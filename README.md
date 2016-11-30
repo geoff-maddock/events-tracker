@@ -28,9 +28,9 @@ $ cd events-tracker
 
 ### REQUIREMENTS
 
-Laravel 5.1+
-Database flexible
-Unix like operating system (OS X, Ubuntu, Debian, and more)
+* Laravel 5.1+
+* Database flexible
+* Unix like operating system (OS X, Ubuntu, Debian)
 
 ### Configuration
 
