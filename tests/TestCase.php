@@ -1,0 +1,24 @@
+<?php
+
+class TestCase extends Illuminate\Foundation\Testing\TestCase {
+
+	protected $baseUrl;
+
+	/**
+	 * Creates the application.
+	 *
+	 * @return \Illuminate\Foundation\Application
+	 */
+	public function createApplication()
+	{
+        Dotenv::load(__DIR__.'/../');
+        $this->baseUrl = env('APP_URL', $this->baseUrl);
+		
+		$app = require __DIR__.'/../bootstrap/app.php';
+
+		$app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
+
+		return $app;
+	}
+
+}

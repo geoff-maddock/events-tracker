@@ -1,0 +1,394 @@
+<?php namespace App;
+
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model as Eloquent;
+
+class Entity extends Eloquent {
+
+
+	public static function boot()
+	{
+		parent::boot();
+
+		static::creating(function($entity)
+		{
+			if (Auth::user())
+			{
+				$entity->created_by = Auth::user()->id;
+				$entity->updated_by = Auth::user()->id;
+			};
+		});
+
+		static::updating(function($entity)
+		{
+			$entity->updated_by = Auth::user()->id;			
+		});
+	}
+
+	/**
+	 * @var Array
+	 *
+	 **/
+	protected $fillable = [
+	'name', 'slug', 'short', 'description', 'entity_type_id', 'entity_status_id','entity_address_id'
+	];
+
+
+	protected $dates = ['updated_at'];
+
+
+    /**
+     * Get all of the entities comments
+     */
+    public function comments()
+    {
+        return $this->morphMany('App\Comment', 'commentable')->orderBy('created_at', 'DESC');
+    }
+
+	/**
+	 * Returns entities by type
+	 *
+	 */
+	public function scopeOfType($query, $type)
+	{
+		$type = EntityType::where('name','=',$type)->first();
+		return $query->where('entity_type_id','=', $type ? $type->id : NULL );
+	}
+
+
+	/**
+	 * Returns active entities
+	 *
+	 */
+	public function scopeActive($query)
+	{
+		$status = EntityStatus::where('name','=', 'Active')->first();
+
+		return $query->where('entity_status_id','=', $status ? $status->id : NULL);
+	}
+
+	/**
+	 * Returns entities created by the user
+	 *
+	 * @ param User $user
+	 * 
+	 */
+	public function scopeOwnedBy($query, User $user)
+	{
+		return $query->where('created_by', '=', $user ? $user->id : NULL);
+	}
+
+	/**
+	 * Returns entities that are promoters
+	 *
+	 */
+	public function scopePromoter($query)
+	{
+		$type = EntityType::where('name','=',$type)->first();
+		return $query->where('entity_type_id','=', $type->id);
+	}
+
+	/**
+	 * An entity is owned by a user
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function user()
+	{
+		return $this->belongsTo('App\User', 'created_by');
+	}
+
+	/**
+	 * The contacts that belong to the entity
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function contacts()
+	{
+		return $this->belongsToMany('App\Contact');
+	}
+
+	/**
+	 * The links that belong to the entity
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function links()
+	{
+		return $this->belongsToMany('App\Link');
+	}
+
+	/**
+	 * An entity has one entity type
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function entityType()
+	{
+		return $this->belongsTo('App\EntityType');
+	}
+
+	/**
+	 * An entity has one status
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function entityStatus()
+	{
+		return $this->belongsTo('App\EntityStatus');
+	}
+
+	
+	/**
+	 * The events that belog to the entity
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function events()
+	{
+		return $this->belongsToMany('App\Event')->withTimestamps();
+	}
+
+	/**
+	 * The locations that belong to the entity
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function locations()
+	{
+		return $this->hasMany('App\Location');
+	}
+
+
+    /**
+     * Get all of the entities photos
+     */
+    public function photos()
+    {
+		return $this->belongsToMany('App\Photo')->withTimestamps();
+    }
+
+
+	/**
+	 * The roles that belong to the entity
+	 * 
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function roles()
+	{
+		return $this->belongsToMany('App\Role')->withTimestamps();
+	} 
+
+	/**
+	 * The tags that belong to the entity
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function tags()
+	{
+		return $this->belongsToMany('App\Tag')->withTimestamps();
+	}
+
+
+	/**
+	 * If there is a future event, return it
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function futureEvents()
+	{
+		$events = $this->events()->where('start_at','>=',Carbon::now())->orderBy('start_at', 'ASC')->get();
+		return $events;
+	}
+
+	/**
+	 * If there is a future event, return it
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function pastEvents()
+	{
+		$events = $this->events()->where('start_at','<',Carbon::now())->orderBy('start_at', 'DESC')->get();
+		return $events;
+	}
+
+	/**
+	 * Events that occurred at this venue
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function eventsAtVenue()
+	{
+		$events = Event::where('venue_id', $this->id)->orderBy('start_at', 'ASC')->get();
+		return $events;
+	}
+
+	/**
+	 * Get a list of tag ids associated with the event
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function getTagListAttribute()
+	{
+		return $this->tags->lists('id')->all();
+	}
+
+
+	/**
+	 * Get a list of role ids associated with the event
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function getRoleListAttribute()
+	{
+		return $this->roles->lists('id')->all();
+	}
+
+
+	/**
+	 * Return a collection of entities with the role venue
+	 * 
+	 * @return Collection $venues
+	 * 
+	 **/
+	public static function getVenues()
+	{
+		// get a list of venues
+		$venues = self::whereHas('roles', function($q)
+		{
+			$q->where('name','=','Venue');
+		})->orderBy('name','ASC');
+
+		return $venues;
+	}
+
+	/**
+	 * Return a collection of entities with the role  promoter
+	 * 
+	 * @return Collection $venues
+	 * 
+	 **/
+	public static function getPromoters()
+	{
+		// get a list of venues
+		$venues = self::whereHas('roles', function($q)
+		{
+			$q->where('name','=','Promoter');
+		})->orderBy('name','ASC');
+
+		return $venues;
+	}
+
+
+	/**
+	 * Return a collection of entities with the passed role
+	 * 
+	 * @pra
+	 * @return Collection $entities
+	 * 
+	 **/
+	public static function getByRole($role)
+	{
+		// get a list of entities that have the passed role
+		$entities = self::whereHas('roles', function($q) use ($role)
+		{
+			$q->where('slug','=', strtolower($role));
+		})->orderBy('name','ASC');
+
+		return $entities;
+	}
+
+	/**
+	 * Return a collection of entities with the passed tag
+	 * 
+	 * @pra
+	 * @return Collection $entities
+	 * 
+	 **/
+	public static function getByTag($tag)
+	{
+		// get a list of entities that have the passed tag
+		$entities = self::whereHas('tags', function($q) use ($tag)
+		{
+			$q->where('name','=', ucfirst($tag));
+		})->orderBy('name','ASC');
+
+		return $entities;
+	}
+
+	/**
+	 * Return a collection of entities with the passed type
+	 * 
+	 * @pra
+	 * @return Collection $entities
+	 * 
+	 **/
+	public static function getByType($type)
+	{
+		// get a list of entities that have the passed role
+		$entities = self::whereHas('entity_type', function($q) use ($type)
+		{
+			$q->where('name','=', ucfirst($type));
+		})->orderBy('name','ASC');
+
+		return $entities;
+	}
+
+	public function addPhoto(Photo $photo)
+	{
+		return $this->photos()->attach($photo->id);;
+	}
+
+	/**
+	 * Return the primary photo for this entity
+	 * 
+	 * @return Photo $photo
+	 * 
+	 **/
+	public function getPrimaryPhoto()
+	{
+		// get a list of events that start on the passed date
+		$primary = $this->photos()->where('photos.is_primary','=','1')->first();
+
+		return $primary;
+	}
+
+	/**
+	 * Return the primary location for this entity
+	 * 
+	 * @return Location
+	 * 
+	 **/
+	public function getPrimaryLocation()
+	{
+		// get a list of events that start on the passed date
+		$primary = $this->locations()->first();
+
+		return $primary;
+	}
+
+
+	/**
+	 * Return the primary location address
+	 * 
+	 * @return Location
+	 * 
+	 **/
+	public function getPrimaryLocationAddress()
+	{
+		$address = '';
+
+		// get a list of events that start on the passed date
+		$primary = $this->locations()->first();
+
+		if ($primary)
+		{
+			$address .= $primary->address_one.' ';
+			$address .= $primary->city;
+		};
+
+		return $address;
+	}
+
+}

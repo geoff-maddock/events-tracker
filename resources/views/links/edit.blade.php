@@ -1,0 +1,21 @@
+@extends('app')
+
+@section('title','Entity Link Edit')
+
+@section('content')
+
+	<P><B>Entity</B> > {!! link_to_route('entities.show', $entity->name, [$entity->id], ['class' => 'text-'.$entity->entityStatus->getDisplayClass()]) !!}</P>
+
+	<h1>Edit Link: <i>{{ $link->text }}</i> </h1> 
+
+	{!! Form::model($link, ['route' => ['entities.links.update', $entity->id, $link->id], 'method' => 'PATCH']) !!}
+
+		@include('links.form', ['action' => 'update'])
+
+	{!! Form::close() !!}
+
+	<div class="col-md-3">
+	<P>{!! delete_form(['entities.links.destroy', $entity->id,  $link->id]) !!}</P>
+	</div>
+
+@stop

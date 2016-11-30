@@ -1,0 +1,22 @@
+body {
+	background: #FEFFF1;
+}
+
+.event-date {
+	font-weight: 900;
+	font-size: 17px;
+}
+
+.event-list, .list {
+	list-style-type:none;
+	margin:1em;
+	padding-left: 0px;
+}
+
+.label-tag {
+ 	background-color: #000000;
+}
+
+.label-related{
+	background-color: #ffffff;
+}

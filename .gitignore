@@ -1,0 +1,14 @@
+/bootstrap/compiled.php
+/config/database.php
+/html/photos
+/node_modules
+/planning
+/vendor
+.env.local.php
+.env.php
+.env
+.htaccess
+composer.phar
+composer.lock
+Homestead.yaml
+Homestead.json

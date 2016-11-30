@@ -1,0 +1,52 @@
+{
+	"name": "laravel/laravel",
+	"description": "The Laravel Framework.",
+	"keywords": ["framework", "laravel"],
+	"license": "MIT",
+	"type": "project",
+	"require": {
+		"laravel/framework": "5.1.*",
+		"illuminate/html": "^5.0",
+		"braunson/laravel-html5-forms": "dev-laravel-5",
+		"laravel/socialite": "~2.0",
+		"intervention/image": "^2.3",
+		"maddhatter/laravel-fullcalendar": "^1.2"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "~4.0",
+		"phpspec/phpspec": "~2.1"
+	},
+	"autoload": {
+		"classmap": [
+			"database"
+		],
+		"psr-4": {
+			"App\\": "app/"
+		},
+		"files": ["app/Http/helpers.php",
+					"app/Http/flash.php"
+					]
+	},
+	"autoload-dev": {
+		"classmap": [
+			"tests/TestCase.php"
+		]
+	},
+	"scripts": {
+		"post-install-cmd": [
+			"php-latest artisan clear-compiled",
+			"php-latest artisan optimize"
+		],
+		"post-update-cmd": [
+			"php-latest artisan clear-compiled",
+			"php-latest artisan optimize"
+		],
+		"post-create-project-cmd": [
+			"php-latest -r \"copy('.env.example', '.env');\"",
+			"php-latest artisan key:generate"
+		]
+	},
+	"config": {
+		"preferred-install": "dist"
+	}
+}
