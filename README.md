@@ -5,7 +5,7 @@ A guide and calander of events, weekly and monthly series, promoters, artists, p
 Run an instance to create your own community where events, event series, entities, attendees and other objects can be added, tagged maintained and followed.  
 
 
-## FEATURES (v.0.1)
+## FEATURES (v0.1)
 
 * Public, filterable event listings
 * User registration for private homepage with customized private event listings and account settings.
