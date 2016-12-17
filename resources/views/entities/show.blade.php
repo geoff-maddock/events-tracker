@@ -190,7 +190,7 @@
 	@foreach ($set as $photo)
 		<div class="col-md-2">
 		
-		<a href="/{{ $photo->path }}" data-lightbox="{{ $photo->path }}"><img src="/{{ urlencode($photo->thumbnail) }}" alt="{{ $entity->name}}"  style="max-width: 100%;"></a>
+		<a href="/{{ $photo->path }}" data-lightbox="{{ $photo->path }}"><img src="/{{ $photo->thumbnail }}" alt="{{ $entity->name}}"  style="max-width: 100%;"></a>
 		@if ($user && Auth::user()->id == $entity->user->id)	
 			{!! link_form('Delete', $photo, 'DELETE') !!}
 			@if ($photo->is_primary)
