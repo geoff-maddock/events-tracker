@@ -6,7 +6,7 @@
 	@include('series.crumbs', ['slug' => $series->slug])
 </h1>
 <P>
-@if ($user && Auth::user()->id == $series->user->id)	
+@if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser')  ) )
 	<a href="{!! route('series.edit', ['id' => $series->id]) !!}" class="btn btn-primary">Edit Series</a>
 	<a href="{!! route('series.createOccurrence', ['id' => $series->id]) !!}" class="btn btn-primary">Add Occurrence</a>
 @endif
@@ -86,7 +86,7 @@
 </div>
 
 <div class="col-md-8">
-@if ($user && Auth::user()->id == $series->user->id)	
+@if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser') ) )
 <form action="/series/{{ $series->id }}/photos" class="dropzone" method="POST">
 	<input type="hidden" name="_token" value="{{ csrf_token() }}">
 </form>
@@ -99,7 +99,7 @@
 @foreach ($set as $photo)
 	<div class="col-md-2">
 	<img src="/{{ $photo->thumbnail }}" alt="{{$photo->name}}"  style="max-width: 100%;">
-	@if ($user && Auth::user()->id == $series->user->id)	
+	@if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser') ))	
 
 			{!! link_form('Delete', $photo, 'DELETE') !!}
 			@if ($photo->is_primary)

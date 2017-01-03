@@ -17,7 +17,7 @@
 			@endif
 		 	{!! link_to_route('series.show', $series->name, [$series->id]) !!} {{ $series->short }}
 
-			@if ($signedIn && $series->ownedBy($user))
+			@if ($signedIn && $series->ownedBy($user) || $user->id == Config::get('app.superuser') )
 			<a href="{!! route('series.edit', ['id' => $series->id]) !!}"><span class='glyphicon glyphicon-pencil'></span></a>
 			<a href="{!! route('series.createOccurrence', ['id' => $series->id]) !!}" title="Create the next occurrence of {{ $series->name }}"><span class='glyphicon glyphicon-fire'></span></a>
 			@endif

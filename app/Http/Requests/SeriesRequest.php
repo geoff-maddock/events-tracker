@@ -25,7 +25,8 @@ class SeriesRequest extends Request {
 		return [
 			'name' => 'required|min:3',
 			'event_type_id' => 'required',
-			'visibility_id' => 'required'
+			'visibility_id' => 'required',
+			'occurrence_type_id' => 'required',
 		];
 	}
 

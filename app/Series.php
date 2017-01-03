@@ -463,9 +463,16 @@ class Series extends Eloquent {
 	 */
 	public function cycleFromFoundedAt()
 	{ 
+		// local founded at
 		$founded_at = $this->founded_at;
 
-		$next = $this->founded_at;
+		// if no founded date, assume created at date
+		if (!$founded_at)
+		{
+			$founded_at = $this->created_at;
+		}
+
+		$next = $founded_at;
 
 		if ($next)
 		{
@@ -478,9 +485,8 @@ class Series extends Eloquent {
 		};
 		
 		// clean up time due to timeshift
-		//$next = $next->subMinute();
-		$next->hour = $this->founded_at->hour;
-		$next->minute = $this->founded_at->minute;
+		$next->hour = $founded_at->hour;
+		$next->minute = $founded_at->minute;
 
 		return $next;
 	}

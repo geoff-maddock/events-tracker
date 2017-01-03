@@ -91,6 +91,7 @@ return [
 	| 
 	*/
 	'feedback' => env('APP_FEEDBACK_EMAIL', 'admin@localhost'),
+	'superuser' => env('APP_SUPERUSER'),
 
 	/*
 	|--------------------------------------------------------------------------

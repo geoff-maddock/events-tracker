@@ -9,7 +9,7 @@
 </h1>
 
 <P>
-@if ($user && Auth::user()->id == $event->user->id)	
+@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )	
 	<a href="{!! route('events.edit', ['id' => $event->id]) !!}" class="btn btn-primary">Edit Event</a>
 @endif
 	<a href="{!! URL::route('events.index') !!}" class="btn btn-info">Return to list</a>
@@ -109,7 +109,7 @@
 	</div>
 
 	<div class="col-md-6">
-	@if ($user && Auth::user()->id == $event->user->id)	
+	@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )	
 	<form action="/events/{{ $event->id }}/photos" class="dropzone" method="POST">
 		<input type="hidden" name="_token" value="{{ csrf_token() }}">
 	</form>
@@ -122,7 +122,7 @@
 	@foreach ($set as $photo)
 		<div class="col-md-2">
 		<a href="/{{ $photo->path }}" data-lightbox="{{ $photo->path }}"><img src="/{{ $photo->thumbnail }}" alt="{{ $event->name}}"  style="max-width: 100%;"></a>
-		@if ($user && Auth::user()->id == $event->user->id)	
+		@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )	
 			{!! link_form('Delete', $photo, 'DELETE') !!}
 			@if ($photo->is_primary)
 			<button class="btn btn-success">Primary</button>
