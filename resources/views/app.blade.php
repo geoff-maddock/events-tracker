@@ -47,6 +47,7 @@
 	<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.8.2/js/lightbox.min.js"></script>
 
 	<script src="{{ asset('/js/sweetalert-dev.js') }}"></script>
+	<script src="{{ asset('/js/facebook-sdk.js') }}"></script>
 
 	@yield('scripts.footer')
 	@yield('footer')

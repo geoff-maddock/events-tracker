@@ -477,7 +477,7 @@ class Series extends Eloquent {
 		if ($next)
 		{
 
-			while ($next < Carbon::now())
+			while ($next < Carbon::now()->startOfDay())
 			{
 				$next = $this->cycleForward($next);
 			};
