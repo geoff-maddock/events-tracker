@@ -3,6 +3,7 @@
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
+use App\Http\Requests\ProfileRequest;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ class UsersController extends Controller {
 
 	public function __construct(User $user)
 	{
-		$this->middleware('auth', ['except' => array('index', 'show')]);
+		$this->middleware('auth', ['except' => array('index', 'show',)]);
 		$this->user = $user;
 		$this->rpp = 5;
 
@@ -48,8 +49,6 @@ class UsersController extends Controller {
 
 	public function create()
 	{
-
-		
 		$userTypes = [''=>''] + UserType::lists('name', 'id');
 		$visibilities = [''=>''] + Visibility::lists('name', 'id');
 		$tags = Tag::lists('name','id');
@@ -59,6 +58,8 @@ class UsersController extends Controller {
 
 	public function show(User $user)
 	{
+		// if there is no profile, create one?
+
 		return view('users.show', compact('user'));
 	}
 
@@ -68,6 +69,13 @@ class UsersController extends Controller {
 		$input = $request->all();
 
 		$user->create($input);
+
+		// if there is no profile, create one
+		if (!$user->profile)
+		{
+			$profile = new App/Profile();
+			$profile->save();
+		}
 
 		$user->tags()->attach($request->input('tag_list'));
 
@@ -80,24 +88,23 @@ class UsersController extends Controller {
 	{
 		$this->middleware('auth');
 
-		$type = EntityType::where('name', 'Venue')->first();
-		$venues = [''=>''] + DB::table('entities')->where('entity_type_id', $type->id)-> orderBy('name', 'ASC')->lists('name','id');
-		$userTypes = [''=>''] + UserType::lists('name', 'id');
-		$visibilities = [''=>''] + Visibility::lists('name', 'id');
+		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->lists('name', 'id')->all();
 		$tags = Tag::lists('name','id');
 
-		return view('users.edit', compact('user', 'venues', 'userTypes', 'visibilities','tags'));
+		return view('users.edit', compact('user', 'visibilities','tags'));
 	}
 
-	public function update(User $user, UserRequest $request)
+	public function update(User $user, ProfileRequest $request)
 	{
-		$user->fill($request->input())->save();
+		$user->profile->fill($request->input())->save();
+		//$user->fill($request->input())->save();
 
-		$user->tags()->sync($request->input('tag_list',[]));
+		//$user->tags()->sync($request->input('tag_list',[]));
 
-		\Session::flash('flash_message', 'Your user has been updated!');
 
-		return redirect('users');
+		flash('Success', 'Your user has been updated');
+
+		return view('users.show', compact('user'));
 	}
 
 	public function destroy(User $user)

@@ -115,6 +115,7 @@
 	{!! Form::label('primary_link','Primary Link:') !!}
 	{!! Form::text('primary_link', null, ['class' =>'form-control']) !!}
 	{!! $errors->first('primary_link','<span class="help-block">:message</span>') !!}
+	<button type="button" class="btn btn-info" id='import-link'>Import</button>
 	</div>
 
 	<div class="form-group col-md-4 {{$errors->has('ticket_link') ? 'has-error' : '' }}">
@@ -178,6 +179,7 @@
 
 @section('footer')
 	<script>
+		// javascript to enable the select2 for the tag and entity list
 		$('#tag_list').select2(
 			{
 				placeholder: 'Choose a tag',
@@ -188,5 +190,25 @@
 				placeholder: 'Choose a related artist, producer, dj',
 				tags: false,
 			});
+
+		$('#import-link').click(function(e){
+
+			// get the id out of the link
+			var str = $('#primary_link').val();
+			var spl = str.split("/");
+			var event_id = spl[4];
+
+			// get the content of the link
+			console.log(str);
+			console.log(event_id); // should be the position of the event
+
+			// login
+			FB.login(function(response) {
+				// try to pull info from the fb object
+				FB.api('/'+event_id, function(response) {
+		 		 console.log(response);	
+				});
+			});
+		})
 	</script>
 @endsection

@@ -68,6 +68,17 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		return $this->hasMany('App\EventResponse');
 	}
 
+
+	/**
+	 * A user can have one profile()
+	 *
+	 */
+	public function profile()
+	{
+		return $this->hasOne('App\Profile');
+	}
+
+
 	/**
 	 * Return the count of events the user is attending
 	 *
@@ -84,7 +95,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	}
 
 	/**
-	 * Events tjat were created nu tjos iser
+	 * Events that were created by the user
 	 *
 	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
 	 */

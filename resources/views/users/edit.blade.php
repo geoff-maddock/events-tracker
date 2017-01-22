@@ -3,16 +3,21 @@
 @section('content')
 
 
-	<i>{{ $event->start_at->format('l F jS Y \\a\\t h:i A') }} </i> 
-	<h2>Edit: {{ $event->name }}</h2>
+	<h2>{{ $user->name }}</h2>
+	<p>
 
-	{!! Form::model($event, ['route' => ['events.update', $event->id], 'method' => 'PATCH']) !!}
+		<a href="{!! route('users.show', ['id' => $user->id]) !!}" class="btn btn-primary">Show Profile</a>
+		<a href="{!! URL::route('users.index') !!}" class="btn btn-info">Return to list</a>
 
-		@include('events.form', ['action' => 'update'])
+	</p>
+
+	{!! Form::model($user->profile, ['route' => ['users.update', $user->id], 'method' => 'PATCH']) !!}
+
+		@include('users.form', ['action' => 'update'])
 
 	{!! Form::close() !!}
 
-	{!! delete_form(['events.destroy', $event->id]) !!}
+	{!! delete_form(['users.destroy', $user->id]) !!}
 
-	{!! link_to_route('events.index','Return to list') !!}
+	{!! link_to_route('users.index','Return to list') !!}
 @stop
