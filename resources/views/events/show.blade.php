@@ -16,7 +16,7 @@
 </P>
 
 <div class="row">
-<div class="col-md-6">
+<div class="event-card col-md-6">
 	<div class='event-date'>
 	<h2>{!! $event->start_at->format('l F jS Y') !!}</h2>
 
@@ -108,7 +108,7 @@
 	</P>
 	</div>
 
-	<div class="col-md-6">
+	<div class="col-md-5">
 	@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )	
 	<form action="/events/{{ $event->id }}/photos" class="dropzone" method="POST">
 		<input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -139,38 +139,37 @@
 
 </div>
 
-	<div class="row">
-		<div class="col-md-4">
-			@if ($comments = $event->comments AND count($comments) > 0)
-			<b>Comments:</b><br>
-			@foreach ($comments as $comment)
-				<div class="well well-sm">
-					<b>{{ $comment->author->name }}</b><br>
-					{!! $comment->message !!}<br>
-					{{ $comment->created_at->diffForHumans() }} <br>
-					@if ($signedIn && $comment->createdBy($user))
-					<a href="{!! route('events.comments.edit', ['event' => $event->id, 'id' => $comment->id]) !!}">
-					<span class='glyphicon glyphicon-pencil'></span></a>
-					{!! Form::open(['route' => ['events.comments.destroy', 'event' => $event->id, 'id' => $comment->id], 'method' => 'delete']) !!}
-        			<button type="submit" class="btn btn-danger btn-mini">Delete</button>
-    				{!! Form::close() !!}
+<div class="row">
+	<div class="col-md-4">
+		@if ($comments = $event->comments AND count($comments) > 0)
+		<b>Comments:</b><br>
+		@foreach ($comments as $comment)
+			<div class="well well-sm">
+				<b>{{ $comment->author->name }}</b><br>
+				{!! $comment->message !!}<br>
+				{{ $comment->created_at->diffForHumans() }} <br>
+				@if ($signedIn && $comment->createdBy($user))
+				<a href="{!! route('events.comments.edit', ['event' => $event->id, 'id' => $comment->id]) !!}">
+				<span class='glyphicon glyphicon-pencil'></span></a>
+				{!! Form::open(['route' => ['events.comments.destroy', 'event' => $event->id, 'id' => $comment->id], 'method' => 'delete']) !!}
+    			<button type="submit" class="btn btn-danger btn-mini">Delete</button>
+				{!! Form::close() !!}
 
-					@endif
-				</div>
-			@endforeach
-			@endif
-		</div>
-
+				@endif
+			</div>
+		@endforeach
+		@endif
 	</div>
 
+</div>
 
-	<P>
-	@if (Auth::user())	
-		<span> 
-			<a href="{!! route('events.comments.create', ['id' => $event->id]) !!}" class="btn btn-primary">Add Comment</a>
-		</span>
-	@endif
-	</P>
+<P>
+@if (Auth::user())	
+	<span> 
+		<a href="{!! route('events.comments.create', ['id' => $event->id]) !!}" class="btn btn-primary">Add Comment</a>
+	</span>
+@endif
+</P>
 
 @stop
 

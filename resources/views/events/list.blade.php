@@ -4,7 +4,7 @@
 	<?php $month = '';?>
 	@foreach ($events as $event)
 
-	<li style="clear: both;">
+	<li class="event-card" style="clear: both;">
 		@if ($primary = $event->getPrimaryPhoto())
 		<div style="float: left; padding: 5px;">
 				<a href="/{{ $event->getPrimaryPhoto()->path }}" data-lightbox="{{ $event->getPrimaryPhoto()->path }}"><img src="/{{ $event->getPrimaryPhoto()->thumbnail }}" alt="{{ $event->name}}"  style="max-width: 100px; "></a>

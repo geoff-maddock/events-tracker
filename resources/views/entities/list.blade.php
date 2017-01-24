@@ -1,12 +1,12 @@
 		@if (isset($entities) && $entities)
 
 		<?php $type = NULL;?>
-		<ul class='list'>
+		<ul class='list col-md-6'>
 			@foreach ($entities as $entity)
 	
-			<li style="clear: both;">
+			<li class="card" style="clear: both;">
 				@if ($primary = $entity->getPrimaryPhoto())
-				<div style="float: left; padding: 5px;">
+				<div class="card-thumb" style="float: left; padding: 5px;">
 						<img src="/{!! str_replace(' ','%20',$entity->getPrimaryPhoto()->thumbnail) !!}" alt="{{ $entity->name}}"  style="max-width: 100px; ">
 				</div>
 				@endif

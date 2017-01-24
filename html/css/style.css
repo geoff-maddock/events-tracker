@@ -1,7 +1,47 @@
 body {
 	background: #FEFFF1;
+	font-family: Roboto,sans-serif !important;
 }
 
+.profile-card {
+	padding: 10px;
+	background-color: #433;
+	margin: 5px;
+	border-radius: 5px;
+	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
+	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2); 
+	min-height: 130px;
+}
+
+.card {
+	padding: 10px;
+	background-color: #445;
+	margin: 5px;
+	border-radius: 5px;
+	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
+	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2); 
+	min-height: 130px;
+}
+
+.event-card {
+	padding: 10px;
+	background-color: #334;
+	margin: 5px;
+	border-radius: 5px;
+	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
+	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2); 
+	min-height: 130px;
+}
+
+.series-card {
+	padding: 10px;
+	background-color: #223;
+	margin: 5px;
+	border-radius: 5px;
+	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
+	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2); 
+	min-height: 130px;
+}
 .event-date {
 	font-weight: 900;
 	font-size: 17px;
@@ -19,4 +59,8 @@ body {
 
 .label-related{
 	background-color: #ffffff;
+}
+
+.card-thumb {
+	border-radius: 5px;
 }

@@ -3,13 +3,13 @@
 	<?php $type = NULL;?>
 		@foreach ($series as $series)
 		@if ($type != $series->occurrence_type_id)
-		<li>			<br style="clear: left;"/>
+		<li style="margin-left: 10px;">			<br style="clear: left;"/>
 				<h3>{{ $series->occurrenceType->name }}</h3>
-				<?php $type = $series->occurrence_type_id?>
+				<?php $type = $series->occurrence_type_id; ?>
 		</li>
 		@endif
 
-		<li style="clear: both;">
+		<li class="series-card" style="clear: both;">
 			@if ($primary = $series->getPrimaryPhoto())
 			<div style="float: left; padding: 5px;">
 					<img src="/{{ $series->getPrimaryPhoto()->thumbnail }}" alt="{{ $series->name}}"  style="max-width: 100px; ">

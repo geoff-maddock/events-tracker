@@ -17,7 +17,7 @@
 </P>
 
 <div class="row">
-	<div class="col-md-4">
+	<div class="profile-card col-md-4">
 	<h2>{{ $entity->name }}</h2>
 
 	<b>{{ $entity->entityType->name }}</b>
@@ -176,7 +176,7 @@
 
 	</div>
 
-	<div class="col-md-8">
+	<div class="col-md-6">
 	@if ($user && Auth::user()->id == $entity->user->id)	
 	<form action="/entities/{{ $entity->id }}/photos" class="dropzone" method="POST">
 		<input type="hidden" name="_token" value="{{ csrf_token() }}">
