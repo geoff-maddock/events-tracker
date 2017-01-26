@@ -18,13 +18,12 @@
 
 	</div>
 	<br style="clear: left;"/>
-
  
 	<!-- DISPLAY THE NEXT FOUR DAYS OF EVENTS --> 
 	<?php 	$today = \Carbon\Carbon::now('America/New_York'); ?>
-	<div class="row">
+	<div class="row small-gutter">
  
-		@for ($i = 0; $i < 4; $i++) 
+		@for ($i = 0; $i < 4; $i++)  
 
 		<?php $day = \Carbon\Carbon::parse($today)->addDay($i);?>
 		<div class="col-lg-3">

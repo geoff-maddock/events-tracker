@@ -128,6 +128,27 @@ class EventsController extends Controller {
 	}
 
 	/**
+ 	 * Display a simple text feed of future events
+ 	 *
+ 	 * @return Response
+ 	 */
+	public function feed()
+	{
+		// get a list of venues
+		$venues = [''=>''] + Entity::getVenues()->lists('name','id')->all();
+
+		$this->rpp = 10000;
+
+		$events = Event::future()->simplePaginate($this->rpp);
+		$events->filter(function($e)
+		{
+			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+		});
+
+		return view('events.feed', compact('events'));
+	}
+
+	/**
 	 * Display a calendar view of events
 	 *
 	 * @return view

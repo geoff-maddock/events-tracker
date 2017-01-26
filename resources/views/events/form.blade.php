@@ -206,9 +206,59 @@
 			FB.login(function(response) {
 				// try to pull info from the fb object
 				FB.api('/'+event_id, function(response) {
+					if (!response || response.error) {
+						handleError(response.error);
+					} else {
+						// process the response and try to set the event form fields
+						if (response.name)
+						{
+							$('#name').val(response.name);
+							$('#slug').val(response.name);
+							console.log('set name');
+						};
+
+						if (response.description)
+						{
+							$('#description').val(response.description);
+							console.log('set description');
+
+							$('#short').val(response.description.slice(0,100));
+							console.log('set short description');
+						};
+						if (response.start_time)
+						{
+							start_trim = response.start_time.slice(0,-5);
+							$('#start_at').val(start_trim);
+							console.log('set start at '+start_trim);
+						};
+						if (response.end_time)
+						{
+							end_trim = response.end_time.slice(0,-5);
+							$('#end_at').val(end_trim);
+							console.log('set end at'+end_trim);
+						};
+						if (response.place)
+						{
+							venue = response.place.name;
+							venue_val = $('#venue_id').find("option:contains('"+venue+"')").val();
+							$('#venue_id option[value='+venue_val+']').attr('selected', 'selected');
+							console.log('venue_val'+venue_val);
+							console.log('set venue '+venue);
+						};
+
+					}
 		 		 console.log(response);	
 				});
 			});
 		})
+
+		function handleError(error) {
+			console.log('Error code:'+error.code);
+			console.log(error.message);
+		}
+
+		function eventPhotos(event){
+			// get the photos from the api
+		}
 	</script>
 @endsection

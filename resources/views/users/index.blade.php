@@ -9,11 +9,11 @@
 
 
 			<ul class='user-list'>
-				@foreach ($users as $user)
+				@foreach ($users as $x)
 				<li>
-					<b><a href="{!! route('users.show', ['id' => $user->id]) !!}" title="Added {!! $user->created_at->format('l F jS Y') !!}">{{ $user->name }} </b>
+					<b><a href="{!! route('users.show', ['id' => $x->id]) !!}" title="Added {!! $x->created_at->format('l F jS Y') !!}">{{ $x->name }} </b>
 					<span>
-					@if ($user && (Auth::user()->id == $user->id || $user->id == Config::get('app.superuser') ) )	
+					@if ($signedIn && (Auth::user()->id == $user->id || $user->id == Config::get('app.superuser') ) )	
 					<a href="{!! route('users.edit', ['id' => $user->id]) !!}"><span class='glyphicon glyphicon-pencil'></span></a>
 					@endif
 					</span>

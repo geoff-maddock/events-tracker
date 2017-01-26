@@ -6,7 +6,8 @@ body {
 .profile-card {
 	padding: 10px;
 	background-color: #433;
-	margin: 5px;
+	margin-left: 5px;
+	margin-bottom: 15px;
 	border-radius: 5px;
 	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
 	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2); 
@@ -16,7 +17,8 @@ body {
 .card {
 	padding: 10px;
 	background-color: #445;
-	margin: 5px;
+	margin-left: 5px;
+	margin-bottom: 15px;
 	border-radius: 5px;
 	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
 	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2); 
@@ -26,7 +28,8 @@ body {
 .event-card {
 	padding: 10px;
 	background-color: #334;
-	margin: 5px;
+	margin-left: 5px;
+	margin-bottom: 15px;
 	border-radius: 5px;
 	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
 	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2); 
@@ -36,7 +39,8 @@ body {
 .series-card {
 	padding: 10px;
 	background-color: #223;
-	margin: 5px;
+	margin-left: 5px;
+	margin-bottom: 15px;
 	border-radius: 5px;
 	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
 	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2); 
@@ -49,7 +53,7 @@ body {
 
 .event-list, .list {
 	list-style-type:none;
-	margin:1em;
+	margin:.5em;
 	padding-left: 0px;
 }
 
@@ -63,4 +67,14 @@ body {
 
 .card-thumb {
 	border-radius: 5px;
+}
+
+.no-gutter > [class*='col-'] {
+    padding-right:0;
+    padding-left:0;
+}
+
+.small-gutter > [class*='col-'] {
+    padding-right:10px;
+    padding-left:10px;
 }

@@ -15,6 +15,7 @@
 
 <div class="row">
 <div class="col-md-4">
+	<div class="event-card">
 	<h2>{{ $series->name }}</h2>
 	<b>{{ $series->occurrenceType->name }}  {{ $series->occurrenceRepeat() }}</b>
 
@@ -82,10 +83,10 @@
 			</div>
 		</div>	
 	</div>
-
+	</div>
 </div>
 
-<div class="col-md-8">
+<div class="col-md-6">
 @if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser') ) )
 <form action="/series/{{ $series->id }}/photos" class="dropzone" method="POST">
 	<input type="hidden" name="_token" value="{{ csrf_token() }}">

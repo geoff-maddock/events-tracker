@@ -7,12 +7,13 @@
 
 	<h2>{{ $user->name }}</h2>
 	<p>
-	@if ($user && (Auth::user()->id == $user->id || $user->id == Config::get('app.superuser') ) )	
+	@if ($signedIn && (Auth::user()->id == $user->id || $user->id == Config::get('app.superuser') ) )	
 		<a href="{!! route('users.edit', ['id' => $user->id]) !!}" class="btn btn-primary">Edit Profile</a>
 	@endif
 		<a href="{!! URL::route('users.index') !!}" class="btn btn-info">Return to list</a>
 
 	</p>
+	<div class="col-lg-6 profile-card">
 	<b>Name </b> {{ $user->profile->first_name }} {{ $user->profile->last_name }}<br>
 	<b>Alias </b> {{ $user->profile->alias }}<br>
 	<b>Contact </b> <a href="mailto:{{ $user->email }}">{{ $user->email }}</a><br>
@@ -25,7 +26,7 @@
 	</div>
 	<h5>Added <b>{{ $user->created_at->format('l F jS Y') }}</b></h5>
 	<br>
-
+	</div>
 	<div class="row">
 	<div class="col-md-12">
 
@@ -49,6 +50,8 @@
 		</div>
 	</div>
 
+	
+	</div>
 
 
 @stop

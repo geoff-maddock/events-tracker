@@ -11,11 +11,13 @@ use Carbon\Carbon;
 
 use DB;
 use App\User;
+use App\Profile;
 use App\Entity;
 use App\UserType;
 use App\EntityType;
 use App\Visibility;
 use App\Tag;
+use App\EventResponse;
 
 class UsersController extends Controller {
 
@@ -34,8 +36,6 @@ class UsersController extends Controller {
  	 */
 	public function index()
 	{
-
-		// $users = $this->user->orderBy('name', 'ASC')->get();
 		$users = User::orderBy('name','ASC')->get();
 
 		return view('users.index',compact('users'));

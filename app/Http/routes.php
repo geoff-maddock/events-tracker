@@ -63,6 +63,7 @@ Route::get('events/venue/{slug}', 'EventsController@indexVenues');
 Route::get('events/relatedto/{slug}', 'EventsController@indexRelatedTo');
 Route::get('events/type/{slug}', 'EventsController@indexTypes');
 Route::get('events/series/{slug}', 'EventsController@indexSeries');
+Route::get('events/feed', 'EventsController@feed');
 
 Route::get('events/{id}/attending', [
 	'as' => 'events.attending', 

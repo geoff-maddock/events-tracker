@@ -1,5 +1,6 @@
 <?php namespace App;
 
+use App\EventResponse;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Passwords\CanResetPassword;
@@ -92,6 +93,15 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		});
 
 		return count($responses);
+	}
+
+	/**
+	 * Return a list of events the user is attending
+	 *
+	 */
+	public function attending()
+	{
+		return $this->hasManyThrough('Event','EventResponse');
 	}
 
 	/**

@@ -28,7 +28,7 @@
 			@endif
 			
 			@if ($ticket = $event->ticket_link)
-			<a href="{{ $link }}" target="_" title="Ticket link">
+			<a href="{{ $ticket }}" target="_" title="Ticket link">
 			<span class='glyphicon glyphicon-shopping-cart'></span>
 			</a>
 			@endif
