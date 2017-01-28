@@ -490,7 +490,7 @@ class Event extends Eloquent {
 	 **/
 	public function getPrimaryPhoto()
 	{
-		// get a list of events that start on the passed date
+		// gets the first photo related to this event
 		$primary = $this->photos()->where('photos.is_primary','=','1')->first();
 
 		return $primary;

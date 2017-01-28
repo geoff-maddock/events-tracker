@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 use DB;
+use Log;
+use Mail;
 use App\User;
 use App\Profile;
 use App\Entity;
@@ -18,6 +20,7 @@ use App\EntityType;
 use App\Visibility;
 use App\Tag;
 use App\EventResponse;
+use App\Photo;
 
 class UsersController extends Controller {
 
@@ -114,4 +117,53 @@ class UsersController extends Controller {
 		return redirect('users');
 	}
 
+
+	/**
+	 * Add a photo to a user
+	 *
+	 * @param  int  $id
+	 * @return Response
+	 */
+	public function addPhoto($id, Request $request)
+	{
+		$this->validate($request, [
+			'file' =>'required|mimes:jpg,jpeg,png,gif'
+		]);
+
+		$photo = $this->makePhoto($request->file('file'));
+		$photo->save();
+
+		// attach to user
+		$user = User::find($id);
+		$user->addPhoto($photo);
+	}
+	
+	/**
+	 * Delete a photo
+	 *
+	 * @param  int  $id
+	 * @return Response
+	 */
+	public function deletePhoto($id, Request $request)
+	{
+
+		$this->validate($request, [
+			'file' =>'required|mimes:jpg,jpeg,png,gif'
+		]);
+
+		// detach from user
+		$user = User::find($id);
+		$user->removePhoto($photo);
+
+		$photo = $this->deletePhoto($request->file('file'));
+		$photo->save();
+
+
+	}
+
+	protected function makePhoto(UploadedFile $file)
+	{
+		return Photo::named($file->getClientOriginalName())
+			->move($file);
+	}
 }

@@ -4,6 +4,9 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta property="og:url" content="{{ Request::url() }}">
+	<meta property="og:title" content="@yield('title')">
+	<meta property="og:description" content="A guide and calander of events, weekly and  monthly series, promoters, artists, producers, djs, venues and other entities.">
 	<title>Event Repo - Club Guide - @yield('title')</title>
 
 	<link href="{{ asset('/css/app.css') }}" rel="stylesheet">

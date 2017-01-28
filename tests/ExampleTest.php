@@ -21,7 +21,7 @@ class ExampleTest extends TestCase {
 	 */
 	public function testEventsExample()
 	{
-        $this->visit('/')
+        $this->visit('/events')
              ->see('Events')
              ->dontSee('Rails');
 	}
@@ -33,7 +33,19 @@ class ExampleTest extends TestCase {
 	 */
 	public function testSeriesExample()
 	{
-        $this->visit('/')
+        $this->visit('/series')
+             ->see('Series')
+             ->dontSee('Error');
+	}
+
+	/**
+	 * A basic functional test example.
+	 *
+	 * @return void
+	 */
+	public function testEntitiesExample()
+	{
+        $this->visit('/entities')
              ->see('Series')
              ->dontSee('Error');
 	}

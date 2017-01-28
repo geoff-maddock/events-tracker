@@ -16,7 +16,8 @@
 </P>
 
 <div class="row">
-<div class="event-card col-md-6">
+<div class="col-md-6">
+	<div class="event-card">
 	<div class='event-date'>
 	<h2>{!! $event->start_at->format('l F jS Y') !!}</h2>
 
@@ -107,37 +108,38 @@
 	@endunless
 	</P>
 	</div>
+	</div>
 
 	<div class="col-md-5">
-	@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )	
-	<form action="/events/{{ $event->id }}/photos" class="dropzone" method="POST">
-		<input type="hidden" name="_token" value="{{ csrf_token() }}">
-	</form>
-	@endif
-
-	<br style="clear: left;"/>
-
-	@foreach ($event->photos->chunk(4) as $set)
-	<div class="row">
-	@foreach ($set as $photo)
-		<div class="col-md-2">
-		<a href="/{{ $photo->path }}" data-lightbox="{{ $photo->path }}"><img src="/{{ $photo->thumbnail }}" alt="{{ $event->name}}"  style="max-width: 100%;"></a>
 		@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )	
-			{!! link_form('Delete', $photo, 'DELETE') !!}
-			@if ($photo->is_primary)
-			<button class="btn btn-success">Primary</button>
-			{!! link_form('Unset Primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST') !!}
-			@else
-			{!! link_form('Make Primary', '/photos/'.$photo->id.'/setPrimary', 'POST') !!}
-			@endif
+		<form action="/events/{{ $event->id }}/photos" class="dropzone" method="POST">
+			<input type="hidden" name="_token" value="{{ csrf_token() }}">
+		</form>
 		@endif
-		</div>
-	@endforeach
-	</div>
-	@endforeach
-	</div>
 
-</div>
+		<br style="clear: left;"/>
+
+		@foreach ($event->photos->chunk(4) as $set)
+		<div class="row">
+		@foreach ($set as $photo)
+			<div class="col-md-2">
+			<a href="/{{ $photo->path }}" data-lightbox="{{ $photo->path }}"><img src="/{{ $photo->thumbnail }}" alt="{{ $event->name}}"  style="max-width: 100%;"></a>
+			@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )	
+				{!! link_form('Delete', $photo, 'DELETE') !!}
+				@if ($photo->is_primary)
+				<button class="btn btn-success">Primary</button>
+				{!! link_form('Unset Primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST') !!}
+				@else
+				{!! link_form('Make Primary', '/photos/'.$photo->id.'/setPrimary', 'POST') !!}
+				@endif
+			@endif
+			</div>
+		@endforeach
+		</div>
+		@endforeach
+		</div>
+
+	</div>
 
 <div class="row">
 	<div class="col-md-4">

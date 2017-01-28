@@ -1,15 +1,18 @@
 <?php namespace App;
 
+use DB;
 use App\EventResponse;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
-class User extends Model implements AuthenticatableContract, CanResetPasswordContract {
+class User extends Model implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract {
 
-	use Authenticatable, CanResetPassword;
+	use Authenticatable, Authorizable, CanResetPassword;
 
 	/**
 	 * The database table used by the model.
@@ -40,6 +43,15 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	public function events()
 	{
 		return $this->hasMany('App\Event', 'created_by')->orderBy('start_at', 'DESC');
+	}
+
+	/**
+	 * A how many events the user created
+	 *
+	 */
+	public function getEventCountAttribute()
+	{
+		return $this->hasMany('App\Event', 'created_by')->count();
 	}
 
 	/**
@@ -79,6 +91,27 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		return $this->hasOne('App\Profile');
 	}
 
+    /**
+     * Get all of the events photos
+     */
+    public function photos()
+    {
+		return $this->belongsToMany('App\Photo')->withTimestamps();
+    }
+
+	/**
+	 * Return the primary photo for this user
+	 * 
+	 * @return Photo $photo
+	 * 
+	 **/
+	public function getPrimaryPhoto()
+	{
+		// get a list of events that start on the passed date
+		$primary = $this->photos()->where('photos.is_primary','=','1')->first();
+
+		return $primary;
+	}
 
 	/**
 	 * Return the count of events the user is attending
@@ -99,9 +132,17 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 * Return a list of events the user is attending
 	 *
 	 */
-	public function attending()
+	public function getAttending()
 	{
-		return $this->hasManyThrough('Event','EventResponse');
+		$events = Event::join('event_responses', 'events.id', '=', 'event_responses.event_id')
+			->join('response_types', 'event_responses.response_type_id', '=', 'response_types.id')
+			->where('response_types.name', '=', 'Attending')
+			->where('event_responses.user_id', '=', $this->id)
+			->orderBy('events.start_at','desc')
+			->select('events.*')
+			->get();
+		return $events;
+	
 	}
 
 	/**
@@ -114,4 +155,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		$events = $this->events()->where('created_at','=',Auth::user())->orderBy('start_at', 'ASC')->get();
 		return $events;
 	}	
+
+
+	public function addPhoto(Photo $photo)
+	{
+		return $this->photos()->attach($photo->id);;
+	}
+
 }

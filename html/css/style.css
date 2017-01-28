@@ -28,7 +28,6 @@ body {
 .event-card {
 	padding: 10px;
 	background-color: #334;
-	margin-left: 5px;
 	margin-bottom: 15px;
 	border-radius: 5px;
 	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
@@ -39,7 +38,6 @@ body {
 .series-card {
 	padding: 10px;
 	background-color: #223;
-	margin-left: 5px;
 	margin-bottom: 15px;
 	border-radius: 5px;
 	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);

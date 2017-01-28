@@ -18,6 +18,7 @@
 		          <ul class="dropdown-menu">
 		            <li class="{{ Request::is('events/all') ? 'active' : '' }}"><a href="{{ url('/events/all') }}">All Events</a></li>
 		            <li class="{{ Request::is('series') ? 'active' : '' }}"><a href="{{ url('/series') }}">Event Series</a></li>
+		            <li class="{{ Request::is('events/feed') ? 'active' : '' }}"><a href="{{ url('/events/feed') }}" target="_blank">Events Text Only</a></li>
 		            <li class="{{ Request::is('events/create') ? 'active' : '' }}"><a href="{!! url('/events/create') !!}">Add Event</a></li>
 		            <li class="{{ Request::is('series/create') ? 'active' : '' }}"><a href="{!! url('/series/create') !!}">Add Series</a></li>
 		          </ul>
@@ -54,9 +55,10 @@
 					@if ($latest)
 					<li></li>
 					@endif
-					<li class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ Auth::user()->name }} <span class="caret"></span></a>
-						<ul class="dropdown-menu" role="menu">
+					<li class="dropdown ">
+						<a href="{{ url('/users/'.Auth::user()->id) }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ Auth::user()->name }} <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="{{ url('/users/'.Auth::user()->id) }}">Profile</a></li> 
 							<li><a href="{{ url('/auth/logout') }}">Logout</a></li>
 						</ul>
 					</li>

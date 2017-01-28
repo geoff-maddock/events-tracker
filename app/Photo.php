@@ -50,6 +50,15 @@ class Photo extends Eloquent {
 	}
 
 	/**
+	 * Get the user that the photo belongs to
+	 *
+	 */
+	public function users()
+	{
+		return $this->belongsToMany('App\User')->withTimestamps();
+	}
+
+	/**
 	 * Get the event series that the photo belongs to
 	 *
 	 */

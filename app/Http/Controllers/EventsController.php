@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 use DB;
+use Log;
+use Mail;
 use App\Event;
 use App\Entity;
 use App\EventType;
@@ -20,6 +22,7 @@ use App\Visibility;
 use App\Photo;
 use App\EventResponse;
 use App\ResponseType;
+use App\User;
 
 
 class EventsController extends Controller {
@@ -146,6 +149,37 @@ class EventsController extends Controller {
 		});
 
 		return view('events.feed', compact('events'));
+	}
+
+
+	/**
+ 	 * Send a reminder to all users who are attending this event
+ 	 *
+ 	 * @return Response
+ 	 */
+	public function remind($id)
+	{
+		if (!$event = Event::find($id))
+		{
+			flash()->error('Error',  'No such event');
+			return back();
+		};
+
+		// get all the users attending
+		foreach ($event->eventResponses as $response)
+		{
+			$user = User::findOrFail($response->user_id);
+
+			Mail::send('emails.reminder', ['user' => $user, 'event' => $event], function ($m) use ($user, $event) {
+				$m->from('admin@events.cutupsmethod.com','Event Repo');
+
+				$m->to($user->email, $user->name)->subject('Event Repo: '.$event->start_at->format('D F jS').' '.$event->name.' REMINDER');
+			});
+		}
+
+		flash()->success('Success',  'You sent an email reminder to '.count($event->eventResponses).' user about '.$event->name);
+
+		return back();
 	}
 
 	/**
@@ -410,6 +444,9 @@ class EventsController extends Controller {
 		$response->user_id = $this->user->id;
 		$response->response_type_id = 1; // 1 = Attending, 2 = Interested, 3 = Uninterested, 4 = Cannot Attend
 		$response->save();
+
+
+     	Log::info('User '.$id.' is attending '.$event->name);
 
 		flash()->success('Success',  'You are now attending the event - '.$event->name);
 

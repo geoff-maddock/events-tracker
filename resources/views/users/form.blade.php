@@ -4,6 +4,12 @@
 {!! $errors->first('first_name','<span class="help-block">:message</span>') !!}
 </div>
 
+<div class="form-group {{$errors->has('name') ? 'has-error' : '' }}">
+{!! Form::label('last_name','Last Name') !!}
+{!! Form::text('last_name', null, ['class' =>'form-control']) !!}
+{!! $errors->first('last_name','<span class="help-block">:message</span>') !!}
+</div>
+
 <div class="form-group">
 {!! Form::label('alias','Alias') !!}
 {!! Form::text('alias', null, ['class' =>'form-control']) !!}

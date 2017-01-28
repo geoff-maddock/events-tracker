@@ -45,6 +45,9 @@ Route::bind('users', function($id)
 
 $router->resource('users','UsersController');
 
+Route::post('users/{id}/photos', 'UsersController@addPhoto');
+Route::delete('users/{id}/photos/{photo_id}', 'UsersController@deletePhoto');
+
 # PHOTOS 
 
 Route::delete('photos/{id}', 'PhotosController@destroy');
@@ -64,6 +67,11 @@ Route::get('events/relatedto/{slug}', 'EventsController@indexRelatedTo');
 Route::get('events/type/{slug}', 'EventsController@indexTypes');
 Route::get('events/series/{slug}', 'EventsController@indexSeries');
 Route::get('events/feed', 'EventsController@feed');
+
+Route::get('events/{id}/remind', [
+	'as' => 'events.remind', 
+	'uses' => 'EventsController@remind'
+	]);
 
 Route::get('events/{id}/attending', [
 	'as' => 'events.attending', 
