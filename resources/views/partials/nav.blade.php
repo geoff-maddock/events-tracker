@@ -33,6 +33,7 @@
 		          </ul>
 		        </li>
 				<li class="{{ Request::is('calendar') ? 'active' : '' }}"><a href="{{ url('/calendar') }}">Calendar</a></li>
+				<li class="{{ Request::is('tags') ? 'active' : '' }}"><a href="{{ url('/tags') }}">Tags</a></li>
 				<li class="dropdown {{ Request::is('users') ? 'active' : '' }}">
 		          <a href="{{ url('/users') }}" class="dropdown-toggle" data-hover="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Users <span class="caret"></span></a>
 		        </li>

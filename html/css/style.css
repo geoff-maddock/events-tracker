@@ -25,6 +25,17 @@ body {
 	min-height: 130px;
 }
 
+.mute-card {
+	padding: 10px;
+	background-color: #223;
+	margin-left: 5px;
+	margin-bottom: 15px;
+	border-radius: 5px;
+	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
+	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2); 
+	min-height: 130px;
+}
+
 .event-card {
 	padding: 10px;
 	background-color: #334;
@@ -75,4 +86,23 @@ body {
 .small-gutter > [class*='col-'] {
     padding-right:10px;
     padding-left:10px;
+}
+
+li.selected {
+    color: #ffffff;
+    background-color: #df691a;
+    border-color: #df691a;
+    padding: 5px;
+    padding-left:10px;
+}
+
+li.selected a {
+	color: #fff;
+	font-weight: bold;
+}
+
+li.selected:hover {
+    color: #ffffff;
+    background-color: #b15315;
+    border-color: #b15315;
 }

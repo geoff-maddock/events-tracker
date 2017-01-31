@@ -23,17 +23,18 @@ use App\Photo;
 use App\EventResponse;
 use App\ResponseType;
 use App\User;
+use App\Follow;
 
 
-class EventsController extends Controller {
+class TagsController extends Controller {
 
 
-	public function __construct(Event $event)
+	public function __construct(Tag $tag)
 	{
 		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
-		$this->event = $event;
+		$this->tag = $tag;
 
-		$this->rpp = 5;
+		$this->rpp = 25;
 		parent::__construct();
 	}
 	/**
@@ -46,20 +47,54 @@ class EventsController extends Controller {
 		// get a list of venues
 		$venues = [''=>''] + Entity::getVenues()->lists('name','id')->all();;
 
-		$future_events = Event::future()->simplePaginate($this->rpp);
-		$future_events->filter(function($e)
+		$events = Event::orderBy('start_at','DESC')->simplePaginate($this->rpp);
+		$events->filter(function($e)
+		{
+			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+		});
+
+		$tags = Tag::orderBy('name', 'ASC')->get();
+
+		return view('tags.index', compact('tags','events'));
+	}
+
+	/**
+	 * Display a listing of events by tag
+	 *
+	 * @return Response
+	 */
+	public function indexTags($tag)
+	{
+		// get a list of venues
+		$venues = [''=>''] + Entity::getVenues()->lists('name','id')->all();;
+
+ 		$tag = urldecode($tag);
+
+		$events = Event::getByTag(ucfirst($tag))
+					->orderBy('start_at', 'DESC')
+					->orderBy('name', 'ASC')
+					->simplePaginate($this->rpp);
+
+		$events->filter(function($e)
 		{
 			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
 		});
 
 
-		$past_events = Event::past()->simplePaginate($this->rpp);
-		$past_events->filter(function($e)
-		{
-			return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-		});
+		$entities = Entity::getByTag(ucfirst($tag))
+					->where(function($query)
+					{
+						$query->active()
+						->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
+					})
+					->orderBy('entity_type_id', 'ASC')
+					->orderBy('name', 'ASC')
+					->simplePaginate($this->rpp);
 
-		return view('events.index', compact('future_events','past_events'));
+
+		$tags = Tag::orderBy('name', 'ASC')->get();
+
+		return view('tags.index', compact('entities','events', 'tag', 'tags'));
 	}
 
 	/**
@@ -526,39 +561,7 @@ class EventsController extends Controller {
 
 	}
 
-	/**
-	 * Display a listing of events by tag
-	 *
-	 * @return Response
-	 */
-	public function indexTags($tag)
-	{
- 		$tag = urldecode($tag);
 
-		$future_events = Event::getByTag(ucfirst($tag))->future()
-					->orderBy('start_at', 'ASC')
-					->orderBy('name', 'ASC')
-					->simplePaginate($this->rpp);
-
-		$future_events->filter(function($e)
-		{
-			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-		});
-
-
-		$past_events = Event::getByTag(ucfirst($tag))->past()
-					->orderBy('start_at', 'ASC')
-					->orderBy('name', 'ASC')
-					->simplePaginate($this->rpp);
-
-
-		$past_events->filter(function($e)
-		{
-			return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-		});
-
-		return view('events.index', compact('future_events', 'past_events', 'tag'));
-	}
 
 	/**
 	 * Display a listing of events related to entity
@@ -788,12 +791,14 @@ class EventsController extends Controller {
 	}
 
 	/**
-	 * Mark user as following the event
+	 * Mark user as following the tag
 	 *
 	 * @return Response
 	 */
 	public function follow($id, Request $request)
 	{
+		$type = 'tag';
+
 		// check if there is a logged in user
 		if (!$this->user)
 		{
@@ -801,9 +806,11 @@ class EventsController extends Controller {
 			return back();
 		};
 
-		if (!$event = Event::find($id))
+
+		// how can i derive this class from a string?
+		if (!$object = call_user_func("App\\".ucfirst($type)."::find", $id)) // Tag::find($id)) 
 		{
-			flash()->error('Error',  'No such event');
+			flash()->error('Error',  'No such '.$type);
 			return back();
 		};
 
@@ -811,12 +818,12 @@ class EventsController extends Controller {
 		$follow = new Follow;
 		$follow->object_id = $id;
 		$follow->user_id = $this->user->id;
-		$follow->object_type = 'event'; // 
+		$follow->object_type = $type; // 
 		$follow->save();
 
-     	Log::info('User '.$id.' is following '.$event->name);
+     	Log::info('User '.$id.' is following '.$object->name);
 
-		flash()->success('Success',  'You are now following the event - '.$event->name);
+		flash()->success('Success',  'You are now following the '.$type.' - '.$object->name);
 
 		return back();
 
@@ -829,6 +836,7 @@ class EventsController extends Controller {
 	 */
 	public function unfollow($id, Request $request)
 	{
+		$type = 'tag';
 
 		// check if there is a logged in user
 		if (!$this->user)
@@ -839,15 +847,15 @@ class EventsController extends Controller {
 
 		if (!$event = Event::find($id))
 		{
-			flash()->error('Error',  'No such event');
+			flash()->error('Error',  'No such '.$type);
 			return back();
 		};
 
 		// delete the follow
-		$response = Follow::where('object_id','=', $id)->where('user_id','=',$this->user->id)->where('object_type','=','event')->first();
+		$response = Follow::where('object_id','=', $id)->where('user_id','=',$this->user->id)->where('object_type','=',$type)->first();
 		$response->delete();
 
-		flash()->success('Success',  'You are no longer following the event.');
+		flash()->success('Success',  'You are no longer following the '.$type);
 
 		return back();
 

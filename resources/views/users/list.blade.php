@@ -22,7 +22,7 @@
 				<ul class="list">
 				@if ($events = $user->events->take(3))
 				@foreach ($events as $event)
-					<li>Evemts:
+					<li>Events:
 					<b>{{ $event->start_at->format('m.d.y')  }}</b> {!! link_to_route('events.show', $event->name, [$event->id], ['class' =>'butt']) !!} </li>
 				@endforeach
 				@endif

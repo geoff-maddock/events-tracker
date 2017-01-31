@@ -190,6 +190,15 @@ class Entity extends Eloquent {
 		return $this->belongsToMany('App\Tag')->withTimestamps();
 	}
 
+	/**
+	 * The follows that belong to the entity
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function follows()
+	{
+		return $this->belongsToMany('App\Follow')->withTimestamps();
+	}
 
 	/**
 	 * If there is a future event, return it
@@ -391,4 +400,20 @@ class Entity extends Eloquent {
 		return $address;
 	}
 
+	/**
+	 * Checks if the entity is followed by the user
+	 * 
+	 * @return Collection $follows
+	 * 
+	 **/
+	public function followedBy($user)
+	{
+		$response = Follow::where('object_type','=', 'entity')
+		->where('object_id','=',$this->id)
+		->where('user_id', '=', $user->id)
+		->first();
+		// return any follow instances
+	
+		return $response;
+	}
 }

@@ -38,8 +38,8 @@
 
 		</div>
 
-
+		<div class='col-md-6'>
 		@include('entities.list', ['entities' => $entities])
-	
+		</div>
 
 @stop

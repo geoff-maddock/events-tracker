@@ -31,6 +31,16 @@
 		<i>{{ $entity->description }} </i><br>
 	@endif 
 
+	@if ($signedIn)
+	<br>
+	@if ($follow = $entity->followedBy($user))
+	<b>You Are Following</b> <a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}" title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
+	@else
+	Click to Follow <a href="{!! route('entities.follow', ['id' => $entity->id]) !!}" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
+	@endif
+
+	@endif 
+
 	@unless ($entity->roles->isEmpty())
 		
 		<P><b>Roles:</b>

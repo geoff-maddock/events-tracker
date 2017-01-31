@@ -611,5 +611,21 @@ class Series extends Eloquent {
 
 		return $primary;
 	}
+
+	/**
+	 * Checks if the series is followed by the user
+	 * 
+	 * @return Collection $follows
+	 * 
+	 **/
+	public function followedBy($user)
+	{
+		$response = Follow::where('object_type','=', 'series')
+		->where('object_id','=',$this->id)
+		->where('user_id', '=', $user->id)
+		->first();
+		// return any follow instances
 	
+		return $response;
+	}
 }

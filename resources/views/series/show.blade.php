@@ -43,7 +43,15 @@
 
 	<p>	{{ $series->eventType->name or ''}} at {{ $series->venue->name or 'No venue specified' }}</p>
 
+	@if ($signedIn)
+	<br>
+	@if ($follow = $series->followedBy($user))
+	<b>You Are Following</b> <a href="{!! route('series.unfollow', ['id' => $series->id]) !!}" title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
+	@else
+	Click to Follow <a href="{!! route('series.follow', ['id' => $series->id]) !!}" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
+	@endif
 
+	@endif 
 
 	<P>
 	@unless ($series->entities->isEmpty())

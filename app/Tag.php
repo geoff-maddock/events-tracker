@@ -55,6 +55,21 @@ class Tag extends Eloquent {
 		return $this->hasOne('App\TagType','id','tag_type_id');
 	}
 
-
+	/**
+	 * Checks if the tag is followed by the user
+	 * 
+	 * @return Collection $follows
+	 * 
+	 **/
+	public function followedBy($user)
+	{
+		$response = Follow::where('object_type','=', 'tag')
+		->where('object_id','=',$this->id)
+		->where('user_id', '=', $user->id)
+		->first();
+		// return any follow instances
+	
+		return $response;
+	}
 
 }

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 use DB;
+use Log;
 use App\Series;
 use App\EventType;
 use App\Entity;
@@ -18,6 +19,7 @@ use App\OccurrenceWeek;
 use App\Tag;
 use App\Visibility;
 use App\Photo;
+use App\Follow;
 
 class SeriesController extends Controller {
 
@@ -368,5 +370,70 @@ class SeriesController extends Controller {
 			->move($file);
 	}
 
+	/**
+	 * Mark user as following the series
+	 *
+	 * @return Response
+	 */
+	public function follow($id, Request $request)
+	{
+		// check if there is a logged in user
+		if (!$this->user)
+		{
+			flash()->error('Error',  'No user is logged in.');
+			return back();
+		};
+
+		if (!$series = Series::find($id))
+		{
+			flash()->error('Error',  'No such series');
+			return back();
+		};
+
+		// add the following response
+		$follow = new Follow;
+		$follow->object_id = $id;
+		$follow->user_id = $this->user->id;
+		$follow->object_type = 'series'; // 
+		$follow->save();
+
+     	Log::info('User '.$id.' is following '.$series->name);
+
+		flash()->success('Success',  'You are now following the series - '.$series->name);
+
+		return back();
+
+	}
+
+	/**
+	 * Mark user as unfollowing the series
+	 *
+	 * @return Response
+	 */
+	public function unfollow($id, Request $request)
+	{
+
+		// check if there is a logged in user
+		if (!$this->user)
+		{
+			flash()->error('Error',  'No user is logged in.');
+			return back();
+		};
+
+		if (!$series = Series::find($id))
+		{
+			flash()->error('Error',  'No such series');
+			return back();
+		};
+
+		// delete the follow
+		$response = Follow::where('object_id','=', $id)->where('user_id','=',$this->user->id)->where('object_type','=','series')->first();
+		$response->delete();
+
+		flash()->success('Success',  'You are no longer following the series.');
+
+		return back();
+
+	}
 
 }

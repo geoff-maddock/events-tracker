@@ -103,7 +103,18 @@ Route::get('entities/filter', array('as' => 'entities.filter', 'uses' => 'Entiti
 Route::get('entities/reset', array('as' => 'entities.reset', 'uses' => 'EntitiesController@indexRoles'));
 
 Route::get('entities/tag/{tag}', 'EntitiesController@indexTags');
- 
+
+
+Route::get('entities/{id}/follow', [
+	'as' => 'entities.follow', 
+	'uses' => 'EntitiesController@follow'
+	]);
+
+Route::get('entities/{id}/unfollow', [
+	'as' => 'entities.unfollow', 
+	'uses' => 'EntitiesController@unfollow'
+	]);
+
 Route::bind('entities', function($id)
 {
 	return App\Entity::whereId($id)->first();
@@ -154,6 +165,16 @@ Route::get('series/week', 'SeriesController@indexWeek');
 Route::post('series/{id}/photos', 'SeriesController@addPhoto');
 Route::delete('series/{id}/photos/{photo_id}', 'SeriesController@deletePhoto');
 
+Route::get('series/{id}/follow', [
+	'as' => 'series.follow', 
+	'uses' => 'SeriesController@follow'
+	]);
+
+Route::get('series/{id}/unfollow', [
+	'as' => 'series.unfollow', 
+	'uses' => 'SeriesController@unfollow'
+	]);
+
 Route::bind('series', function($id)
 {
 	return App\Series::whereId($id)->first();
@@ -161,3 +182,16 @@ Route::bind('series', function($id)
 
 
 $router->resource('series','SeriesController');
+
+Route::get('tags/{tag}', 'TagsController@indexTags');
+$router->resource('tags','TagsController');
+
+Route::get('tags/{id}/follow', [
+	'as' => 'tags.follow', 
+	'uses' => 'TagsController@follow'
+	]);
+
+Route::get('tags/{id}/unfollow', [
+	'as' => 'tags.unfollow', 
+	'uses' => 'TagsController@unfollow'
+	]);

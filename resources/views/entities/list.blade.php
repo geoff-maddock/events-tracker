@@ -1,31 +1,49 @@
 		@if (isset($entities) && $entities)
 
 		<?php $type = NULL;?>
-		<ul class='list col-md-6'>
+		<ul class='list'>
 			@foreach ($entities as $entity)
 	
-			<li class="card" style="clear: both;">
+			<li class="
+			@if ($entity->entityStatus->name === "Inactive") mute-card @else card @endif" style="clear: both;">
 				@if ($primary = $entity->getPrimaryPhoto())
 				<div class="card-thumb" style="float: left; padding: 5px;">
 						<img src="/{!! str_replace(' ','%20',$entity->getPrimaryPhoto()->thumbnail) !!}" alt="{{ $entity->name}}"  style="max-width: 100px; ">
 				</div>
 				@endif
 
-				{!! link_to_route('entities.show', $entity->name, [$entity->id], ['class' => 'text-'.$entity->entityStatus->getDisplayClass()]) !!}
-
+				{!! link_to_route('entities.show', $entity->name, [$entity->id]) !!}
+				@if ($entity->entityStatus->name === "Inactive")
+				[Inactive]
+				@endif
 
 				@if ($signedIn && $entity->ownedBy($user))
 				<a href="{!! route('entities.edit', ['id' => $entity->id]) !!}">
 				<span class='glyphicon glyphicon-pencil'></span></a>
 				@endif 
 				
+				@if ($signedIn)
+				@if ($follow = $entity->followedBy($user))
+				<a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}" title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
+				@else
+				<a href="{!! route('entities.follow', ['id' => $entity->id]) !!}" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
+				@endif
+
+				@endif 
+
+
 				@if ($type = $entity->entityType)
 					<br><b>{{ $entity->entityType->name }}</b>
 				@endif
 
 				@if ($entity->getPrimaryLocationAddress() )
-					{{ $entity->getPrimaryLocationAddress() }} - {{ $entity->getPrimaryLocation()->neighborhood }} 	<br>
+					{{ $entity->getPrimaryLocationAddress() }} - {{ $entity->getPrimaryLocation()->neighborhood }} 
 				@endif
+			    <br>
+				@foreach ($entity->roles as $role)
+				<span class="label label-tag"><a href="/entities/role/{{ $role->name }}">{{ $role->name }}</a></span>
+				@endforeach
+				<br>
 				<ul class="list">
 				@if ($events = $entity->futureEvents()->take(1))
 				@foreach ($events as $event)
