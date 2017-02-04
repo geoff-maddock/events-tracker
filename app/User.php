@@ -2,6 +2,7 @@
 
 use DB;
 use App\EventResponse;
+use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Passwords\CanResetPassword;
@@ -81,6 +82,14 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 		return $this->hasMany('App\EventResponse');
 	}
 
+	/**
+	 * A user can follow many objects
+	 *
+	 */
+	public function follows()
+	{
+		return $this->hasMany('App\Follow');
+	}
 
 	/**
 	 * A user can have one profile()
@@ -129,6 +138,38 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 	}
 
 	/**
+	 * Return the count of entities the user is following
+	 *
+	 */
+	public function getEntitiesFollowingCountAttribute()
+	{
+		$responses = $this->follows()->get();
+		$responses->filter(function($e)
+		{
+			return ($e->object_type == 'entity');
+		});
+
+		return count($responses);
+	}
+
+	/**
+	 * Return a list of events the user is attending in the future
+	 *
+	 */
+	public function getAttendingFuture()
+	{
+		$events = Event::join('event_responses', 'events.id', '=', 'event_responses.event_id')
+			->join('response_types', 'event_responses.response_type_id', '=', 'response_types.id')
+			->where('response_types.name', '=', 'Attending')
+			->where('event_responses.user_id', '=', $this->id)
+			->where('start_at','>=', Carbon::today()->startOfDay())
+			->orderBy('events.start_at','asc')
+			->select('events.*')
+			->get();
+		return $events;
+	}
+
+	/**
 	 * Return a list of events the user is attending
 	 *
 	 */
@@ -142,6 +183,22 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 			->select('events.*')
 			->get();
 		return $events;
+	}
+
+
+	/**
+	 * Return a list of events the user is attending
+	 *
+	 */
+	public function getEntitiesFollowing()
+	{
+		$entities = Entity::join('follows', 'entities.id', '=', 'follows.object_id')
+			->where('follows.object_type', '=', 'entity')
+			->where('follows.user_id', '=', $this->id)
+			->orderBy('follows.created_at','desc')
+			->select('entities.*')
+			->get();
+		return $entities;
 	
 	}
 

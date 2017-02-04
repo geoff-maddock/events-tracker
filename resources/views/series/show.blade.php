@@ -96,7 +96,7 @@
 
 <div class="col-md-6">
 @if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser') ) )
-<form action="/series/{{ $series->id }}/photos" class="dropzone" method="POST">
+<form action="/series/{{ $series->id }}/photos" class="dropzone" id="myDropzone" method="POST">
 	<input type="hidden" name="_token" value="{{ csrf_token() }}">
 </form>
 @endif
@@ -109,15 +109,12 @@
 	<div class="col-md-2">
 	<img src="/{{ $photo->thumbnail }}" alt="{{$photo->name}}"  style="max-width: 100%;">
 	@if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser') ))	
-
-			{!! link_form('Delete', $photo, 'DELETE') !!}
-			@if ($photo->is_primary)
-			<button class="btn btn-success">Primary</button>
-			{!! link_form('Unset Primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST') !!}
-			@else
-			{!! link_form('Make Primary', '/photos/'.$photo->id.'/setPrimary', 'POST') !!}
-			@endif
-
+				{!! link_form_icon('glyphicon-trash text-warning', $photo, 'DELETE', 'Delete the photo') !!}
+				@if ($photo->is_primary)
+				{!! link_form_icon('glyphicon-star text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
+				@else
+				{!! link_form_icon('glyphicon-star-empty text-info', '/photos/'.$photo->id.'/setPrimary', 'POST', 'Set as primary photo') !!}
+				@endif
 	@endif
 	</div>
 @endforeach
@@ -133,9 +130,24 @@
 @section('scripts.footer')
 <script src="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.2.0/dropzone.js"></script>
 <script>
-Dropzone.options.addPhotosForm = {
-	maxFilesize: 3,
-	accept: ['.jpg','.png','.gif']
-}
+Dropzone.autoDiscover = false;
+$(document).ready(function(){
+
+	var myDropzone = new Dropzone('#myDropzone');
+	myDropzone.options.addPhotosForm = {
+		maxFilesize: 3,
+		accept: ['.jpg','.png','.gif'],
+		init: function () {
+	            myDropzone.on("complete", function (file) {
+	                location.href = 'series/{{ $series->id }}'
+	                location.reload();
+
+	            });
+	        }
+	};
+
+	myDropzone.options.addPhotosForm.init();
+	
+})
 </script>
 @stop

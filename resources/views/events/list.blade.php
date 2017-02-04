@@ -7,30 +7,28 @@
 	<li class="event-card" style="clear: both;">
 		@if ($primary = $event->getPrimaryPhoto())
 		<div style="float: left; padding: 5px;">
-				<a href="/{{ $event->getPrimaryPhoto()->path }}" data-lightbox="{{ $event->getPrimaryPhoto()->path }}"><img src="/{{ $event->getPrimaryPhoto()->thumbnail }}" alt="{{ $event->name}}"  style="max-width: 100px; "></a>
+		<a href="/{{ $event->getPrimaryPhoto()->path }}" data-lightbox="{{ $event->getPrimaryPhoto()->path }}"><img src="/{{ $event->getPrimaryPhoto()->thumbnail }}" alt="{{ $event->name}}"  style="max-width: 100px; "></a>
 		</div>
 		@endif
 
 		@if ($month != $event->start_at->format('F')) 
-		<?php $month = $event->start_at->format('F')?>
+			<?php $month = $event->start_at->format('F')?>
 		@endif
 
 		<div class='event-date'>{!! $event->start_at->format('l F jS Y') !!} </div>
-			{!! link_to_route('events.show', $event->name, [$event->id]) !!} 
+	
+			{!! link_to_route('events.show', $event->name, [$event->id], ['class' => 'item-title']) !!} 
+	
 			@if ($signedIn && $event->ownedBy($user))
-			<a href="{!! route('events.edit', ['id' => $event->id]) !!}"><span class='glyphicon glyphicon-pencil'></span></a>
+			<a href="{!! route('events.edit', ['id' => $event->id]) !!}" title="Edit this event."><span class='glyphicon glyphicon-pencil'></span></a>
 			@endif
 
 			@if ($link = $event->primary_link)
-			<a href="{{ $link }}" target="_blank">
-			<span class='glyphicon glyphicon-link'></span>
-			</a>
+				<a href="{{ $link }}" title="External link for this event" target="_blank"><span class='glyphicon glyphicon-link'></span></a>
 			@endif
 			
 			@if ($ticket = $event->ticket_link)
-			<a href="{{ $ticket }}" target="_" title="Ticket link">
-			<span class='glyphicon glyphicon-shopping-cart'></span>
-			</a>
+				<a href="{{ $ticket }}" target="_" title="Ticket link"><span class='glyphicon glyphicon-shopping-cart'></span></a>
 			@endif
 
 			@if ($signedIn)

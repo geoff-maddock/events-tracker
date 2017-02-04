@@ -427,12 +427,15 @@ class Series extends Eloquent {
 			if ($s->nextEvent() == NULL AND $s->nextOccurrenceDate() != NULL)
 			{
 				// add matches to list
+
 				$next_date = $s->nextOccurrenceDate()->format('Y-m-d');
+
 				if ($next_date == $date)
 				{
 					$list[] = $s;
 				}
 			};
+
 		};
 
 		return $list;
@@ -474,19 +477,15 @@ class Series extends Eloquent {
 
 		$next = $founded_at;
 
-		if ($next)
+		if ($next)  // 10PM
 		{
-
-			while ($next < Carbon::now()->startOfDay())
+			while ($next < Carbon::now('America/New_York')->startOfDay())
 			{
 				$next = $this->cycleForward($next);
 			};
 
 		};
 		
-		// clean up time due to timeshift
-		$next->hour = $founded_at->hour;
-		$next->minute = $founded_at->minute;
 
 		return $next;
 	}

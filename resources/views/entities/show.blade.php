@@ -18,12 +18,12 @@
 
 <div class="row">
 	<div class="profile-card col-md-4">
-	<h2>{{ $entity->name }}</h2>
+	<h2 class='item-title'>{{ $entity->name }}</h2>
 
 	<b>{{ $entity->entityType->name }}</b>
 	<p>
 	@if ($entity->short)
-		<i>{{ $entity->short }} </i><br>
+		<i>{{ $entity->short }} </i><br><br>
 	@endif 
 
 	@if ($entity->description)
@@ -64,15 +64,24 @@
 		
 		<P>		
 		@foreach ($entity->locations as $location)
-		<span><B>{{ $location->locationType->name }}</B>  {{ $location->address_one }} {{ $location->neighborhood or '' }}  {{ $location->city }} {{ $location->state }} {{ $location->country }} / {{ $location->capacity ? 'Capacity: '.$location->capacity : ''}}
+		<span><B>{{ $location->locationType->name }}</B>  {{ $location->address_one }} {{ $location->neighborhood or '' }}  {{ $location->city }} {{ $location->state }} {{ $location->country }}
+				
 				@if (isset($location->map_url))
 				<a href="{!! $location->map_url !!}" target="_" title="Link to map.">
 				<span class='glyphicon glyphicon-map-marker'></span></a>
 				@endif
+
+
 				@if ($signedIn && $entity->ownedBy($user))
 				<a href="{!! route('entities.locations.edit', ['entity' => $entity->id, 'id' => $location->id]) !!}" title="Edit this location.">
 				<span class='glyphicon glyphicon-pencil'></span></a>
 				@endif
+				
+				<br>
+				@if (isset($location->capacity))
+				 <b>Capacity:</b> {{  $location->capacity }}
+				@endif 
+
 		</span><br>
 		@endforeach
 		
@@ -188,7 +197,7 @@
 
 	<div class="col-md-6">
 	@if ($user && Auth::user()->id == $entity->user->id)	
-	<form action="/entities/{{ $entity->id }}/photos" class="dropzone" method="POST">
+	<form action="/entities/{{ $entity->id }}/photos" class="dropzone" id="myDropzone" method="POST">
 		<input type="hidden" name="_token" value="{{ csrf_token() }}">
 	</form>
 	@endif
@@ -202,12 +211,11 @@
 		
 		<a href="/{{ $photo->path }}" data-lightbox="{{ $photo->path }}"><img src="/{{ $photo->thumbnail }}" alt="{{ $entity->name}}"  style="max-width: 100%;"></a>
 		@if ($user && Auth::user()->id == $entity->user->id)	
-			{!! link_form('Delete', $photo, 'DELETE') !!}
+			{!! link_form_icon('glyphicon-trash text-warning', $photo, 'DELETE', 'Delete the photo') !!}
 			@if ($photo->is_primary)
-			<button class="btn btn-success">Primary</button>
-			{!! link_form('Unset Primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST') !!}
+			{!! link_form_icon('glyphicon-star text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
 			@else
-			{!! link_form('Make Primary', '/photos/'.$photo->id.'/setPrimary', 'POST') !!}
+			{!! link_form_icon('glyphicon-star-empty text-info', '/photos/'.$photo->id.'/setPrimary', 'POST', 'Set as primary photo') !!}
 			@endif
 		@endif
 		</div>
@@ -222,9 +230,24 @@
 @section('scripts.footer')
 <script src="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.2.0/dropzone.js"></script>
 <script>
-Dropzone.options.addPhotosForm = {
-	maxFilesize: 3,
-	accept: ['.jpg','.png','.gif']
-}
+Dropzone.autoDiscover = false;
+$(document).ready(function(){
+
+	var myDropzone = new Dropzone('#myDropzone');
+	myDropzone.options.addPhotosForm = {
+		maxFilesize: 3,
+		accept: ['.jpg','.png','.gif'],
+		init: function () {
+	            myDropzone.on("complete", function (file) {
+	                location.href = 'entities/{{ $entity->id }}'
+	                location.reload();
+
+	            });
+	        }
+	};
+
+	myDropzone.options.addPhotosForm.init();
+	
+})
 </script>
 @stop

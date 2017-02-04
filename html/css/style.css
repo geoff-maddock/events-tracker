@@ -3,6 +3,18 @@ body {
 	font-family: Roboto,sans-serif !important;
 }
 
+.no-button {
+	background: none;
+	border: none;
+	padding: 5px;
+	outline: none;
+}
+
+.no-button span:hover {
+	-moz-opacity: 0.6;
+	opacity: 0.6;
+}
+
 .profile-card {
 	padding: 10px;
 	background-color: #433;
@@ -105,4 +117,8 @@ li.selected:hover {
     color: #ffffff;
     background-color: #b15315;
     border-color: #b15315;
+}
+
+.item-title {
+	font-weight: 600;
 }

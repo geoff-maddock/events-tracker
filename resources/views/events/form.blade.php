@@ -246,6 +246,8 @@
 							console.log('set venue '+venue);
 						};
 
+						// default to public visibility
+						$('#visibility_id option[value=3]').attr('selected', 'selected');
 					}
 		 		 console.log(response);	
 				});

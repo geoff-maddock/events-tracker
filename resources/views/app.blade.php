@@ -8,6 +8,8 @@
 	<meta property="og:title" content="@yield('title')">
 	<meta property="og:description" content="A guide and calander of events, weekly and  monthly series, promoters, artists, producers, djs, venues and other entities.">
 	<title>Event Repo - Club Guide - @yield('title')</title>
+  	<link rel="alternate" type="application/rss+xml" href="{{ url('rss') }}"
+    	    title="RSS Feed {{ config('blog.title') }}">
 
 	<link href="{{ asset('/css/app.css') }}" rel="stylesheet">
 	<link href="{{ asset('/css/style.css') }}" rel="stylesheet">

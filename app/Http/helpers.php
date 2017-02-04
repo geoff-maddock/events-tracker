@@ -45,4 +45,28 @@
 		</form>
 EOT;
 	}
+
+	function link_form_icon($icon, $path, $type, $title='')
+	{
+		$csrf = csrf_token();
+
+		if (is_object($path)) {
+
+			$action = '/' . $path->getTable(); // photos
+			
+			if (in_array($type, ['PUT','PATCH','DELETE'])) {
+				$action .= '/' . $path->getKey(); // photos/1
+			}
+		} else {
+			$action = $path;
+		}
+
+		return <<< EOT
+		<form method="POST" action="{$action}" style="display: inline;">
+			<input type='hidden' name='_method' value='{$type}'>
+			<input type="hidden" name="_token" value="{$csrf}">
+			<button type="submit" class="no-button"><span class="glyphicon {$icon}" title="{$title}"></span></button>
+		</form>
+EOT;
+	}
 ?>

@@ -52,7 +52,11 @@ class Event extends Eloquent {
 
 	protected $dates = ['soundcheck_at', 'door_at', 'start_at', 'end_at'];
 
-	
+	// building filter
+	public function scopeFilter($query, QueryFilter $filters)
+	{
+		return $filters->apply($query);
+	}
 
 	/**
 	 * Set the soundcheck_at attribute
@@ -149,7 +153,8 @@ class Event extends Eloquent {
 		$cdate_tomorrow = Carbon::parse($date)->addDay(1);
 
 		$query->where('start_at','>', $cdate_yesterday->toDateString().' 23:59:59')
-					->where('start_at','<',$cdate_tomorrow->toDateString().' 00:00:00');
+					->where('start_at','<',$cdate_tomorrow->toDateString().' 00:00:00')
+					->orderBy('start_at','ASC');
 	}
 
     /**

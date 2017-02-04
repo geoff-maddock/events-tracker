@@ -30,7 +30,7 @@
 				<div class="panel-body">
 				<ul style="margin-left: -30px;">
 				@foreach ($tags as $t)
-					@if (strtolower($tag) === strtolower($t->name))
+					@if (isset($tag) && (strtolower($tag) === strtolower($t->name)))
 						<li class='list selected'><a href="/tags/{{ $t->name }}">{{ $t->name }}</a>
 							@if ($signedIn)
 								@if ($follow = $t->followedBy($user))
@@ -60,6 +60,24 @@
 
 	@if (isset($events) && count($events) > 0)
 	<div class="col-lg-5">
+		
+		@if (isset($series) && count($series) > 0)
+		<div class="bs-component">
+			<div class="panel panel-info">
+
+
+				<div class="panel-heading">
+					<h3 class="panel-title">Series</h3>
+				</div>
+
+				<div class="panel-body">
+				@include('series.list', ['series' => $series])
+				{!! $events->render() !!}
+				</div>
+
+			</div>
+		</div>
+		@endif
 		<div class="bs-component">
 			<div class="panel panel-info">
 

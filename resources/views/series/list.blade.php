@@ -15,7 +15,7 @@
 					<img src="/{{ $series->getPrimaryPhoto()->thumbnail }}" alt="{{ $series->name}}"  style="max-width: 100px; ">
 			</div>
 			@endif
-		 	{!! link_to_route('series.show', $series->name, [$series->id]) !!} {{ $series->short }}
+		 	{!! link_to_route('series.show', $series->name, [$series->id], ['class' => 'item-title']) !!} {{ $series->short }}
 
 			@if ($signedIn && ($series->ownedBy($user) || (isset($user) && $user->id == Config::get('app.superuser') ) ))
 			<a href="{!! route('series.edit', ['id' => $series->id]) !!}"><span class='glyphicon glyphicon-pencil'></span></a>
@@ -32,7 +32,7 @@
 			@endif 
 			<br>
 			{{ $series->occurrenceType->name }}  {{ $series->occurrenceRepeat() }} 
-			@if ($series->cancelled_at == NULL)
+			@if ($series->cancelled_at == NULL AND $series->occurrenceType->name != 'No Schedule')
 			next is 
 			{{ $series->nextEvent() ? $series->nextEvent()->start_at->format('l F jS Y') : $series->cycleFromFoundedAt()->format('l F jS Y') }}
 			

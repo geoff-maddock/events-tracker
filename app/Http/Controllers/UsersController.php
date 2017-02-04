@@ -63,6 +63,14 @@ class UsersController extends Controller {
 	{
 		// if there is no profile, create one?
 
+		if (!$user->profile)
+		{
+			$profile = new Profile();
+			$profile->user_id = $user->id;
+			$profile->save();
+		}
+
+
 		return view('users.show', compact('user'));
 	}
 
@@ -76,7 +84,8 @@ class UsersController extends Controller {
 		// if there is no profile, create one
 		if (!$user->profile)
 		{
-			$profile = new App/Profile();
+			$profile = new Profile();
+			$profile->user_id = $user->id;
 			$profile->save();
 		}
 

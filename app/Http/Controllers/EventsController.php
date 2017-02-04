@@ -23,7 +23,7 @@ use App\Photo;
 use App\EventResponse;
 use App\ResponseType;
 use App\User;
-
+use App\Services\RssFeed;
 
 class EventsController extends Controller {
 
@@ -43,6 +43,7 @@ class EventsController extends Controller {
  	 */
 	public function index()
 	{
+
 		// get a list of venues
 		$venues = [''=>''] + Entity::getVenues()->lists('name','id')->all();;
 
@@ -52,7 +53,14 @@ class EventsController extends Controller {
 			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
 		});
 
-
+		// ages filter
+	/*	if ($request->has('ages'))
+		{
+			$future_events->filter(function($e) {
+				return ($e->min_age == $request->ages);
+			});
+		};
+	*/
 		$past_events = Event::past()->simplePaginate($this->rpp);
 		$past_events->filter(function($e)
 		{
@@ -181,6 +189,37 @@ class EventsController extends Controller {
 
 		return back();
 	}
+
+
+	/**
+ 	 * Send a reminder to all users about all events they are attending
+ 	 *
+ 	 * @return Response
+ 	 */
+	public function daily()
+	{
+		// get all the users
+		$users = User::orderBy('name','ASC')->get();
+
+		// cycle through all the users
+		foreach ($users as $user)
+		{
+			$events = $user->getAttendingFuture()->take(100);
+
+			Mail::send('emails.daily-events', ['user' => $user, 'events' => $events], function ($m) use ($user, $events) {
+				$m->from('admin@events.cutupsmethod.com','Event Repo');
+
+				$m->to($user->email, $user->name)->subject('Event Repo: Daily Events Reminder');
+			});
+		
+		};
+
+		flash()->success('Success',  'You sent an email reminder to '.count($users).' users about events they are attending');
+
+		return back();
+	}
+
+
 
 	/**
 	 * Display a calendar view of events
@@ -664,7 +703,6 @@ class EventsController extends Controller {
 						$query->visible($this->user);
 					})
 					->orderBy('start_at', 'ASC')
-					->orderBy('name', 'ASC')
 					->paginate();
 
 		$past_events = Event::getByType($slug)
@@ -674,7 +712,6 @@ class EventsController extends Controller {
 						$query->visible($this->user);
 					})
 					->orderBy('start_at', 'ASC')
-					->orderBy('name', 'ASC')
 					->paginate();
 
 
@@ -850,6 +887,14 @@ class EventsController extends Controller {
 		flash()->success('Success',  'You are no longer following the event.');
 
 		return back();
-
 	}
+
+
+	public function rss(RssFeed $feed)
+	{
+	    $rss = $feed->getRSS();
+
+	    return response($rss)
+	      ->header('Content-type', 'application/rss+xml');
+  	}
 }

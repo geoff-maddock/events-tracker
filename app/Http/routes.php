@@ -60,6 +60,7 @@ Route::get('events/future', 'EventsController@indexFuture');
 Route::get('events/past', 'EventsController@indexPast');
 Route::get('events/week', 'EventsController@indexWeek');
 Route::get('events/starting/{date}', 'EventsController@indexStarting');
+Route::get('events/daily', 'EventsController@daily');
 
 Route::get('events/tag/{tag}', 'EventsController@indexTags');
 Route::get('events/venue/{slug}', 'EventsController@indexVenues');
@@ -195,3 +196,6 @@ Route::get('tags/{id}/unfollow', [
 	'as' => 'tags.unfollow', 
 	'uses' => 'TagsController@unfollow'
 	]);
+
+// Add the new route
+get('rss', 'EventsController@rss');

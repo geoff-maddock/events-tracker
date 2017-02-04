@@ -12,7 +12,7 @@
 				</div>
 				@endif
 
-				{!! link_to_route('entities.show', $entity->name, [$entity->id]) !!}
+				{!! link_to_route('entities.show', $entity->name, [$entity->id], ['class' => 'item-title']) !!}
 				@if ($entity->entityStatus->name === "Inactive")
 				[Inactive]
 				@endif

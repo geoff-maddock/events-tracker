@@ -10,7 +10,8 @@
 		"braunson/laravel-html5-forms": "dev-laravel-5",
 		"laravel/socialite": "~2.0",
 		"intervention/image": "^2.3",
-		"maddhatter/laravel-fullcalendar": "^1.2"
+		"maddhatter/laravel-fullcalendar": "^1.2",
+		"suin/php-rss-writer": "^1.5"
 	},
 	"require-dev": {
 		"fzaninotto/faker": "~1.4",

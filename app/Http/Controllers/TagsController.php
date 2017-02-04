@@ -70,6 +70,17 @@ class TagsController extends Controller {
 
  		$tag = urldecode($tag);
 
+ 		// get all series linked to the tag
+		$series = Series::getByTag(ucfirst($tag))
+					->where(function($query)
+					{
+						$query->visible($this->user);
+					})
+					->orderBy('start_at', 'ASC')
+					->orderBy('name', 'ASC')
+					->paginate();
+
+ 		// get all the events linked to the tag
 		$events = Event::getByTag(ucfirst($tag))
 					->orderBy('start_at', 'DESC')
 					->orderBy('name', 'ASC')
@@ -80,7 +91,7 @@ class TagsController extends Controller {
 			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
 		});
 
-
+		// get all entities linked to the tag
 		$entities = Entity::getByTag(ucfirst($tag))
 					->where(function($query)
 					{
@@ -94,7 +105,7 @@ class TagsController extends Controller {
 
 		$tags = Tag::orderBy('name', 'ASC')->get();
 
-		return view('tags.index', compact('entities','events', 'tag', 'tags'));
+		return view('tags.index', compact('series','entities','events', 'tag', 'tags'));
 	}
 
 	/**
