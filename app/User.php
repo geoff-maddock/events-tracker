@@ -170,6 +170,24 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 	}
 
 	/**
+	 * Return a list of events the user is attending in the future
+	 *
+	 */
+	public function getAttendingToday()
+	{
+		$events = Event::join('event_responses', 'events.id', '=', 'event_responses.event_id')
+			->join('response_types', 'event_responses.response_type_id', '=', 'response_types.id')
+			->where('response_types.name', '=', 'Attending')
+			->where('event_responses.user_id', '=', $this->id)
+			->where('start_at','>=', Carbon::today()->startOfDay())
+			->where('start_at','<', Carbon::tomorrow()->startOfDay())
+			->orderBy('events.start_at','asc')
+			->select('events.*')
+			->get();
+		return $events;
+	}
+
+	/**
 	 * Return a list of events the user is attending
 	 *
 	 */
@@ -187,7 +205,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
 
 	/**
-	 * Return a list of events the user is attending
+	 * Return a list of entities the user is following
 	 *
 	 */
 	public function getEntitiesFollowing()
@@ -199,8 +217,23 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 			->select('entities.*')
 			->get();
 		return $entities;
-	
 	}
+
+	/**
+	 * Return a list of tags the user is following
+	 *
+	 */
+	public function getTagsFollowing()
+	{
+		$tags = Tag::join('follows', 'tags.id', '=', 'follows.object_id')
+			->where('follows.object_type', '=', 'tag')
+			->where('follows.user_id', '=', $this->id)
+			->orderBy('follows.created_at','desc')
+			->select('tags.*')
+			->get();
+		return $tags;
+	}
+
 
 	/**
 	 * Events that were created by the user

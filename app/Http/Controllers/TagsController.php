@@ -47,15 +47,40 @@ class TagsController extends Controller {
 		// get a list of venues
 		$venues = [''=>''] + Entity::getVenues()->lists('name','id')->all();;
 
-		$events = Event::orderBy('start_at','DESC')->simplePaginate($this->rpp);
+		/*
+ 		// get all series linked to the tag
+		$series = Series::where(function($query)
+					{
+						$query->visible($this->user);
+					})
+					->orderBy('start_at', 'ASC')
+					->orderBy('name', 'ASC')
+					->paginate();
+
+ 		// get all the events linked to the tag
+		$events = Event::orderBy('start_at', 'DESC')
+					->orderBy('name', 'ASC')
+					->simplePaginate($this->rpp);
+
 		$events->filter(function($e)
 		{
 			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
 		});
 
+		// get all entities linked to the tag
+		$entities = Entity::where(function($query)
+					{
+						$query->active()
+						->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
+					})
+					->orderBy('entity_type_id', 'ASC')
+					->orderBy('name', 'ASC')
+					->simplePaginate($this->rpp);
+		*/
+
 		$tags = Tag::orderBy('name', 'ASC')->get();
 
-		return view('tags.index', compact('tags','events'));
+		return view('tags.index', compact('series','entities','events', 'tag', 'tags'));
 	}
 
 	/**
@@ -816,7 +841,6 @@ class TagsController extends Controller {
 			flash()->error('Error',  'No user is logged in.');
 			return back();
 		};
-
 
 		// how can i derive this class from a string?
 		if (!$object = call_user_func("App\\".ucfirst($type)."::find", $id)) // Tag::find($id)) 

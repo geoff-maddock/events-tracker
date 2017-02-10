@@ -124,10 +124,17 @@
 Dropzone.autoDiscover = false;
 $(document).ready(function(){
 
-	var myDropzone = new Dropzone('#myDropzone');
+	var myDropzone = new Dropzone('#myDropzone', {
+   		dictDefaultMessage: "Drop a file here to add a user profile picture"
+	});
+
+$('div.dz-default.dz-message > span').show(); // Show message span
+$('div.dz-default.dz-message').css({'opacity':1, 'background-image': 'none'});
+
 	myDropzone.options.addPhotosForm = {
 		maxFilesize: 3,
 		accept: ['.jpg','.png','.gif'],
+		dictDefaultMessage: "Drop a file here to add a picture",
 		init: function () {
 	            myDropzone.on("complete", function (file) {
 	                location.href = 'users/{{ $user->id }}'
@@ -138,7 +145,7 @@ $(document).ready(function(){
 	};
 
 	myDropzone.options.addPhotosForm.init();
-	
+	 
 })
 </script>
 @stop

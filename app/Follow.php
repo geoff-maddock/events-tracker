@@ -35,5 +35,16 @@ class Follow extends Eloquent {
 		return $this->belongsToMany('App\User')->withTimestamps();
 	}
 
-	
+	/**
+	 * Get the object being followed
+	 *
+	 */
+	public function getObject()
+	{
+		// how can i derive this class from a string?
+		if (!$object = call_user_func("App\\".ucfirst($this->getObjectType())."::find", $this->getObjectId())) // Tag::find($id)) 
+		{
+			return $object;
+		};
+	}
 }

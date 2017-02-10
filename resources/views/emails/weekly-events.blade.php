@@ -1,4 +1,4 @@
-Here are the events your are attending today.
+Here is a reminder about these upcoming events that you are attending.
 
 @foreach ($events as $event)
 <div class='event-date'>

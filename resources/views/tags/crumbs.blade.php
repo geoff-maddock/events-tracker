@@ -1,12 +1,5 @@
 @if (isset($tag))
-	. {{ ucfirst($tag) }}
+	. {{  ucfirst($tag) }}
+@else
+	. Select a TAG to filter
 @endif
-@if (isset($type))
-	. {{ ucfirst($type) }}
-@endif 
-@if (isset($slug))
-	. {{ strtoupper($slug) }}
-@endif 
-@if (isset($cdate))
-	. {{ $cdate->toDateString() }}
-@endif 

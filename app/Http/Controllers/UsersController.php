@@ -109,10 +109,6 @@ class UsersController extends Controller {
 	public function update(User $user, ProfileRequest $request)
 	{
 		$user->profile->fill($request->input())->save();
-		//$user->fill($request->input())->save();
-
-		//$user->tags()->sync($request->input('tag_list',[]));
-
 
 		flash('Success', 'Your user has been updated');
 

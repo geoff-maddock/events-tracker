@@ -29,26 +29,49 @@ class Kernel extends ConsoleKernel {
 		$schedule->command('inspire')
 				 ->hourly();
 
-		// schedule daily email of events each user is attending
+		// schedule weekly email of events each user is attending
 		$schedule->call(function () {
-		// get each user
-		// get the events they are attending
-		// send an email containing that list
+			// get each user
 			$users = User::orderBy('name','ASC')->get();
+			$show_count = 12;
 
 			// cycle through all the users
 			foreach ($users as $user)
 			{
-				$events = $user->getAttendingFuture()->take(100);
+				// get the next x events they are attending
+				$events = $user->getAttendingFuture()->take($show_count);
 
-				Mail::send('emails.daily-events', ['user' => $user, 'events' => $events], function ($m) use ($user, $events) {
+				// send an email containing that list
+				Mail::send('emails.weekly-events', ['user' => $user, 'events' => $events], function ($m) use ($user, $events) {
+					$m->from('admin@events.cutupsmethod.com','Event Repo');
+
+					$m->to($user->email, $user->name)->subject('Event Repo: Weekly Events Reminder');
+				});
+			
+			};
+		})->weekly()->mondays()->timezone('America/New_York')->at('5:00');
+
+		// schedule daily email of events each user is attending today
+		$schedule->call(function () {
+			// get each user
+			$users = User::orderBy('name','ASC')->get();
+			$show_count = 12;
+
+			// cycle through all the users
+			foreach ($users as $user)
+			{
+				// get the next x events they are attending
+				$events = $user->getAttendingToday()->take($show_count);
+
+				// send an email containing that list
+				Mail::send('emails.weekly-events', ['user' => $user, 'events' => $events], function ($m) use ($user, $events) {
 					$m->from('admin@events.cutupsmethod.com','Event Repo');
 
 					$m->to($user->email, $user->name)->subject('Event Repo: Daily Events Reminder');
 				});
 			
 			};
-		})->dailyAt('6:00');
+		})->daily()->timezone('America/New_York')->at('6:00');
 
 	}
 
