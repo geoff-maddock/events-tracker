@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use DB;
 use Log;
 use App\Entity;
+use App\EntityFilters;
 use App\EntityType;
 use App\EntityStatus;
 use App\Tag;
@@ -34,14 +35,28 @@ class EntitiesController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function index()
+	public function index(EntityFilters $filters)
 	{
+		$is_filtering = 0;
+
 		// get all active entites plus those created by the logged in user, ordered by type and name
 
+		// base criteria
 		$entities = $this->entity->active()
 		->orWhere('created_by','=',($this->user ? $this->user->id : NULL))
 		->orderBy('entity_type_id', 'ASC')
-		->orderBy('name', 'ASC')->get();
+		->orderBy('name', 'ASC');
+
+		$entities->filter($filters);
+
+		/*
+		if ($request->has('name'))
+		{	$name = $request->name;
+			$this->entity->where('name', $name);
+		}
+		*/
+
+		$entities = $this->entity->get();
 
 		return view('entities.index', compact('entities'));
 	}
@@ -93,9 +108,10 @@ class EntitiesController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function filter(Request $request)
+	public function filter(Request $request, EntityFilters $filters)
 	{
-		$entities = array();
+		//$entities = array();
+		$entities = $this->entity->active();
 
  		// check request for passed filter values
  		if ($request->input('filter_role'))
@@ -108,8 +124,7 @@ class EntitiesController extends Controller {
 							->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
 						})
 						->orderBy('entity_type_id', 'ASC')
-						->orderBy('name', 'ASC')
-						->get();
+						->orderBy('name', 'ASC');
  		};
 
   		if ($request->input('filter_tag'))
@@ -122,10 +137,12 @@ class EntitiesController extends Controller {
 							->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
 						})
 						->orderBy('entity_type_id', 'ASC')
-						->orderBy('name', 'ASC')
-						->get();
+						->orderBy('name', 'ASC');
  		}
 
+		$entities->filter($filters);
+
+		$entities->get();
 
 		return view('entities.index', compact('entities', 'role', 'tag'));
 	}

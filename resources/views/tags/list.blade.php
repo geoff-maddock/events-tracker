@@ -22,7 +22,7 @@
 			@endif
 
 			@if ($link = $event->primary_link)
-			<a href="{{ $link }}" target="_blank">
+			<a href="{{ $link }}" target="_blank" title="Event link">
 			<span class='glyphicon glyphicon-link'></span>
 			</a>
 			@endif

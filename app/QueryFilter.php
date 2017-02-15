@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 abstract class QueryFilter
@@ -14,7 +15,7 @@ abstract class QueryFilter
 		$this->request = $request;
 	}
 
-	public function apply(Bulder $bulder)
+	public function apply(Builder $builder)
 	{
 		$this->builder = $builder;
 

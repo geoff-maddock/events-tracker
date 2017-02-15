@@ -47,4 +47,9 @@ class Follow extends Eloquent {
 			return $object;
 		};
 	}
+
+	public function followable()
+	{
+		return $this->morphTo();
+	}
 }

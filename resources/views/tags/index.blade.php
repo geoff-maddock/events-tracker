@@ -31,7 +31,7 @@
 				<ul style="margin-left: -30px;">
 				@foreach ($tags as $t)
 					@if (isset($tag) && (strtolower($tag) === strtolower($t->name)))
-						<li class='list selected'><a href="/tags/{{ $t->name }}">{{ $t->name }}</a>
+						<li class='list selected'><a href="/tags/{{ $t->name }}" title="Click to show all related events and entities.">{{ $t->name }}</a>
 							@if ($signedIn)
 								@if ($follow = $t->followedBy($user))
 								<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
@@ -56,6 +56,24 @@
 				</div>
 			</div>
 		</div>
+	</div>
+
+	<div class="col-lg-10">
+		<div class="bs-component">
+			<div class="panel panel-info">
+
+
+				<div class="panel-heading">
+					<h3 class="panel-title">Info</h3>
+				</div>
+
+				<div class="panel-body" style="padding: 15px !important;">
+
+				Click on a <b>tag</b> name in the left panel to find all related events or entites.  Click on the <b>plus</b> next to the tag to follow, <b>minus</b> to unfollow.
+				</div>
+
+			</div>
+		</div>	
 	</div>
 
 	@if (isset($events) && count($events) > 0)

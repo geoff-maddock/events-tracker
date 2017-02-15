@@ -13,6 +13,14 @@
 		<!-- NAV / FILTER -->
 		<div class="row">
 				{!! Form::open(['route' => ['entities.filter'], 'method' => 'GET']) !!}
+
+				<div class="form-group col-md-2">
+
+				{!! Form::label('name','Filter By Name') !!}
+
+				{!! Form::text('name', (isset($name) ? $name : NULL), ['class' =>'form-control']) !!}
+				</div>
+
 				<div class="form-group col-md-2">
 
 				{!! Form::label('filter_role','Filter By Role') !!}

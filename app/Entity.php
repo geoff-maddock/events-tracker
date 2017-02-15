@@ -46,6 +46,11 @@ class Entity extends Eloquent {
         return $this->morphMany('App\Comment', 'commentable')->orderBy('created_at', 'DESC');
     }
 
+    public function scopeFilter($builder, QueryFilter $filters)
+    {
+    	return $filters->apply($builder);
+    }
+
 	/**
 	 * Returns entities by type
 	 *

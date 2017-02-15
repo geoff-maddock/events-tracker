@@ -3,7 +3,7 @@
 	{
 		$form = Form::open(['method' => 'DELETE', 'route' => $routeParams]);
 
-		$form .= Form::submit($label, ['class' => 'btn btn-danger']);
+		$form .= Form::submit($label, ['class' => 'btn btn-danger', 'onsubmit' => 'confirm("Are you sure you want to delete?")']);
 
 		return $form .= Form::close();
 	}
