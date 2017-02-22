@@ -116,35 +116,44 @@ class EntitiesController extends Controller {
  		// check request for passed filter values
  		if ($request->input('filter_role'))
  		{
+ 			 	//		dd('filter role');
  			$role = $request->input('filter_role');
-			$entities = Entity::getByRole(ucfirst($request->input('filter_role')))
+			$entities = Entity::getByRole(ucfirst($role))
 						->where(function($query)
 						{
 							$query->active()
 							->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
 						})
 						->orderBy('entity_type_id', 'ASC')
-						->orderBy('name', 'ASC');
+						->orderBy('name', 'ASC')
+						->get();
  		};
 
   		if ($request->input('filter_tag'))
  		{
  			$tag = $request->input('filter_tag');
-			$entities = Entity::getByTag(ucfirst($request->input('filter_tag')))
+			$entities = Entity::getByTag(ucfirst($tag))
 						->where(function($query)
 						{
 							$query->active()
 							->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
 						})
 						->orderBy('entity_type_id', 'ASC')
-						->orderBy('name', 'ASC');
+						->orderBy('name', 'ASC')
+						->get();
  		}
 
-		$entities->filter($filters);
+   		if ($request->input('filter_name'))
+ 		{
+ 			$name = $request->input('filter_name');
+			$entities = Entity::where('name', $name)->get();
+ 		}
 
-		$entities->get();
+ 		// revisit filtering here
+		// $entities->filter($filters);
+		//$entities->get();
 
-		return view('entities.index', compact('entities', 'role', 'tag'));
+		return view('entities.index', compact('entities', 'role', 'tag','name'));
 	}
 
 	/**

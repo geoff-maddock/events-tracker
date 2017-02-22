@@ -374,10 +374,10 @@ class EventsController extends Controller {
 	protected function notifyFollowing($event)
 	{
 		// notify users following any of the tags
-		$tags = $event->tags()->get();;
+		$tags = $event->tags()->get();
 		$users = array();
 
-		// improve this so it will only sent one email to each user per event, and include a list of tags they were following that led to the notification
+		// improve this so it will only sent one email to each user per event, and include a list of all tags they were following that led to the notification
 		foreach ($tags as $tag)
 		{
 			foreach ($tag->followers() as $user)
@@ -385,7 +385,7 @@ class EventsController extends Controller {
 				// if the user hasn't already been notified, then email them
 				if (!array_key_exists($user->id, $users))
 				{
-					Mail::send('emails.following', ['user' => $user, 'event' => $event, 'tag' => $tag], function ($m) use ($user, $event, $tag) {
+					Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $tag], function ($m) use ($user, $event, $tag) {
 						$m->from('admin@events.cutupsmethod.com','Event Repo');
 
 						$m->to($user->email, $user->name)->subject('Event Repo: '.$tag->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
@@ -393,7 +393,29 @@ class EventsController extends Controller {
 					$users[$user->id] = $tag->name;
 				};
 			};
-		}
+		};
+
+		// notify users following any of the entities
+		$entities = $event->entities()->get();
+
+		// improve this so it will only sent one email to each user per event, and include a list of entities they were following that led to the notification
+		foreach ($entities as $entity)
+		{
+			foreach ($entity->followers() as $user)
+			{
+
+				// if the user hasn't already been notified, then email them
+				if (!array_key_exists($user->id, $users))
+				{
+					Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $entity], function ($m) use ($user, $event, $entity) {
+						$m->from('admin@events.cutupsmethod.com','Event Repo');
+
+						$m->to($user->email, $user->name)->subject('Event Repo: '.$entity->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
+					});
+					$users[$user->id] = $entity->name;
+				};
+			};
+		};
 
 		return back();
 	}

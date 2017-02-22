@@ -40,7 +40,7 @@ class Kernel extends ConsoleKernel {
 			foreach ($users as $user)
 			{
 				// get the next x events they are attending
-				if ($events = $user->getAttendingFuture()->take($show_count))
+				if ($events = $user->getAttendingFuture()->take($show_count) && $events->count() > 0)
 				{
 
 					// send an email containing that list
@@ -65,13 +65,13 @@ class Kernel extends ConsoleKernel {
 			foreach ($users as $user)
 			{
 				// get the next x events they are attending
-				if ($events = $user->getAttendingToday()->take($show_count))
+				if ($events = $user->getAttendingToday()->take($show_count)  && $events->count() > 0)
 				{
-
 					// send an email containing that list
 					Mail::send('emails.weekly-events', ['user' => $user, 'events' => $events], function ($m) use ($user, $events) {
 						$m->from('admin@events.cutupsmethod.com','Event Repo');
-
+						
+						$dt = Carbon::now();
 						$m->to($user->email, $user->name)->subject('Event Repo: Daily Reminder - '.$dt->format('l F jS Y'));
 					});
 				};

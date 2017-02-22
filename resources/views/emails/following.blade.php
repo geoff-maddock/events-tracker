@@ -1,4 +1,4 @@
-You might be interested in this new event because you are following <b>{!! $tag->name !!}</b>.
+You might be interested in this new event because you are following <b>{!! $object->name !!}</b>.
 
 <div class='event-date'>
 	<h2>{!! $event->start_at->format('l F jS Y') !!}</h2>

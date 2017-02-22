@@ -47,12 +47,11 @@
 		@unless ($event->tags->isEmpty())
 		Tags:
 			@foreach ($event->tags as $tag)
-				{{ $tag->name }}, 
+				{{ $tag->name }},
 			@endforeach
 		@endunless
 		
-
-		@if ($event->primary_link))
+		@if ($event->primary_link)
 		<br>{{ $event->primary_link or ''}}
 		@endif
 		<br><br>

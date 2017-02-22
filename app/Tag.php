@@ -74,8 +74,6 @@ class Tag extends Eloquent {
 	}
 
 
-
-
 	/**
 	 * Returns the users that follow the tag
 	 * 

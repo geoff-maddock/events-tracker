@@ -4,10 +4,14 @@ namespace App;
 
 class EntityFilters extends QueryFilter
 {
-	public function name($value) // example.com/events?ages
+	public function name($value = NULL) // example.com/events?ages
 	{
-		return $this->builder->where('name', $value);
+		if (isset($value))
+		{
+			return $this->builder->where('name', $value);
+		} else {
+			return $this->builder;
+		}
 	}
-
 
 }
