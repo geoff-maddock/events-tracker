@@ -45,7 +45,7 @@ class UsersController extends Controller {
 	}
 
 	/**
-	 * Show a form to create a new Article.
+	 * Show a form to create a new user.
 	 *
 	 * @return view
 	 **/
@@ -82,18 +82,14 @@ class UsersController extends Controller {
 		$user->create($input);
 
 		// if there is no profile, create one
-		if (!$user->profile)
-		{
-			$profile = new Profile();
-			$profile->user_id = $user->id;
-			$profile->save();
-		}
+		$profile = new Profile();
+		$profile->user_id = $user->id;
+		$profile->save();
 
 		$user->tags()->attach($request->input('tag_list'));
 
 		\Session::flash('flash_message', 'Your user has been created!');
 
-		//return redirect()->route('users.index');
 	}
 
 	public function edit(User $user)

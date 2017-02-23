@@ -118,10 +118,22 @@ class CommentsController extends Controller {
 	 * @param  \App\Comment  	$comment
 	 * @return Response
 	 */
-	public function edit(Entity $entity, Comment $comment)
+	public function edit($object, Comment $comment)
 	{
+		if (get_class($object) == 'Entity')
+		{
+			$entity = $object;
+			$type = 'entities';
+		};
 
-		return view('comments.edit', compact('entity', 'comment'));
+		if (get_class($object) == 'Entity')
+		{
+			$event = $object;
+			$type = 'events';
+		}
+
+
+		return view('comments.edit', compact('entity', 'object', 'event', 'comment','type'));
 	}
 
 	/**

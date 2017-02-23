@@ -64,7 +64,7 @@
 		
 		<P>		
 		@foreach ($entity->locations as $location)
-		<span><B>{{ $location->locationType->name }}</B>  {{ $location->address_one }} {{ $location->neighborhood or '' }}  {{ $location->city }} {{ $location->state }} {{ $location->country }}
+		<span><B>{{ isset($location->locationType) ? $location->locationType->name : '' }}</B>  {{ $location->address_one }} {{ $location->neighborhood or '' }}  {{ $location->city }} {{ $location->state }} {{ $location->country }}
 				
 				@if (isset($location->map_url))
 				<a href="{!! $location->map_url !!}" target="_" title="Link to map.">
@@ -196,7 +196,7 @@
 	</div>
 
 	<div class="col-md-6">
-	@if ($user && Auth::user()->id == $entity->user->id)	
+	@if ($user && (Auth::user()->id == $entity->user->id || $user->id == Config::get('app.superuser')))	
 	<form action="/entities/{{ $entity->id }}/photos" class="dropzone" id="myDropzone" method="POST">
 		<input type="hidden" name="_token" value="{{ csrf_token() }}">
 	</form>
@@ -210,7 +210,7 @@
 		<div class="col-md-2">
 		
 		<a href="/{{ $photo->path }}" data-lightbox="{{ $photo->path }}"><img src="/{{ $photo->thumbnail }}" alt="{{ $entity->name}}"  style="max-width: 100%;"></a>
-		@if ($user && Auth::user()->id == $entity->user->id)	
+		@if ($user && (Auth::user()->id == $entity->user->id || $user->id == Config::get('app.superuser')))	
 			{!! link_form_icon('glyphicon-trash text-warning', $photo, 'DELETE', 'Delete the photo') !!}
 			@if ($photo->is_primary)
 			{!! link_form_icon('glyphicon-star text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}

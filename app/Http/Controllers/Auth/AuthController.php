@@ -7,6 +7,7 @@ use \Validator;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
 use App\User;
+use App\Profile;
 
 class AuthController extends Controller {
 
@@ -65,11 +66,18 @@ class AuthController extends Controller {
 	 */
 	public function create(array $data)
 	{
-		return User::create([
+		$user = User::create([
 			'name' => $data['name'],
 			'email' => $data['email'],
 			'password' => bcrypt($data['password']),
 		]);
+
+		$profile = new Profile();
+		$profile->user_id = $user->id;
+		$profile->save();
+
+
+		return $user;
 	}
 
 }
