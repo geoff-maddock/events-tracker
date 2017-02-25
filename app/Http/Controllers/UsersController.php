@@ -21,6 +21,7 @@ use App\Visibility;
 use App\Tag;
 use App\EventResponse;
 use App\Photo;
+use App\Activity;
 
 class UsersController extends Controller {
 
@@ -113,6 +114,8 @@ class UsersController extends Controller {
 
 	public function destroy(User $user)
 	{
+		Activity::log($user, $user, 3);
+
 		$user->delete();
 
 		return redirect('users');

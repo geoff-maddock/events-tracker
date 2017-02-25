@@ -65,6 +65,15 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 	}
 
 	/**
+	 * A user can have much activity
+	 *
+	 */
+	public function activity()
+	{
+		return $this->hasMany('App\Activity');
+	}
+
+	/**
 	 * A user can have many comments
 	 *
 	 */

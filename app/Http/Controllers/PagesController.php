@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use App\Event;
 use App\Entity;
 use App\Series;
+use App\Activity;
 
 class PagesController extends Controller {
 
@@ -115,6 +116,15 @@ class PagesController extends Controller {
 					->paginate();
 
 		return view('pages.home', compact('events'));
+	}
+
+	public function activity()
+	{
+
+		$activities = Activity::orderBy('created_at', 'DESC')
+					->paginate();
+
+		return view('pages.activity', compact('activities'));
 	}
 
 }

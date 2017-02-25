@@ -13,7 +13,7 @@ class CreateFollowsTable extends Migration
     public function up()
     {
 
-        Schema::create('object_types', function(Blueprint $table)
+   /*     Schema::create('object_types', function(Blueprint $table)
         {
             $table->increments('id');
             $table->string('name')->nullable();
@@ -30,7 +30,7 @@ class CreateFollowsTable extends Migration
             $table->timestamps();
             $table->index(['user_id', 'object_type', 'object_id']);
         });
-
+*/
     }
 
     /**

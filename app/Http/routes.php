@@ -38,6 +38,8 @@ Route::get('calendar', 'EventsController@calendar');
 
 Route::get('search','PagesController@search');
 
+Route::get('activity','PagesController@activity');
+
 Route::bind('users', function($id)
 {
 	return App\User::whereId($id)->first();

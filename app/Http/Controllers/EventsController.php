@@ -23,6 +23,7 @@ use App\Photo;
 use App\EventResponse;
 use App\ResponseType;
 use App\User;
+use App\Activity;
 use App\Services\RssFeed;
 
 class EventsController extends Controller {
@@ -366,6 +367,9 @@ class EventsController extends Controller {
 		// here, make a call to notify all users who are following any of the sync'd tags
 		$this->notifyFollowing($event);
 
+		// add to activity log
+		Activity::log($event, $this->user, 1);
+
 		flash()->success('Success', 'Your event has been created');
 
 		return redirect()->route('events.index');
@@ -491,6 +495,9 @@ class EventsController extends Controller {
 		$event->tags()->sync($syncArray);
 		$event->entities()->sync($request->input('entity_list',[]));
 
+		// add to activity log
+		Activity::log($event, $this->user, 2);
+
 		flash('Success', 'Your event has been updated');
 
 		return redirect('events');
@@ -498,6 +505,10 @@ class EventsController extends Controller {
 
 	public function destroy(Event $event)
 	{
+
+		// add to activity log
+		Activity::log($event, $this->user, 3);
+
 		$event->delete();
 
 		flash()->success('Success', 'Your event has been deleted!');
@@ -535,6 +546,8 @@ class EventsController extends Controller {
 		$response->response_type_id = 1; // 1 = Attending, 2 = Interested, 3 = Uninterested, 4 = Cannot Attend
 		$response->save();
 
+		// add to activity log
+		Activity::log($event, $this->user, 6);
 
      	Log::info('User '.$id.' is attending '.$event->name);
 
@@ -569,6 +582,9 @@ class EventsController extends Controller {
 		$response = EventResponse::where('event_id','=', $id)->where('user_id','=',$this->user->id)->where('response_type_id','=',1)->first();
 		//dd($response);
 		$response->delete();
+
+		// add to activity log
+		Activity::log($event, $this->user, 7);
 
 		flash()->success('Success',  'You are no longer attending the event - '.$event->name);
 

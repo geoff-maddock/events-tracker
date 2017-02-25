@@ -6,8 +6,11 @@ use Illuminate\Contracts\Auth\Guard;
 use \Validator;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
+use Illuminate\Http\Request;
 use App\User;
 use App\Profile;
+use App\Activity;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller {
 
@@ -76,8 +79,37 @@ class AuthController extends Controller {
 		$profile->user_id = $user->id;
 		$profile->save();
 
+		Activity::log($user, $user, 1);
 
 		return $user;
 	}
+
+	protected function redirectTo()
+	{
+		Activity::log(Auth::user(), Auth::user(), 4);
+
+	    return '/home';
+	}
+
+	public function authenticated(Request $request, $user)
+	{
+		Activity::log($user, $user, 4); 
+
+		return redirect()->intended( $this->redirectPath() );   
+	}
+
+    /**
+     * Log the user out of the application.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getLogout()
+    {
+		Activity::log(Auth::user(), Auth::user(), 5); 
+
+        Auth::logout();
+
+        return redirect(property_exists($this, 'redirectAfterLogout') ? $this->redirectAfterLogout : '/');
+    }
 
 }
