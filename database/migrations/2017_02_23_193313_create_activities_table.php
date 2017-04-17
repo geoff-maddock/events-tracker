@@ -13,7 +13,7 @@ class CreateActivitiesTable extends Migration
     public function up()
     {
 
-        Schema::create('actions', function(Blueprint $table)
+     /*   Schema::create('actions', function(Blueprint $table)
         {
             $table->increments('id');
             $table->string('name');
@@ -41,7 +41,7 @@ class CreateActivitiesTable extends Migration
             $table->integer('action_id')->nullable();
             $table->timestamps();
         });
-
+*/
     }
 
     /**

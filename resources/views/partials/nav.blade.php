@@ -47,6 +47,16 @@
 			</ul>
 
 			<ul class="nav navbar-nav navbar-right">
+			    @if ($user && $user->id == Config::get('app.superuser'))
+				<li class="dropdown ">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="{{ url('/forums')}}">Forum</a></li> 
+						<li><a href="{{ url('/threads')}}">Threads</a></li> 
+						<li><a href="{{ url('/activity')}}">Activity</a></li> 
+					</ul>
+				</li>
+				@endif
 				<li><a href="mailto:{{ config('app.feedback') }}" title="Send email to {{ config('app.feedback') }}">Feedback</a></li>
 				<li><a href="{{ url('/help') }}">Help</a></li>
 				@if (Auth::guest())

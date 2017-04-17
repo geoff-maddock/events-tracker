@@ -122,3 +122,8 @@ li.selected:hover {
 .item-title {
 	font-weight: 600;
 }
+
+.post-body {
+	padding: 10px;
+	padding-bottom: 50px;
+}

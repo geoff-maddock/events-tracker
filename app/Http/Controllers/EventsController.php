@@ -754,6 +754,8 @@ class EventsController extends Controller {
 		return view('events.index', compact('future_events', 'past_events', 'slug'));
 	}
 
+
+
 	/**
 	 * Display a listing of events by type
 	 *

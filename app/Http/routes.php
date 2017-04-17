@@ -96,6 +96,29 @@ Route::bind('events', function($id)
 
 $router->resource('events','EventsController');
 
+# THREADS
+Route::get('threads/all', 'ThreadsController@indexAll');
+Route::get('threads/category/{slug}', 'ThreadsController@indexCategories');
+Route::get('threads/tag/{tag}', 'ThreadsController@indexTags');
+
+Route::bind('threads', function($id)
+{
+	return App\Thread::whereId($id)->first();
+});
+
+$router->resource('threads','ThreadsController');
+
+# POSTS
+Route::get('posts/all', 'PostsController@indexAll');
+
+Route::bind('posts', function($id)
+{
+	return App\Post::whereId($id)->first();
+});
+
+$router->resource('posts','PostsController');
+
+# ENTITIES
 Route::post('entities/{id}/photos', 'EntitiesController@addPhoto');
 
 Route::get('entities/type/{type}', 'EntitiesController@indexTypes');
@@ -155,6 +178,7 @@ $router->resource('entities.comments','CommentsController');
 $router->resource('events.comments','CommentsController');
 
 
+# SERIES
 Route::get('series/createOccurrence', [
 	'as' => 'series.createOccurrence', 
 	'uses' => 'SeriesController@createOccurrence'
