@@ -11,7 +11,7 @@
 	<p>
 	<a href="{{ url('/threads/all') }}" class="btn btn-info">Show all threads</a>
 	<a href="{!! URL::route('threads.index') !!}" class="btn btn-info">Show paginated threads</a>
-	<a href="{!! URL::route('threads.create') !!}" class="btn btn-primary">Add an thread</a>
+	<a href="{!! URL::route('threads.create') !!}" class="btn btn-primary">Add a thread</a>
 	</p>
 
 	<br style="clear: left;"/>
@@ -20,7 +20,6 @@
 
 	@if (isset($threads) && count($threads) > 0)
 	<div class="col-lg-12">
-	
 		@include('threads.list', ['threads' => $threads])
 		{!! $threads->render() !!}
 

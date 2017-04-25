@@ -97,14 +97,17 @@ Route::bind('events', function($id)
 $router->resource('events','EventsController');
 
 # THREADS
-Route::get('threads/all', 'ThreadsController@indexAll');
-Route::get('threads/category/{slug}', 'ThreadsController@indexCategories');
-Route::get('threads/tag/{tag}', 'ThreadsController@indexTags');
-
 Route::bind('threads', function($id)
 {
 	return App\Thread::whereId($id)->first();
 });
+
+Route::get('threads/all', 'ThreadsController@indexAll');
+Route::get('threads/category/{slug}', 'ThreadsController@indexCategories');
+Route::get('threads/tag/{tag}', 'ThreadsController@indexTags');
+Route::get('threads/series/{tag}', 'ThreadsController@indexSeries');
+Route::get('threads/relatedto/{slug}', 'ThreadsController@indexRelatedTo');
+Route::post('threads/{threads}/posts','PostsController@store');
 
 $router->resource('threads','ThreadsController');
 

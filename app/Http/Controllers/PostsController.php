@@ -43,7 +43,13 @@ class PostsController extends Controller
      */
     public function index()
     {
-        //
+        $posts = Post::orderBy('created_at', 'desc')->paginate($this->rpp);
+        $posts->filter(function($e)
+        {
+            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
+
+        return view('posts.index', compact('posts'));
     }
 
     /**
@@ -53,7 +59,14 @@ class PostsController extends Controller
      */
     public function create()
     {
-        //
+        $visibilities = [''=>''] + Visibility::orderBy('name','ASC')->lists('name', 'id')->all();
+
+        $tags = Tag::orderBy('name','ASC')->lists('name','id')->all();
+        $entities = Entity::orderBy('name','ASC')->lists('name','id')->all();
+        $series = Series::orderBy('name','ASC')->lists('name','id')->all();
+
+
+        return view('posts.create', compact('visibilities','tags','entities','series'));
     }
 
     /**
@@ -62,9 +75,16 @@ class PostsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Thread $thread)
     {
-        //
+        $thread->addPost([
+            'body' => request('body'),
+            'created_by' => auth()->id(),
+            'visibility_id' => 1,
+            'allow_html' => $thread->allow_html
+            ]);
+
+        return back();
     }
 
     /**
@@ -73,9 +93,13 @@ class PostsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Thread $thread)
     {
-        //
+        // call a log for this and prevent it from going out of control
+        $post->views++;
+        $post->save();
+
+        return view('posts.show', compact('post'));
     }
 
     /**
@@ -84,9 +108,16 @@ class PostsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Post $post)
     {
-        //
+        $this->middleware('auth');
+
+        $visibilities = [''=>''] + Visibility::lists('name', 'id')->all();
+        $tags = Tag::orderBy('name','ASC')->lists('name','id')->all();
+        $entities = Entity::orderBy('name','ASC')->lists('name','id')->all();
+        $series = [''=>''] + Series::lists('name', 'id')->all();
+
+        return view('posts.edit', compact('post', 'visibilities', 'tags','entities','series'));
     }
 
     /**

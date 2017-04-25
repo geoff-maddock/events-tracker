@@ -500,4 +500,18 @@ class Event extends Eloquent {
 
 		return $primary;
 	}
+
+    /**
+     * Create the slug from the name if none was passed
+     */
+    public function setSlugAttribute($value) {
+
+        // grab the title and slugify it
+        if ($value == '')
+        {
+        	$this->attributes['slug'] = str_slug($this->name);
+        } else {
+        	$this->attributes['slug'] = $value;
+        }
+    }
 }

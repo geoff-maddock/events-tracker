@@ -16,6 +16,7 @@
 		<td colspan='6' class="post-body">
 		{{ $post->body }}
 		<br>
+
 			@unless ($post->entities->isEmpty())
 			Related:
 				@foreach ($post->entities as $entity)
@@ -28,7 +29,7 @@
 				@foreach ($post->tags as $tag)
 					<span class="label label-tag"><a href="/posts/tag/{{ urlencode($tag->name) }}">{{ $tag->name }}</a></span>
 				@endforeach
-		@endunless		
+			@endunless		
 		</td>
 	</tr>
 	</tbody>

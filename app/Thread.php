@@ -34,6 +34,7 @@ class Thread extends Eloquent {
 	 * @var Array
 	 *
 	 **/
+
 	protected $fillable = [
 	'name', 
 	'slug', 
@@ -42,10 +43,13 @@ class Thread extends Eloquent {
 	'thread_category_id',
 	'visibility_id', 
 	'forum_id',
+	'views',
 	];
 
+	//protected $guarded = [];
 
 	protected $dates = ['created_at','updated_at'];
+
 
 	// building filter
 	public function scopeFilter($query, QueryFilter $filters)
@@ -56,7 +60,7 @@ class Thread extends Eloquent {
 
 	public function path()
 	{
-		return '/thread/'. $this->id;
+		return '/threads/'. $this->id;
 	}
 
 
@@ -87,10 +91,18 @@ class Thread extends Eloquent {
 	 */
 	public function posts()
 	{
-		return $this->hasMany('App\Post','thread_id');
+		return $this->hasMany('App\Post');
 	}
 
 
+	/**
+	 * Add a post to a thread
+	 *
+	 */
+	public function addPost($post)
+	{
+		$this->posts()->create($post);
+	}
 
 	/**
 	 * Get the date of the last post
@@ -176,7 +188,7 @@ class Thread extends Eloquent {
 	 */
 	public function series()
 	{
-		return $this->hasOne('App\Series','id','series_id');
+		return $this->belongsToMany('App\Series')->withTimestamps();
 	}
 
 	/**
@@ -261,6 +273,22 @@ class Thread extends Eloquent {
 		return $threads;
 	}
 
+	/**
+	 * Return a collection of threads with the passed series
+	 * 
+	 * @return Collection $threads
+	 * 
+	 **/
+	public static function getBySeries($tag)
+	{
+		// get a list of threads that have the passed series
+		$threads = self::whereHas('series', function($q) use ($tag)
+		{
+			$q->where('slug','=', ucfirst($tag));
+		});
+
+		return $threads;
+	}
 
 
 	/**
@@ -280,22 +308,6 @@ class Thread extends Eloquent {
 		return $threads;
 	}
 
-	/**
-	 * Return a collection of threads with the passed series
-	 * 
-	 * @return Collection $threads
-	 * 
-	 **/
-	public static function getBySeries($slug)
-	{
-		// get a list of threads that have the passed tag
-		$threads = self::whereHas('series', function($q) use ($slug)
-		{
-			$q->where('name','=', $slug);
-		})->orderBy('name','ASC');
-
-		return $threads;
-	}
 
 	/**
 	 * Return a collection of threads with the passed entity
@@ -349,4 +361,18 @@ class Thread extends Eloquent {
 
 		return $primary;
 	}
+
+    /**
+     * Create the slug from the name if none was passed
+     */
+    public function setSlugAttribute($value) {
+
+        // grab the name and slugify it
+        if ($value == '')
+        {
+        	$this->attributes['slug'] = str_slug($this->name);
+        } else {
+        	$this->attributes['slug'] = $value;
+        }
+    }
 }

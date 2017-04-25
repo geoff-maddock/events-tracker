@@ -20,6 +20,7 @@
 	<link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.6.0/fullcalendar.min.css" rel="stylesheet">
 	<link href="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.2.0/min/dropzone.min.css" rel="stylesheet">
 	<link href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.8.2/css/lightbox.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 	<!-- Fonts -->
 	<link href='//fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'>
@@ -31,7 +32,7 @@
 		<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script> 
 	<![endif]-->
 </head>
-<body>
+<body id="event-repo">
 	<script src="{{ asset('/js/facebook-sdk.js') }}"></script>
 	@include('partials.nav')
 

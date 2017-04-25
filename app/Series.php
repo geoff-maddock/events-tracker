@@ -247,6 +247,18 @@ class Series extends Eloquent {
 		return $series;
 	}
 
+
+	/**
+	 * Get the threads that belong to the series
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function series()
+	{
+		return $this->belongsToMany('App\Series')->withTimestamps();
+	}
+
+
 	/**
 	 * An series can have many events
 	 *

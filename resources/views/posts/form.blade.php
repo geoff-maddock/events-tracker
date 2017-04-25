@@ -27,24 +27,10 @@
 	</div>
 </div>
 
-
-
-<div class="row">
-
-	<div class="form-group col-md-2 {{$errors->has('thread_type_id') ? 'has-error' : '' }}">
-	{!! Form::label('thread_category_id','Thread category:') !!}
-	{!! Form::select('thread_category_id', $threadCategories, (isset($thread->thread_category_id) ? $thread->thread_category_id : NULL), ['class' =>'form-control']) !!}
-	{!! $errors->first('thread_category_id','<span class="help-block">:message</span>') !!}
-	</div>
-
-
-</div>
-
-
 <div class="row">
 	<div class="form-group col-md-2 {{$errors->has('visibility_id') ? 'has-error' : '' }}">
 	{!! Form::label('visibility_id','Visibility:') !!}
-	{!! Form::select('visibility_id', $visibilities, (isset($thread->visibility_id) ? $thread->visibility_id : NULL), ['class' =>'form-control']) !!}
+	{!! Form::select('visibility_id', $visibilities, (isset($post->visibility_id) ? $post->visibility_id : NULL), ['class' =>'form-control']) !!}
 	{!! $errors->first('visibility_id','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -56,14 +42,6 @@
 	{!! Form::label('entity_list','Related Entities:') !!}
 	{!! Form::select('entity_list[]', $entities, null, ['id' => 'entity_list', 'class' =>'form-control', 'multiple']) !!}
 	{!! $errors->first('entities','<span class="help-block">:message</span>') !!}
-	</div>
-</div>
-
-<div class="row">
-	<div class="form-group col-md-2">
-	{!! Form::label('series_list','Related Series:') !!}
-	{!! Form::select('series_list[]', $series, isset($thread) ? $thread->series->lists('id')->toArray() : NULL, ['id' => 'series_list', 'class' =>'form-control', 'multiple']) !!}
-	{!! $errors->first('series','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
 
@@ -79,8 +57,8 @@
 
 
 <div class="form-group">
-{!! Form::hidden('forum_id', '1', array('id' => 'forum_id')) !!}
-{!! Form::submit(isset($action) && $action == 'update' ? 'Update Thread' : 'Add Thread', null, ['class' =>'btn btn-primary']) !!}
+{!! Form::hidden('thread_id', '1', array('id' => 'thread_id')) !!}
+{!! Form::submit(isset($action) && $action == 'update' ? 'Update Post' : 'Add Post', null, ['class' =>'btn btn-primary']) !!}
 </div>
 
 

@@ -73,11 +73,19 @@ class Activity extends Eloquent {
 	}
 
 	/**
-	 * Get the style of an activity
+	 * Get the age of the activity
 	 */
 	public function getAgeAttribute()
 	{
 		return $this->created_at->diffForHumans();
+	}
+
+	/**
+	 * Get the name of the user
+	 */
+	public function getUserNameAttribute()
+	{
+		return $this->user ? $this->user->name : 'unknown';
 	}
 
 

@@ -337,6 +337,8 @@ class EventsController extends Controller {
 		// get the request
 		$input = $request->all();
 
+		// validate - hmm, isn't this doing it elsewhere?
+
 		$tagArray = $request->input('tag_list',[]);
 		$syncArray = array();
 
@@ -966,4 +968,7 @@ class EventsController extends Controller {
 	    return response($rss)
 	      ->header('Content-type', 'application/rss+xml');
   	}
+
+
+
 }

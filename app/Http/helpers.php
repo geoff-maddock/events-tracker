@@ -1,9 +1,9 @@
 <?php 
 	function delete_form($routeParams, $label = 'Delete')
 	{
-		$form = Form::open(['method' => 'DELETE', 'route' => $routeParams]);
+		$form = Form::open(['method' => 'DELETE', 'route' => $routeParams, 'id' => 'deleteForm']);
 
-		$form .= Form::submit($label, ['class' => 'btn btn-danger', 'onsubmit' => 'confirm("Are you sure you want to delete?")']);
+		$form .= Form::submit($label, ['class' => 'btn btn-danger delete']);
 
 		return $form .= Form::close();
 	}

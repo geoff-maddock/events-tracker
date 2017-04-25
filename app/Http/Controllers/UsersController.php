@@ -69,8 +69,9 @@ class UsersController extends Controller {
 			$profile = new Profile();
 			$profile->user_id = $user->id;
 			$profile->save();
-		}
 
+			return redirect('users/'.$user->id);
+		}
 
 		return view('users.show', compact('user'));
 	}

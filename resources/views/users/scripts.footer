@@ -1,0 +1,15 @@
+<script type="text/javascript">
+$('input.delete').on('click', function(){
+  swal({   
+    title: "Are you sure?",
+    text: "You will not be able to recover this User!",         type: "warning",   
+    showCancelButton: true,   
+    confirmButtonColor: "#DD6B55",
+    confirmButtonText: "Yes, delete it!", 
+    closeOnConfirm: false 
+  }, 
+       function(){   
+    $("#myform").submit();
+  });
+})
+</script>

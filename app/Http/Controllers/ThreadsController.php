@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ThreadRequest;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -30,7 +31,7 @@ class ThreadsController extends Controller
 		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
 		$this->thread = $thread;
 
-		$this->rpp = 20;
+		$this->rpp = 15;
 		parent::__construct();
 	}
 
@@ -101,6 +102,38 @@ class ThreadsController extends Controller
 		return view('threads.index', compact('threads', 'tag'));
 	}
 
+	/**
+	 * Display a listing of threads by series
+	 *
+	 * @return Response
+	 */
+	public function indexSeries($tag)
+	{
+ 		$tag = urldecode($tag);
+
+		$threads = Thread::getBySeries(ucfirst($tag))
+					->orderBy('created_at', 'ASC')
+					->paginate($this->rpp);
+
+		return view('threads.index', compact('threads', 'tag'));
+	}
+
+	/**
+	 * Display a listing of threads by entity
+	 *
+	 * @return Response
+	 */
+	public function indexRelatedTo($slug)
+	{
+ 		$tag = urldecode($slug);
+
+		$threads = Thread::getByEntity(ucfirst($tag))
+					->orderBy('created_at', 'ASC')
+					->paginate($this->rpp);
+
+		return view('threads.index', compact('threads', 'tag'));
+	}
+
 
     /**
      * Show the form for creating a new resource.
@@ -114,9 +147,10 @@ class ThreadsController extends Controller
 
 		$tags = Tag::orderBy('name','ASC')->lists('name','id')->all();
 		$entities = Entity::orderBy('name','ASC')->lists('name','id')->all();
-		$threads = Event::orderBy('name','ASC')->lists('name','id')->all();
+		$series = Series::orderBy('name','ASC')->lists('name','id')->all();
 
-		return view('threads.create', compact('threadCategories','visibilities','tags','entities','threads'));
+
+		return view('threads.create', compact('threadCategories','visibilities','tags','entities','series'));
     }
 
     /**
@@ -158,6 +192,7 @@ class ThreadsController extends Controller
 
 		$thread->tags()->attach($syncArray);
 		$thread->entities()->attach($request->input('entity_list'));
+		$thread->series()->attach($request->input('series_list'));
 
 		// here, make a call to notify all users who are following any of the sync'd tags
 		//$this->notifyFollowing($thread);
@@ -170,7 +205,22 @@ class ThreadsController extends Controller
 		return redirect()->route('threads.index');
 	}
 
-	protected function unauthorized(EventRequest $request)
+	/**
+	 * Create a conversation slug.
+	 *
+	 * @param  string $title
+	 * @return string
+	 */
+	public function makeSlugFromTitle($title)
+	{
+	    $slug = Str::slug($title);
+
+	    $count = Thread::whereRaw("slug RLIKE '^{$slug}(-[0-9]+)?$'")->count();
+
+	    return $count ? "{$slug}-{$count}" : $slug;
+	}
+
+	protected function unauthorized(ThreadRequest $request)
 	{
 		if($request->ajax())
 		{
@@ -212,10 +262,9 @@ class ThreadsController extends Controller
 		$visibilities = [''=>''] + Visibility::lists('name', 'id')->all();
 		$tags = Tag::orderBy('name','ASC')->lists('name','id')->all();
 		$entities = Entity::orderBy('name','ASC')->lists('name','id')->all();
-		$threads = Entity::orderBy('name','ASC')->lists('name','id')->all();
-		$seriesList = [''=>''] + Series::lists('name', 'id')->all();
+		$series = Series::orderBy('name','ASC')->lists('name','id')->all();
 
-		return view('threads.edit', compact('thread', 'threadCategories', 'visibilities','tags','entities','threads','seriesList'));
+		return view('threads.edit', compact('thread', 'threadCategories', 'visibilities','tags','entities','series'));
     }
 
     /**
@@ -260,6 +309,7 @@ class ThreadsController extends Controller
 
 		$thread->tags()->sync($syncArray);
 		$thread->entities()->sync($request->input('entity_list',[]));
+		$thread->series()->sync($request->input('series_list',[]));
 
 		// add to activity log
 		Activity::log($thread, $this->user, 2);

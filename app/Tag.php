@@ -25,7 +25,16 @@ class Tag extends Eloquent {
 
 	protected $dates = ['created_at','updated_at'];
 
-	
+	/**
+	 * Get the threads that belong to the tag
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function threads()
+	{
+		return $this->belongsToMany('App\Thread')->withTimestamps();
+	}
+
 
 	/**
 	 * Get the events that belong to the tag

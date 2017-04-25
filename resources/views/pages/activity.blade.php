@@ -11,11 +11,14 @@
 
 		@foreach ($activities as $activity)  
 		<li class="list-group-item {{ $activity->style }} ">
-			{{ $activity->id }} {{ $activity->message }}<br>
+			{{ $activity->id }} 
 
-			<small>by {{ $activity->user->name }}</small>
+			{{ $activity->message }}<br>
+
+			<small>by {{ $activity->userName }}</small>
 		 </li>
 		@endforeach
+		{!! $activities->render() !!}
 	@endif
 
 	</ul>

@@ -24,8 +24,10 @@ class EventRequest extends Request {
 	 */
 	public function rules()
 	{
+
 		return [
 			'name' => 'required|min:3',
+			'slug' => 'unique:events'.(isset($this->events) ? ',id,'.$this->events->id : ''),
 			'start_at' => 'required|date',
 			'event_type_id' => 'required',
 			'visibility_id' => 'required'

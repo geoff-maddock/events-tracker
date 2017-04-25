@@ -24,7 +24,7 @@
 	    <thead>
 	      <tr>
 	        <th>
-	          <h3>Topic</h3>
+	          Thread
 	        </th>
 	        <th class="cell-stat hidden-xs hidden-sm">Category</th>
 	        <th class="cell-stat hidden-xs hidden-sm">Users</th>
@@ -35,11 +35,18 @@
 	    </thead>
 	<tbody>	
 	<tr>
-	<td>{!! link_to_route('threads.show', $thread->name, [$thread->id], ['class' => 'thread-name btn']) !!} 
+	<td>{!! link_to_route('threads.show', $thread->name, [$thread->id], ['class' => 'forum-link']) !!} 
 			@if ($signedIn && $thread->ownedBy($user))
 			<a href="{!! route('threads.edit', ['id' => $thread->id]) !!}" title="Edit this thread."><span class='glyphicon glyphicon-pencil'></span></a>
 			@endif
 			<br>
+            @unless ($thread->series->isEmpty())
+            Series:
+                @foreach ($thread->series as $series)
+                    <span class="label label-tag"><a href="/threads/series/{{ urlencode($series->slug) }}">{{ $series->name }}</a></span>
+                @endforeach
+            @endunless
+
 			@unless ($thread->entities->isEmpty())
 			Related:
 				@foreach ($thread->entities as $entity)
@@ -56,14 +63,14 @@
 
 	</td>
     <td>{{ $thread->thread_category or 'General'}}</td>
-    <td class="cell-stat hidden-xs hidden-sm">{{ $thread->user->name }}</td>
+    <td class="cell-stat hidden-xs hidden-sm">{{ $thread->user->name or 'User deleted'}}</td>
     <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->postCount }}</td>
     <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->views }}</td>
     <td>{{ $thread->lastPostAt->diffForHumans() }}</td>
     </tr>
     <tr>
     <td colspan="6">
-    	<div style="padding-left: 20px;">
+    	<div style="padding-left: 5px;">
     		{{ $thread->body }}
     		<br>
     		@if ($signedIn && $thread->ownedBy($user))
@@ -80,15 +87,28 @@
 	</table>
 	</div>
 
-	<div class="col-lg-12">
-	Add new post form here
+	<div class="col-lg-6">
+			@if ($signedIn)
+			Add new post as <strong>{{ $user->name }}</strong>
+			<form method="POST" action="{{ $thread->path().'/posts' }}">
+			{{ csrf_field() }}
+			<div class="form-group">
+				<textarea name="body" id="body" class="form-control" placeholder="Have something to say?" rows="5"></textarea>
+			</div>
+			<button type="submit" class="btn btn-default">Post</button>
+			</form>
+
+			@else
+			<p class="text-center">Please <a href="{{ url('/auth/login')}}">sign in</a> to participate in this discussion.</p>
+			@endif
 	</div>
 	@endif
 	</div>
 @stop
- 
+@section('scripts.footer')
  <script>
     $(".delete").on("submit", function(){
         return confirm("Do you want to delete this item?");
     });
 </script>
+@stop

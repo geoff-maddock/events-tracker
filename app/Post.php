@@ -34,14 +34,17 @@ class Post extends Eloquent {
 	 * @var Array
 	 *
 	 **/
+	/*
 	protected $fillable = [
 	'name', 
 	'slug', 
 	'description',
 	'visibility_id', 
+	'body',
+	'thread_id'
 	];
-
-
+	*/
+	protected $guarded = [];
 	protected $dates = ['created_at','updated_at'];
 
 	// building filter
