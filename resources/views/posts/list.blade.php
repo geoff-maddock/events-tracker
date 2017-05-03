@@ -2,7 +2,7 @@
 
 	@foreach ($posts as $post)
 	<tbody class='thread-post'>
-	<tr>
+	<tr id='post-{{ $post->id }}'>
 		<td colspan='2'>
 		<td>{{ $post->user->name }} 
 			@if ($signedIn && $post->ownedBy($user))

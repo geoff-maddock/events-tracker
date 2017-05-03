@@ -1,14 +1,38 @@
-<?php
-
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
+<?php namespace App\Http\Controllers;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ForumRequest;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Carbon\Carbon;
+
+use DB;
+use Log;
+use Mail;
+use App\Forum;
+use App\Thread;
+use App\Event;
+use App\Entity;
+use App\Series;
+use App\Tag;
+use App\Visibility;
+use App\Activity;
 
 class ForumsController extends Controller
 {
+
+    public function __construct(Forum $forum)
+    {
+        $this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
+        $this->forum = $forum;
+
+        $this->rpp = 15;
+        parent::__construct();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,7 +40,13 @@ class ForumsController extends Controller
      */
     public function index()
     {
-        //
+        $forums = Forum::orderBy('created_at', 'desc')->paginate($this->rpp);
+        $forums->filter(function($e)
+        {
+            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
+
+        return view('forums.index', compact('forums'));
     }
 
     /**

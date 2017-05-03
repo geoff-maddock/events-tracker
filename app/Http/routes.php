@@ -96,6 +96,16 @@ Route::bind('events', function($id)
 
 $router->resource('events','EventsController');
 
+# FORUMS
+Route::bind('forums', function($id)
+{
+	return App\Forum::whereId($id)->first();
+});
+
+Route::get('forums/all', 'ForumsController@indexAll');
+
+$router->resource('forums','ForumsController');
+
 # THREADS
 Route::bind('threads', function($id)
 {
@@ -226,5 +236,5 @@ Route::get('tags/{id}/unfollow', [
 	'uses' => 'TagsController@unfollow'
 	]);
 
-// Add the new route
-get('rss', 'EventsController@rss');
+// Add the route for rss
+Route::get('rss', 'EventsController@rss');

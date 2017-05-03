@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PostRequest;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 use Carbon\Carbon;
@@ -75,13 +76,20 @@ class PostsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Thread $thread)
+    public function store(Post $post, Thread $thread)
     {
+        if (auth()->id() == config('app.superuser'))
+        {
+            $allow_html = 1;
+        } else {
+            $allow_html = 0;
+        }
+
         $thread->addPost([
             'body' => request('body'),
             'created_by' => auth()->id(),
             'visibility_id' => 1,
-            'allow_html' => $thread->allow_html
+            'allow_html' => $allow_html
             ]);
 
         return back();
@@ -93,13 +101,14 @@ class PostsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Thread $thread)
+    public function show(Post $post)
     {
         // call a log for this and prevent it from going out of control
         $post->views++;
         $post->save();
 
-        return view('posts.show', compact('post'));
+        $route = route('threads.show',['id' =>$post->thread_id]).'#post-'.$post->id;
+        return redirect($route);
     }
 
     /**
@@ -115,9 +124,8 @@ class PostsController extends Controller
         $visibilities = [''=>''] + Visibility::lists('name', 'id')->all();
         $tags = Tag::orderBy('name','ASC')->lists('name','id')->all();
         $entities = Entity::orderBy('name','ASC')->lists('name','id')->all();
-        $series = [''=>''] + Series::lists('name', 'id')->all();
 
-        return view('posts.edit', compact('post', 'visibilities', 'tags','entities','series'));
+        return view('posts.edit', compact('post', 'visibilities', 'tags','entities'));
     }
 
     /**
@@ -127,9 +135,49 @@ class PostsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Post $post, PostRequest $request)
     {
-        //
+
+        $msg = '';
+
+        $post->fill($request->input())->save();
+
+        if (!$post->ownedBy($this->user))
+        {
+            $this->unauthorized($request); 
+        };
+
+        $tagArray = $request->input('tag_list',[]);
+        $syncArray = array();
+
+        // check the elements in the tag list, and if any don't match, add the tag
+        foreach ($tagArray as $key => $tag)
+        {
+
+            if (!DB::table('tags')->where('id', $tag)->get())
+            {
+                $newTag = new Tag;
+                $newTag->name = ucwords(strtolower($tag));
+                $newTag->tag_type_id = 1;
+                $newTag->save();
+
+                $syncArray[] = $newTag->id;
+
+                $msg .= ' Added tag '.$tag.'.';
+            } else {
+                $syncArray[$key] = $tag;
+            };
+        }
+
+        $post->tags()->sync($syncArray);
+        $post->entities()->sync($request->input('entity_list',[]));
+
+        // add to activity log
+        Activity::log($post, $this->user, 2);
+
+        flash('Success', 'Your post has been updated');
+
+       return redirect()->route('threads.show',['id' =>$post->thread_id]);
     }
 
     /**
@@ -140,6 +188,15 @@ class PostsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $id = $post->thread_id;
+        // add to activity log
+        Activity::log($post, $this->user, 3);
+
+        $post->delete();
+
+        flash()->success('Success', 'Your post has been deleted!');
+
+
+        return redirect('threads.show',['id' =>$id]);
     }
 }

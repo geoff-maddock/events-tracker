@@ -155,7 +155,7 @@
 				<a href="{!! route('events.comments.edit', ['event' => $event->id, 'id' => $comment->id]) !!}">
 				<span class='glyphicon glyphicon-pencil'></span></a>
 				{!! Form::open(['route' => ['events.comments.destroy', 'event' => $event->id, 'id' => $comment->id], 'method' => 'delete']) !!}
-    			<button type="submit" class="btn btn-danger btn-mini">Delete</button>
+    			<button type="submit" class="btn btn-danger btn-mini delete">Delete</button>
 				{!! Form::close() !!}
 
 				@endif
@@ -199,4 +199,25 @@ $(document).ready(function(){
 	
 })
 </script>
+
+<script type="text/javascript">
+$('button.delete').on('click', function(e){
+  e.preventDefault();
+  var form = $(this).parents('form');
+  swal({   
+    title: "Are you sure?",
+    text: "You will not be able to recover this thread!", 
+    type: "warning",   
+    showCancelButton: true,   
+    confirmButtonColor: "#DD6B55",
+    confirmButtonText: "Yes, delete it!", 
+    closeOnConfirm: true
+  }, 
+   function(isConfirm){
+    console.log('clicked');
+    form.submit();
+  });
+})
+</script>
+
 @stop

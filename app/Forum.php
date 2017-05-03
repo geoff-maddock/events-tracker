@@ -58,62 +58,6 @@ class Forum extends Eloquent {
 		return $filters->apply($query);
 	}
 
-	/**
-	 * Set the soundcheck_at attribute
-	 *
-	 * @param $date
-	 */
-	public function setSoundcheckAtAttribute($date)
-	{
-		if (!empty($date)) {
-			$this->attributes['soundcheck_at'] = Carbon::parse($date);
-		} else {
-			$this->attributes['soundcheck_at'] = NULL;
-		}
-	}
-
-	/**
-	 * Set the start_at attribute
-	 *
-	 * @param $date
-	 */
-	public function setStartAtAttribute($date)
-	{
-		if (!empty($date)) {
-			$this->attributes['start_at'] = Carbon::parse($date);
-		} else {
-			$this->attributes['start_at'] = NULL;
-		}
-	}
-
-	/**
-	 * Set the end_at attribute
-	 *
-	 * @param $date
-	 */
-	public function setEndAtAttribute($date)
-	{
-		if (!empty($date)) {
-			$this->attributes['end_at'] = Carbon::parse($date);
-		} else {
-			$this->attributes['end_at'] = NULL;
-		}
-	}
-
-
-	/**
-	 * Set the door_at attribute
-	 *
-	 * @param $date
-	 */
-	public function setDoorAtAttribute($date)
-	{
-		if (!empty($date)) {
-			$this->attributes['door_at'] = Carbon::parse($date);
-		} else {
-			$this->attributes['door_at'] = NULL;
-		}
-	}
 
 	public function scopeFuture($query)
 	{
@@ -141,21 +85,6 @@ class Forum extends Eloquent {
 
 	}
 
-	/**
-	 * Returns visible events
-	 *
-	 */
-	public function scopeStarting($query, $date)
-	{
-
-		$cdate = Carbon::parse($date);
-		$cdate_yesterday = Carbon::parse($date)->subDay(1);
-		$cdate_tomorrow = Carbon::parse($date)->addDay(1);
-
-		$query->where('start_at','>', $cdate_yesterday->toDateString().' 23:59:59')
-					->where('start_at','<',$cdate_tomorrow->toDateString().' 00:00:00')
-					->orderBy('start_at','ASC');
-	}
 
     /**
      * Get all of the events comments
@@ -195,24 +124,6 @@ class Forum extends Eloquent {
 	public function ownedBy(User $user)
 	{
 		return $this->created_by == $user->id;
-	}
-
-	/**
-	 * An event has one venue
-	 *
-	 */
-	public function venue()
-	{
-		return $this->hasOne('App\Entity','id','venue_id');
-	}
-
-	/**
-	 * An event has one type
-	 *
-	 */
-	public function eventType()
-	{
-		return $this->hasOne('App\EventType','id','event_type_id');
 	}
 
 	/**
@@ -280,48 +191,7 @@ class Forum extends Eloquent {
 		return $this->hasMany('App\EventResponse');
 	}
 
-	/**
-	 * Get the count of users attending this event
-	 *
-	 */
-	public function getAttendingCountAttribute()
-	{
-		$responses = $this->eventResponses()->get();
-		$responses->filter(function($e)
-		{
-			return ($e->responseType->name == 'Attending');
-		});
-
-		return count($responses);
-	}
-
-
-	/**
-	 * Get the length of the event in hours
-	 *
-	 * @ return decimal
-	 */
-	public function getLengthInHoursAttribute()
-	{
-		return $this->start_at->diffInHours($this->end_time, false);
-	}
-
-	/**
-	 * Get the end time of the event
-	 *
-	 * @ return 
-	 */
-	public function getEndTimeAttribute()
-	{
-		if (isset($this->end_at))
-		{
-			return $this->end_at;
-		} else {
-			return  $this->start_at->addDay()->startOfDay();
-		};
-	}
-
-
+	
 	/**
 	 * Get a list of tag ids associated with the event
 	 *
@@ -360,22 +230,6 @@ class Forum extends Eloquent {
 		return $events;
 	}
 
-	/**
-	 * Return a collection of events with the passed venue
-	 * 
-	 * @return Collection $events
-	 * 
-	 **/
-	public static function getByVenue($slug)
-	{
-		// get a list of events that have the passed tag
-		$events = self::whereHas('venue', function($q) use ($slug)
-		{
-			$q->where('slug','=', $slug);
-		});
-
-		return $events;
-	}
 
 	/**
 	 * Return a collection of events with the passed event type
@@ -445,27 +299,7 @@ class Forum extends Eloquent {
 		return $response;
 	}
 
-	/**
-	 * Return a collection of events that begin on the passed date
-	 * 
-	 * @return Collection $events
-	 * 
-	 **/
-	public static function getByStartAt($date)
-	{
-		// get a list of events that start on the passed date
 
-		$cdate = Carbon::parse($date);
-		$cdate_yesterday = Carbon::parse($date)->subDay(1);
-		$cdate_tomorrow = Carbon::parse($date)->addDay(1);
-
-		$events = Event::where('start_at','>', $cdate_yesterday->toDateString())
-					->where('start_at','<',$cdate_tomorrow->toDateString())
-					->orderBy('start_at', 'ASC')
-					->orderBy('name', 'ASC');
-
-		return $events;
-	}
 
 	public function addPhoto(Photo $photo)
 	{
@@ -499,5 +333,25 @@ class Forum extends Eloquent {
 		$primary = $this->photos()->where('photos.is_primary','=','1')->first();
 
 		return $primary;
+	}
+ 
+	// Post model
+	public function threadsCount()
+	{
+	  return $this->hasOne('App\Thread')
+	    ->selectRaw('forum_id, count(*) as aggregate')
+	    ->groupBy('forum_id');
+	}
+	 
+	public function getThreadsCountAttribute()
+	{
+	  // if relation is not loaded already, let's do it first
+	  if ( ! array_key_exists('threadsCount', $this->relations)) 
+	    $this->load('threadsCount');
+	 
+	  $related = $this->getRelation('threadsCount');
+	 
+	  // then return the count directly
+	  return ($related) ? (int) $related->aggregate : 0;
 	}
 }

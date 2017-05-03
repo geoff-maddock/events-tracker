@@ -158,7 +158,10 @@ return [
 		'Illuminate\Translation\TranslationServiceProvider',
 		'Illuminate\Validation\ValidationServiceProvider',
 		'Illuminate\View\ViewServiceProvider',
-		'Illuminate\Html\HtmlServiceProvider', 
+		//'Illuminate\Html\HtmlServiceProvider', 
+
+		# lavelcollective forms
+		Collective\Html\HtmlServiceProvider::class,
 
 		// HTML5 forms
 		//'Braunson\LaravelHTML5Forms\LaravelHTML5FormsServiceProvider',
@@ -230,10 +233,12 @@ return [
 		'URL'       => 'Illuminate\Support\Facades\URL',
 		'Validator' => 'Illuminate\Support\Facades\Validator',
 		'View'      => 'Illuminate\Support\Facades\View',
-		'Form'		=> 'Illuminate\Html\FormFacade',
+		#'Form'		=> 'Illuminate\Html\FormFacade',
 		'Socialize' => 'Laravel\Socialite\Facades\Socialite',
 		'Image'     => 'Intervention\Image\Facades\Image',
 		'Calendar'  => 'MaddHatter\LaravelFullcalendar\Facades\Calendar',
+        'Form' => Collective\Html\FormFacade::class,
+        'Html' => Collective\Html\HtmlFacade::class,
 	],
 
 ];

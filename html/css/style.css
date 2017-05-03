@@ -158,3 +158,8 @@ li.selected:hover {
 	font-size: 15px;
 	background-color: #5bc0de;
 }
+
+#event-repo .deletesmall {
+	font-size: 15px;
+	background-color: #5bc0de;
+}

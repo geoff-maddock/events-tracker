@@ -75,7 +75,7 @@
     		<br>
     		@if ($signedIn && $thread->ownedBy($user))
 				{!! Form::open(['route' => ['threads.destroy', 'id' => $thread->id], 'method' => 'delete','class' => 'delete']) !!}
-    			<button type="submit" class="btn btn-danger btn-mini delete">Delete</button>
+    			<button type="submit" class="btn btn-danger btn-mini">Delete</button>
 				{!! Form::close() !!}
 			@endif
     	</div>
@@ -106,23 +106,9 @@
 	</div>
 @stop
 @section('scripts.footer')
-<script type="text/javascript">
-$('button.delete').on('click', function(e){
-  e.preventDefault();
-  var form = $(this).parents('form');
-  swal({   
-    title: "Are you sure?",
-    text: "You will not be able to recover this thread!", 
-    type: "warning",   
-    showCancelButton: true,   
-    confirmButtonColor: "#DD6B55",
-    confirmButtonText: "Yes, delete it!", 
-    closeOnConfirm: true
-  }, 
-   function(isConfirm){
-    console.log('clicked');
-    form.submit();
-  });
-})
+ <script>
+    $(".delete").on("submit", function(){
+        return confirm("Do you want to delete this item?");
+    });
 </script>
 @stop

@@ -1,25 +1,6 @@
 
 <div class="row">
  
-	<div class="form-group col-md-8 {{$errors->has('name') ? 'has-error' : '' }}">
-	{!! Form::label('name','Name') !!}
-	{!! Form::text('name', null, ['class' =>'form-control']) !!}
-	{!! $errors->first('name','<span class="help-block">:message</span>') !!}
-	</div>
-
-</div>
-
-<div class="row">
- 
-	<div class="form-group col-md-8">
-	{!! Form::label('description','Description') !!}
-	{!! Form::textarea('description', null, ['class' =>'form-control', 'cols' => 2]) !!}
-	{!! $errors->first('description','<span class="help-block">:message</span>') !!}
-	</div>
-</div>
-
-<div class="row">
- 
 	<div class="form-group col-md-8">
 	{!! Form::label('body','Body') !!}
 	{!! Form::textarea('body', null, ['class' =>'form-control']) !!}
@@ -57,7 +38,7 @@
 
 
 <div class="form-group">
-{!! Form::hidden('thread_id', '1', array('id' => 'thread_id')) !!}
+{!! Form::hidden('thread_id', (isset($post) ? $post->thread_id : NULL), array('id' => (isset($post) ? $post->thread_id : NULL))) !!}
 {!! Form::submit(isset($action) && $action == 'update' ? 'Update Post' : 'Add Post', null, ['class' =>'btn btn-primary']) !!}
 </div>
 
@@ -75,12 +56,6 @@
 				placeholder: 'Choose a related artist, producer, dj',
 				tags: false,
 			});
-		$('#series_list').select2(
-			{
-				placeholder: 'Choose a related event series',
-				tags: false,
-			});
-
 
 		function handleError(error) {
 			console.log('Error code:'+error.code);
