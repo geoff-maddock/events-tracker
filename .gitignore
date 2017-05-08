@@ -1,6 +1,7 @@
 /bootstrap/compiled.php
 /config/database.php
 /html/photos
+/html/js/global-config.js
 /node_modules
 /planning
 /vendor

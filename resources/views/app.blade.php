@@ -33,6 +33,7 @@
 	<![endif]-->
 </head>
 <body id="event-repo">
+	<script src="{{ asset('/js/global-config.js') }}"></script>
 	<script src="{{ asset('/js/facebook-sdk.js') }}"></script>
 	@include('partials.nav')
 
@@ -52,6 +53,7 @@
 	<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.1/moment.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.6.0/fullcalendar.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.8.2/js/lightbox.min.js"></script>
+
 
 	<script src="{{ asset('/js/facebook-event.js') }}"></script>
 	<script src="{{ asset('/js/sweetalert-dev.js') }}"></script>
