@@ -47,7 +47,7 @@
 			</ul>
 
 			<ul class="nav navbar-nav navbar-right">
-			    @if ($user && $user->id == Config::get('app.superuser'))
+			    @if (Auth::user() && Auth::user()->id == Config::get('app.superuser'))
 				<li class="dropdown ">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
 					<ul class="dropdown-menu">
