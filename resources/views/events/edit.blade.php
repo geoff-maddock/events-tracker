@@ -34,8 +34,10 @@ $('input.delete').on('click', function(e){
     closeOnConfirm: true
   }, 
    function(isConfirm){
-    console.log('clicked');
-    form.submit();
+    if (isConfirm)
+    {
+      form.submit();
+    };
   });
 })
 </script>
