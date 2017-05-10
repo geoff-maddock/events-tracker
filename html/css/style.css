@@ -174,3 +174,7 @@ li.selected:hover {
 #event-repo .fc-body .fc-day {
 	background-color: #1d2a36;
 }
+
+#event-repo img.avatar {
+	max-width: 32px;
+}

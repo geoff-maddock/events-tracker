@@ -334,7 +334,6 @@ class ThreadsController extends Controller
 
 		flash()->success('Success', 'Your thread has been deleted!');
 
-
 		return redirect('threads');
     }
 }

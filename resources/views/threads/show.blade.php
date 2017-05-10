@@ -37,7 +37,8 @@
 	<tr>
 	<td>{!! link_to_route('threads.show', $thread->name, [$thread->id], ['class' => 'forum-link']) !!} 
 			@if ($signedIn && $thread->ownedBy($user))
-			<a href="{!! route('threads.edit', ['id' => $thread->id]) !!}" title="Edit this thread."><span class='glyphicon glyphicon-pencil'></span></a>
+				<a href="{!! route('threads.edit', ['id' => $thread->id]) !!}" title="Edit this thread."><span class='glyphicon glyphicon-pencil text-primary'></span></a>
+				{!! link_form_icon('glyphicon-trash text-warning', $thread, 'DELETE', 'Delete the [thread]') !!}
 			@endif
 			<br>
             @unless ($thread->series->isEmpty())
@@ -63,7 +64,14 @@
 
 	</td>
     <td>{{ $thread->thread_category or 'General'}}</td>
-    <td class="cell-stat hidden-xs hidden-sm">{{ $thread->user->name or 'User deleted'}}</td>
+    <td class="cell-stat hidden-xs hidden-sm">
+	    @if (isset($thread->user))
+	      @include('users.avatar', ['user' => $thread->user])
+	    {!! link_to_route('users.show', $thread->user->name, [$thread->user->id], ['class' => 'forum-link']) !!} 
+	    @else
+	    User deleted
+    	@endif
+    </td>
     <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->postCount }}</td>
     <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->views }}</td>
     <td>{{ $thread->lastPostAt->diffForHumans() }}</td>
@@ -72,12 +80,6 @@
     <td colspan="6">
     	<div style="padding-left: 5px;">
     		{{ $thread->body }}
-    		<br>
-    		@if ($signedIn && $thread->ownedBy($user))
-				{!! Form::open(['route' => ['threads.destroy', 'id' => $thread->id], 'method' => 'delete','class' => 'delete']) !!}
-    			<button type="submit" class="btn btn-danger btn-mini delete">Delete</button>
-				{!! Form::close() !!}
-			@endif
     	</div>
     </td>
     </tr>
@@ -120,8 +122,9 @@ $('button.delete').on('click', function(e){
     closeOnConfirm: true
   }, 
    function(isConfirm){
-    console.log('clicked');
-    form.submit();
+   	if (isConfirm) {
+    	form.submit();
+   	};
   });
 })
 </script>

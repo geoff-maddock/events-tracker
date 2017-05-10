@@ -34,7 +34,7 @@
 						<h3 class="panel-title">@if ($i == 0) 
 						Today's Events
 						@else
-						{{ $day->format('l') }}
+						{{ $day->format('l M jS Y') }}
 						@endif
 						</h3>
 					</div>

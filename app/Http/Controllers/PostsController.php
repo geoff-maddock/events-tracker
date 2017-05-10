@@ -177,7 +177,7 @@ class PostsController extends Controller
 
         flash('Success', 'Your post has been updated');
 
-       return redirect()->route('threads.show',['id' =>$post->thread_id]);
+       return redirect()->route('threads.show',['id' => $post->thread_id]);
     }
 
     /**
@@ -186,9 +186,11 @@ class PostsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Post $post)
     {
         $id = $post->thread_id;
+        $thread = $post->thread;
+
         // add to activity log
         Activity::log($post, $this->user, 3);
 
@@ -196,7 +198,7 @@ class PostsController extends Controller
 
         flash()->success('Success', 'Your post has been deleted!');
 
+       return redirect()->route('threads.show',['id' => $id]);
 
-        return redirect('threads.show',['id' =>$id]);
     }
 }

@@ -20,7 +20,7 @@
 	<td>{!! link_to_route('threads.show', $thread->name, [$thread->id], ['id' => 'thread-name', 'title' => 'Thread topic.', 'class' => 'forum-link']) !!} 
 			@if ($signedIn && $thread->ownedBy($user))
 			<a href="{!! route('threads.edit', ['id' => $thread->id]) !!}" title="Edit this thread."><span class='glyphicon glyphicon-pencil'></span></a>
-            {!! link_form_icon('glyphicon-trash text-warning', $thread, 'DELETE', 'Delete the thread') !!}
+      {!! link_form_icon('glyphicon-trash text-warning', $thread, 'DELETE', 'Delete the thread') !!}
 			@endif
 			<br>
             @unless ($thread->series->isEmpty())
@@ -52,11 +52,12 @@
     @endif
     </td>
     <td class="cell-stat hidden-xs hidden-sm">
-    @if (isset($thread->user))
-    {!! link_to_route('users.show', $thread->user->name, [$thread->user->id], ['class' => 'forum-link']) !!} 
-    @else
-    User deleted
-    @endif
+      @if (isset($thread->user))
+        @include('users.avatar', ['user' => $thread->user])
+      {!! link_to_route('users.show', $thread->user->name, [$thread->user->id], ['class' => 'forum-link']) !!} 
+      @else
+      User deleted
+      @endif
     </td>
     <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->postCount }}</td>
     <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->views }}</td>
