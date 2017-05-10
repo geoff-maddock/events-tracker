@@ -49,10 +49,12 @@ EOT;
 	function link_form_icon($icon, $path, $type, $title='')
 	{
 		$csrf = csrf_token();
+		$object = "object";
+		$class = strtolower($type);
 
 		if (is_object($path)) {
 
-			$class = get_class_name(get_class($path));
+			$object = get_class_name(get_class($path));
 
 			$action = '/' . $path->getTable(); // photos
 			
@@ -67,7 +69,7 @@ EOT;
 		<form method="POST" action="{$action}" style="display: inline;">
 			<input type='hidden' name='_method' value='{$type}'>
 			<input type="hidden" name="_token" value="{$csrf}">
-			<button type="submit" class="no-button delete" data-type="{$class}"><span class="glyphicon {$icon}" title="{$title}"></span></button>
+			<button type="submit" class="no-button {$class}" data-type="{$object}"><span class="glyphicon {$icon}" title="{$title}"></span></button>
 		</form>
 EOT;
 	}
