@@ -52,6 +52,8 @@ EOT;
 
 		if (is_object($path)) {
 
+			$class = get_class_name(get_class($path));
+
 			$action = '/' . $path->getTable(); // photos
 			
 			if (in_array($type, ['PUT','PATCH','DELETE'])) {
@@ -65,8 +67,14 @@ EOT;
 		<form method="POST" action="{$action}" style="display: inline;">
 			<input type='hidden' name='_method' value='{$type}'>
 			<input type="hidden" name="_token" value="{$csrf}">
-			<button type="submit" class="no-button"><span class="glyphicon {$icon}" title="{$title}"></span></button>
+			<button type="submit" class="no-button delete" data-type="{$class}"><span class="glyphicon {$icon}" title="{$title}"></span></button>
 		</form>
 EOT;
 	}
+
+function get_class_name($classname)
+{
+    if ($pos = strrpos($classname, '\\')) return substr($classname, $pos + 1);
+    return $pos;
+}
 ?>

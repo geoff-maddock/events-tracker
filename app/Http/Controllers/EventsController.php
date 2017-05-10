@@ -48,7 +48,7 @@ class EventsController extends Controller {
 		// get a list of venues
 		$venues = [''=>''] + Entity::getVenues()->lists('name','id')->all();;
 
-		$future_events = Event::future()->simplePaginate($this->rpp);
+		$future_events = Event::future()->paginate($this->rpp);
 		$future_events->filter(function($e)
 		{
 			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
@@ -62,7 +62,7 @@ class EventsController extends Controller {
 			});
 		};
 	*/
-		$past_events = Event::past()->simplePaginate($this->rpp);
+		$past_events = Event::past()->paginate($this->rpp);
 		$past_events->filter(function($e)
 		{
 			return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
@@ -81,14 +81,14 @@ class EventsController extends Controller {
 		// get a list of venues
 		$venues = [''=>''] + Entity::getVenues()->lists('name','id')->all();
 
-		$future_events = Event::future()->simplePaginate(100000);
+		$future_events = Event::future()->paginate(100000);
 		$future_events->filter(function($e)
 		{
 			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
 		});
 
 
-		$past_events = Event::past()->simplePaginate(100000);
+		$past_events = Event::past()->paginate(100000);
 		$past_events->filter(function($e)
 		{
 			return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
@@ -109,7 +109,7 @@ class EventsController extends Controller {
 
 		$this->rpp = 10000;
 
-		$future_events = Event::future()->simplePaginate($this->rpp);
+		$future_events = Event::future()->paginate($this->rpp);
 		$future_events->filter(function($e)
 		{
 			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
@@ -128,9 +128,9 @@ class EventsController extends Controller {
 		// get a list of venues
 		$venues = [''=>''] + Entity::getVenues()->lists('name','id')->all();
 
-		$this->rpp = 10000;
+		$this->rpp = 10;
 		
-		$past_events = Event::past()->simplePaginate($this->rpp);
+		$past_events = Event::past()->paginate($this->rpp);
 		$past_events->filter(function($e)
 		{
 			return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
@@ -220,6 +220,55 @@ class EventsController extends Controller {
 		return back();
 	}
 
+
+	/**
+	 * Display a listing of events by tag
+	 *
+	 * @return Response
+	 */
+	public function calendarTags($tag)
+	{
+ 		$tag = urldecode($tag);
+
+ 		$eventList = array();
+
+		$events = Event::getByTag(ucfirst($tag))
+					->orderBy('start_at', 'ASC')
+					->orderBy('name', 'ASC')
+					->simplePaginate($this->rpp);
+
+		$events->filter(function($e)
+		{
+			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+		});
+
+
+		foreach ($events as $event)
+		{
+			$eventList[] = \Calendar::event(
+			    $event->name, //event title
+			    false, //full day event?
+			    $event->start_at->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
+			    ($event->end_time ? $event->end_time->format('Y-m-d H:i') : NULL), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
+			    $event->id, //optional event ID
+			    [
+			        'url' => 'events/'.$event->id,
+			        //'color' => '#fc0'
+			    ]
+			);
+		};
+
+
+		$calendar = \Calendar::addEvents($eventList) //add an array with addEvents
+		    ->setOptions([ //set fullcalendar options
+		        'firstDay' => 0,
+		        'height' => 840,
+		    ])->setCallbacks([ //set fullcalendar callback options (will not be JSON encoded)
+		        //'viewRender' => 'function() {alert("Callbacks!");}'
+		    ]); 
+		return view('events.calendar', compact('calendar'));
+
+	}
 
 
 	/**

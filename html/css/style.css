@@ -163,3 +163,14 @@ li.selected:hover {
 	font-size: 15px;
 	background-color: #5bc0de;
 }
+
+/** Add styles to fullcalendar **/
+
+#event-repo .fc-head .fc-day-header {
+    color: #fff;
+    background-color: #df691a;
+}
+
+#event-repo .fc-body .fc-day {
+	background-color: #1d2a36;
+}

@@ -20,6 +20,7 @@
 	<td>{!! link_to_route('threads.show', $thread->name, [$thread->id], ['id' => 'thread-name', 'title' => 'Thread topic.', 'class' => 'forum-link']) !!} 
 			@if ($signedIn && $thread->ownedBy($user))
 			<a href="{!! route('threads.edit', ['id' => $thread->id]) !!}" title="Edit this thread."><span class='glyphicon glyphicon-pencil'></span></a>
+            {!! link_form_icon('glyphicon-trash text-warning', $thread, 'DELETE', 'Delete the thread') !!}
 			@endif
 			<br>
             @unless ($thread->series->isEmpty())
@@ -68,3 +69,29 @@
 @else
 	<ul class='thread-list'><li style='clear:both;'><i>No threads listed</i></li></ul> 
 @endif
+
+@section('scripts.footer')
+<script type="text/javascript">
+$('button.delete').on('click', function(e){
+  e.preventDefault();
+  var form = $(this).parents('form');
+  var type = $(this).data('type');
+  swal({   
+    title: "Are you sure?",
+    text: "You will not be able to recover this "+type+"!", 
+    type: "warning",   
+    showCancelButton: true,   
+    confirmButtonColor: "#DD6B55",
+    confirmButtonText: "Yes, delete it!", 
+    closeOnConfirm: true
+  }, 
+   function(isConfirm){
+    if (isConfirm) {
+        form.submit();
+    };
+   // 
+  });
+})
+</script>
+
+@stop

@@ -206,7 +206,7 @@ $('button.delete').on('click', function(e){
   var form = $(this).parents('form');
   swal({   
     title: "Are you sure?",
-    text: "You will not be able to recover this thread!", 
+    text: "You will not be able to recover this!", 
     type: "warning",   
     showCancelButton: true,   
     confirmButtonColor: "#DD6B55",
@@ -214,8 +214,10 @@ $('button.delete').on('click', function(e){
     closeOnConfirm: true
   }, 
    function(isConfirm){
-    console.log('clicked');
-    form.submit();
+   	if (isConfirm) {
+   		form.submit();
+   	};
+   // 
   });
 })
 </script>

@@ -35,6 +35,7 @@ Route::get('about', 'PagesController@about');
 Route::get('help', 'PagesController@help');
 
 Route::get('calendar', 'EventsController@calendar');
+Route::get('calendar/tag/{tag}', 'EventsController@calendarTags');
 
 Route::get('search','PagesController@search');
 
