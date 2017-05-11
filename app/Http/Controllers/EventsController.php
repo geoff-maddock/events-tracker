@@ -235,7 +235,7 @@ class EventsController extends Controller {
 		$events = Event::getByTag(ucfirst($tag))
 					->orderBy('start_at', 'ASC')
 					->orderBy('name', 'ASC')
-					->simplePaginate($this->rpp);
+					->get();
 
 		$events->filter(function($e)
 		{
@@ -258,6 +258,36 @@ class EventsController extends Controller {
 			);
 		};
 
+		// get all the upcoming series events
+		$series = Series::getByTag(ucfirst($tag))->active()->get();
+
+		$series = $series->filter(function($e)
+		{
+			// all public events
+			// all events that you created
+			// all events that you are invited to
+			return ((($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id)) AND $e->occurrenceType->name != 'No Schedule');
+		});
+
+		foreach ($series as $s)
+		{
+			if ($s->nextEvent() == NULL AND $s->nextOccurrenceDate() != NULL)
+			{
+				// add the next instance of each series to the calendar
+				$eventList[] = \Calendar::event(
+				    $s->name, //event title
+				    false, //full day event?
+				    $s->nextOccurrenceDate()->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
+				    ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : NULL), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
+				    $s->id, //optional event ID
+				    [
+				        'url' => 'series/'.$s->id,
+				        'color' => '#99bcdb'
+				    ]
+				);
+			};
+		};
+
 
 		$calendar = \Calendar::addEvents($eventList) //add an array with addEvents
 		    ->setOptions([ //set fullcalendar options
@@ -266,7 +296,7 @@ class EventsController extends Controller {
 		    ])->setCallbacks([ //set fullcalendar callback options (will not be JSON encoded)
 		        //'viewRender' => 'function() {alert("Callbacks!");}'
 		    ]); 
-		return view('events.calendar', compact('calendar'));
+		return view('events.calendar', compact('calendar', 'tag'));
 
 	}
 

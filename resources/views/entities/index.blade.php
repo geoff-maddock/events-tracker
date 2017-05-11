@@ -4,9 +4,9 @@
 
 @section('content')
 
-		<h1>Entities 
+		<h4>Entities 
 				@include('entities.crumbs')
-		</h1>
+		</h4>
 
 		<P><a href="{!! URL::route('entities.create') !!}" class="btn btn-primary">Add an entity</a></P>
 

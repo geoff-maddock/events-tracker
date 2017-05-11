@@ -4,6 +4,9 @@
 
 @section('content')
 
+	<h4>Events Calendar
+		@include('events.crumbs')
+	</h4>
 
 @stop
 

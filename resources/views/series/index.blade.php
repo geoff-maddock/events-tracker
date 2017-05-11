@@ -2,7 +2,7 @@
 
 @section('content')
 
-	<h1>Event Series</h1>
+	<h4>Event Series</h4>
 
 	<p><a href="{!! URL::route('series.create') !!}" class="btn btn-primary">Add an event series</a></p>
 

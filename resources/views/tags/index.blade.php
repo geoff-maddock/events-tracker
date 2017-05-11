@@ -4,9 +4,9 @@
 
 @section('content')
 
-	<h1>Tags
+	<h4>Tags
 		@include('tags.crumbs')
-	</h1>
+	</h4>
 
 	<p>
 	<a href="{{ url('/events/all') }}" class="btn btn-info">Show all events</a>
