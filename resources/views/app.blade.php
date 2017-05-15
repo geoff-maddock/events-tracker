@@ -8,7 +8,7 @@
 	<meta property="og:title" content="@yield('title')">
 	<meta property="og:description" content="A guide and calander of events, weekly and  monthly series, promoters, artists, producers, djs, venues and other entities.">
 	<meta property="fb:app_id" content="{{ config('app.fb_app_id') }}">
-	<title>Event Repo - Club Guide - @yield('title')</title>
+	<title>{{ config('app.app_name')}} - Event + Club Guide - @yield('title')</title>
   	<link rel="alternate" type="application/rss+xml" href="{{ url('rss') }}"
     	    title="RSS Feed {{ config('blog.title') }}">
 
