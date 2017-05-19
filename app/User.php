@@ -261,4 +261,10 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 		return $this->photos()->attach($photo->id);;
 	}
 
+
+	public function groups()
+	{
+		return $this->belongsToMany(Role::class);
+	}
+
 }

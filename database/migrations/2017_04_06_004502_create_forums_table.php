@@ -12,7 +12,7 @@ class CreateForumsTable extends Migration
      */
     public function up()
     {
-        
+        /*
         Schema::create('forums', function(Blueprint $table)
         {
             $table->increments('id');
@@ -90,46 +90,31 @@ class CreateForumsTable extends Migration
 
         Schema::create('event_thread', function(Blueprint $table)
         {
-            $table->integer('event_id')->unsigned()->nullable()->index();
-            $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
-            $table->integer('thread_id')->unsigned()->nullable()->index();
-            $table->foreign('thread_id')->references('id')->on('threads')->onDelete('cascade');
+            $table->integer('event_id')->unsigned()->index();
+#            $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
+            $table->integer('thread_id')->unsigned()->index();
+#            $table->foreign('thread_id')->references('id')->on('threads')->onDelete('cascade');
             $table->timestamps();
         });
+*/
 
-        Schema::create('entity_thread', function(Blueprint $table)
-        {
-            $table->integer('entity_id')->unsigned()->nullable()->index();
-            $table->foreign('entity_id')->references('id')->on('entities')->onDelete('cascade');
-            $table->integer('thread_id')->unsigned()->nullable()->index();
-            $table->foreign('thread_id')->references('id')->on('threads')->onDelete('cascade');
-            $table->timestamps();
-        });
 
-        Schema::create('series_thread', function(Blueprint $table)
-        {
-            $table->integer('series_id')->unsigned()->nullable()->index();
-            $table->foreign('series_id')->references('id')->on('tags')->onDelete('cascade');
-            $table->integer('thread_id')->unsigned()->nullable()->index();
-            $table->foreign('thread_id')->references('id')->on('threads')->onDelete('cascade');
-            $table->timestamps();
-        });
 
         Schema::create('tag_thread', function(Blueprint $table)
         {
-            $table->integer('tag_id')->unsigned()->nullable()->index();
-            $table->foreign('tag_id')->references('id')->on('tags')->onDelete('cascade');
-            $table->integer('thread_id')->unsigned()->nullable()->index();
-            $table->foreign('thread_id')->references('id')->on('threads')->onDelete('cascade');
+            $table->integer('tag_id')->unsigned()->index();
+#            $table->foreign('tag_id')->references('id')->on('tags')->onDelete('cascade');
+            $table->integer('thread_id')->unsigned()->index();
+#            $table->foreign('thread_id')->references('id')->on('threads')->onDelete('cascade');
             $table->timestamps();
         });
 
         Schema::create('post_tag', function(Blueprint $table)
         {
-            $table->integer('tag_id')->unsigned()->nullable()->index();
-            $table->foreign('tag_id')->references('id')->on('tags')->onDelete('cascade');
-            $table->integer('post_id')->unsigned()->nullable()->index();
-            $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');
+            $table->integer('tag_id')->unsigned()->index();
+#            $table->foreign('tag_id')->references('id')->on('tags')->onDelete('cascade');
+            $table->integer('post_id')->unsigned()->index();
+#            $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');
             $table->timestamps();
         });
 
