@@ -264,7 +264,22 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
 	public function groups()
 	{
-		return $this->belongsToMany(Role::class);
+		return $this->belongsToMany(Group::class);
 	}
 
+	public function hasGroup($group)
+	{
+		if (is_string($group)) {
+			return $this->groups->contains('name', $group);
+		}
+
+		return !! $group->intersect($this->groups)->count();
+	}
+
+	public function assignGroup($group)
+	{
+		$this->groups()->save(
+			Group::whereNAme($group)->firstOrFail()
+		);
+	}
 }

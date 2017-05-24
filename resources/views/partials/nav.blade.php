@@ -47,16 +47,19 @@
 			</ul>
 
 			<ul class="nav navbar-nav navbar-right">
-			    @if (Auth::user() && Auth::user()->id == Config::get('app.superuser'))
+				@can('show admin')
 				<li class="dropdown ">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
 					<ul class="dropdown-menu">
 						<li><a href="{{ url('/forums')}}">Forum</a></li> 
 						<li><a href="{{ url('/threads')}}">Threads</a></li> 
+
+						@can('show activity')
 						<li><a href="{{ url('/activity')}}">Activity</a></li> 
+						@endcan
 					</ul>
 				</li>
-				@endif
+				@endcan
 				<li><a href="mailto:{{ config('app.feedback') }}" title="Send email to {{ config('app.feedback') }}">Feedback</a></li>
 				<li><a href="{{ url('/help') }}">Help</a></li>
 				@if (Auth::guest())
