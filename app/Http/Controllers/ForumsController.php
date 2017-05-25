@@ -76,9 +76,18 @@ class ForumsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Forum $forum)
     {
-        //
+        $threads = Thread::where('forum_id', $forum->id)->orderBy('created_at', 'desc')->paginate(1000000);
+        $threads->filter(function($e)
+        {
+            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
+
+        // pass a slug for the forum
+        $slug = $forum->description;
+        
+        return view('threads.index', compact('threads','slug'));
     }
 
     /**

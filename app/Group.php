@@ -1,11 +1,12 @@
-<?php
-
-namespace App;
+<?php namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
 class Group extends Model
 {
+
+    protected $fillable = ['name','label','description','level'];
+    
 	public function permissions()
 	{
 		return $this->belongsToMany(Permission::class);
@@ -15,4 +16,13 @@ class Group extends Model
 	{
 		return $this->permissions()->save($permission);
 	}
+
+
+	public function assignPermission($permission)
+	{
+		return $this->permissions()->save(
+			Permission::whereName($permission)->firstOrFail()
+		);
+	}
+	
 }

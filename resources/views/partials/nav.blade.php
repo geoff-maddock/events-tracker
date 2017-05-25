@@ -47,14 +47,14 @@
 			</ul>
 
 			<ul class="nav navbar-nav navbar-right">
-				@can('show admin')
+				@can('show_admin')
 				<li class="dropdown ">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
 					<ul class="dropdown-menu">
 						<li><a href="{{ url('/forums')}}">Forum</a></li> 
 						<li><a href="{{ url('/threads')}}">Threads</a></li> 
 
-						@can('show activity')
+						@can('show_activity')
 						<li><a href="{{ url('/activity')}}">Activity</a></li> 
 						@endcan
 					</ul>

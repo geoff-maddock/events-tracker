@@ -142,6 +142,16 @@ class Thread extends Eloquent {
 	}
 
 	/**
+	 * An thread is owned by one forum
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function forum()
+	{
+		return $this->belongsTo('App\Forum','forum_id');
+	}
+
+	/**
 	 * An thread is created by one user
 	 *
 	 * @ param User $user

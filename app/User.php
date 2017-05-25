@@ -278,8 +278,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
 	public function assignGroup($group)
 	{
-		$this->groups()->save(
-			Group::whereNAme($group)->firstOrFail()
+		return $this->groups()->save(
+			Group::whereName($group)->firstOrFail()
 		);
 	}
 }

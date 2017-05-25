@@ -126,14 +126,6 @@ class Forum extends Eloquent {
 		return $this->created_by == $user->id;
 	}
 
-	/**
-	 * An event has one status
-	 *
-	 */
-	public function eventStatus()
-	{
-		return $this->hasOne('App\EventStatus','id','event_status_id');
-	}
 
     /**
      * Get all of the events photos
@@ -180,15 +172,6 @@ class Forum extends Eloquent {
 	public function entities()
 	{
 		return $this->belongsToMany('App\Entity')->withTimestamps();
-	}
-
-	/**
-	 * A user can have many event responses
-	 *
-	 */
-	public function eventResponses()
-	{
-		return $this->hasMany('App\EventResponse');
 	}
 
 	
@@ -282,22 +265,6 @@ class Forum extends Eloquent {
 		return $events;
 	}
 
-	/**
-	 * Returns the response status for the passed user
-	 * 
-	 * @return Collection $events
-	 * 
-	 **/
-	public function getEventResponse($user)
-	{
-		$event = $this;
-		$response = EventResponse::where('event_id','=', $event->id)
-		->where('user_id','=',$user->id)->first();
-		// get a list of events that have the passed entity
-	
-
-		return $response;
-	}
 
 
 
@@ -306,19 +273,14 @@ class Forum extends Eloquent {
 		return $this->photos()->attach($photo->id);;
 	}
 
-
 	/**
-	 * Return the flyer for this event
-	 * 
-	 * @return Photo $photo
-	 * 
-	 **/
-	public function getFlyer()
+	 * The threads that belong to the forum
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function threads()
 	{
-		// get a list of events that start on the passed date
-		$flyer = $this->photos()->first();
-
-		return $flyer;
+		return $this->hasMany('App\Thread');
 	}
 
 	/**
