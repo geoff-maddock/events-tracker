@@ -13,7 +13,7 @@
  
 	<div class="form-group col-md-8">
 	{!! Form::label('description','Description') !!}
-	{!! Form::textarea('description', null, ['class' =>'form-control', 'cols' => 2]) !!}
+	{!! Form::textarea('description', null, ['class' =>'form-control', 'cols' => 40, 'rows' => 2]) !!}
 	{!! $errors->first('description','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
