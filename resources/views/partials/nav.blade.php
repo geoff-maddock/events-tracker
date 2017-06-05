@@ -53,6 +53,8 @@
 					<ul class="dropdown-menu">
 						<li><a href="{{ url('/forums')}}">Forum</a></li> 
 						<li><a href="{{ url('/threads')}}">Threads</a></li> 
+						<li><a href="{{ url('/permissions')}}">Permissions</a></li> 
+						<li><a href="{{ url('/groups')}}">Groups</a></li> 
 
 						@can('show_activity')
 						<li><a href="{{ url('/activity')}}">Activity</a></li> 

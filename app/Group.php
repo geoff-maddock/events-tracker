@@ -12,6 +12,11 @@ class Group extends Model
 		return $this->belongsToMany(Permission::class);
 	}
 
+	public function users()
+	{
+		return $this->belongsToMany(User::class);
+	}
+
 	public function givePermissionTo(Permission $permission)
 	{
 		return $this->permissions()->save($permission);
@@ -24,5 +29,24 @@ class Group extends Model
 			Permission::whereName($permission)->firstOrFail()
 		);
 	}
-	
+
+	/**
+	 * Get a list of user ids associated with the group
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function getUserListAttribute()
+	{
+		return $this->users->lists('id')->all();
+	}
+
+	/**
+	 * Get a list of permission ids associated with the group
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function getPermissionListAttribute()
+	{
+		return $this->permissions->lists('id')->all();
+	}
 }

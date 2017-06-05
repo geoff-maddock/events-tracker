@@ -132,6 +132,28 @@ Route::bind('posts', function($id)
 
 $router->resource('posts','PostsController');
 
+# PERMISSIONS
+Route::get('permissions/all', 'PermissionssController@indexAll');
+
+Route::bind('permissions', function($id)
+{
+	return App\Permission::whereId($id)->first();
+});
+
+$router->resource('permissions','PermissionsController');
+
+
+# GROUPS
+Route::get('groups/all', 'GroupsController@indexAll');
+
+Route::bind('groups', function($id)
+{
+	return App\Group::whereId($id)->first();
+});
+
+$router->resource('groups','GroupsController');
+
+
 # ENTITIES
 Route::post('entities/{id}/photos', 'EntitiesController@addPhoto');
 
