@@ -1,20 +1,20 @@
 @extends('app')
 
-@section('title','Thread Edit')
+@section('title','Forum Edit')
 
 @section('content')
 
-<h1>Thread . EDIT 
-	@include('threads.crumbs', ['slug' => $thread->slug ? $thread->slug : $thread->id])
+<h1>Forum . EDIT 
+	@include('forums.crumbs', ['slug' => $forum->slug ? $forum->slug : $forum->id])
 </h1>
 
-	{!! Form::model($thread, ['route' => ['threads.update', $thread->id], 'method' => 'PATCH']) !!}
+	{!! Form::model($forum, ['route' => ['forums.update', $forum->id], 'method' => 'PATCH']) !!}
 
-		@include('threads.form', ['action' => 'update'])
+		@include('forums.form', ['action' => 'update'])
 
 	{!! Form::close() !!}
 
-	<P>{!! delete_form(['threads.destroy', $thread->id]) !!}</P>
+	<P>{!! delete_form(['forums.destroy', $forum->id]) !!}</P>
 
-	<P><a href="{!! URL::route('threads.index') !!}" class="btn btn-info">Return to list</a></P>
+	<P><a href="{!! URL::route('forums.index') !!}" class="btn btn-info">Return to list</a></P>
 @stop

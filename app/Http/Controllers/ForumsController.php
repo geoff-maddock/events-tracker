@@ -56,7 +56,10 @@ class ForumsController extends Controller
      */
     public function create()
     {
-        //
+        $visibilities = [''=>''] + Visibility::orderBy('name','ASC')->lists('name', 'id')->all();
+
+
+        return view('forums.create', compact('visibilities'));
     }
 
     /**
@@ -65,9 +68,21 @@ class ForumsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ForumRequest $request, Forum $forum)
     {
-        //
+        $msg = '';
+
+        // get the request
+        $input = $request->all();
+
+        $forum = $forum->create($input);
+
+        // add to activity log
+        Activity::log($forum, $this->user, 1);
+
+        flash()->success('Success', 'Your forum has been created');
+
+        return redirect()->route('forums.index');
     }
 
     /**
@@ -96,9 +111,13 @@ class ForumsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Forum $forum)
     {
-        //
+        $this->middleware('auth');
+
+        $visibilities = [''=>''] + Visibility::lists('name', 'id')->all();
+
+        return view('forums.edit', compact('forum', 'visibilities'));
     }
 
     /**
@@ -108,9 +127,23 @@ class ForumsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ForumRequest $request, Forum $forum)
     {
-        //
+        $msg = '';
+
+        $forum->fill($request->input())->save();
+
+        if (!$forum->ownedBy($this->user))
+        {
+            $this->unauthorized($request); 
+        };
+
+              // add to activity log
+        Activity::log($forum, $this->user, 2);
+
+        flash('Success', 'Your forum has been updated');
+
+        return redirect('forums');
     }
 
     /**
@@ -119,8 +152,15 @@ class ForumsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Forum $forum)
     {
-        //
+        // add to activity log
+        Activity::log($forum, $this->user, 3);
+
+        $forum->delete();
+
+        flash()->success('Success', 'Your forum has been deleted!');
+
+        return redirect('forums');
     }
 }

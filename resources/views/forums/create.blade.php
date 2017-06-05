@@ -1,16 +1,16 @@
 @extends('app')
 
-@section('title', 'Thread Add')
+@section('title', 'Forum Add')
 
 @section('content')
 
-	<h1>Add a New Thread</h1>
+	<h1>Add a New Forum</h1>
 
-	{!! Form::open(['route' => 'threads.store']) !!}
+	{!! Form::open(['route' => 'forums.store']) !!}
 
-		@include('threads.form')
+		@include('forums.form')
 
 	{!! Form::close() !!}
 
-	{!! link_to_route('threads.index', 'Return to list') !!}
+	{!! link_to_route('forums.index', 'Return to list') !!}
 @stop
