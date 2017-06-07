@@ -84,6 +84,57 @@ class ThreadsTest extends TestCase
         $this->get($this->thread->path());
     }
 
+    /** @test */
+    function an_authenticated_user_can_create_new_forum_threads()
+    {
+        $this->signIn();
 
+        $thread = make('App\Thread');
+
+        $response = $this->post('/threads', $thread->toArray());
+
+        $this->get($response->headers->get('Location'))
+            ->assertSee($thread->name)
+            ->assertSee($thread->body);
+
+    }
+
+    /** @test */
+    function a_thread_requires_a_name()
+    {
+        $this->publishThread('name' => null])
+            ->assertSessionHasErrors('name');
+
+    }
+
+    /** @test */
+    function a_thread_requires_a_body()
+    {
+        $this->publishThread('body' => null])
+            ->assertSessionHasErrors('body');
+
+    }
+
+    /** @test */
+    function a_thread_requires_a_valid_forum()
+    {
+        factory('App\Forum', 2)->create();
+
+        $this->publishThread('forum_id' => null])
+            ->assertSessionHasErrors('forum_id');
+
+        $this->publishThread('forum_id' => 99999999])
+            ->assertSessionHasErrors('forum_id');
+
+    }
+
+    public function publishThread($overrides = [])
+    {
+        $this->withExceptionHandling()->signIn()
+
+        $thread = make('App\Thread', $overrides);
+
+        $this->post('/threads', $thread->toArray())
+    }
 
 }

@@ -83,6 +83,26 @@ class TagsController extends Controller {
 		return view('tags.index', compact('series','entities','events', 'tag', 'tags'));
 	}
 
+    /**
+     * Show the application dataAjax.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function dataAjax(Request $request)
+    {
+    	$data = [];
+
+        if($request->has('q')){
+            $search = $request->q;
+            $data = DB::table("tags")
+            		->select("id","name")
+            		->where('name','LIKE',"%$search%")
+            		->get();
+        }
+
+        return response()->json($data);
+    }
+
 	/**
 	 * Display a listing of events by tag
 	 *

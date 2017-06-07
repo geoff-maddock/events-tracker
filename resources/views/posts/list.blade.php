@@ -74,5 +74,4 @@ $('button.delete').on('click', function(e){
   });
 })
 </script>
-
 @stop
