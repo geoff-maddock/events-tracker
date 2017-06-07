@@ -59,7 +59,7 @@ Route::post('photos/{id}/unsetPrimary', 'PhotosController@unsetPrimary');
 
 # EVENTS
 Route::get('events/all', 'EventsController@indexAll');
-Route::get('events/future', 'EventsController@indexFuture');
+Route::get('events/future', 'EventsController@indexFuture')->name('events.future');
 Route::get('events/past', 'EventsController@indexPast');
 Route::get('events/week', 'EventsController@indexWeek');
 Route::get('events/starting/{date}', 'EventsController@indexStarting');
@@ -133,7 +133,7 @@ Route::bind('posts', function($id)
 $router->resource('posts','PostsController');
 
 # PERMISSIONS
-Route::get('permissions/all', 'PermissionssController@indexAll');
+Route::get('permissions/all', 'PermissionsController@indexAll');
 
 Route::bind('permissions', function($id)
 {

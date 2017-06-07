@@ -10,6 +10,7 @@
 	<P>
 	<a href="{{ url('/events/all') }}" class="btn btn-info">Show all events</a>
 	<a href="{!! URL::route('events.index') !!}" class="btn btn-info">Show paginated events</a>
+	<a href="{!! URL::route('events.future') !!}" class="btn btn-info">Show future events</a>
 	<a href="{!! URL::route('series.index') !!}" class="btn btn-info">Show event series</a> 
 	<a href="{!! URL::route('events.create') !!}" class="btn btn-primary">Add an event</a> 
 	<a href="{!! URL::route('series.create') !!}" class="btn btn-primary">Add an event series</a>

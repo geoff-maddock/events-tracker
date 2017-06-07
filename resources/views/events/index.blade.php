@@ -50,7 +50,7 @@
 
 				<div class="panel-body">
 				@include('events.list', ['events' => $past_events])
-				{!! $past_events->render() !!}
+				{!! $past_events->appends(['sort_by' => $sortBy, 'rpp' => $rpp])->render() !!}
 				</div>
 
 			</div>
@@ -70,7 +70,7 @@
 
 				<div class="panel-body">
 				@include('events.list', ['events' => $future_events])
-				{!! $future_events->render() !!}
+				{!! $future_events->appends(['sort_by' => $sortBy, 'rpp' => $rpp])->render() !!}
 				</div>
 
 			</div>
@@ -79,5 +79,12 @@
 	@endif
 	</div>
 
+		<ul class="pagination">
+			<li class="disabled"><span class="label label-info">RPP</span></li>
+			<li @if ($rpp == 5) class="active" @endif >{!! link_to_route('events.index', '5', ['rpp' => 5], ['class' => 'item-title']) !!}</li>
+			<li @if ($rpp == 10) class="active" @endif >{!! link_to_route('events.index', '10', ['rpp' => 10], ['class' => 'item-title']) !!}</li>
+			<li @if ($rpp == 25) class="active" @endif >{!! link_to_route('events.index', '25', ['rpp' => 25], ['class' => 'item-title']) !!}</li>
+			<li @if ($rpp == 100) class="active" @endif >{!! link_to_route('events.index', '100', ['rpp' => 100], ['class' => 'item-title']) !!}</li>
+		</ul>
 @stop
  

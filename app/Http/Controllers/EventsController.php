@@ -34,16 +34,44 @@ class EventsController extends Controller {
 		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
 		$this->event = $event;
 
+		// default list variables
 		$this->rpp = 5;
+		$this->sortBy = 'created_at';
+		$this->sortDirection = 'desc';
 		parent::__construct();
 	}
+
+	/**
+	 * Update the page list parameters from the request
+	 *
+	 */
+	protected function updatePaging($request)
+	{
+ 		// set sort by column
+ 		if ($request->input('sort_by')) {
+ 			$this->sortBy = $request->input('sort_by');
+ 		};
+
+		// set sort direction
+ 		if ($request->input('sort_direction')) {
+ 			$this->sortDirection = $request->input('sort_direction');
+ 		};
+
+ 		// set results per page
+ 		if ($request->input('rpp')) {
+ 			$this->rpp = $request->input('rpp');
+ 		};
+	}
+
 	/**
  	 * Display a listing of the resource.
  	 *
  	 * @return Response
  	 */
-	public function index()
+	public function index(Request $request)
 	{
+ 		// updates sort, rpp from request
+ 		$this->updatePaging($request);
 
 		// get a list of venues
 		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();;
@@ -54,21 +82,17 @@ class EventsController extends Controller {
 			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
 		});
 
-		// ages filter
-	/*	if ($request->has('ages'))
-		{
-			$future_events->filter(function($e) {
-				return ($e->min_age == $request->ages);
-			});
-		};
-	*/
+
 		$past_events = Event::past()->paginate($this->rpp);
 		$past_events->filter(function($e)
 		{
 			return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
 		});
 
-		return view('events.index', compact('future_events','past_events'));
+		return view('events.index') 
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        	->with(compact('future_events'))
+        	->with(compact('past_events'));
 	}
 
 	/**
@@ -76,8 +100,11 @@ class EventsController extends Controller {
  	 *
  	 * @return Response
  	 */
-	public function indexAll()
+	public function indexAll(Request $request)
 	{
+ 		// updates sort, rpp from request
+ 		$this->updatePaging($request);
+
 		// get a list of venues
 		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
 
@@ -94,7 +121,10 @@ class EventsController extends Controller {
 			return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
 		});
 
-		return view('events.index', compact('future_events','past_events'));
+		return view('events.index')
+		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        	->with(compact('future_events')) 
+        	->with(compact('past_events'));
 	}
 
 	/**
@@ -102,8 +132,11 @@ class EventsController extends Controller {
  	 *
  	 * @return Response
  	 */
-	public function indexFuture()
+	public function indexFuture(Request $request)
 	{
+ 		// updates sort, rpp from request
+ 		$this->updatePaging($request);
+
 		// get a list of venues
 		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
 
@@ -115,7 +148,9 @@ class EventsController extends Controller {
 			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
 		});
 
-		return view('events.index', compact('future_events'));
+		return view('events.index')
+		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        	->with(compact('future_events'));
 	}
 
 	/**
@@ -123,8 +158,11 @@ class EventsController extends Controller {
  	 *
  	 * @return Response
  	 */
-	public function indexPast()
+	public function indexPast(Request $request)
 	{
+ 		// updates sort, rpp from request
+ 		$this->updatePaging($request);
+ 		
 		// get a list of venues
 		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
 
@@ -136,7 +174,9 @@ class EventsController extends Controller {
 			return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
 		});
 
-		return view('events.index', compact('past_events'));
+		return view('events.index')
+		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        	->with(compact('past_events'));
 	}
 
 	/**
