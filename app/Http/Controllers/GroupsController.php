@@ -163,8 +163,8 @@ class GroupsController extends Controller {
 	public function create()
 	{
 
-		$permissions = Permission::orderBy('name')->lists('name','id')->all();
-		$users = User::orderBy('name')->lists('name','id')->all();
+		$permissions = Permission::orderBy('name')->pluck('name','id')->all();
+		$users = User::orderBy('name')->pluck('name','id')->all();
 
 		return view('groups.create', compact('permissions','users'));
 	}
@@ -212,8 +212,8 @@ class GroupsController extends Controller {
 	{
 		$this->middleware('auth');
 
-		$permissions = Permission::orderBy('name')->lists('name','id')->all();
-		$users = User::orderBy('name')->lists('name','id')->all();
+		$permissions = Permission::orderBy('name')->pluck('name','id')->all();
+		$users = User::orderBy('name')->pluck('name','id')->all();
 
 		return view('groups.edit', compact('group','permissions','users'));
 	}

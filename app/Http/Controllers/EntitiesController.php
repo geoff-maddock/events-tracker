@@ -205,11 +205,11 @@ class EntitiesController extends Controller {
 	 */
 	public function create()
 	{
-		$entityTypes = EntityType::orderBy('name','ASC')->lists('name', 'id')->all();
-		$entityStatuses = EntityStatus::orderBy('name','ASC')->lists('name', 'id')->all();
+		$entityTypes = EntityType::orderBy('name','ASC')->pluck('name', 'id')->all();
+		$entityStatuses = EntityStatus::orderBy('name','ASC')->pluck('name', 'id')->all();
 
-		$tags = Tag::orderBy('name','ASC')->lists('name','id')->all();
-		$roles = Role::orderBy('name','ASC')->lists('name','id')->all();
+		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
+		$roles = Role::orderBy('name','ASC')->pluck('name','id')->all();
 
 		return view('entities.create',compact('entityTypes','entityStatuses','tags','roles'));
 	}
@@ -279,11 +279,11 @@ class EntitiesController extends Controller {
 	{
 		$this->middleware('auth');
 
-		$entityTypes =  EntityType::orderBy('name','ASC')->lists('name', 'id')->all();
-		$entityStatuses = EntityStatus::orderBy('name','ASC')->lists('name', 'id')->all();
+		$entityTypes =  EntityType::orderBy('name','ASC')->pluck('name', 'id')->all();
+		$entityStatuses = EntityStatus::orderBy('name','ASC')->pluck('name', 'id')->all();
 
-		$tags = Tag::orderBy('name')->lists('name','id')->all();
-		$roles = Role::orderBy('name')->lists('name','id')->all();
+		$tags = Tag::orderBy('name')->pluck('name','id')->all();
+		$roles = Role::orderBy('name')->pluck('name','id')->all();
 
 		return view('entities.edit', compact('entity','entityTypes', 'entityStatuses','tags','roles'));
 	}

@@ -47,7 +47,7 @@ class LinksController extends Controller {
 	public function create(Entity $entity)
 	{
 
-		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->lists('name', 'id')->all();
+		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
 
 		return view('links.create', compact('entity','visibilities'));
 	}
@@ -100,7 +100,7 @@ class LinksController extends Controller {
 	 */
 	public function edit(Entity $entity, Link $link)
 	{
-		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->lists('name', 'id')->all();
+		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
 
 		return view('links.edit', compact('entity', 'link', 'visibilities' ));
 	}

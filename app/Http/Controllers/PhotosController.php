@@ -43,8 +43,8 @@ class PhotosController extends Controller {
 	public function create()
 	{
 
-		$tags = Tag::lists('name','id');
-		$entities = Entity::lists('name','id');
+		$tags = Tag::pluck('name','id');
+		$entities = Entity::pluck('name','id');
 
 		return view('photos.create', compact('venues','photoTypes','visibilities','tags','entities'));
 	}
@@ -74,11 +74,11 @@ class PhotosController extends Controller {
 		$this->middleware('auth');
 
 		$type = EntityType::where('name', 'Venue')->first();
-		$venues = [''=>''] + DB::table('entities')->where('entity_type_id', $type->id)->orderBy('name', 'ASC')->lists('name','id');
-		$photoTypes = [''=>''] + PhotoType::lists('name', 'id');
-		$visibilities = [''=>''] + Visibility::lists('name', 'id');
-		$tags = Tag::orderBy('name','ASC')->lists('name','id');
-		$entities = Entity::orderBy('name','ASC')->lists('name','id');
+		$venues = [''=>''] + DB::table('entities')->where('entity_type_id', $type->id)->orderBy('name', 'ASC')->pluck('name','id');
+		$photoTypes = [''=>''] + PhotoType::pluck('name', 'id');
+		$visibilities = [''=>''] + Visibility::pluck('name', 'id');
+		$tags = Tag::orderBy('name','ASC')->pluck('name','id');
+		$entities = Entity::orderBy('name','ASC')->pluck('name','id');
 
 		return view('photos.edit', compact('photo', 'venues', 'photoTypes', 'visibilities','tags','entities'));
 	}

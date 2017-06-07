@@ -46,7 +46,7 @@ class LocationsController extends Controller {
 	 */
 	public function create(Entity $entity)
 	{
-		$locationTypes = [''=>''] + LocationType::orderBy('name','ASC')->lists('name', 'id')->all(); 
+		$locationTypes = [''=>''] + LocationType::orderBy('name','ASC')->pluck('name', 'id')->all(); 
 
 		return view('locations.create', compact('entity', 'locationTypes'));
 	}
@@ -96,7 +96,7 @@ class LocationsController extends Controller {
 	 */
 	public function edit(Entity $entity, Location $location)
 	{
-		$locationTypes = [''=>''] + LocationType::orderBy('name','ASC')->lists('name', 'id')->all(); 
+		$locationTypes = [''=>''] + LocationType::orderBy('name','ASC')->pluck('name', 'id')->all(); 
 
 		return view('locations.edit', compact('entity', 'location', 'locationTypes'));
 	}

@@ -245,7 +245,7 @@ class Entity extends Eloquent {
 	 */
 	public function getTagListAttribute()
 	{
-		return $this->tags->lists('id')->all();
+		return $this->tags->pluck('id')->all();
 	}
 
 
@@ -256,7 +256,7 @@ class Entity extends Eloquent {
 	 */
 	public function getRoleListAttribute()
 	{
-		return $this->roles->lists('id')->all();
+		return $this->roles->pluck('id')->all();
 	}
 
 

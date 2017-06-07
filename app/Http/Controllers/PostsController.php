@@ -60,11 +60,11 @@ class PostsController extends Controller
      */
     public function create()
     {
-        $visibilities = [''=>''] + Visibility::orderBy('name','ASC')->lists('name', 'id')->all();
+        $visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
 
-        $tags = Tag::orderBy('name','ASC')->lists('name','id')->all();
-        $entities = Entity::orderBy('name','ASC')->lists('name','id')->all();
-        $series = Series::orderBy('name','ASC')->lists('name','id')->all();
+        $tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
+        $entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
+        $series = Series::orderBy('name','ASC')->pluck('name','id')->all();
 
 
         return view('posts.create', compact('visibilities','tags','entities','series'));
@@ -121,9 +121,9 @@ class PostsController extends Controller
     {
         $this->middleware('auth');
 
-        $visibilities = [''=>''] + Visibility::lists('name', 'id')->all();
-        $tags = Tag::orderBy('name','ASC')->lists('name','id')->all();
-        $entities = Entity::orderBy('name','ASC')->lists('name','id')->all();
+        $visibilities = [''=>''] + Visibility::pluck('name', 'id')->all();
+        $tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
+        $entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
 
         return view('posts.edit', compact('post', 'visibilities', 'tags','entities'));
     }

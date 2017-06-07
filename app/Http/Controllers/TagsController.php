@@ -45,7 +45,7 @@ class TagsController extends Controller {
 	public function index()
 	{
 		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->lists('name','id')->all();;
+		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();;
 
 		/*
  		// get all series linked to the tag
@@ -111,7 +111,7 @@ class TagsController extends Controller {
 	public function indexTags($tag)
 	{
 		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->lists('name','id')->all();;
+		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();;
 
  		$tag = urldecode($tag);
 
@@ -161,7 +161,7 @@ class TagsController extends Controller {
 	public function indexAll()
 	{
 		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->lists('name','id')->all();
+		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
 
 		$future_events = Event::future()->simplePaginate(100000);
 		$future_events->filter(function($e)
@@ -187,7 +187,7 @@ class TagsController extends Controller {
 	public function indexFuture()
 	{
 		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->lists('name','id')->all();
+		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
 
 		$this->rpp = 10000;
 
@@ -208,7 +208,7 @@ class TagsController extends Controller {
 	public function indexPast()
 	{
 		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->lists('name','id')->all();
+		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
 
 		$this->rpp = 10000;
 		
@@ -229,7 +229,7 @@ class TagsController extends Controller {
 	public function feed()
 	{
 		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->lists('name','id')->all();
+		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
 
 		$this->rpp = 10000;
 
@@ -357,20 +357,20 @@ class TagsController extends Controller {
 	public function create()
 	{
 		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->lists('name','id')->all();
+		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
 
 		// get a list of promoters
 		$promoters = [''=>''] + Entity::whereHas('roles', function($q)
 		{
 			$q->where('name','=','Promoter');
-		})->orderBy('name','ASC')->lists('name','id')->all();
+		})->orderBy('name','ASC')->pluck('name','id')->all();
 
-		$eventTypes = [''=>''] + EventType::orderBy('name','ASC')->lists('name', 'id')->all(); 
-		$seriesList = [''=>''] + Series::orderBy('name','ASC')->lists('name', 'id')->all(); 
-		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->lists('name', 'id')->all();
+		$eventTypes = [''=>''] + EventType::orderBy('name','ASC')->pluck('name', 'id')->all(); 
+		$seriesList = [''=>''] + Series::orderBy('name','ASC')->pluck('name', 'id')->all(); 
+		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
 
-		$tags = Tag::orderBy('name','ASC')->lists('name','id')->all();
-		$entities = Entity::orderBy('name','ASC')->lists('name','id')->all();
+		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
+		$entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
 
 		return view('events.create', compact('venues','eventTypes','visibilities','tags','entities','promoters','seriesList'));
 	}
@@ -438,20 +438,20 @@ class TagsController extends Controller {
 		$this->middleware('auth');
 
 		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->lists('name','id')->all();
+		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
 
 		// get a list of promoters
 		$promoters = [''=>''] + Entity::whereHas('roles', function($q)
 		{
 			$q->where('name','=','Promoter');
-		})->orderBy('name','ASC')->lists('name','id')->all();
+		})->orderBy('name','ASC')->pluck('name','id')->all();
 
-		$eventTypes = [''=>''] + EventType::orderBy('name','ASC')->lists('name', 'id')->all();
-		$visibilities = [''=>''] + Visibility::lists('name', 'id')->all();
-		$tags = Tag::orderBy('name','ASC')->lists('name','id')->all();
-		$entities = Entity::orderBy('name','ASC')->lists('name','id')->all();
+		$eventTypes = [''=>''] + EventType::orderBy('name','ASC')->pluck('name', 'id')->all();
+		$visibilities = [''=>''] + Visibility::pluck('name', 'id')->all();
+		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
+		$entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
 
-		$seriesList = [''=>''] + Series::lists('name', 'id')->all();
+		$seriesList = [''=>''] + Series::pluck('name', 'id')->all();
 
 		return view('events.edit', compact('event', 'venues', 'promoters','eventTypes', 'visibilities','tags','entities','seriesList'));
 	}
@@ -783,7 +783,7 @@ class TagsController extends Controller {
 		$this->rpp = 5;
 
 		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->lists('name','id')->all();
+		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
 
 		$events = Event::future()->get();
 		$events->filter(function($e)

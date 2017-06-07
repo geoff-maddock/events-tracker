@@ -125,24 +125,24 @@ class SeriesController extends Controller {
 	{
 
 		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->lists('name','id')->all();
+		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
 
 		// get a list of promoters
 		$promoters = [''=>''] + Entity::whereHas('roles', function($q)
 		{
 			$q->where('name','=','Promoter');
-		})->orderBy('name','ASC')->lists('name','id')->all();
+		})->orderBy('name','ASC')->pluck('name','id')->all();
 
-		$eventTypes = [''=>''] + EventType::orderBy('name','ASC')->lists('name', 'id')->all();
+		$eventTypes = [''=>''] + EventType::orderBy('name','ASC')->pluck('name', 'id')->all();
 
-		$occurrenceTypes = [''=>''] + OccurrenceType::lists('name', 'id')->all();
-		$days = [''=>''] + OccurrenceDay::lists('name', 'id')->all();
-		$weeks = [''=>''] + OccurrenceWeek::lists('name', 'id')->all();
+		$occurrenceTypes = [''=>''] + OccurrenceType::pluck('name', 'id')->all();
+		$days = [''=>''] + OccurrenceDay::pluck('name', 'id')->all();
+		$weeks = [''=>''] + OccurrenceWeek::pluck('name', 'id')->all();
 
-		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->lists('name', 'id')->all();
+		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
 
-		$tags = Tag::orderBy('name','ASC')->lists('name','id')->all();
-		$entities = Entity::orderBy('name','ASC')->lists('name','id')->all();
+		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
+		$entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
 
 		return view('series.create', compact('venues','eventTypes','visibilities','tags','entities','promoters', 'weeks','days', 'occurrenceTypes'));
 	}
@@ -196,24 +196,24 @@ class SeriesController extends Controller {
 	public function edit(Series $series)
 	{
 		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->lists('name','id')->all();
+		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
 
 		// get a list of promoters
 		$promoters = [''=>''] + Entity::whereHas('roles', function($q)
 		{
 			$q->where('name','=','Promoter');
-		})->orderBy('name','ASC')->lists('name','id')->all();
+		})->orderBy('name','ASC')->pluck('name','id')->all();
 
-		$eventTypes = [''=>''] + EventType::orderBy('name','ASC')->lists('name', 'id')->all();
+		$eventTypes = [''=>''] + EventType::orderBy('name','ASC')->pluck('name', 'id')->all();
 
-		$occurrenceTypes = [''=>''] + OccurrenceType::lists('name', 'id')->all();
-		$days = [''=>''] + OccurrenceDay::lists('name', 'id')->all();
-		$weeks = [''=>''] + OccurrenceWeek::lists('name', 'id')->all();
+		$occurrenceTypes = [''=>''] + OccurrenceType::pluck('name', 'id')->all();
+		$days = [''=>''] + OccurrenceDay::pluck('name', 'id')->all();
+		$weeks = [''=>''] + OccurrenceWeek::pluck('name', 'id')->all();
 
-		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->lists('name', 'id')->all();
+		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
 
-		$tags = Tag::orderBy('name','ASC')->lists('name','id')->all();
-		$entities = Entity::orderBy('name','ASC')->lists('name','id')->all();
+		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
+		$entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
 
 
 		return view('series.edit', compact('series','venues','eventTypes','visibilities','tags','entities','promoters', 'weeks','days', 'occurrenceTypes'));
@@ -228,21 +228,21 @@ class SeriesController extends Controller {
 		$series = Series::find($request->id);
 
 		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->lists('name','id')->all();
+		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
 
 		// get a list of promoters
 		$promoters = [''=>''] + Entity::whereHas('roles', function($q)
 		{
 			$q->where('name','=','Promoter');
-		})->orderBy('name','ASC')->lists('name','id')->all();
+		})->orderBy('name','ASC')->pluck('name','id')->all();
 
-		$eventTypes = [''=>''] + EventType::orderBy('name','ASC')->lists('name', 'id')->all();
+		$eventTypes = [''=>''] + EventType::orderBy('name','ASC')->pluck('name', 'id')->all();
 
-		$seriesList = [''=>''] + Series::orderBy('name','ASC')->lists('name', 'id')->all(); 
-		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->lists('name', 'id')->all();
+		$seriesList = [''=>''] + Series::orderBy('name','ASC')->pluck('name', 'id')->all(); 
+		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
 
-		$tags = Tag::orderBy('name','ASC')->lists('name','id')->all();
-		$entities = Entity::orderBy('name','ASC')->lists('name','id')->all();
+		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
+		$entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
 
 		// calculate the next occurrance date based on template settings
 		$nextDate = $series->nextOccurrenceDate();

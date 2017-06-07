@@ -142,12 +142,12 @@ class ThreadsController extends Controller
      */
     public function create()
     {
-		$threadCategories = [''=>''] + ThreadCategory::orderBy('name','ASC')->lists('name', 'id')->all(); 
-		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->lists('name', 'id')->all();
+		$threadCategories = [''=>''] + ThreadCategory::orderBy('name','ASC')->pluck('name', 'id')->all(); 
+		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
 
-		$tags = Tag::orderBy('name','ASC')->lists('name','id')->all();
-		$entities = Entity::orderBy('name','ASC')->lists('name','id')->all();
-		$series = Series::orderBy('name','ASC')->lists('name','id')->all();
+		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
+		$entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
+		$series = Series::orderBy('name','ASC')->pluck('name','id')->all();
 
 
 		return view('threads.create', compact('threadCategories','visibilities','tags','entities','series'));
@@ -258,11 +258,11 @@ class ThreadsController extends Controller
     {
 		$this->middleware('auth');
 
-		$threadCategories = [''=>''] + ThreadCategory::orderBy('name','ASC')->lists('name', 'id')->all();
-		$visibilities = [''=>''] + Visibility::lists('name', 'id')->all();
-		$tags = Tag::orderBy('name','ASC')->lists('name','id')->all();
-		$entities = Entity::orderBy('name','ASC')->lists('name','id')->all();
-		$series = Series::orderBy('name','ASC')->lists('name','id')->all();
+		$threadCategories = [''=>''] + ThreadCategory::orderBy('name','ASC')->pluck('name', 'id')->all();
+		$visibilities = [''=>''] + Visibility::pluck('name', 'id')->all();
+		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
+		$entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
+		$series = Series::orderBy('name','ASC')->pluck('name','id')->all();
 
 		return view('threads.edit', compact('thread', 'threadCategories', 'visibilities','tags','entities','series'));
     }

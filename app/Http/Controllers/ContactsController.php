@@ -46,7 +46,7 @@ class ContactsController extends Controller {
 	public function create(Entity $entity)
 	{
 
-		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->lists('name', 'id')->all();
+		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
 
 		return view('contacts.create', compact('entity','visibilities'));
 	}
@@ -99,7 +99,7 @@ class ContactsController extends Controller {
 	public function edit(Entity $entity, Contact $contact)
 	{
 
-		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->lists('name', 'id')->all();
+		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
 
 		return view('contacts.edit', compact('entity', 'contact', 'visibilities' ));
 	}

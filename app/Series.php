@@ -591,7 +591,7 @@ class Series extends Eloquent {
 	 */
 	public function getTagListAttribute()
 	{
-		return $this->tags->lists('id')->all();
+		return $this->tags->pluck('id')->all();
 	}
 
 	/**
@@ -601,7 +601,7 @@ class Series extends Eloquent {
 	 */
 	public function getEntityListAttribute()
 	{
-		return $this->entities->lists('id')->all();
+		return $this->entities->pluck('id')->all();
 	}
 
 	public function addPhoto(Photo $photo)

@@ -73,7 +73,7 @@ class EntityTypesController extends Controller {
 	{
 		$this->middleware('auth');
 
-		$entityTypes = App/EntityType::lists('name', 'id');
+		$entityTypes = App/EntityType::pluck('name', 'id');
 
 		return view('entities.edit', compact('entity','entityTypes'));
 	}

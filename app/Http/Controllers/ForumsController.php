@@ -56,7 +56,7 @@ class ForumsController extends Controller
      */
     public function create()
     {
-        $visibilities = [''=>''] + Visibility::orderBy('name','ASC')->lists('name', 'id')->all();
+        $visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
 
 
         return view('forums.create', compact('visibilities'));
@@ -115,7 +115,7 @@ class ForumsController extends Controller
     {
         $this->middleware('auth');
 
-        $visibilities = [''=>''] + Visibility::lists('name', 'id')->all();
+        $visibilities = [''=>''] + Visibility::pluck('name', 'id')->all();
 
         return view('forums.edit', compact('forum', 'visibilities'));
     }

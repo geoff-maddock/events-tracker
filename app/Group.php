@@ -37,7 +37,7 @@ class Group extends Model
 	 */
 	public function getUserListAttribute()
 	{
-		return $this->users->lists('id')->all();
+		return $this->users->pluck('id')->all();
 	}
 
 	/**
@@ -47,6 +47,6 @@ class Group extends Model
 	 */
 	public function getPermissionListAttribute()
 	{
-		return $this->permissions->lists('id')->all();
+		return $this->permissions->pluck('id')->all();
 	}
 }

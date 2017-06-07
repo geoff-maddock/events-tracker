@@ -53,9 +53,9 @@ class UsersController extends Controller {
 
 	public function create()
 	{
-		$userTypes = [''=>''] + UserType::lists('name', 'id');
-		$visibilities = [''=>''] + Visibility::lists('name', 'id');
-		$tags = Tag::lists('name','id');
+		$userTypes = [''=>''] + UserType::pluck('name', 'id');
+		$visibilities = [''=>''] + Visibility::pluck('name', 'id');
+		$tags = Tag::pluck('name','id');
 
 		return view('users.create');
 	}
@@ -98,8 +98,8 @@ class UsersController extends Controller {
 	{
 		$this->middleware('auth');
 
-		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->lists('name', 'id')->all();
-		$tags = Tag::lists('name','id');
+		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
+		$tags = Tag::pluck('name','id');
 
 		return view('users.edit', compact('user', 'visibilities','tags'));
 	}

@@ -19,6 +19,6 @@ class Permission extends Model
 	 */
 	public function getGroupListAttribute()
 	{
-		return $this->groups->lists('id')->all();
+		return $this->groups->pluck('id')->all();
 	}
 }
