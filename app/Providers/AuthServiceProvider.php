@@ -27,6 +27,14 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies($gate);
 
+        // super admins can do anything
+        $gate->before(function ($user, $ability) {
+            if ($user->hasGroup('super_admin')) {
+                return true;
+            }
+        });
+
+        // gets permissions
         foreach ($this->getPermissions() as $permission) {
             $gate->define($permission->name, function($user) use ($permission) {
                 return $user->hasGroup($permission->groups);

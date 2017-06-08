@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers;
 
+use Gate;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ForumRequest;
@@ -29,9 +30,11 @@ class ForumsController extends Controller
         $this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
         $this->forum = $forum;
 
+
         $this->rpp = 15;
         parent::__construct();
     }
+
 
     /**
      * Display a listing of the resource.
@@ -40,6 +43,14 @@ class ForumsController extends Controller
      */
     public function index()
     {
+         // if the gate does not allow this user to show a forum redirect to home
+        if (Gate::denies('show_forum')) {
+            flash()->error('Unauthorized', 'Your cannot view the forum');
+
+            return redirect()->back();
+        }
+
+
         $forums = Forum::orderBy('created_at', 'desc')->paginate($this->rpp);
         $forums->filter(function($e)
         {
@@ -93,6 +104,13 @@ class ForumsController extends Controller
      */
     public function show(Forum $forum)
     {
+         // if the gate does not allow this user to show a forum redirect to home
+        if (Gate::denies('show_forum')) {
+            flash()->error('Unauthorized', 'Your cannot view the forum');
+
+            return redirect()->back();
+        }
+
         $threads = Thread::where('forum_id', $forum->id)->orderBy('created_at', 'desc')->paginate(1000000);
         $threads->filter(function($e)
         {

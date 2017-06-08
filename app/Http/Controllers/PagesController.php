@@ -19,8 +19,28 @@ class PagesController extends Controller {
 		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
 		$this->event = $event;
 
+		// default list variables
 		$this->rpp = 5;
+		$this->dayOffset = 0;
+
 		parent::__construct();
+	}
+
+	/**
+	 * Update the page list parameters from the request
+	 *
+	 */
+	protected function updatePaging($request)
+	{
+ 		// set starting day offset
+ 		if ($request->input('day_offset')) {
+ 			$this->dayOffset = $request->input('day_offset');
+ 		};
+
+ 		// set results per page
+ 		if ($request->input('rpp')) {
+ 			$this->rpp = $request->input('rpp');
+ 		};
 	}
 
 	public function index()
@@ -103,8 +123,10 @@ class PagesController extends Controller {
 		return view('pages.settings');
 	}
 
-	public function home()
+	public function home(Request $request)
 	{
+ 		// updates sort, rpp from request
+ 		$this->updatePaging($request);
 
 		$events = Event::getByStartAt(Carbon::today())
 					->where(function($query)
@@ -115,7 +137,9 @@ class PagesController extends Controller {
 					->orderBy('name', 'ASC')
 					->paginate();
 
-		return view('pages.home', compact('events'));
+		return view('pages.home')
+		        	->with(['rpp' => $this->rpp, 'dayOffset' => $this->dayOffset])
+        			->with(compact('events'));
 	}
 
 	public function activity()

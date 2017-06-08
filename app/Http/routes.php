@@ -28,7 +28,7 @@ Route::post('password/email', 'Auth\PasswordController@postEmail');
 Route::get('password/reset/{token}', 'Auth\PasswordController@getReset');
 Route::post('password/reset', 'Auth\PasswordController@postReset');
 
-Route::get('/', 'PagesController@home');
+Route::get('/', 'PagesController@home')->name('home');
 
 Route::get('about', 'PagesController@about');
 
@@ -225,6 +225,7 @@ Route::get('series/type/{type}', 'SeriesController@indexTypes');
 Route::get('series/tag/{tag}', 'SeriesController@indexTags');
 Route::get('series/relatedto/{slug}', 'SeriesController@indexRelatedTo');
 Route::get('series/week', 'SeriesController@indexWeek');
+Route::get('series/cancelled', 'SeriesController@indexCancelled')->name('series.cancelled');
 Route::post('series/{id}/photos', 'SeriesController@addPhoto');
 Route::delete('series/{id}/photos/{photo_id}', 'SeriesController@deletePhoto');
 

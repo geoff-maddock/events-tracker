@@ -54,6 +54,25 @@ class SeriesController extends Controller {
 		return view('series.index', compact('series'));
 	}
 
+	public function indexCancelled()
+	{
+		$series = $this->series
+		->whereNotNull('cancelled_at')
+		->orderBy('occurrence_type_id','ASC')
+		->orderBy('occurrence_week_id', 'ASC')
+		->orderBy('occurrence_day_id', 'ASC')
+		->orderBy('name', 'ASC')
+		->get();
+
+		$series = $series->filter(function($e)
+		{
+			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+		});
+
+
+		return view('series.index', compact('series'));
+	}
+
 	/**
 	 * Display a listing of event series in a week view
 	 *
@@ -436,4 +455,15 @@ class SeriesController extends Controller {
 
 	}
 
+	protected function unauthorized(SeriesRequest $request)
+	{
+		if($request->ajax())
+		{
+			return response(['message' => 'No way.'], 403);
+		}
+
+		\Session::flash('flash_message', 'Not authorized');
+
+		return redirect('/');
+	}
 }

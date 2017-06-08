@@ -25,6 +25,19 @@
 		{{ $user->profile->bio or 'No bio available'}}
 	</p>
 	</div>
+
+	<div class="groups">
+	@unless ($user->groups->isEmpty())
+		
+		<P><b>Groups:</b>
+		
+		@foreach ($user->groups as $group)
+		<span class="label label-tag"><a href="/groups/{{ $group->id }}" title="{{ $group->description }}">{{ $group->label }}</a></span>
+		@endforeach
+
+	@endunless
+	</div>
+
 	<h5>Added <b>{{ $user->created_at->format('l F jS Y') }}</b></h5>
 	<br>
 	</div>

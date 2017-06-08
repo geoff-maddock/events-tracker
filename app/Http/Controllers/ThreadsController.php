@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
+use Gate;
 use DB;
 use Log;
 use Mail;
@@ -42,6 +43,13 @@ class ThreadsController extends Controller
      */
     public function index()
     {
+         // if the gate does not allow this user to show a forum redirect to home
+        if (Gate::denies('show_forum')) {
+            flash()->error('Unauthorized', 'Your cannot view the forum');
+
+            return redirect()->back();
+        }
+
 		$threads = Thread::orderBy('created_at', 'desc')->paginate($this->rpp);
 		$threads->filter(function($e)
 		{
@@ -58,6 +66,14 @@ class ThreadsController extends Controller
      */
     public function indexAll()
     {
+
+        // if the gate does not allow this user to show a forum redirect to home
+        if (Gate::denies('show_forum')) {
+            flash()->error('Unauthorized', 'Your cannot view the forum');
+
+            return redirect()->back();
+        }
+ 
         $threads = Thread::orderBy('created_at', 'desc')->paginate(1000000);
 		$threads->filter(function($e)
 		{
@@ -74,6 +90,13 @@ class ThreadsController extends Controller
 	 */
 	public function indexCategories($slug)
 	{
+        // if the gate does not allow this user to show a forum redirect to home
+        if (Gate::denies('show_forum')) {
+            flash()->error('Unauthorized', 'Your cannot view the forum');
+
+            return redirect()->back();
+        }
+
 		$threads = Thread::getByCategory(strtolower($slug))
 					->where(function($query)
 					{
@@ -93,6 +116,13 @@ class ThreadsController extends Controller
 	 */
 	public function indexTags($tag)
 	{
+        // if the gate does not allow this user to show a forum redirect to home
+        if (Gate::denies('show_forum')) {
+            flash()->error('Unauthorized', 'Your cannot view the forum');
+
+            return redirect()->back();
+        }
+
  		$tag = urldecode($tag);
 
 		$threads = Thread::getByTag(ucfirst($tag))
@@ -109,6 +139,13 @@ class ThreadsController extends Controller
 	 */
 	public function indexSeries($tag)
 	{
+        // if the gate does not allow this user to show a forum redirect to home
+        if (Gate::denies('show_forum')) {
+            flash()->error('Unauthorized', 'Your cannot view the forum');
+
+            return redirect()->back();
+        }
+
  		$tag = urldecode($tag);
 
 		$threads = Thread::getBySeries(ucfirst($tag))
@@ -125,6 +162,13 @@ class ThreadsController extends Controller
 	 */
 	public function indexRelatedTo($slug)
 	{
+        // if the gate does not allow this user to show a forum redirect to home
+        if (Gate::denies('show_forum')) {
+            flash()->error('Unauthorized', 'Your cannot view the forum');
+
+            return redirect()->back();
+        }
+
  		$tag = urldecode($slug);
 
 		$threads = Thread::getByEntity(ucfirst($tag))
@@ -241,6 +285,14 @@ class ThreadsController extends Controller
      */
     public function show(Thread $thread)
     {
+
+        // if the gate does not allow this user to show a forum redirect to home
+        if (Gate::denies('show_forum')) {
+            flash()->error('Unauthorized', 'Your cannot view the forum');
+
+            return redirect()->back();
+        }
+        
     	// call a log for this and prevent it from going out of control
     	$thread->views++;
     	$thread->save();

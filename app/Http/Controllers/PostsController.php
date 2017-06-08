@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 use Carbon\Carbon;
 
+use Gate;
 use DB;
 use Log;
 use Mail;
@@ -44,6 +45,13 @@ class PostsController extends Controller
      */
     public function index()
     {
+        // if the gate does not allow this user to show a forum redirect to home
+        if (Gate::denies('show_forum')) {
+            flash()->error('Unauthorized', 'Your cannot view the forum');
+
+            return redirect()->back();
+        }
+
         $posts = Post::orderBy('created_at', 'desc')->paginate($this->rpp);
         $posts->filter(function($e)
         {
@@ -103,6 +111,13 @@ class PostsController extends Controller
      */
     public function show(Post $post)
     {
+        // if the gate does not allow this user to show a forum redirect to home
+        if (Gate::denies('show_forum')) {
+            flash()->error('Unauthorized', 'Your cannot view the forum');
+
+            return redirect()->back();
+        }
+
         // call a log for this and prevent it from going out of control
         $post->views++;
         $post->save();

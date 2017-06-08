@@ -8,11 +8,22 @@
 		@include('events.crumbs')
 	</h4>
 
-	<p>
+	<div class="col-md-6">
 	<a href="{{ url('/events/all') }}" class="btn btn-info">Show all events</a>
 	<a href="{!! URL::route('events.index') !!}" class="btn btn-info">Show paginated events</a>
 	<a href="{!! URL::route('events.create') !!}" class="btn btn-primary">Add an event</a>	<a href="{!! URL::route('series.create') !!}" class="btn btn-primary">Add an event series</a>
-	</p>
+	</div>
+
+	<div class="col-md-6">
+	<ul class="pagination pull-right" style="margin-top: 0px;">
+		<li class="disabled"><span class="label label-info">RPP</span></li>
+		<li @if ($rpp == 5) class="active" @endif >{!! link_to_route('events.index', '5', ['rpp' => 5], ['class' => 'item-title']) !!}</li>
+		<li @if ($rpp == 10) class="active" @endif >{!! link_to_route('events.index', '10', ['rpp' => 10], ['class' => 'item-title']) !!}</li>
+		<li @if ($rpp == 25) class="active" @endif >{!! link_to_route('events.index', '25', ['rpp' => 25], ['class' => 'item-title']) !!}</li>
+		<li @if ($rpp == 100) class="active" @endif >{!! link_to_route('events.index', '100', ['rpp' => 100], ['class' => 'item-title']) !!}</li>
+	</ul>
+	</div>
+
 
 	<br style="clear: left;"/>
 
@@ -79,12 +90,5 @@
 	@endif
 	</div>
 
-		<ul class="pagination">
-			<li class="disabled"><span class="label label-info">RPP</span></li>
-			<li @if ($rpp == 5) class="active" @endif >{!! link_to_route('events.index', '5', ['rpp' => 5], ['class' => 'item-title']) !!}</li>
-			<li @if ($rpp == 10) class="active" @endif >{!! link_to_route('events.index', '10', ['rpp' => 10], ['class' => 'item-title']) !!}</li>
-			<li @if ($rpp == 25) class="active" @endif >{!! link_to_route('events.index', '25', ['rpp' => 25], ['class' => 'item-title']) !!}</li>
-			<li @if ($rpp == 100) class="active" @endif >{!! link_to_route('events.index', '100', ['rpp' => 100], ['class' => 'item-title']) !!}</li>
-		</ul>
 @stop
  
