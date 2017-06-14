@@ -758,14 +758,17 @@ class EventsController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function indexTags($tag)
+	public function indexTags(Request $request, $tag)
 	{
  		$tag = urldecode($tag);
+
+ 		// updates sort, rpp from request
+ 		$this->updatePaging($request);
 
 		$future_events = Event::getByTag(ucfirst($tag))->future()
 					->orderBy('start_at', 'ASC')
 					->orderBy('name', 'ASC')
-					->simplePaginate($this->rpp);
+					->paginate($this->rpp);
 
 		$future_events->filter(function($e)
 		{
@@ -776,15 +779,21 @@ class EventsController extends Controller {
 		$past_events = Event::getByTag(ucfirst($tag))->past()
 					->orderBy('start_at', 'ASC')
 					->orderBy('name', 'ASC')
-					->simplePaginate($this->rpp);
+					->paginate($this->rpp);
 
 
 		$past_events->filter(function($e)
 		{
 			return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
 		});
+	
 
-		return view('events.index', compact('future_events', 'past_events', 'tag'));
+		return view('events.index') 
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        	->with(compact('future_events'))
+        	->with(compact('past_events'))
+        	->with(compact('tag'));
+
 	}
 
 	/**
@@ -792,9 +801,12 @@ class EventsController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function indexRelatedTo($slug)
+	public function indexRelatedTo(Request $request, $slug)
 	{
  		$slug = urldecode($slug);
+
+  		// updates sort, rpp from request
+ 		$this->updatePaging($request);
 
 		$future_events = Event::getByEntity(strtolower($slug))
 					->future()
@@ -804,7 +816,7 @@ class EventsController extends Controller {
 					})
 					->orderBy('start_at', 'ASC')
 					->orderBy('name', 'ASC')
-					->paginate();
+					->paginate($this->rpp);
 
 		$past_events = Event::getByEntity(strtolower($slug))
 					->past()
@@ -814,9 +826,13 @@ class EventsController extends Controller {
 					})
 					->orderBy('start_at', 'ASC')
 					->orderBy('name', 'ASC')
-					->paginate();
+					->paginate($this->rpp);
 
-		return view('events.index', compact('future_events', 'past_events', 'slug'));
+		return view('events.index') 
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        	->with(compact('future_events'))
+        	->with(compact('past_events'))
+        	->with(compact('slug'));
 	}
 
 	/**
@@ -824,8 +840,11 @@ class EventsController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function indexStarting($date)
+	public function indexStarting(Request $request, $date)
 	{
+  		// updates sort, rpp from request
+ 		$this->updatePaging($request);
+
 		$cdate = Carbon::parse($date);
 		$cdate_yesterday = Carbon::parse($date)->subDay(1);
 		$cdate_tomorrow = Carbon::parse($date)->addDay(1);
@@ -838,9 +857,12 @@ class EventsController extends Controller {
 					})
 					->orderBy('start_at', 'ASC')
 					->orderBy('name', 'ASC')
-					->paginate();
+					->paginate($this->rpp);
 
-		return view('events.index', compact('future_events', 'cdate'));
+		return view('events.index') 
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        	->with(compact('future_events'))
+        	->with(compact('cdate'));
 	} 
 
 	/**
@@ -848,9 +870,12 @@ class EventsController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function indexVenues($slug)
+	public function indexVenues(Request $request, $slug)
 	{
  
+   		// updates sort, rpp from request
+ 		$this->updatePaging($request);
+
 		$future_events = Event::getByVenue(strtolower($slug))
 					->future()
 					->where(function($query)
@@ -859,7 +884,7 @@ class EventsController extends Controller {
 					})
 					->orderBy('start_at', 'ASC')
 					->orderBy('name', 'ASC')
-					->paginate();
+					->paginate($this->rpp);
 
 		$past_events = Event::getByVenue(strtolower($slug))
 					->past()
@@ -869,10 +894,14 @@ class EventsController extends Controller {
 					})
 					->orderBy('start_at', 'ASC')
 					->orderBy('name', 'ASC')
-					->paginate();
+					->paginate($this->rpp);
 
 
-		return view('events.index', compact('future_events', 'past_events', 'slug'));
+		return view('events.index') 
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        	->with(compact('future_events'))
+        	->with(compact('past_events'))
+        	->with(compact('slug'));
 	}
 
 
@@ -882,8 +911,12 @@ class EventsController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function indexTypes($slug)
+	public function indexTypes(Request $request, $slug)
 	{
+
+  		// updates sort, rpp from request
+ 		$this->updatePaging($request);
+
  		$slug = urldecode($slug);
 
 		$future_events = Event::getByType($slug)
@@ -893,7 +926,7 @@ class EventsController extends Controller {
 						$query->visible($this->user);
 					})
 					->orderBy('start_at', 'ASC')
-					->paginate();
+					->paginate($this->rpp);
 
 		$past_events = Event::getByType($slug)
 					->past()
@@ -902,10 +935,14 @@ class EventsController extends Controller {
 						$query->visible($this->user);
 					})
 					->orderBy('start_at', 'ASC')
-					->paginate();
+					->paginate($this->rpp);
 
 
-		return view('events.index', compact('future_events', 'past_events', 'slug'));
+		return view('events.index') 
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        	->with(compact('future_events'))
+        	->with(compact('past_events'))
+        	->with(compact('slug'));
 	}
 
 	/**
@@ -913,8 +950,12 @@ class EventsController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function indexSeries($slug)
+	public function indexSeries(Request $request, $slug)
 	{
+
+  		// updates sort, rpp from request
+ 		$this->updatePaging($request);
+
  		$slug = urldecode($slug);
 
 		$future_events = Event::getBySeries(strtolower($slug))
@@ -924,8 +965,7 @@ class EventsController extends Controller {
 						$query->visible($this->user);
 					})
 					->orderBy('start_at', 'ASC')
-					->orderBy('name', 'ASC')
-					->paginate();
+					->paginate($this->rpp);
 
 		$past_events = Event::getBySeries(strtolower($slug))
 					->past()
@@ -934,11 +974,14 @@ class EventsController extends Controller {
 						$query->visible($this->user);
 					})
 					->orderBy('start_at', 'ASC')
-					->orderBy('name', 'ASC')
-					->paginate();
+					->paginate($this->rpp);
 
 
-		return view('events.index', compact('future_events', 'past_events', 'slug'));
+		return view('events.index') 
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        	->with(compact('future_events'))
+        	->with(compact('past_events'))
+        	->with(compact('slug'));
 	}
 
 	/**
@@ -946,9 +989,9 @@ class EventsController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function indexWeek()
+	public function indexWeek(Request $request)
 	{
-		$this->rpp = 5;
+		$this->rpp = 7;
 
 		// get a list of venues
 		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
