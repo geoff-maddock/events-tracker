@@ -261,6 +261,88 @@ class EventsController extends Controller {
 	}
 
 
+
+	/**
+	 * Display a listing of events related to entity
+	 *
+	 * @return Response
+	 */
+	public function calendarRelatedTo(Request $request, $slug)
+	{
+ 		$slug = urldecode($slug);
+
+ 		$eventList = array();
+
+ 		// get all events related to the entity
+		$events = Event::getByEntity(strtolower($slug))
+					->orderBy('start_at', 'ASC')
+					->orderBy('name', 'ASC')
+					->get();
+
+		$events->filter(function($e)
+		{
+			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+		});
+
+
+		foreach ($events as $event)
+		{
+			$eventList[] = \Calendar::event(
+			    $event->name, //event title
+			    false, //full day event?
+			    $event->start_at->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
+			    ($event->end_time ? $event->end_time->format('Y-m-d H:i') : NULL), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
+			    $event->id, //optional event ID
+			    [
+			        'url' => 'events/'.$event->id,
+			        //'color' => '#fc0'
+			    ]
+			);
+		};
+
+		// get all the upcoming series events
+		$series = Series::getByEntity(ucfirst($slug))->active()->get();
+
+		$series = $series->filter(function($e)
+		{
+			// all public events
+			// all events that you created
+			// all events that you are invited to
+			return ((($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id)) AND $e->occurrenceType->name != 'No Schedule');
+		});
+
+		foreach ($series as $s)
+		{
+			if ($s->nextEvent() == NULL AND $s->nextOccurrenceDate() != NULL)
+			{
+				// add the next instance of each series to the calendar
+				$eventList[] = \Calendar::event(
+				    $s->name, //event title
+				    false, //full day event?
+				    $s->nextOccurrenceDate()->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
+				    ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : NULL), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
+				    $s->id, //optional event ID
+				    [
+				        'url' => 'series/'.$s->id,
+				        'color' => '#99bcdb'
+				    ]
+				);
+			};
+		};
+
+
+		$calendar = \Calendar::addEvents($eventList) //add an array with addEvents
+		    ->setOptions([ //set fullcalendar options
+		        'firstDay' => 0,
+		        'height' => 840,
+		    ])->setCallbacks([ //set fullcalendar callback options (will not be JSON encoded)
+		        //'viewRender' => 'function() {alert("Callbacks!");}'
+		    ]); 
+		return view('events.calendar', compact('calendar', 'slug'));
+
+	}
+
+
 	/**
 	 * Display a listing of events by tag
 	 *
