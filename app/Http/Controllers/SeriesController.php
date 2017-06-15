@@ -10,6 +10,7 @@ use Carbon\Carbon;
 
 use DB;
 use Log;
+use Mail;
 use App\Series;
 use App\EventType;
 use App\Entity;
