@@ -38,12 +38,12 @@ class ThreadsTest extends TestCase
     function a_user_can_read_posts_that_are_associated_with_a_thread()
     {
     	// add that thread includes replies
-    	$reply = factory('App\Post')
+    	$post = factory('App\Post')
     		->create(['thread_id' => $this->thread->id]);
 
     	// when we visit a thread page
     	$this->get('/threads/' . $this->thread->id)
-    		->see($reply->body);
+    		->see($post->body);
     }
 
      /** @test */
@@ -102,7 +102,8 @@ class ThreadsTest extends TestCase
     /** @test */
     function a_thread_requires_a_name()
     {
-        $this->publishThread('name' => null])
+        $this->publishThread(['name' => null])
+
             ->assertSessionHasErrors('name');
 
     }
@@ -110,7 +111,7 @@ class ThreadsTest extends TestCase
     /** @test */
     function a_thread_requires_a_body()
     {
-        $this->publishThread('body' => null])
+        $this->publishThread(['body' => null])
             ->assertSessionHasErrors('body');
 
     }
@@ -118,23 +119,23 @@ class ThreadsTest extends TestCase
     /** @test */
     function a_thread_requires_a_valid_forum()
     {
-        factory('App\Forum', 2)->create();
+        $forum = factory('App\Forum')->create();
 
-        $this->publishThread('forum_id' => null])
+        $this->publishThread(['forum_id' => null])
             ->assertSessionHasErrors('forum_id');
 
-        $this->publishThread('forum_id' => 99999999])
+        $this->publishThread(['forum_id' => 99999999])
             ->assertSessionHasErrors('forum_id');
 
     }
 
     public function publishThread($overrides = [])
     {
-        $this->withExceptionHandling()->signIn()
+        $this->withExceptionHandling()->signIn();
 
         $thread = make('App\Thread', $overrides);
 
-        $this->post('/threads', $thread->toArray())
+        $this->post('/threads', $thread->toArray());
     }
 
 }

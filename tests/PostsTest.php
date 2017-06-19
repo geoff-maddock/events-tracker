@@ -29,7 +29,7 @@ class PostsTest extends TestCase
     {
         $this->withExceptionHandling()->signIn();
 
-        $thread = create('App\Thread');
+        $thread =  factory('App\Thread')->create();
         $post = make('App\Post', ['body' => null]);
 
         $this->post($thread->path() . '/posts', $post->toArray())

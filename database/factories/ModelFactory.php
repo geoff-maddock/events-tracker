@@ -18,6 +18,20 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
     ];
 });
 
+
+$factory->define(App\Forum::class, function (Faker\Generator $faker) {
+    $user = factory('App\User')->create()->id;
+    return [
+        'created_by' => $user,
+        'name' => $faker->sentence,
+        'slug' => $faker->sentence,
+        'body' => $faker->paragraph,
+        'description' => $faker->paragraph,
+        'visibility_id' => 1,
+        'is_active' => 1
+    ];
+});
+
 $factory->define(App\Thread::class, function (Faker\Generator $faker) {
 	$user = factory('App\User')->create()->id;
 	return [
@@ -37,10 +51,10 @@ $factory->define(App\Thread::class, function (Faker\Generator $faker) {
 $factory->define(App\Post::class, function (Faker\Generator $faker) {
 	return [
 		'thread_id' => function() {
-			return factory('App\User')->create()->id;
+			return factory('App\Thread')->create()->id;
 		},
 		'created_by' => function() {
-			return factory('App\User')->create()->id;
+			return App\User::all()->last()->id;
 		},
 		'name' => $faker->sentence,
 		'slug' => $faker->sentence,
