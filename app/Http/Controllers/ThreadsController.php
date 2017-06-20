@@ -108,6 +108,8 @@ class ThreadsController extends Controller
             return redirect()->back();
         }
  		*/
+ 		// updates sort, rpp from request
+ 		$this->updatePaging($request);
 
         $threads = Thread::orderBy('created_at', 'desc')->paginate(1000000);
 		$threads->filter(function($e)
@@ -115,7 +117,9 @@ class ThreadsController extends Controller
 			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
 		});
 
-        return view('threads.index', compact('threads'));
+        return view('threads.index')
+                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        			->with(compact('threads'));
     }
 
 	/**
@@ -123,7 +127,7 @@ class ThreadsController extends Controller
 	 *
 	 * @return Response
 	 */
-	public function indexCategories($slug)
+	public function indexCategories(Request $request, $slug)
 	{
         // if the gate does not allow this user to show a forum redirect to home
         /*
@@ -133,6 +137,8 @@ class ThreadsController extends Controller
             return redirect()->back();
         }
 		*/
+ 		// updates sort, rpp from request
+ 		$this->updatePaging($request);
 
 		$threads = Thread::getByCategory(strtolower($slug))
 					->where(function($query)
@@ -142,7 +148,10 @@ class ThreadsController extends Controller
 					->orderBy('created_at', 'ASC')
 					->paginate($this->rpp);
 
-        return view('threads.index', compact('threads', 'slug'));
+        return view('threads.index')
+                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection, 'slug' => $slug])
+        			->with(compact('threads'));
+
 	}
 
 
@@ -151,7 +160,7 @@ class ThreadsController extends Controller
 	 *
 	 * @return Response
 	 */
-	public function indexTags($tag)
+	public function indexTags(Request $request, $tag)
 	{
         // if the gate does not allow this user to show a forum redirect to home
         /*
@@ -161,6 +170,8 @@ class ThreadsController extends Controller
             return redirect()->back();
         }
 		*/
+ 		// updates sort, rpp from request
+ 		$this->updatePaging($request);
 
  		$tag = urldecode($tag);
 
@@ -168,7 +179,9 @@ class ThreadsController extends Controller
 					->orderBy('created_at', 'ASC')
 					->paginate($this->rpp);
 
-		return view('threads.index', compact('threads', 'tag'));
+        return view('threads.index')
+                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection, 'tag' => $tag])
+        			->with(compact('threads'));
 	}
 
 	/**
@@ -176,7 +189,7 @@ class ThreadsController extends Controller
 	 *
 	 * @return Response
 	 */
-	public function indexSeries($tag)
+	public function indexSeries(Request $request, $tag)
 	{
         // if the gate does not allow this user to show a forum redirect to home
         /*
@@ -186,6 +199,9 @@ class ThreadsController extends Controller
             return redirect()->back();
         }
 		*/
+
+ 		// updates sort, rpp from request
+ 		$this->updatePaging($request);
 
  		$tag = urldecode($tag);
 
@@ -193,7 +209,9 @@ class ThreadsController extends Controller
 					->orderBy('created_at', 'ASC')
 					->paginate($this->rpp);
 
-		return view('threads.index', compact('threads', 'tag'));
+        return view('threads.index')
+                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection, 'tag' => $tag])
+        			->with(compact('threads'));
 	}
 
 	/**
@@ -201,7 +219,7 @@ class ThreadsController extends Controller
 	 *
 	 * @return Response
 	 */
-	public function indexRelatedTo($slug)
+	public function indexRelatedTo(Request $request, $slug)
 	{
         // if the gate does not allow this user to show a forum redirect to home
         /*
@@ -211,6 +229,8 @@ class ThreadsController extends Controller
             return redirect()->back();
         }
 		*/
+ 		// updates sort, rpp from request
+ 		$this->updatePaging($request);
 
  		$tag = urldecode($slug);
 
@@ -218,7 +238,9 @@ class ThreadsController extends Controller
 					->orderBy('created_at', 'ASC')
 					->paginate($this->rpp);
 
-		return view('threads.index', compact('threads', 'tag'));
+        return view('threads.index')
+                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection, 'tag' => $tag])
+        			->with(compact('threads'));
 	}
 
 
@@ -328,13 +350,14 @@ class ThreadsController extends Controller
      */
     public function show(Thread $thread)
     {
-
         // if the gate does not allow this user to show a forum redirect to home
+        /*
         if (Gate::denies('show_forum')) {
             flash()->error('Unauthorized', 'Your cannot view the forum');
 
             return redirect()->back();
         }
+ 		*/
         
     	// call a log for this and prevent it from going out of control
     	$thread->views++;
