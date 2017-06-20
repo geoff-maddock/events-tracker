@@ -18,7 +18,11 @@
 	</tr>
 	<tr>
 		<td colspan='6' class="post-body">
+			@if ($post->user->can('trust_post'))
+			{!! $post->body !!}
+			@else
 			{{ $post->body }}
+			@endcan
 			<span>
 			@if ($signedIn && $post->ownedBy($user))
 				<a href="{!! route('posts.edit', ['id' => $post->id]) !!}" title="Edit this post."><span class='glyphicon glyphicon-pencil text-primary'></span></a>

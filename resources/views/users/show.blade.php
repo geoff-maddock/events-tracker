@@ -1,8 +1,8 @@
 @extends('app')
 
-@section('content')
-
 @section('title','User Profile View')
+
+@section('content')
 
 	<div class="row">
 	<div class="col-md-12">
