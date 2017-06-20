@@ -18,7 +18,8 @@
 
 	<tr>
 	<td>{!! link_to_route('threads.show', $thread->name, [$thread->id], ['id' => 'thread-name', 'title' => 'Thread topic.', 'class' => 'forum-link']) !!} 
-			@if ($signedIn && $thread->ownedBy($user))
+
+			@if (($signedIn && $thread->ownedBy($user) && $thread->isRecent()) || $user->hasGroup('super_admin'))
 			<a href="{!! route('threads.edit', ['id' => $thread->id]) !!}" title="Edit this thread."><span class='glyphicon glyphicon-pencil'></span></a>
       {!! link_form_icon('glyphicon-trash text-warning', $thread, 'DELETE', 'Delete the thread') !!}
 			@endif

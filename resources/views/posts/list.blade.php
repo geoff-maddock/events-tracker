@@ -18,13 +18,15 @@
 	</tr>
 	<tr>
 		<td colspan='6' class="post-body">
+			<!-- TO DO: change this to storing the trust in the user at post save -->
 			@if ($post->user->can('trust_post'))
-			{!! $post->body !!}
+				{!! $post->body !!}
 			@else
-			{{ $post->body }}
+				{{ $post->body }}
 			@endcan
 			<span>
-			@if ($signedIn && $post->ownedBy($user))
+			
+			@if (($signedIn && $post->ownedBy($user) && $post->isRecent()) || $user->hasGroup('super_admin'))
 				<a href="{!! route('posts.edit', ['id' => $post->id]) !!}" title="Edit this post."><span class='glyphicon glyphicon-pencil text-primary'></span></a>
 				{!! link_form_icon('glyphicon-trash text-warning', $post, 'DELETE', 'Delete the [post]') !!}
 			@endif</span>

@@ -251,4 +251,22 @@ class Post extends Eloquent {
 
 		return $primary;
 	}
+
+	/**
+	 * Checks if a post was recent - thus edittable or deletable
+	 *
+	 * 
+	 * @ return boolean
+	 */
+	public function isRecent()
+	{
+		$recent_hours = 24;
+
+		// recency cut off date
+		$recent_date = Carbon::parse('now')->subHours($recent_hours);
+
+		$created_date = Carbon::parse($this->created_at);
+
+		return ($created_date > $recent_date) ? true : false;
+	}
 }

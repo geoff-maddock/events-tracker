@@ -32,23 +32,53 @@ class ThreadsController extends Controller
 		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
 		$this->thread = $thread;
 
-		$this->rpp = 15;
+		// default list variables
+		$this->rpp = 10;
+		$this->sortBy = 'created_at';
+		$this->sortDirection = 'desc';
 		parent::__construct();
 	}
+
+	/**
+	 * Update the page list parameters from the request
+	 *
+	 */
+	protected function updatePaging($request)
+	{
+ 		// set sort by column
+ 		if ($request->input('sort_by')) {
+ 			$this->sortBy = $request->input('sort_by');
+ 		};
+
+		// set sort direction
+ 		if ($request->input('sort_direction')) {
+ 			$this->sortDirection = $request->input('sort_direction');
+ 		};
+
+ 		// set results per page
+ 		if ($request->input('rpp')) {
+ 			$this->rpp = $request->input('rpp');
+ 		};
+	}
+
 
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
          // if the gate does not allow this user to show a forum redirect to home
+    	/*
         if (Gate::denies('show_forum')) {
             flash()->error('Unauthorized', 'Your cannot view the forum');
 
             return redirect()->back();
         }
+		*/
+ 		// updates sort, rpp from request
+ 		$this->updatePaging($request);
 
 		$threads = Thread::orderBy('created_at', 'desc')->paginate($this->rpp);
 		$threads->filter(function($e)
@@ -56,7 +86,10 @@ class ThreadsController extends Controller
 			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
 		});
 
-        return view('threads.index', compact('threads'));
+        return view('threads.index')
+                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        			->with(compact('threads'));
+
     }
 
     /**
@@ -64,16 +97,18 @@ class ThreadsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function indexAll()
+    public function indexAll(Request $request)
     {
 
         // if the gate does not allow this user to show a forum redirect to home
+        /*
         if (Gate::denies('show_forum')) {
             flash()->error('Unauthorized', 'Your cannot view the forum');
 
             return redirect()->back();
         }
- 
+ 		*/
+
         $threads = Thread::orderBy('created_at', 'desc')->paginate(1000000);
 		$threads->filter(function($e)
 		{
@@ -91,11 +126,13 @@ class ThreadsController extends Controller
 	public function indexCategories($slug)
 	{
         // if the gate does not allow this user to show a forum redirect to home
+        /*
         if (Gate::denies('show_forum')) {
             flash()->error('Unauthorized', 'Your cannot view the forum');
 
             return redirect()->back();
         }
+		*/
 
 		$threads = Thread::getByCategory(strtolower($slug))
 					->where(function($query)
@@ -117,11 +154,13 @@ class ThreadsController extends Controller
 	public function indexTags($tag)
 	{
         // if the gate does not allow this user to show a forum redirect to home
+        /*
         if (Gate::denies('show_forum')) {
             flash()->error('Unauthorized', 'Your cannot view the forum');
 
             return redirect()->back();
         }
+		*/
 
  		$tag = urldecode($tag);
 
@@ -140,11 +179,13 @@ class ThreadsController extends Controller
 	public function indexSeries($tag)
 	{
         // if the gate does not allow this user to show a forum redirect to home
+        /*
         if (Gate::denies('show_forum')) {
             flash()->error('Unauthorized', 'Your cannot view the forum');
 
             return redirect()->back();
         }
+		*/
 
  		$tag = urldecode($tag);
 
@@ -163,11 +204,13 @@ class ThreadsController extends Controller
 	public function indexRelatedTo($slug)
 	{
         // if the gate does not allow this user to show a forum redirect to home
+        /*
         if (Gate::denies('show_forum')) {
             flash()->error('Unauthorized', 'Your cannot view the forum');
 
             return redirect()->back();
         }
+		*/
 
  		$tag = urldecode($slug);
 
