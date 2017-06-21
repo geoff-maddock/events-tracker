@@ -12,7 +12,7 @@ class CreateForumsTable extends Migration
      */
     public function up()
     {
-        /*
+        
         Schema::create('forums', function(Blueprint $table)
         {
             $table->increments('id');
@@ -96,7 +96,7 @@ class CreateForumsTable extends Migration
 #            $table->foreign('thread_id')->references('id')->on('threads')->onDelete('cascade');
             $table->timestamps();
         });
-*/
+
 
 
 
