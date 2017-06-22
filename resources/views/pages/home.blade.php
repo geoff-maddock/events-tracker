@@ -19,24 +19,23 @@
 
 	</div>
 
-	<div class="col-md-1">
-	<ul class="pagination pull-left" style="margin-top: 0px;">
-		<li>{!! link_to_route('home', '< Past', ['day_offset' => $dayOffset-1], ['class' => 'item-title']) !!}</li>
-	</ul>
-	</div>
+		<div class="col-sm-1">
+		<ul class="pagination pull-left" style="margin-top: 0px;">
+			<li>{!! link_to_route('home', '< Past', ['day_offset' => $dayOffset-1], ['class' => 'item-title', 'style' => 'white-space: nowrap;']) !!}</li>
+		</ul>
+		</div>
 
-	<div class="col-md-10">
-	<ul class="pagination" style="margin-top: 0px;">
+		<div class="col-sm-10">
+		<ul class="pagination" style="margin-top: 0px;">
+		<li></li>
+		</ul>
+		</div>
 
-	</ul>
-	</div>
-
-	<div class="col-md-1">
-	<ul class="pagination pull-right" style="margin-top: 0px;">
-		<li>{!! link_to_route('home', 'Future >', ['day_offset' => $dayOffset+1], ['class' => 'item-title']) !!}</li>
-	</ul>
-	</div>
-
+		<div class="col-sm-1">
+		<ul class="pagination pull-right" style="margin-top: 0px;">
+			<li>{!! link_to_route('home', 'Future >', ['day_offset' => $dayOffset+1], ['class' => 'item-title', 'style' => 'white-space: nowrap;']) !!}</li>
+		</ul>
+		</div>
 
 	<br style="clear: left;"/>
  

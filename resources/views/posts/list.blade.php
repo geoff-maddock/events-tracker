@@ -3,7 +3,8 @@
 	@foreach ($posts as $post)
 	<tbody class='thread-post'>
 	<tr id='post-{{ $post->id }}'>
-		<td colspan='2'>
+		<td></td>
+		<td class="hidden-xs hidden-sm"></td>
 		<td>
 		    @if (isset($post->user))
 		      @include('users.avatar', ['user' => $post->user])
@@ -12,9 +13,9 @@
 		    User deleted
 		    @endif
 		</td>
-		<td></td>
-		<td></td>
-		<td>{{ $post->created_at->diffForHumans() }}</td>
+		<td class="hidden-xs hidden-sm"></td>
+		<td class="hidden-xs hidden-sm"></td>
+		<td class="hidden-xs">{{ $post->created_at->diffForHumans() }}</td>
 	</tr>
 	<tr>
 		<td colspan='6' class="post-body">

@@ -23,14 +23,12 @@
 	<table class="table forum table-striped">
 	    <thead>
 	      <tr>
-	        <th>
-	          Thread
-	        </th>
+	        <th>Thread</th>
 	        <th class="cell-stat hidden-xs hidden-sm">Category</th>
-	        <th class="cell-stat hidden-xs hidden-sm">Users</th>
+	        <th class="cell-stat">Author</th>
 	        <th class="cell-stat text-center hidden-xs hidden-sm">Posts</th>
 	        <th class="cell-stat text-center hidden-xs hidden-sm">Views</th>
-	        <th class="cell-stat-2x hidden-xs hidden-sm">Last Post</th>
+	        <th class="cell-stat-2x hidden-xs">Last Post</th>
 	      </tr>
 	    </thead>
 	<tbody>	
@@ -63,8 +61,8 @@
 		@endunless
 
 	</td>
-    <td>{{ $thread->thread_category or 'General'}}</td>
-    <td class="cell-stat hidden-xs hidden-sm">
+    <td class="cell-stat hidden-xs hidden-sm">{{ $thread->thread_category or 'General'}}</td>
+    <td class="cell-stat">
 	    @if (isset($thread->user))
 	      @include('users.avatar', ['user' => $thread->user])
 	    {!! link_to_route('users.show', $thread->user->name, [$thread->user->id], ['class' => 'forum-link']) !!} 
@@ -74,7 +72,7 @@
     </td>
     <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->postCount }}</td>
     <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->views }}</td>
-    <td>{{ $thread->lastPostAt->diffForHumans() }}</td>
+    <td class="cell-stat-2x hidden-xs">{{ $thread->lastPostAt->diffForHumans() }}</td>
     </tr>
     <tr>
     <td colspan="6">

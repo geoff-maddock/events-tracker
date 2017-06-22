@@ -123,6 +123,12 @@ li.selected:hover {
 	font-weight: 600;
 }
 
+
+.slim-row {
+	height: 10 px;
+	padding: 2px;
+}
+
 .post-body {
 	padding: 10px;
 	padding-bottom: 50px;
