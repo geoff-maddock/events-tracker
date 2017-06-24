@@ -44,6 +44,8 @@ class Thread extends Eloquent {
 	'visibility_id', 
 	'forum_id',
 	'views',
+	'locked_at',
+	'locked_by'
 	];
 
 	//protected $guarded = [];
@@ -261,6 +263,18 @@ class Thread extends Eloquent {
 		$posts = $this->posts()->get();
 
 		return count($posts);
+	}
+
+
+	/**
+	 * Get the locked status of the thread
+	 *
+	 */
+	public function getIsLockedAttribute()
+	{
+		$posts = $this->posts()->get();
+
+		return ($this->locked_by == NULL) ? 0 : 1;
 	}
 
 

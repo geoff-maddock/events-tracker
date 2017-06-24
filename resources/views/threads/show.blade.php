@@ -37,7 +37,13 @@
 			@if ($signedIn && (($thread->ownedBy($user) && $thread->isRecent()) || $user->hasGroup('super_admin')))
 				<a href="{!! route('threads.edit', ['id' => $thread->id]) !!}" title="Edit this thread."><span class='glyphicon glyphicon-pencil text-primary'></span></a>
 				{!! link_form_icon('glyphicon-trash text-warning', $thread, 'DELETE', 'Delete the [thread]') !!}
+				@if (!$thread->is_locked) 
+					<a href="{!! route('threads.lock', ['id' => $thread->id]) !!}" title="Lock this thread."><span class='glyphicon glyphicon-lock text-success'></span></a>
+				@else 
+					<a href="{!! route('threads.unlock', ['id' => $thread->id]) !!}" title="Unlock this thread."><span class='glyphicon glyphicon-lock text-danger'></span></a>
+				@endif
 			@endif
+
 			<br>
             @unless ($thread->series->isEmpty())
             Series:
@@ -93,6 +99,10 @@
 	</div>
 
 	<div class="col-lg-6">
+
+		@if ($thread->is_locked)
+		<P class="text-center">This thread has been locked.</P>
+		@else
 			@if ($signedIn)
 			Add new post as <strong>{{ $user->name }}</strong>
 			<form method="POST" action="{{ $thread->path().'/posts' }}">
@@ -106,6 +116,7 @@
 			@else
 			<p class="text-center">Please <a href="{{ url('/auth/login')}}">sign in</a> to participate in this discussion.</p>
 			@endif
+		@endif
 	</div>
 	@endif
 	</div>

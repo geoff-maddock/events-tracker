@@ -3,6 +3,7 @@
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ThreadRequest;
+use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 use Illuminate\Support\Str;
@@ -13,6 +14,7 @@ use Gate;
 use DB;
 use Log;
 use Mail;
+use Auth;
 use App\Thread;
 use App\Event;
 use App\Entity;
@@ -65,7 +67,7 @@ class ThreadsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
     public function index(Request $request)
     {
@@ -80,11 +82,19 @@ class ThreadsController extends Controller
  		// updates sort, rpp from request
  		$this->updatePaging($request);
 
-		$threads = Thread::orderBy('created_at', 'desc')->paginate($this->rpp);
+        // get the threads
+		$threads = Thread::orderBy($this->sortBy, $this->sortDirection)->paginate($this->rpp);
 		$threads->filter(function($e)
 		{
 			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
 		});
+
+		// if the user is not authenticated, filter out any guarded threads
+        if (!Auth::check()) {
+            $threads->filter(function($e){
+                return ($e->visibility->name != 'Guarded');
+            });
+        }
 
         return view('threads.index')
                 	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
@@ -125,7 +135,7 @@ class ThreadsController extends Controller
 	/**
 	 * Display a listing of threads by category
 	 *
-	 * @return Response
+	 * @return View
 	 */
 	public function indexCategories(Request $request, $slug)
 	{
@@ -145,7 +155,7 @@ class ThreadsController extends Controller
 					{
 						$query->visible($this->user);
 					})
-					->orderBy('created_at', 'ASC')
+					->orderBy($this->sortBy, 'ASC')
 					->paginate($this->rpp);
 
         return view('threads.index')
@@ -158,7 +168,7 @@ class ThreadsController extends Controller
 	/**
 	 * Display a listing of threads by tag
 	 *
-	 * @return Response
+	 * @return View
 	 */
 	public function indexTags(Request $request, $tag)
 	{
@@ -365,6 +375,59 @@ class ThreadsController extends Controller
 
 		return view('threads.show', compact('thread'));
     }
+
+
+    /**
+     * Lock the specified resource.
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function lock($id)
+    {
+		if (!$thread = Thread::find($id))
+		{
+			flash()->error('Error',  'No such thread');
+			return back();
+		};
+    	// call a log for this and prevent it from going out of control
+    	$thread->locked_by = $this->user->id;
+    	$thread->locked_at = Carbon::now();
+
+    	$thread->save();
+
+		// add to activity log
+		Activity::log($thread, $this->user, 8);
+
+		return back();
+    }
+
+
+    /**
+     * Unlock the specified resource.
+     *
+     * @param  Thread  $thread
+     * @return \Illuminate\Http\Response
+     */
+    public function unlock($id)
+    {
+		if (!$thread = Thread::find($id))
+		{
+			flash()->error('Error',  'No such thread');
+			return back();
+		};
+
+    	// call a log for this and prevent it from going out of control
+    	$thread->locked_by = NULL;
+    	$thread->locked_at = NULL;
+    	$thread->save();
+
+		// add to activity log
+		Activity::log($thread, $this->user, 9);
+
+		return back();
+    }
+
 
     /**
      * Show the form for editing the specified resource.
