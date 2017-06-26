@@ -32,18 +32,21 @@
 			@endif 
 			<br>
 			{{ $series->occurrenceType->name }}  {{ $series->occurrenceRepeat() }} 
-			@if ($series->cancelled_at == NULL AND $series->occurrenceType->name != 'No Schedule')
+			@if ($series->occurrenceType->name != 'No Schedule')
 			next is 
 			{{ $series->nextEvent() ? $series->nextEvent()->start_at->format('l F jS Y') : $series->cycleFromFoundedAt()->format('l F jS Y') }}
-			
-			@else
-			<br>Founded {!! $series->founded_at ? $series->founded_at->format('l F jS Y') : 'unknown'!!}<br>
-			Cancelled {!! $series->cancelled_at ? $series->cancelled_at->format('l F jS Y') : 'unknown'!!}
+			@endif
+
+			<br>Founded {!! $series->founded_at ? $series->founded_at->format('l F jS Y') : 'unknown'!!}
+
+			@if ($series->cancelled_at != NULL)
+			<br> Cancelled {!! $series->cancelled_at ? $series->cancelled_at->format('l F jS Y') : 'unknown'!!}<br>
 			@endif
 
 			@if ($venue = $series->venue)
 			<br><a href="{!! route('entities.show', ['id' => $series->venue->id]) !!}">{{ $series->venue->name }}</a> at {{ $series->venue->getPrimaryLocationAddress() }}
 			@endunless
+
 			@if ($event = $series->nextEvent())
 			<br>Next Event is {!! link_to_route('events.show', $event->name, [$event->id], ['class' =>'butt']) !!} 
 			@endif
