@@ -429,17 +429,17 @@ class Series extends Eloquent {
 		{
 			// all public events
 			// and all events with a schedule
-			$next_date = $e->nextOccurrenceDate()->format('Y-m-d');
+			//$next_date = $e->nextOccurrenceDate()->format('Y-m-d');
 
 			return (($e->visibility->name == 'Public') AND ($e->occurrenceType->name != 'No Schedule') );
 		});
 
+		// 
 		foreach ($series as $s)
 		{
 			if ($s->nextEvent() == NULL AND $s->nextOccurrenceDate() != NULL)
 			{
 				// add matches to list
-
 				$next_date = $s->nextOccurrenceDate()->format('Y-m-d');
 
 				if ($next_date == $date)

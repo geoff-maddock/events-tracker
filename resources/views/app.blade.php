@@ -34,7 +34,6 @@
 </head>
 <body id="event-repo">
 	<script src="{{ asset('/js/global-config.js') }}"></script>
-	<script src="{{ asset('/js/facebook-sdk.js') }}"></script>
 	@include('partials.nav')
 
 	<div class="container-fluid">
@@ -55,7 +54,6 @@
 	<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.8.2/js/lightbox.min.js"></script>
 
 
-	<script src="{{ asset('/js/facebook-event.js') }}"></script>
 	<script src="{{ asset('/js/sweetalert-dev.js') }}"></script>
 
 	@yield('scripts.footer')

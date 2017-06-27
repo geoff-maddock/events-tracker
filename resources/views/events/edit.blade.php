@@ -3,10 +3,12 @@
 @section('title','Event Edit')
 
 @section('content')
+<script src="{{ asset('/js/facebook-sdk.js') }}"></script>
 
-<h1>Event . EDIT 
+<h2>Event . EDIT 
 	@include('events.crumbs', ['slug' => $event->slug ? $event->slug : $event->id])
-</h1>
+  <br>    <a href="{!! route('events.show', ['id' => $event->id]) !!}" class="btn btn-primary">Show Event</a> <a href="{!! URL::route('events.index') !!}" class="btn btn-info">Return to list</a>
+</h2>
 
 <div class="row">
   <div class="col-md-8">
@@ -18,7 +20,7 @@
 
 	<P>{!! delete_form(['events.destroy', $event->id]) !!}</P>
 
-	<P><a href="{!! URL::route('events.index') !!}" class="btn btn-info">Return to list</a></P>
+
   </div>
 
   <div class="col-md-4">
@@ -57,12 +59,19 @@
 @stop
 
 @section('scripts.footer')
+<script src="{{ asset('/js/facebook-event.js') }}"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.2.0/dropzone.js"></script>
 <script>
 Dropzone.autoDiscover = false;
 $(document).ready(function(){
 
-  var myDropzone = new Dropzone('#myDropzone');
+  var myDropzone = new Dropzone('#myDropzone', {
+      dictDefaultMessage: "Drop a file here to add an entity profile picture. Click the star to set primary photo."
+  });
+
+  $('div.dz-default.dz-message > span').show(); // Show message span
+  $('div.dz-default.dz-message').css({'opacity':1, 'background-image': 'none'});
+  
   myDropzone.options.addPhotosForm = {
     maxFilesize: 3,
     accept: ['.jpg','.png','.gif'],
