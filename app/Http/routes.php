@@ -162,7 +162,7 @@ Route::post('entities/{id}/photos', 'EntitiesController@addPhoto');
 
 Route::get('entities/type/{type}', 'EntitiesController@indexTypes');
 
-Route::get('entities/role/{role}', array('as' => 'entities.filter', 'uses' => 'EntitiesController@indexRoles'));
+Route::get('entities/role/{role}', 'EntitiesController@indexRoles')->name('entities.role');
 
 Route::get('entities/filter', array('as' => 'entities.filter', 'uses' => 'EntitiesController@filter'));
 Route::get('entities/reset', array('as' => 'entities.reset', 'uses' => 'EntitiesController@indexRoles'));
