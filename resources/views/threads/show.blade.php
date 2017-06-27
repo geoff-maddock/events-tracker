@@ -35,12 +35,12 @@
 	<tr>
 	<td>{!! link_to_route('threads.show', $thread->name, [$thread->id], ['class' => 'forum-link']) !!} 
 			@if ($signedIn && (($thread->ownedBy($user) && $thread->isRecent()) || $user->hasGroup('super_admin')))
-				<a href="{!! route('threads.edit', ['id' => $thread->id]) !!}" title="Edit this thread."><span class='glyphicon glyphicon-pencil text-primary'></span></a>
+				<a href="{!! route('threads.edit', ['id' => $thread->id]) !!}" title="Edit this thread." class="hover-dim"><span class='glyphicon glyphicon-pencil text-primary'></span></a>
 				{!! link_form_icon('glyphicon-trash text-warning', $thread, 'DELETE', 'Delete the [thread]') !!}
 				@if (!$thread->is_locked) 
-					<a href="{!! route('threads.lock', ['id' => $thread->id]) !!}" title="Lock this thread."><span class='glyphicon glyphicon-lock text-success'></span></a>
+					<a href="{!! route('threads.lock', ['id' => $thread->id]) !!}" title="Lock this thread." class="hover-dim"><span class='material-icons md-18 icon-correct text-primary'>lock</span></a>
 				@else 
-					<a href="{!! route('threads.unlock', ['id' => $thread->id]) !!}" title="Unlock this thread."><span class='glyphicon glyphicon-lock text-danger'></span></a>
+					<a href="{!! route('threads.unlock', ['id' => $thread->id]) !!}" title="Thread is locked.  Click to unlock." class="hover-dim"><span class='material-icons md-18 icon-correct text-danger'>lock</span></a>
 				@endif
 			@endif
 

@@ -82,7 +82,8 @@ class Thread extends Eloquent {
 
 		$public = Visibility::where('name','=','Public')->first();
 		
- 		$query->where('visibility_id','=', $public ? $public->id : NULL )->orWhere('created_by','=',($user ? $user->id : NULL));
+ 		$query->where('visibility_id','=', ($public ? $public->id : NULL))
+ 				->orWhere('created_by','=',($user ? $user->id : NULL));
 
 	}
 
@@ -204,7 +205,7 @@ class Thread extends Eloquent {
     }
 
 	/**
-	 * An thread has one visibility
+	 * A thread has one visibility
 	 *
 	 */
 	public function visibility()
@@ -214,7 +215,7 @@ class Thread extends Eloquent {
 
 
 	/**
-	 * An thread has one series
+	 * A thread has one series
 	 *
 	 */
 	public function series()

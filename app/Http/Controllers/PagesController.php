@@ -137,6 +137,14 @@ class PagesController extends Controller {
 					->orderBy('name', 'ASC')
 					->paginate();
 
+		// handle the request if ajax
+		if ($request->ajax()) {
+            return view('pages.4days')
+		        	->with(['rpp' => $this->rpp, 'dayOffset' => $this->dayOffset])
+        			->with(compact('events'))
+        			->render();
+		}
+
 		return view('pages.home')
 		        	->with(['rpp' => $this->rpp, 'dayOffset' => $this->dayOffset])
         			->with(compact('events'));

@@ -27,6 +27,10 @@ class Kernel extends ConsoleKernel {
 	 */
 	protected function schedule(Schedule $schedule)
 	{
+		$reply_email = config('app.noreply_email');
+		$site = config('app.app_name');
+		$url = config('app.url');
+
 		$schedule->command('inspire')
 				 ->hourly();
 
@@ -46,11 +50,11 @@ class Kernel extends ConsoleKernel {
 					if ($events->count() > 0)
 					{
 						// send an email containing that list
-						Mail::send('emails.weekly-events', ['user' => $user, 'events' => $events], function ($m) use ($user, $events) {
-							$m->from('admin@events.cutupsmethod.com','Event Repo');
+						Mail::send('emails.weekly-events', ['user' => $user, 'events' => $events, 'url' => $url], function ($m) use ($user, $events) {
+							$m->from($reply_email, $site);
 
 							$dt = Carbon::now();
-							$m->to($user->email, $user->name)->subject('Event Repo: Weekly Reminder - '.$dt->format('l F jS Y'));
+							$m->to($user->email, $user->name)->subject($site.': Weekly Reminder - '.$dt->format('l F jS Y'));
 						});
 					};
 				};
@@ -74,11 +78,11 @@ class Kernel extends ConsoleKernel {
 					if ($events->count() > 0)
 					{
 						// send an email containing that list
-						Mail::send('emails.weekly-events', ['user' => $user, 'events' => $events], function ($m) use ($user, $events) {
-							$m->from('admin@events.cutupsmethod.com','Event Repo');
+						Mail::send('emails.weekly-events', ['user' => $user, 'events' => $events, 'url' => $url], function ($m) use ($user, $events) {
+							$m->from($reply_email, $site);
 							
 							$dt = Carbon::now();
-							$m->to($user->email, $user->name)->subject('Event Repo: Daily Reminder - '.$dt->format('l F jS Y'));
+							$m->to($user->email, $user->name)->subject($site.': Daily Reminder - '.$dt->format('l F jS Y'));
 						});
 					};
 				};
