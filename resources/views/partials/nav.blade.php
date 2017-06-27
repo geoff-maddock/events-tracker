@@ -7,12 +7,11 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="#">{{ config('app.app_name')}} </a>
+			<span class="{{ Request::is('/') ? 'active' : '' }}"><a class="navbar-brand" href="{{ url('/') }}">{{ config('app.app_name')}} </a></span>
 		</div>
 
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			<ul class="nav navbar-nav">
-				<li class="{{ Request::is('/') ? 'active' : '' }}"><a href="{{ url('/') }}">Home</a></li>
 				<li class="dropdown {{ Request::is('events') ? 'active' : '' }}">
 		          <a href="{{ url('/events') }}" class="dropdown-toggle" data-hover="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Events <span class="caret"></span></a>
 		          <ul class="dropdown-menu">
@@ -36,9 +35,7 @@
 
 				<li><a href="{{ url('/threads')}}">Forum</a></li> 
 				<li class="{{ Request::is('tags') ? 'active' : '' }}"><a href="{{ url('/tags') }}">Tags</a></li>
-				<li class="dropdown {{ Request::is('users') ? 'active' : '' }}">
-		          <a href="{{ url('/users') }}" class="dropdown-toggle" data-hover="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Users <span class="caret"></span></a>
-		        </li>
+				<li class="{{ Request::is('users') ? 'active' : '' }}"><a href="{{ url('/users') }}">Users</a></li>
 		        <li>
 		      <form class="navbar-form navbar-left" role="search" action="/search">
 		        <div class="form-group">
@@ -64,8 +61,14 @@
 					</ul>
 				</li>
 				@endcan
-				<li><a href="mailto:{{ config('app.feedback') }}" title="Send email to {{ config('app.feedback') }}">Feedback</a></li>
-				<li><a href="{{ url('/help') }}">Help</a></li>
+				<li class="dropdown ">
+					<a href="{{ url('/help') }}"  class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Help <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="{{ url('/help')}}">Help</a></li> 
+						<li><a href="mailto:{{ config('app.feedback') }}" title="Send email to {{ config('app.feedback') }}">Feedback</a></li>
+					</ul>
+				</li>
+
 				@if (Auth::guest())
 					<li><a href="{{ url('/auth/login') }}">Login</a></li>
 					<li><a href="{{ url('/auth/register') }}">Register</a></li>

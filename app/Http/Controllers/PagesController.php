@@ -11,6 +11,8 @@ use App\Event;
 use App\Entity;
 use App\Series;
 use App\Activity;
+use App\Tag;
+use App\User;
 
 class PagesController extends Controller {
 
@@ -96,15 +98,23 @@ class PagesController extends Controller {
 
 
 		$entities = Entity::where('name','like','%'.$slug.'%')
-		->orWhereHas('tags', function($q) use ($slug)
-						{
-							$q->where('name','=', ucfirst($slug));
-						})
-		->orderBy('entity_type_id', 'ASC')
-		->orderBy('name', 'ASC')
-		->simplePaginate($this->rpp);
+				->orWhereHas('tags', function($q) use ($slug)
+								{
+									$q->where('name','=', ucfirst($slug));
+								})
+				->orderBy('entity_type_id', 'ASC')
+				->orderBy('name', 'ASC')
+				->simplePaginate($this->rpp);
 
-		return view('events.search', compact('events', 'entities', 'series', 'slug'));
+		$tags = Tag::where('name','like','%'.$slug.'%')
+				->orderBy('name', 'ASC')
+				->simplePaginate($this->rpp);
+
+		$users = User::where('name','like','%'.$slug.'%')
+				->orderBy('name', 'ASC')
+				->simplePaginate($this->rpp);
+
+		return view('events.search', compact('events', 'entities', 'series','users','tags','slug'));
 
 	}
 

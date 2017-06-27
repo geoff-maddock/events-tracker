@@ -66,8 +66,8 @@ Route::get('events/week', 'EventsController@indexWeek');
 Route::get('events/starting/{date}', 'EventsController@indexStarting');
 Route::get('events/daily', 'EventsController@daily');
 
-Route::get('events/tag/{tag}', 'EventsController@indexTags');
-Route::get('events/venue/{slug}', 'EventsController@indexVenues');
+Route::get('events/tag/{tag}', 'EventsController@indexTags')->name('events.tag');
+Route::get('events/venue/{slug}', 'EventsController@indexVenues')->name('events.venue');
 Route::get('events/relatedto/{slug}', 'EventsController@indexRelatedTo');
 Route::get('events/type/{slug}', 'EventsController@indexTypes');
 Route::get('events/series/{slug}', 'EventsController@indexSeries');
@@ -116,7 +116,7 @@ Route::bind('threads', function($id)
 
 Route::get('threads/all', 'ThreadsController@indexAll');
 Route::get('threads/category/{slug}', 'ThreadsController@indexCategories');
-Route::get('threads/tag/{tag}', 'ThreadsController@indexTags');
+Route::get('threads/tag/{tag}', 'ThreadsController@indexTags')->name('threads.tag');
 Route::get('threads/series/{tag}', 'ThreadsController@indexSeries');
 Route::get('threads/relatedto/{slug}', 'ThreadsController@indexRelatedTo');
 Route::post('threads/{threads}/posts','PostsController@store');
@@ -167,7 +167,7 @@ Route::get('entities/role/{role}', array('as' => 'entities.filter', 'uses' => 'E
 Route::get('entities/filter', array('as' => 'entities.filter', 'uses' => 'EntitiesController@filter'));
 Route::get('entities/reset', array('as' => 'entities.reset', 'uses' => 'EntitiesController@indexRoles'));
 
-Route::get('entities/tag/{tag}', 'EntitiesController@indexTags');
+Route::get('entities/tag/{tag}', 'EntitiesController@indexTags')->name('entities.tag');
 
 
 Route::get('entities/{id}/follow', [
@@ -225,7 +225,7 @@ Route::get('series/createOccurrence', [
 
 
 Route::get('series/type/{type}', 'SeriesController@indexTypes');
-Route::get('series/tag/{tag}', 'SeriesController@indexTags');
+Route::get('series/tag/{tag}', 'SeriesController@indexTags')->name('series.tag');
 Route::get('series/relatedto/{slug}', 'SeriesController@indexRelatedTo');
 Route::get('series/week', 'SeriesController@indexWeek');
 Route::get('series/cancelled', 'SeriesController@indexCancelled')->name('series.cancelled');

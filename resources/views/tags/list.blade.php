@@ -1,85 +1,22 @@
-@if (count($events) > 0)
+@if (count($tags) > 0)
 
 <ul class='event-list'>
-	<?php $month = '';?>
-	@foreach ($events as $event)
+	@foreach ($tags as $tag)
 
 	<li class="event-card" style="clear: both;">
-		@if ($primary = $event->getPrimaryPhoto())
-		<div style="float: left; padding: 5px;">
-				<a href="/{{ $event->getPrimaryPhoto()->path }}" data-lightbox="{{ $event->getPrimaryPhoto()->path }}"><img src="/{{ $event->getPrimaryPhoto()->thumbnail }}" alt="{{ $event->name}}"  style="max-width: 100px; "></a>
-		</div>
-		@endif
-
-		@if ($month != $event->start_at->format('F')) 
-		<?php $month = $event->start_at->format('F')?>
-		@endif
-
-		<div class='event-date'>{!! $event->start_at->format('l F jS Y') !!} </div>
-			{!! link_to_route('events.show', $event->name, [$event->id]) !!} 
-			@if ($signedIn && $event->ownedBy($user))
-			<a href="{!! route('events.edit', ['id' => $event->id]) !!}"><span class='glyphicon glyphicon-pencil'></span></a>
-			@endif
-
-			@if ($link = $event->primary_link)
-			<a href="{{ $link }}" target="_blank" title="Event link">
-			<span class='glyphicon glyphicon-link'></span>
-			</a>
-			@endif
-			
-			@if ($ticket = $event->ticket_link)
-			<a href="{{ $ticket }}" target="_" title="Ticket link">
-			<span class='glyphicon glyphicon-shopping-cart'></span>
-			</a>
-			@endif
-
+		<h1>{!! link_to_route('tags.show', $tag->name, [$tag->name], ['class' => 'item-title']) !!}
 			@if ($signedIn)
-				@if ($response = $event->getEventResponse($user))
-				<a href="{!! route('events.unattending', ['id' => $event->id]) !!}" title="{{ $response->responseType->name }}"><span class='glyphicon glyphicon-star text-warning'></span></a>
+				@if ($follow = $tag->followedBy($user))
+				<a href="{!! route('tags.unfollow', ['id' => $tag->id]) !!}" title="You are following this tag.  Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
 				@else
-				<a href="{!! route('events.attending', ['id' => $event->id]) !!}" title="No reponse to event."><span class='glyphicon glyphicon-star text-info'></span></a>
+				<a href="{!! route('tags.follow', ['id' => $tag->id]) !!}" title="Click to follow this tag."><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
 				@endif
-			@endif
-
-		<br>
-		@if (!empty($event->series_id))
-		<a href="/series/{{$event->series_id }}">{!! $event->series->name !!}</a> series
-		@endif
-
-		<a href="/events/type/{{ urlencode($event->eventType->name) }}">{{ $event->eventType->name }}</a>
-
-		@if ($event->venue)
-		<br><a href="/entities/{{$event->venue->id }}">{{ $event->venue->name or 'No venue specified' }}</a>
-			@if ($event->venue->getPrimaryLocationAddress() )
-				{{ $event->venue->getPrimaryLocationAddress() }}
-			@endif
-		@else
-		no venue specified
-		@endif
-
-		@if ($event->start_at)
-		at {{ $event->start_at->format('g:i A') }}
-		@endif
-
-		@if ($event->door_price)
-		${{ number_format($event->door_price,0) }}
-		@endif
-
-		<P>
-		@unless ($event->entities->isEmpty())
-		Related:
-			@foreach ($event->entities as $entity)
-				<span class="label label-tag"><a href="/events/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a></span>
-			@endforeach
-		@endunless
-
-		@unless ($event->tags->isEmpty())
-		Tags:
-			@foreach ($event->tags as $tag)
-				<span class="label label-tag"><a href="/events/tag/{{ urlencode($tag->name) }}">{{ $tag->name }}</a></span>
-			@endforeach
-		@endunless
-		</P>
+			@endif 
+		</h1> 
+		<span class="label label-tag">{!! link_to_route('events.tag', 'Events', [$tag->name], ['class' => 'item-title']) !!} {{ count($tag->events) }}</span>
+		<span class="label label-tag">{!! link_to_route('series.tag', 'Series', [$tag->name], ['class' => 'item-title']) !!}  {{ count($tag->series) }}</span>
+		<span class="label label-tag">{!! link_to_route('entities.tag', 'Entities', [$tag->name], ['class' => 'item-title']) !!} {{ count($tag->entities) }}</span>
+		<span class="label label-tag">{!! link_to_route('threads.tag', 'Threads', [$tag->name], ['class' => 'item-title']) !!} {{ count($tag->threads) }}</span>
 
 	</li>
 
@@ -87,5 +24,5 @@
 </ul>
 
 @else
-	<ul class='event-list'><li style='clear:both;'><i>No events listed</i></li></ul> 
+	<ul class='event-list'><li style='clear:both;'><i>No tags listed</i></li></ul> 
 @endif

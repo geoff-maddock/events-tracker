@@ -4,7 +4,7 @@
 
 @section('content')
 
-	<h1>Events
+	<h1>Search
 		@include('events.crumbs')
 	</h1>
 
@@ -20,6 +20,24 @@
 
 	@if (isset($events) && count($events) > 0)
 	<div class="col-lg-6">
+
+		@if (isset($tags) && count($tags) > 0)
+		<div class="bs-component">
+			<div class="panel panel-info">
+
+
+				<div class="panel-heading">
+					<h3 class="panel-title">Tags</h3>
+				</div>
+
+				<div class="panel-body">
+				@include('tags.list', ['tags' => $tags])
+				{!! $series->render() !!}
+				</div>
+
+			</div>
+		</div>
+		@endif
 
 		@if (isset($series) && count($series) > 0)
 		<div class="bs-component">
@@ -58,12 +76,29 @@
 
 	</div>
 	@endif
-	
-	@if (isset($entities) && count($entities) > 0)	
+
 	<div class="col-lg-6">
+		@if (isset($users) && count($users) > 0)
 		<div class="bs-component">
 			<div class="panel panel-info">
 
+				<div class="panel-heading">
+					<h3 class="panel-title">Users</h3>
+				</div>
+
+				<div class="panel-body">
+				@include('users.list', ['users' => $users])
+				{!! $series->render() !!}
+				</div>
+
+			</div>
+		</div>
+		@endif
+	
+	@if (isset($entities) && count($entities) > 0)	
+
+		<div class="bs-component">
+			<div class="panel panel-info">
 			
 				<div class="panel-heading">
 					<h3 class="panel-title">Entities</h3>
@@ -76,9 +111,10 @@
 
 			</div>
 		</div>
-	</div>
+
 	@endif
 	</div>
+</div>
 
 @stop
  
