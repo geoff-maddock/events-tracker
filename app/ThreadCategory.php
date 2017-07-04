@@ -31,5 +31,10 @@ class ThreadCategory extends Eloquent {
 		return $this->hasMany('App\Thread');
 	}
 
+	public function getRouteKeyName()
+    {
+        return 'id';
+    }
+
 
 }

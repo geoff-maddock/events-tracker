@@ -138,4 +138,16 @@ class ThreadsTest extends TestCase
         $this->post('/threads', $thread->toArray());
     }
 
+    /** @test */
+    function a_user_can_filter_threads_according_to_a_tag()
+    {
+        $category = create('App\ThreadCategory');
+        $threadInCategory = create('App\Thread')->['thread_category_id' => $category->id]);
+        $threadNotInCategory = create('App\Thread');
+
+        $this->get('/threads/category/' . $category->name)
+            ->assertSee($threadInCategory->name)
+            ->assertDontSee($threadNotInCategory->name);
+    }
+
 }

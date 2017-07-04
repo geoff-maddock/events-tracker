@@ -1,0 +1,205 @@
+body {
+	background: #FEFFF1;
+	font-family: Roboto,sans-serif !important;
+}
+
+.no-button {
+	background: none;
+	border: none;
+	padding: 5px;
+	outline: none;
+}
+
+.no-button span:hover {
+	-moz-opacity: 0.6;
+	opacity: 0.6;
+}
+
+.profile-card {
+	padding: 10px;
+	background-color: #433;
+	margin-left: 5px;
+	margin-bottom: 15px;
+	border-radius: 5px;
+	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
+	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2); 
+	min-height: 130px;
+}
+
+.card {
+	padding: 10px;
+	background-color: #445;
+	margin-left: 5px;
+	margin-bottom: 15px;
+	border-radius: 5px;
+	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
+	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2); 
+	min-height: 130px;
+}
+
+.mute-card {
+	padding: 10px;
+	background-color: #223;
+	margin-left: 5px;
+	margin-bottom: 15px;
+	border-radius: 5px;
+	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
+	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2); 
+	min-height: 130px;
+}
+
+.event-card {
+	padding: 10px;
+	background-color: #334;
+	margin-bottom: 15px;
+	border-radius: 5px;
+	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
+	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2); 
+	min-height: 130px;
+}
+
+.series-card {
+	padding: 10px;
+	background-color: #223;
+	margin-bottom: 15px;
+	border-radius: 5px;
+	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
+	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2); 
+	min-height: 130px;
+}
+.event-date {
+	font-weight: 900;
+	font-size: 17px;
+}
+
+.event-list, .list {
+	list-style-type:none;
+	margin:.5em;
+	padding-left: 0px;
+}
+
+.label-tag {
+ 	background-color: #000000;
+}
+
+.label-related{
+	background-color: #ffffff;
+}
+
+.card-thumb {
+	border-radius: 5px;
+}
+
+.no-gutter > [class*='col-'] {
+    padding-right:0;
+    padding-left:0;
+}
+
+.small-gutter > [class*='col-'] {
+    padding-right:10px;
+    padding-left:10px;
+}
+
+li.selected {
+    color: #ffffff;
+    background-color: #df691a;
+    border-color: #df691a;
+    padding: 5px;
+    padding-left:10px;
+}
+
+li.selected a {
+	color: #fff;
+	font-weight: bold;
+}
+
+li.selected:hover {
+    color: #ffffff;
+    background-color: #b15315;
+    border-color: #b15315;
+}
+
+.item-title {
+	font-weight: 600;
+}
+
+
+.slim-row {
+	height: 10 px;
+	padding: 2px;
+}
+
+.post-body {
+	padding: 10px;
+	padding-bottom: 50px;
+}
+
+#event-repo .forum .forum-link {
+	color: #df691a;
+	text-decoration: none;
+	font-size: 15px;
+	cursor: pointer;
+	padding: 8px 0px;
+}
+
+#event-repo .forum .forum-link:hover {
+	color: #fff;
+	text-decoration: none;
+	font-size: 15px;
+	cursor: pointer;
+	padding: 8px 0px;
+}
+
+#event-repo .forum .label-link {
+	color: #df691a;
+	text-decoration: none;
+}
+
+#event-repo .forum .label-link:hover {
+	color: #fff;
+	text-decoration: none;
+}
+
+#event-repo .forum th {
+	font-size: 15px;
+	background-color: #5bc0de;
+}
+
+#event-repo .deletesmall {
+	font-size: 15px;
+	background-color: #5bc0de;
+}
+
+/** Add styles to fullcalendar **/
+
+#event-repo .fc-head .fc-day-header {
+    color: #fff;
+    background-color: #df691a;
+}
+
+#event-repo .fc-body .fc-day {
+	background-color: #1d2a36;
+}
+
+#event-repo img.avatar {
+	max-width: 32px;
+}
+
+#event-repo .fc-unthemed .fc-body .fc-bg .fc-today {
+  background-color: #ecab7e;
+}
+
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
+
+.icon-correct {
+	top: 3px;
+	position: relative;
+}
+
+.hover-dim span:hover {
+	-moz-opacity: 0.6;
+	opacity: 0.6;
+}
