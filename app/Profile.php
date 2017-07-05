@@ -33,7 +33,7 @@ class Profile extends Eloquent {
 	 *
 	 **/
 	protected $fillable = [
-	'first_name','last_name', 'bio', 'alias', 'location', 'facebook_username', 'twitter_username'
+	'first_name','last_name', 'bio', 'alias', 'location', 'facebook_username', 'twitter_username', 'default_theme'
 	];
 
 

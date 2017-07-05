@@ -123,6 +123,7 @@ return [
 
 	'fb_app_id' => env('APP_FB_APP_ID'),
 	'app_name' => env('APP_NAME', 'Event Repo'),
+    'default_theme' => 'dark-theme',
 
 	/*
 	|--------------------------------------------------------------------------

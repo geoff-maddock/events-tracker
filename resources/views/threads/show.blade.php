@@ -42,6 +42,11 @@
 				@else 
 					<a href="{!! route('threads.unlock', ['id' => $thread->id]) !!}" title="Thread is locked.  Click to unlock." class="hover-dim"><span class='material-icons md-18 icon-correct text-danger'>lock</span></a>
 				@endif
+				@if ($follow = $thread->followedBy($user))
+					<a href="{!! route('threads.unfollow', ['id' => $thread->id]) !!}" title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
+				@else
+					<a href="{!! route('threads.follow', ['id' => $thread->id]) !!}" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
+				@endif
 			@endif
 
 			<br>

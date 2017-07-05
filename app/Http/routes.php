@@ -123,6 +123,17 @@ Route::post('threads/{threads}/posts','PostsController@store');
 Route::get('threads/{id}/lock', 'ThreadsController@lock')->name('threads.lock');
 Route::get('threads/{id}/unlock', 'ThreadsController@unlock')->name('threads.unlock');
 
+
+Route::get('threads/{id}/follow', [
+    'as' => 'threads.follow',
+    'uses' => 'ThreadsController@follow'
+]);
+
+Route::get('threads/{id}/unfollow', [
+    'as' => 'threads.unfollow',
+    'uses' => 'ThreadsController@unfollow'
+]);
+
 $router->resource('threads','ThreadsController');
 
 # POSTS

@@ -18,6 +18,7 @@
 	<b>Name </b> {{ $user->profile->first_name }} {{ $user->profile->last_name }}<br>
 	<b>Alias </b> {{ $user->profile->alias }}<br>
 	<b>Contact </b> <a href="mailto:{{ $user->email }}">{{ $user->email }}</a><br>
+	<b>Default Theme </b> {{ $user->profile->default_theme ? $user->profile->default_theme : Config::get('app.default_theme') }}<br>
 
 	<div class="bio">
 	<b>Bio</b><br>

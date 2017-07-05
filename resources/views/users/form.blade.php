@@ -22,6 +22,11 @@
 {!! $errors->first('bio','<span class="help-block">:message</span>') !!}
 </div>
 
+<div class="form-group">
+    {!! Form::label('default_theme','Default Theme') !!}
+    {!! Form::select('default_theme', Config::get('constants.themes'), (isset($user->profile->default_theme) ? $user->profile->default_theme : NULL), ['class' =>'form-control']) !!}
+    {!! $errors->first('default_theme','<span class="help-block">:message</span>') !!}
+</div>
 
 <div class="form-group">
 {!! Form::submit(isset($action) ? 'Update Profile' : 'Add Profile', null, ['class' =>'btn btn-primary']) !!}

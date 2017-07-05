@@ -1,7 +1,5 @@
 <?php namespace App\Http\Controllers;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\ThreadRequest;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -16,13 +14,13 @@ use Log;
 use Mail;
 use Auth;
 use App\Thread;
-use App\Event;
 use App\Entity;
 use App\ThreadCategory;
 use App\Series;
 use App\Tag;
 use App\Visibility;
 use App\Activity;
+use App\Follow;
 
 
 class ThreadsController extends Controller
@@ -41,10 +39,10 @@ class ThreadsController extends Controller
 		parent::__construct();
 	}
 
-	/**
-	 * Update the page list parameters from the request
-	 *
-	 */
+    /**
+     * Update the page list parameters from the request
+     * @param $request
+     */
 	protected function updatePaging($request)
 	{
  		// set sort by column
@@ -67,6 +65,7 @@ class ThreadsController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param Request $request
      * @return View
      */
     public function index(Request $request)
@@ -105,6 +104,7 @@ class ThreadsController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
     public function indexAll(Request $request)
@@ -132,11 +132,13 @@ class ThreadsController extends Controller
         			->with(compact('threads'));
     }
 
-	/**
-	 * Display a listing of threads by category
-	 *
-	 * @return View
-	 */
+    /**
+     * Display a listing of threads by category
+     *
+     * @param Request $request
+     * @param $slug
+     * @return View
+     */
 	public function indexCategories(Request $request, $slug)
 	{
         // if the gate does not allow this user to show a forum redirect to home
@@ -165,11 +167,13 @@ class ThreadsController extends Controller
 	}
 
 
-	/**
-	 * Display a listing of threads by tag
-	 *
-	 * @return View
-	 */
+    /**
+     * Display a listing of threads by tag
+     *
+     * @param Request $request
+     * @param $tag
+     * @return View
+     */
 	public function indexTags(Request $request, $tag)
 	{
         // if the gate does not allow this user to show a forum redirect to home
@@ -194,11 +198,13 @@ class ThreadsController extends Controller
         			->with(compact('threads'));
 	}
 
-	/**
-	 * Display a listing of threads by series
-	 *
-	 * @return Response
-	 */
+    /**
+     * Display a listing of threads by series
+     *
+     * @param Request $request
+     * @param $tag
+     * @return Response
+     */
 	public function indexSeries(Request $request, $tag)
 	{
         // if the gate does not allow this user to show a forum redirect to home
@@ -224,11 +230,13 @@ class ThreadsController extends Controller
         			->with(compact('threads'));
 	}
 
-	/**
-	 * Display a listing of threads by entity
-	 *
-	 * @return Response
-	 */
+    /**
+     * Display a listing of threads by entity
+     *
+     * @param Request $request
+     * @param $slug
+     * @return Response
+     */
 	public function indexRelatedTo(Request $request, $slug)
 	{
         // if the gate does not allow this user to show a forum redirect to home
@@ -275,7 +283,8 @@ class ThreadsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param ThreadRequest|Request $request
+     * @param Thread $thread
      * @return \Illuminate\Http\Response
      */
 	public function store(ThreadRequest $request, Thread $thread)
@@ -355,8 +364,9 @@ class ThreadsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param Thread $thread
      * @return \Illuminate\Http\Response
+     * @internal param int $id
      */
     public function show(Thread $thread)
     {
@@ -406,8 +416,9 @@ class ThreadsController extends Controller
     /**
      * Unlock the specified resource.
      *
-     * @param  Thread  $thread
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param Thread $thread
      */
     public function unlock($id)
     {
@@ -432,8 +443,9 @@ class ThreadsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param Thread $thread
      * @return \Illuminate\Http\Response
+     * @internal param int $id
      */
     public function edit(Thread $thread)
     {
@@ -451,9 +463,10 @@ class ThreadsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param Thread $thread
+     * @param ThreadRequest|Request $request
      * @return \Illuminate\Http\Response
+     * @internal param int $id
      */
     public function update(Thread $thread, ThreadRequest $request)
     {
@@ -503,8 +516,9 @@ class ThreadsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Thread $thread
      * @return \Illuminate\Http\Response
+     * @internal param int $id
      */
     public function destroy(Thread $thread)
     {
@@ -516,5 +530,75 @@ class ThreadsController extends Controller
 		flash()->success('Success', 'Your thread has been deleted!');
 
 		return redirect('threads');
+    }
+
+    /**
+     * Mark user as following the thread
+     *
+     * @param $id
+     * @param Request $request
+     * @return Response
+     */
+    public function follow($id, Request $request)
+    {
+        // check if there is a logged in user
+        if (!$this->user)
+        {
+            flash()->error('Error',  'No user is logged in.');
+            return back();
+        };
+
+        if (!$thread = Thread::find($id))
+        {
+            flash()->error('Error',  'No such entity');
+            return back();
+        };
+
+        // add the following response
+        $follow = new Follow;
+        $follow->object_id = $id;
+        $follow->user_id = $this->user->id;
+        $follow->object_type = 'thread'; // 1 = Attending, 2 = Interested, 3 = Uninterested, 4 = Cannot Attend
+        $follow->save();
+
+        Log::info('User '.$id.' is following '.$thread->name);
+
+        flash()->success('Success',  'You are now following the thread - '.$thread->name);
+
+        return back();
+
+    }
+
+    /**
+     * Mark user as unfollowing the thread.
+     *
+     * @param $id
+     * @param Request $request
+     * @return Response
+     */
+    public function unfollow($id, Request $request)
+    {
+
+        // check if there is a logged in user
+        if (!$this->user)
+        {
+            flash()->error('Error',  'No user is logged in.');
+            return back();
+        };
+
+        if (!$thread = Thread::find($id))
+        {
+            flash()->error('Error',  'No such thread');
+            return back();
+        };
+
+        // delete the follow
+        $response = Follow::where('object_id','=', $id)->where('user_id','=',$this->user->id)->where('object_type','=','thread')->first();
+        $response->delete();
+
+        flash()->success('Success',  'You are no longer following the thread.');
+
+        return back();
+
     }
 }

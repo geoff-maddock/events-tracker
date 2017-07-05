@@ -144,6 +144,33 @@ class Thread extends Eloquent {
 		return $this->belongsTo('App\User','created_by');
 	}
 
+    /**
+     * Checks if the thread is followed by the user
+     *
+     * @return Collection $follows
+     *
+     **/
+    public function followedBy($user)
+    {
+        $response = Follow::where('object_type','=', 'thread')
+            ->where('object_id','=',$this->id)
+            ->where('user_id', '=', $user->id)
+            ->first();
+        // return any follow instances
+
+        return $response;
+    }
+
+    /**
+     * The follows that belong to the thread
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function follows()
+    {
+        return $this->belongsToMany('App\Follow')->withTimestamps();
+    }
+
 	/**
 	 * An thread is owned by one forum
 	 *
