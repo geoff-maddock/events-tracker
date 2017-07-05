@@ -16,7 +16,7 @@
 
 
     <!-- select based on default-theme -->
-    @if ($signedIn && (Auth::user()->profile->default_theme != 'dark-theme'))
+    @if (isset($signedIn) && $signedIn === true && (Auth::user()->profile->default_theme != 'dark-theme'))
     	<link href="{{ asset('/css/'.Auth::user()->profile->default_theme.'.css') }}" rel="stylesheet">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     @else
