@@ -1007,7 +1007,7 @@ class EventsController extends Controller {
 					{
 						$query->visible($this->user);
 					})
-					->orderBy('start_at', 'ASC')
+//					->orderBy('start_at', 'ASC')
 					->paginate($this->rpp);
 
 		$past_events = Event::getByType($slug)
@@ -1016,7 +1016,7 @@ class EventsController extends Controller {
 					{
 						$query->visible($this->user);
 					})
-					->orderBy('start_at', 'ASC')
+	//				->orderBy('start_at', 'ASC')
 					->paginate($this->rpp);
 
 
@@ -1046,7 +1046,7 @@ class EventsController extends Controller {
 					{
 						$query->visible($this->user);
 					})
-					->orderBy('start_at', 'ASC')
+					//->orderBy('start_at', 'ASC')
 					->paginate($this->rpp);
 
 		$past_events = Event::getBySeries(strtolower($slug))
@@ -1055,7 +1055,7 @@ class EventsController extends Controller {
 					{
 						$query->visible($this->user);
 					})
-					->orderBy('start_at', 'ASC')
+				//	->orderBy('start_at', 'ASC')
 					->paginate($this->rpp);
 
 

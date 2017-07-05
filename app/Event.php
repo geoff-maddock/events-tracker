@@ -389,7 +389,7 @@ class Event extends Eloquent {
 		$events = self::whereHas('eventType', function($q) use ($slug)
 		{
 			$q->where('name','=', $slug);
-		})->orderBy('name','ASC');
+		});
 
 		return $events;
 	}
@@ -406,7 +406,7 @@ class Event extends Eloquent {
 		$events = self::whereHas('series', function($q) use ($slug)
 		{
 			$q->where('name','=', $slug);
-		})->orderBy('name','ASC');
+		});
 
 		return $events;
 	}
