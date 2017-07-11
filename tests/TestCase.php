@@ -41,6 +41,8 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase {
     protected function disableExceptionHandling()
     {
         $this->oldExceptionHandler = $this->app->make(ExceptionHandler::class);
+
+        /*
         $this->app->instance(ExceptionHandler::class, new class extends Handler {
             public function __construct() {}
             public function report(\Exception $e) {}
@@ -48,6 +50,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase {
                 throw $e;
             }
         });
+        */
     }
     protected function withExceptionHandling()
     {

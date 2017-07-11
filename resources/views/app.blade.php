@@ -44,6 +44,12 @@
 </head>
 <body id="event-repo">
 	<script src="{{ asset('/js/global-config.js') }}"></script>
+
+	<div id="loading" class="loading">
+		<div class="spinner"></div>
+	</div>
+	<div id="flash" class="flash"></div>
+
 	@include('partials.nav')
 
 	<div class="container-fluid">

@@ -142,7 +142,7 @@ class ThreadsTest extends TestCase
     function a_user_can_filter_threads_according_to_a_tag()
     {
         $category = create('App\ThreadCategory');
-        $threadInCategory = create('App\Thread')->['thread_category_id' => $category->id]);
+        $threadInCategory = create('App\Thread', ['thread_category_id' => $category->id]);
         $threadNotInCategory = create('App\Thread');
 
         $this->get('/threads/category/' . $category->name)
