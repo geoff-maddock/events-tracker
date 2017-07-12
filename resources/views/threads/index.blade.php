@@ -12,6 +12,17 @@
 	<a href="{{ url('/threads/all') }}" class="btn btn-info">Show all threads</a>
 	<a href="{!! URL::route('threads.index') !!}" class="btn btn-info">Show paginated threads</a>
 	<a href="{!! URL::route('threads.create') !!}" class="btn btn-primary">Add a thread</a>
+	<div class="btn-group">
+		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			Thread Category <span class="caret"></span>
+		</button>
+		<ul class="dropdown-menu">
+			<li><a  href="/threads">General</a></li>
+			@foreach (App\ThreadCategory::all() as $category)
+			<li><a  href="/threads/category/{{ urlencode($category->name) }}">{{ $category->name }}</a></li>
+			@endforeach
+		</ul>
+	</div>
 	</p>
 
 	<br style="clear: left;"/>
