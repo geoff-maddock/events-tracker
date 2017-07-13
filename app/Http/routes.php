@@ -29,6 +29,7 @@ Route::get('password/reset/{token}', 'Auth\PasswordController@getReset');
 Route::post('password/reset', 'Auth\PasswordController@postReset');
 
 Route::get('/', 'PagesController@home')->name('home');
+Route::get('/home', 'PagesController@home')->name('home');
 
 Route::get('about', 'PagesController@about');
 
