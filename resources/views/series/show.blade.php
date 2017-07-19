@@ -30,8 +30,12 @@
 		@if ($nextEvent = $series->nextEvent() )
 			Next is {{ $nextEvent->start_at->format('l F jS Y')}}<br>
 		@elseif ($series->cancelled_at == NULL)
-			Next is {{ $series->cycleFromFoundedAt() ? $series->founded_at->format('l F jS Y'). ' (not yet created)' : ' unkown'}}<br>
+			Next is {{ $series->nextEvent() ? $series->nextEvent()->start_at->format('l F jS Y') : $series->cycleFromFoundedAt()->format('l F jS Y') }} (not yet created)<br>
 		@endif
+
+
+
+
 	@endif
 	</p>
 
