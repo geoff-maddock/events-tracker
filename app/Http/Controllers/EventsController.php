@@ -430,8 +430,7 @@ class EventsController extends Controller {
 	 **/
 	public function calendar()
 	{
-		$eventList = array();
-		
+	
 		// get all public events
 		$events = Event::all();
 
@@ -442,6 +441,122 @@ class EventsController extends Controller {
 			// all events that you are invited to
 			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
 		});
+
+		// get all the upcoming series events
+		$series = Series::active()->get();
+
+		$series = $series->filter(function($e)
+		{
+			// all public events
+			// all events that you created
+			// all events that you are invited to
+			return ((($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id)) AND $e->occurrenceType->name != 'No Schedule');
+		});
+
+
+		return $this->renderCalendar($events, $series);
+	}
+
+	/**
+	 * Display a calendar view of free events
+	 *
+	 * @return view
+	 **/
+	public function calendarFree()
+	{
+			
+		$events = Event::where('door_price', 0)
+			->orderBy('start_at', 'ASC')
+			->orderBy('name', 'ASC')
+			->get();
+
+		$events = $events->filter(function($e)
+		{
+			// all public events
+			// all events that you created
+			// all events that you are invited to
+			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+		});
+
+
+		// get all the upcoming series events
+		$series = Series::where('door_price', 0)->active()->get();
+
+		$series = $series->filter(function($e)
+		{
+			// all public events
+			// all events that you created
+			// all events that you are invited to
+			return ((($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id)) AND $e->occurrenceType->name != 'No Schedule');
+		});
+
+		$tag = "No Cover";
+
+		return $this->renderCalendar($events, $series, $tag);
+	}
+
+	/**
+	 * Display a calendar view of all ages
+	 *
+	 * @return view
+	 **/
+	public function calendarMinAge($age)
+	{
+
+ 		$age = urldecode($age);
+			
+		$events = Event::where('min_age', '<=', $age)
+			->orderBy('start_at', 'ASC')
+			->orderBy('name', 'ASC')
+			->get();
+
+		$events = $events->filter(function($e)
+		{
+			// all public events
+			// all events that you created
+			// all events that you are invited to
+			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+		});
+
+
+		// get all the upcoming series events
+		$series = Series::where('min_age', '<=', $age)->active()->get();
+
+		$series = $series->filter(function($e)
+		{
+			// all public events
+			// all events that you created
+			// all events that you are invited to
+			return ((($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id)) AND $e->occurrenceType->name != 'No Schedule');
+		});
+
+		$tag = "Min Age ".$age;
+
+		return $this->renderCalendar($events, $series, $tag);
+
+	}
+
+	/**
+	 * Display a listing of events by event type
+	 *
+	 * @return Response
+	 */
+	public function calendarEventTypes($type)
+	{
+ 		$tag = urldecode($type);
+
+ 		$eventList = array();
+
+		$events = Event::getByType(ucfirst($tag))
+					->orderBy('start_at', 'ASC')
+					->orderBy('name', 'ASC')
+					->get();
+
+		$events->filter(function($e)
+		{
+			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+		});
+
 
 		foreach ($events as $event)
 		{
@@ -459,7 +574,7 @@ class EventsController extends Controller {
 		};
 
 		// get all the upcoming series events
-		$series = Series::active()->get();
+		$series = Series::getByTag(ucfirst($tag))->active()->get();
 
 		$series = $series->filter(function($e)
 		{
@@ -488,6 +603,7 @@ class EventsController extends Controller {
 			};
 		};
 
+
 		$calendar = \Calendar::addEvents($eventList) //add an array with addEvents
 		    ->setOptions([ //set fullcalendar options
 		        'firstDay' => 0,
@@ -495,8 +611,66 @@ class EventsController extends Controller {
 		    ])->setCallbacks([ //set fullcalendar callback options (will not be JSON encoded)
 		        //'viewRender' => 'function() {alert("Callbacks!");}'
 		    ]); 
-		return view('events.calendar', compact('calendar'));
+		return view('events.calendar', compact('calendar', 'tag'));
+
 	}
+
+
+	/**
+	 * Displays the calendar based on passed events and tag
+	 *
+	 * @return view
+	 **/
+	public function renderCalendar($events, $series = NULL, $tag = NULL)
+	{
+		$eventList = array();
+			
+		foreach ($events as $event)
+		{
+			$eventList[] = \Calendar::event(
+			    $event->name, //event title
+			    false, //full day event?
+			    $event->start_at->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
+			    ($event->end_time ? $event->end_time->format('Y-m-d H:i') : NULL), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
+			    $event->id, //optional event ID
+			    [
+			        'url' => 'events/'.$event->id,
+			        //'color' => '#fc0'
+			    ]
+			);
+		};
+
+		foreach ($series as $s)
+		{
+			if ($s->nextEvent() == NULL AND $s->nextOccurrenceDate() != NULL)
+			{
+				// add the next instance of each series to the calendar
+				$eventList[] = \Calendar::event(
+				    $s->name, //event title
+				    false, //full day event?
+				    $s->nextOccurrenceDate()->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
+				    ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : NULL), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
+				    $s->id, //optional event ID
+				    [
+				        'url' => 'series/'.$s->id,
+				        'color' => '#99bcdb'
+				    ]
+				);
+			};
+		};
+
+		$calendar = \Calendar::addEvents($eventList) //add an array with addEvents
+		    ->setOptions([ //set fullcalendar options
+		        'firstDay' => 0,
+		        'height' => 840,
+		    ])->setCallbacks([ //set fullcalendar callback options (will not be JSON encoded)
+		        //'viewRender' => 'function() {alert("Callbacks!");}'
+		    ]); 
+
+
+		return view('events.calendar', compact('calendar', 'tag'));
+	}
+
 
 	/**
 	 * Show a form to create a new Article.

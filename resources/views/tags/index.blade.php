@@ -24,7 +24,9 @@
 
 
 				<div class="panel-heading">
-					<h3 class="panel-title">Tags</h3>
+					<h3 class="panel-title">Tags
+						<a href="#" ><span class='glyphicon glyphicon-question-sign pull-right' data-toggle="tooltip" data-placement="bottom"  title="Click on a tag name in the left panel to find all related events or entites.  Click on the plus next to the tag to follow, minus to unfollow."></span></a>
+					</h3>
 				</div>
 
 				<div class="panel-body">
@@ -58,6 +60,7 @@
 		</div>
 	</div>
 
+	@if (!isset($tag))
 	<div class="col-lg-10">
 		<div class="bs-component">
 			<div class="panel panel-info">
@@ -75,6 +78,7 @@
 			</div>
 		</div>	
 	</div>
+	@endif
 
 	@if (isset($events) && count($events) > 0)
 	<div class="col-lg-5">
@@ -101,7 +105,10 @@
 
 
 				<div class="panel-heading">
-					<h3 class="panel-title">Events</h3>
+					<h3 class="panel-title">Events
+								<a href="{!! route('calendar.tag', ['tag' => $tag]) !!}" title="{{ $tag.' Calendar' }}"><span class='glyphicon glyphicon-calendar pull-right'></span></a>
+					</h3>
+
 				</div>
 
 				<div class="panel-body">
@@ -137,4 +144,12 @@
 	</div>
 
 @stop
- 
+
+@section('scripts.footer')
+@parent
+<script>
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip(); 
+});
+</script>
+@stop
