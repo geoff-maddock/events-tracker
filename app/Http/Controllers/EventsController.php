@@ -574,7 +574,7 @@ class EventsController extends Controller {
 		};
 
 		// get all the upcoming series events
-		$series = Series::getByTag(ucfirst($tag))->active()->get();
+		$series = Series::getByType(ucfirst($tag))->active()->get();
 
 		$series = $series->filter(function($e)
 		{
@@ -611,6 +611,7 @@ class EventsController extends Controller {
 		    ])->setCallbacks([ //set fullcalendar callback options (will not be JSON encoded)
 		        //'viewRender' => 'function() {alert("Callbacks!");}'
 		    ]); 
+		    
 		return view('events.calendar', compact('calendar', 'tag'));
 
 	}

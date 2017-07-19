@@ -215,6 +215,23 @@ class Series extends Eloquent {
 	}
 
 	/**
+	 * Return a collection of series with the passed event type
+	 * 
+	 * @return Collection $series
+	 * 
+	 **/
+	public static function getByType($slug)
+	{
+		// get a list of series that have the passed tag
+		$series = self::whereHas('eventType', function($q) use ($slug)
+		{
+			$q->where('name','=', $slug);
+		});
+
+		return $series;
+	}
+
+	/**
 	 * Return a collection of series with the passed venue
 	 * 
 	 * @return Collection $series
