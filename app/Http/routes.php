@@ -36,8 +36,11 @@ Route::get('about', 'PagesController@about');
 Route::get('help', 'PagesController@help');
 
 Route::get('calendar', 'EventsController@calendar');
-Route::get('calendar/tag/{tag}', 'EventsController@calendarTags');
+Route::get('calendar/tag/{tag}', 'EventsController@calendarTags')->name('calendar.tag');
 Route::get('calendar/relatedto/{slug}', 'EventsController@calendarRelatedTo');
+Route::get('calendar/free', 'EventsController@calendarFree')->name('calendar.free');
+Route::get('calendar/type/{tag}', 'EventsController@calendarEventTypes')->name('calendar.type');
+Route::get('calendar/min_age/{age}', 'EventsController@calendarMinAge')->name('calendar.minAge');
 
 Route::get('search','PagesController@search');
 

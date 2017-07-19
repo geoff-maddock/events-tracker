@@ -31,7 +31,16 @@
 		            <li class="{{ Request::is('entities/create') ? 'active' : '' }}"><a href="{!! url('/entities/create') !!}" >Add Entity</a></li>
 		          </ul>
 		        </li>
-				<li class="{{ Request::is('calendar') ? 'active' : '' }}"><a href="{{ url('/calendar') }}">Calendar</a></li>
+
+
+				<li class="dropdown {{ Request::is('calendar') ? 'active' : '' }}">
+		          <a href="{{ url('/calendar') }}" class="dropdown-toggle" data-hover="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Calendar <span class="caret"></span></a>
+		          <ul class="dropdown-menu">
+		            <li class="{{ Request::is('calendar/free') ? 'active' : '' }}"><a href="{!! url('/calendar/free') !!}" >Free Shows</a></li>
+		            <li class="{{ Request::is('calendar/min_age/0') ? 'active' : '' }}"><a href="{!! url('/calendar/min_age/0') !!}" >All Ages</a></li>
+		            <li class="{{ Request::is('calendar/type/club night') ? 'active' : '' }}"><a href="{!! url('/calendar/type/club night') !!}" >Club Night</a></li>
+		          </ul>
+		        </li>
 
 				<li><a href="{{ url('/threads')}}">Forum</a></li> 
 				<li class="{{ Request::is('tags') ? 'active' : '' }}"><a href="{{ url('/tags') }}">Tags</a></li>
