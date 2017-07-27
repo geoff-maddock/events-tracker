@@ -15,6 +15,7 @@ use App\EntityFilters;
 use App\EntityType;
 use App\EntityStatus;
 use App\Tag;
+use App\Alias;
 use App\Role;
 use App\Location;
 use App\Photo;
@@ -143,6 +144,20 @@ class EntitiesController extends Controller {
 						->get();
  		}
 
+  		if ($request->input('filter_alias'))
+ 		{
+ 			$alias = $request->input('filter_alias');
+			$entities = Entity::getByAlias(ucfirst($alias))
+						->where(function($query)
+						{
+							$query->active()
+							->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
+						})
+						->orderBy('entity_type_id', 'ASC')
+						->orderBy('name', 'ASC')
+						->get();
+ 		}
+
    		if ($request->input('filter_name'))
  		{
  			$name = $request->input('filter_name');
@@ -153,7 +168,7 @@ class EntitiesController extends Controller {
 		// $entities->filter($filters);
 		//$entities->get();
 
-		return view('entities.index', compact('entities', 'role', 'tag','name'));
+		return view('entities.index', compact('entities', 'role', 'tag', 'alias', 'name'));
 	}
 
 	/**
@@ -199,6 +214,28 @@ class EntitiesController extends Controller {
 	}
 
 	/**
+	 * Display a listing of entities by alias
+	 *
+	 * @return Response
+	 */
+	public function indexAliases($role)
+	{
+ 
+		$entities = Entity::getByAlias(ucfirst($role))
+					->where(function($query)
+					{
+						$query->active()
+						->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
+					})
+					->orderBy('entity_type_id', 'ASC')
+					->orderBy('name', 'ASC')
+					->get();
+
+		return view('entities.index', compact('entities', 'role'));
+	}
+
+
+	/**
 	 * Show the form for creating a new resource.
 	 *
 	 * @return Response
@@ -209,9 +246,10 @@ class EntitiesController extends Controller {
 		$entityStatuses = EntityStatus::orderBy('name','ASC')->pluck('name', 'id')->all();
 
 		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
+		$aliases = Alias::orderBy('name','ASC')->pluck('name','id')->all();
 		$roles = Role::orderBy('name','ASC')->pluck('name','id')->all();
 
-		return view('entities.create',compact('entityTypes','entityStatuses','tags','roles'));
+		return view('entities.create',compact('entityTypes','entityStatuses','tags','aliases','roles'));
 	}
 
 	/**
@@ -227,7 +265,9 @@ class EntitiesController extends Controller {
  		$input = $request->all();
 
 		$tagArray = $request->input('tag_list',[]);
+		$aliasArray = $request->input('alias_list',[]);
 		$syncArray = array();
+		$aliasSyncArray = array();
 
 		// check the elements in the tag list, and if any don't match, add the tag
 		foreach ($tagArray as $key => $tag)
@@ -246,11 +286,32 @@ class EntitiesController extends Controller {
 			} else {
 				$syncArray[$key] = $tag;
 			};
+		};
+
+		// check the elements in the alias list, and if any don't match, add the alias
+		foreach ($aliasArray as $key => $alias)
+		{
+
+			if (!DB::table('aliases')->where('id', $alias)->get())
+			{
+				$newAlias = new Alias;
+				$newAlias->name = ucwords(strtolower($alias));
+				$newAlias->save();
+
+				$aliasSyncArray[] = $newAlias->id;
+
+				$msg .= ' Added alias '.$alias.'.';
+			} else {
+				$aliasSyncArray[$key] = $alias;
+			};
 		}
+
+
 
 		$entity = $entity->create($input);
 
 		$entity->tags()->attach($syncArray);
+		$entity->aliases()->attach($aliasSyncArray);
 		$entity->roles()->attach($request->input('role_list',[]));
 
 		flash()->success('Success', 'Your entity has been created');
@@ -283,9 +344,10 @@ class EntitiesController extends Controller {
 		$entityStatuses = EntityStatus::orderBy('name','ASC')->pluck('name', 'id')->all();
 
 		$tags = Tag::orderBy('name')->pluck('name','id')->all();
+		$aliases = Alias::orderBy('name')->pluck('name','id')->all();
 		$roles = Role::orderBy('name')->pluck('name','id')->all();
 
-		return view('entities.edit', compact('entity','entityTypes', 'entityStatuses','tags','roles'));
+		return view('entities.edit', compact('entity','entityTypes', 'entityStatuses','tags','aliases','roles'));
 	}
 
 	/**
@@ -306,8 +368,10 @@ class EntitiesController extends Controller {
 		};
 
 		$tagArray = $request->input('tag_list',[]);
+		$aliasArray = $request->input('alias_list',[]);
 
 		$syncArray = array();
+		$aliasSyncArray = array();
 
 		// check the elements in the tag list, and if any don't match, add the tag
 		foreach ($tagArray as $key => $tag)
@@ -328,7 +392,28 @@ class EntitiesController extends Controller {
 			};
 		}
 
+
+		// check the elements in the alias list, and if any don't match, add the alias
+		foreach ($aliasArray as $key => $alias)
+		{
+
+			if (!DB::table('aliases')->where('id', $alias)->get())
+			{
+				$newAlias = new Alias;
+				$newAlias->name = ucwords(strtolower($alias));
+				$newAlias->save();
+
+				$aliasSyncArray[] = $newAlias->id;
+
+				$msg .= ' Added alias '.$alias.'.';
+			} else {
+				$aliasSyncArray[$key] = $alias;
+			};
+		}
+
+
 		$entity->tags()->sync($syncArray);
+		$entity->aliases()->attach($aliasSyncArray);
 
 		$entity->roles()->sync($request->input('role_list', []));
 

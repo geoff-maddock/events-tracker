@@ -196,6 +196,16 @@ class Entity extends Eloquent {
 	}
 
 	/**
+	 * The aliases that belong to the entity
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function aliases()
+	{
+		return $this->belongsToMany('App\Alias')->withTimestamps();
+	}
+
+	/**
 	 * The follows that belong to the entity
 	 *
 	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -239,7 +249,7 @@ class Entity extends Eloquent {
 	}
 
 	/**
-	 * Get a list of tag ids associated with the event
+	 * Get a list of tag ids associated with the entity
 	 *
 	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
 	 */
@@ -248,9 +258,18 @@ class Entity extends Eloquent {
 		return $this->tags->pluck('id')->all();
 	}
 
+	/**
+	 * Get a list of alias ids associated with the entity
+	 *
+	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function getAliasListAttribute()
+	{
+		return $this->aliases->pluck('id')->all();
+	}
 
 	/**
-	 * Get a list of role ids associated with the event
+	 * Get a list of role ids associated with the entity
 	 *
 	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
 	 */
@@ -331,6 +350,23 @@ class Entity extends Eloquent {
 		return $entities;
 	}
 
+	/**
+	 * Return a collection of entities with the passed alias
+	 * 
+	 * @pra
+	 * @return Collection $entities
+	 * 
+	 **/
+	public static function getByAlias($alias)
+	{
+		// get a list of entities that have the passed alias
+		$entities = self::whereHas('aliases', function($q) use ($alias)
+		{
+			$q->where('name','=', ucfirst($alias));
+		})->orderBy('name','ASC');
+
+		return $entities;
+	}
 	/**
 	 * Return a collection of entities with the passed type
 	 * 

@@ -20,7 +20,18 @@
 	<div class="profile-card col-md-5">
 	<h2 class='item-title'>{{ $entity->name }}</h2>
 
+	@unless ($entity->aliases->isEmpty())
+		
+		<P><b>Aliases:</b>
+		
+		@foreach ($entity->aliases as $alias)
+		<span class="label label-tag"><a href="/entities/alias/{{ $alias->name }}">{{ $alias->name }}</a></span>
+		@endforeach
+
+	@endunless
+	<P>
 	<b>{{ $entity->entityType->name }}</b>
+	</P>
 	<p>
 	@if ($entity->short)
 		<i>{{ $entity->short }} </i><br><br>

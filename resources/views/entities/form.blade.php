@@ -62,6 +62,13 @@
 	</div>
 </div>
 
+<div class="row">
+	<div class="form-group col-md-6">
+	{!! Form::label('alias_list','Aliases:') !!}
+	{!! Form::select('alias_list[]', $aliases, null, ['id' => 'alias_list','class' =>'form-control', 'multiple']) !!}
+	{!! $errors->first('aliases','<span class="help-block">:message</span>') !!}
+	</div>
+</div>
 
 <div class="form-group">
 {!! Form::submit(isset($action) ? 'Update Entity' : 'Add Entity', null, ['class' =>'btn btn-primary']) !!}
@@ -73,6 +80,11 @@
 		$('#tag_list').select2(
 			{
 				placeholder: 'Choose a tag',
+				tags: true,
+			});
+		$('#alias_list').select2(
+			{
+				placeholder: 'Choose an alias',
 				tags: true,
 			});
 		$('#role_list').select2(
