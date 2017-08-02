@@ -2,13 +2,14 @@ You might be interested in this new thread because you are following <b>{!! $obj
 
 <div class='event-date'>
     <h2>{!! $thread->created_at->format('l F jS Y') !!}</h2>
-
-    {!! $thread->start_at->format('h:i A') !!} {!! $event->end_time ? 'until '.$event->end_time->format('h:i A') : '' !!}
 </div>
 
 <h2>{{ $thread->name }}</h2>
 <i><a href="{{ url('threads/'.$thread->id) }}">{{ $thread->description }}</a></i><br>
 
+<p>
+{{ $thread->body }}
+</p>
 
     <br>
     <i>Added by <a href="{{ url('users/'.$thread->user->id) }}">{{ $thread->user->name or '' }}</a></i>
@@ -22,7 +23,7 @@ You might be interested in this new thread because you are following <b>{!! $obj
     @endunless
 </P>
 
-@unless ($event->tags->isEmpty())
+@unless ($thread->tags->isEmpty())
     <P>Tags:
         @foreach ($thread->tags as $tag)
             <span class="label label-tag"><a href="{{ url('threads/tag/'.$tag->name) }}">{{ $tag->name }}</a></span>

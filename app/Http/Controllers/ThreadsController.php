@@ -83,6 +83,8 @@ class ThreadsController extends Controller
 
         // get the threads
 		$threads = Thread::orderBy($this->sortBy, $this->sortDirection)->paginate($this->rpp);
+
+        // filter only public threads or those created by the logged in user
 		$threads->filter(function($e)
 		{
 			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
@@ -97,7 +99,8 @@ class ThreadsController extends Controller
 
         return view('threads.index')
                 	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
-        			->with(compact('threads'));
+        			->with(compact('threads'))
+                    ->render();
 
     }
 
@@ -370,10 +373,10 @@ class ThreadsController extends Controller
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users))
                 {
-                    Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $event, $tag, $reply_email, $site, $url) {
+                    Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $thread, $tag, $reply_email, $site, $url) {
                         $m->from($reply_email, $site);
 
-                        $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
+                        $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$thread->created_at->format('D F jS').' '.$thread->name);
                     });
                     $users[$user->id] = $tag->name;
                 };
@@ -381,7 +384,7 @@ class ThreadsController extends Controller
         };
 
         // notify users following any of the series
-        $seriess = $event->series()->get();
+        $seriess = $thread->series()->get();
 
 
         foreach ($seriess as $series)
@@ -392,12 +395,12 @@ class ThreadsController extends Controller
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users))
                 {
-                    Mail::send('emails.following-thread', ['user' => $user, 'event' => $event, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $event, $tag, $reply_email, $site, $url) {
+                    Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $series, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $thread, $series, $reply_email, $site, $url) {
                         $m->from($reply_email, $site);
 
-                        $m->to($user->email, $user->name)->subject($site.': '.$entity->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
+                        $m->to($user->email, $user->name)->subject($site.': '.$series->name.' :: '.$thread->created_at->format('D F jS').' '.$thread->name);
                     });
-                    $users[$user->id] = $entity->name;
+                    $users[$user->id] = $series->name;
                 };
             };
         };
