@@ -154,7 +154,7 @@
 <div class="row">
 	<div class="form-group col-md-6">
 	{!! Form::label('tag_list','Tags:') !!}
-	{!! Form::select('tag_list[]', $tags, null, ['id' => 'tag_list', 'class' =>'form-control', 'multiple']) !!}
+	{!! Form::select('tag_list[]', $tags, old('tag_list'), ['id' => 'tag_list', 'class' =>'form-control', 'multiple' => 'true']) !!}
 	{!! $errors->first('tags','<span class="help-block">:message</span>') !!}
 	</div>
 </div>

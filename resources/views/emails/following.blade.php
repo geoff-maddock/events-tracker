@@ -9,17 +9,16 @@ You might be interested in this new event because you are following <b>{!! $obje
 	<h2>{{ $event->name }}</h2>
 	<i>{{ $event->short }}</i><br>
 
-
 	<b>
 	@if (!empty($event->series_id))
-	<a href="/series/{{$event->series_id }}">{!! $event->series->name !!}</a> series
+	<a href="{{ url('series/'.$event->series_id) }}">{!! $event->series->name !!}</a> series
 	@endif
 
-	<a href="/events/type/{{$event->eventType->name }}">{{ $event->eventType->name }}</a>
+	<a href="{{ url('events/type/'.$event->eventType->name) }}">{{ $event->eventType->name }}</a>
 	<br>
 
 	@if (!empty($event->venue_id))
-	<a href="/entities/{{$event->venue->id }}">{!! $event->venue->name !!}</a>
+	<a href="{{ url('entities/'.$event->venue->id) }}">{!! $event->venue->name !!}</a>
 
 	@if ($event->venue->getPrimaryLocationAddress() )
 		{{ $event->venue->getPrimaryLocationAddress() }}
@@ -62,13 +61,13 @@ You might be interested in this new event because you are following <b>{!! $obje
 	@endif
 
 	<br>
-	<i>Added by <a href="/users/{{ $event->user->id }}">{{ $event->user->name or '' }}</a></i>
+	<i>Added by <a href="{{ url('users/'.$event->user->id) }}">{{ $event->user->name or '' }}</a></i>
 
 	<P>
 	@unless ($event->entities->isEmpty())
 	Related Entities:
 		@foreach ($event->entities as $entity)
-		<span class="label label-tag"><a href="/events/relatedto/{{ $entity->slug }}">{{ $entity->name }}</a></span>
+		<span class="label label-tag"><a href="{{ url('events/relatedto/'.$entity->slug) }}">{{ $entity->name }}</a></span>
 		@endforeach
 	@endunless
 	</P>
@@ -76,7 +75,7 @@ You might be interested in this new event because you are following <b>{!! $obje
 	@unless ($event->tags->isEmpty())
 	<P>Tags:
 	@foreach ($event->tags as $tag)
-		<span class="label label-tag"><a href="/events/tag/{{ $tag->name }}">{{ $tag->name }}</a></span>
+		<span class="label label-tag"><a href="{{ url('events/tag/'.$tag->name) }}">{{ $tag->name }}</a></span>
 		@endforeach
 	@endunless
 	</P>

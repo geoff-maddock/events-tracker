@@ -30,7 +30,7 @@
 				@if ($response = $event->getEventResponse($user))
 				<a href="{!! route('events.unattending', ['id' => $event->id]) !!}" title="{{ $response->responseType->name }}"><span class='glyphicon glyphicon-star text-warning'></span></a>
 				@else
-				<a href="{!! route('events.attending', ['id' => $event->id]) !!}" title="No reponse to event."><span class='glyphicon glyphicon-star text-info'></span></a>
+				<a href="{!! route('events.attending', ['id' => $event->id]) !!}" title="Click star to mark attending"><span class='glyphicon glyphicon-star text-info'></span></a>
 				@endif
 			@endif
 

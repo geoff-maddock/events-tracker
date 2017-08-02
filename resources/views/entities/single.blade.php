@@ -22,7 +22,6 @@
 	@else
 	<a href="{!! route('entities.follow', ['id' => $entity->id]) !!}" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
 	@endif
-
 	@endif 
 
 

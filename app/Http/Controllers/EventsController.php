@@ -3,6 +3,8 @@
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventRequest;
+use Illuminate\View\View;
+use PhpParser\Node\Expr\Array_;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 use Illuminate\Http\Request;
@@ -36,6 +38,7 @@ class EventsController extends Controller {
 
 		// default list variables
 		$this->rpp = 5;
+		$this->page = 1;
 		$this->sortBy = 'created_at';
 		$this->sortDirection = 'desc';
 		parent::__construct();
@@ -63,18 +66,111 @@ class EventsController extends Controller {
  		};
 	}
 
-	/**
+
+    /**
+     * Apply the filters to the query
+     *
+     */
+    protected function buildCriteria(array $filters = null)
+    {
+        if (is_null($filters)) {
+            $filters = $this->getFilters();
+        }
+    }
+
+    /**
+     * Get session filters
+     *
+     * @return Array
+     */
+    protected function getFilters(Request $request)
+    {
+        return $request->session()->get('filters', $this->getDefaultFilters());
+    }
+
+    /**
+     * Set filters attribute
+     *
+     * @param array $input
+     * @return array
+     */
+    protected function setFilters(array $input)
+    {
+        return $request->session()->put('filters', $input);
+    }
+
+    /**
+     * Get the default filters array
+     *
+     * @return Array
+     */
+    protected function getDefaultFilters()
+    {
+        return array();
+    }
+
+    /**
+     * Reset filter action.
+     *
+     * @param Request $request
+     */
+    public function executeReset(Request $request)
+    {
+        if ($request->input('criteria'))
+        {
+            $this->setCriteria($request->input('criteria'));
+        }
+        $this->setFilters($this->getDefaultFilters());
+        $request->session()->put('defaultFilter', 0);
+        $this->setPage(1);
+        $this->executeFilterRedirect();
+    }
+
+    /**
+     * Returns true if the user has any filters outside of the default
+     *
+     * @return Boolean
+     */
+    protected function getIsFiltered(Request $request)
+    {
+        if (($filters = $this->getFilters($request)) == $this->getDefaultFilters())
+        {
+            return false;
+        }
+        return (bool) count($filters);
+    }
+
+
+    /**
+     * Get page attribute
+     *
+     * @return integer
+     */
+    protected function getPage()
+    {
+        return $request->session()->get('page', 1);
+    }
+
+    /**
+     * Set page attribute
+     *
+     * @param array $input
+     * @return array
+     */
+    protected function setPage(array $input)
+    {
+        return $request->session()->put('page', $input);
+    }
+
+    /**
  	 * Display a listing of the resource.
  	 *
- 	 * @return Response
+ 	 * @return View
  	 */
 	public function index(Request $request)
 	{
  		// updates sort, rpp from request
  		$this->updatePaging($request);
-
-		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();;
 
 		$future_events = Event::future()->paginate($this->rpp);
 		$future_events->filter(function($e)
@@ -92,10 +188,49 @@ class EventsController extends Controller {
 		return view('events.index') 
         	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
         	->with(compact('future_events'))
-        	->with(compact('past_events'));
+        	->with(compact('past_events'))
+            ->render();
 	}
 
-	/**
+    /**
+     * Filter the list of events
+     *
+     * @param Request $request
+     * @return Response
+     * @internal param $Request
+     */
+    public function filter(Request $request)
+    {
+        // get filters from the request
+        $filters = $request->input('EventFilter', array());
+
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        // get a list of venues
+        $venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();;
+
+        $future_events = Event::future()->paginate($this->rpp);
+        $future_events->filter(function($e)
+        {
+            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
+
+
+        $past_events = Event::past()->paginate($this->rpp);
+        $past_events->filter(function($e)
+        {
+            return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
+
+        return view('events.index')
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+            ->with(compact('future_events'))
+            ->with(compact('past_events'));
+    }
+
+
+    /**
  	 * Display a listing of the resource.
  	 *
  	 * @return Response
@@ -186,9 +321,7 @@ class EventsController extends Controller {
  	 */
 	public function feed()
 	{
-		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
-
+        // set number of results per page
 		$this->rpp = 10000;
 
 		$events = Event::future()->simplePaginate($this->rpp);
@@ -199,7 +332,6 @@ class EventsController extends Controller {
 
 		return view('events.feed', compact('events'));
 	}
-
 
 	/**
  	 * Send a reminder to all users who are attending this event
@@ -721,7 +853,6 @@ class EventsController extends Controller {
 		// check the elements in the tag list, and if any don't match, add the tag
 		foreach ($tagArray as $key => $tag)
 		{
-
 			if (!DB::table('tags')->where('id', $tag)->get())
 			{
 				$newTag = new Tag;
@@ -753,8 +884,16 @@ class EventsController extends Controller {
 		return redirect()->route('events.index');
 	}
 
-	protected function notifyFollowing($event)
+    /**
+     * @param $event
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function notifyFollowing($event)
 	{
+        $reply_email = config('app.noreplyemail');
+        $site = config('app.app_name');
+        $url = config('app.url');
+
 		// notify users following any of the tags
 		$tags = $event->tags()->get();
 		$users = array();
@@ -767,10 +906,10 @@ class EventsController extends Controller {
 				// if the user hasn't already been notified, then email them
 				if (!array_key_exists($user->id, $users))
 				{
-					Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $tag], function ($m) use ($user, $event, $tag) {
-						$m->from('admin@events.cutupsmethod.com','Event Repo');
+					Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $event, $tag, $reply_email, $site, $url) {
+                        $m->from($reply_email, $site);
 
-						$m->to($user->email, $user->name)->subject('Event Repo: '.$tag->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
+						$m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
 					});
 					$users[$user->id] = $tag->name;
 				};
@@ -789,10 +928,10 @@ class EventsController extends Controller {
 				// if the user hasn't already been notified, then email them
 				if (!array_key_exists($user->id, $users))
 				{
-					Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $entity], function ($m) use ($user, $event, $entity) {
-						$m->from('admin@events.cutupsmethod.com','Event Repo');
+                    Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $entity, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $event, $tag, $reply_email, $site, $url) {
+                        $m->from($reply_email, $site);
 
-						$m->to($user->email, $user->name)->subject('Event Repo: '.$entity->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
+						$m->to($user->email, $user->name)->subject($site.': '.$entity->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
 					});
 					$users[$user->id] = $entity->name;
 				};
@@ -1056,7 +1195,7 @@ class EventsController extends Controller {
 	/**
 	 * Display a listing of events related to entity
 	 *
-	 * @return Response
+	 * @return View
 	 */
 	public function indexRelatedTo(Request $request, $slug)
 	{
@@ -1092,11 +1231,13 @@ class EventsController extends Controller {
         	->with(compact('slug'));
 	}
 
-	/**
-	 * Display a listing of events that start on the specified day
-	 *
-	 * @return Response
-	 */
+    /**
+     * Display a listing of events that start on the specified day
+     *
+     * @param Request $request
+     * @param $date
+     * @return View
+     */
 	public function indexStarting(Request $request, $date)
 	{
   		// updates sort, rpp from request
@@ -1125,7 +1266,7 @@ class EventsController extends Controller {
 	/**
 	 * Display a listing of events by venue
 	 *
-	 * @return Response
+	 * @return View
 	 */
 	public function indexVenues(Request $request, $slug)
 	{
@@ -1166,7 +1307,7 @@ class EventsController extends Controller {
 	/**
 	 * Display a listing of events by type
 	 *
-	 * @return Response
+	 * @return View
 	 */
 	public function indexTypes(Request $request, $slug)
 	{
@@ -1205,7 +1346,7 @@ class EventsController extends Controller {
 	/**
 	 * Display a listing of events by series
 	 *
-	 * @return Response
+	 * @return View
 	 */
 	public function indexSeries(Request $request, $slug)
 	{
@@ -1244,7 +1385,7 @@ class EventsController extends Controller {
 	/**
 	 * Display a listing of events in a week view
 	 *
-	 * @return Response
+	 * @return View
 	 */
 	public function indexWeek(Request $request)
 	{
@@ -1268,7 +1409,7 @@ class EventsController extends Controller {
 	 * Add a photo to an event
 	 *
 	 * @param  int  $id
-	 * @return Response
+	 * @return View
 	 */
 	public function addPhoto($id, Request $request)
 	{
@@ -1289,7 +1430,7 @@ class EventsController extends Controller {
 	 * Delete a photo
 	 *
 	 * @param  int  $id
-	 * @return Response
+	 * @return View
 	 */
 	public function deletePhoto($id, Request $request)
 	{

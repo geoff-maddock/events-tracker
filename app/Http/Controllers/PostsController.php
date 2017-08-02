@@ -100,6 +100,70 @@ class PostsController extends Controller
             'allow_html' => $allow_html
             ]);
 
+        // here, notify anybody following the thread
+        $this->notifyFollowing($post);
+
+        // add to activity log
+        Activity::log($post, $this->user, 1);
+
+        return back();
+    }
+
+    /**
+     * @param $thread
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function notifyFollowing($post)
+    {
+        $reply_email = config('app.noreplyemail');
+        $site = config('app.app_name');
+        $url = config('app.url');
+
+        $thread = $post->thread;
+
+        // notify users following any of the tags
+        $tags = $thread->tags()->get();
+        $users = array();
+
+        // notify users following any tags related to the thread
+        foreach ($tags as $tag)
+        {
+            foreach ($tag->followers() as $user)
+            {
+                // if the user hasn't already been notified, then email them
+                if (!array_key_exists($user->id, $users))
+                {
+                    Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $event, $tag, $reply_email, $site, $url) {
+                        $m->from($reply_email, $site);
+
+                        $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
+                    });
+                    $users[$user->id] = $tag->name;
+                };
+            };
+        };
+
+        // notify users following any of the series
+        $seriess = $event->series()->get();
+
+        foreach ($seriess as $series)
+        {
+            foreach ($series->followers() as $user)
+            {
+
+                // if the user hasn't already been notified, then email them
+                if (!array_key_exists($user->id, $users))
+                {
+                    Mail::send('emails.following-thread', ['user' => $user, 'event' => $event, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $event, $tag, $reply_email, $site, $url) {
+                        $m->from($reply_email, $site);
+
+                        $m->to($user->email, $user->name)->subject($site.': '.$entity->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
+                    });
+                    $users[$user->id] = $entity->name;
+                };
+            };
+        };
+
         return back();
     }
 
