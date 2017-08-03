@@ -27,7 +27,9 @@
 
 
 				<div class="panel-heading">
-					<h3 class="panel-title">Tags</h3>
+					<h3 class="panel-title">Tags
+						<a href="#" ><span class='label label-tag pull-right' data-toggle="tooltip" data-placement="bottom"  title="# of Tags that match this search term.">{{ count($tags)}}</span></a>
+					</h3>
 				</div>
 
 				<div class="panel-body">
@@ -45,7 +47,9 @@
 
 
 				<div class="panel-heading">
-					<h3 class="panel-title">Series</h3>
+					<h3 class="panel-title">Series
+						<a href="#" ><span class='label label-tag pull-right' data-toggle="tooltip" data-placement="bottom"  title="# of Series that match this search term.">{{ count($series)}}</span></a>
+					</h3>
 				</div>
 
 				<div class="panel-body">
@@ -62,7 +66,9 @@
 
 
 				<div class="panel-heading">
-					<h3 class="panel-title">Events</h3>
+					<h3 class="panel-title">Events
+						<a href="#" ><span class='label label-tag pull-right' data-toggle="tooltip" data-placement="bottom"  title="# of Events that match this search term.">{{ count($events)}}</span></a>
+					</h3>
 				</div>
 
 				<div class="panel-body">
@@ -83,7 +89,9 @@
 			<div class="panel panel-info">
 
 				<div class="panel-heading">
-					<h3 class="panel-title">Users</h3>
+					<h3 class="panel-title">Users
+						<a href="#" ><span class='label label-tag pull-right' data-toggle="tooltip" data-placement="bottom"  title="# of Users that match this search term.">{{ count($users)}}</span></a>
+					</h3>
 				</div>
 
 				<div class="panel-body">
@@ -101,7 +109,9 @@
 			<div class="panel panel-info">
 			
 				<div class="panel-heading">
-					<h3 class="panel-title">Entities</h3>
+					<h3 class="panel-title">Entities
+						<a href="#" ><span class='label label-tag pull-right' data-toggle="tooltip" data-placement="bottom"  title="# of Entities that match this search term.">{{ count($entities)}}</span></a>
+					</h3>
 				</div>
 
 				<div class="panel-body">

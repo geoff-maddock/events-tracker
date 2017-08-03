@@ -73,6 +73,10 @@ class PagesController extends Controller {
 						{
 							$q->where('name','=', ucfirst($slug));
 						})
+					->orWhereHas('series', function($q) use ($slug)
+						{
+							$q->where('name','=', ucfirst($slug));
+						})
 					->orWhere('name','like','%'.$slug.'%')
 					->where(function($query)
 					{
