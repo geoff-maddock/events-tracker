@@ -47,6 +47,11 @@ class Post extends Eloquent {
 	protected $guarded = [];
 	protected $dates = ['created_at','updated_at'];
 
+	public function __toString()
+	{
+		return (string) $this->body;
+	}
+
 	// building filter
 	public function scopeFilter($query, QueryFilter $filters)
 	{

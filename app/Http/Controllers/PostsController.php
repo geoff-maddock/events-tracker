@@ -84,7 +84,7 @@ class PostsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Post $post, Thread $thread)
+    public function store(Thread $thread)
     {
         if (auth()->id() == config('app.superuser'))
         {
@@ -100,6 +100,8 @@ class PostsController extends Controller
             'allow_html' => $allow_html
             ]);
 
+        $post = Post::where('thread_id' ,'=', $thread->id)->orderBy('id','DESC')->first();
+
         // here, notify anybody following the thread
         $this->notifyFollowing($post);
 
@@ -110,7 +112,7 @@ class PostsController extends Controller
     }
 
     /**
-     * @param $thread
+     * @param Post $post
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function notifyFollowing($post)
@@ -125,7 +127,23 @@ class PostsController extends Controller
         $tags = $thread->tags()->get();
         $users = array();
 
+        // notify users who are following this thread 
+        foreach ($thread->followers() as $user)
+        {
+            // if the user hasn't already been notified, then email them
+            if (!array_key_exists($user->id, $users))
+            {
+                Mail::send('emails.following-thread-post', ['user' => $user, 'post' => $post, 'thread' => $thread, 'object' => $thread, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $post, $thread, $reply_email, $site, $url) {
+                    $m->from($reply_email, $site);
+
+                    $m->to($user->email, $user->name)->subject($site.': New post by '.$post->user->name.' in thread '.$thread->name);
+                });
+                $users[$user->id] = $thread->name;
+            };
+        };
+
         // notify users following any tags related to the thread
+        /*
         foreach ($tags as $tag)
         {
             foreach ($tag->followers() as $user)
@@ -133,10 +151,10 @@ class PostsController extends Controller
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users))
                 {
-                    Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $event, $tag, $reply_email, $site, $url) {
+                    Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $thread, $tag, $reply_email, $site, $url) {
                         $m->from($reply_email, $site);
 
-                        $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
+                        $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$thread->created_at->format('D F jS').' '.$thread->name);
                     });
                     $users[$user->id] = $tag->name;
                 };
@@ -144,7 +162,8 @@ class PostsController extends Controller
         };
 
         // notify users following any of the series
-        $seriess = $event->series()->get();
+        $seriess = $thread->series()->get();
+
 
         foreach ($seriess as $series)
         {
@@ -154,16 +173,16 @@ class PostsController extends Controller
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users))
                 {
-                    Mail::send('emails.following-thread', ['user' => $user, 'event' => $event, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $event, $tag, $reply_email, $site, $url) {
+                    Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $series, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $thread, $series, $reply_email, $site, $url) {
                         $m->from($reply_email, $site);
 
-                        $m->to($user->email, $user->name)->subject($site.': '.$entity->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
+                        $m->to($user->email, $user->name)->subject($site.': '.$series->name.' :: '.$thread->created_at->format('D F jS').' '.$thread->name);
                     });
-                    $users[$user->id] = $entity->name;
+                    $users[$user->id] = $series->name;
                 };
             };
         };
-
+        */
         return back();
     }
 

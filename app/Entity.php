@@ -146,7 +146,7 @@ class Entity extends Eloquent {
 
 	
 	/**
-	 * The events that belog to the entity
+	 * The events that belong to the entity
 	 *
 	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
 	 */

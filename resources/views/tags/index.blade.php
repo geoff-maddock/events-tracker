@@ -33,6 +33,7 @@
 				<ul style="margin-left: -30px;">
 				@foreach ($tags as $t)
 					@if (isset($tag) && (strtolower($tag) === strtolower($t->name)))
+						<?php $match = $t;?>
 						<li class='list selected'><a href="/tags/{{ $t->name }}" title="Click to show all related events and entities.">{{ $t->name }}</a>
 							@if ($signedIn)
 								@if ($follow = $t->followedBy($user))
@@ -80,8 +81,50 @@
 	</div>
 	@endif
 
+
+	@if (!isset($match) && isset($userTags))
+		<div class="col-lg-5">
+			<div class="bs-component">
+				<div class="panel panel-info">
+
+
+					<div class="panel-heading">
+						<h3 class="panel-title">Tags</h3>
+					</div>
+
+					<div class="panel-body">
+					@include('tags.list', ['tags' => $userTags])
+					</div>
+
+				</div>
+			</div>
+		</div>
+	@endif
+
+
 	@if (isset($events) && count($events) > 0)
 	<div class="col-lg-5">
+
+
+		@if (isset($match) )
+		<div class="bs-component">
+			<div class="panel panel-info">
+
+
+				<div class="panel-heading">
+					<h3 class="panel-title">Tags</h3>
+				</div>
+
+				<div class="panel-body">
+				<ul class='event-list'>
+					@include('tags.single', ['tag' => $match])
+				</ul>
+				</div>
+
+			</div>
+		</div>
+		@endif
+
 		
 		@if (isset($series) && count($series) > 0)
 		<div class="bs-component">
@@ -141,7 +184,7 @@
 	</div>
 	@endif
 
-	</div>
+</div>
 
 @stop
 

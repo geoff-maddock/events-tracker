@@ -171,6 +171,23 @@ class Thread extends Eloquent {
         return $this->belongsToMany('App\Follow')->withTimestamps();
     }
 
+
+	/**
+	 * Returns the users that follow the entity
+	 * 
+	 * @return Collection $follows
+	 * 
+	 **/
+	public function followers()
+	{
+		$users = User::join('follows', 'users.id', '=', 'follows.user_id')
+		->where('follows.object_type', 'thread')
+		->where('follows.object_id', $this->id)
+		->get();
+
+		return $users;
+	}
+
 	/**
 	 * An thread is owned by one forum
 	 *

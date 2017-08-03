@@ -44,8 +44,6 @@ class TagsController extends Controller {
  	 */
 	public function index()
 	{
-		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();;
 
 		/*
  		// get all series linked to the tag
@@ -78,9 +76,13 @@ class TagsController extends Controller {
 					->simplePaginate($this->rpp);
 		*/
 
+		// get a list of all tags
 		$tags = Tag::orderBy('name', 'ASC')->get();
 
-		return view('tags.index', compact('series','entities','events', 'tag', 'tags'));
+		// get a list of all the user's followed tags
+		$userTags = $this->user->getTagsFollowing();
+
+		return view('tags.index', compact('series','entities','events', 'tag', 'tags','userTags'));
 	}
 
     /**
@@ -110,8 +112,6 @@ class TagsController extends Controller {
 	 */
 	public function indexTags($tag)
 	{
-		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();;
 
  		$tag = urldecode($tag);
 

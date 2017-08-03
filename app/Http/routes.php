@@ -267,6 +267,7 @@ Route::bind('series', function($id)
 $router->resource('series','SeriesController');
 
 Route::get('tags/{tag}', 'TagsController@indexTags');
+
 $router->resource('tags','TagsController');
 
 Route::get('tags/{id}/follow', [
