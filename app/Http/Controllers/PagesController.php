@@ -102,6 +102,10 @@ class PagesController extends Controller {
 								{
 									$q->where('name','=', ucfirst($slug));
 								})
+				->orWherehas('aliases', function($q) use ($slug)
+								{
+									$q->where('name','=', ucfirst($slug));
+								})
 				->orderBy('entity_type_id', 'ASC')
 				->orderBy('name', 'ASC')
 				->simplePaginate($this->rpp);
