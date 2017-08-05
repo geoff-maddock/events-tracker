@@ -1,7 +1,7 @@
 # Event Repo
-> A guide and calander of events, weekly and monthly series, promoters, artists, producers, djs, venues and other entities.
+> A guide and calender of events, weekly and monthly series, promoters, artists, producers, djs, venues and other entities.
 
-A guide and calander of events, weekly and monthly series, promoters, artists, producers, djs, venues and other entities.
+A guide and calender of events, weekly and monthly series, promoters, artists, producers, djs, venues and other entities.
 Run an instance to create your own community where events, event series, entities, attendees and other objects can be added, tagged maintained and followed.  
 
 
