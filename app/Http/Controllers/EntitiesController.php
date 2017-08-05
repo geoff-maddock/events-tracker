@@ -28,6 +28,11 @@ class EntitiesController extends Controller {
 		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
 		$this->entity = $entity;
 
+        // default list variables
+        $this->rpp = 5;
+        $this->page = 1;
+        $this->sortBy = 'created_at';
+        $this->sortDirection = 'desc';
 		parent::__construct();
 	}
 
@@ -37,30 +42,41 @@ class EntitiesController extends Controller {
 	 * @return Response
 	 */
 	public function index(EntityFilters $filters)
-	{
-		$is_filtering = 0;
+    {
+        $is_filtering = 0;
 
-		// get all active entites plus those created by the logged in user, ordered by type and name
+        // get all active entites plus those created by the logged in user, ordered by type and name
 
-		// base criteria
-		$entities = $this->entity->active()
-		->orWhere('created_by','=',($this->user ? $this->user->id : NULL))
-		->orderBy('entity_type_id', 'ASC')
-		->orderBy('name', 'ASC');
+        // base criteria
+        $query = $this->entity->active()
+            ->orWhere('created_by', '=', ($this->user ? $this->user->id : NULL))
+            ->orderBy('entity_type_id', 'ASC')
+            ->orderBy('name', 'ASC');
 
-		$entities->filter($filters);
+        // set the filters from the request
 
-		/*
-		if ($request->has('name'))
-		{	$name = $request->name;
-			$this->entity->where('name', $name);
-		}
-		*/
+        // apply the filters to the list
+        $query->filter($filters);
 
-		$entities = $this->entity->get();
+        /*
+        if ($request->has('name'))
+        {	$name = $request->name;
+            $this->entity->where('name', $name);
+        }
+        */
 
-		return view('entities.index', compact('entities'));
-	}
+        // convert to sql
+        $results = $query->toSql();
+        //dd($results);
+
+        // save the query results into entities collection
+        $entities = $query->paginate($this->rpp);
+
+        return view('entities.index')
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+            ->with(compact('entities'))
+            ->render();
+    }
 
 
 	/**
@@ -111,64 +127,71 @@ class EntitiesController extends Controller {
 	 */
 	public function filter(Request $request, EntityFilters $filters)
 	{
-		//$entities = array();
-		$entities = $this->entity->active();
+		$query = $this->entity->active();
 
  		// check request for passed filter values
- 		if ($request->input('filter_role'))
+ 		if (!empty($request->input('filter_role')))
  		{
  			 	//		dd('filter role');
  			$role = $request->input('filter_role');
-			$entities = Entity::getByRole(ucfirst($role))
+			$query = Entity::getByRole(ucfirst($role))
 						->where(function($query)
 						{
 							$query->active()
 							->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
 						})
 						->orderBy('entity_type_id', 'ASC')
-						->orderBy('name', 'ASC')
-						->get();
+						->orderBy('name', 'ASC');
  		};
 
-  		if ($request->input('filter_tag'))
+  		if (!empty($request->input('filter_tag')))
  		{
  			$tag = $request->input('filter_tag');
-			$entities = Entity::getByTag(ucfirst($tag))
+			$query = Entity::getByTag(ucfirst($tag))
 						->where(function($query)
 						{
 							$query->active()
 							->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
 						})
 						->orderBy('entity_type_id', 'ASC')
-						->orderBy('name', 'ASC')
-						->get();
+						->orderBy('name', 'ASC');
  		}
 
-  		if ($request->input('filter_alias'))
+  		if (!empty($request->input('filter_alias')))
  		{
  			$alias = $request->input('filter_alias');
-			$entities = Entity::getByAlias(ucfirst($alias))
+			$query = Entity::getByAlias(ucfirst($alias))
 						->where(function($query)
 						{
 							$query->active()
 							->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
 						})
 						->orderBy('entity_type_id', 'ASC')
-						->orderBy('name', 'ASC')
-						->get();
+						->orderBy('name', 'ASC');
  		}
 
-   		if ($request->input('filter_name'))
+   		if (!empty($request->input('filter_name')))
  		{
  			$name = $request->input('filter_name');
-			$entities = Entity::where('name', $name)->get();
+			$query = Entity::where('name', 'like', $name.'%');
  		}
 
+        if (!empty($request->input('filter_rpp')))
+        {
+            $this->rpp = $request->input('filter_rpp');
+        }
+
+        // get the entities
+        $entities = $query->paginate($this->rpp);
  		// revisit filtering here
 		// $entities->filter($filters);
 		//$entities->get();
 
-		return view('entities.index', compact('entities', 'role', 'tag', 'alias', 'name'));
+		return view('entities.index')
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+            ->with(compact('entities', 'role', 'tag', 'alias', 'name'))
+            ->render();
+
 	}
 
 	/**

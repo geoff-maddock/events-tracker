@@ -28,33 +28,42 @@
 				{!! Form::text('filter_name', (isset($name) ? $name : NULL), ['class' =>'form-control']) !!}
 				</div>
 
-				<div class="form-group col-md-2">
+				<div class="form-group col-md-1">
 
 				{!! Form::label('filter_role','Filter By Role') !!}
-				<?php $roles = [''=>'&nbsp;'] + App\Role::orderBy('name', 'ASC')->lists('name', 'name')->all();;?>
+				<?php $roles = [''=>'&nbsp;'] + App\Role::orderBy('name', 'ASC')->lists('name', 'name')->all();?>
 				{!! Form::select('filter_role', $roles, (isset($role) ? $role : NULL), ['class' =>'form-control']) !!}
 				</div>
 
-				<div class="form-group col-md-2">
+				<div class="form-group col-md-1">
 				{!! Form::label('filter_tag','Filter By Tag') !!}
-				<?php $tags =  [''=>'&nbsp;'] + App\Tag::orderBy('name','ASC')->lists('name', 'name')->all();;?>
+				<?php $tags =  [''=>'&nbsp;'] + App\Tag::orderBy('name','ASC')->lists('name', 'name')->all();?>
 				{!! Form::select('filter_tag', $tags, (isset($tag) ? $tag : NULL), ['class' =>'form-control']) !!}
 				</div>
-				<div class="btn-group">
-				{!! Form::submit('Filter',  ['class' =>'btn btn-primary']) !!}
+
+				<div class="form-group col-md-1">
+					{!! Form::label('filter_rpp','RPP') !!}
+					<?php $rpp_options =  [''=>'&nbsp;', 5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000];?>
+					{!! Form::select('filter_rpp', $rpp_options, (isset($rpp) ? $rpp : NULL), ['class' =>'form-control']) !!}
 				</div>
+
+				<div class="btn-group col-md-1">
+				{!! Form::submit('Filter',  ['class' =>'btn btn-primary']) !!}
+
 				{!! Form::close() !!}
 
 				{!! Form::open(['route' => ['entities.index'], 'method' => 'GET']) !!}
-				<div class="btn-group">
-				{!! Form::submit('Reset',  ['class' =>'btn btn-primary']) !!}
-				</div>
-				{!! Form::close() !!}
 
+					{!! Form::submit('Reset',  ['class' =>'btn btn-primary']) !!}
+
+				{!! Form::close() !!}
+				</div>
 		</div>
 
 		<div class='col-md-6'>
+			{!! $entities->appends(['sort_by' => $sortBy, 'rpp' => $rpp])->render() !!}
 		@include('entities.list', ['entities' => $entities])
+
 		</div>
 
 @stop
