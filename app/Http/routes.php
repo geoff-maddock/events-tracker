@@ -180,7 +180,7 @@ Route::get('entities/type/{type}', 'EntitiesController@indexTypes');
 Route::get('entities/role/{role}', 'EntitiesController@indexRoles')->name('entities.role');
 
 Route::get('entities/filter', array('as' => 'entities.filter', 'uses' => 'EntitiesController@filter'));
-Route::get('entities/reset', array('as' => 'entities.reset', 'uses' => 'EntitiesController@indexRoles'));
+Route::get('entities/reset', array('as' => 'entities.reset', 'uses' => 'EntitiesController@reset'));
 
 Route::get('entities/tag/{tag}', 'EntitiesController@indexTags')->name('entities.tag');
 Route::get('entities/alias/{alias}', 'EntitiesController@indexAliases')->name('entities.tag');

@@ -119,9 +119,9 @@ class EntitiesController extends Controller {
      *
      * @return Array
      */
-    protected function getFilters()
+    protected function getFilters(Request $request)
     {
-        return $this->getAttribute('filters', $this->getDefaultFilters());
+        return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
     }
 
     /**
@@ -211,7 +211,8 @@ class EntitiesController extends Controller {
     protected function setFilters(Request $request, array $input)
     {
         //return $request->session()->set('filters',self::ATTR_FILTERS, $input);
-        return $this->setAttribute('filters', $input);
+        // example: $input = array('filter_tag' => 'role', 'filter_name' => 'xano');
+        return $this->setAttribute('filters', $input, $request);
     }
     /**
      * Set criteria.
@@ -287,7 +288,7 @@ class EntitiesController extends Controller {
         $entities = $query->paginate($this->rpp);
 
         return view('entities.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter, 'filters' => $filters])
             ->with(compact('entities'))
             ->render();
     }
@@ -348,7 +349,11 @@ class EntitiesController extends Controller {
 	 */
 	public function filter(Request $request, EntityFilters $filters)
 	{
+        // indicate if there are any filters
         $hasFilter = 1;
+
+        // get all the filters from the session
+        $filters = $this->getFilters($request);
 
         // get all active entites plus those created by the logged in user, ordered by type and name
 
@@ -357,7 +362,7 @@ class EntitiesController extends Controller {
 
         // base criteria
         $query = $this->entity->active()
-            ->orWhere('created_by', '=', ($this->user ? $this->user->id : NULL))
+            //->orWhere('created_by', '=', ($this->user ? $this->user->id : NULL))  // if not active, shows 
             ->orderBy($this->sortBy, $this->sortOrder);
 
         // add the criteria from the session
@@ -371,6 +376,11 @@ class EntitiesController extends Controller {
             {
                 $q->where('slug','=', strtolower($role));
             });
+
+            // add to filters array
+            $filters['filter_role'] = $role;
+
+           // dd($role);
  		};
 
   		if (!empty($request->input('filter_tag')))
@@ -384,7 +394,10 @@ class EntitiesController extends Controller {
 						})
 						->orderBy('entity_type_id', 'ASC')
 						->orderBy('name', 'ASC');
-            dd('tag');
+            // add to filters array
+            $filters['filter_tag'] = $tag;
+            //dd($tag);
+
  		}
 
   		if (!empty($request->input('filter_alias')))
@@ -398,32 +411,50 @@ class EntitiesController extends Controller {
 						})
 						->orderBy('entity_type_id', 'ASC')
 						->orderBy('name', 'ASC');
-            dd('alias');
+            // add to filters array
+            $filters['filter_alias'] = $alias;
+
  		}
 
    		if (!empty($request->input('filter_name')))
  		{
  			$name = $request->input('filter_name');
             $query->where('name', 'like', $name.'%');
-            dd('name');
+            // add to filters array
+            $filters['filter_name'] = $name;
  		}
 
+        // change this - should be seperate
         if (!empty($request->input('filter_rpp')))
         {
             $this->rpp = $request->input('filter_rpp');
         }
 
+
+        // save filters to session
+        $this->setFilters($request, $filters);
+
+
+        //$query = Entity::where('name', '=', '8Cylinder');
         // convert to sql
         $results = $query->toSql();
-       // dd($results);
+        //dd($results);
         // get the entities
         $entities = $query->paginate($this->rpp);
  		// revisit filtering here
 		// $entities->filter($filters);
-		// $entities->get();
+		 //$entities = $query->get();
 
+        //dd($filters);
+        //dd($request->session());
+
+        //dd($entities);
 		return view('entities.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'filters' => $filters, 'hasFilter' => $hasFilter])
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'filters' => $filters, 'hasFilter' => $hasFilter,
+                'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL ,  // there should be a better way to do this...
+                'filter_role' => isset($filters['filter_role']) ? $filters['filter_role'] : NULL,
+                'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL
+                ])
             ->with(compact('entities', 'role', 'tag', 'alias', 'name'))
             ->render();
 
@@ -434,20 +465,32 @@ class EntitiesController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function reset()
+	public function reset(Request $request)
 	{
+        // doesn't have filter, but temp
+        $hasFilter = 1; 
+        // set the filters to empty
+        $this->setFilters($request, $this->getDefaultFilters());
  
-		$entities = Entity::getByRole(ucfirst($role))
-					->where(function($query)
+        //dd($request->session());
+
+        // default 
+		$query = Entity::where(function($query)
 					{
 						$query->active()
 						->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
 					})
 					->orderBy('entity_type_id', 'ASC')
-					->orderBy('name', 'ASC')
-					->get();
+					->orderBy('name', 'ASC');
 
-		return view('entities.index', compact('entities', 'role'));
+        // paginate
+        $entities = $query->paginate($this->rpp);
+
+        return view('entities.index')
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(compact('entities'))
+            ->render();
+
 	}
 
 	/**

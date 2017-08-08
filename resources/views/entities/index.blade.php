@@ -55,7 +55,7 @@
 
 				{!! Form::close() !!}
 
-				{!! Form::open(['route' => ['entities.index'], 'method' => 'GET']) !!}
+				{!! Form::open(['route' => ['entities.reset'], 'method' => 'GET']) !!}
 
 					{!! Form::submit('Reset',  ['class' =>'btn btn-primary']) !!}
 
@@ -67,7 +67,12 @@
 		</div>
 
 		<div class='col-md-6'>
-			{!! $entities->appends(['sort_by' => $sortBy, 'rpp' => $rpp])->render() !!}
+			{!! $entities->appends(['sort_by' => $sortBy,
+									'rpp' => $rpp, 
+									'filter_role' => isset($filter_role) ? $filter_role : NULL,
+									'filter_tag' => isset($filter_tag) ? $filter_tag : NULL,
+									'filter_name' => isset($filter_name) ? $filter_name : NULL,
+			])->render() !!}
 		@include('entities.list', ['entities' => $entities])
 
 		</div>
