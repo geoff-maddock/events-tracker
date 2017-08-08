@@ -149,7 +149,7 @@
 
 				<div class="panel-heading">
 					<h3 class="panel-title">Events
-								<a href="{!! route('calendar.tag', ['tag' => $tag]) !!}" title="{{ $tag.' Calendar' }}"><span class='glyphicon glyphicon-calendar pull-right'></span></a>
+						<a href="{!! route('calendar.tag', ['tag' => $tag]) !!}" title="{{ $tag.' Calendar' }}"><span class='glyphicon glyphicon-calendar pull-right'></span></a>
 					</h3>
 
 				</div>

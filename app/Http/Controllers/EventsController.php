@@ -40,7 +40,7 @@ class EventsController extends Controller {
 		$this->rpp = 5;
 		$this->page = 1;
 		$this->sortBy = 'created_at';
-		$this->sortDirection = 'desc';
+		$this->sortOrder = 'desc';
 		parent::__construct();
 	}
 
@@ -57,7 +57,7 @@ class EventsController extends Controller {
 
 		// set sort direction
  		if ($request->input('sort_direction')) {
- 			$this->sortDirection = $request->input('sort_direction');
+ 			$this->sortOrder = $request->input('sort_direction');
  		};
 
  		// set results per page
@@ -172,6 +172,7 @@ class EventsController extends Controller {
  		// updates sort, rpp from request
  		$this->updatePaging($request);
 
+        // get future events
 		$future_events = Event::future()->paginate($this->rpp);
 		$future_events->filter(function($e)
 		{
@@ -179,6 +180,7 @@ class EventsController extends Controller {
 		});
 
 
+        // get past events
 		$past_events = Event::past()->paginate($this->rpp);
 		$past_events->filter(function($e)
 		{
@@ -186,7 +188,7 @@ class EventsController extends Controller {
 		});
 
 		return view('events.index') 
-        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
         	->with(compact('future_events'))
         	->with(compact('past_events'))
             ->render();
@@ -196,7 +198,7 @@ class EventsController extends Controller {
      * Filter the list of events
      *
      * @param Request $request
-     * @return Response
+     * @return View
      * @internal param $Request
      */
     public function filter(Request $request)
@@ -224,7 +226,7 @@ class EventsController extends Controller {
         });
 
         return view('events.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
             ->with(compact('future_events'))
             ->with(compact('past_events'));
     }
@@ -233,7 +235,7 @@ class EventsController extends Controller {
     /**
  	 * Display a listing of the resource.
  	 *
- 	 * @return Response
+ 	 * @return View
  	 */
 	public function indexAll(Request $request)
 	{
@@ -257,7 +259,7 @@ class EventsController extends Controller {
 		});
 
 		return view('events.index')
-		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
         	->with(compact('future_events')) 
         	->with(compact('past_events'));
 	}
@@ -284,7 +286,7 @@ class EventsController extends Controller {
 		});
 
 		return view('events.index')
-		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
         	->with(compact('future_events'));
 	}
 
@@ -310,7 +312,7 @@ class EventsController extends Controller {
 		});
 
 		return view('events.index')
-		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
         	->with(compact('past_events'));
 	}
 
@@ -971,7 +973,7 @@ class EventsController extends Controller {
 		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
 		$entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
 
-		$seriesList = [''=>''] + Series::pluck('name', 'id')->all();
+		$seriesList = [''=>''] + Series::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
 		return view('events.edit', compact('event', 'venues', 'promoters','eventTypes', 'visibilities','tags','entities','seriesList'));
 	}
@@ -1185,7 +1187,7 @@ class EventsController extends Controller {
 	
 
 		return view('events.index') 
-        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
         	->with(compact('future_events'))
         	->with(compact('past_events'))
         	->with(compact('tag'));
@@ -1225,7 +1227,7 @@ class EventsController extends Controller {
 					->paginate($this->rpp);
 
 		return view('events.index') 
-        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
         	->with(compact('future_events'))
         	->with(compact('past_events'))
         	->with(compact('slug'));
@@ -1258,7 +1260,7 @@ class EventsController extends Controller {
 					->paginate($this->rpp);
 
 		return view('events.index') 
-        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
         	->with(compact('future_events'))
         	->with(compact('cdate'));
 	} 
@@ -1296,7 +1298,7 @@ class EventsController extends Controller {
 
 
 		return view('events.index') 
-        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
         	->with(compact('future_events'))
         	->with(compact('past_events'))
         	->with(compact('slug'));
@@ -1337,7 +1339,7 @@ class EventsController extends Controller {
 
 
 		return view('events.index') 
-        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
         	->with(compact('future_events'))
         	->with(compact('past_events'))
         	->with(compact('slug'));
@@ -1376,7 +1378,7 @@ class EventsController extends Controller {
 
 
 		return view('events.index') 
-        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
         	->with(compact('future_events'))
         	->with(compact('past_events'))
         	->with(compact('slug'));

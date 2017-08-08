@@ -18,8 +18,11 @@
 		</P>
 
 		<!-- NAV / FILTER -->
-		<div class="row">
+		<div class="row" class="tab-content filters-content">
 				{!! Form::open(['route' => ['entities.filter'], 'method' => 'GET']) !!}
+
+				<!-- BEGIN: FILTERS -->
+                @if ($hasFilter)
 
 				<div class="form-group col-md-2">
 
@@ -48,7 +51,7 @@
 				</div>
 
 				<div class="btn-group col-md-1">
-				{!! Form::submit('Filter',  ['class' =>'btn btn-primary']) !!}
+				{!! Form::submit('Filter',  ['class' =>'btn btn-primary btn-sm btn-tb', 'id' => 'primary-filter-submit']) !!}
 
 				{!! Form::close() !!}
 
@@ -58,6 +61,9 @@
 
 				{!! Form::close() !!}
 				</div>
+
+				@endif
+				<!-- END: FILTERS -->
 		</div>
 
 		<div class='col-md-6'>

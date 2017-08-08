@@ -44,8 +44,8 @@ class TagsController extends Controller {
  	 */
 	public function index()
 	{
+        $tag = NULL;
 
-		/*
  		// get all series linked to the tag
 		$series = Series::where(function($query)
 					{
@@ -74,13 +74,15 @@ class TagsController extends Controller {
 					->orderBy('entity_type_id', 'ASC')
 					->orderBy('name', 'ASC')
 					->simplePaginate($this->rpp);
-		*/
+
 
 		// get a list of all tags
 		$tags = Tag::orderBy('name', 'ASC')->get();
 
 		// get a list of all the user's followed tags
-		$userTags = $this->user->getTagsFollowing();
+        if (isset($this->user)) {
+            $userTags = $this->user->getTagsFollowing();
+        };
 
 		return view('tags.index', compact('series','entities','events', 'tag', 'tags','userTags'));
 	}

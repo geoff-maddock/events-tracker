@@ -20,7 +20,6 @@
 
 	<P>{!! delete_form(['events.destroy', $event->id]) !!}</P>
 
-
   </div>
 
   <div class="col-md-4">

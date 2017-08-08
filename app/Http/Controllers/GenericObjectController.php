@@ -1,9 +1,8 @@
 <?php namespace App\Http\Controllers;
 
-use App\Http\Requests;
+
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EntityRequest;
-use phpDocumentor\Reflection\Types\Mixed;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 use Illuminate\Http\Request;
@@ -21,249 +20,29 @@ use App\Role;
 use App\Photo;
 use App\Follow;
 
-class EntitiesController extends Controller {
+class GenericObjectController extends Controller {
 
 	public function __construct(Entity $entity)
 	{
 		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
 		$this->entity = $entity;
 
-        // prefix for session storage
-        $this->prefix = 'app.entities.';
-
         // default list variables
         $this->rpp = 5;
         $this->page = 1;
-        $this->sort = array('name', 'desc');
-        $this->sortBy = 'name';
-        $this->sortOrder = 'asc';
-        $this->defaultCriteria = NULL;
+        $this->sortBy = 'created_at';
+        $this->sortDirection = 'desc';
 		parent::__construct();
 	}
 
-
-    /**
-     * Update the page list parameters from the request
-     *
-     */
-    protected function updatePaging($request)
-    {
-        // set sort by column
-        if ($request->input('sort_by')) {
-            $this->sortBy = $request->input('sort_by');
-        };
-
-        // set sort direction
-        if ($request->input('sort_order')) {
-            $this->sortOrder = $request->input('sort_order');
-        };
-
-        // set results per page
-        if ($request->input('rpp')) {
-            $this->rpp = $request->input('rpp');
-        };
-    }
-
-
-
-    /**
-     * Gets the reporting options from the request and saves to session
-     *
-     * @param Request $request
-     */
-    public function getReportingOptions(Request $request)
-    {
-        foreach (array('page', 'rpp', 'sort', 'criteria') as $option)
-        {
-            if (!$request->has($option))
-            {
-                continue;
-            }
-            switch ($option)
-            {
-                case 'sort':
-                    $value = array
-                    (
-                        $request->input($option),
-                        $request->input('sort_order', 'asc'),
-                    );
-                    break;
-                default:
-                    $value = $request->input($option);
-                    break;
-            }
-            call_user_func
-            (
-                array($this, sprintf('set%s', ucwords($option))),
-                $value
-            );
-        }
-    }
-
-    /**
-     * Get user session attribute
-     *
-     * @param String $attribute
-     * @param Mixed $default
-     * @param Request $request
-     * @return Mixed
-     */
-    protected function getAttribute($attribute, $default = null, Request $request)
-    {
-        return $request->session()
-            ->get($this->prefix.$attribute, $default);
-    }
-
-    /**
-     * Get session filters
-     *
-     * @return Array
-     */
-    protected function getFilters()
-    {
-        return $this->getAttribute('filters', $this->getDefaultFilters());
-    }
-
-    /**
-     * Criteria provides a way to define criteria to be applied to a tab on the index page.
-     *
-     * @return array
-     */
-    protected function getCriteria()
-    {
-        return $this->criteria;
-    }
-
-    /**
-     * Get the current page for this module
-     *
-     * @return integner
-     */
-    protected function getPage()
-    {
-        return $this->getAttribute('page', 1);
-    }
-
-    /**
-     * Get the current results per page
-     *
-     * @param Request $request
-     * @return integer
-     */
-    protected function getRpp(Request $request)
-    {
-        //$rpp = $request->session()->get('filters', $this->rpp);
-        return $this->getAttribute('rpp', $this->rpp);
-    }
-    /**
-     * Get the sort order and column
-     *
-     * @return array
-     */
-    protected function getSort(Request $request)
-    {
-        return $this->getAttribute('sort', $this->getDefaultSort());
-    }
-
-
-
-    /**
-     * Get the default sort array
-     *
-     * @return Array
-     */
-    protected function getDefaultSort()
-    {
-        return array('id', 'desc');
-    }
-
-
-    /**
-     * Get the default filters array
-     *
-     * @return Array
-     */
-    protected function getDefaultFilters()
-    {
-        return array();
-    }
-
-    /**
-     * Set user session attribute
-     *
-     * @param String $attribute
-     * @param Mixed $value
-     * @param Request $request
-     * @return Mixed
-     */
-    protected function setAttribute($attribute, $value, Request $request)
-    {
-        return $request->session()
-            ->set($this->prefix.$attribute, $value);
-    }
-
-    /**
-     * Set filters attribute
-     *
-     * @param array $input
-     * @return array
-     */
-    protected function setFilters(Request $request, array $input)
-    {
-        //return $request->session()->set('filters',self::ATTR_FILTERS, $input);
-        return $this->setAttribute('filters', $input);
-    }
-    /**
-     * Set criteria.
-     *
-     * @param array $input
-     * @return string
-     */
-    protected function setCriteria($input)
-    {
-        $this->criteria = $input;
-        return $this->criteria;
-    }
-    /**
-     * Set page attribute
-     *
-     * @param integer $input
-     * @return integer
-     */
-    protected function setPage($input)
-    {
-        return $this->setAttribute('page', $input);
-    }
-    /**
-     * Set results per page attribute
-     *
-     * @param integer $input
-     * @return integer
-     */
-    protected function setRpp($input)
-    {
-        return $this->setAttribute('rpp', 5);
-    }
-    /**
-     * Set sort order attribute
-     *
-     * @param array $input
-     * @return array
-     */
-    protected function setSort(array $input)
-    {
-        return $this->setAttribute('sort', $input);
-    }
-
-
-    /**
+	/**
 	 * Display a listing of the resource.
 	 *
 	 * @return Response
 	 */
 	public function index(EntityFilters $filters)
     {
-        $hasFilter = 1;
+        $is_filtering = 0;
 
         // get all active entites plus those created by the logged in user, ordered by type and name
 
@@ -278,6 +57,12 @@ class EntitiesController extends Controller {
         // apply the filters to the list
         $query->filter($filters);
 
+        /*
+        if ($request->has('name'))
+        {	$name = $request->name;
+            $this->entity->where('name', $name);
+        }
+        */
 
         // convert to sql
         $results = $query->toSql();
@@ -287,7 +72,7 @@ class EntitiesController extends Controller {
         $entities = $query->paginate($this->rpp);
 
         return view('entities.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
             ->with(compact('entities'))
             ->render();
     }
@@ -300,6 +85,7 @@ class EntitiesController extends Controller {
 	 */
 	public function indexTypes($type)
 	{
+
 		$entities = Entity::ofType(ucfirst($type))
 					->where(function($query)
 					{
@@ -307,14 +93,10 @@ class EntitiesController extends Controller {
 						->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
 					})
 					->orderBy('entity_type_id', 'ASC')->orderBy('name', 'ASC')
-                    ->paginate();
+					->get();
 
-		return view('entities.index')
-            ->with(['type' => $type, 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
-            ->with(compact('entities'))
-            ->render();
+		return view('entities.index', compact('entities', 'type'));
 	}
-
 
 	/**
 	 * Display a listing of entities by role
@@ -332,13 +114,9 @@ class EntitiesController extends Controller {
 					})
 					->orderBy('entity_type_id', 'ASC')
 					->orderBy('name', 'ASC')
-					->paginate();
+					->get();
 
-        return view('entities.index')
-            ->with(['role' => $role, 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
-            ->with(compact('entities'))
-            ->render();
-
+		return view('entities.index', compact('entities', 'role'));
 	}
 
 	/**
@@ -348,29 +126,21 @@ class EntitiesController extends Controller {
 	 */
 	public function filter(Request $request, EntityFilters $filters)
 	{
-        $hasFilter = 1;
-
-        // get all active entites plus those created by the logged in user, ordered by type and name
-
-        // updates sort, rpp from request - TODO add other filters?
-        $this->updatePaging($request);
-
-        // base criteria
-        $query = $this->entity->active()
-            ->orWhere('created_by', '=', ($this->user ? $this->user->id : NULL))
-            ->orderBy($this->sortBy, $this->sortOrder);
-
-        // add the criteria from the session
+		$query = $this->entity->active();
 
  		// check request for passed filter values
-
  		if (!empty($request->input('filter_role')))
  		{
+ 			 	//		dd('filter role');
  			$role = $request->input('filter_role');
- 			$query->whereHas('roles', function($q) use ($role)
-            {
-                $q->where('slug','=', strtolower($role));
-            });
+			$query = Entity::getByRole(ucfirst($role))
+						->where(function($query)
+						{
+							$query->active()
+							->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
+						})
+						->orderBy('entity_type_id', 'ASC')
+						->orderBy('name', 'ASC');
  		};
 
   		if (!empty($request->input('filter_tag')))
@@ -384,7 +154,6 @@ class EntitiesController extends Controller {
 						})
 						->orderBy('entity_type_id', 'ASC')
 						->orderBy('name', 'ASC');
-            dd('tag');
  		}
 
   		if (!empty($request->input('filter_alias')))
@@ -398,14 +167,12 @@ class EntitiesController extends Controller {
 						})
 						->orderBy('entity_type_id', 'ASC')
 						->orderBy('name', 'ASC');
-            dd('alias');
  		}
 
    		if (!empty($request->input('filter_name')))
  		{
  			$name = $request->input('filter_name');
-            $query->where('name', 'like', $name.'%');
-            dd('name');
+			$query = Entity::where('name', 'like', $name.'%');
  		}
 
         if (!empty($request->input('filter_rpp')))
@@ -413,17 +180,14 @@ class EntitiesController extends Controller {
             $this->rpp = $request->input('filter_rpp');
         }
 
-        // convert to sql
-        $results = $query->toSql();
-       // dd($results);
         // get the entities
         $entities = $query->paginate($this->rpp);
  		// revisit filtering here
 		// $entities->filter($filters);
-		// $entities->get();
+		//$entities->get();
 
 		return view('entities.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'filters' => $filters, 'hasFilter' => $hasFilter])
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
             ->with(compact('entities', 'role', 'tag', 'alias', 'name'))
             ->render();
 
@@ -577,25 +341,23 @@ class EntitiesController extends Controller {
  		return redirect()->route('entities.index');
  	}
 
-    /**
-     * Display the specified resource.
-     *
-     * @param Entity $entity
-     * @return Response
-     * @internal param int $id
-     */
+	/**
+	 * Display the specified resource.
+	 *
+	 * @param  int  $id
+	 * @return Response
+	 */
 	public function show(Entity $entity)
 	{
 		return view('entities.show', compact('entity'));
 	}
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param Entity $entity
-     * @return Response
-     * @internal param int $id
-     */
+	/**
+	 * Show the form for editing the specified resource.
+	 *
+	 * @param  int  $id
+	 * @return Response
+	 */
 	public function edit(Entity $entity)
 	{
 		$this->middleware('auth');
@@ -610,14 +372,12 @@ class EntitiesController extends Controller {
 		return view('entities.edit', compact('entity','entityTypes', 'entityStatuses','tags','aliases','roles'));
 	}
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Entity $entity
-     * @param Request $request
-     * @return Response
-     * @internal param int $id
-     */
+	/**
+	 * Update the specified resource in storage.
+	 *
+	 * @param  int  $id
+	 * @return Response
+	 */
 	public function update(Entity $entity, Request $request)
 	{
 		$msg = '';
@@ -654,6 +414,7 @@ class EntitiesController extends Controller {
 			};
 		}
 
+
 		// check the elements in the alias list, and if any don't match, add the alias
 		foreach ($aliasArray as $key => $alias)
 		{
@@ -672,20 +433,21 @@ class EntitiesController extends Controller {
 			};
 		}
 
+
 		$entity->tags()->sync($syncArray);
 		$entity->aliases()->attach($aliasSyncArray);
+
 		$entity->roles()->sync($request->input('role_list', []));
 
 		return redirect('entities');
 	}
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param Entity $entity
-     * @return Response
-     * @internal param int $id
-     */
+	/**
+	 * Remove the specified resource from storage.
+	 *
+	 * @param  int  $id
+	 * @return Response
+	 */
 	public function destroy(Entity $entity)
 	{
 		$entity->delete();
@@ -702,6 +464,7 @@ class EntitiesController extends Controller {
 	 */
 	public function addPhoto($id, Request $request)
 	{
+
 		$this->validate($request, [
 			'file' =>'required|mimes:jpg,jpeg,png,gif'
 		]);
