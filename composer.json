@@ -11,7 +11,8 @@
 		"laravel/socialite": "~2.0",
 		"intervention/image": "^2.3",
 		"maddhatter/laravel-fullcalendar": "^1.2",
-		"suin/php-rss-writer": "^1.5"
+		"suin/php-rss-writer": "^1.5",
+		"barryvdh/laravel-debugbar": "^2.4"
 	},
 	"require-dev": {
 		"fzaninotto/faker": "~1.4",

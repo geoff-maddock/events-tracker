@@ -25,7 +25,6 @@ class GenericObjectController extends Controller {
 	public function __construct(Entity $entity)
 	{
 		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
-		$this->entity = $entity;
 
         // default list variables
         $this->rpp = 5;
@@ -35,7 +34,29 @@ class GenericObjectController extends Controller {
 		parent::__construct();
 	}
 
-	/**
+    /**
+     * Update the page list parameters from the request
+     *
+     */
+    protected function updatePaging($request)
+    {
+        // set sort by column
+        if ($request->input('sort_by')) {
+            $this->sortBy = $request->input('sort_by');
+        };
+
+        // set sort direction
+        if ($request->input('sort_direction')) {
+            $this->sortOrder = $request->input('sort_direction');
+        };
+
+        // set results per page
+        if ($request->input('rpp')) {
+            $this->rpp = $request->input('rpp');
+        };
+    }
+
+    /**
 	 * Display a listing of the resource.
 	 *
 	 * @return Response
@@ -56,13 +77,6 @@ class GenericObjectController extends Controller {
 
         // apply the filters to the list
         $query->filter($filters);
-
-        /*
-        if ($request->has('name'))
-        {	$name = $request->name;
-            $this->entity->where('name', $name);
-        }
-        */
 
         // convert to sql
         $results = $query->toSql();
@@ -200,8 +214,7 @@ class GenericObjectController extends Controller {
 	 */
 	public function reset()
 	{
- 
-		$entities = Entity::getByRole(ucfirst($role))
+ 		$entities = Entity::getByRole(ucfirst($role))
 					->where(function($query)
 					{
 						$query->active()
@@ -214,47 +227,6 @@ class GenericObjectController extends Controller {
 		return view('entities.index', compact('entities', 'role'));
 	}
 
-	/**
-	 * Display a listing of entities by tag
-	 *
-	 * @return Response
-	 */
-	public function indexTags($role)
-	{
- 
-		$entities = Entity::getByTag(ucfirst($role))
-					->where(function($query)
-					{
-						$query->active()
-						->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
-					})
-					->orderBy('entity_type_id', 'ASC')
-					->orderBy('name', 'ASC')
-					->get();
-
-		return view('entities.index', compact('entities', 'role'));
-	}
-
-	/**
-	 * Display a listing of entities by alias
-	 *
-	 * @return Response
-	 */
-	public function indexAliases($role)
-	{
- 
-		$entities = Entity::getByAlias(ucfirst($role))
-					->where(function($query)
-					{
-						$query->active()
-						->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
-					})
-					->orderBy('entity_type_id', 'ASC')
-					->orderBy('name', 'ASC')
-					->get();
-
-		return view('entities.index', compact('entities', 'role'));
-	}
 
 
 	/**
@@ -328,9 +300,7 @@ class GenericObjectController extends Controller {
 			};
 		}
 
-
-
-		$entity = $entity->create($input);
+        $entity = $entity->create($input);
 
 		$entity->tags()->attach($syncArray);
 		$entity->aliases()->attach($aliasSyncArray);
@@ -414,7 +384,6 @@ class GenericObjectController extends Controller {
 			};
 		}
 
-
 		// check the elements in the alias list, and if any don't match, add the alias
 		foreach ($aliasArray as $key => $alias)
 		{
@@ -484,69 +453,5 @@ class GenericObjectController extends Controller {
 			->move($file);
 	}
 
-	/**
-	 * Mark user as following the entity
-	 *
-	 * @return Response
-	 */
-	public function follow($id, Request $request)
-	{
-		// check if there is a logged in user
-		if (!$this->user)
-		{
-			flash()->error('Error',  'No user is logged in.');
-			return back();
-		};
 
-		if (!$entity = Entity::find($id))
-		{
-			flash()->error('Error',  'No such entity');
-			return back();
-		};
-
-		// add the following response
-		$follow = new Follow;
-		$follow->object_id = $id;
-		$follow->user_id = $this->user->id;
-		$follow->object_type = 'entity'; // 1 = Attending, 2 = Interested, 3 = Uninterested, 4 = Cannot Attend
-		$follow->save();
-
-     	Log::info('User '.$id.' is following '.$entity->name);
-
-		flash()->success('Success',  'You are now following the entity - '.$entity->name);
-
-		return back();
-
-	}
-
-	/**
-	 * Mark user as unfollowing the entity.
-	 *
-	 * @return Response
-	 */
-	public function unfollow($id, Request $request)
-	{
-
-		// check if there is a logged in user
-		if (!$this->user)
-		{
-			flash()->error('Error',  'No user is logged in.');
-			return back();
-		};
-
-		if (!$entity = Entity::find($id))
-		{
-			flash()->error('Error',  'No such entity');
-			return back();
-		};
-
-		// delete the follow
-		$response = Follow::where('object_id','=', $id)->where('user_id','=',$this->user->id)->where('object_type','=','entity')->first();
-		$response->delete();
-
-		flash()->success('Success',  'You are no longer following the entity.');
-
-		return back();
-
-	}
 }

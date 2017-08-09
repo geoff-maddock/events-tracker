@@ -47,7 +47,6 @@ class PagesController extends Controller {
 
 	public function index()
 	{
-
 		$future_events = Event::where('start_at','>=',Carbon::now())
 						->orderBy('start_at', 'asc')
 						->get();

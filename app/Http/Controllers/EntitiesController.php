@@ -65,7 +65,6 @@ class EntitiesController extends Controller {
     }
 
 
-
     /**
      * Gets the reporting options from the request and saves to session
      *
@@ -279,7 +278,6 @@ class EntitiesController extends Controller {
         // apply the filters to the list
         $query->filter($filters);
 
-
         // convert to sql
         $results = $query->toSql();
         //dd($results);
@@ -301,6 +299,8 @@ class EntitiesController extends Controller {
 	 */
 	public function indexTypes($type)
 	{
+        $hasFilter = 1;
+
 		$entities = Entity::ofType(ucfirst($type))
 					->where(function($query)
 					{
@@ -311,7 +311,7 @@ class EntitiesController extends Controller {
                     ->paginate();
 
 		return view('entities.index')
-            ->with(['type' => $type, 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
+            ->with(['type' => $type, 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter, ])
             ->with(compact('entities'))
             ->render();
 	}
@@ -324,7 +324,8 @@ class EntitiesController extends Controller {
 	 */
 	public function indexRoles($role)
 	{
- 
+        $hasFilter = 1;
+
 		$entities = Entity::getByRole(ucfirst($role))
 					->where(function($query)
 					{
@@ -336,7 +337,7 @@ class EntitiesController extends Controller {
 					->paginate();
 
         return view('entities.index')
-            ->with(['role' => $role, 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
+            ->with(['role' => $role, 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
             ->with(compact('entities'))
             ->render();
 
@@ -349,6 +350,7 @@ class EntitiesController extends Controller {
 	 */
 	public function filter(Request $request, EntityFilters $filters)
 	{
+	    // EntityFilters is a class that defines
         // indicate if there are any filters
         $hasFilter = 1;
 
@@ -361,17 +363,33 @@ class EntitiesController extends Controller {
         $this->updatePaging($request);
 
         // base criteria
-        $query = $this->entity->active()
-            //->orWhere('created_by', '=', ($this->user ? $this->user->id : NULL))  // if not active, shows 
-            ->orderBy($this->sortBy, $this->sortOrder);
+        $query = Entity::where(function($query)
+        {
+            // entity is active or was created by the user
+            $query->active()
+                ->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
+        })->orderBy($this->sortBy, $this->sortOrder);
 
         // add the criteria from the session
-
  		// check request for passed filter values
+
+        if (!empty($request->input('filter_name')))
+        {
+            // getting name from the request
+            $name = $request->input('filter_name');
+            $query->where('name', 'like', '%'.$name.'%')
+                ->orWherehas('aliases', function($q) use ($name)
+                {
+                    $q->where('name','=', ucfirst($name));
+                });
+            // add to filters array
+            $filters['filter_name'] = $name;
+        }
 
  		if (!empty($request->input('filter_role')))
  		{
  			$role = $request->input('filter_role');
+            // add has clause
  			$query->whereHas('roles', function($q) use ($role)
             {
                 $q->where('slug','=', strtolower($role));
@@ -386,18 +404,13 @@ class EntitiesController extends Controller {
   		if (!empty($request->input('filter_tag')))
  		{
  			$tag = $request->input('filter_tag');
-			$query = Entity::getByTag(ucfirst($tag))
-						->where(function($query)
-						{
-							$query->active()
-							->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
-						})
-						->orderBy('entity_type_id', 'ASC')
-						->orderBy('name', 'ASC');
+			$query->whereHas('tags', function($q) use ($tag)
+            {
+                $q->where('name','=', ucfirst($tag));
+            });
+
             // add to filters array
             $filters['filter_tag'] = $tag;
-            //dd($tag);
-
  		}
 
   		if (!empty($request->input('filter_alias')))
@@ -413,15 +426,6 @@ class EntitiesController extends Controller {
 						->orderBy('name', 'ASC');
             // add to filters array
             $filters['filter_alias'] = $alias;
-
- 		}
-
-   		if (!empty($request->input('filter_name')))
- 		{
- 			$name = $request->input('filter_name');
-            $query->where('name', 'like', $name.'%');
-            // add to filters array
-            $filters['filter_name'] = $name;
  		}
 
         // change this - should be seperate
@@ -430,25 +434,22 @@ class EntitiesController extends Controller {
             $this->rpp = $request->input('filter_rpp');
         }
 
-
         // save filters to session
         $this->setFilters($request, $filters);
 
-
-        //$query = Entity::where('name', '=', '8Cylinder');
+        // debugging
         // convert to sql
-        $results = $query->toSql();
-        //dd($results);
-        // get the entities
-        $entities = $query->paginate($this->rpp);
- 		// revisit filtering here
-		// $entities->filter($filters);
-		 //$entities = $query->get();
+        // $sql = $query->toSql();
+        // dd($sql);
+        // dd($filters);
+        // dd($request->session());
+        // dd($entities);
 
-        //dd($filters);
-        //dd($request->session());
+        // apply the filters to the query
+        // $entities->filter($filters)
+        // get the entities and paginate
+          $entities = $query->paginate($this->rpp);
 
-        //dd($entities);
 		return view('entities.index')
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'filters' => $filters, 'hasFilter' => $hasFilter,
                 'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL ,  // there should be a better way to do this...
@@ -500,18 +501,24 @@ class EntitiesController extends Controller {
 	 */
 	public function indexTags($role)
 	{
- 
-		$entities = Entity::getByTag(ucfirst($role))
+        $hasFilter = 1;
+        $this->rpp = 1000;
+
+		$query = Entity::getByTag(ucfirst($role))
 					->where(function($query)
 					{
 						$query->active()
 						->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
 					})
 					->orderBy('entity_type_id', 'ASC')
-					->orderBy('name', 'ASC')
-					->get();
+					->orderBy('name', 'ASC');
+        // paginate
+        $entities = $query->paginate($this->rpp);
 
-		return view('entities.index', compact('entities', 'role'));
+        return view('entities.index')
+            ->with(['role' => $role, 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(compact('entities'))
+            ->render();
 	}
 
 	/**

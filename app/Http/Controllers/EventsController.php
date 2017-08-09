@@ -1,8 +1,10 @@
 <?php namespace App\Http\Controllers;
 
+use App\EventFilters;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventRequest;
+use App\Traits\Followable;
 use Illuminate\View\View;
 use PhpParser\Node\Expr\Array_;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -28,19 +30,24 @@ use App\User;
 use App\Activity;
 use App\Services\RssFeed;
 
-class EventsController extends Controller {
 
+class EventsController extends Controller {
 
 	public function __construct(Event $event)
 	{
 		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
 		$this->event = $event;
 
+        // prefix for session storage
+        $this->prefix = 'app.events.';
+
 		// default list variables
-		$this->rpp = 5;
-		$this->page = 1;
-		$this->sortBy = 'created_at';
-		$this->sortOrder = 'desc';
+        $this->rpp = 5;
+        $this->page = 1;
+        $this->sort = array('name', 'desc');
+        $this->sortBy = 'name';
+        $this->sortOrder = 'asc';
+        $this->defaultCriteria = NULL;
 		parent::__construct();
 	}
 
@@ -79,37 +86,6 @@ class EventsController extends Controller {
     }
 
     /**
-     * Get session filters
-     *
-     * @return Array
-     */
-    protected function getFilters(Request $request)
-    {
-        return $request->session()->get('filters', $this->getDefaultFilters());
-    }
-
-    /**
-     * Set filters attribute
-     *
-     * @param array $input
-     * @return array
-     */
-    protected function setFilters(array $input)
-    {
-        return $request->session()->put('filters', $input);
-    }
-
-    /**
-     * Get the default filters array
-     *
-     * @return Array
-     */
-    protected function getDefaultFilters()
-    {
-        return array();
-    }
-
-    /**
      * Reset filter action.
      *
      * @param Request $request
@@ -142,24 +118,189 @@ class EventsController extends Controller {
 
 
     /**
-     * Get page attribute
+     * Gets the reporting options from the request and saves to session
      *
-     * @return integer
+     * @param Request $request
      */
-    protected function getPage()
+    public function getReportingOptions(Request $request)
     {
-        return $request->session()->get('page', 1);
+        foreach (array('page', 'rpp', 'sort', 'criteria') as $option)
+        {
+            if (!$request->has($option))
+            {
+                continue;
+            }
+            switch ($option)
+            {
+                case 'sort':
+                    $value = array
+                    (
+                        $request->input($option),
+                        $request->input('sort_order', 'asc'),
+                    );
+                    break;
+                default:
+                    $value = $request->input($option);
+                    break;
+            }
+            call_user_func
+            (
+                array($this, sprintf('set%s', ucwords($option))),
+                $value
+            );
+        }
     }
 
     /**
-     * Set page attribute
+     * Get user session attribute
+     *
+     * @param String $attribute
+     * @param Mixed $default
+     * @param Request $request
+     * @return Mixed
+     */
+    public function getAttribute($attribute, $default = null, Request $request)
+    {
+        return $request->session()
+            ->get($this->prefix.$attribute, $default);
+    }
+
+    /**
+     * Get session filters
+     *
+     * @return Array
+     */
+    public function getFilters(Request $request)
+    {
+        return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
+    }
+
+    /**
+     * Criteria provides a way to define criteria to be applied to a tab on the index page.
+     *
+     * @return array
+     */
+    public function getCriteria()
+    {
+        return $this->criteria;
+    }
+
+    /**
+     * Get the current page for this module
+     *
+     * @return integner
+     */
+    public function getPage()
+    {
+        return $this->getAttribute('page', 1);
+    }
+
+    /**
+     * Get the current results per page
+     *
+     * @param Request $request
+     * @return integer
+     */
+    public function getRpp(Request $request)
+    {
+        return $this->getAttribute('rpp', $this->rpp);
+    }
+    /**
+     * Get the sort order and column
+     *
+     * @return array
+     */
+    public function getSort(Request $request)
+    {
+        return $this->getAttribute('sort', $this->getDefaultSort());
+    }
+
+
+    /**
+     * Get the default sort array
+     *
+     * @return Array
+     */
+    public function getDefaultSort()
+    {
+        return array('id', 'desc');
+    }
+
+
+    /**
+     * Get the default filters array
+     *
+     * @return Array
+     */
+    public function getDefaultFilters()
+    {
+        return array();
+    }
+
+    /**
+     * Set user session attribute
+     *
+     * @param String $attribute
+     * @param Mixed $value
+     * @param Request $request
+     * @return Mixed
+     */
+    public function setAttribute($attribute, $value, Request $request)
+    {
+        return $request->session()
+            ->set($this->prefix.$attribute, $value);
+    }
+
+    /**
+     * Set filters attribute
      *
      * @param array $input
      * @return array
      */
-    protected function setPage(array $input)
+    public function setFilters(Request $request, array $input)
     {
-        return $request->session()->put('page', $input);
+        return $this->setAttribute('filters', $input, $request);
+    }
+    /**
+     * Set criteria.
+     *
+     * @param array $input
+     * @return string
+     */
+    public function setCriteria($input)
+    {
+        $this->criteria = $input;
+        return $this->criteria;
+    }
+    /**
+     * Set page attribute
+     *
+     * @param integer $input
+     * @return integer
+     */
+    public function setPage($input)
+    {
+        return $this->setAttribute('page', $input);
+    }
+    /**
+     * Set results per page attribute
+     *
+     * @param integer $input
+     * @return integer
+     */
+    public function setRpp($input)
+    {
+        return $this->setAttribute('rpp', 5);
+    }
+    /**
+     * Set sort order attribute
+     *
+     * @param array $input
+     * @return array
+     */
+    public function setSort(array $input)
+    {
+        return $this->setAttribute('sort', $input);
     }
 
     /**
@@ -167,13 +308,21 @@ class EventsController extends Controller {
  	 *
  	 * @return View
  	 */
-	public function index(Request $request)
+	public function index(Request $request, EventFilters $filters)
 	{
+        $hasFilter = 1;
+
+        // get all active entites plus those created by the logged in user, ordered by type and name
+
+        // base criteria
+        $query_future = $this->event->future();
+        $query_past = $this->event->past();
+
  		// updates sort, rpp from request
  		$this->updatePaging($request);
 
-        // get future events
-		$future_events = Event::future()->paginate($this->rpp);
+         // get future events
+		$future_events = $query_future->paginate($this->rpp);
 		$future_events->filter(function($e)
 		{
 			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
@@ -181,14 +330,14 @@ class EventsController extends Controller {
 
 
         // get past events
-		$past_events = Event::past()->paginate($this->rpp);
+		$past_events = $query_past->paginate($this->rpp);
 		$past_events->filter(function($e)
 		{
 			return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
 		});
 
 		return view('events.index') 
-        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
         	->with(compact('future_events'))
         	->with(compact('past_events'))
             ->render();
@@ -201,32 +350,97 @@ class EventsController extends Controller {
      * @return View
      * @internal param $Request
      */
-    public function filter(Request $request)
+    public function filter(Request $request, EventFilters $filters)
     {
-        // get filters from the request
-        $filters = $request->input('EventFilter', array());
+        $hasFilter = 1;
+
+        // get all the filters from the session
+        $filters = $this->getFilters($request);
 
         // updates sort, rpp from request
         $this->updatePaging($request);
 
-        // get a list of venues
-        $venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();;
+        // base criteria
+        $query_future = $this->event->future()->orderBy($this->sortBy, $this->sortOrder);;
+        $query_past = $this->event->past()->orderBy($this->sortBy, $this->sortOrder);;
 
-        $future_events = Event::future()->paginate($this->rpp);
+        // add the criteria from the session
+        // check request for passed filter values
+
+        if (!empty($request->input('filter_name')))
+        {
+            // getting name from the request
+            $name = $request->input('filter_name');
+            $query_future->where('name', 'like', '%'.$name.'%');
+            $query_past->where('name', 'like', '%'.$name.'%');
+
+            // add to filters array
+            $filters['filter_name'] = $name;
+        }
+
+        if (!empty($request->input('filter_venue')))
+        {
+            $venue = $request->input('filter_venue');
+            // add has clause
+            $query_future->whereHas('venue', function($q) use ($venue)
+            {
+                $q->where('slug','=', $venue);
+            });
+            $query_past->whereHas('venue', function($q) use ($venue)
+            {
+                $q->where('slug','=', $venue);
+            });
+
+            // add to filters array
+            $filters['filter_venue'] = $venue;
+
+        };
+
+        if (!empty($request->input('filter_tag')))
+        {
+            $tag = $request->input('filter_tag');
+            $query_future->whereHas('tags', function($q) use ($tag)
+            {
+                $q->where('name','=', ucfirst($tag));
+            });
+            $query_past->whereHas('tags', function($q) use ($tag)
+            {
+                $q->where('name','=', ucfirst($tag));
+            });
+            // add to filters array
+            $filters['filter_tag'] = $tag;
+        }
+
+        // change this - should be seperate
+        if (!empty($request->input('filter_rpp')))
+        {
+            $this->rpp = $request->input('filter_rpp');
+        }
+
+        // save filters to session
+        $this->setFilters($request, $filters);
+
+        // get future events
+        $future_events = $query_future->paginate($this->rpp);
         $future_events->filter(function($e)
         {
             return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
 
 
-        $past_events = Event::past()->paginate($this->rpp);
+        // get past events
+        $past_events = $query_past->paginate($this->rpp);
         $past_events->filter(function($e)
         {
             return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
 
         return view('events.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter,
+                'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL ,  // there should be a better way to do this...
+                'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL,
+                'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL
+            ])
             ->with(compact('future_events'))
             ->with(compact('past_events'));
     }
@@ -239,6 +453,8 @@ class EventsController extends Controller {
  	 */
 	public function indexAll(Request $request)
 	{
+        $hasFilter = 1;
+
  		// updates sort, rpp from request
  		$this->updatePaging($request);
 
@@ -259,7 +475,7 @@ class EventsController extends Controller {
 		});
 
 		return view('events.index')
-		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
+		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
         	->with(compact('future_events')) 
         	->with(compact('past_events'));
 	}
@@ -271,7 +487,9 @@ class EventsController extends Controller {
  	 */
 	public function indexFuture(Request $request)
 	{
- 		// updates sort, rpp from request
+        $hasFilter = 1;
+
+        // updates sort, rpp from request
  		$this->updatePaging($request);
 
 		// get a list of venues
@@ -286,7 +504,7 @@ class EventsController extends Controller {
 		});
 
 		return view('events.index')
-		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
+		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
         	->with(compact('future_events'));
 	}
 
@@ -297,6 +515,8 @@ class EventsController extends Controller {
  	 */
 	public function indexPast(Request $request)
 	{
+        $hasFilter = 1;
+
  		// updates sort, rpp from request
  		$this->updatePaging($request);
  		
@@ -312,7 +532,7 @@ class EventsController extends Controller {
 		});
 
 		return view('events.index')
-		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
+		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
         	->with(compact('past_events'));
 	}
 

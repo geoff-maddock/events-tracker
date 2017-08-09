@@ -70,6 +70,9 @@ Route::get('events/week', 'EventsController@indexWeek');
 Route::get('events/starting/{date}', 'EventsController@indexStarting');
 Route::get('events/daily', 'EventsController@daily');
 
+Route::get('events/filter', array('as' => 'events.filter', 'uses' => 'EventsController@filter'));
+Route::get('events/reset', array('as' => 'events.reset', 'uses' => 'EventsController@reset'));
+
 Route::get('events/tag/{tag}', 'EventsController@indexTags')->name('events.tag');
 Route::get('events/venue/{slug}', 'EventsController@indexVenues')->name('events.venue');
 Route::get('events/relatedto/{slug}', 'EventsController@indexRelatedTo');
