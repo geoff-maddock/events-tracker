@@ -6,7 +6,15 @@
 
 	<head>
 		<link href='//fonts.googleapis.com/css?family=Lato:100' rel='stylesheet' type='text/css'>
-
+	    <!-- select based on default-theme -->
+	    @if (isset($signedIn) && $signedIn === true && (Auth::user()->profile->default_theme != 'dark-theme'))
+	    	<link href="{{ asset('/css/'.Auth::user()->profile->default_theme.'.css') }}" rel="stylesheet">
+	        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	    @else
+	        <!-- TODO Fix Bootstrap Theme "Superhero" - ORDER OF style vs superhero theme matters-->
+	        <link href="{{ asset('/css/dark-theme.css') }}" rel="stylesheet">
+	        <link href="{{ asset('/css/superhero-bootstrap.min.css') }}" rel="stylesheet">
+	    @endif
 		<style>
 			body {
 				margin: 0;
@@ -37,5 +45,7 @@
 		</style>
 	</head>
 
-				<div class="title">404 page not found</div>
+	<body id="event-repo">
+				<div class="title">404 page not found.</div> <a href="{{ URL::previous() }}">Go Back</a>
+	</body>
 @stop

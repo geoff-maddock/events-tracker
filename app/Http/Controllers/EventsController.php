@@ -48,6 +48,7 @@ class EventsController extends Controller {
         $this->sortBy = 'name';
         $this->sortOrder = 'asc';
         $this->defaultCriteria = NULL;
+        $this->hasFilter = 0;
 		parent::__construct();
 	}
 
@@ -453,7 +454,7 @@ class EventsController extends Controller {
  	 */
 	public function indexAll(Request $request)
 	{
-        $hasFilter = 1;
+        $this->hasFilter = 1;
 
  		// updates sort, rpp from request
  		$this->updatePaging($request);
@@ -475,7 +476,7 @@ class EventsController extends Controller {
 		});
 
 		return view('events.index')
-		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
         	->with(compact('future_events')) 
         	->with(compact('past_events'));
 	}
@@ -487,7 +488,7 @@ class EventsController extends Controller {
  	 */
 	public function indexFuture(Request $request)
 	{
-        $hasFilter = 1;
+        $this->hasFilter = 1;
 
         // updates sort, rpp from request
  		$this->updatePaging($request);
@@ -504,7 +505,7 @@ class EventsController extends Controller {
 		});
 
 		return view('events.index')
-		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
         	->with(compact('future_events'));
 	}
 
@@ -515,7 +516,7 @@ class EventsController extends Controller {
  	 */
 	public function indexPast(Request $request)
 	{
-        $hasFilter = 1;
+        $this->hasFilter = 1;
 
  		// updates sort, rpp from request
  		$this->updatePaging($request);
@@ -532,7 +533,7 @@ class EventsController extends Controller {
 		});
 
 		return view('events.index')
-		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
         	->with(compact('past_events'));
 	}
 
@@ -554,6 +555,51 @@ class EventsController extends Controller {
 
 		return view('events.feed', compact('events'));
 	}
+
+    /**
+     * Reset the filtering of entities
+     *
+     * @return Response
+     */
+    public function reset(Request $request)
+    {
+        // doesn't have filter, but temp
+        $hasFilter = 1; 
+
+        // set the filters to empty
+        $this->setFilters($request, $this->getDefaultFilters());
+ 
+        //dd($request->session());
+
+        // base criteria
+        $query_future = $this->event->future();
+        $query_past = $this->event->past();
+
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+         // get future events
+        $future_events = $query_future->paginate($this->rpp);
+        $future_events->filter(function($e)
+        {
+            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
+
+
+        // get past events
+        $past_events = $query_past->paginate($this->rpp);
+        $past_events->filter(function($e)
+        {
+            return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
+
+        return view('events.index') 
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(compact('future_events'))
+            ->with(compact('past_events'))
+            ->render();
+
+    }
 
 	/**
  	 * Send a reminder to all users who are attending this event
@@ -1056,6 +1102,11 @@ class EventsController extends Controller {
 
 	public function show(Event $event)
 	{
+        if (empty((array) $event))
+        {
+            abort(404);
+        };
+
 		return view('events.show', compact('event'));
 	}
 
@@ -1378,6 +1429,11 @@ class EventsController extends Controller {
 	 */
 	public function indexTags(Request $request, $tag)
 	{
+        $this->hasFilter = 1;
+
+        // doesn't have filter, but temp
+        $hasFilter = 1; 
+
  		$tag = urldecode($tag);
 
  		// updates sort, rpp from request
@@ -1407,7 +1463,7 @@ class EventsController extends Controller {
 	
 
 		return view('events.index') 
-        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
         	->with(compact('future_events'))
         	->with(compact('past_events'))
         	->with(compact('tag'));
@@ -1421,6 +1477,9 @@ class EventsController extends Controller {
 	 */
 	public function indexRelatedTo(Request $request, $slug)
 	{
+        // doesn't have filter, but temp
+        $this->hasFilter = 1; 
+
  		$slug = urldecode($slug);
 
   		// updates sort, rpp from request
@@ -1447,7 +1506,7 @@ class EventsController extends Controller {
 					->paginate($this->rpp);
 
 		return view('events.index') 
-        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
         	->with(compact('future_events'))
         	->with(compact('past_events'))
         	->with(compact('slug'));
@@ -1462,6 +1521,9 @@ class EventsController extends Controller {
      */
 	public function indexStarting(Request $request, $date)
 	{
+        // doesn't have filter, but temp
+        $this->hasFilter = 1; 
+
   		// updates sort, rpp from request
  		$this->updatePaging($request);
 
@@ -1480,7 +1542,7 @@ class EventsController extends Controller {
 					->paginate($this->rpp);
 
 		return view('events.index') 
-        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
         	->with(compact('future_events'))
         	->with(compact('cdate'));
 	} 
@@ -1492,7 +1554,9 @@ class EventsController extends Controller {
 	 */
 	public function indexVenues(Request $request, $slug)
 	{
- 
+         // doesn't have filter, but temp
+        $this->hasFilter = 1; 
+
    		// updates sort, rpp from request
  		$this->updatePaging($request);
 
@@ -1518,7 +1582,7 @@ class EventsController extends Controller {
 
 
 		return view('events.index') 
-        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
         	->with(compact('future_events'))
         	->with(compact('past_events'))
         	->with(compact('slug'));
@@ -1533,6 +1597,8 @@ class EventsController extends Controller {
 	 */
 	public function indexTypes(Request $request, $slug)
 	{
+         // doesn't have filter, but temp
+        $this->hasFilter = 1; 
 
   		// updates sort, rpp from request
  		$this->updatePaging($request);
@@ -1559,7 +1625,7 @@ class EventsController extends Controller {
 
 
 		return view('events.index') 
-        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
         	->with(compact('future_events'))
         	->with(compact('past_events'))
         	->with(compact('slug'));
@@ -1572,6 +1638,8 @@ class EventsController extends Controller {
 	 */
 	public function indexSeries(Request $request, $slug)
 	{
+         // doesn't have filter, but temp
+        $this->hasFilter = 0; 
 
   		// updates sort, rpp from request
  		$this->updatePaging($request);
@@ -1598,7 +1666,7 @@ class EventsController extends Controller {
 
 
 		return view('events.index') 
-        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
         	->with(compact('future_events'))
         	->with(compact('past_events'))
         	->with(compact('slug'));

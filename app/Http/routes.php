@@ -48,7 +48,7 @@ Route::get('activity','PagesController@activity');
 
 Route::bind('users', function($id)
 {
-	return App\User::whereId($id)->first();
+	return App\User::whereId($id)->firstOrFail();
 });
 
 $router->resource('users','UsersController');
@@ -100,7 +100,7 @@ Route::delete('events/{id}/photos/{photo_id}', 'EventsController@deletePhoto');
 
 Route::bind('events', function($id)
 {
-	return App\Event::whereId($id)->first();
+	return App\Event::whereId($id)->firstOrFail();
 });
 
 $router->resource('events','EventsController');
@@ -108,7 +108,7 @@ $router->resource('events','EventsController');
 # FORUMS
 Route::bind('forums', function($id)
 {
-	return App\Forum::whereId($id)->first();
+	return App\Forum::whereId($id)->firstOrFail();
 });
 
 Route::get('forums/all', 'ForumsController@indexAll');
@@ -118,7 +118,7 @@ $router->resource('forums','ForumsController');
 # THREADS
 Route::bind('threads', function($id)
 {
-	return App\Thread::whereId($id)->first();
+	return App\Thread::whereId($id)->firstOrFail();
 });
 
 Route::get('threads/all', 'ThreadsController@indexAll');
@@ -148,7 +148,7 @@ Route::get('posts/all', 'PostsController@indexAll');
 
 Route::bind('posts', function($id)
 {
-	return App\Post::whereId($id)->first();
+	return App\Post::whereId($id)->firstOrFail();
 });
 
 $router->resource('posts','PostsController');
@@ -158,7 +158,7 @@ Route::get('permissions/all', 'PermissionsController@indexAll');
 
 Route::bind('permissions', function($id)
 {
-	return App\Permission::whereId($id)->first();
+	return App\Permission::whereId($id)->firstOrFail();
 });
 
 $router->resource('permissions','PermissionsController');
@@ -169,7 +169,7 @@ Route::get('groups/all', 'GroupsController@indexAll');
 
 Route::bind('groups', function($id)
 {
-	return App\Group::whereId($id)->first();
+	return App\Group::whereId($id)->firstOrFail();
 });
 
 $router->resource('groups','GroupsController');
@@ -201,35 +201,35 @@ Route::get('entities/{id}/unfollow', [
 
 Route::bind('entities', function($id)
 {
-	return App\Entity::whereId($id)->first();
+	return App\Entity::whereId($id)->firstOrFail();
 });
 
 $router->resource('entities','EntitiesController');
 
 Route::bind('locations', function($id)
 {
-	return App\Location::whereId($id)->first();
+	return App\Location::whereId($id)->firstOrFail();
 });
 
 $router->resource('entities.locations','LocationsController');
 
 Route::bind('contacts', function($id)
 {
-	return App\Contact::whereId($id)->first();
+	return App\Contact::whereId($id)->firstOrFail();
 });
 
 $router->resource('entities.contacts','ContactsController');
 
 Route::bind('links', function($id)
 {
-	return App\Link::whereId($id)->first();
+	return App\Link::whereId($id)->firstOrFail();
 });
 
 $router->resource('entities.links','LinksController');
 
 Route::bind('comments', function($id)
 {
-	return App\Comment::whereId($id)->first();
+	return App\Comment::whereId($id)->firstOrFail();
 });
 
 $router->resource('entities.comments','CommentsController');
@@ -263,7 +263,7 @@ Route::get('series/{id}/unfollow', [
 
 Route::bind('series', function($id)
 {
-	return App\Series::whereId($id)->first();
+	return App\Series::whereId($id)->firstOrFail();
 });
 
 
