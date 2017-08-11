@@ -75,6 +75,8 @@
 		
 		<P>		
 		@foreach ($entity->locations as $location)
+		@if ($location->visibility->name != 'Guarded' || ($location->visibility->name == 'Guarded' && $signedIn))
+
 		<span><B>{{ isset($location->locationType) ? $location->locationType->name : '' }}</B>  {{ $location->address_one }} {{ $location->neighborhood or '' }}  {{ $location->city }} {{ $location->state }} {{ $location->country }}
 				
 				@if (isset($location->map_url))
@@ -94,6 +96,7 @@
 				@endif 
 
 		</span><br>
+		@endif
 		@endforeach
 		
 	@endunless

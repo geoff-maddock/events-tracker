@@ -431,14 +431,14 @@ class Entity extends Eloquent {
 	 * @return Location
 	 * 
 	 **/
-	public function getPrimaryLocationAddress()
+	public function getPrimaryLocationAddress($signedIn)
 	{
 		$address = '';
 
 		// get a list of events that start on the passed date
 		$primary = $this->locations()->first();
 
-		if ($primary)
+		if ($primary && ($primary->visibility->name != 'Guarded' || ($primary->visibility->name == 'Guarded') && $signedIn))
 		{
 			$address .= $primary->address_one.' ';
 			$address .= $primary->city;

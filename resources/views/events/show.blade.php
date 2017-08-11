@@ -37,11 +37,12 @@
 	<br>
 
 	@if (!empty($event->venue_id))
-	<a href="/entities/{{$event->venue->id }}">{!! $event->venue->name !!}</a>
+		<a href="/entities/{{$event->venue->id }}">{!! $event->venue->name !!}</a>
 
-	@if ($event->venue->getPrimaryLocationAddress() )
-		{{ $event->venue->getPrimaryLocationAddress() }}
-	@endif
+		@if ($event->venue->getPrimaryLocationAddress($signedIn))
+			{{ $event->venue->getPrimaryLocationAddress() }}
+		@endif
+
 	@else
 	no venue specified
 	@endif

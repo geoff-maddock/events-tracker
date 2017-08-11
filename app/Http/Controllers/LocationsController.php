@@ -10,6 +10,7 @@ use DB;
 use App\Entity;
 use App\LocationType;
 use App\Location;
+use App\Visibility;
 
 class LocationsController extends Controller {
 
@@ -46,9 +47,10 @@ class LocationsController extends Controller {
 	 */
 	public function create(Entity $entity)
 	{
-		$locationTypes = [''=>''] + LocationType::orderBy('name','ASC')->pluck('name', 'id')->all(); 
+		$locationTypes = [''=>''] + LocationType::orderBy('name','ASC')->pluck('name', 'id')->all();
+        $visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
 
-		return view('locations.create', compact('entity', 'locationTypes'));
+		return view('locations.create', compact('entity', 'locationTypes', 'visibilities'));
 	}
 
 	/**
@@ -96,9 +98,10 @@ class LocationsController extends Controller {
 	 */
 	public function edit(Entity $entity, Location $location)
 	{
-		$locationTypes = [''=>''] + LocationType::orderBy('name','ASC')->pluck('name', 'id')->all(); 
+		$locationTypes = [''=>''] + LocationType::orderBy('name','ASC')->pluck('name', 'id')->all();
+        $visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
 
-		return view('locations.edit', compact('entity', 'location', 'locationTypes'));
+		return view('locations.edit', compact('entity', 'location', 'locationTypes','visibilities'));
 	}
 
 	/**
