@@ -431,7 +431,7 @@ class Entity extends Eloquent {
 	 * @return Location
 	 * 
 	 **/
-	public function getPrimaryLocationAddress($signedIn)
+	public function getPrimaryLocationAddress($signedIn = NULL)
 	{
 		$address = '';
 
