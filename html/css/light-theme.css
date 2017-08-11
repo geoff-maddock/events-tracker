@@ -79,11 +79,11 @@ body {
 }
 
 .label-tag {
- 	background-color: #dddddd;
+ 	background-color: #000000;
 }
 
 .label-related{
-	background-color: #eeeeee;
+	background-color: #ffffff;
 }
 
 .card-thumb {
@@ -178,7 +178,7 @@ li.selected:hover {
 }
 
 #event-repo .fc-body .fc-day {
-	background-color: #fea;
+	background-color: #fc0;
 }
 
 #event-repo img.avatar {
@@ -202,4 +202,8 @@ li.selected:hover {
 .hover-dim span:hover {
 	-moz-opacity: 0.6;
 	opacity: 0.6;
+}
+
+#event-repo .navbar-default .navbar-nav > li > a:hover {
+	background-color: #e7e7e7;
 }

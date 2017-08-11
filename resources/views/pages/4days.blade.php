@@ -1,18 +1,20 @@
-<div class="col-sm-1">
+<div class="col-sm-3">
 <ul class="pagination pull-left" style="margin-top: 0px;">
-	<li>{!! link_to_route('home', '< Past', ['day_offset' => $dayOffset-1], ['class' => 'item-title', 'style' => 'white-space: nowrap;']) !!}</li>
+	<li>{!! link_to_route('home', '< Past Week', ['day_offset' => $dayOffset-4], ['class' => 'item-title', 'style' => 'white-space: nowrap;']) !!}</li>
+	<li>{!! link_to_route('home', '< Past Day', ['day_offset' => $dayOffset-1], ['class' => 'item-title', 'style' => 'white-space: nowrap;']) !!}</li>
 </ul>
 </div>
 
-<div class="col-sm-10">
+<div class="col-sm-6">
 <ul class="pagination" style="margin-top: 0px;">
 <li></li>
 </ul>
 </div>
-
-<div class="col-sm-1">
+ 
+<div class="col-sm-3">
 <ul class="pagination pull-right" style="margin-top: 0px;">
-	<li>{!! link_to_route('home', 'Future >', ['day_offset' => $dayOffset+1], ['class' => 'item-title', 'style' => 'white-space: nowrap;']) !!}</li>
+	<li>{!! link_to_route('home', 'Future Day >', ['day_offset' => $dayOffset+1], ['class' => 'item-title', 'style' => 'white-space: nowrap;']) !!}</li>
+	<li>{!! link_to_route('home', 'Future Week >', ['day_offset' => $dayOffset+4], ['class' => 'item-title', 'style' => 'white-space: nowrap;']) !!}</li>
 </ul>
 </div>
 
