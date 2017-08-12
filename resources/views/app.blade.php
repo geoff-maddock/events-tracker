@@ -26,6 +26,7 @@
     @endif
 
 	<link href="{{ asset('/css/select2.css') }}" rel="stylesheet">
+    <link href="{{ asset('/css/select2-bootstrap.min.css') }}" rel="stylesheet">
 	<link href="{{ asset('/css/sweetalert.css') }}" rel="stylesheet">
 	<link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.6.0/fullcalendar.min.css" rel="stylesheet">
 	<link href="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.2.0/min/dropzone.min.css" rel="stylesheet">

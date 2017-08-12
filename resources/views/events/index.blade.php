@@ -68,8 +68,6 @@
 		</div>
 
 
-
-
 	<br style="clear: left;"/>
 
 	<div class="row">
@@ -145,4 +143,17 @@
 	</div>
 
 @stop
- 
+
+
+@section('footer')
+	<script>
+        // javascript to enable the select2 for the tag and entity list
+        $('#filter_tag').select2(
+            {
+
+                placeholder: 'Choose a tag',
+                tags: true,
+            });
+
+	</script>
+@endsection
