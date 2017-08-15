@@ -68,13 +68,13 @@
 	</a>
 	@endif
 
-	<!-- display attending - x-editable or just dropdown -->
+	<!-- display attend - x-editable or just dropdown -->
 
 	@if ($signedIn)
 		@if ($response = $event->getEventResponse($user))
-		<a href="{!! route('events.unattending', ['id' => $event->id]) !!}" title="Click to mark unattending"><span class='glyphicon glyphicon-star text-warning'></span> {{ $response->responseType->name }}</a>
+		<a href="{!! route('events.unattend', ['id' => $event->id]) !!}" title="Click to mark unattending"><span class='glyphicon glyphicon-star text-warning'></span> {{ $response->responseType->name }}</a>
 		@else
-		<a href="{!! route('events.attending', ['id' => $event->id]) !!}" title="Click to mark attending"><span class='glyphicon glyphicon-star text-info'></span>  No response</a>
+		<a href="{!! route('events.attend', ['id' => $event->id]) !!}" title="Click to mark attending"><span class='glyphicon glyphicon-star text-info'></span>  No response</a>
 		@endif
 	@endif
 

@@ -1,3 +1,4 @@
+<div class="row">
 <div class="col-sm-3">
 <ul class="pagination pull-left" style="margin-top: 0px;">
 	<li>{!! link_to_route('home', '< Past Week', ['day_offset' => $dayOffset-4], ['class' => 'item-title', 'style' => 'white-space: nowrap;']) !!}</li>
@@ -17,7 +18,7 @@
 	<li>{!! link_to_route('home', 'Future Week >', ['day_offset' => $dayOffset+4], ['class' => 'item-title', 'style' => 'white-space: nowrap;']) !!}</li>
 </ul>
 </div>
-
+</div>
 <br style="clear: left;"/>
 <!-- DISPLAY THE NEXT FOUR DAYS OF EVENTS --> 
 <?php $today = \Carbon\Carbon::now('America/New_York'); ?>

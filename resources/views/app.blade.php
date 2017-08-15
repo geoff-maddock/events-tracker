@@ -6,7 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta property="og:url" content="{{ Request::url() }}">
 	<meta property="og:title" content="@yield('title')">
-	<meta property="og:description" content="A guide and calander of events, weekly and  monthly series, promoters, artists, producers, djs, venues and other entities.">
+	<meta property="og:description" content="A guide and calender of events, weekly and  monthly series, promoters, artists, producers, djs, venues and other entities.">
 	<meta property="fb:app_id" content="{{ config('app.fb_app_id') }}">
 	<title>{{ config('app.app_name')}} - Event + Club Guide - @yield('title')</title>
   	<link rel="alternate" type="application/rss+xml" href="{{ url('rss') }}"

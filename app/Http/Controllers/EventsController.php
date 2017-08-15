@@ -1035,7 +1035,7 @@ class EventsController extends Controller {
 			    ($event->end_time ? $event->end_time->format('Y-m-d H:i') : NULL), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
 			    $event->id, //optional event ID
 			    [
-			        'url' => 'events/'.$event->id,
+			        'url' => '/events/'.$event->id,
 			        //'color' => '#fc0'
 			    ]
 			);
@@ -1053,7 +1053,7 @@ class EventsController extends Controller {
 				    ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : NULL), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
 				    $s->id, //optional event ID
 				    [
-				        'url' => 'series/'.$s->id,
+				        'url' => '/series/'.$s->id,
 				        'color' => '#99bcdb'
 				    ]
 				);
@@ -1313,9 +1313,8 @@ class EventsController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function attending($id, Request $request)
+	public function attend($id, Request $request)
 	{
-
 		// check if there is a logged in user
 		if (!$this->user)
 		{
@@ -1352,7 +1351,7 @@ class EventsController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function unattending($id, Request $request)
+	public function unattend($id, Request $request)
 	{
 
 		// check if there is a logged in user

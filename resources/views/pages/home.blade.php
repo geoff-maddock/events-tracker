@@ -6,7 +6,7 @@
 
 	<div class="jumbotron">
 	<h3>Event Repo</h3>
-	<p>A guide and calander of events, weekly and  monthly series, promoters, artists, producers, djs, venues and other entities.</p>
+	<p>A guide and calender of events, weekly and  monthly series, promoters, artists, producers, djs, venues and other entities.</p>
 	<P>
 	<a href="{{ url('/events/all') }}" class="btn btn-info">Show all events</a>
 	<a href="{!! URL::route('events.index') !!}" class="btn btn-info">Show paginated events</a>

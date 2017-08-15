@@ -79,20 +79,21 @@ Route::get('events/relatedto/{slug}', 'EventsController@indexRelatedTo');
 Route::get('events/type/{slug}', 'EventsController@indexTypes');
 Route::get('events/series/{slug}', 'EventsController@indexSeries');
 Route::get('events/feed', 'EventsController@feed');
+Route::get('events/attending', 'EventsController@attending');
 
 Route::get('events/{id}/remind', [
 	'as' => 'events.remind', 
 	'uses' => 'EventsController@remind'
 	]);
 
-Route::get('events/{id}/attending', [
-	'as' => 'events.attending', 
-	'uses' => 'EventsController@attending'
+Route::get('events/{id}/attend', [
+	'as' => 'events.attend',
+	'uses' => 'EventsController@attend'
 	]);
 
-Route::get('events/{id}/unattending', [
-	'as' => 'events.unattending', 
-	'uses' => 'EventsController@unattending'
+Route::get('events/{id}/unattend', [
+	'as' => 'events.unattend',
+	'uses' => 'EventsController@unattend'
 	]);
 
 Route::post('events/{id}/photos', 'EventsController@addPhoto');

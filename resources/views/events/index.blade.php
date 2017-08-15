@@ -150,10 +150,13 @@
         // javascript to enable the select2 for the tag and entity list
         $('#filter_tag').select2(
             {
-
                 placeholder: 'Choose a tag',
                 tags: true,
             });
-
+        $('#filter_venue').select2(
+            {
+                placeholder: 'Choose a venue',
+                tags: false,
+            });
 	</script>
 @endsection

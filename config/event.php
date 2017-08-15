@@ -2,8 +2,8 @@
 return [
     'name' => "Event Repo",
     'title' => "Event Repo",
-    'subtitle' => 'A guide and calander of events, weekly and monthly series, promoters, artists, producers, djs, venues and other entities.',
-    'description' => 'A guide and calander of events, weekly and monthly series, promoters, artists, producers, djs, venues and other entities.',
+    'subtitle' => 'A guide and calender of events, weekly and monthly series, promoters, artists, producers, djs, venues and other entities.',
+    'description' => 'A guide and calender of events, weekly and monthly series, promoters, artists, producers, djs, venues and other entities.',
     'author' => 'Geoff Maddock',
     'page_image' => 'photos/tn-1485825995-icon-publicentities-big.png',
     'posts_per_page' => 10,
