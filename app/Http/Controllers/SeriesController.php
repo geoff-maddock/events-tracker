@@ -30,21 +30,224 @@ class SeriesController extends Controller {
 		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
 		$this->series = $series;
 		
-		$this->rpp = 5;
+        // prefix for session storage
+        $this->prefix = 'app.series.';
 
-		parent::__construct();
-	}
+        // default list variables
+        $this->rpp = 100;
+        $this->page = 1;
+        $this->sort = array('name', 'desc');
+        $this->sortBy = 'name';
+        $this->sortOrder = 'asc';
+        $this->defaultCriteria = NULL;
+        $this->hasFilter = 0;
+        parent::__construct();
+    }
 
+    /**
+     * Update the page list parameters from the request
+     *
+     */
+    protected function updatePaging($request)
+    {
+        // set sort by column
+        if ($request->input('sort_by')) {
+            $this->sortBy = $request->input('sort_by');
+        };
+
+        // set sort direction
+        if ($request->input('sort_direction')) {
+            $this->sortOrder = $request->input('sort_direction');
+        };
+
+        // set results per page
+        if ($request->input('rpp')) {
+            $this->rpp = $request->input('rpp');
+        };
+    }
+
+    /**
+     * Apply the filters to the query
+     *
+     */
+    protected function buildCriteria(array $filters = null)
+    {
+        if (is_null($filters)) {
+            $filters = $this->getFilters();
+        }
+    }
+
+    /**
+     * Get the base criteria
+     *
+     */
+    protected function baseCriteria()
+    {
+        $query = $this->series
+            ->where('cancelled_at', NULL)
+            ->orderBy('occurrence_type_id','ASC')
+            ->orderBy('occurrence_week_id', 'ASC')
+            ->orderBy('occurrence_day_id', 'ASC')
+            ->orderBy('name', 'ASC');
+
+        return $query;
+    }
+
+    /**
+     * Filter the list of events
+     *
+     * @param Request $request
+     * @return View
+     * @internal param $Request
+     */
+    public function filter(Request $request)
+    {
+        $hasFilter = 1;
+
+        // get all the filters from the session
+        $filters = $this->getFilters($request);
+
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        // base criteria
+        $query = $this->baseCriteria();
+
+        // add the criteria from the session
+        // check request for passed filter values
+
+        if (!empty($request->input('filter_name')))
+        {
+            // getting name from the request
+            $name = $request->input('filter_name');
+            $query->where('name', 'like', '%'.$name.'%');
+            // add to filters array
+            $filters['filter_name'] = $name;
+        }
+
+        if (!empty($request->input('filter_occurrence_type')))
+        {
+            $type = $request->input('filter_occurrence_type');
+            // add has clause
+            $query->whereHas('occurrenceType',
+                function($q) use ($type)
+                {
+                    $q->where('name','=', ucfirst($type));
+                });
+
+            // add to filters array
+            $filters['filter_occurrence_type'] = $type;
+        };
+
+        if (!empty($request->input('filter_occurrence_week')))
+        {
+            $week = $request->input('filter_occurrence_week');
+            // add has clause
+            $query->whereHas('occurrenceWeek',
+                function($q) use ($week)
+                {
+                    $q->where('name','=', ucfirst($week));
+                });
+
+            // add to filters array
+            $filters['filter_occurrence_week'] = $week;
+        };
+
+
+        if (!empty($request->input('filter_occurrence_day')))
+        {
+            $day = $request->input('filter_occurrence_day');
+            // add has clause
+            $query->whereHas('occurrenceDay',
+                function($q) use ($day)
+                {
+                    $q->where('name','=', ucfirst($day));
+                });
+
+            // add to filters array
+            $filters['filter_occurrence_day'] = $day;
+        };
+
+
+        if (!empty($request->input('filter_tag')))
+        {
+            $tag = $request->input('filter_tag');
+            $query->whereHas('tags', function($q) use ($tag)
+            {
+                $q->where('name','=', ucfirst($tag));
+            });
+
+            // add to filters array
+            $filters['filter_tag'] = $tag;
+        }
+
+
+        // change this - should be seperate
+        if (!empty($request->input('filter_rpp')))
+        {
+            $this->rpp = $request->input('filter_rpp');
+        }
+
+        // save filters to session
+        $this->setFilters($request, $filters);
+
+        // get series
+        $series = $query->paginate($this->rpp);
+        $series->filter(function ($e) {
+            return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
+
+        return view('series.index')
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter,
+                'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
+                'filter_occurrence_type' => isset($filters['filter_occurrence_type']) ? $filters['filter_occurrence_type'] : NULL,
+                'filter_occurrence_week' => isset($filters['filter_occurrence_week']) ? $filters['filter_occurrence_week'] : NULL,
+                'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL
+            ])
+            ->with(compact('series'));
+    }
+
+    /**
+     * Reset the filtering of entities
+     *
+     * @return Response
+     */
+    public function reset(Request $request)
+    {
+        // doesn't have filter, but temp
+        $hasFilter = 1;
+
+        // set the filters to empty
+        $this->setFilters($request, $this->getDefaultFilters());
+
+        // base criteria
+        $query = $this->baseCriteria();
+
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        // get future events
+        $series = $query->paginate($this->rpp);
+        $series->filter(function ($e) {
+            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
+
+
+        return view('series.index')
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(compact('series'))
+            ->render();
+
+    }
 
 	public function index()
 	{
-		$series = $this->series
-		->where('cancelled_at', NULL)
-		->orderBy('occurrence_type_id','ASC')
-		->orderBy('occurrence_week_id', 'ASC')
-		->orderBy('occurrence_day_id', 'ASC')
-		->orderBy('name', 'ASC')
-		->get();
+        $hasFilter = 1;
+
+        // base criteria
+        $query = $this->baseCriteria();
+
+        $series = $query->paginate($this->rpp);
 
 		$series = $series->filter(function($e)
 		{
@@ -52,7 +255,10 @@ class SeriesController extends Controller {
 		});
 
 
-		return view('series.index', compact('series'));
+		return view('series.index')
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(compact('series'))
+            ->render();
 	}
 
 	public function indexCancelled()
@@ -467,4 +673,208 @@ class SeriesController extends Controller {
 
 		return redirect('/');
 	}
+
+
+    /**
+     * Returns true if the user has any filters outside of the default
+     *
+     * @return Boolean
+     */
+    protected function getIsFiltered(Request $request)
+    {
+        if (($filters = $this->getFilters($request)) == $this->getDefaultFilters()) {
+            return false;
+        }
+        return (bool)count($filters);
+    }
+
+
+    /**
+     * Gets the reporting options from the request and saves to session
+     *
+     * @param Request $request
+     */
+    public function getReportingOptions(Request $request)
+    {
+        foreach (array('page', 'rpp', 'sort', 'criteria') as $option) {
+            if (!$request->has($option)) {
+                continue;
+            }
+            switch ($option) {
+                case 'sort':
+                    $value = array
+                    (
+                        $request->input($option),
+                        $request->input('sort_order', 'asc'),
+                    );
+                    break;
+                default:
+                    $value = $request->input($option);
+                    break;
+            }
+            call_user_func
+            (
+                array($this, sprintf('set%s', ucwords($option))),
+                $value
+            );
+        }
+    }
+
+    /**
+     * Get user session attribute
+     *
+     * @param String $attribute
+     * @param Mixed $default
+     * @param Request $request
+     * @return Mixed
+     */
+    public function getAttribute($attribute, $default = null, Request $request)
+    {
+        return $request->session()
+            ->get($this->prefix . $attribute, $default);
+    }
+
+    /**
+     * Get session filters
+     *
+     * @return Array
+     */
+    public function getFilters(Request $request)
+    {
+        return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
+    }
+
+    /**
+     * Criteria provides a way to define criteria to be applied to a tab on the index page.
+     *
+     * @return array
+     */
+    public function getCriteria()
+    {
+        return $this->criteria;
+    }
+
+    /**
+     * Get the current page for this module
+     *
+     * @return integner
+     */
+    public function getPage()
+    {
+        return $this->getAttribute('page', 1);
+    }
+
+    /**
+     * Get the current results per page
+     *
+     * @param Request $request
+     * @return integer
+     */
+    public function getRpp(Request $request)
+    {
+        return $this->getAttribute('rpp', $this->rpp);
+    }
+
+    /**
+     * Get the sort order and column
+     *
+     * @return array
+     */
+    public function getSort(Request $request)
+    {
+        return $this->getAttribute('sort', $this->getDefaultSort());
+    }
+
+
+    /**
+     * Get the default sort array
+     *
+     * @return Array
+     */
+    public function getDefaultSort()
+    {
+        return array('id', 'desc');
+    }
+
+
+    /**
+     * Get the default filters array
+     *
+     * @return Array
+     */
+    public function getDefaultFilters()
+    {
+        return array();
+    }
+
+    /**
+     * Set user session attribute
+     *
+     * @param String $attribute
+     * @param Mixed $value
+     * @param Request $request
+     * @return Mixed
+     */
+    public function setAttribute($attribute, $value, Request $request)
+    {
+        return $request->session()
+            ->set($this->prefix . $attribute, $value);
+    }
+
+    /**
+     * Set filters attribute
+     *
+     * @param array $input
+     * @return array
+     */
+    public function setFilters(Request $request, array $input)
+    {
+        return $this->setAttribute('filters', $input, $request);
+    }
+
+    /**
+     * Set criteria.
+     *
+     * @param array $input
+     * @return string
+     */
+    public function setCriteria($input)
+    {
+        $this->criteria = $input;
+        return $this->criteria;
+    }
+
+    /**
+     * Set page attribute
+     *
+     * @param integer $input
+     * @return integer
+     */
+    public function setPage($input)
+    {
+        return $this->setAttribute('page', $input);
+    }
+
+    /**
+     * Set results per page attribute
+     *
+     * @param integer $input
+     * @return integer
+     */
+    public function setRpp($input)
+    {
+        return $this->setAttribute('rpp', 5);
+    }
+
+    /**
+     * Set sort order attribute
+     *
+     * @param array $input
+     * @return array
+     */
+    public function setSort(array $input)
+    {
+        return $this->setAttribute('sort', $input);
+    }
+
 }

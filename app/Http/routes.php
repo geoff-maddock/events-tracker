@@ -39,6 +39,7 @@ Route::get('calendar', 'EventsController@calendar');
 Route::get('calendar/tag/{tag}', 'EventsController@calendarTags')->name('calendar.tag');
 Route::get('calendar/relatedto/{slug}', 'EventsController@calendarRelatedTo');
 Route::get('calendar/free', 'EventsController@calendarFree')->name('calendar.free');
+Route::get('calendar/attending', 'EventsController@calendarAttending')->name('calendar.attending');
 Route::get('calendar/type/{tag}', 'EventsController@calendarEventTypes')->name('calendar.type');
 Route::get('calendar/min_age/{age}', 'EventsController@calendarMinAge')->name('calendar.minAge');
 
@@ -79,7 +80,7 @@ Route::get('events/relatedto/{slug}', 'EventsController@indexRelatedTo');
 Route::get('events/type/{slug}', 'EventsController@indexTypes');
 Route::get('events/series/{slug}', 'EventsController@indexSeries');
 Route::get('events/feed', 'EventsController@feed');
-Route::get('events/attending', 'EventsController@attending');
+Route::get('events/attending', 'EventsController@indexAttending');
 
 Route::get('events/{id}/remind', [
 	'as' => 'events.remind', 
@@ -251,6 +252,9 @@ Route::get('series/week', 'SeriesController@indexWeek');
 Route::get('series/cancelled', 'SeriesController@indexCancelled')->name('series.cancelled');
 Route::post('series/{id}/photos', 'SeriesController@addPhoto');
 Route::delete('series/{id}/photos/{photo_id}', 'SeriesController@deletePhoto');
+
+Route::get('series/filter', array('as' => 'series.filter', 'uses' => 'SeriesController@filter'));
+Route::get('series/reset', array('as' => 'series.reset', 'uses' => 'SeriesController@reset'));
 
 Route::get('series/{id}/follow', [
 	'as' => 'series.follow', 

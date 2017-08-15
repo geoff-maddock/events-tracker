@@ -39,6 +39,7 @@
 		            <li class="{{ Request::is('calendar/free') ? 'active' : '' }}"><a href="{!! url('/calendar/free') !!}" >Free Shows</a></li>
 		            <li class="{{ Request::is('calendar/min_age/0') ? 'active' : '' }}"><a href="{!! url('/calendar/min_age/0') !!}" >All Ages</a></li>
 		            <li class="{{ Request::is('calendar/type/club night') ? 'active' : '' }}"><a href="{!! url('/calendar/type/club night') !!}" >Club Night</a></li>
+					<li class="{{ Request::is('calendar/attending') ? 'active' : '' }}"><a href="{!! url('/calendar/attending') !!}" >Attending</a></li>
 		          </ul>
 		        </li>
 
@@ -88,7 +89,8 @@
 					<li class="dropdown ">
 						<a href="{{ url('/users/'.Auth::user()->id) }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ Auth::user()->name }} <span class="caret"></span></a>
 						<ul class="dropdown-menu">
-							<li><a href="{{ url('/users/'.Auth::user()->id) }}">Profile</a></li> 
+							<li><a href="{{ url('/users/'.Auth::user()->id) }}">Profile</a></li>
+							<li><a href="{{ url('/events/attending') }}">Events Attending</a></li>
 							<li><a href="{{ url('/auth/logout') }}">Logout</a></li>
 						</ul>
 					</li>

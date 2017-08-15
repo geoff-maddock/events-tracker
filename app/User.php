@@ -207,8 +207,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 			->where('response_types.name', '=', 'Attending')
 			->where('event_responses.user_id', '=', $this->id)
 			->orderBy('events.start_at','desc')
-			->select('events.*')
-			->get();
+			->select('events.*');
 		return $events;
 	}
 
@@ -243,6 +242,20 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 		return $tags;
 	}
 
+
+    /**
+     * Return a list of series the user is following
+     *
+     */
+    public function getSeriesFollowing()
+    {
+        $series = Series::join('follows', 'series.id', '=', 'follows.object_id')
+            ->where('follows.object_type', '=', 'series')
+            ->where('follows.user_id', '=', $this->id)
+            ->orderBy('follows.created_at','desc')
+            ->select('series.*');
+        return $series;
+    }
 
 	/**
 	 * Events that were created by the user

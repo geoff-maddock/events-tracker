@@ -31,17 +31,26 @@ use App\Activity;
 use App\Services\RssFeed;
 
 
-class EventsController extends Controller {
+class EventsController extends Controller
+{
+    protected $prefix;
+    protected $rpp;
+    protected $page;
+    protected $sort;
+    protected $sortBy;
+    protected $sortOrder;
+    protected $defaultCriteria;
+    protected $hasFilter;
 
-	public function __construct(Event $event)
-	{
-		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
-		$this->event = $event;
+    public function __construct(Event $event)
+    {
+        $this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update','indexAttending', 'calendarAttending')]);
+        $this->event = $event;
 
         // prefix for session storage
         $this->prefix = 'app.events.';
 
-		// default list variables
+        // default list variables
         $this->rpp = 5;
         $this->page = 1;
         $this->sort = array('name', 'desc');
@@ -49,31 +58,30 @@ class EventsController extends Controller {
         $this->sortOrder = 'asc';
         $this->defaultCriteria = NULL;
         $this->hasFilter = 0;
-		parent::__construct();
-	}
+        parent::__construct();
+    }
 
-	/**
-	 * Update the page list parameters from the request
-	 *
-	 */
-	protected function updatePaging($request)
-	{
- 		// set sort by column
- 		if ($request->input('sort_by')) {
- 			$this->sortBy = $request->input('sort_by');
- 		};
+    /**
+     * Update the page list parameters from the request
+     *
+     */
+    protected function updatePaging($request)
+    {
+        // set sort by column
+        if ($request->input('sort_by')) {
+            $this->sortBy = $request->input('sort_by');
+        };
 
-		// set sort direction
- 		if ($request->input('sort_direction')) {
- 			$this->sortOrder = $request->input('sort_direction');
- 		};
+        // set sort direction
+        if ($request->input('sort_direction')) {
+            $this->sortOrder = $request->input('sort_direction');
+        };
 
- 		// set results per page
- 		if ($request->input('rpp')) {
- 			$this->rpp = $request->input('rpp');
- 		};
-	}
-
+        // set results per page
+        if ($request->input('rpp')) {
+            $this->rpp = $request->input('rpp');
+        };
+    }
 
     /**
      * Apply the filters to the query
@@ -93,11 +101,10 @@ class EventsController extends Controller {
      */
     public function executeReset(Request $request)
     {
-        if ($request->input('criteria'))
-        {
+        if ($request->input('criteria')) {
             $this->setCriteria($request->input('criteria'));
         }
-        $this->setFilters($this->getDefaultFilters());
+        $this->setFilters($this->getDefaultFilters(), NULL);
         $request->session()->put('defaultFilter', 0);
         $this->setPage(1);
         $this->executeFilterRedirect();
@@ -110,11 +117,10 @@ class EventsController extends Controller {
      */
     protected function getIsFiltered(Request $request)
     {
-        if (($filters = $this->getFilters($request)) == $this->getDefaultFilters())
-        {
+        if (($filters = $this->getFilters($request)) == $this->getDefaultFilters()) {
             return false;
         }
-        return (bool) count($filters);
+        return (bool)count($filters);
     }
 
 
@@ -125,14 +131,11 @@ class EventsController extends Controller {
      */
     public function getReportingOptions(Request $request)
     {
-        foreach (array('page', 'rpp', 'sort', 'criteria') as $option)
-        {
-            if (!$request->has($option))
-            {
+        foreach (array('page', 'rpp', 'sort', 'criteria') as $option) {
+            if (!$request->has($option)) {
                 continue;
             }
-            switch ($option)
-            {
+            switch ($option) {
                 case 'sort':
                     $value = array
                     (
@@ -163,7 +166,7 @@ class EventsController extends Controller {
     public function getAttribute($attribute, $default = null, Request $request)
     {
         return $request->session()
-            ->get($this->prefix.$attribute, $default);
+            ->get($this->prefix . $attribute, $default);
     }
 
     /**
@@ -206,6 +209,7 @@ class EventsController extends Controller {
     {
         return $this->getAttribute('rpp', $this->rpp);
     }
+
     /**
      * Get the sort order and column
      *
@@ -249,7 +253,7 @@ class EventsController extends Controller {
     public function setAttribute($attribute, $value, Request $request)
     {
         return $request->session()
-            ->set($this->prefix.$attribute, $value);
+            ->set($this->prefix . $attribute, $value);
     }
 
     /**
@@ -262,6 +266,7 @@ class EventsController extends Controller {
     {
         return $this->setAttribute('filters', $input, $request);
     }
+
     /**
      * Set criteria.
      *
@@ -273,6 +278,7 @@ class EventsController extends Controller {
         $this->criteria = $input;
         return $this->criteria;
     }
+
     /**
      * Set page attribute
      *
@@ -283,6 +289,7 @@ class EventsController extends Controller {
     {
         return $this->setAttribute('page', $input);
     }
+
     /**
      * Set results per page attribute
      *
@@ -293,6 +300,7 @@ class EventsController extends Controller {
     {
         return $this->setAttribute('rpp', 5);
     }
+
     /**
      * Set sort order attribute
      *
@@ -305,12 +313,12 @@ class EventsController extends Controller {
     }
 
     /**
- 	 * Display a listing of the resource.
- 	 *
- 	 * @return View
- 	 */
-	public function index(Request $request, EventFilters $filters)
-	{
+     * Display a listing of the resource.
+     *
+     * @return View
+     */
+    public function index(Request $request, EventFilters $filters)
+    {
         $hasFilter = 1;
 
         // get all active entites plus those created by the logged in user, ordered by type and name
@@ -319,30 +327,28 @@ class EventsController extends Controller {
         $query_future = $this->event->future();
         $query_past = $this->event->past();
 
- 		// updates sort, rpp from request
- 		$this->updatePaging($request);
+        // updates sort, rpp from request
+        $this->updatePaging($request);
 
-         // get future events
-		$future_events = $query_future->paginate($this->rpp);
-		$future_events->filter(function($e)
-		{
-			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-		});
+        // get future events
+        $future_events = $query_future->paginate($this->rpp);
+        $future_events->filter(function ($e) {
+            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
 
 
         // get past events
-		$past_events = $query_past->paginate($this->rpp);
-		$past_events->filter(function($e)
-		{
-			return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-		});
+        $past_events = $query_past->paginate($this->rpp);
+        $past_events->filter(function ($e) {
+            return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
 
-		return view('events.index') 
-        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
-        	->with(compact('future_events'))
-        	->with(compact('past_events'))
+        return view('events.index')
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(compact('future_events'))
+            ->with(compact('past_events'))
             ->render();
-	}
+    }
 
     /**
      * Filter the list of events
@@ -368,28 +374,24 @@ class EventsController extends Controller {
         // add the criteria from the session
         // check request for passed filter values
 
-        if (!empty($request->input('filter_name')))
-        {
+        if (!empty($request->input('filter_name'))) {
             // getting name from the request
             $name = $request->input('filter_name');
-            $query_future->where('name', 'like', '%'.$name.'%');
-            $query_past->where('name', 'like', '%'.$name.'%');
+            $query_future->where('name', 'like', '%' . $name . '%');
+            $query_past->where('name', 'like', '%' . $name . '%');
 
             // add to filters array
             $filters['filter_name'] = $name;
         }
 
-        if (!empty($request->input('filter_venue')))
-        {
+        if (!empty($request->input('filter_venue'))) {
             $venue = $request->input('filter_venue');
             // add has clause
-            $query_future->whereHas('venue', function($q) use ($venue)
-            {
-                $q->where('slug','=', $venue);
+            $query_future->whereHas('venue', function ($q) use ($venue) {
+                $q->where('slug', '=', $venue);
             });
-            $query_past->whereHas('venue', function($q) use ($venue)
-            {
-                $q->where('slug','=', $venue);
+            $query_past->whereHas('venue', function ($q) use ($venue) {
+                $q->where('slug', '=', $venue);
             });
 
             // add to filters array
@@ -397,24 +399,20 @@ class EventsController extends Controller {
 
         };
 
-        if (!empty($request->input('filter_tag')))
-        {
+        if (!empty($request->input('filter_tag'))) {
             $tag = $request->input('filter_tag');
-            $query_future->whereHas('tags', function($q) use ($tag)
-            {
-                $q->where('name','=', ucfirst($tag));
+            $query_future->whereHas('tags', function ($q) use ($tag) {
+                $q->where('name', '=', ucfirst($tag));
             });
-            $query_past->whereHas('tags', function($q) use ($tag)
-            {
-                $q->where('name','=', ucfirst($tag));
+            $query_past->whereHas('tags', function ($q) use ($tag) {
+                $q->where('name', '=', ucfirst($tag));
             });
             // add to filters array
             $filters['filter_tag'] = $tag;
         }
 
         // change this - should be seperate
-        if (!empty($request->input('filter_rpp')))
-        {
+        if (!empty($request->input('filter_rpp'))) {
             $this->rpp = $request->input('filter_rpp');
         }
 
@@ -423,22 +421,20 @@ class EventsController extends Controller {
 
         // get future events
         $future_events = $query_future->paginate($this->rpp);
-        $future_events->filter(function($e)
-        {
+        $future_events->filter(function ($e) {
             return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
 
 
         // get past events
         $past_events = $query_past->paginate($this->rpp);
-        $past_events->filter(function($e)
-        {
+        $past_events->filter(function ($e) {
             return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
 
         return view('events.index')
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter,
-                'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL ,  // there should be a better way to do this...
+                'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
                 'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL,
                 'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL
             ])
@@ -448,113 +444,126 @@ class EventsController extends Controller {
 
 
     /**
- 	 * Display a listing of the resource.
- 	 *
- 	 * @return View
- 	 */
-	public function indexAll(Request $request)
-	{
-        $this->hasFilter = 1;
-
- 		// updates sort, rpp from request
- 		$this->updatePaging($request);
-
-		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
-
-		$future_events = Event::future()->paginate(100000);
-		$future_events->filter(function($e)
-		{
-			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-		});
-
-
-		$past_events = Event::past()->paginate(100000);
-		$past_events->filter(function($e)
-		{
-			return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-		});
-
-		return view('events.index')
-		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
-        	->with(compact('future_events')) 
-        	->with(compact('past_events'));
-	}
-
-	/**
- 	 * Display a listing of the resource.
- 	 *
- 	 * @return Response
- 	 */
-	public function indexFuture(Request $request)
-	{
+     * Display a listing of the resource.
+     *
+     * @return View
+     */
+    public function indexAll(Request $request)
+    {
         $this->hasFilter = 1;
 
         // updates sort, rpp from request
- 		$this->updatePaging($request);
+        $this->updatePaging($request);
 
-		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
+        $future_events = Event::future()->paginate(100000);
+        $future_events->filter(function ($e) {
+            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
 
-		$this->rpp = 10000;
+        $past_events = Event::past()->paginate(100000);
+        $past_events->filter(function ($e) {
+            return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
 
-		$future_events = Event::future()->paginate($this->rpp);
-		$future_events->filter(function($e)
-		{
-			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-		});
+        return view('events.index')
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
+            ->with(compact('future_events'))
+            ->with(compact('past_events'));
+    }
 
-		return view('events.index')
-		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
-        	->with(compact('future_events'));
-	}
-
-	/**
- 	 * Display a listing of the resource.
- 	 *
- 	 * @return Response
- 	 */
-	public function indexPast(Request $request)
-	{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return Response
+     */
+    public function indexFuture(Request $request)
+    {
         $this->hasFilter = 1;
 
- 		// updates sort, rpp from request
- 		$this->updatePaging($request);
- 		
-		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
+        // updates sort, rpp from request
+        $this->updatePaging($request);
 
-		$this->rpp = 10;
-		
-		$past_events = Event::past()->paginate($this->rpp);
-		$past_events->filter(function($e)
-		{
-			return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-		});
+        $this->rpp = 10;
 
-		return view('events.index')
-		    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
-        	->with(compact('past_events'));
-	}
+        $future_events = Event::future()->paginate($this->rpp);
+        $future_events->filter(function ($e) {
+            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
 
-	/**
- 	 * Display a simple text feed of future events
- 	 *
- 	 * @return Response
- 	 */
-	public function feed()
-	{
+        return view('events.index')
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
+            ->with(compact('future_events'));
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return Response
+     */
+    public function indexPast(Request $request)
+    {
+        $this->hasFilter = 1;
+
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        $this->rpp = 10;
+
+        $past_events = Event::past()->paginate($this->rpp);
+        $past_events->filter(function ($e) {
+            return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
+
+        return view('events.index')
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
+            ->with(compact('past_events'));
+    }
+
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return Response
+     */
+    public function indexAttending(Request $request)
+    {
+        $this->middleware('auth');
+
+        $this->hasFilter = 1;
+
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        $this->rpp = 10;
+
+        $events = $this->user->getAttending()->paginate($this->rpp);
+
+        $events->filter(function ($e) {
+            return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
+
+        return view('events.index')
+            ->with(['tag' => 'Attending', 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
+            ->with(compact('events'));
+    }
+
+    /**
+     * Display a simple text feed of future events
+     *
+     * @return Response
+     */
+    public function feed()
+    {
         // set number of results per page
-		$this->rpp = 10000;
+        $this->rpp = 10000;
 
-		$events = Event::future()->simplePaginate($this->rpp);
-		$events->filter(function($e)
-		{
-			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-		});
+        $events = Event::future()->simplePaginate($this->rpp);
+        $events->filter(function ($e) {
+            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
 
-		return view('events.feed', compact('events'));
-	}
+        return view('events.feed', compact('events'));
+    }
 
     /**
      * Reset the filtering of entities
@@ -564,12 +573,10 @@ class EventsController extends Controller {
     public function reset(Request $request)
     {
         // doesn't have filter, but temp
-        $hasFilter = 1; 
+        $hasFilter = 1;
 
         // set the filters to empty
         $this->setFilters($request, $this->getDefaultFilters());
- 
-        //dd($request->session());
 
         // base criteria
         $query_future = $this->event->future();
@@ -578,22 +585,19 @@ class EventsController extends Controller {
         // updates sort, rpp from request
         $this->updatePaging($request);
 
-         // get future events
+        // get future events
         $future_events = $query_future->paginate($this->rpp);
-        $future_events->filter(function($e)
-        {
+        $future_events->filter(function ($e) {
             return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
 
-
         // get past events
         $past_events = $query_past->paginate($this->rpp);
-        $past_events->filter(function($e)
-        {
+        $past_events->filter(function ($e) {
             return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
 
-        return view('events.index') 
+        return view('events.index')
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
             ->with(compact('future_events'))
             ->with(compact('past_events'))
@@ -601,270 +605,289 @@ class EventsController extends Controller {
 
     }
 
-	/**
- 	 * Send a reminder to all users who are attending this event
- 	 *
- 	 * @return Response
- 	 */
-	public function remind($id)
-	{
-		if (!$event = Event::find($id))
-		{
-			flash()->error('Error',  'No such event');
-			return back();
-		};
+    /**
+     * Send a reminder to all users who are attending this event
+     *
+     * @return Response
+     */
+    public function remind($id)
+    {
+        if (!$event = Event::find($id)) {
+            flash()->error('Error', 'No such event');
+            return back();
+        };
 
-		// get all the users attending
-		foreach ($event->eventResponses as $response)
-		{
-			$user = User::findOrFail($response->user_id);
+        // get all the users attending
+        foreach ($event->eventResponses as $response) {
+            $user = User::findOrFail($response->user_id);
 
-			Mail::send('emails.reminder', ['user' => $user, 'event' => $event], function ($m) use ($user, $event) {
-				$m->from('admin@events.cutupsmethod.com','Event Repo');
+            Mail::send('emails.reminder', ['user' => $user, 'event' => $event], function ($m) use ($user, $event) {
+                $m->from('admin@events.cutupsmethod.com', 'Event Repo');
 
-				$m->to($user->email, $user->name)->subject('Event Repo: '.$event->start_at->format('D F jS').' '.$event->name.' REMINDER');
-			});
-		}
+                $m->to($user->email, $user->name)->subject('Event Repo: ' . $event->start_at->format('D F jS') . ' ' . $event->name . ' REMINDER');
+            });
+        }
 
-		flash()->success('Success',  'You sent an email reminder to '.count($event->eventResponses).' user about '.$event->name);
+        flash()->success('Success', 'You sent an email reminder to ' . count($event->eventResponses) . ' user about ' . $event->name);
 
-		return back();
-	}
+        return back();
+    }
 
 
-	/**
- 	 * Send a reminder to all users about all events they are attending
- 	 *
- 	 * @return Response
- 	 */
-	public function daily()
-	{
-		// get all the users
-		$users = User::orderBy('name','ASC')->get();
+    /**
+     * Send a reminder to all users about all events they are attending
+     *
+     * @return Response
+     */
+    public function daily()
+    {
+        // get all the users
+        $users = User::orderBy('name', 'ASC')->get();
 
-		// cycle through all the users
-		foreach ($users as $user)
-		{
-			$events = $user->getAttendingFuture()->take(100);
+        // cycle through all the users
+        foreach ($users as $user) {
+            $events = $user->getAttendingFuture()->take(100);
 
-			Mail::send('emails.daily-events', ['user' => $user, 'events' => $events], function ($m) use ($user, $events) {
-				$m->from('admin@events.cutupsmethod.com','Event Repo');
+            Mail::send('emails.daily-events', ['user' => $user, 'events' => $events], function ($m) use ($user, $events) {
+                $m->from('admin@events.cutupsmethod.com', 'Event Repo');
 
-				$m->to($user->email, $user->name)->subject('Event Repo: Daily Events Reminder');
-			});
-		
-		};
+                $m->to($user->email, $user->name)->subject('Event Repo: Daily Events Reminder');
+            });
 
-		flash()->success('Success',  'You sent an email reminder to '.count($users).' users about events they are attending');
+        };
 
-		return back();
-	}
+        flash()->success('Success', 'You sent an email reminder to ' . count($users) . ' users about events they are attending');
 
+        return back();
+    }
 
 
-	/**
-	 * Display a listing of events related to entity
-	 *
-	 * @return Response
-	 */
-	public function calendarRelatedTo(Request $request, $slug)
-	{
- 		$slug = urldecode($slug);
+    /**
+     * Display a listing of events related to entity
+     *
+     * @return Response
+     */
+    public function calendarRelatedTo(Request $request, $slug)
+    {
+        $slug = urldecode($slug);
 
- 		$eventList = array();
+        $eventList = array();
 
- 		// get all events related to the entity
-		$events = Event::getByEntity(strtolower($slug))
-					->orderBy('start_at', 'ASC')
-					->orderBy('name', 'ASC')
-					->get();
+        // get all events related to the entity
+        $events = Event::getByEntity(strtolower($slug))
+            ->orderBy('start_at', 'ASC')
+            ->orderBy('name', 'ASC')
+            ->get();
 
-		$events->filter(function($e)
-		{
-			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-		});
-
-
-		foreach ($events as $event)
-		{
-			$eventList[] = \Calendar::event(
-			    $event->name, //event title
-			    false, //full day event?
-			    $event->start_at->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
-			    ($event->end_time ? $event->end_time->format('Y-m-d H:i') : NULL), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
-			    $event->id, //optional event ID
-			    [
-			        'url' => 'events/'.$event->id,
-			        //'color' => '#fc0'
-			    ]
-			);
-		};
-
-		// get all the upcoming series events
-		$series = Series::getByEntity(ucfirst($slug))->active()->get();
-
-		$series = $series->filter(function($e)
-		{
-			// all public events
-			// all events that you created
-			// all events that you are invited to
-			return ((($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id)) AND $e->occurrenceType->name != 'No Schedule');
-		});
-
-		foreach ($series as $s)
-		{
-			if ($s->nextEvent() == NULL AND $s->nextOccurrenceDate() != NULL)
-			{
-				// add the next instance of each series to the calendar
-				$eventList[] = \Calendar::event(
-				    $s->name, //event title
-				    false, //full day event?
-				    $s->nextOccurrenceDate()->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
-				    ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : NULL), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
-				    $s->id, //optional event ID
-				    [
-				        'url' => 'series/'.$s->id,
-				        'color' => '#99bcdb'
-				    ]
-				);
-			};
-		};
+        $events->filter(function ($e) {
+            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
 
 
-		$calendar = \Calendar::addEvents($eventList) //add an array with addEvents
-		    ->setOptions([ //set fullcalendar options
-		        'firstDay' => 0,
-		        'height' => 840,
-		    ])->setCallbacks([ //set fullcalendar callback options (will not be JSON encoded)
-		        //'viewRender' => 'function() {alert("Callbacks!");}'
-		    ]); 
-		return view('events.calendar', compact('calendar', 'slug'));
+        foreach ($events as $event) {
+            $eventList[] = \Calendar::event(
+                $event->name, //event title
+                false, //full day event?
+                $event->start_at->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
+                ($event->end_time ? $event->end_time->format('Y-m-d H:i') : NULL), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
+                $event->id, //optional event ID
+                [
+                    'url' => 'events/' . $event->id,
+                    //'color' => '#fc0'
+                ]
+            );
+        };
 
-	}
+        // get all the upcoming series events
+        $series = Series::getByEntity(ucfirst($slug))->active()->get();
 
+        $series = $series->filter(function ($e) {
+            // all public events
+            // all events that you created
+            // all events that you are invited to
+            return ((($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id)) AND $e->occurrenceType->name != 'No Schedule');
+        });
 
-	/**
-	 * Display a listing of events by tag
-	 *
-	 * @return Response
-	 */
-	public function calendarTags($tag)
-	{
- 		$tag = urldecode($tag);
+        foreach ($series as $s) {
+            if ($s->nextEvent() == NULL AND $s->nextOccurrenceDate() != NULL) {
+                // add the next instance of each series to the calendar
+                $eventList[] = \Calendar::event(
+                    $s->name, //event title
+                    false, //full day event?
+                    $s->nextOccurrenceDate()->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
+                    ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : NULL), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
+                    $s->id, //optional event ID
+                    [
+                        'url' => 'series/' . $s->id,
+                        'color' => '#99bcdb'
+                    ]
+                );
+            };
+        };
 
- 		$eventList = array();
+        $calendar = \Calendar::addEvents($eventList)//add an array with addEvents
+        ->setOptions([ //set fullcalendar options
+            'firstDay' => 0,
+            'height' => 840,
+        ])->setCallbacks([ //set fullcalendar callback options (will not be JSON encoded)
+            //'viewRender' => 'function() {alert("Callbacks!");}'
+        ]);
+        return view('events.calendar', compact('calendar', 'slug'));
 
-		$events = Event::getByTag(ucfirst($tag))
-					->orderBy('start_at', 'ASC')
-					->orderBy('name', 'ASC')
-					->get();
-
-		$events->filter(function($e)
-		{
-			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-		});
-
-
-		foreach ($events as $event)
-		{
-			$eventList[] = \Calendar::event(
-			    $event->name, //event title
-			    false, //full day event?
-			    $event->start_at->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
-			    ($event->end_time ? $event->end_time->format('Y-m-d H:i') : NULL), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
-			    $event->id, //optional event ID
-			    [
-			        'url' => 'events/'.$event->id,
-			        //'color' => '#fc0'
-			    ]
-			);
-		};
-
-		// get all the upcoming series events
-		$series = Series::getByTag(ucfirst($tag))->active()->get();
-
-		$series = $series->filter(function($e)
-		{
-			// all public events
-			// all events that you created
-			// all events that you are invited to
-			return ((($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id)) AND $e->occurrenceType->name != 'No Schedule');
-		});
-
-		foreach ($series as $s)
-		{
-			if ($s->nextEvent() == NULL AND $s->nextOccurrenceDate() != NULL)
-			{
-				// add the next instance of each series to the calendar
-				$eventList[] = \Calendar::event(
-				    $s->name, //event title
-				    false, //full day event?
-				    $s->nextOccurrenceDate()->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
-				    ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : NULL), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
-				    $s->id, //optional event ID
-				    [
-				        'url' => 'series/'.$s->id,
-				        'color' => '#99bcdb'
-				    ]
-				);
-			};
-		};
+    }
 
 
-		$calendar = \Calendar::addEvents($eventList) //add an array with addEvents
-		    ->setOptions([ //set fullcalendar options
-		        'firstDay' => 0,
-		        'height' => 840,
-		    ])->setCallbacks([ //set fullcalendar callback options (will not be JSON encoded)
-		        //'viewRender' => 'function() {alert("Callbacks!");}'
-		    ]); 
-		return view('events.calendar', compact('calendar', 'tag'));
+    /**
+     * Display a listing of events by tag
+     *
+     * @return Response
+     */
+    public function calendarTags($tag)
+    {
+        $tag = urldecode($tag);
 
-	}
+        $eventList = array();
 
+        $events = Event::getByTag(ucfirst($tag))
+            ->orderBy('start_at', 'ASC')
+            ->orderBy('name', 'ASC')
+            ->get();
 
-	/**
-	 * Display a calendar view of events
-	 *
-	 * @return view
-	 **/
-	public function calendar()
-	{
-	
-		// get all public events
-		$events = Event::all();
-
-		$events = $events->filter(function($e)
-		{
-			// all public events
-			// all events that you created
-			// all events that you are invited to
-			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-		});
-
-		// get all the upcoming series events
-		$series = Series::active()->get();
-
-		$series = $series->filter(function($e)
-		{
-			// all public events
-			// all events that you created
-			// all events that you are invited to
-			return ((($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id)) AND $e->occurrenceType->name != 'No Schedule');
-		});
+        $events->filter(function ($e) {
+            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
 
 
-		return $this->renderCalendar($events, $series);
-	}
+        foreach ($events as $event) {
+            $eventList[] = \Calendar::event(
+                $event->name, //event title
+                false, //full day event?
+                $event->start_at->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
+                ($event->end_time ? $event->end_time->format('Y-m-d H:i') : NULL), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
+                $event->id, //optional event ID
+                [
+                    'url' => 'events/' . $event->id,
+                    //'color' => '#fc0'
+                ]
+            );
+        };
 
-	/**
-	 * Display a calendar view of free events
-	 *
-	 * @return view
-	 **/
-	public function calendarFree()
-	{
-			
+        // get all the upcoming series events
+        $series = Series::getByTag(ucfirst($tag))->active()->get();
+
+        $series = $series->filter(function ($e) {
+            // all public events
+            // all events that you created
+            // all events that you are invited to
+            return ((($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id)) AND $e->occurrenceType->name != 'No Schedule');
+        });
+
+        foreach ($series as $s) {
+            if ($s->nextEvent() == NULL AND $s->nextOccurrenceDate() != NULL) {
+                // add the next instance of each series to the calendar
+                $eventList[] = \Calendar::event(
+                    $s->name, //event title
+                    false, //full day event?
+                    $s->nextOccurrenceDate()->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
+                    ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : NULL), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
+                    $s->id, //optional event ID
+                    [
+                        'url' => 'series/' . $s->id,
+                        'color' => '#99bcdb'
+                    ]
+                );
+            };
+        };
+
+        $calendar = \Calendar::addEvents($eventList)//add an array with addEvents
+        ->setOptions([ //set fullcalendar options
+            'firstDay' => 0,
+            'height' => 840,
+        ])->setCallbacks([ //set fullcalendar callback options (will not be JSON encoded)
+            //'viewRender' => 'function() {alert("Callbacks!");}'
+        ]);
+        return view('events.calendar', compact('calendar', 'tag'));
+
+    }
+
+
+    /**
+     * Display a calendar view of events
+     *
+     * @return view
+     **/
+    public function calendar()
+    {
+        // get all public events
+        $events = Event::all();
+
+        $events = $events->filter(function ($e) {
+            // all public events
+            // all events that you created
+            // all events that you are invited to
+            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
+
+        // get all the upcoming series events
+        $series = Series::active()->get();
+
+        $series = $series->filter(function ($e) {
+            // all public events
+            // all events that you created
+            // all events that you are invited to
+            return ((($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id)) AND $e->occurrenceType->name != 'No Schedule');
+        });
+
+
+        return $this->renderCalendar($events, $series);
+    }
+
+    /**
+     * Display a calendar view of events you are attending
+     *
+     * @return view
+     **/
+    public function calendarAttending()
+    {
+        $this->middleware('auth');
+
+        $events = $this->user->getAttending()
+            ->orderBy('start_at', 'ASC')
+            ->orderBy('name', 'ASC')
+            ->get();
+
+        $events = $events->filter(function($e)
+        {
+            // all public events
+            // all events that you created
+            // all events that you are invited to
+            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
+
+
+        // get all the upcoming series events
+        $series = $this->user->getSeriesFollowing()->get();
+
+        $series = $series->filter(function($e)
+        {
+            // all public events
+            // all events that you created
+            // all events that you are invited to
+            return ((($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id)) AND $e->occurrenceType->name != 'No Schedule');
+        });
+
+        $tag = "Attending";
+
+        return $this->renderCalendar($events, $series, $tag);
+    }
+
+    /**
+     * Display a calendar view of free events
+     *
+     * @return view
+     **/
+    public function calendarFree()
+    {
 		$events = Event::where('door_price', 0)
 			->orderBy('start_at', 'ASC')
 			->orderBy('name', 'ASC')
@@ -902,7 +925,6 @@ class EventsController extends Controller {
 	 **/
 	public function calendarMinAge($age)
 	{
-
  		$age = urldecode($age);
 			
 		$events = Event::where('min_age', '<=', $age)

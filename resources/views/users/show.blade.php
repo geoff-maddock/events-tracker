@@ -120,7 +120,7 @@
 				</div>
 
 				<div class="panel-body">
-				@include('events.list', ['events' => $user->getAttending()->take(20)])
+				@include('events.list', ['events' => $user->getAttending()->get()->take(20)])
 				</div>
 
 			</div>
