@@ -34,20 +34,20 @@
 
                 <div class="form-group col-sm-1">
                     {!! Form::label('filter_occurrence_week','Week') !!}
-                    <?php $weeks = [''=>''] + App\OccurrenceWeek::orderBy('name','ASC')->pluck('name','name')->all();?>
+                    <?php $weeks = [''=>''] + App\OccurrenceWeek::orderBy('id','ASC')->pluck('name','name')->all();?>
                     {!! Form::select('filter_occurrence_week', $weeks, (isset($week) ? $week : NULL), ['class' =>'form-control']) !!}
                 </div>
 
                 <div class="form-group col-sm-1">
                     {!! Form::label('filter_occurrence_day','Day') !!}
-                    <?php $days = [''=>''] + App\OccurrenceDay::orderBy('name','ASC')->pluck('name','name')->all();?>
+                    <?php $days = [''=>''] + App\OccurrenceDay::orderBy('id','ASC')->pluck('name','name')->all();?>
                     {!! Form::select('filter_occurrence_day', $days, (isset($day) ? $day : NULL), ['class' =>'form-control']) !!}
                 </div>
 
 				<div class="form-group col-sm-2">
 					{!! Form::label('filter_tag','Tag') !!}
                     <?php $tags =  [''=>'&nbsp;'] + App\Tag::orderBy('name','ASC')->lists('name', 'name')->all();?>
-					{!! Form::select('filter_tag', $tags, (isset($tag) ? $tag : NULL), ['class' =>'form-control']) !!}
+					{!! Form::select('filter_tag', $tags, (isset($tag) ? $tag : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a tag']) !!}
 				</div>
 
 				<div class="form-group col-sm-1">
@@ -80,15 +80,3 @@
 
 @stop
 
-
-@section('footer')
-    <script>
-        // javascript to enable the select2 for the tag and entity list
-        $('#filter_tag').select2(
-            {
-                placeholder: 'Choose a tag',
-                tags: true,
-            });
-
-    </script>
-@endsection

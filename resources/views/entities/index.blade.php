@@ -36,13 +36,13 @@
 
 			{!! Form::label('filter_role','Filter By Role') !!}
 			<?php $roles = [''=>'&nbsp;'] + App\Role::orderBy('name', 'ASC')->lists('name', 'name')->all();?>
-			{!! Form::select('filter_role', $roles, (isset($role) ? $role : NULL), ['class' =>'form-control']) !!}
+			{!! Form::select('filter_role', $roles, (isset($role) ? $role : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a role']) !!}
 			</div>
 
 			<div class="form-group col-sm-2">
 			{!! Form::label('filter_tag','Filter By Tag') !!}
 			<?php $tags =  [''=>'&nbsp;'] + App\Tag::orderBy('name','ASC')->lists('name', 'name')->all();?>
-			{!! Form::select('filter_tag', $tags, (isset($tag) ? $tag : NULL), ['class' =>'form-control']) !!}
+			{!! Form::select('filter_tag', $tags, (isset($tag) ? $tag : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a tag']) !!}
 			</div>
 
 			<div class="form-group col-sm-2">

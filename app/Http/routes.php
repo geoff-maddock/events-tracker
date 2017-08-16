@@ -82,6 +82,11 @@ Route::get('events/series/{slug}', 'EventsController@indexSeries');
 Route::get('events/feed', 'EventsController@feed');
 Route::get('events/attending', 'EventsController@indexAttending');
 
+Route::get('events/{id}/createThread', [
+    'as' => 'events.createThread',
+    'uses' => 'EventsController@createThread'
+]);
+
 Route::get('events/{id}/remind', [
 	'as' => 'events.remind', 
 	'uses' => 'EventsController@remind'

@@ -33,13 +33,13 @@
 
 					{!! Form::label('filter_venue','Filter By Venue') !!}
 					<?php $venues = [''=>''] + App\Entity::getVenues()->pluck('name','name')->all();?>
-					{!! Form::select('filter_venue', $venues, (isset($venue) ? $venue : NULL), ['class' =>'form-control']) !!}
+					{!! Form::select('filter_venue', $venues, (isset($venue) ? $venue : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a venue']) !!}
 				</div>
 
 				<div class="form-group col-sm-2">
 					{!! Form::label('filter_tag','Filter By Tag') !!}
 					<?php $tags =  [''=>'&nbsp;'] + App\Tag::orderBy('name','ASC')->lists('name', 'name')->all();?>
-					{!! Form::select('filter_tag', $tags, (isset($tag) ? $tag : NULL), ['class' =>'form-control']) !!}
+					{!! Form::select('filter_tag', $tags, (isset($tag) ? $tag : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a tag']) !!}
 				</div>
 
 				<div class="form-group col-sm-2">
@@ -146,16 +146,5 @@
 
 @section('footer')
 	<script>
-        // javascript to enable the select2 for the tag and entity list
-        $('#filter_tag').select2(
-            {
-                placeholder: 'Choose a tag',
-                tags: true,
-            });
-        $('#filter_venue').select2(
-            {
-                placeholder: 'Choose a venue',
-                tags: false,
-            });
 	</script>
 @endsection

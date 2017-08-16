@@ -75,13 +75,13 @@
 
 	<div class="form-group col-md-2">
 	{!! Form::label('venue_id','Venue') !!}
-	{!! Form::select('venue_id', $venues, (isset($series->venue_id) ? $series->venue_id : NULL), ['class' =>'form-control']) !!}
+	{!! Form::select('venue_id', $venues, (isset($series->venue_id) ? $series->venue_id : NULL), ['class' =>'form-control  select2']) !!}
 	{!! $errors->first('venue_id','<span class="help-block">:message</span>') !!}
 	</div>
 
 	<div class="form-group col-md-2">
 	{!! Form::label('promoter_id','Promoter') !!}
-	{!! Form::select('promoter_id', $promoters, (isset($series->promoter_id) ? $series->promoter_id : NULL), ['class' =>'form-control']) !!}
+	{!! Form::select('promoter_id', $promoters, (isset($series->promoter_id) ? $series->promoter_id : NULL), ['class' =>'form-control  select2']) !!}
 	{!! $errors->first('promoter_id','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -165,38 +165,26 @@
 </div>
 
 <div class="row">
-	<div class="form-group col-md-2">
-	{!! Form::label('entity_list','Related Entities:') !!}
-	{!! Form::select('entity_list[]', $entities, null, ['id' => 'entity_list', 'class' =>'form-control', 'multiple']) !!}
-	{!! $errors->first('entities','<span class="help-block">:message</span>') !!}
+	<div class="form-group col-md-6">
+		{!! Form::label('entity_list','Related Entities:') !!}
+		{!! Form::select('entity_list[]', $entities, null, ['id' => 'entity_list', 'class' =>'form-control select2', 'data-placeholder' => 'Choose a related artist, producer, dj', 'data-tags' =>'false', 'multiple']) !!}
+		{!! $errors->first('entities','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
 
 
 <div class="row">
-	<div class="form-group col-md-2">
-	{!! Form::label('tag_list','Tags:') !!}
-	{!! Form::select('tag_list[]', $tags, null, ['id' => 'tag_list', 'class' =>'form-control', 'multiple']) !!}
-	{!! $errors->first('tags','<span class="help-block">:message</span>') !!}
+	<div class="form-group col-md-6">
+		{!! Form::label('tag_list','Tags:') !!}
+		{!! Form::select('tag_list[]', $tags, old('tag_list'), ['id' => 'tag_list',
+        'class' =>'form-control select2',
+        'data-placeholder' => 'Choose a tag',
+        'data-tags' =>'true',
+        'multiple' => 'true']) !!}
+		{!! $errors->first('tags','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
 
 <div class="form-group">
 {!! Form::submit(isset($action) ? 'Update Series' : 'Add Series', null, ['class' =>'btn btn-primary']) !!}
 </div>
-
-
-@section('footer')
-	<script>
-		$('#tag_list').select2(
-			{
-				placeholder: 'Choose a tag',
-				tags: true,
-			});
-		$('#entity_list').select2(
-			{
-				placeholder: 'Choose a related artist, producer, dj',
-				tags: false,
-			});
-	</script>
-@endsection

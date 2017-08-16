@@ -1,3 +1,15 @@
+<div class="row">
+
+    <div class="form-group col-md-6">
+        {!! Form::label('primary_link','Primary Link:') !!}
+        {!! Form::text('primary_link', null, ['class' =>'form-control']) !!}
+        {!! $errors->first('primary_link','<span class="help-block">:message</span>') !!}
+    </div>
+    <div class="form-group col-md-3">
+    <label></label>
+    <button type="button" class="btn btn-info form-control" id='import-link'>Import</button>
+    </div>
+</div>
 
 <div class="row">
  
@@ -48,13 +60,13 @@
 
 	<div class="form-group col-md-3">
 	{!! Form::label('venue_id','Venue') !!}
-	{!! Form::select('venue_id', $venues, (isset($event->venue_id) ? $event->venue_id : NULL), ['class' =>'form-control']) !!}
+	{!! Form::select('venue_id', $venues, (isset($event->venue_id) ? $event->venue_id : NULL), ['class' =>'form-control select2']) !!}
 	{!! $errors->first('venue_id','<span class="help-block">:message</span>') !!}
 	</div>
 
 	<div class="form-group col-md-3">
 	{!! Form::label('promoter_id','Promoter') !!}
-	{!! Form::select('promoter_id', $promoters, (isset($event->promoter_id) ? $event->promoter_id : NULL), ['class' =>'form-control']) !!}
+	{!! Form::select('promoter_id', $promoters, (isset($event->promoter_id) ? $event->promoter_id : NULL), ['class' =>'form-control select2']) !!}
 	{!! $errors->first('promoter_id','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -111,12 +123,7 @@
 </div>
 
 <div class="row">
-	<div class="form-group col-md-6">
-	{!! Form::label('primary_link','Primary Link:') !!}
-	{!! Form::text('primary_link', null, ['class' =>'form-control']) !!}
-	{!! $errors->first('primary_link','<span class="help-block">:message</span>') !!}
-	<button type="button" class="btn btn-info" id='import-link'>Import</button>
-	</div>
+
 
 	<div class="form-group col-md-6 {{$errors->has('ticket_link') ? 'has-error' : '' }}">
 	{!! Form::label('ticket_link','Ticket Link:') !!}
@@ -136,7 +143,7 @@
 <div class="row">
 	<div class="form-group col-md-3">
 	{!! Form::label('series_id','Series:') !!}
-	{!! Form::select('series_id', $seriesList, (isset($event->series_id) ? $event->series_id : NULL), ['class' =>'form-control']) !!}
+	{!! Form::select('series_id', $seriesList, (isset($event->series_id) ? $event->series_id : NULL), ['class' =>'form-control select2']) !!}
 	{!! $errors->first('series_id','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -145,7 +152,7 @@
 <div class="row">
 	<div class="form-group col-md-6">
 	{!! Form::label('entity_list','Related Entities:') !!}
-	{!! Form::select('entity_list[]', $entities, null, ['id' => 'entity_list', 'class' =>'form-control', 'multiple']) !!}
+	{!! Form::select('entity_list[]', $entities, null, ['id' => 'entity_list', 'class' =>'form-control select2', 'data-placeholder' => 'Choose a related artist, producer, dj', 'data-tags' =>'false', 'multiple']) !!}
 	{!! $errors->first('entities','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -154,7 +161,11 @@
 <div class="row">
 	<div class="form-group col-md-6">
 	{!! Form::label('tag_list','Tags:') !!}
-	{!! Form::select('tag_list[]', $tags, old('tag_list'), ['id' => 'tag_list', 'class' =>'form-control', 'multiple' => 'true']) !!}
+	{!! Form::select('tag_list[]', $tags, old('tag_list'), ['id' => 'tag_list',
+	'class' =>'form-control select2',
+	'data-placeholder' => 'Choose a tag',
+	'data-tags' =>'true',
+	'multiple' => 'true']) !!}
 	{!! $errors->first('tags','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -179,17 +190,6 @@
 
 @section('footer')
 	<script>
-		// javascript to enable the select2 for the tag and entity list
-		$('#tag_list').select2(
-			{
-				placeholder: 'Choose a tag',
-				tags: true,
-			});
-		$('#entity_list').select2(
-			{
-				placeholder: 'Choose a related artist, producer, dj',
-				tags: false,
-			});
 
 		$('#import-link').click(function(e){
 

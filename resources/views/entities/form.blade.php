@@ -49,7 +49,10 @@
 <div class="row">
 	<div class="form-group col-md-6">
 	{!! Form::label('role_list','Roles:') !!}
-	{!! Form::select('role_list[]', $roles, null, ['id' => 'role_list','class' =>'form-control', 'multiple']) !!}
+	{!! Form::select('role_list[]', $roles, null, ['id' => 'role_list',	'class' =>'form-control select2',
+	'data-placeholder' => 'Choose a role',
+	'data-tags' => 'false',
+	'multiple']) !!}
 	{!! $errors->first('roles','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -57,7 +60,10 @@
 <div class="row">
 	<div class="form-group col-md-6">
 	{!! Form::label('tag_list','Tags:') !!}
-	{!! Form::select('tag_list[]', $tags, null, ['id' => 'tag_list','class' =>'form-control', 'multiple']) !!}
+	{!! Form::select('tag_list[]', $tags, null, ['id' => 'tag_list', 'class' =>'form-control select2',
+	'data-placeholder' => 'Choose a tag',
+	'data-tags' =>'true',
+	 'multiple']) !!}
 	{!! $errors->first('tags','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -65,7 +71,10 @@
 <div class="row">
 	<div class="form-group col-md-6">
 	{!! Form::label('alias_list','Aliases:') !!}
-	{!! Form::select('alias_list[]', $aliases, null, ['id' => 'alias_list','class' =>'form-control', 'multiple']) !!}
+	{!! Form::select('alias_list[]', $aliases, null, ['id' => 'alias_list',	'class' =>'form-control select2',
+	'data-placeholder' => 'Choose an alias',
+	'data-tags' =>'true',
+	'multiple']) !!}
 	{!! $errors->first('aliases','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -73,24 +82,3 @@
 <div class="form-group">
 {!! Form::submit(isset($action) ? 'Update Entity' : 'Add Entity', null, ['class' =>'btn btn-primary']) !!}
 </div>
-
-
-@section('footer')
-	<script>
-		$('#tag_list').select2(
-			{
-				placeholder: 'Choose a tag',
-				tags: true,
-			});
-		$('#alias_list').select2(
-			{
-				placeholder: 'Choose an alias',
-				tags: true,
-			});
-		$('#role_list').select2(
-			{
-				placeholder: 'Choose a role',
-				tags: false,
-			});
-	</script>
-@endsection
