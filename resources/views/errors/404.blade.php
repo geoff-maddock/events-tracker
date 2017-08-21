@@ -7,7 +7,7 @@
 	<head>
 		<link href='//fonts.googleapis.com/css?family=Lato:100' rel='stylesheet' type='text/css'>
 	    <!-- select based on default-theme -->
-	    @if (isset($signedIn) && $signedIn === true && (Auth::user()->profile->default_theme != 'dark-theme'))
+	    @if ($u = Auth::user() && (Auth::user()->profile->default_theme != 'dark-theme'))
 	    	<link href="{{ asset('/css/'.Auth::user()->profile->default_theme.'.css') }}" rel="stylesheet">
 	        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	    @else
@@ -46,6 +46,6 @@
 	</head>
 
 	<body id="event-repo">
-				<div class="title">404 page not found.</div> <a href="{{ URL::previous() }}">Go Back</a>
+			<div class="title">404 page not found.</div> <a href="{{ URL::previous() }}">Go Back</a>
 	</body>
 @stop

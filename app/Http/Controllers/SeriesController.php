@@ -263,6 +263,8 @@ class SeriesController extends Controller {
 
 	public function indexCancelled()
 	{
+		$hasFilter = 1;
+
 		$series = $this->series
 		->whereNotNull('cancelled_at')
 		->orderBy('occurrence_type_id','ASC')
@@ -277,7 +279,10 @@ class SeriesController extends Controller {
 		});
 
 
-		return view('series.index', compact('series'));
+		return view('series.index')
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(compact('series'))
+            ->render();
 	}
 
 	/**
@@ -287,13 +292,17 @@ class SeriesController extends Controller {
 	 */
 	public function indexWeek()
 	{
+		$hasFilter = 1;
+
 		$this->rpp = 5;
 
 		// this is more complex because we want to show weeklies that fall on the days, plus monthlies that fall on the days
 		// may be an iterative process that is called from the template to the series model that checks against each criteria and builds a list that way
 		$series = Series::future()->get();
-
-		return view('series.indexWeek', compact('events'));
+		return view('series.indexWeek')
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(compact('series'))
+            ->render();
 	}
 
 
@@ -304,6 +313,7 @@ class SeriesController extends Controller {
 	 */
 	public function indexRelatedTo($slug)
 	{
+		$hasFilter = 1;
  		$slug = urldecode($slug);
 
 		$series = Series::getByEntity(strtolower($slug))
@@ -315,7 +325,10 @@ class SeriesController extends Controller {
 					->orderBy('name', 'ASC')
 					->paginate();
 
-		return view('series.index', compact('series','slug'));
+		return view('series.index')
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(compact('series','slug'))
+            ->render();
 	}
 
 	/**
@@ -325,7 +338,7 @@ class SeriesController extends Controller {
 	 */
 	public function indexTags($tag)
 	{
- 
+ 		$hasFilter = 1;
   		$tag = urldecode($tag);
 
 		$series = Series::getByTag(ucfirst($tag))
@@ -338,7 +351,10 @@ class SeriesController extends Controller {
 					->paginate();
 					
 
-		return view('series.index', compact('series', 'tag'));
+		return view('series.index')
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(compact('series','tag'))
+            ->render();
 	}
 
 	/**
@@ -349,7 +365,6 @@ class SeriesController extends Controller {
 
 	public function create()
 	{
-
 		// get a list of venues
 		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
 

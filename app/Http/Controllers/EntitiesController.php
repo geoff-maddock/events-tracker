@@ -539,7 +539,10 @@ class EntitiesController extends Controller {
 					->orderBy('name', 'ASC')
 					->get();
 
-		return view('entities.index', compact('entities', 'role'));
+        return view('entities.index')
+            ->with(['role' => $role, 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(compact('entities'))
+            ->render();
 	}
 
 
