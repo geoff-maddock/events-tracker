@@ -651,7 +651,7 @@ var Url = (function()
 })();
 
 
-// Framework - a version of the Framework module framework tools
+// Framework - a version of the framework module tools
 var Framework = (function()
 {
     var _confirm = function(options)
@@ -866,24 +866,24 @@ var Framework = (function()
     };
 
 
-    var formatCustomerResults = function(data)
+    var formatEntityResults = function(data)
     {
         return '<span class="text-500">' + data.text + '</span>' + '<br>' + data.type + ' ' + data.status;
     };
 
-    var formatTicketResults = function(data)
-    {
-        return '<span class="text-500">' + data.text + '</span>' + '<br>' + data.customer + ' - ' + data.subject;
-    };
-
-    var formatDeliveryResults = function(data)
+    var formatEventResults = function(data)
     {
         return '<span class="text-500">' + data.text + '</span>' + '<br>' + data.customer + ' - ' + data.title;
     };
 
-    function formatHasProductFilterResults(data)
+    var formatSeriesResults = function(data)
     {
-        return '<span class="text-500">' + data.text + '</span>' + ' (' + data.id + ')';
+        return '<span class="text-500">' + data.text + '</span>' + '<br>' + data.customer + ' - ' + data.title;
+    };
+
+    var formatUserResults = function(data)
+    {
+        return '<span class="text-500">' + data.text + '</span>' + '<br>' + data.customer + ' - ' + data.title;
     };
 
     var formHasChanged = false;

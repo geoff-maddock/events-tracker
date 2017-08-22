@@ -1252,23 +1252,10 @@ class EventsController extends Controller
 	{
 		$this->middleware('auth');
 
-		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
+        // moved necessary lists into AppServiceProvider
 
-		// get a list of promoters
-		$promoters = [''=>''] + Entity::whereHas('roles', function($q)
-		{
-			$q->where('name','=','Promoter');
-		})->orderBy('name','ASC')->pluck('name','id')->all();
 
-		$eventTypes = [''=>''] + EventType::orderBy('name','ASC')->pluck('name', 'id')->all();
-		$visibilities = [''=>''] + Visibility::pluck('name', 'id')->all();
-		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
-		$entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
-
-		$seriesList = [''=>''] + Series::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-		return view('events.edit', compact('event', 'venues', 'promoters','eventTypes', 'visibilities','tags','entities','seriesList'));
+		return view('events.edit', compact('event' ));
 	}
 
 	public function update(Event $event, EventRequest $request)
