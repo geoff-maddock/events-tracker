@@ -123,6 +123,7 @@ return [
 
 	'fb_app_id' => env('APP_FB_APP_ID'),
 	'app_name' => env('APP_NAME', 'Event Repo'),
+    'name' => env('APP_NAME', 'Event Repo'),
     'default_theme' => 'dark-theme',
 
 	/*
@@ -143,7 +144,7 @@ return [
 		 */
 #		'Illuminate\Foundation\Providers\ArtisanServiceProvider',
 		'Illuminate\Auth\AuthServiceProvider',
-		'Illuminate\Broadcasting\BroadcastServiceProvider',
+#		'Illuminate\Broadcasting\BroadcastServiceProvider',
 #		'Illuminate\Bus\BusServiceProvider',
 		'Illuminate\Cache\CacheServiceProvider',
 		'Illuminate\Foundation\Providers\ConsoleSupportServiceProvider',
@@ -155,6 +156,7 @@ return [
 		'Illuminate\Foundation\Providers\FoundationServiceProvider',
 		'Illuminate\Hashing\HashServiceProvider',
 		'Illuminate\Mail\MailServiceProvider',
+        'Illuminate\Notifications\NotificationServiceProvider',
 		'Illuminate\Pagination\PaginationServiceProvider',
 		'Illuminate\Pipeline\PipelineServiceProvider',
 		'Illuminate\Queue\QueueServiceProvider',
@@ -176,6 +178,7 @@ return [
 		 * Application Service Providers...
 		 */
 		'App\Providers\AppServiceProvider',
+#        App\Providers\BroadcastServiceProvider::class,
 #		'App\Providers\BusServiceProvider',
 #		'App\Providers\ConfigServiceProvider',
 		'App\Providers\EventServiceProvider',

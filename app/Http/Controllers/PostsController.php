@@ -81,8 +81,9 @@ class PostsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Thread $thread
      * @return \Illuminate\Http\Response
+     * @internal param Request $request
      */
     public function store(Thread $thread)
     {
@@ -164,7 +165,6 @@ class PostsController extends Controller
         // notify users following any of the series
         $seriess = $thread->series()->get();
 
-
         foreach ($seriess as $series)
         {
             foreach ($series->followers() as $user)
@@ -189,8 +189,9 @@ class PostsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param Post $post
      * @return \Illuminate\Http\Response
+     * @internal param int $id
      */
     public function show(Post $post)
     {

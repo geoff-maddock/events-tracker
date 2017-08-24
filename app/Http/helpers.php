@@ -79,4 +79,19 @@ function get_class_name($classname)
     if ($pos = strrpos($classname, '\\')) return substr($classname, $pos + 1);
     return $pos;
 }
+
+function split_name($name)
+{
+    $name = trim($name);
+    if (strpos($name, ' ') === false) {
+        // you can return the firstname with no last name
+        return array('firstname' => $name, 'lastname' => '');
+    }
+
+    $parts     = explode(" ", $name);
+    $lastname  = array_pop($parts);
+    $firstname = implode(" ", $parts);
+
+    return array('firstname' => $firstname, 'lastname' => $lastname);
+}
 ?>

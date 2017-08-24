@@ -38,7 +38,7 @@
 
 				<div class="form-group col-sm-2">
 					{!! Form::label('filter_tag','Filter By Tag') !!}
-					<?php $tags =  [''=>'&nbsp;'] + App\Tag::orderBy('name','ASC')->lists('name', 'name')->all();?>
+					<?php $tags =  [''=>'&nbsp;'] + App\Tag::orderBy('name','ASC')->pluck('name', 'name')->all();?>
 					{!! Form::select('filter_tag', $tags, (isset($tag) ? $tag : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a tag']) !!}
 				</div>
 

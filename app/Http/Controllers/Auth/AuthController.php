@@ -3,14 +3,15 @@
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Auth\Guard;
 //use Illuminate\Contracts\Validation\Validator;
-use \Validator;
-use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+//use \Validator;
+//use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
 use Illuminate\Http\Request;
 use App\User;
 use App\Profile;
 use App\Activity;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller {
 
@@ -25,17 +26,14 @@ class AuthController extends Controller {
 	|
 	*/
 
-	use AuthenticatesAndRegistersUsers;
+//	use AuthenticatesAndRegistersUsers;
 
 	protected $redirectTo = '/';
-	
-	/**
-	 * Create a new authentication controller instance.
-	 *
-	 * @param  \Illuminate\Contracts\Auth\Guard  $auth
-	 * @param  \Illuminate\Contracts\Auth\Registrar  $registrar
-	 * @return void
-	 */
+
+    /**
+     * Create a new authentication controller instance.
+     *
+     */
 	public function __construct()
 	{
 		//$this->auth = $auth;
@@ -98,11 +96,13 @@ class AuthController extends Controller {
 		return redirect()->intended( $this->redirectPath() );   
 	}
 
+
     /**
      * Log the user out of the application.
      *
      * @return \Illuminate\Http\Response
      */
+    /*
     public function getLogout()
     {
 		Activity::log(Auth::user(), Auth::user(), 5); 
@@ -111,5 +111,5 @@ class AuthController extends Controller {
 
         return redirect(property_exists($this, 'redirectAfterLogout') ? $this->redirectAfterLogout : '/');
     }
-
+    */
 }

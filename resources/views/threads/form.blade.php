@@ -62,11 +62,10 @@
 <div class="row">
 	<div class="form-group col-md-2">
 	{!! Form::label('series_list','Related Series:') !!}
-	{!! Form::select('series_list[]', $series, isset($thread) ? $thread->series->lists('id')->toArray() : NULL, ['id' => 'series_list', 'class' =>'form-control', 'multiple']) !!}
+	{!! Form::select('series_list[]', $series, isset($thread) ? $thread->series->pluck('id', 'id')->all() : NULL, ['id' => 'series_list', 'class' =>'form-control', 'multiple']) !!}
 	{!! $errors->first('series','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
-
 
 
 <div class="row">

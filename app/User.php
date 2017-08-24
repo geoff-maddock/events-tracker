@@ -1,8 +1,8 @@
 <?php namespace App;
 
 use DB;
-use App\EventResponse;
 use Carbon\Carbon;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Passwords\CanResetPassword;
@@ -13,7 +13,7 @@ use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
 class User extends Model implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract {
 
-	use Authenticatable, Authorizable, CanResetPassword;
+	use Authenticatable, Authorizable, CanResetPassword, Notifiable;
 
 	/**
 	 * The database table used by the model.

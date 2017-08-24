@@ -14,14 +14,13 @@
 
 	<link href="{{ asset('/css/app.css') }}" rel="stylesheet">
 
-
     <!-- select based on default-theme -->
-    @if (isset($signedIn) && $signedIn === true && (Auth::user()->profile->default_theme != 'dark-theme'))
-    	<link href="{{ asset('/css/'.Auth::user()->profile->default_theme.'.css') }}" rel="stylesheet">
+    @if ($theme != config('app.default_theme'))
+    	<link href="{{ asset('/css/'.$theme.'.css') }}" rel="stylesheet">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     @else
         <!-- TODO Fix Bootstrap Theme "Superhero" - ORDER OF style vs superhero theme matters-->
-        <link href="{{ asset('/css/dark-theme.css') }}" rel="stylesheet">
+        <link href="{{ asset('/css/'.$theme.'.css') }}" rel="stylesheet">
         <link href="{{ asset('/css/superhero-bootstrap.min.css') }}" rel="stylesheet">
     @endif
 
@@ -44,6 +43,7 @@
 	<![endif]-->
 </head>
 <body id="event-repo">
+
 	<script src="{{ asset('/js/global-config.js') }}"></script>
 
 	<div id="loading" class="loading">

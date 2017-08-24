@@ -9,9 +9,7 @@
 	</h4>
 
 	<p>
-	<a href="{{ url('/events/all') }}" class="btn btn-info">Show all events</a>
-	<a href="{!! URL::route('events.index') !!}" class="btn btn-info">Show paginated events</a>
-	<a href="{!! URL::route('events.create') !!}" class="btn btn-primary">Add an event</a>	<a href="{!! URL::route('series.create') !!}" class="btn btn-primary">Add an event series</a>
+	<a href="{{ url('/tags') }}" class="btn btn-info">Show all tags</a>
 	</p>
 
 	<br style="clear: left;"/>

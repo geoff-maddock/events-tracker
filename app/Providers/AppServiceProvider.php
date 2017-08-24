@@ -7,6 +7,7 @@ use App\Visibility;
 use App\Tag;
 use App\Series;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider {
@@ -18,6 +19,16 @@ class AppServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
+	    // get the user, set the theme and pass to the view
+        \View::composer('app', function($view) {
+            if (Auth::check() && Auth::user()->profile->default_theme) {
+                $theme = Auth::user()->profile->default_theme;
+            } else {
+                $theme = config('app.default_theme');
+            };
+            $view->with('theme', $theme);
+        });
+
         \View::composer('events.edit', function($view) {
             $view->with('venues',[''=>''] + Entity::getVenues()->pluck('name','id')->all());
             $view->with('promoters',[''=>''] + Entity::whereHas('roles', function($q)
@@ -29,7 +40,6 @@ class AppServiceProvider extends ServiceProvider {
             $view->with('tags',Tag::orderBy('name','ASC')->pluck('name','id')->all());
             $view->with('entities',Entity::orderBy('name','ASC')->pluck('name','id')->all());
             $view->with('seriesList',[''=>''] + Series::orderBy('name', 'ASC')->pluck('name', 'id')->all());
-
         });
 	}
 

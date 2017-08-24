@@ -80,8 +80,8 @@
 				</li>
 
 				@if (Auth::guest())
-					<li><a href="{{ url('/auth/login') }}">Login</a></li>
-					<li><a href="{{ url('/auth/register') }}">Register</a></li>
+					<li><a href="{{ url('/login') }}">Login</a></li>
+					<li><a href="{{ url('/register') }}">Register</a></li>
 				@else
 					@if ($latest)
 					<li></li>
@@ -91,7 +91,10 @@
 						<ul class="dropdown-menu">
 							<li><a href="{{ url('/users/'.Auth::user()->id) }}">Profile</a></li>
 							<li><a href="{{ url('/events/attending') }}">Events Attending</a></li>
-							<li><a href="{{ url('/auth/logout') }}">Logout</a></li>
+							<li>
+								<a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+								<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">{{ csrf_field() }}</form>
+							</li>
 						</ul>
 					</li>
 				@endif 
