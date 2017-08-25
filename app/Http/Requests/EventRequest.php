@@ -1,7 +1,6 @@
-<?php 
+<?php namespace App\Http\Requests;
 
-namespace App\Http\Requests;
-
+use Illuminate\Validation\Rule;
 use App\Http\Requests\Request;
 use App\Event;
 
@@ -27,7 +26,7 @@ class EventRequest extends Request {
 
 		return [
 			'name' => 'required|min:3',
-			'slug' => 'unique:events'.(isset($this->events) ? ',id,'.$this->events->id : ''),
+			'slug' => Rule::unique('events')->ignore(isset($this->event) ? $this->event->id : ''),
 			'start_at' => 'required|date',
 			'event_type_id' => 'required',
 			'visibility_id' => 'required'

@@ -528,7 +528,8 @@ class EntitiesController extends Controller {
 	 */
 	public function indexAliases($role)
 	{
- 
+        $hasFilter = 1;
+        
 		$entities = Entity::getByAlias(ucfirst($role))
 					->where(function($query)
 					{
@@ -671,8 +672,9 @@ class EntitiesController extends Controller {
      * @return Response
      * @internal param int $id
      */
-	public function update(Entity $entity, Request $request)
+	public function update(Entity $entity, EntityRequest $request)
 	{
+
 		$msg = '';
 		
 		$entity->fill($request->input())->save();
@@ -681,6 +683,10 @@ class EntitiesController extends Controller {
 		{
 			$this->unauthorized($request); 
 		};
+
+
+        // if we got this far, it worked
+        $msg = 'Updated entity. ';
 
 		$tagArray = $request->input('tag_list',[]);
 		$aliasArray = $request->input('alias_list',[]);
@@ -728,6 +734,9 @@ class EntitiesController extends Controller {
 		$entity->tags()->sync($syncArray);
 		$entity->aliases()->attach($aliasSyncArray);
 		$entity->roles()->sync($request->input('role_list', []));
+
+        // flash this message
+        flash()->success('Success',  $msg);
 
 		return redirect('entities');
 	}

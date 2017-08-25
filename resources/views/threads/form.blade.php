@@ -54,7 +54,11 @@
 <div class="row">
 	<div class="form-group col-md-2">
 	{!! Form::label('entity_list','Related Entities:') !!}
-	{!! Form::select('entity_list[]', $entities, null, ['id' => 'entity_list', 'class' =>'form-control', 'multiple']) !!}
+	{!! Form::select('entity_list[]', $entities, null, ['id' => 'entity_list',
+	 'class' =>'form-control select2',
+	 'data-placeholder' =>'Choose a related artist, producer, dj',
+	 'data-tags' => 'false',
+	  'multiple']) !!}
 	{!! $errors->first('entities','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -62,7 +66,10 @@
 <div class="row">
 	<div class="form-group col-md-2">
 	{!! Form::label('series_list','Related Series:') !!}
-	{!! Form::select('series_list[]', $series, isset($thread) ? $thread->series->pluck('id', 'id')->all() : NULL, ['id' => 'series_list', 'class' =>'form-control', 'multiple']) !!}
+	{!! Form::select('series_list[]', $series, isset($thread) ? $thread->series->pluck('id', 'id')->all() : NULL, ['id' => 'series_list', 'class' =>'form-control select2',
+	 'data-placeholder' => 'Choose a related event series',
+	 'data-tags' => 'false',
+	  'multiple']) !!}
 	{!! $errors->first('series','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -71,7 +78,10 @@
 <div class="row">
 	<div class="form-group col-md-2">
 	{!! Form::label('tag_list','Tags:') !!}
-	{!! Form::select('tag_list[]', $tags, null, ['id' => 'tag_list', 'class' =>'form-control', 'multiple']) !!}
+	{!! Form::select('tag_list[]', $tags, null, ['id' => 'tag_list', 'class' =>'form-control select2',
+	'data-placeholder' => 'Choose a tag',
+	'data-tags' =>'true',
+	 'multiple']) !!}
 	{!! $errors->first('tags','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -85,23 +95,6 @@
 
 @section('footer')
 	<script>
-		// javascript to enable the select2 for the tag and entity list
-		$('#tag_list').select2(
-			{
-				placeholder: 'Choose a tag',
-				tags: true,
-			});
-		$('#entity_list').select2(
-			{
-				placeholder: 'Choose a related artist, producer, dj',
-				tags: false,
-			});
-		$('#series_list').select2(
-			{
-				placeholder: 'Choose a related event series',
-				tags: false,
-			});
-
 
 		function handleError(error) {
 			console.log('Error code:'+error.code);

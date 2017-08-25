@@ -1,13 +1,15 @@
 <?php
 namespace App\Http;
 
+use Illuminate\Support\Facades\Session;
+
 class Flash {
 
 
 	public function message($title, $message)
 	{
 
-		session()->flash('flash_message', [
+		\Session::flash('flash_message', [
 			'title' => $title,
 			'message' => $message,
 			'level' => 'info',
@@ -17,7 +19,7 @@ class Flash {
 
    public function create($title, $message, $level)
    {
-   	return session()->flash('flash_message', [
+   		 \Session::flash('flash_message', [
 			'title' => $title,
 			'message' => $message,
 			'level' => $level,
@@ -26,18 +28,18 @@ class Flash {
 
 
 
-	public function error($title, $message)
+	public function error( $title, $message)
 	{
-		session()->flash('flash_message', [
+		\Session::flash('flash_message', [
 			'title' => $title,
 			'message' => $message,
 			'level' => 'error',
 			]);
 	}
 
-	public function success($title, $message)
+	public function success( $title, $message)
 	{
-		session()->flash('flash_message', [
+			\Session::flash('flash_message', [
 			'title' => $title,
 			'message' => $message,
 			'level' => 'success',

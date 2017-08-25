@@ -1255,8 +1255,9 @@ class EventsController extends Controller
         // moved necessary lists into AppServiceProvider
 
 
-		return view('events.edit', compact('event' ));
+		return view('events.edit', compact('event'));
 	}
+
 
 	public function update(Event $event, EventRequest $request)
 	{
@@ -1297,7 +1298,7 @@ class EventsController extends Controller
 		// add to activity log
 		Activity::log($event, $this->user, 2);
 
-		flash('Success', 'Your event has been updated');
+		flash($request, 'Success', 'Your event has been updated');
 
 		return redirect('events');
 	}
@@ -1378,7 +1379,7 @@ class EventsController extends Controller
 
 		// delete the attending response
 		$response = EventResponse::where('event_id','=', $id)->where('user_id','=',$this->user->id)->where('response_type_id','=',1)->first();
-		//dd($response);
+
 		$response->delete();
 
 		// add to activity log

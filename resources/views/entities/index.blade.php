@@ -74,13 +74,17 @@
 
     <div class="row">
         <div class='col-md-12 col-lg-6'>
+
+        @if (!$entities->isEmpty())
             {!! $entities->appends(['sort_by' => $sortBy,
                                     'rpp' => $rpp,
                                     'filter_role' => isset($filter_role) ? $filter_role : NULL,
                                     'filter_tag' => isset($filter_tag) ? $filter_tag : NULL,
                                     'filter_name' => isset($filter_name) ? $filter_name : NULL,
             ])->render() !!}
+        @endif
             @include('entities.list', ['entities' => $entities])
+
         </div>
     </div>
 @stop

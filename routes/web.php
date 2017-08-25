@@ -11,7 +11,7 @@
 |
 */
 
-
+// what is this  for?
 Auth::routes();
 
 // Authentication routes...
@@ -73,7 +73,7 @@ Route::bind('users', function($id)
     return App\User::whereId($id)->firstOrFail();
 });
 
-$router->resource('users','UsersController');
+Route::resource('users','UsersController');
 
 Route::post('users/{id}/photos', 'UsersController@addPhoto');
 Route::delete('users/{id}/photos/{photo_id}', 'UsersController@deletePhoto');
@@ -131,7 +131,7 @@ Route::bind('events', function($id)
     return App\Event::whereId($id)->firstOrFail();
 });
 
-$router->resource('events','EventsController');
+Route::resource('events','EventsController');
 
 # FORUMS
 Route::bind('forums', function($id)
@@ -141,7 +141,7 @@ Route::bind('forums', function($id)
 
 Route::get('forums/all', 'ForumsController@indexAll');
 
-$router->resource('forums','ForumsController');
+Route::resource('forums','ForumsController');
 
 # THREADS
 Route::bind('threads', function($id)
@@ -169,7 +169,7 @@ Route::get('threads/{id}/unfollow', [
     'uses' => 'ThreadsController@unfollow'
 ]);
 
-$router->resource('threads','ThreadsController');
+Route::resource('threads','ThreadsController');
 
 # POSTS
 Route::get('posts/all', 'PostsController@indexAll');
@@ -179,7 +179,7 @@ Route::bind('posts', function($id)
     return App\Post::whereId($id)->firstOrFail();
 });
 
-$router->resource('posts','PostsController');
+Route::resource('posts','PostsController');
 
 # PERMISSIONS
 Route::get('permissions/all', 'PermissionsController@indexAll');
@@ -189,7 +189,7 @@ Route::bind('permissions', function($id)
     return App\Permission::whereId($id)->firstOrFail();
 });
 
-$router->resource('permissions','PermissionsController');
+Route::resource('permissions','PermissionsController');
 
 
 # GROUPS
@@ -200,7 +200,7 @@ Route::bind('groups', function($id)
     return App\Group::whereId($id)->firstOrFail();
 });
 
-$router->resource('groups','GroupsController');
+Route::resource('groups','GroupsController');
 
 
 # ENTITIES
@@ -232,36 +232,36 @@ Route::bind('entities', function($id)
     return App\Entity::whereId($id)->firstOrFail();
 });
 
-$router->resource('entities','EntitiesController');
+Route::resource('entities','EntitiesController');
 
 Route::bind('locations', function($id)
 {
     return App\Location::whereId($id)->firstOrFail();
 });
 
-$router->resource('entities.locations','LocationsController');
+Route::resource('entities.locations','LocationsController');
 
 Route::bind('contacts', function($id)
 {
     return App\Contact::whereId($id)->firstOrFail();
 });
 
-$router->resource('entities.contacts','ContactsController');
+Route::resource('entities.contacts','ContactsController');
 
 Route::bind('links', function($id)
 {
     return App\Link::whereId($id)->firstOrFail();
 });
 
-$router->resource('entities.links','LinksController');
+Route::resource('entities.links','LinksController');
 
 Route::bind('comments', function($id)
 {
     return App\Comment::whereId($id)->firstOrFail();
 });
 
-$router->resource('entities.comments','CommentsController');
-$router->resource('events.comments','CommentsController');
+Route::resource('entities.comments','CommentsController');
+Route::resource('events.comments','CommentsController');
 
 
 # SERIES
@@ -298,7 +298,7 @@ Route::bind('series', function($id)
 });
 
 
-$router->resource('series','SeriesController');
+Route::resource('series','SeriesController');
 
 Route::get('tags/{tag}', 'TagsController@indexTags')->name('tags.show');
 
@@ -313,7 +313,7 @@ Route::get('tags/{id}/unfollow', [
     'uses' => 'TagsController@unfollow'
 ]);
 
-$router->resource('tags','TagsController');
+Route::resource('tags','TagsController');
 
 // Add the route for rss
 Route::get('rss', 'EventsController@rss');

@@ -512,6 +512,7 @@ class ThreadsController extends Controller
 		$this->middleware('auth');
 
 		$threadCategories = [''=>''] + ThreadCategory::orderBy('name','ASC')->pluck('name', 'id')->all();
+        
 		$visibilities = [''=>''] + Visibility::pluck('name', 'id')->all();
 		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
 		$entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
