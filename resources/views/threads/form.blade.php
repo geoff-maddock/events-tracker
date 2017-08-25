@@ -37,7 +37,6 @@
 	{!! $errors->first('thread_category_id','<span class="help-block">:message</span>') !!}
 	</div>
 
-
 </div>
 
 
@@ -61,6 +60,16 @@
 	  'multiple']) !!}
 	{!! $errors->first('entities','<span class="help-block">:message</span>') !!}
 	</div>
+</div>
+
+<div class="row">
+
+	<div class="form-group col-md-2 {{$errors->has('event_id') ? 'has-error' : '' }}">
+	{!! Form::label('event_id','Event:') !!}
+	{!! Form::select('event_id', $events, (isset($thread->event_id) ? $thread->event_id : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select an event']) !!}
+	{!! $errors->first('event_id','<span class="help-block">:message</span>') !!}
+	</div>
+
 </div>
 
 <div class="row">

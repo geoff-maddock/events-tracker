@@ -158,6 +158,9 @@ Route::post('threads/{threads}/posts','PostsController@store');
 Route::get('threads/{id}/lock', 'ThreadsController@lock')->name('threads.lock');
 Route::get('threads/{id}/unlock', 'ThreadsController@unlock')->name('threads.unlock');
 
+Route::get('threads/filter', array('as' => 'threads.filter', 'uses' => 'ThreadsController@filter'));
+Route::get('threads/reset', array('as' => 'threads.reset', 'uses' => 'ThreadsController@reset'));
+
 
 Route::get('threads/{id}/follow', [
     'as' => 'threads.follow',

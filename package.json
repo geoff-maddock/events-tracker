@@ -1,7 +1,10 @@
 {
   "private": true,
   "devDependencies": {
-    "gulp": "^3.8.8",
+  	"bootstrap-sass": "^3.3.7",
+    "gulp": "^3.9.1",
+    "jquery": "^3.1.0",
+    "js-cookie": "^2.1.2",
     "laravel-elixir": "*"
   },
   "dependencies": {

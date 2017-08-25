@@ -12,34 +12,57 @@
 	<a href="{{ url('/threads/all') }}" class="btn btn-info">Show all threads</a>
 	<a href="{!! URL::route('threads.index') !!}" class="btn btn-info">Show paginated threads</a>
 	<a href="{!! URL::route('threads.create') !!}" class="btn btn-primary">Add a thread</a>
-	<div class="btn-group">
-		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-			Thread Category <span class="caret"></span>
-		</button>
-		<ul class="dropdown-menu">
-			<li><a  href="/threads">General</a></li>
-			@foreach (App\ThreadCategory::all() as $category)
-			<li><a  href="/threads/category/{{ urlencode($category->name) }}">{{ $category->name }}</a></li>
-			@endforeach
-		</ul>
-	</div>
-	</p>
 
-	<br style="clear: left;"/>
+	<!-- NAV / FILTER -->
+	<div class="row" class="tab-content filters-content">
+		<div class="col-sm-12">
+			{!! Form::open(['route' => ['threads.filter'], 'method' => 'GET']) !!}
 
-	<div class="row">
-		<div class="col-md-6">
-			{!! $threads->appends(['sort_by' => $sortBy, 'rpp' => $rpp])->render() !!}
+			<!-- BEGIN: FILTERS -->
+			@if ($hasFilter)
+
+			<div class="form-group col-sm-4">
+
+			{!! Form::label('filter_name','Filter By Name') !!}
+
+			{!! Form::text('filter_name', (isset($name) ? $name : NULL), ['class' =>'form-control']) !!}
+			</div>
+
+			<div class="form-group col-sm-2">
+			{!! Form::label('filter_user_id','Filter By User') !!}
+			<?php $users = [''=>'&nbsp;'] + App\User::orderBy('name', 'ASC')->pluck('name', 'name')->all();?>
+			{!! Form::select('filter_user', $users, (isset($user) ? $user : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a role']) !!}
+			</div>
+
+			<div class="form-group col-sm-2">
+			{!! Form::label('filter_tag','Filter By Tag') !!}
+			<?php $tags =  [''=>'&nbsp;'] + App\Tag::orderBy('name','ASC')->pluck('name', 'name')->all();?>
+			{!! Form::select('filter_tag', $tags, (isset($tag) ? $tag : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a tag']) !!}
+			</div>
+
+			<div class="form-group col-sm-2">
+				{!! Form::label('filter_rpp','RPP') !!}
+				<?php $rpp_options =  [''=>'&nbsp;', 5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000];?>
+				{!! Form::select('filter_rpp', $rpp_options, (isset($rpp) ? $rpp : NULL), ['class' =>'form-control']) !!}
+			</div>
+			@endif
+
+			<div class="col-sm-2">
+				<div class="btn-group col-sm-1">
+				{!! Form::submit('Filter',  ['class' =>'btn btn-primary btn-sm btn-tb', 'id' => 'primary-filter-submit']) !!}
+
+				{!! Form::close() !!}
+
+				{!! Form::open(['route' => ['threads.reset'], 'method' => 'GET']) !!}
+
+					{!! Form::submit('Reset',  ['class' =>'btn btn-primary btn-sm btn-tb', 'id' => 'primary-filter-reset']) !!}
+
+				{!! Form::close() !!}
+				</div>
+			</div>
+
 		</div>
-		<div class="col-md-6">
-			<ul class="pagination pull-right" style="margin-top: 0px;">
-				<li class="disabled"><span class="label label-info">RPP</span></li>
-				<li @if ($rpp == 5) class="active" @endif >{!! link_to_route('threads.index', '5', ['rpp' => 5], ['class' => 'item-title']) !!}</li>
-				<li @if ($rpp == 10) class="active" @endif >{!! link_to_route('threads.index', '10', ['rpp' => 10], ['class' => 'item-title']) !!}</li>
-				<li @if ($rpp == 25) class="active" @endif >{!! link_to_route('threads.index', '25', ['rpp' => 25], ['class' => 'item-title']) !!}</li>
-				<li @if ($rpp == 100) class="active" @endif >{!! link_to_route('threads.index', '100', ['rpp' => 100], ['class' => 'item-title']) !!}</li>
-			</ul>
-		</div>
+			<!-- END: FILTERS -->
 	</div>
 
 	<div class="row">

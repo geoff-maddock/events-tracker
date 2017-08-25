@@ -3,6 +3,7 @@
 use Carbon\Carbon;
 use App\User;
 use App\Action;
+use Illuminate\Support\Facades\Request;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
@@ -115,6 +116,7 @@ class Activity extends Eloquent {
 		$activity->action_id = $a;
 		$activity->object_name = $object->name;
 		$activity->changes = $object;
+		$activity->ip_address = \Request::ip();
 
 		if ($message)
 		{

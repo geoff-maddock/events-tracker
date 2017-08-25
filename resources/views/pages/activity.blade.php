@@ -15,7 +15,7 @@
 
 			{{ $activity->message }}<br>
 
-			<small>by {{ $activity->userName }}</small>
+			<small>by {{ $activity->userName }} {{ (isset($activity->ip_address) ? 'at '.$activity->ip_address : '') }} </small>
 		 </li>
 		@endforeach
 		{!! $activities->render() !!}

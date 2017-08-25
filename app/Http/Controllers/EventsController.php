@@ -368,8 +368,8 @@ class EventsController extends Controller
         $this->updatePaging($request);
 
         // base criteria
-        $query_future = $this->event->future()->orderBy($this->sortBy, $this->sortOrder);;
-        $query_past = $this->event->past()->orderBy($this->sortBy, $this->sortOrder);;
+        $query_future = $this->event->future()->orderBy($this->sortBy, $this->sortOrder);
+        $query_past = $this->event->past()->orderBy($this->sortBy, $this->sortOrder);
 
         // add the criteria from the session
         // check request for passed filter values

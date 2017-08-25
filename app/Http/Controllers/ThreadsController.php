@@ -14,6 +14,7 @@ use Log;
 use Mail;
 use Auth;
 use App\Thread;
+use App\ThreadFilters;
 use App\Entity;
 use App\ThreadCategory;
 use App\Series;
@@ -21,10 +22,20 @@ use App\Tag;
 use App\Visibility;
 use App\Activity;
 use App\Follow;
+use App\Event;
 
 
 class ThreadsController extends Controller
 {
+
+    protected $prefix;
+    protected $rpp;
+    protected $page;
+    protected $sort;
+    protected $sortBy;
+    protected $sortOrder;
+    protected $defaultCriteria;
+    protected $hasFilter;
 
 
 	public function __construct(Thread $thread)
@@ -32,10 +43,18 @@ class ThreadsController extends Controller
 		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
 		$this->thread = $thread;
 
-		// default list variables
-		$this->rpp = 10;
-		$this->sortBy = 'created_at';
-		$this->sortDirection = 'desc';
+        // prefix for session storage
+        $this->prefix = 'app.threads.';
+
+        // default list variables
+        $this->rpp = 10;
+        $this->page = 1;
+        $this->sort = array('name', 'desc');
+        $this->sortBy = 'created_at';
+        $this->sortOrder = 'asc';
+        $this->defaultCriteria = NULL;
+        $this->hasFilter = 0;
+
 		parent::__construct();
 	}
 
@@ -45,21 +64,207 @@ class ThreadsController extends Controller
      */
 	protected function updatePaging($request)
 	{
- 		// set sort by column
- 		if ($request->input('sort_by')) {
- 			$this->sortBy = $request->input('sort_by');
- 		};
+        // set sort by column
+        if ($request->input('sort_by')) {
+            $this->sortBy = $request->input('sort_by');
+        };
 
-		// set sort direction
- 		if ($request->input('sort_direction')) {
- 			$this->sortDirection = $request->input('sort_direction');
- 		};
+        // set sort direction
+        if ($request->input('sort_direction')) {
+            $this->sortOrder = $request->input('sort_direction');
+        };
 
- 		// set results per page
- 		if ($request->input('rpp')) {
- 			$this->rpp = $request->input('rpp');
- 		};
+        // set results per page
+        if ($request->input('rpp')) {
+            $this->rpp = $request->input('rpp');
+        };
 	}
+
+    /**
+     * Reset filter action.
+     *
+     * @param Request $request
+     */
+    public function executeReset(Request $request)
+    {
+        if ($request->input('criteria')) {
+            $this->setCriteria($request->input('criteria'));
+        }
+        $this->setFilters($this->getDefaultFilters(), NULL);
+        $request->session()->put('defaultFilter', 0);
+        $this->setPage(1);
+        $this->executeFilterRedirect();
+    }
+
+    /**
+     * Returns true if the user has any filters outside of the default
+     *
+     * @return Boolean
+     */
+    protected function getIsFiltered(Request $request)
+    {
+        if (($filters = $this->getFilters($request)) == $this->getDefaultFilters()) {
+            return false;
+        }
+        return (bool)count($filters);
+    }
+
+   /**
+     * Get user session attribute
+     *
+     * @param String $attribute
+     * @param Mixed $default
+     * @param Request $request
+     * @return Mixed
+     */
+    public function getAttribute($attribute, $default = null, Request $request)
+    {
+        return $request->session()
+            ->get($this->prefix . $attribute, $default);
+    }
+
+    /**
+     * Get session filters
+     *
+     * @return Array
+     */
+    public function getFilters(Request $request)
+    {
+        return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
+    }
+
+    /**
+     * Criteria provides a way to define criteria to be applied to a tab on the index page.
+     *
+     * @return array
+     */
+    public function getCriteria()
+    {
+        return $this->criteria;
+    }
+
+    /**
+     * Get the current page for this module
+     *
+     * @return integner
+     */
+    public function getPage()
+    {
+        return $this->getAttribute('page', 1);
+    }
+
+    /**
+     * Get the current results per page
+     *
+     * @param Request $request
+     * @return integer
+     */
+    public function getRpp(Request $request)
+    {
+        return $this->getAttribute('rpp', $this->rpp);
+    }
+
+    /**
+     * Get the sort order and column
+     *
+     * @return array
+     */
+    public function getSort(Request $request)
+    {
+        return $this->getAttribute('sort', $this->getDefaultSort());
+    }
+
+
+    /**
+     * Get the default sort array
+     *
+     * @return Array
+     */
+    public function getDefaultSort()
+    {
+        return array('id', 'desc');
+    }
+
+
+    /**
+     * Get the default filters array
+     *
+     * @return Array
+     */
+    public function getDefaultFilters()
+    {
+        return array();
+    }
+
+    /**
+     * Set user session attribute
+     *
+     * @param String $attribute
+     * @param Mixed $value
+     * @param Request $request
+     * @return Mixed
+     */
+    public function setAttribute($attribute, $value, Request $request)
+    {
+        return $request->session()
+            ->set($this->prefix . $attribute, $value);
+    }
+
+    /**
+     * Set filters attribute
+     *
+     * @param array $input
+     * @return array
+     */
+    public function setFilters(Request $request, array $input)
+    {
+        return $this->setAttribute('filters', $input, $request);
+    }
+
+    /**
+     * Set criteria.
+     *
+     * @param array $input
+     * @return string
+     */
+    public function setCriteria($input)
+    {
+        $this->criteria = $input;
+        return $this->criteria;
+    }
+
+    /**
+     * Set page attribute
+     *
+     * @param integer $input
+     * @return integer
+     */
+    public function setPage($input)
+    {
+        return $this->setAttribute('page', $input);
+    }
+
+    /**
+     * Set results per page attribute
+     *
+     * @param integer $input
+     * @return integer
+     */
+    public function setRpp($input)
+    {
+        return $this->setAttribute('rpp', 5);
+    }
+
+    /**
+     * Set sort order attribute
+     *
+     * @param array $input
+     * @return array
+     */
+    public function setSort(array $input)
+    {
+        return $this->setAttribute('sort', $input);
+    }
 
 
     /**
@@ -78,11 +283,13 @@ class ThreadsController extends Controller
             return redirect()->back();
         }
 		*/
+        $hasFilter = 1;
+
  		// updates sort, rpp from request
  		$this->updatePaging($request);
 
         // get the threads
-		$threads = Thread::orderBy($this->sortBy, $this->sortDirection)->paginate($this->rpp);
+		$threads = Thread::orderBy($this->sortBy, $this->sortOrder)->paginate($this->rpp);
 
         // filter only public threads or those created by the logged in user
 		$threads->filter(function($e)
@@ -98,11 +305,127 @@ class ThreadsController extends Controller
         }
 
         return view('threads.index')
-                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
         			->with(compact('threads'))
                     ->render();
 
     }
+
+  /**
+     * Filter the list of events
+     *
+     * @param Request $request
+     * @return View
+     * @internal param $Request
+     */
+    public function filter(Request $request, ThreadFilters $filters)
+    {
+        $hasFilter = 1;
+
+        // get all the filters from the session
+        $filters = $this->getFilters($request);
+
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        // base criteria
+        $query = $this->thread->orderBy($this->sortBy, $this->sortOrder);
+
+        // add the criteria from the session
+        // check request for passed filter values
+
+        if (!empty($request->input('filter_name'))) {
+            // getting name from the request
+            $name = $request->input('filter_name');
+            $query->where('name', 'like', '%' . $name . '%');
+
+            // add to filters array
+            $filters['filter_name'] = $name;
+        }
+
+
+        if (!empty($request->input('filter_user'))) {
+            $tag = $request->input('filter_user');
+            $query->where('tags', function ($q) use ($tag) {
+                $q->where('name', '=', ucfirst($tag));
+            });
+
+            // add to filters array
+            $filters['filter_tag'] = $tag;
+        }
+
+        if (!empty($request->input('filter_tag'))) {
+            $tag = $request->input('filter_tag');
+            $query->whereHas('tags', function ($q) use ($tag) {
+                $q->where('name', '=', ucfirst($tag));
+            });
+
+            // add to filters array
+            $filters['filter_tag'] = $tag;
+        }
+
+        // change this - should be seperate
+        if (!empty($request->input('filter_rpp'))) {
+            $this->rpp = $request->input('filter_rpp');
+        }
+
+        // save filters to session
+        $this->setFilters($request, $filters);
+
+        // get future events
+        $threads = $query->paginate($this->rpp);
+        $threads->filter(function ($e) {
+            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
+
+
+        // get past threads
+        $threads = $query->paginate($this->rpp);
+        $threads->filter(function ($e) {
+            return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
+
+        return view('threads.index')
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter,
+                'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
+                'filter_user' => isset($filters['filter_user']) ? $filters['filter_user'] : NULL,
+                'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL
+            ])
+            ->with(compact('threads'));
+    }
+
+
+
+    /**
+     * Reset the filtering of entities
+     *
+     * @return Response
+     */
+    public function reset(Request $request)
+    {
+        // doesn't have filter, but temp
+        $hasFilter = 1; 
+        // set the filters to empty
+        $this->setFilters($request, $this->getDefaultFilters());
+ 
+        // default 
+        $query = Thread::where(function($query)
+                    {
+                        $query->visible($this->user);
+                    })
+                    ->orderBy($this->sortBy, 'ASC')
+                    ->orderBy('name', 'ASC');
+
+        // paginate
+        $threads = $query->paginate($this->rpp);
+
+        return view('threads.index')
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(compact('threads'))
+            ->render();
+
+    }
+
 
     /**
      * Display a listing of the resource.
@@ -278,9 +601,9 @@ class ThreadsController extends Controller
 		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
 		$entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
 		$series = Series::orderBy('name','ASC')->pluck('name','id')->all();
+        $events = Event::orderBy('name','ASC')->pluck('slug','id')->all();
 
-
-		return view('threads.create', compact('threadCategories','visibilities','tags','entities','series'));
+		return view('threads.create', compact('threadCategories','visibilities','tags','entities','series', 'events'));
     }
 
     /**
@@ -517,8 +840,9 @@ class ThreadsController extends Controller
 		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
 		$entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
 		$series = Series::orderBy('name','ASC')->pluck('name','id')->all();
+        $events = Event::orderBy('name','ASC')->pluck('slug','id')->all();
 
-		return view('threads.edit', compact('thread', 'threadCategories', 'visibilities','tags','entities','series'));
+		return view('threads.edit', compact('thread', 'threadCategories', 'visibilities','tags','entities','series','events'));
     }
 
     /**

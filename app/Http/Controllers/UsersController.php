@@ -116,7 +116,7 @@ class UsersController extends Controller {
 
 	public function destroy(User $user)
 	{
-		Activity::log($user, $user, 3);
+		Activity::log($user, $this->user, 3);
 
 		$user->delete();
 
