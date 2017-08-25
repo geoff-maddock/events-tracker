@@ -31,7 +31,7 @@
 			<div class="form-group col-sm-2">
 			{!! Form::label('filter_user_id','Filter By User') !!}
 			<?php $users = [''=>'&nbsp;'] + App\User::orderBy('name', 'ASC')->pluck('name', 'name')->all();?>
-			{!! Form::select('filter_user', $users, (isset($user) ? $user : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a role']) !!}
+			{!! Form::select('filter_user', $users, (isset($user) ? $user : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a user']) !!}
 			</div>
 
 			<div class="form-group col-sm-2">
@@ -69,9 +69,13 @@
 
 	@if (isset($threads) && count($threads) > 0)
 	<div class="col-lg-12">
+					{!! $threads->appends(['sort_by' => $sortBy,
+										'rpp' => $rpp,
+										'filter_user' => isset($filter_user) ? $filter_venue : NULL,
+										'filter_tag' => isset($filter_tag) ? $filter_tag : NULL,
+										'filter_name' => isset($filter_name) ? $filter_name : NULL,
+					])->render() !!}
 		@include('threads.list', ['threads' => $threads])
-
-
 	</div>
 	@endif
 

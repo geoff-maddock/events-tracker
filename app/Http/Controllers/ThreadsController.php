@@ -51,7 +51,7 @@ class ThreadsController extends Controller
         $this->page = 1;
         $this->sort = array('name', 'desc');
         $this->sortBy = 'created_at';
-        $this->sortOrder = 'asc';
+        $this->sortOrder = 'desc';
         $this->defaultCriteria = NULL;
         $this->hasFilter = 0;
 
@@ -372,14 +372,8 @@ class ThreadsController extends Controller
         // save filters to session
         $this->setFilters($request, $filters);
 
-        // get future events
-        $threads = $query->paginate($this->rpp);
-        $threads->filter(function ($e) {
-            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-        });
-
-
-        // get past threads
+  
+        // get threads
         $threads = $query->paginate($this->rpp);
         $threads->filter(function ($e) {
             return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
@@ -413,7 +407,7 @@ class ThreadsController extends Controller
                     {
                         $query->visible($this->user);
                     })
-                    ->orderBy($this->sortBy, 'ASC')
+                    ->orderBy($this->sortBy, $this->sortOrder)
                     ->orderBy('name', 'ASC');
 
         // paginate
