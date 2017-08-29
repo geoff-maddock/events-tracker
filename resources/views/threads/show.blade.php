@@ -119,7 +119,7 @@
 			</form>
 
 			@else
-			<p class="text-center">Please <a href="{{ url('/auth/login')}}">sign in</a> to participate in this discussion.</p>
+			<p class="text-center">Please <a href="{{ url('/login')}}">sign in</a> to participate in this discussion.</p>
 			@endif
 		@endif
 	</div>
