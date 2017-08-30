@@ -5,6 +5,7 @@ var App = (function()
     {
         this.setupControls();
         this.setupLoadingModal();
+        console.log('App init complete');
     };
 
     var setupControls = function(target)

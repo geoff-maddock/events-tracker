@@ -225,6 +225,23 @@
 							$('#short').val(response.description.slice(0,100));
 							console.log('set short description');
 						};
+
+						// scrape some more data from description
+						let adult = "21+";
+						if (adult.indexOf(response.description))
+						{
+                            $('#min_age option[value=21]').attr('selected', 'selected');
+                            console.log('set ages to 21+');
+						};
+
+                        let amount = response.description.match(/\$(\d+)/);
+
+						if (amount)
+						{
+                            $('#door_price').val(amount[1]);
+                            console.log('set price '+amount[1]);
+						};
+
 						if (response.start_time)
 						{
 							start_trim = response.start_time.slice(0,-5);
@@ -239,20 +256,27 @@
 						};
 						if (response.place)
 						{
-							venue = response.place.name;
+							venue = capitalizeNth(response.place.name,0);
 							venue_val = $('#venue_id').find("option:contains('"+venue+"')").val();
 							$('#venue_id option[value='+venue_val+']').attr('selected', 'selected');
-							console.log('venue_val'+venue_val);
+							console.log('venue_val '+venue_val);
 							console.log('set venue '+venue);
 						};
 
 						// default to public visibility
 						$('#visibility_id option[value=3]').attr('selected', 'selected');
 					}
-		 		 console.log(response);	
+		 		 console.log(response);
+                    App.init();
 				});
 			});
+
+
 		})
+
+        function capitalizeNth(text, n) {
+            return text.slice(0,n) + text.charAt(n).toUpperCase() + text.slice(n+1)
+        }
 
 		function handleError(error) {
 			console.log('Error code:'+error.code);
