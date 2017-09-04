@@ -228,7 +228,7 @@
 
 						// scrape some more data from description
 						let adult = "21+";
-						if (adult.indexOf(response.description))
+						if (adult.indexOf(response.description) > 0)
 						{
                             $('#min_age option[value=21]').attr('selected', 'selected');
                             console.log('set ages to 21+');
