@@ -228,11 +228,14 @@
 
 						// scrape some more data from description
 						let adult = "21+";
-						if (adult.indexOf(response.description) > 0)
+
+						if (response.description.indexOf(adult) > 0)
 						{
                             $('#min_age option[value=21]').attr('selected', 'selected');
                             console.log('set ages to 21+');
-						};
+						} else {
+                            console.log('adult '+response.description.indexOf(adult)+' '+adult);
+						}
 
                         let amount = response.description.match(/\$(\d+)/);
 
