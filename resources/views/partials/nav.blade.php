@@ -16,6 +16,7 @@
 		          <a href="{{ url('/events') }}" class="dropdown-toggle" data-hover="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Events <span class="caret"></span></a>
 		          <ul class="dropdown-menu">
 		            <li class="{{ Request::is('events/all') ? 'active' : '' }}"><a href="{{ url('/events/all') }}">All Events</a></li>
+                    <li class="{{ Request::is('events/week') ? 'active' : '' }}"><a href="{{ url('/events/week') }}">Week's Events</a></li>
 		            <li class="{{ Request::is('series') ? 'active' : '' }}"><a href="{{ url('/series') }}">Event Series</a></li>
 		            <li class="{{ Request::is('events/feed') ? 'active' : '' }}"><a href="{{ url('/events/feed') }}" target="_blank">Events Text Only</a></li>
 		            <li class="{{ Request::is('events/create') ? 'active' : '' }}"><a href="{!! url('/events/create') !!}">Add Event</a></li>

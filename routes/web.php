@@ -88,7 +88,7 @@ Route::post('photos/{id}/unsetPrimary', 'PhotosController@unsetPrimary');
 Route::get('events/all', 'EventsController@indexAll');
 Route::get('events/future', 'EventsController@indexFuture')->name('events.future');
 Route::get('events/past', 'EventsController@indexPast');
-Route::get('events/week', 'EventsController@indexWeek');
+Route::get('events/week', 'EventsController@indexWeek')->name('events.week');
 Route::get('events/starting/{date}', 'EventsController@indexStarting');
 Route::get('events/daily', 'EventsController@daily');
 

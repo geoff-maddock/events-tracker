@@ -2,7 +2,7 @@
 
 		@if ($primary = $event->getPrimaryPhoto())
 		<div style="float: left; padding: 5px;">
-		<a href="/{{ $event->getPrimaryPhoto()->path }}" data-lightbox="{{ $event->getPrimaryPhoto()->path }}"><img src="/{{ $event->getPrimaryPhoto()->thumbnail }}" alt="{{ $event->name}}"  style="max-width: 100px; "></a>
+		<a href="/{{ $event->getPrimaryPhoto()->path }}" data-lightbox="{{ $event->getPrimaryPhoto()->path }}"><img src="/{{ $event->getPrimaryPhoto()->thumbnail }}" alt="{{ $event->name}}" ></a>
 		</div>
 		@endif
 

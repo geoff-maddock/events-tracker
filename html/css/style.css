@@ -1,3 +1,4 @@
+/* CUSTOM CSS FOR THE APP - Not sure when I stopped using it though... */
 body {
 	background: #FEFFF1;
 	font-family: Roboto,sans-serif !important;
@@ -123,7 +124,6 @@ li.selected:hover {
 	font-weight: 600;
 }
 
-
 .slim-row {
 	height: 10 px;
 	padding: 2px;
@@ -203,3 +203,4 @@ li.selected:hover {
 	-moz-opacity: 0.6;
 	opacity: 0.6;
 }
+

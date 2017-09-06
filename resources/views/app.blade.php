@@ -12,6 +12,7 @@
   	<link rel="alternate" type="application/rss+xml" href="{{ url('rss') }}"
     	    title="RSS Feed {{ config('blog.title') }}">
 
+	<!-- default css - this is generic bootstrap -->
 	<link href="{{ asset('/css/app.css') }}" rel="stylesheet">
 
     <!-- select based on default-theme -->
