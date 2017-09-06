@@ -3,9 +3,34 @@ var App = (function()
 {
     var init = function()
     {
+        this.setupConfirm();
         this.setupControls();
         this.setupLoadingModal();
         console.log('App init complete');
+    };
+
+    var setupConfirm = function() {
+        $('button.delete').on('click', function (e) {
+            e.preventDefault();
+            var form = $(this).parents('form');
+            var type = $(this).data('type');
+            swal({
+                    title: "Are you sure?",
+                    text: "You will not be able to recover this " + type + "!",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes, delete it!",
+                    closeOnConfirm: true
+                },
+                function (isConfirm) {
+                    if (isConfirm) {
+                        form.submit();
+                    }
+                    ;
+                    //
+                });
+        });
     };
 
     var setupControls = function(target)
@@ -56,6 +81,7 @@ var App = (function()
     return {
 
         init: init,
+        setupConfirm: setupConfirm,
         setupControls: setupControls,
         setupLoadingModal: setupLoadingModal,
         showLoadingModal: showLoadingModal,
