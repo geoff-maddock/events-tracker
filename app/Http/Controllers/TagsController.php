@@ -37,6 +37,21 @@ class TagsController extends Controller {
 		$this->rpp = 25;
 		parent::__construct();
 	}
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param Tag $tag
+     * @return Response
+     * @internal param int $id
+     */
+    public function destroy(Tag $tag)
+    {
+        $tag->delete();
+
+        return redirect('tags');
+    }
+
 	/**
  	 * Display a listing of the resource.
  	 *

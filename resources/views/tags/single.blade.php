@@ -6,7 +6,12 @@
 			@else
 			<a href="{!! route('tags.follow', ['id' => $tag->id]) !!}" title="Click to follow this tag."><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
 			@endif
-		@endif 
+
+            @if ($signedIn &&  Auth::user()->id == Config::get('app.superuser'))
+                {!! link_form_icon('glyphicon-trash text-warning', $tag, 'DELETE', 'Delete the tag') !!}
+            @endif
+		@endif
+
 	</h1> 
 	<span class="label label-tag">{!! link_to_route('events.tag', 'Events', [$tag->name], ['class' => 'item-title']) !!} {{ count($tag->events) }}</span>
 	<span class="label label-tag">{!! link_to_route('series.tag', 'Series', [$tag->name], ['class' => 'item-title']) !!}  {{ count($tag->series) }}</span>

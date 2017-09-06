@@ -82,4 +82,25 @@ $(document).ready(function(){
 	
 })
 </script>
+<script type="text/javascript">
+    $('input.delete').on('click', function(e){
+        e.preventDefault();
+        var form = $(this).parents('form');
+        swal({
+                title: "Are you sure?",
+                text: "You will not be able to recover this entity!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: true
+            },
+            function(isConfirm){
+                if (isConfirm)
+                {
+                    form.submit();
+                };
+            });
+    })
+</script>
 @stop

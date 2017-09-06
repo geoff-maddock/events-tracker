@@ -6,7 +6,7 @@
 	@else
 		<div class="card-thumb" style="float: left; padding: 5px;">
 			<img src="/images/avatar-placeholder-generic.jpg"  style="max-width: 100px; ">
-		</div>				
+		</div>
 	@endif
 
 	{!! link_to_route('users.show', $user->name, [$user->id]) !!}
@@ -15,8 +15,9 @@
 	@if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser') ))
 	<a href="{!! route('users.edit', ['id' => $user->id]) !!}">
 	<span class='glyphicon glyphicon-pencil'></span></a>
-	@endif 
-	
+    {!! link_form_icon('glyphicon-trash text-warning', $user, 'DELETE', 'Delete the user') !!}
+	@endif
+
 	<ul class="list">
 	@if ($events = $user->events->take(3))
 	@foreach ($events as $event)
@@ -24,6 +25,6 @@
 		<b>{{ $event->start_at->format('m.d.y')  }}</b> {!! link_to_route('events.show', $event->name, [$event->id], ['class' =>'butt']) !!} </li>
 	@endforeach
 	@endif
-	
+
 	</ul>
 </li>
