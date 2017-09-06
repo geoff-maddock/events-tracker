@@ -71,7 +71,7 @@
 	<div class="col-lg-12">
 					{!! $threads->appends(['sort_by' => $sortBy,
 										'rpp' => $rpp,
-										'filter_user' => isset($filter_user) ? $filter_venue : NULL,
+										'filter_user' => isset($filter_user) ? $filter_user : NULL,
 										'filter_tag' => isset($filter_tag) ? $filter_tag : NULL,
 										'filter_name' => isset($filter_name) ? $filter_name : NULL,
 					])->render() !!}

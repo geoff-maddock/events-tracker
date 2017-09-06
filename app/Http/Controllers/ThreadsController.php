@@ -288,8 +288,15 @@ class ThreadsController extends Controller
  		// updates sort, rpp from request
  		$this->updatePaging($request);
 
+        // get filters from session
+        $filters = $this->getFilters($request);
+
+ 		// initialize the query
+ 		//$query = Thread::orderBy($this->sortBy, $this->sortOrder);
+ 		$query = $this->buildCriteria($request);
+
         // get the threads
-		$threads = Thread::orderBy($this->sortBy, $this->sortOrder)->paginate($this->rpp);
+		$threads = $query->paginate($this->rpp);
 
         // filter only public threads or those created by the logged in user
 		$threads->filter(function($e)
@@ -304,10 +311,15 @@ class ThreadsController extends Controller
             });
         }
 
+        //dd($filters);
+
         return view('threads.index')
-                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
         			->with(compact('threads'))
-                    ->render();
+                    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter,
+                        'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
+                        'filter_user' => isset($filters['filter_user']) ? $filters['filter_user'] : NULL,
+                        'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL
+                    ])->render();
 
     }
 
@@ -343,15 +355,16 @@ class ThreadsController extends Controller
             $filters['filter_name'] = $name;
         }
 
-
         if (!empty($request->input('filter_user'))) {
-            $tag = $request->input('filter_user');
-            $query->where('tags', function ($q) use ($tag) {
-                $q->where('name', '=', ucfirst($tag));
+            $user = $request->input('filter_user');
+
+            // add has clause
+            $query->whereHas('user', function ($q) use ($user) {
+                $q->where('name', '=', $user);
             });
 
             // add to filters array
-            $filters['filter_tag'] = $tag;
+            $filters['filter_user'] = $user;
         }
 
         if (!empty($request->input('filter_tag'))) {
@@ -372,7 +385,6 @@ class ThreadsController extends Controller
         // save filters to session
         $this->setFilters($request, $filters);
 
-  
         // get threads
         $threads = $query->paginate($this->rpp);
         $threads->filter(function ($e) {
@@ -380,7 +392,7 @@ class ThreadsController extends Controller
         });
 
         return view('threads.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter,
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter, 'filters' => $filters,
                 'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
                 'filter_user' => isset($filters['filter_user']) ? $filters['filter_user'] : NULL,
                 'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL
@@ -389,6 +401,62 @@ class ThreadsController extends Controller
     }
 
 
+    /**
+     * Builds the criteria from the session
+     *
+     * @return $query
+     */
+    public function buildCriteria(Request $request)
+    {
+        $hasFilter = 1;
+
+        // get all the filters from the session
+        $filters = $this->getFilters($request);
+
+        // base criteria
+        $query = $this->thread->orderBy($this->sortBy, $this->sortOrder);
+
+        // add the criteria from the session
+        // check request for passed filter values
+
+        if (!empty($filters['filter_name'])) {
+            // getting name from the request
+            $name = $filters['filter_name'];
+            $query->where('name', 'like', '%' . $name . '%');
+
+        }
+
+        if (!empty($filters['filter_user'])) {
+            $user = $filters['filter_user'];
+
+            // add has clause
+            $query->whereHas('user', function ($q) use ($user) {
+                $q->where('name', '=', $user);
+            });
+
+            // add to filters array
+            $filters['filter_user'] = $user;
+        }
+
+        if (!empty($filters['filter_tag'])) {
+            $tag = $filters['filter_tag'];
+            $query->whereHas('tags', function ($q) use ($tag) {
+                $q->where('name', '=', ucfirst($tag));
+            });
+
+            // add to filters array
+            $filters['filter_tag'] = $tag;
+        }
+
+        // change this - should be seperate
+        if (!empty($filters['filter_rpp'])) {
+            $this->rpp = $filters['filter_rpp'];
+        }
+
+        return $query;
+        // save filters to session
+        //$this->setFilters($request, $filters);
+    }
 
     /**
      * Reset the filtering of entities
@@ -438,6 +506,8 @@ class ThreadsController extends Controller
             return redirect()->back();
         }
  		*/
+        $hasFilter = 1;
+
  		// updates sort, rpp from request
  		$this->updatePaging($request);
 
@@ -448,7 +518,7 @@ class ThreadsController extends Controller
 		});
 
         return view('threads.index')
-                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
         			->with(compact('threads'));
     }
 
@@ -481,7 +551,7 @@ class ThreadsController extends Controller
 					->paginate($this->rpp);
 
         return view('threads.index')
-                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection, 'slug' => $slug])
+                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'slug' => $slug])
         			->with(compact('threads'));
 
 	}
@@ -514,7 +584,7 @@ class ThreadsController extends Controller
 					->paginate($this->rpp);
 
         return view('threads.index')
-                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection, 'tag' => $tag])
+                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'tag' => $tag])
         			->with(compact('threads'));
 	}
 
@@ -546,7 +616,7 @@ class ThreadsController extends Controller
 					->paginate($this->rpp);
 
         return view('threads.index')
-                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection, 'tag' => $tag])
+                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'tag' => $tag])
         			->with(compact('threads'));
 	}
 
@@ -577,7 +647,7 @@ class ThreadsController extends Controller
 					->paginate($this->rpp);
 
         return view('threads.index')
-                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection, 'tag' => $tag])
+                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'tag' => $tag])
         			->with(compact('threads'));
 	}
 

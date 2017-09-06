@@ -14,26 +14,6 @@
 // what is this  for?
 Auth::routes();
 
-// Authentication routes...
-// 5.2 - removing
-/*
-Route::get('auth/login', 'Auth\AuthController@getLogin');
-Route::post('auth/login', 'Auth\AuthController@postLogin');
-//Route::get('auth/logout', 'Auth\AuthController@getLogout');
-Route::get('/logout', 'Auth\LoginController@logout');
-
-// Registration routes...
-Route::get('auth/register', 'Auth\AuthController@getRegister');
-Route::post('auth/register', 'Auth\AuthController@postRegister');
-
-// Password reset link request routes...
-Route::get('password/email', 'Auth\PasswordController@getEmail');
-Route::post('password/email', 'Auth\PasswordController@postEmail');
-
-// Password reset routes...
-Route::get('password/reset/{token}', 'Auth\PasswordController@getReset');
-Route::post('password/reset', 'Auth\PasswordController@postReset');
-*/
 // Authentication Routes...
 $this->get('login', 'Auth\LoginController@showLoginForm')->name('login');
 $this->post('login', 'Auth\LoginController@login');
@@ -91,6 +71,7 @@ Route::get('events/past', 'EventsController@indexPast');
 Route::get('events/week', 'EventsController@indexWeek')->name('events.week');
 Route::get('events/starting/{date}', 'EventsController@indexStarting');
 Route::get('events/daily', 'EventsController@daily');
+Route::get('events/attending', 'EventsController@indexAttending')->name('events.attending');
 
 Route::get('events/filter', array('as' => 'events.filter', 'uses' => 'EventsController@filter'));
 Route::get('events/reset', array('as' => 'events.reset', 'uses' => 'EventsController@reset'));
@@ -101,7 +82,7 @@ Route::get('events/relatedto/{slug}', 'EventsController@indexRelatedTo');
 Route::get('events/type/{slug}', 'EventsController@indexTypes');
 Route::get('events/series/{slug}', 'EventsController@indexSeries');
 Route::get('events/feed', 'EventsController@feed');
-Route::get('events/attending', 'EventsController@indexAttending');
+
 
 Route::get('events/{id}/createThread', [
     'as' => 'events.createThread',
