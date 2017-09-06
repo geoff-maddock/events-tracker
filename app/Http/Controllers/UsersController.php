@@ -40,6 +40,7 @@ class UsersController extends Controller {
  	 */
 	public function index()
 	{
+
 		$users = User::orderBy('name','ASC')->get();
 
 		return view('users.index',compact('users'));
