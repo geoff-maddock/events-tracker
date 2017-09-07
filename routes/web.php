@@ -198,7 +198,7 @@ Route::get('entities/filter', array('as' => 'entities.filter', 'uses' => 'Entiti
 Route::get('entities/reset', array('as' => 'entities.reset', 'uses' => 'EntitiesController@reset'));
 
 Route::get('entities/tag/{tag}', 'EntitiesController@indexTags')->name('entities.tag');
-Route::get('entities/alias/{alias}', 'EntitiesController@indexAliases')->name('entities.tag');
+Route::get('entities/alias/{alias}', 'EntitiesController@indexAliases')->name('entities.alias');
 
 
 Route::get('entities/{id}/follow', [
