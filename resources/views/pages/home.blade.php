@@ -15,6 +15,9 @@
 	<a href="{!! URL::route('events.create') !!}" class="btn btn-primary">Add an event</a> 
 	<a href="{!! URL::route('series.create') !!}" class="btn btn-primary">Add an event series</a>
 	<a href="{!! URL::route('entities.create') !!}" class="btn btn-primary">Add an entity</a>
+    @if (Auth::guest())
+        <a href="{!! URL::route('register') !!}" class="btn btn-success">Register account</a>
+    @endif
 	</p>
 
 	</div>
