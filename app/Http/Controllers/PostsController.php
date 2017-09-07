@@ -144,7 +144,7 @@ class PostsController extends Controller
         };
 
         // notify users following any tags related to the thread
-        /*
+        /*  why is this disabled?
         foreach ($tags as $tag)
         {
             foreach ($tag->followers() as $user)

@@ -315,7 +315,9 @@ class ThreadsController extends Controller
 
         return view('threads.index')
         			->with(compact('threads'))
-                    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter,
+                    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder,
+                        'hasFilter' => $hasFilter,
+                        'filters' => $filters,
                         'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
                         'filter_user' => isset($filters['filter_user']) ? $filters['filter_user'] : NULL,
                         'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL
@@ -481,8 +483,10 @@ class ThreadsController extends Controller
         // paginate
         $threads = $query->paginate($this->rpp);
 
+        $filters = array();
+
         return view('threads.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter,  'filters' => $filters])
             ->with(compact('threads'))
             ->render();
 
@@ -539,6 +543,8 @@ class ThreadsController extends Controller
             return redirect()->back();
         }
 		*/
+        $hasFilter = 1;
+
  		// updates sort, rpp from request
  		$this->updatePaging($request);
 
@@ -551,7 +557,7 @@ class ThreadsController extends Controller
 					->paginate($this->rpp);
 
         return view('threads.index')
-                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'slug' => $slug])
+                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'slug' => $slug, 'hasFilter' => $hasFilter])
         			->with(compact('threads'));
 
 	}
@@ -574,7 +580,9 @@ class ThreadsController extends Controller
             return redirect()->back();
         }
 		*/
- 		// updates sort, rpp from request
+        $hasFilter = 1;
+
+        // updates sort, rpp from request
  		$this->updatePaging($request);
 
  		$tag = urldecode($tag);
@@ -584,7 +592,7 @@ class ThreadsController extends Controller
 					->paginate($this->rpp);
 
         return view('threads.index')
-                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'tag' => $tag])
+                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'tag' => $tag, 'hasFilter' => $hasFilter])
         			->with(compact('threads'));
 	}
 
