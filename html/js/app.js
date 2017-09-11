@@ -3,10 +3,16 @@ var App = (function()
 {
     var init = function()
     {
+        this.initTooltip();
         this.setupConfirm();
         this.setupControls();
         this.setupLoadingModal();
+
         console.log('App init complete');
+    };
+
+    var initTooltip = function () {
+        $('[data-toggle="tooltip"]').tooltip();
     };
 
     var setupConfirm = function() {
@@ -81,6 +87,7 @@ var App = (function()
     return {
 
         init: init,
+        initTooltip: initTooltip,
         setupConfirm: setupConfirm,
         setupControls: setupControls,
         setupLoadingModal: setupLoadingModal,

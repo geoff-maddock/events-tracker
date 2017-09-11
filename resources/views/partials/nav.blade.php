@@ -7,13 +7,13 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<span class="{{ Request::is('/') ? 'active' : '' }}"><a class="navbar-brand" href="{{ url('/') }}">{{ config('app.app_name')}} </a></span>
+			<span class="{{ Request::is('/') ? 'active' : '' }}"><a class="navbar-brand" data-toggle="tooltip"  data-placement="bottom"  data-delay='{"show":"500", "hide":"100"}' title="Return to the home page." href="{{ url('/') }}">{{ config('app.app_name')}} </a></span>
 		</div>
 
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			<ul class="nav navbar-nav">
 				<li class="dropdown {{ Request::is('events') ? 'active' : '' }}">
-		          <a href="{{ url('/events') }}" class="dropdown-toggle" data-hover="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Events <span class="caret"></span></a>
+		          <a href="{{ url('/events') }}" class="dropdown-toggle" data-hover="dropdown" role="button" aria-haspopup="true" aria-expanded="false" data-toggle="xtooltipx"  data-placement="bottom"  title="Show paginated list of events">Events <span class="caret"></span></a>
 		          <ul class="dropdown-menu">
 		            <li class="{{ Request::is('events/all') ? 'active' : '' }}"><a href="{{ url('/events/all') }}">All Events</a></li>
                     <li class="{{ Request::is('events/week') ? 'active' : '' }}"><a href="{{ url('/events/week') }}">Week's Events</a></li>
