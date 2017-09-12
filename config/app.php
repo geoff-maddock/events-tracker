@@ -195,6 +195,9 @@ return [
 		# for integration with full calendar
 		'MaddHatter\LaravelFullcalendar\ServiceProvider',
       #  'Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class', // Laravel IDE helper
+
+        # laravel tinker provider
+        Laravel\Tinker\TinkerServiceProvider::class,
 	],
 
 	/*

@@ -4,11 +4,13 @@
 /html/js/global-config.js
 /node_modules
 /planning
+/public/hot
 /vendor
 .env.local.php
 .env.php
 .env
 .htaccess
+/.vagrant
 composer.phar
 composer.lock
 Homestead.yaml
