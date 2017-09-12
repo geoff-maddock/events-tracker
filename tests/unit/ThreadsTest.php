@@ -29,8 +29,8 @@ class ThreadsTest extends TestCase
     function a_user_can_read_a_single_thread()
     {
     	// when we visit a thread page
-    	//$this->get('/threads/' . $this->thread->id)
-    	//	->see($this->thread->name);
+    	$this->get('/threads/' . $this->thread->id)
+    		->see($this->thread->name);
     }
 
 
@@ -89,7 +89,7 @@ class ThreadsTest extends TestCase
     {
         $this->signIn();
 
-        $thread = make('App\Thread');
+        $thread = factory('App\Thread')->make();
 
         $response = $this->post('/threads', $thread->toArray());
 
@@ -103,7 +103,6 @@ class ThreadsTest extends TestCase
     function a_thread_requires_a_name()
     {
         $this->publishThread(['name' => null])
-
             ->assertSessionHasErrors('name');
 
     }
@@ -133,9 +132,11 @@ class ThreadsTest extends TestCase
     {
         $this->withExceptionHandling()->signIn();
 
-        $thread = make('App\Thread', $overrides);
+        $thread = factory('App\Thread', $overrides)->make();
 
         $this->post('/threads', $thread->toArray());
+
+        return $thread;
     }
 
     /** @test */

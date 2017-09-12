@@ -30,10 +30,18 @@ class PostsTest extends TestCase
         $this->withExceptionHandling()->signIn();
 
         $thread =  factory('App\Thread')->create();
-        $post = make('App\Post', ['body' => null]);
+        $post = factory('App\Post', ['body' => null])->make();
 
         $this->post($thread->path() . '/posts', $post->toArray())
             ->assertSessionHasErrors('body');
     }
 
+
+    /** @test */
+    function it_has_an_owner()
+    {
+        $post = factory('App\Post')->create();
+
+        $this->assertInstanceOf('App\User', $post->user);
+    }
 }

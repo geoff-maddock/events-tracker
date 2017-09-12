@@ -57,7 +57,7 @@ class GenericObjectController extends Controller {
     }
 
 
-    abstract protected function baseCriteria();
+    //abstract protected function baseCriteria();
 
 	/**
 	 * Reset the filtering of entities
