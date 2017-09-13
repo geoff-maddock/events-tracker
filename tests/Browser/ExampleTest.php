@@ -20,4 +20,10 @@ class ExampleTest extends DuskTestCase
                     ->assertSee('Laravel');
         });
     }
+
+    public function testApplication()
+    {
+        $response = $this->withSession(['foo' => 'bar'])
+            ->get('/');
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests;
 
 use App\Exceptions\Handler;
@@ -7,36 +8,21 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
-use CreatesApplication;
+    use CreatesApplication;
 
-	protected $baseUrl;
-
-	/**
-	 * Creates the application.
-	 *
-	 * @return \Illuminate\Foundation\Application
-	 */
-	/*public function createApplication()
-	{
-        //Dotenv::load(__DIR__.'/../');
-       // $this->baseUrl = env('APP_URL', $this->baseUrl);
-
-		$app = require __DIR__.'/../bootstrap/app.php';
-
-		$app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
-
-		return $app;
-	}
-*/
     protected function setUp()
     {
         parent::setUp();
+
         $this->disableExceptionHandling();
     }
+
     protected function signIn($user = null)
     {
-        $user = $user ?: factory('App\User')->create();
+        $user = $user ?: create('App\User');
+
         $this->actingAs($user);
+
         return $this;
     }
 
@@ -45,7 +31,6 @@ use CreatesApplication;
     {
         $this->oldExceptionHandler = $this->app->make(ExceptionHandler::class);
 
-        /*
         $this->app->instance(ExceptionHandler::class, new class extends Handler {
             public function __construct() {}
             public function report(\Exception $e) {}
@@ -53,12 +38,12 @@ use CreatesApplication;
                 throw $e;
             }
         });
-        */
     }
+
     protected function withExceptionHandling()
     {
         $this->app->instance(ExceptionHandler::class, $this->oldExceptionHandler);
+
         return $this;
     }
-
 }

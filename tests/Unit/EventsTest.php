@@ -1,14 +1,15 @@
 <?php
-namespace Tests\Browser;
+namespace Tests\Unit;
 
 use App\User;
 use App\Events;
+use Carbon\Carbon;
 use Laravel\Dusk\Dusk;
-use Tests\DuskTestCase;
+use Tests\TestCase;
 use Laravel\Dusk\Chrome;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
-class EventsTest extends DuskTestCase {
+class EventsTest extends TestCase {
 
     //use DatabaseMigrations;
 
