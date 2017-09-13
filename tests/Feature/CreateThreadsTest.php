@@ -1,12 +1,15 @@
 <?php
-namespace Tests;
+namespace Tests\Feature;
 
+use App\Activity;
+use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class CreateThreadsTest extends TestCase
 {
+    use DatabaseMigrations;
     /**
      * A basic test example.
      *
@@ -21,10 +24,12 @@ class CreateThreadsTest extends TestCase
     function an_authenticated_user_can_create_new_forum_threads()
     {
         $this->signIn();
-        $thread = make('App\Thread');
-        $this->post('/threads', $thread->toArray());
 
-        $this->get($thread->path())
+        $thread = make('App\Thread');
+
+        $response = $this->post('/threads', $thread->toArray());
+
+        $this->get($response->headers->get('Location'))
             ->assertSee($thread->title)
             ->assertSee($thread->body);
     }

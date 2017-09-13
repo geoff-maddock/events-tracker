@@ -10,7 +10,7 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class EventsTest extends DuskTestCase {
 
-    use DatabaseMigrations;
+    //use DatabaseMigrations;
 
 	/**
 	 * A basic functional test example.
@@ -50,11 +50,11 @@ class EventsTest extends DuskTestCase {
 	 */
 	public function testSeriesExample()
 	{
-        $this->visit('/series')
-             ->see('Series')
-             ->dontSee('Error');
-
-        //$this->assertStatus(200);
+        $this->browse(function ($browser) {
+            $browser->visit('/series')
+                -> assertSee('Series');
+        });
+        $this->assertStatus(200);
 	}
 
 	/**
@@ -64,9 +64,10 @@ class EventsTest extends DuskTestCase {
 	 */
 	public function testEntitiesExample()
 	{
-        $this->visit('/entities')
-             ->see('Series');
-
-       // $this->assertStatus(200);
+        $this->browse(function ($browser) {
+            $browser->visit('/entities')
+                -> assertSee('Entities');
+        });
+        $this->assertStatus(200);
 	}
 }
