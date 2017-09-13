@@ -1,9 +1,16 @@
 <?php
+namespace Tests\Browser;
 
-
+use App\User;
+use App\Events;
+use Laravel\Dusk\Dusk;
+use Tests\DuskTestCase;
+use Laravel\Dusk\Chrome;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
-class EventsTest extends TestCase {
+class EventsTest extends DuskTestCase {
+
+    use DatabaseMigrations;
 
 	/**
 	 * A basic functional test example.
@@ -24,9 +31,15 @@ class EventsTest extends TestCase {
 	 */
 	public function testEventsExample()
 	{
+        $this->browse(function ($browser) {
+            $browser->visit('/events')
+                -> assertSee('Events');
+        });
+	    /*
         $this->visit('/events')
              ->see('Events')
              ->dontSee('Error');
+	    */
        //$response->assertStatus(200);
 	}
 

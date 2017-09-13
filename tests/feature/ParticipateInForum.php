@@ -1,4 +1,5 @@
 <?php
+namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -27,7 +28,7 @@ class ParticipateInForum extends TestCase
 
         // when the user adds a post to the thread
         $post = factory('App\Post')->make();
-        $this->post('/threads/'.$thread->id./'posts', $post->toArray());
+        $this->post('/threads/'.$thread->id.'/posts', $post->toArray());
 
         // then their reply should be visible on the page
         $this->get($thread->path())

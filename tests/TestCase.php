@@ -1,10 +1,13 @@
 <?php
-
+namespace Tests;
 
 use App\Exceptions\Handler;
 use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
-class TestCase extends Illuminate\Foundation\Testing\TestCase {
+abstract class TestCase extends BaseTestCase
+{
+use CreatesApplication;
 
 	protected $baseUrl;
 
@@ -13,18 +16,18 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase {
 	 *
 	 * @return \Illuminate\Foundation\Application
 	 */
-	public function createApplication()
+	/*public function createApplication()
 	{
         //Dotenv::load(__DIR__.'/../');
        // $this->baseUrl = env('APP_URL', $this->baseUrl);
-		
+
 		$app = require __DIR__.'/../bootstrap/app.php';
 
 		$app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
 
 		return $app;
 	}
-
+*/
     protected function setUp()
     {
         parent::setUp();
