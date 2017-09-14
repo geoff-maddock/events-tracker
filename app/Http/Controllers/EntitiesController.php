@@ -198,7 +198,7 @@ class EntitiesController extends Controller {
     protected function setAttribute($attribute, $value, Request $request)
     {
         return $request->session()
-            ->set($this->prefix.$attribute, $value);
+            ->put($this->prefix.$attribute, $value);
     }
 
     /**
@@ -209,7 +209,6 @@ class EntitiesController extends Controller {
      */
     protected function setFilters(Request $request, array $input)
     {
-        //return $request->session()->set('filters',self::ATTR_FILTERS, $input);
         // example: $input = array('filter_tag' => 'role', 'filter_name' => 'xano');
         return $this->setAttribute('filters', $input, $request);
     }

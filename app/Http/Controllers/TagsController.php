@@ -34,7 +34,18 @@ class TagsController extends Controller {
 		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
 		$this->tag = $tag;
 
-		$this->rpp = 25;
+        // prefix for session storage
+        $this->prefix = 'app.threads.';
+
+        // default list variables
+        $this->rpp = 25;
+        $this->page = 1;
+        $this->sort = array('name', 'desc');
+        $this->sortBy = 'created_at';
+        $this->sortOrder = 'desc';
+        $this->defaultCriteria = NULL;
+        $this->hasFilter = 0;
+
 		parent::__construct();
 	}
 
@@ -248,9 +259,6 @@ class TagsController extends Controller {
 	}
 
 
-
-
-
 	/**
 	 * Add a photo to an event
 	 *
@@ -368,6 +376,177 @@ class TagsController extends Controller {
 		flash()->success('Success',  'You are no longer following the '.$type);
 
 		return back();
-
 	}
+
+    /**
+     * Returns true if the user has any filters outside of the default
+     *
+     * @return Boolean
+     */
+    protected function getIsFiltered(Request $request)
+    {
+        if (($filters = $this->getFilters($request)) == $this->getDefaultFilters()) {
+            return false;
+        }
+        return (bool)count($filters);
+    }
+
+    /**
+     * Get user session attribute
+     *
+     * @param String $attribute
+     * @param Mixed $default
+     * @param Request $request
+     * @return Mixed
+     */
+    public function getAttribute($attribute, $default = null, Request $request)
+    {
+        return $request->session()
+            ->get($this->prefix . $attribute, $default);
+    }
+
+    /**
+     * Get session filters
+     *
+     * @return Array
+     */
+    public function getFilters(Request $request)
+    {
+        return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
+    }
+
+    /**
+     * Criteria provides a way to define criteria to be applied to a tab on the index page.
+     *
+     * @return array
+     */
+    public function getCriteria()
+    {
+        return $this->criteria;
+    }
+
+    /**
+     * Get the current page for this module
+     *
+     * @return integner
+     */
+    public function getPage()
+    {
+        return $this->getAttribute('page', 1);
+    }
+
+    /**
+     * Get the current results per page
+     *
+     * @param Request $request
+     * @return integer
+     */
+    public function getRpp(Request $request)
+    {
+        return $this->getAttribute('rpp', $this->rpp);
+    }
+
+    /**
+     * Get the sort order and column
+     *
+     * @return array
+     */
+    public function getSort(Request $request)
+    {
+        return $this->getAttribute('sort', $this->getDefaultSort());
+    }
+
+
+    /**
+     * Get the default sort array
+     *
+     * @return Array
+     */
+    public function getDefaultSort()
+    {
+        return array('id', 'desc');
+    }
+
+
+    /**
+     * Get the default filters array
+     *
+     * @return Array
+     */
+    public function getDefaultFilters()
+    {
+        return array();
+    }
+
+
+    /**
+     * Set user session attribute
+     *
+     * @param String $attribute
+     * @param Mixed $value
+     * @param Request $request
+     * @return Mixed
+     */
+    public function setAttribute($attribute, $value, Request $request)
+    {
+        return $request->session()
+            ->put($this->prefix . $attribute, $value);
+    }
+
+    /**
+     * Set filters attribute
+     *
+     * @param array $input
+     * @return array
+     */
+    public function setFilters(Request $request, array $input)
+    {
+        return $this->setAttribute('filters', $input, $request);
+    }
+
+    /**
+     * Set criteria.
+     *
+     * @param array $input
+     * @return string
+     */
+    public function setCriteria($input)
+    {
+        $this->criteria = $input;
+        return $this->criteria;
+    }
+
+    /**
+     * Set page attribute
+     *
+     * @param integer $input
+     * @return integer
+     */
+    public function setPage($input)
+    {
+        return $this->setAttribute('page', $input);
+    }
+
+    /**
+     * Set results per page attribute
+     *
+     * @param integer $input
+     * @return integer
+     */
+    public function setRpp($input)
+    {
+        return $this->setAttribute('rpp', 5);
+    }
+
+    /**
+     * Set sort order attribute
+     *
+     * @param array $input
+     * @return array
+     */
+    public function setSort(array $input)
+    {
+        return $this->setAttribute('sort', $input);
+    }
+
 }

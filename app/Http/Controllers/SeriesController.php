@@ -833,7 +833,7 @@ class SeriesController extends Controller {
     public function setAttribute($attribute, $value, Request $request)
     {
         return $request->session()
-            ->set($this->prefix . $attribute, $value);
+            ->put($this->prefix . $attribute, $value);
     }
 
     /**

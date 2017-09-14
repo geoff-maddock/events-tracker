@@ -185,7 +185,6 @@ class ThreadsController extends Controller
         return array('id', 'desc');
     }
 
-
     /**
      * Get the default filters array
      *
@@ -207,7 +206,7 @@ class ThreadsController extends Controller
     public function setAttribute($attribute, $value, Request $request)
     {
         return $request->session()
-            ->set($this->prefix . $attribute, $value);
+            ->put($this->prefix . $attribute, $value);
     }
 
     /**
@@ -425,7 +424,6 @@ class ThreadsController extends Controller
             // getting name from the request
             $name = $filters['filter_name'];
             $query->where('name', 'like', '%' . $name . '%');
-
         }
 
         if (!empty($filters['filter_user'])) {
@@ -455,9 +453,10 @@ class ThreadsController extends Controller
             $this->rpp = $filters['filter_rpp'];
         }
 
-        return $query;
         // save filters to session
         //$this->setFilters($request, $filters);
+
+        return $query;
     }
 
     /**

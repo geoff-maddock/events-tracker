@@ -14,12 +14,9 @@ use Log;
 use Mail;
 use App\User;
 use App\Profile;
-use App\Entity;
 use App\UserType;
-use App\EntityType;
 use App\Visibility;
 use App\Tag;
-use App\EventResponse;
 use App\Photo;
 use App\Activity;
 
@@ -30,8 +27,14 @@ class UsersController extends Controller {
 		$this->middleware('auth', ['except' => array('index', 'show',)]);
 		$this->user = $user;
 		$this->rpp = 5;
+        $this->page = 1;
+        $this->sort = array('name', 'desc');
+        $this->sortBy = 'created_at';
+        $this->sortOrder = 'desc';
+        $this->defaultCriteria = NULL;
+        $this->hasFilter = 0;
 
-		parent::__construct();
+        parent::__construct();
 	}
 	/**
  	 * Display a listing of the resource.

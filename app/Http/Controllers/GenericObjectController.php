@@ -245,7 +245,7 @@ class GenericObjectController extends Controller {
      */
     public function setAttribute($attribute, $value, Request $request)
     {
-        return $request->session()->set($this->prefix . $attribute, $value);
+        return $request->session()->put($this->prefix . $attribute, $value);
     }
 
     /**
