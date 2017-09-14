@@ -29,20 +29,20 @@
 
 			{!! Form::label('filter_name','Filter By Name') !!}
 
-			{!! Form::text('filter_name', (isset($name) ? $name : NULL), ['class' =>'form-control']) !!}
+			{!! Form::text('filter_name', (isset($filters['filter_name']) ? $filters['filter_name'] : NULL), ['class' =>'form-control']) !!}
 			</div>
 
 			<div class="form-group col-sm-2">
 
 			{!! Form::label('filter_role','Filter By Role') !!}
 			<?php $roles = [''=>'&nbsp;'] + App\Role::orderBy('name', 'ASC')->pluck('name', 'name')->all();?>
-			{!! Form::select('filter_role', $roles, (isset($role) ? $role : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a role']) !!}
+			{!! Form::select('filter_role', $roles, (isset($filters['filter_role']) ? $filters['filter_role'] : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a role']) !!}
 			</div>
 
 			<div class="form-group col-sm-2">
 			{!! Form::label('filter_tag','Filter By Tag') !!}
 			<?php $tags =  [''=>'&nbsp;'] + App\Tag::orderBy('name','ASC')->pluck('name', 'name')->all();?>
-			{!! Form::select('filter_tag', $tags, (isset($tag) ? $tag : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a tag']) !!}
+			{!! Form::select('filter_tag', $tags, (isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a tag']) !!}
 			</div>
 
 			<div class="form-group col-sm-2">

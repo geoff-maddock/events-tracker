@@ -11,6 +11,7 @@ use Carbon\Carbon;
 
 use DB;
 use Log;
+use Auth;
 use App\Entity;
 use App\EntityFilters;
 use App\EntityType;
@@ -22,6 +23,15 @@ use App\Photo;
 use App\Follow;
 
 class EntitiesController extends Controller {
+
+    // define a list of variables
+    protected $rpp;
+    protected $page;
+    protected $sort;
+    protected $sortBy;
+    protected $sortOrder;
+    protected $defaultCriteria;
+    protected $hasFilter;
 
 	public function __construct(Entity $entity)
 	{
@@ -38,6 +48,7 @@ class EntitiesController extends Controller {
         $this->sortBy = 'name';
         $this->sortOrder = 'asc';
         $this->defaultCriteria = NULL;
+        $this->hasFilter = 1;
 		parent::__construct();
 	}
 
@@ -260,29 +271,30 @@ class EntitiesController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function index(EntityFilters $filters)
+	public function index(Request $request, EntityFilters $filters)
     {
         $hasFilter = 1;
 
         // get all active entites plus those created by the logged in user, ordered by type and name
 
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        // get filters from session
+        $filters = $this->getFilters($request);
+
         // base criteria
-        $query = $this->entity->active()
-            ->orWhere('created_by', '=', ($this->user ? $this->user->id : NULL))
-            ->orderBy('entity_type_id', 'ASC')
-            ->orderBy('name', 'ASC');
+        $query = $this->buildCriteria($request);
 
-        // set the filters from the request
-
-        // apply the filters to the list
-        $query->filter($filters);
-
-        // convert to sql
-        $results = $query->toSql();
-        //dd($results);
-
-        // save the query results into entities collection
+        // get the threads
         $entities = $query->paginate($this->rpp);
+
+        // if the user is not authenticated, filter out any guarded entities
+        if (!Auth::check()) {
+            $entities->filter(function($e){
+                return ($e->visibility->name != 'Guarded');
+            });
+        }
 
         return view('entities.index')
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter, 'filters' => $filters])
@@ -290,6 +302,64 @@ class EntitiesController extends Controller {
             ->render();
     }
 
+    /**
+     * Builds the criteria from the session
+     *
+     * @return $query
+     */
+    public function buildCriteria(Request $request)
+    {
+        $hasFilter = 1;
+
+        // get all the filters from the session
+        $filters = $this->getFilters($request);
+
+        // base criteria
+        $query = $this->entity->active()
+      //      ->orWhere('created_by', '=', ($this->user ? $this->user->id : NULL))
+            ->orderBy('entity_type_id', 'ASC')
+            ->orderBy($this->sortBy, $this->sortOrder);
+
+        // add the criteria from the session
+        // check request for passed filter values
+
+        if (!empty($filters['filter_name'])) {
+            // getting name from the request
+            $name = $filters['filter_name'];
+            $query->where('name', 'like', '%' . $name . '%');
+        }
+
+        if (!empty($filters['filter_tag'])) {
+            $tag = $filters['filter_tag'];
+            $query->whereHas('tags', function ($q) use ($tag) {
+                $q->where('name', '=', ucfirst($tag));
+            });
+
+            // add to filters array
+            $filters['filter_tag'] = $tag;
+        }
+
+        if (!empty($filters['filter_role']))
+        {
+            $role = $filters['filter_role'];
+            // add has clause
+            $query->whereHas('roles', function($q) use ($role)
+            {
+                $q->where('slug','=', strtolower($role));
+            });
+
+            // add to filters array
+            $filters['filter_role'] = $role;
+
+        };
+
+        // change this - should be seperate
+        if (!empty($filters['filter_rpp'])) {
+            $this->rpp = $filters['filter_rpp'];
+        }
+
+        return $query;
+    }
 
 	/**
 	 * Display a listing of entities by type
@@ -397,7 +467,6 @@ class EntitiesController extends Controller {
             // add to filters array
             $filters['filter_role'] = $role;
 
-           // dd($role);
  		};
 
   		if (!empty($request->input('filter_tag')))
@@ -447,7 +516,7 @@ class EntitiesController extends Controller {
         // apply the filters to the query
         // $entities->filter($filters)
         // get the entities and paginate
-          $entities = $query->paginate($this->rpp);
+        $entities = $query->paginate($this->rpp);
 
 		return view('entities.index')
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'filters' => $filters, 'hasFilter' => $hasFilter,

@@ -27,8 +27,7 @@ use App\Event;
 
 class ThreadsController extends Controller
 {
-
-    protected $prefix;
+    // define a list of variables
     protected $rpp;
     protected $page;
     protected $sort;
@@ -36,7 +35,6 @@ class ThreadsController extends Controller
     protected $sortOrder;
     protected $defaultCriteria;
     protected $hasFilter;
-
 
 	public function __construct(Thread $thread)
 	{
@@ -53,7 +51,7 @@ class ThreadsController extends Controller
         $this->sortBy = 'created_at';
         $this->sortOrder = 'desc';
         $this->defaultCriteria = NULL;
-        $this->hasFilter = 0;
+        $this->hasFilter = 1;
 
 		parent::__construct();
 	}
@@ -310,7 +308,6 @@ class ThreadsController extends Controller
             });
         }
 
-        //dd($filters);
 
         return view('threads.index')
         			->with(compact('threads'))
