@@ -289,12 +289,6 @@ class EntitiesController extends Controller {
         // get the threads
         $entities = $query->paginate($this->rpp);
 
-        // if the user is not authenticated, filter out any guarded entities
-        if (!Auth::check()) {
-            $entities->filter(function($e){
-                return ($e->visibility->name != 'Guarded');
-            });
-        }
 
         return view('entities.index')
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter, 'filters' => $filters])
