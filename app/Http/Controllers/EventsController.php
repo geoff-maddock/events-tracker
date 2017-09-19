@@ -1712,16 +1712,28 @@ class EventsController extends Controller
 	 */
 	public function addPhoto($id, Request $request)
 	{
-
 		$this->validate($request, [
 			'file' =>'required|mimes:jpg,jpeg,png,gif'
 		]);
 
-		$photo = $this->makePhoto($request->file('file'));
+        // get the event
+        $event = Event::find($id);
+
+        // make the photo object from the file in the request
+
+        $photo = $this->makePhoto($request->file('file'));
+
+        // count existing photos, and if zero, make this primary
+        if (count($event->photos) == 0)
+        {
+            $photo->is_primary=1;
+        };
+
+
 		$photo->save();
 
 		// attach to event
-		$event = Event::find($id);
+
 		$event->addPhoto($photo);
 	}
 	
