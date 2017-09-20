@@ -19,6 +19,9 @@
 <div class="col-md-6">
 	<div class="event-card">
 	<div class='event-date'>
+        @if ($event->visibility->name == 'Cancelled')
+            <span class="text-warning">Cancelled on {{ $event->cancelled_at->format('l F jS Y') }}</span><br>
+        @endif
 	<h2>{!! $event->start_at->format('l F jS Y') !!}</h2>
 
 	{!! $event->start_at->format('h:i A') !!} {!! $event->end_time ? 'until '.$event->end_time->format('h:i A') : '' !!}
@@ -90,6 +93,8 @@
 	@endif
 
 	<br>
+
+
 	<i>Added by <a href="/users/{{ $event->user->id }}">{{ $event->user->name or '' }}</a></i>
 
 	<P>

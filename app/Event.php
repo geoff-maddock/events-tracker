@@ -44,13 +44,13 @@ class Event extends Eloquent {
 	'presale_price','door_price',
 	'ticket_link','primary_link',
 	'series_id',
-	'soundcheck_at','door_at', 'start_at', 'end_at',
+	'soundcheck_at','door_at', 'start_at', 'end_at','cancelled_at',
 	'min_age',
 	
 	];
 
 
-	protected $dates = ['soundcheck_at', 'door_at', 'start_at', 'end_at'];
+	protected $dates = ['soundcheck_at', 'door_at', 'start_at', 'end_at','cancelled_at'];
 
 	// building filter
 	public function scopeFilter($query, QueryFilter $filters)
@@ -100,6 +100,19 @@ class Event extends Eloquent {
 		}
 	}
 
+    /**
+     * Set the cancelled at attribute
+     *
+     * @param $date
+     */
+    public function setCancelledAtAttribute($date)
+    {
+        if (!empty($date)) {
+            $this->attributes['cancelled_at'] = Carbon::parse($date);
+        } else {
+            $this->attributes['cancelled_at'] = NULL;
+        }
+    }
 
 	/**
 	 * Set the door_at attribute

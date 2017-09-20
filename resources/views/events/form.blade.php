@@ -98,6 +98,12 @@
 	{!! Form::dateTimeLocal('end_at', (isset($action) && isset($event->end_at)) ? $event->end_at->format('Y-m-d\\TH:i') : NULL, ['class' =>'form-control']) !!}
 	{!! $errors->first('end_at','<span class="help-block">:message</span>') !!}
 	</div>
+
+    <div class="form-group col-md-3">
+        {!! Form::label('cancelled_at','Cancelled At:') !!}
+        {!! Form::dateTimeLocal('cancelled_at', (isset($action) && isset($event->cancelled_at)) ? $event->cancelled_at->format('Y-m-d\\TH:i') : NULL, ['class' =>'form-control']) !!}
+        {!! $errors->first('cancelled_at','<span class="help-block">:message</span>') !!}
+    </div>
 </div>
 
 <div class="row">
