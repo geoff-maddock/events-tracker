@@ -190,6 +190,15 @@
 
 @section('footer')
 	<script>
+        function slugify(text)
+        {
+            return text.toString().toLowerCase()
+                .replace(/\s+/g, '-')           // Replace spaces with -
+                .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+                .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+                .replace(/^-+/, '')             // Trim - from start of text
+                .replace(/-+$/, '');            // Trim - from end of text
+        };
 
 		$('#import-link').click(function(e){
 
@@ -204,8 +213,9 @@
 
 			// login
 			FB.login(function(response) {
+                let fields =  'description,end_time,id,name,place,start_time,cover,attending_count,interested_count,maybe_count,noreply_count';
 				// try to pull info from the fb object
-				FB.api('/'+event_id, function(response) {
+				FB.api('/'+event_id+'?fields='+fields, function(response) {
 					if (!response || response.error) {
 						handleError(response.error);
 					} else {
@@ -213,7 +223,7 @@
 						if (response.name)
 						{
 							$('#name').val(response.name);
-							$('#slug').val(response.name);
+							$('#slug').val(slugify(response.name));
 							console.log('set name');
 						};
 
@@ -269,9 +279,16 @@
 						// default to public visibility
 						$('#visibility_id option[value=3]').attr('selected', 'selected');
 					}
-		 		 console.log(response);
+		 		 	console.log(response);
+
+
                     App.init();
 				});
+
+                // Make a post to my feed
+                // Note: The call will only work if you accept the permission request
+                FB.api('/me/feed', 'post', {message: 'Importing an event to http://arcane.city'});
+                console.log('Made a feed post');
 			});
 
 

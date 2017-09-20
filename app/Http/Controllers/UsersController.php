@@ -140,11 +140,21 @@ class UsersController extends Controller {
 			'file' =>'required|mimes:jpg,jpeg,png,gif'
 		]);
 
+        // attach to user
+        $user = User::find($id);
+
+        // make the photo based on the stored file
 		$photo = $this->makePhoto($request->file('file'));
+
+        // count existing photos, and if zero, make this primary
+        if (count($user->photos) == 0)
+        {
+            $photo->is_primary=1;
+        };
+
 		$photo->save();
 
-		// attach to user
-		$user = User::find($id);
+        // attach to user
 		$user->addPhoto($photo);
 	}
 	

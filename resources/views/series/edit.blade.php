@@ -62,11 +62,11 @@
         $(document).ready(function(){
 
             var myDropzone = new Dropzone('#myDropzone', {
-                dictDefaultMessage: "Drop a file here to add an entity profile picture. Click the star to set primary photo."
+                dictDefaultMessage: "Drop a file here to add an entity profile picture."
             });
 
             $('div.dz-default.dz-message > span').show(); // Show message span
-            $('div.dz-default.dz-message').css({'opacity':1, 'background-image': 'none'});
+            $('div.dz-default.dz-message').css({'color': '#000000', 'opacity':1, 'background-image': 'none'});
 
             myDropzone.options.addPhotosForm = {
                 maxFilesize: 3,

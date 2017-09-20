@@ -183,10 +183,16 @@
 Dropzone.autoDiscover = false;
 $(document).ready(function(){
 
-	var myDropzone = new Dropzone('#myDropzone');
+	var myDropzone = new Dropzone('#myDropzone', {
+        dictDefaultMessage: "Drop a file here to add a picture"
+    });
+
+    $('div.dz-default.dz-message').css({'color': '#000000', 'opacity':1, 'background-image': 'none'});
+
 	myDropzone.options.addPhotosForm = {
 		maxFilesize: 3,
 		accept: ['.jpg','.png','.gif'],
+        dictDefaultMessage: "Drop a file here to add a picture",
 		init: function () {
 	            myDropzone.on("complete", function (file) {
 	                location.href = 'events/{{ $event->id }}'

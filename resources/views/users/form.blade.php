@@ -31,4 +31,3 @@
 <div class="form-group">
 {!! Form::submit(isset($action) ? 'Update Profile' : 'Add Profile', null, ['class' =>'btn btn-primary']) !!}
 </div>
-

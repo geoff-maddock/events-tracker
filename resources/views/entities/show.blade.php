@@ -272,7 +272,7 @@ $(document).ready(function(){
 	});
 
 	$('div.dz-default.dz-message > span').show(); // Show message span
-	$('div.dz-default.dz-message').css({'opacity':1, 'background-image': 'none'});
+	$('div.dz-default.dz-message').css({'color': '#000000', 'opacity':1, 'background-image': 'none'});
 
 	myDropzone.options.addPhotosForm = {
 		maxFilesize: 3,

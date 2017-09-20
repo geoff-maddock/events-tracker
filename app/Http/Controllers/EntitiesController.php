@@ -830,12 +830,20 @@ class EntitiesController extends Controller {
 			'file' =>'required|mimes:jpg,jpeg,png,gif'
 		]);
 
-		//$photo = Photo::fromForm($request->file('file'));
+        // attach to entity
+        $entity = Entity::find($id);
+
 		$photo = $this->makePhoto($request->file('file'));
+
+        // count existing photos, and if zero, make this primary
+        if (count($entity->photos) == 0)
+        {
+            $photo->is_primary=1;
+        };
+
 		$photo->save();
 
 		// attach to entity
-		$entity = Entity::find($id);
 		$entity->addPhoto($photo);
 	}
 	

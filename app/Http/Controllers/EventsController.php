@@ -19,13 +19,10 @@ use App\Event;
 use App\Entity;
 use App\EventType;
 use App\Series;
-use App\EntityType;
-use App\Role;
 use App\Tag;
 use App\Visibility;
 use App\Photo;
 use App\EventResponse;
-use App\ResponseType;
 use App\User;
 use App\Activity;
 use App\Services\RssFeed;
@@ -1720,7 +1717,6 @@ class EventsController extends Controller
         $event = Event::find($id);
 
         // make the photo object from the file in the request
-
         $photo = $this->makePhoto($request->file('file'));
 
         // count existing photos, and if zero, make this primary
@@ -1729,11 +1725,9 @@ class EventsController extends Controller
             $photo->is_primary=1;
         };
 
-
 		$photo->save();
 
 		// attach to event
-
 		$event->addPhoto($photo);
 	}
 	
