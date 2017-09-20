@@ -530,14 +530,14 @@ class SeriesController extends Controller {
 		foreach ($tagArray as $key => $tag)
 		{
 
-			if (!DB::table('tags')->where('id', $tag)->get())
+            if (!Tag::find($tag))
 			{
 				$newTag = new Tag;
 				$newTag->name = ucwords(strtolower($tag));
 				$newTag->tag_type_id = 1;
 				$newTag->save();
 
-				$syncArray[] = $newTag->id;
+				$syncArray[strtolower($tag)] = $newTag->id;
 
 				$msg .= ' Added tag '.$tag.'.';
 			} else {

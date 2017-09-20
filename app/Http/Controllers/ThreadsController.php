@@ -282,11 +282,12 @@ class ThreadsController extends Controller
 		*/
         $hasFilter = 1;
 
+        // get filters from session
+        $filters = $this->getFilters($request);
+
  		// updates sort, rpp from request
  		$this->updatePaging($request);
 
-        // get filters from session
-        $filters = $this->getFilters($request);
 
  		// initialize the query
  		//$query = Thread::orderBy($this->sortBy, $this->sortOrder);
@@ -307,7 +308,6 @@ class ThreadsController extends Controller
                 return ($e->visibility->name != 'Guarded');
             });
         }
-
 
         return view('threads.index')
         			->with(compact('threads'))
@@ -375,9 +375,10 @@ class ThreadsController extends Controller
             $filters['filter_tag'] = $tag;
         }
 
-        // change this - should be seperate
+        // change this - should be separate
         if (!empty($request->input('filter_rpp'))) {
             $this->rpp = $request->input('filter_rpp');
+            $filters['filter_rpp'] = $this->rpp;
         }
 
         // save filters to session
@@ -939,14 +940,14 @@ class ThreadsController extends Controller
 		foreach ($tagArray as $key => $tag)
 		{
 
-			if (!DB::table('tags')->where('id', $tag)->get())
+            if (!Tag::find($tag))
 			{
 				$newTag = new Tag;
 				$newTag->name = ucwords(strtolower($tag));
 				$newTag->tag_type_id = 1;
 				$newTag->save();
 
-				$syncArray[] = $newTag->id;
+				$syncArray[strtolower($tag)] = $newTag->id;
 
 				$msg .= ' Added tag '.$tag.'.';
 			} else {

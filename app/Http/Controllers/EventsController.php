@@ -1273,18 +1273,18 @@ class EventsController extends Controller
 		// check the elements in the tag list, and if any don't match, add the tag
 		foreach ($tagArray as $key => $tag)
 		{
-
-			if (!DB::table('tags')->where('id', $tag)->get())
+			if (!Tag::find($tag))
 			{
 				$newTag = new Tag;
 				$newTag->name = ucwords(strtolower($tag));
 				$newTag->tag_type_id = 1;
 				$newTag->save();
 
-				$syncArray[] = $newTag->id;
+				$syncArray[strtolower($tag)] = $newTag->id;
 
 				$msg .= ' Added tag '.$tag.'.';
 			} else {
+
 				$syncArray[$key] = $tag;
 			};
 		}
@@ -1295,21 +1295,19 @@ class EventsController extends Controller
 		// add to activity log
 		Activity::log($event, $this->user, 2);
 
-		flash($request, 'Success', 'Your event has been updated');
+		flash()->success('Success', 'Your event has been updated');
 
 		return redirect('events');
 	}
 
 	public function destroy(Event $event)
 	{
-
 		// add to activity log
 		Activity::log($event, $this->user, 3);
 
 		$event->delete();
 
 		flash()->success('Success', 'Your event has been deleted!');
-
 
 		return redirect('events');
 	}

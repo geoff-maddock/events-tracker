@@ -89,7 +89,7 @@
     <td colspan="6">
     	<div style="padding-left: 5px;">
 			<!-- TO DO: change this to storing the trust in the user at thread save -->
-			@if ($thread->user->can('trust_thread'))
+			@if (isset($thread->user) && $thread->user->can('trust_thread'))
 				{!! $thread->body !!}
 			@else
 				{{ $thread->body }}
