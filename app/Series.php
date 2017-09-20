@@ -656,4 +656,20 @@ class Series extends Eloquent {
 	
 		return $response;
 	}
+
+    /**
+     * Returns the users that follow the series
+     *
+     * @return Collection $follows
+     *
+     **/
+    public function followers()
+    {
+        $users = User::join('follows', 'users.id', '=', 'follows.user_id')
+            ->where('follows.object_type', 'series')
+            ->where('follows.object_id', $this->id)
+            ->get();
+
+        return $users;
+    }
 }

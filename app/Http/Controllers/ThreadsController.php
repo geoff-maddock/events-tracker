@@ -670,7 +670,7 @@ class ThreadsController extends Controller
 		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
 		$entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
 		$series = Series::orderBy('name','ASC')->pluck('name','id')->all();
-        $events = Event::orderBy('name','ASC')->pluck('slug','id')->all();
+        $events = [''=>''] + Event::orderBy('name','ASC')->pluck('slug','id')->all();
 
 		return view('threads.create', compact('threadCategories','visibilities','tags','entities','series', 'events'));
     }
@@ -776,23 +776,21 @@ class ThreadsController extends Controller
         };
 
         // notify users following any of the series
-        $seriess = $thread->series()->get();
+        $series = $thread->series()->get();
 
-
-        foreach ($seriess as $series)
+        foreach ($series as $s)
         {
-            foreach ($series->followers() as $user)
+            foreach ($s->followers() as $user)
             {
-
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users))
                 {
-                    Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $series, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $thread, $series, $reply_email, $site, $url) {
+                    Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $s, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $thread, $s, $reply_email, $site, $url) {
                         $m->from($reply_email, $site);
 
-                        $m->to($user->email, $user->name)->subject($site.': '.$series->name.' :: '.$thread->created_at->format('D F jS').' '.$thread->name);
+                        $m->to($user->email, $user->name)->subject($site.': '.$s->name.' :: '.$thread->created_at->format('D F jS').' '.$thread->name);
                     });
-                    $users[$user->id] = $series->name;
+                    $users[$user->id] = $s->name;
                 };
             };
         };
@@ -909,7 +907,7 @@ class ThreadsController extends Controller
 		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
 		$entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
 		$series = Series::orderBy('name','ASC')->pluck('name','id')->all();
-        $events = Event::orderBy('name','ASC')->pluck('slug','id')->all();
+        $events = [''=>''] + Event::orderBy('name','ASC')->pluck('slug','id')->all();
 
 		return view('threads.edit', compact('thread', 'threadCategories', 'visibilities','tags','entities','series','events'));
     }
