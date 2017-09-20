@@ -310,7 +310,6 @@ class EntitiesController extends Controller {
 
         // base criteria
         $query = $this->entity->active()
-      //      ->orWhere('created_by', '=', ($this->user ? $this->user->id : NULL))
             ->orderBy('entity_type_id', 'ASC')
             ->orderBy($this->sortBy, $this->sortOrder);
 
@@ -426,12 +425,7 @@ class EntitiesController extends Controller {
         $this->updatePaging($request);
 
         // base criteria
-        $query = Entity::where(function($query)
-        {
-            // entity is active or was created by the user
-            $query->active()
-                ->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
-        })->orderBy($this->sortBy, $this->sortOrder);
+        $query = $this->buildCriteria($request);
 
         // add the criteria from the session
  		// check request for passed filter values
@@ -460,7 +454,6 @@ class EntitiesController extends Controller {
 
             // add to filters array
             $filters['filter_role'] = $role;
-
  		};
 
   		if (!empty($request->input('filter_tag')))
@@ -494,18 +487,11 @@ class EntitiesController extends Controller {
         if (!empty($request->input('filter_rpp')))
         {
             $this->rpp = $request->input('filter_rpp');
+            $filters['filter_rpp'] = $this->rpp;
         }
 
         // save filters to session
         $this->setFilters($request, $filters);
-
-        // debugging
-        // convert to sql
-        // $sql = $query->toSql();
-        // dd($sql);
-        // dd($filters);
-        // dd($request->session());
-        // dd($entities);
 
         // apply the filters to the query
         // $entities->filter($filters)
