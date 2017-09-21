@@ -50,6 +50,7 @@
 								<button type="submit" class="btn btn-primary">Login</button>
 
 								<a class="btn btn-link" href="{{ url('/password/email') }}">Forgot Your Password?</a>
+								or <a class="btn btn-link" href="{{ url('/register') }}"> Register a new account.</a>
 							</div>
 						</div>
 					</form>
