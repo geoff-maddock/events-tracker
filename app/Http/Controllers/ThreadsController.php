@@ -1067,6 +1067,10 @@ class ThreadsController extends Controller
         $like->object_type = 'thread';
         $like->save();
 
+        // update the likes
+        $thread->likes++;
+        $thread->save();
+
         Log::info('User '.$id.' is liking '.$thread->name);
 
         flash()->success('Success',  'You are now liking the thread - '.$thread->name);
@@ -1100,6 +1104,10 @@ class ThreadsController extends Controller
         // delete the like
         $response = Like::where('object_id','=', $id)->where('user_id','=',$this->user->id)->where('object_type','=','thread')->first();
         $response->delete();
+
+        // update the likes
+        $thread->likes--;
+        $thread->save();
 
         flash()->success('Success',  'You are no longer liking the thread.');
 

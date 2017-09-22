@@ -43,93 +43,94 @@
 				@else 
 					<a href="{!! route('threads.unlock', ['id' => $thread->id]) !!}" title="Thread is locked.  Click to unlock." class="hover-dim"><span class='material-icons md-18 icon-correct text-danger'>lock</span></a>
 				@endif
-				@if ($follow = $thread->followedBy($user))
-					<a href="{!! route('threads.unfollow', ['id' => $thread->id]) !!}" title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
-				@else
-					<a href="{!! route('threads.follow', ['id' => $thread->id]) !!}" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
-				@endif
+			@endif
+            @if ($signedIn)
+                @if ($follow = $thread->followedBy($user))
+                    <a href="{!! route('threads.unfollow', ['id' => $thread->id]) !!}" title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
+                @else
+                    <a href="{!! route('threads.follow', ['id' => $thread->id]) !!}" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
+                @endif
                 @if ($like = $thread->likedBy($user))
                     <a href="{!! route('threads.unlike', ['id' => $thread->id]) !!}" title="Click to unlike"><span class='glyphicon glyphicon-star text-success'></span></a>
                 @else
                     <a href="{!! route('threads.like', ['id' => $thread->id]) !!}" title="Click to like"><span class='glyphicon glyphicon-star-empty text-warning'></span></a>
                 @endif
-			@endif
+            @endif
+                <br>
+                @unless ($thread->series->isEmpty())
+                Series:
+                    @foreach ($thread->series as $series)
+                        <span class="label label-tag"><a href="/threads/series/{{ urlencode($series->slug) }}">{{ $series->name }}</a></span>
+                    @endforeach
+                @endunless
 
-			<br>
-            @unless ($thread->series->isEmpty())
-            Series:
-                @foreach ($thread->series as $series)
-                    <span class="label label-tag"><a href="/threads/series/{{ urlencode($series->slug) }}">{{ $series->name }}</a></span>
-                @endforeach
+                @unless ($thread->entities->isEmpty())
+                Related:
+                    @foreach ($thread->entities as $entity)
+                        <span class="label label-tag"><a href="/threads/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a></span>
+                    @endforeach
+                @endunless
+
+                @unless ($thread->tags->isEmpty())
+                Tags:
+                    @foreach ($thread->tags as $tag)
+                        <span class="label label-tag"><a href="/threads/tag/{{ urlencode($tag->name) }}">{{ $tag->name }}</a></span>
+                    @endforeach
             @endunless
 
-			@unless ($thread->entities->isEmpty())
-			Related:
-				@foreach ($thread->entities as $entity)
-					<span class="label label-tag"><a href="/threads/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a></span>
-				@endforeach
-			@endunless
+        </td>
+        <td class="cell-stat hidden-xs hidden-sm">{{ $thread->thread_category or 'General'}}</td>
+        <td class="cell-stat">
+            @if (isset($thread->user))
+              @include('users.avatar', ['user' => $thread->user])
+            {!! link_to_route('users.show', $thread->user->name, [$thread->user->id], ['class' => 'forum-link']) !!}
+            @else
+            User deleted
+            @endif
+        </td>
+        <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->postCount }}</td>
+        <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->views }}</td>
+        <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->likes }}</td>
+        <td class="cell-stat-2x hidden-xs">{{ $thread->lastPostAt->diffForHumans() }}</td>
+        </tr>
+        <tr>
+        <td colspan="7">
+            <div style="padding-left: 5px;">
+                <!-- TO DO: change this to storing the trust in the user at thread save -->
+                @if (isset($thread->user) && $thread->user->can('trust_thread'))
+                    {!! $thread->body !!}
+                @else
+                    {{ $thread->body }}
+                @endcan
+            </div>
+        </td>
+        </tr>
+                    @include('posts.list', ['thread' => $thread, 'posts' => $thread->posts])
 
-			@unless ($thread->tags->isEmpty())
-			Tags:
-				@foreach ($thread->tags as $tag)
-					<span class="label label-tag"><a href="/threads/tag/{{ urlencode($tag->name) }}">{{ $tag->name }}</a></span>
-				@endforeach
-		@endunless
+        </tbody>
+        </table>
+        </div>
 
-	</td>
-    <td class="cell-stat hidden-xs hidden-sm">{{ $thread->thread_category or 'General'}}</td>
-    <td class="cell-stat">
-	    @if (isset($thread->user))
-	      @include('users.avatar', ['user' => $thread->user])
-	    {!! link_to_route('users.show', $thread->user->name, [$thread->user->id], ['class' => 'forum-link']) !!} 
-	    @else
-	    User deleted
-    	@endif
-    </td>
-    <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->postCount }}</td>
-    <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->views }}</td>
-    <td class="cell-stat text-center hidden-xs hidden-sm">{{ count($thread->likes) }}</td>
-    <td class="cell-stat-2x hidden-xs">{{ $thread->lastPostAt->diffForHumans() }}</td>
-    </tr>
-    <tr>
-    <td colspan="7">
-    	<div style="padding-left: 5px;">
-			<!-- TO DO: change this to storing the trust in the user at thread save -->
-			@if (isset($thread->user) && $thread->user->can('trust_thread'))
-				{!! $thread->body !!}
-			@else
-				{{ $thread->body }}
-			@endcan    	
-    	</div>
-    </td>
-    </tr>
-				@include('posts.list', ['thread' => $thread, 'posts' => $thread->posts])
+        <div class="col-lg-6">
 
-	</tbody>
-	</table>
-	</div>
+            @if ($thread->is_locked)
+            <P class="text-center">This thread has been locked.</P>
+            @else
+                @if ($signedIn)
+                Add new post as <strong>{{ $user->name }}</strong>
+                <form method="POST" action="{{ $thread->path().'/posts' }}">
+                {{ csrf_field() }}
+                <div class="form-group">
+                    <textarea name="body" id="body" class="form-control" placeholder="Have something to say?" rows="5"></textarea>
+                </div>
+                <button type="submit" class="btn btn-default">Post</button>
+                </form>
 
-	<div class="col-lg-6">
-
-		@if ($thread->is_locked)
-		<P class="text-center">This thread has been locked.</P>
-		@else
-			@if ($signedIn)
-			Add new post as <strong>{{ $user->name }}</strong>
-			<form method="POST" action="{{ $thread->path().'/posts' }}">
-			{{ csrf_field() }}
-			<div class="form-group">
-				<textarea name="body" id="body" class="form-control" placeholder="Have something to say?" rows="5"></textarea>
-			</div>
-			<button type="submit" class="btn btn-default">Post</button>
-			</form>
-
-			@else
-			<p class="text-center">Please <a href="{{ url('/login')}}">sign in</a> to participate in this discussion.</p>
-			@endif
-		@endif
-	</div>
-	@endif
-	</div>
-@stop
+                @else
+                <p class="text-center">Please <a href="{{ url('/login')}}">sign in</a> to participate in this discussion.</p>
+                @endif
+            @endif
+        </div>
+        @endif
+        </div>
+    @stop
