@@ -188,7 +188,53 @@ class Thread extends Eloquent {
 		return $users;
 	}
 
-	/**
+
+    /**
+     * Checks if the thread is liked by the user
+     *
+     * @return Collection $likes
+     *
+     **/
+    public function likedBy($user)
+    {
+        $response = Like::where('object_type','=', 'thread')
+            ->where('object_id','=',$this->id)
+            ->where('user_id', '=', $user->id)
+            ->first();
+        // return any like instances
+
+        return $response;
+    }
+
+    /**
+     * The likes that belong to the thread
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function likes()
+    {
+        return $this->belongsToMany('App\Like')->withTimestamps();
+    }
+
+
+    /**
+     * Returns the users that like the entity
+     *
+     * @return Collection $likes
+     *
+     **/
+    public function likers()
+    {
+        $users = User::join('likes', 'users.id', '=', 'likes.user_id')
+            ->where('likes.object_type', 'thread')
+            ->where('likes.object_id', $this->id)
+            ->get();
+
+        return $users;
+    }
+
+
+    /**
 	 * An thread is owned by one forum
 	 *
 	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo

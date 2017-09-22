@@ -221,6 +221,16 @@ class Entity extends Eloquent {
 		return $this->belongsToMany('App\Follow')->withTimestamps();
 	}
 
+    /**
+     * The likes that belong to the entity
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function likes()
+    {
+        return $this->belongsToMany('App\Like')->withTimestamps();
+    }
+
 	/**
 	 * If there is a future event, return it
 	 *
@@ -479,4 +489,37 @@ class Entity extends Eloquent {
 
 		return $users;
 	}
+
+    /**
+     * Checks if the entity is liked by the user
+     *
+     * @return Collection $likes
+     *
+     **/
+    public function likedBy($user)
+    {
+        $response = Like::where('object_type','=', 'entity')
+            ->where('object_id','=',$this->id)
+            ->where('user_id', '=', $user->id)
+            ->first();
+        // return any like instances
+
+        return $response;
+    }
+
+    /**
+     * Returns the users that like the entity
+     *
+     * @return Collection $likes
+     *
+     **/
+    public function likers()
+    {
+        $users = User::join('likes', 'users.id', '=', 'follows.user_id')
+            ->where('likes.object_type', 'entity')
+            ->where('likes.object_id', $this->id)
+            ->get();
+
+        return $users;
+    }
 }

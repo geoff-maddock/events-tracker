@@ -178,6 +178,16 @@ class Event extends Eloquent {
         return $this->morphMany('App\Comment', 'commentable')->orderBy('created_at', 'DESC');
     }
 
+    /**
+     * The likes that belong to the event
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function likes()
+    {
+        return $this->belongsToMany('App\Like')->withTimestamps();
+    }
+
 	/**
 	 * An event is owned by a user
 	 *

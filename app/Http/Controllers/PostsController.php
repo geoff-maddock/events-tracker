@@ -18,13 +18,12 @@ use Log;
 use Mail;
 use App\Post;
 use App\Thread;
-use App\Event;
 use App\Entity;
-use App\ThreadCategory;
 use App\Series;
 use App\Tag;
 use App\Visibility;
 use App\Activity;
+use App\Like;
 
 class PostsController extends Controller
 {
@@ -230,9 +229,10 @@ class PostsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param Post $post
+     * @param PostRequest|Request $request
      * @return \Illuminate\Http\Response
+     * @internal param int $id
      */
     public function update(Post $post, PostRequest $request)
     {
@@ -282,8 +282,9 @@ class PostsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Post $post
      * @return \Illuminate\Http\Response
+     * @internal param int $id
      */
     public function destroy(Post $post)
     {
@@ -300,4 +301,72 @@ class PostsController extends Controller
        return redirect()->route('threads.show',['id' => $id]);
 
     }
+
+    /**
+     * Mark user as liking the post
+     *
+     * @return Response
+     */
+    public function like($id, Request $request)
+    {
+        // check if there is a logged in user
+        if (!$this->user)
+        {
+            flash()->error('Error',  'No user is logged in.');
+            return back();
+        };
+
+        if (!$post = Post::find($id))
+        {
+            flash()->error('Error',  'No such post');
+            return back();
+        };
+
+        // add the like response
+        $like = new Like;
+        $like->object_id = $id;
+        $like->user_id = $this->user->id;
+        $like->object_type = 'post';
+        $like->save();
+
+        Log::info('User '.$id.' is liking '.$post->name);
+
+        flash()->success('Success',  'You are now liking the post - '.$post->name);
+
+        return back();
+    }
+
+    /**
+     * Mark user as unliking the post.
+     *
+     * @param $id
+     * @param Request $request
+     * @return Response
+     */
+    public function unlike($id, Request $request)
+    {
+
+        // check if there is a logged in user
+        if (!$this->user)
+        {
+            flash()->error('Error',  'No user is logged in.');
+            return back();
+        };
+
+        if (!$post = Post::find($id))
+        {
+            flash()->error('Error',  'No such post');
+            return back();
+        };
+
+        // delete the like
+        $response = Like::where('object_id','=', $id)->where('user_id','=',$this->user->id)->where('object_type','=','post')->first();
+        $response->delete();
+
+        flash()->success('Success',  'You are no longer following the post.');
+
+        return back();
+
+    }
+
 }

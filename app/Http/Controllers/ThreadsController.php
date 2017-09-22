@@ -22,6 +22,7 @@ use App\Tag;
 use App\Visibility;
 use App\Activity;
 use App\Follow;
+use App\Like;
 use App\Event;
 
 
@@ -1035,6 +1036,73 @@ class ThreadsController extends Controller
         flash()->success('Success',  'You are no longer following the thread.');
 
         return back();
+    }
 
+    /**
+     * Mark user as liking the thread
+     *
+     * @param $id
+     * @param Request $request
+     * @return Response
+     */
+    public function like($id, Request $request)
+    {
+        // check if there is a logged in user
+        if (!$this->user)
+        {
+            flash()->error('Error',  'No user is logged in.');
+            return back();
+        };
+
+        if (!$thread = Thread::find($id))
+        {
+            flash()->error('Error',  'No such thread');
+            return back();
+        };
+
+        // add the following response
+        $like = new Like;
+        $like->object_id = $id;
+        $like->user_id = $this->user->id;
+        $like->object_type = 'thread';
+        $like->save();
+
+        Log::info('User '.$id.' is liking '.$thread->name);
+
+        flash()->success('Success',  'You are now liking the thread - '.$thread->name);
+
+        return back();
+
+    }
+
+    /**
+     * Mark user as unliking the thread.
+     *
+     * @param $id
+     * @param Request $request
+     * @return Response
+     */
+    public function unlike($id, Request $request)
+    {
+        // check if there is a logged in user
+        if (!$this->user)
+        {
+            flash()->error('Error',  'No user is logged in.');
+            return back();
+        };
+
+        if (!$thread = Thread::find($id))
+        {
+            flash()->error('Error',  'No such thread');
+            return back();
+        };
+
+        // delete the like
+        $response = Like::where('object_id','=', $id)->where('user_id','=',$this->user->id)->where('object_type','=','thread')->first();
+        $response->delete();
+
+        flash()->success('Success',  'You are no longer liking the thread.');
+
+        return back();
     }
 }

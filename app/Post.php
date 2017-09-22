@@ -96,6 +96,17 @@ class Post extends Eloquent {
 		return $this->belongsTo('App\User','created_by');
 	}
 
+
+    /**
+     * The likes that belong to the post
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function likes()
+    {
+        return $this->belongsToMany('App\Like')->withTimestamps();
+    }
+
 	/**
 	 * An post is owned by a thread
 	 *
@@ -274,4 +285,38 @@ class Post extends Eloquent {
 
 		return ($created_date > $recent_date) ? true : false;
 	}
+
+    /**
+     * Checks if the post is liked by the user
+     *
+     * @return Collection $likes
+     *
+     **/
+    public function likedBy($user)
+    {
+        $response = Like::where('object_type','=', 'post')
+            ->where('object_id','=',$this->id)
+            ->where('user_id', '=', $user->id)
+            ->first();
+        // return any like instances
+
+        return $response;
+    }
+
+
+    /**
+     * Returns the users that like the post
+     *
+     * @return Collection $likes
+     *
+     **/
+    public function likers()
+    {
+        $users = User::join('likes', 'users.id', '=', 'likes.user_id')
+            ->where('likes.object_type', 'post')
+            ->where('likes.object_id', $this->id)
+            ->get();
+
+        return $users;
+    }
 }

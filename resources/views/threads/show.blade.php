@@ -28,6 +28,7 @@
 	        <th class="cell-stat">Author</th>
 	        <th class="cell-stat text-center hidden-xs hidden-sm">Posts</th>
 	        <th class="cell-stat text-center hidden-xs hidden-sm">Views</th>
+            <th class="cell-stat text-center hidden-xs hidden-sm">Likes</th>
 	        <th class="cell-stat-2x hidden-xs">Last Post</th>
 	      </tr>
 	    </thead>
@@ -47,6 +48,11 @@
 				@else
 					<a href="{!! route('threads.follow', ['id' => $thread->id]) !!}" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
 				@endif
+                @if ($like = $thread->likedBy($user))
+                    <a href="{!! route('threads.unlike', ['id' => $thread->id]) !!}" title="Click to unlike"><span class='glyphicon glyphicon-star text-success'></span></a>
+                @else
+                    <a href="{!! route('threads.like', ['id' => $thread->id]) !!}" title="Click to like"><span class='glyphicon glyphicon-star-empty text-warning'></span></a>
+                @endif
 			@endif
 
 			<br>
@@ -83,10 +89,11 @@
     </td>
     <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->postCount }}</td>
     <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->views }}</td>
+    <td class="cell-stat text-center hidden-xs hidden-sm">{{ count($thread->likes) }}</td>
     <td class="cell-stat-2x hidden-xs">{{ $thread->lastPostAt->diffForHumans() }}</td>
     </tr>
     <tr>
-    <td colspan="6">
+    <td colspan="7">
     	<div style="padding-left: 5px;">
 			<!-- TO DO: change this to storing the trust in the user at thread save -->
 			@if (isset($thread->user) && $thread->user->can('trust_thread'))

@@ -142,6 +142,15 @@ Route::get('threads/{id}/unlock', 'ThreadsController@unlock')->name('threads.unl
 Route::get('threads/filter', array('as' => 'threads.filter', 'uses' => 'ThreadsController@filter'));
 Route::get('threads/reset', array('as' => 'threads.reset', 'uses' => 'ThreadsController@reset'));
 
+Route::get('threads/{id}/like', [
+    'as' => 'threads.like',
+    'uses' => 'ThreadsController@like'
+]);
+
+Route::get('threads/{id}/unlike', [
+    'as' => 'threads.unlike',
+    'uses' => 'ThreadsController@unlike'
+]);
 
 Route::get('threads/{id}/follow', [
     'as' => 'threads.follow',
@@ -163,6 +172,15 @@ Route::bind('posts', function($id)
     return App\Post::whereId($id)->firstOrFail();
 });
 
+Route::get('posts/{id}/like', [
+    'as' => 'posts.like',
+    'uses' => 'PostsController@like'
+]);
+
+Route::get('posts/{id}/unlike', [
+    'as' => 'posts.unlike',
+    'uses' => 'PostsController@unlike'
+]);
 Route::resource('posts','PostsController');
 
 # PERMISSIONS
