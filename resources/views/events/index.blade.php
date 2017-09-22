@@ -27,26 +27,26 @@
 
 					{!! Form::label('filter_name','Filter By Name') !!}
 
-					{!! Form::text('filter_name', (isset($name) ? $name : NULL), ['class' =>'form-control']) !!}
+					{!! Form::text('filter_name', (isset($filters['filter_name']) ? $filters['filter_name'] : NULL), ['class' =>'form-control']) !!}
 				</div>
 
 				<div class="form-group col-sm-2">
 
 					{!! Form::label('filter_venue','Filter By Venue') !!}
 					<?php $venues = [''=>''] + App\Entity::getVenues()->pluck('name','name')->all();?>
-					{!! Form::select('filter_venue', $venues, (isset($venue) ? $venue : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a venue']) !!}
+					{!! Form::select('filter_venue', $venues, (isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a venue']) !!}
 				</div>
 
 				<div class="form-group col-sm-2">
 					{!! Form::label('filter_tag','Filter By Tag') !!}
 					<?php $tags =  [''=>'&nbsp;'] + App\Tag::orderBy('name','ASC')->pluck('name', 'name')->all();?>
-					{!! Form::select('filter_tag', $tags, (isset($tag) ? $tag : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a tag']) !!}
+					{!! Form::select('filter_tag', $tags, (isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a tag']) !!}
 				</div>
 
 				<div class="form-group col-sm-2">
 					{!! Form::label('filter_rpp','RPP') !!}
 					<?php $rpp_options =  [''=>'&nbsp;', 5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000];?>
-					{!! Form::select('filter_rpp', $rpp_options, (isset($rpp) ? $rpp : NULL), ['class' =>'form-control']) !!}
+					{!! Form::select('filter_rpp', $rpp_options, (isset($filters['filter_rpp']) ? $filters['filter_rpp'] : NULL), ['class' =>'form-control']) !!}
 				</div>
 			@endif
 

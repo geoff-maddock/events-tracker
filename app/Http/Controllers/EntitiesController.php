@@ -25,6 +25,7 @@ use App\Follow;
 class EntitiesController extends Controller {
 
     // define a list of variables
+    protected $prefix;
     protected $rpp;
     protected $page;
     protected $sort;
@@ -419,8 +420,6 @@ class EntitiesController extends Controller {
         // get all the filters from the session
         $filters = $this->getFilters($request);
 
-        // get all active entites plus those created by the logged in user, ordered by type and name
-
         // updates sort, rpp from request - TODO add other filters?
         $this->updatePaging($request);
 
@@ -494,7 +493,6 @@ class EntitiesController extends Controller {
         $this->setFilters($request, $filters);
 
         // apply the filters to the query
-        // $entities->filter($filters)
         // get the entities and paginate
         $entities = $query->paginate($this->rpp);
 

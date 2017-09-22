@@ -80,15 +80,60 @@ class EventsController extends Controller
         };
     }
 
+
     /**
-     * Apply the filters to the query
+     * Builds the criteria from the session
      *
+     * @return $query
      */
-    protected function buildCriteria(array $filters = null)
+    public function buildCriteria(Request $request)
     {
-        if (is_null($filters)) {
-            $filters = $this->getFilters();
+        $hasFilter = 1;
+
+        // get all the filters from the session
+        $filters = $this->getFilters($request);
+
+        // base criteria
+        $query = $this->event->orderBy('id','desc');
+
+
+        // add the criteria from the session
+        // check request for passed filter values
+
+        if (!empty($filters['filter_name'])) {
+            // getting name from the request
+            $name = $filters['filter_name'];
+            $query->where('name', 'like', '%' . $name . '%');
+            $filters['filter_name'] = $name;
         }
+
+        if (!empty($filters['filter_tag'])) {
+            $tag = $filters['filter_tag'];
+            $query->whereHas('tags', function ($q) use ($tag) {
+                $q->where('name', '=', ucfirst($tag));
+            });
+
+            // add to filters array
+            $filters['filter_tag'] = $tag;
+        }
+
+        if (!empty($filters['filter_venue'])) {
+            $venue = $filters['filter_venue'];
+            // add has clause
+            $query->whereHas('venue', function ($q) use ($venue) {
+                $q->where('slug', '=', $venue);
+            });
+
+            // add to filters array
+            $filters['filter_venue'] = $venue;
+        };
+
+        // change this - should be separate
+        if (!empty($filters['filter_rpp'])) {
+            $this->rpp = $filters['filter_rpp'];
+        }
+
+        return $query;
     }
 
     /**
@@ -314,18 +359,24 @@ class EventsController extends Controller
      *
      * @return View
      */
-    public function index(Request $request, EventFilters $filters)
+    public function index(Request $request)
     {
         $hasFilter = 1;
 
-        // get all active entites plus those created by the logged in user, ordered by type and name
-
-        // base criteria
-        $query_future = $this->event->future();
-        $query_past = $this->event->past();
-
         // updates sort, rpp from request
         $this->updatePaging($request);
+
+        // get filters from session
+        $filters = $this->getFilters($request);
+
+        // base criteria
+        $query_past = $this->buildCriteria($request);
+        $query_future = $this->buildCriteria($request);
+
+        // base criteria
+        $query_future = $query_future->future();
+        $query_past = $query_past->past();
+
 
         // get future events
         $future_events = $query_future->paginate($this->rpp);
@@ -333,15 +384,19 @@ class EventsController extends Controller
             return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
 
-
         // get past events
         $past_events = $query_past->paginate($this->rpp);
         $past_events->filter(function ($e) {
             return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
-
+        
         return view('events.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter,  'filters' => $filters,
+                'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
+                'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL,
+                'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL,
+                'filter_rpp' => isset($filters['filter_rpp']) ? $filters['filter_rpp'] : NULL
+            ])
             ->with(compact('future_events'))
             ->with(compact('past_events'))
             ->render();
@@ -393,7 +448,6 @@ class EventsController extends Controller
 
             // add to filters array
             $filters['filter_venue'] = $venue;
-
         };
 
         if (!empty($request->input('filter_tag'))) {
@@ -411,6 +465,7 @@ class EventsController extends Controller
         // change this - should be seperate
         if (!empty($request->input('filter_rpp'))) {
             $this->rpp = $request->input('filter_rpp');
+            $filters['filter_rpp'] = $this->rpp;
         }
 
         // save filters to session
@@ -430,13 +485,15 @@ class EventsController extends Controller
         });
 
         return view('events.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter,
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter,  'filters' => $filters,
                 'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
                 'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL,
-                'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL
+                'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL,
+                'filter_rpp' => isset($filters['filter_rpp']) ? $filters['filter_rpp'] : NULL
             ])
             ->with(compact('future_events'))
-            ->with(compact('past_events'));
+            ->with(compact('past_events'))
+            ->render();
     }
 
 
