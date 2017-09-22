@@ -602,14 +602,6 @@ class ThreadsController extends Controller
      */
 	public function indexSeries(Request $request, $tag)
 	{
-        // if the gate does not allow this user to show a forum redirect to home
-        /*
-        if (Gate::denies('show_forum')) {
-            flash()->error('Unauthorized', 'Your cannot view the forum');
-
-            return redirect()->back();
-        }
-		*/
 
  		// updates sort, rpp from request
  		$this->updatePaging($request);
@@ -621,7 +613,7 @@ class ThreadsController extends Controller
 					->paginate($this->rpp);
 
         return view('threads.index')
-                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'tag' => $tag])
+                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'tag' => $tag, 'hasFilter' => $this->hasFilter])
         			->with(compact('threads'));
 	}
 
@@ -634,15 +626,7 @@ class ThreadsController extends Controller
      */
 	public function indexRelatedTo(Request $request, $slug)
 	{
-        // if the gate does not allow this user to show a forum redirect to home
-        /*
-        if (Gate::denies('show_forum')) {
-            flash()->error('Unauthorized', 'Your cannot view the forum');
-
-            return redirect()->back();
-        }
-		*/
- 		// updates sort, rpp from request
+        // updates sort, rpp from request
  		$this->updatePaging($request);
 
  		$tag = urldecode($slug);
@@ -652,7 +636,7 @@ class ThreadsController extends Controller
 					->paginate($this->rpp);
 
         return view('threads.index')
-                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'tag' => $tag])
+                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'tag' => $tag, 'hasFilter' => $this->hasFilter])
         			->with(compact('threads'));
 	}
 

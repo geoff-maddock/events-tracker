@@ -389,7 +389,7 @@ class EventsController extends Controller
         $past_events->filter(function ($e) {
             return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
-        
+
         return view('events.index')
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter,  'filters' => $filters,
                 'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
