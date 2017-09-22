@@ -12,6 +12,7 @@ use DB;
 use Log;
 use Mail;
 use App\Series;
+use App\Thread;
 use App\EventType;
 use App\Entity;
 use App\OccurrenceDay;
@@ -254,7 +255,6 @@ class SeriesController extends Controller {
 			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
 		});
 
-
 		return view('series.index')
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
             ->with(compact('series'))
@@ -390,10 +390,10 @@ class SeriesController extends Controller {
 
 	public function show(Series $series)
 	{
-
 		$events = $series->events()->paginate($this->rpp);
+		$threads = $series->threads()->paginate($this->rpp);
 
-		return view('series.show', compact('series','events'));
+		return view('series.show', compact('series','events','threads'));
 	}
 
 

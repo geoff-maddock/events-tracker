@@ -273,14 +273,13 @@ class ThreadsController extends Controller
     public function index(Request $request)
     {
          // if the gate does not allow this user to show a forum redirect to home
-    	/*
-        if (Gate::denies('show_forum')) {
+        /*
+        if (Gate::denies('show_thread')) {
             flash()->error('Unauthorized', 'Your cannot view the forum');
 
             return redirect()->back();
         }
-		*/
-        $hasFilter = 1;
+        */
 
         // get filters from session
         $filters = $this->getFilters($request);
@@ -309,10 +308,11 @@ class ThreadsController extends Controller
             });
         }
 
+
         return view('threads.index')
         			->with(compact('threads'))
                     ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder,
-                        'hasFilter' => $hasFilter,
+                        'hasFilter' => $this->hasFilter,
                         'filters' => $filters,
                         'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
                         'filter_user' => isset($filters['filter_user']) ? $filters['filter_user'] : NULL,

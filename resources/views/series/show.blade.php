@@ -76,25 +76,28 @@
 
 	<p>	<i>Added by {{ $series->user->name or '' }}</i></p>
 
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="bs-component">
+					<div class="panel panel-info">
 
-	<div class="row">
-		<div class="col-sm-12">
-			<div class="bs-component">
-				<div class="panel panel-info">
-
-					<div class="panel-heading">
-						<h3 class="panel-title">Events</h3>
-					</div>
-					<div class="panel-body">
-							<div class="panel-body">
-							@include('events.list', ['events' => $series->events])
-							{!! $events->render() !!}
-							</div>
+						<div class="panel-heading">
+							<h3 class="panel-title">Events</h3>
+						</div>
+						<div class="panel-body">
+								<div class="panel-body">
+								@include('events.list', ['events' => $series->events])
+								{!! $events->render() !!}
+								</div>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>	
-	</div>
+		</div>
+
+
+
+
 	</div>
 </div>
 
@@ -124,6 +127,16 @@
 @endforeach
 </div>
 @endforeach
+
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="bs-component">
+							@include('threads.list', ['threads' => $threads])
+							{!! $threads->render() !!}
+			</div>
+		</div>
+	</div>
+
 </div>
 
 

@@ -270,9 +270,9 @@ class Series extends Eloquent {
 	 *
 	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
 	 */
-	public function series()
+	public function threads()
 	{
-		return $this->belongsToMany('App\Series')->withTimestamps();
+		return $this->belongsToMany('App\Thread')->withTimestamps();
 	}
 
 
