@@ -44,7 +44,6 @@
 		<span class="label label-tag"><a href="/entities/role/{{ $role->name }}">{{ $role->name }}</a></span>
 		@endforeach
 			@if ($entity->tags)
-			Tags
 			@foreach ($entity->tags as $tag)
 			<span class="label label-tag"><a href="/entities/tag/{{ $tag->name }}">{{ $tag->name }}</a></span>
 			@endforeach

@@ -94,7 +94,7 @@ class EventsController extends Controller
         $filters = $this->getFilters($request);
 
         // base criteria
-        $query = $this->event->orderBy('id','desc');
+        $query = $this->event; //->orderBy('id','desc');
 
 
         // add the criteria from the session
@@ -377,11 +377,12 @@ class EventsController extends Controller
         $query_future = $query_future->future();
         $query_past = $query_past->past();
 
-
+       // echo $query_past->toSql();
+        //dd($query_past->toSql());
         // get future events
         $future_events = $query_future->paginate($this->rpp);
         $future_events->filter(function ($e) {
-            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+            return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
 
         // get past events

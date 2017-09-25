@@ -60,21 +60,27 @@
                 @unless ($thread->series->isEmpty())
                 Series:
                     @foreach ($thread->series as $series)
-                        <span class="label label-tag"><a href="/threads/series/{{ urlencode($series->slug) }}">{{ $series->name }}</a></span>
+                        <span class="label label-tag"><a href="/threads/series/{{ urlencode($series->slug) }}">{{ $series->name }}</a>
+                            <a href="{!! route('series.show', ['id' => $series->id]) !!}" title="Show this series."><span class='glyphicon glyphicon-link text-info'></span></a>
+                        </span>
                     @endforeach
                 @endunless
 
                 @unless ($thread->entities->isEmpty())
                 Related:
                     @foreach ($thread->entities as $entity)
-                        <span class="label label-tag"><a href="/threads/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a></span>
+                        <span class="label label-tag"><a href="/threads/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a>
+                            <a href="{!! route('entities.show', ['id' => $entity->id]) !!}" title="Show this entity."><span class='glyphicon glyphicon-link text-info'></span></a>
+                        </span>
                     @endforeach
                 @endunless
 
                 @unless ($thread->tags->isEmpty())
                 Tags:
                     @foreach ($thread->tags as $tag)
-                        <span class="label label-tag"><a href="/threads/tag/{{ urlencode($tag->name) }}">{{ $tag->name }}</a></span>
+                        <span class="label label-tag"><a href="/threads/tag/{{ urlencode($tag->name) }}">{{ $tag->name }}</a>
+                            <a href="{!! route('tags.show', ['slug' => $tag->name]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a>
+                        </span>
                     @endforeach
             @endunless
 
