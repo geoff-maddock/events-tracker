@@ -1236,6 +1236,8 @@ class EventsController extends Controller
         $spl = explode("/", $str);
         $event_id = $spl[4];
         
+        //dd($fb->getJavaScriptHelper()->getAccessToken());
+
         try {
             $token = $fb->getJavaScriptHelper()->getAccessToken();
             $response = $fb->get($event_id.'?fields='.$fields, $token);
@@ -1263,9 +1265,11 @@ class EventsController extends Controller
             $event->addPhoto($photo);
 
         } catch(\Facebook\Exceptions\FacebookSDKException $e) {
-            flash()->error('Error', 'You could not import the image.  Error: '.$e->getMesage());
+            flash()->error('Error', 'You could not import the image.  Error: '.$e->getMessage());
+            dd($e->getMessage().' '.$token);
         }
 
+       // die('nope');
         flash()->success('Success', 'Successfully imported the event cover photo.');
         return back();
 
