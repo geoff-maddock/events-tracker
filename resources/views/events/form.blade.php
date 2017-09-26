@@ -11,7 +11,7 @@
 	</div>
 	<div class="form-group col-md-3">
 		<label></label>
-		<button type="button" class="btn btn-info form-control" id="import-photo" data-target="api-show">Import Photo</button>
+        <a href="{!! URL::route('events.importPhoto', array('id' => $event->id)) !!}" class="btn btn-info form-control" >Import Photo</a>
 	</div>
 </div>
 
@@ -346,8 +346,7 @@
                         $('#api-show').html("<img src='"+url+"'>");
                         console.log('set photo');
                     };
-
-
+                    
                 }
                 console.log(response);
 

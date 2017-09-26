@@ -84,9 +84,9 @@ Route::get('events/type/{slug}', 'EventsController@indexTypes');
 Route::get('events/series/{slug}', 'EventsController@indexSeries');
 Route::get('events/feed', 'EventsController@feed');
 
-Route::get('events/{id}/showPhoto', [
-    'as' => 'events.showPhoto',
-    'uses' => 'EventsController@showPhoto'
+Route::get('events/{id}/importPhoto', [
+    'as' => 'events.importPhoto',
+    'uses' => 'EventsController@importPhoto'
 ]);
 
 Route::get('events/{id}/createThread', [
