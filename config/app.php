@@ -198,6 +198,9 @@ return [
 
         # laravel tinker provider
         Laravel\Tinker\TinkerServiceProvider::class,
+
+        #facebook SDK
+        SammyK\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
 	],
 
 	/*

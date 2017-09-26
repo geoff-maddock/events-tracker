@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
+use SammyK;
+
 use DB;
 use Log;
 use Mail;
@@ -94,12 +96,10 @@ class EventsController extends Controller
         $filters = $this->getFilters($request);
 
         // base criteria
-        $query = $this->event; //->orderBy('id','desc');
-
+        $query = Event::query();
 
         // add the criteria from the session
         // check request for passed filter values
-
         if (!empty($filters['filter_name'])) {
             // getting name from the request
             $name = $filters['filter_name'];
@@ -370,25 +370,68 @@ class EventsController extends Controller
         $filters = $this->getFilters($request);
 
         // base criteria
-        $query_past = $this->buildCriteria($request);
-        $query_future = $this->buildCriteria($request);
+        $query_past = $this->buildCriteria($request);//,'start_at', 'desc' );
+        $query_future = $this->buildCriteria($request);//, 'start_at', 'asc');
 
-        // base criteria
-        $query_future = $query_future->future();
-        $query_past = $query_past->past();
+        $query_past->past();
+        $query_future->future();
 
-       // echo $query_past->toSql();
-        //dd($query_past->toSql());
         // get future events
-        $future_events = $query_future->paginate($this->rpp);
+        $future_events = $query_future->where('start_at','>', Carbon::today()->startOfDay())->paginate($this->rpp);
         $future_events->filter(function ($e) {
-            return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+            return ((isset($e->visibility) && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
 
         // get past events
-        $past_events = $query_past->paginate($this->rpp);
+        $past_events = $query_past->where('start_at','<', Carbon::today()->startOfDay())->paginate($this->rpp);
         $past_events->filter(function ($e) {
-            return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+            return ((isset($e->visibility) && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
+
+        return view('events.index')
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter,  'filters' => $filters,
+                'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
+                'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL,
+                'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL,
+                'filter_rpp' => isset($filters['filter_rpp']) ? $filters['filter_rpp'] : NULL
+            ])
+            ->with(compact('future_events'))
+            ->with(compact('past_events'))
+            ->render();
+    }
+
+    /**
+     * Display a listing of events from this point in time both future and past
+     *
+     * @return View
+     */
+    public function indexTimeline(Request $request)
+    {
+        $hasFilter = 1;
+
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        // get filters from session
+        $filters = $this->getFilters($request);
+
+        // base criteria
+        $query_past = $this->buildCriteria($request);//,'start_at', 'desc' );
+        $query_future = $this->buildCriteria($request);//, 'start_at', 'asc');
+
+        $query_past->past();
+        $query_future->future();
+
+        // get future events
+        $future_events = $query_future->where('start_at','>', Carbon::today()->startOfDay())->paginate($this->rpp);
+        $future_events->filter(function ($e) {
+            return ((isset($e->visibility) && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
+
+        // get past events
+        $past_events = $query_past->where('start_at','<', Carbon::today()->startOfDay())->paginate($this->rpp);
+        $past_events->filter(function ($e) {
+            return ((isset($e->visibility) && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
 
         return view('events.index')
@@ -1177,7 +1220,88 @@ class EventsController extends Controller
 		return view('events.create', compact('venues','eventTypes','visibilities','tags','entities','promoters','seriesList'));
 	}
 
-	public function show(Event $event)
+    /**
+     * Makes a call to the FB API if there is a link present and downloads the event cover photo
+     * @param Event $event
+     * @return \Illuminate\Contracts\View\Factory|View
+     */
+    public function showPhoto(Event $event)
+    {
+        if (empty((array) $event))
+        {
+            abort(404);
+        };
+
+        $fb = app(SammyK\LaravelFacebookSdk\LaravelFacebookSdk::class);
+        $fields = 'attending_count,category,cover,interested_count,type,name,noreply_count,maybe_count,owner,place,roles';
+
+        try {
+           // $response = $fb->get('/me?fields=id,name,email', 'user-access-token');
+            $token = $fb->getJavaScriptHelper()->getAccessToken();
+            $response = $fb->get('1750886384941695?fields='.$fields, $token);
+            dd($response);
+        } catch(\Facebook\Exceptions\FacebookSDKException $e) {
+            dd($e->getMessage());
+        }
+
+        $userNode = $response->getGraphUser();
+        printf('Hello, %s!', $userNode->getName());
+
+        return view('events.show', compact('event'));
+    }
+
+    /**
+     * Makes a call to the FB API if there is a link present and downloads the event cover photo
+
+     */
+    public function getToken()
+    {
+
+        $fb = app(SammyK\LaravelFacebookSdk\LaravelFacebookSdk::class);
+
+        // Obtain an access token.
+        try {
+            $token = $fb->getAccessTokenFromRedirect();
+        } catch (Facebook\Exceptions\FacebookSDKException $e) {
+            dd($e->getMessage());
+        }
+
+        // Access token will be null if the user denied the request
+        // or if someone just hit this URL outside of the OAuth flow.
+        if (! $token) {
+            // Get the redirect helper
+            $helper = $fb->getRedirectLoginHelper();
+
+            if (! $helper->getError()) {
+                abort(403, 'Unauthorized action.');
+            }
+
+            // User denied the request
+            dd(
+                $helper->getError(),
+                $helper->getErrorCode(),
+                $helper->getErrorReason(),
+                $helper->getErrorDescription()
+            );
+        }
+
+        if (! $token->isLongLived()) {
+            // OAuth 2.0 client handler
+            $oauth_client = $fb->getOAuth2Client();
+
+            // Extend the access token.
+            try {
+                $token = $oauth_client->getLongLivedAccessToken($token);
+            } catch (Facebook\Exceptions\FacebookSDKException $e) {
+                dd($e->getMessage());
+            }
+        }
+
+        $fb->setDefaultAccessToken($token);
+    }
+
+
+    public function show(Event $event)
 	{
         if (empty((array) $event))
         {

@@ -30,7 +30,7 @@
     @endif
 
     <br style="clear: left;"/>
-
+      <div id="api-show"></div>
     @foreach ($event->photos->chunk(4) as $set)
     <div class="row">
     @foreach ($set as $photo)

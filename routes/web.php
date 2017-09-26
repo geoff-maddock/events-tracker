@@ -66,6 +66,7 @@ Route::post('photos/{id}/unsetPrimary', 'PhotosController@unsetPrimary');
 
 # EVENTS
 Route::get('events/all', 'EventsController@indexAll');
+Route::get('events/timeline', 'EventsController@indexTimeline')->name('events.timeline');
 Route::get('events/future', 'EventsController@indexFuture')->name('events.future');
 Route::get('events/past', 'EventsController@indexPast');
 Route::get('events/week', 'EventsController@indexWeek')->name('events.week');
@@ -83,6 +84,10 @@ Route::get('events/type/{slug}', 'EventsController@indexTypes');
 Route::get('events/series/{slug}', 'EventsController@indexSeries');
 Route::get('events/feed', 'EventsController@feed');
 
+Route::get('events/{id}/showPhoto', [
+    'as' => 'events.showPhoto',
+    'uses' => 'EventsController@showPhoto'
+]);
 
 Route::get('events/{id}/createThread', [
     'as' => 'events.createThread',

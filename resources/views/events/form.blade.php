@@ -6,9 +6,13 @@
         {!! $errors->first('primary_link','<span class="help-block">:message</span>') !!}
     </div>
     <div class="form-group col-md-3">
-    <label></label>
-    <button type="button" class="btn btn-info form-control" id='import-link'>Import</button>
-    </div>
+		<label></label>
+		<button type="button" class="btn btn-info form-control" id="import-link">Import Data</button>
+	</div>
+	<div class="form-group col-md-3">
+		<label></label>
+		<button type="button" class="btn btn-info form-control" id="import-photo" data-target="api-show">Import Photo</button>
+	</div>
 </div>
 
 <div class="row">
@@ -206,6 +210,7 @@
                 .replace(/-+$/, '');            // Trim - from end of text
         };
 
+        // queries the primary link to get data - FB API only for now - and parses to set form inputs
 		$('#import-link').click(function(e){
 
 			// get the id out of the link
@@ -217,88 +222,139 @@
 			console.log(str);
 			console.log(event_id); // should be the position of the event
 
-			// login
-			FB.login(function(response) {
-                let fields =  'description,end_time,id,name,place,start_time,cover,attending_count,interested_count,maybe_count,noreply_count';
-				// try to pull info from the fb object
-				FB.api('/'+event_id+'?fields='+fields, function(response) {
-					if (!response || response.error) {
-						handleError(response.error);
-					} else {
-						// process the response and try to set the event form fields
-						if (response.name)
-						{
-							$('#name').val(response.name);
-							$('#slug').val(slugify(response.name));
-							console.log('set name');
-						};
+            // check that there is a login first
+            FB.getLoginStatus(function(response) {
+                if (response.status === 'connected') {
+                    console.log('Logged in.');
+                }
+                else {
+                    FB.login();
+                }
+            });
 
-						if (response.description)
-						{
-							$('#description').val(response.description);
-							console.log('set description');
+            let fields =  'description,end_time,id,name,place,start_time,cover,attending_count,interested_count,maybe_count,noreply_count';
 
-							$('#short').val(response.description.slice(0,100));
-							console.log('set short description');
-						};
+            // try to pull info from the fb object
+            FB.api('/'+event_id+'?fields='+fields, function(response) {
+                if (!response || response.error) {
+                    handleError(response.error);
+                } else {
+                    // process the response and try to set the event form fields
+                    if (response.name)
+                    {
+                        $('#name').val(response.name);
+                        $('#slug').val(slugify(response.name));
+                        console.log('set name');
+                    };
 
-						// scrape some more data from description
-						let adult = "21+";
+                    if (response.description)
+                    {
+                        $('#description').val(response.description);
+                        console.log('set description');
 
-						if (response.description.indexOf(adult) > 0)
-						{
-                            $('#min_age option[value=21]').attr('selected', 'selected');
-                            console.log('set ages to 21+');
-						} else {
-                            console.log('adult '+response.description.indexOf(adult)+' '+adult);
-						}
+                        $('#short').val(response.description.slice(0,100));
+                        console.log('set short description');
+                    };
 
-                        let amount = response.description.match(/\$(\d+)/);
+                    // scrape some more data from description
+                    let adult = "21+";
 
-						if (amount)
-						{
-                            $('#door_price').val(amount[1]);
-                            console.log('set price '+amount[1]);
-						};
+                    if (response.description.indexOf(adult) > 0)
+                    {
+                        $('#min_age option[value=21]').attr('selected', 'selected');
+                        console.log('set ages to 21+');
+                    } else {
+                        console.log('adult '+response.description.indexOf(adult)+' '+adult);
+                    }
 
-						if (response.start_time)
-						{
-							start_trim = response.start_time.slice(0,-5);
-							$('#start_at').val(start_trim);
-							console.log('set start at '+start_trim);
-						};
-						if (response.end_time)
-						{
-							end_trim = response.end_time.slice(0,-5);
-							$('#end_at').val(end_trim);
-							console.log('set end at'+end_trim);
-						};
-						if (response.place)
-						{
-							venue = capitalizeNth(response.place.name,0);
-							venue_val = $('#venue_id').find("option:contains('"+venue+"')").val();
-							$('#venue_id option[value='+venue_val+']').attr('selected', 'selected');
-							console.log('venue_val '+venue_val);
-							console.log('set venue '+venue);
-						};
+                    let amount = response.description.match(/\$(\d+)/);
 
-						// default to public visibility
-						$('#visibility_id option[value=3]').attr('selected', 'selected');
-					}
-		 		 	console.log(response);
+                    if (amount)
+                    {
+                        $('#door_price').val(amount[1]);
+                        console.log('set price '+amount[1]);
+                    };
+
+                    if (response.start_time)
+                    {
+                        start_trim = response.start_time.slice(0,-5);
+                        $('#start_at').val(start_trim);
+                        console.log('set start at '+start_trim);
+                    };
+                    if (response.end_time)
+                    {
+                        end_trim = response.end_time.slice(0,-5);
+                        $('#end_at').val(end_trim);
+                        console.log('set end at'+end_trim);
+                    };
+                    if (response.place)
+                    {
+                        venue = capitalizeNth(response.place.name,0);
+                        venue_val = $('#venue_id').find("option:contains('"+venue+"')").val();
+                        $('#venue_id option[value='+venue_val+']').attr('selected', 'selected');
+                        console.log('venue_val '+venue_val);
+                        console.log('set venue '+venue);
+                    };
+
+                    // default to public visibility
+                    $('#visibility_id option[value=3]').attr('selected', 'selected');
+                }
+                console.log(response);
 
 
-                    App.init();
-				});
+                App.init();
 
-                // Make a post to my feed
-                // Note: The call will only work if you accept the permission request
-                FB.api('/me/feed', 'post', {message: 'Importing an event to http://arcane.city'});
-                console.log('Made a feed post');
 			});
 
 
 		})
+
+        // queries the primary link to get the FB cover photo
+        $('#import-photo').click(function(e){
+
+            // get the id out of the link
+            var str = $('#primary_link').val();
+            var spl = str.split("/");
+            var event_id = spl[4];
+            var updateStatusCallback = false;
+
+            // get the content of the link
+            console.log(str);
+            console.log(event_id); // should be the position of the event
+
+            // check that there is a login first
+            FB.getLoginStatus(function(response) {
+                if (response.status === 'connected') {
+                    console.log('Logged in.');
+                }
+                else {
+                    FB.login();
+                }
+            });
+
+            let fields =  'description,end_time,id,name,place,start_time,cover,attending_count,interested_count,maybe_count,noreply_count';
+
+            // try to pull info from the fb object
+            FB.api('/'+event_id+'?fields='+fields, function(response) {
+                if (!response || response.error) {
+                    handleError(response.error);
+                } else {
+                    // process the response and try to set the event form fields
+                    if (response.cover)
+                    {
+                        url = response.cover.source;
+                        $('#api-show').html("<img src='"+url+"'>");
+                        console.log('set photo');
+                    };
+
+
+                }
+                console.log(response);
+
+                App.init();
+            });
+
+        })
 
         function capitalizeNth(text, n) {
             return text.slice(0,n) + text.charAt(n).toUpperCase() + text.slice(n+1)
