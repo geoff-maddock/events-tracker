@@ -9,10 +9,12 @@
 		<label></label>
 		<button type="button" class="btn btn-info form-control" id="import-link">Import Data</button>
 	</div>
+	@if (isset($event->primary_link))
 	<div class="form-group col-md-3">
 		<label></label>
         <a href="{!! URL::route('events.importPhoto', array('id' => $event->id)) !!}" class="btn btn-info form-control" >Import Photo</a>
 	</div>
+	@endif
 </div>
 
 <div class="row">
