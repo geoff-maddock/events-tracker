@@ -48,6 +48,13 @@ $factory->define(App\Thread::class, function (Faker\Generator $faker) {
 	];
 });
 
+$factory->define(App\ThreadCategory::class, function (Faker\Generator $faker) {
+    return [
+        'forum_id' => 1,
+        'name' => $faker->word
+    ];
+});
+
 $factory->define(App\Post::class, function (Faker\Generator $faker) {
 	return [
 		'thread_id' => function() {

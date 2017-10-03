@@ -295,4 +295,15 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 			Group::whereName($group)->firstOrFail()
 		);
 	}
+
+    /**
+     * Fetch the last published post for the user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function lastPost()
+    {
+        return $this->hasOne(Post::class,'created_by')->latest();
+    }
+
 }

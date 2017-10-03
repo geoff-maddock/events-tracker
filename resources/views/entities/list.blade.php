@@ -1,11 +1,10 @@
 @if (isset($entities) && count($entities) > 0)
 
 <?php $type = NULL;?>
-<ul class='list'>
+<ul class='list' style="display:inline-block;">
 	@foreach ($entities as $entity)
 
-	<li class="
-	@if ($entity->entityStatus->name === "Inactive") mute-card @else card @endif" style="clear: both;">
+	<li class="@if ($entity->entityStatus->name === "Inactive") mute-card @else card @endif" style="clear: both;">
 		@if ($primary = $entity->getPrimaryPhoto())
 		<div class="card-thumb" style="float: left; padding: 5px;">
 				<img src="/{!! str_replace(' ','%20',$entity->getPrimaryPhoto()->thumbnail) !!}" alt="{{ $entity->name}}"  style="max-width: 100px; ">
@@ -49,19 +48,33 @@
 			@endforeach
 			@endif
 		<br>
-		<ul class="list">
+		<ul class="list" style="">
 		@if ($events = $entity->futureEvents()->take(1))
 		@foreach ($events as $event)
-			<li>Next Event:
-			<b>{{ $event->start_at->format('m.d.y')  }}</b> {!! link_to_route('events.show', $event->name, [$event->id], ['class' =>'butt']) !!} </li>
+            <li>
+                <b>Next Event</b>
+				@if ($primary = $event->getPrimaryPhoto())
+					<div class="week-text" style="float: left; padding: 5px;">
+						<a href="/{{ $event->getPrimaryPhoto()->path }}" data-lightbox="{{ $event->getPrimaryPhoto()->path }}"><img src="/{{ $event->getPrimaryPhoto()->thumbnail }}" alt="{{ $event->name}}" ></a>
+					</div>
+				@endif
+			<b>{{ $event->start_at->format('m.d.y')  }}</b> {!! link_to_route('events.show', $event->name, [$event->id], ['class' =>'butt']) !!}
+            </li>
 		@endforeach
 		@endif
 		@if ($events = $entity->pastEvents()->take(3))
 		@foreach ($events as $event)
-			<li>Past Event:
+            <br style="clear: both;">
+			<li>
+                @if ($primary = $event->getPrimaryPhoto())
+                    <div class="week-text" style="float: left; padding: 5px;">
+                        <a href="/{{ $event->getPrimaryPhoto()->path }}" data-lightbox="{{ $event->getPrimaryPhoto()->path }}"><img src="/{{ $event->getPrimaryPhoto()->thumbnail }}" alt="{{ $event->name}}" ></a>
+                    </div>
+                @endif
 			<b>{{ $event->start_at->format('m.d.y')  }}</b> {!! link_to_route('events.show', $event->name, [$event->id], ['class' =>'butt']) !!} </li>
 		@endforeach
 		@endif
+            <a href="events/filter?filter_venue={{ $entity->name }}">...</a>
 		</ul>
 	</li>
 	@endforeach

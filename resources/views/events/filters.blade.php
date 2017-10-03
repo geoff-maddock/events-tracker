@@ -3,7 +3,7 @@
 <!-- BEGIN: FILTERS -->
 @if ($hasFilter)
 
-    <div class="form-group col-sm-4">
+    <div class="form-group col-sm-2">
 
         {!! Form::label('filter_name','Filter By Name') !!}
 
@@ -23,7 +23,7 @@
         {!! Form::select('filter_tag', $tags, (isset($tag) ? $tag : NULL), ['class' =>'form-control select2']) !!}
     </div>
 
-    <div class="form-group col-sm-2">
+    <div class="form-group col-sm-1">
         {!! Form::label('filter_rpp','RPP') !!}
         <?php $rpp_options =  [''=>'&nbsp;', 5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000];?>
         {!! Form::select('filter_rpp', $rpp_options, (isset($rpp) ? $rpp : NULL), ['class' =>'form-control']) !!}

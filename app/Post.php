@@ -13,7 +13,7 @@ class Post extends Eloquent {
 
 		static::creating(function($post)
 		{
-			$post->created_by = Auth::user() ? Auth::user()->id : 1;
+			//$post->created_by = Auth::user() ? Auth::user()->id : 1;
 			$post->updated_by = Auth::user() ? Auth::user()->id : 1;	
 		});
 
@@ -247,7 +247,6 @@ class Post extends Eloquent {
 	}
 
 
-
 	public function addPhoto(Photo $photo)
 	{
 		return $this->photos()->attach($photo->id);;
@@ -285,6 +284,29 @@ class Post extends Eloquent {
 
 		return ($created_date > $recent_date) ? true : false;
 	}
+
+
+    /**
+     * Determine if the post was just published a moment ago.
+     *
+     * @return bool
+     */
+    public function wasJustPublished()
+    {
+        return $this->created_at->gt(Carbon::now()->subMinute());
+    }
+
+    /**
+     * Fetch all mentioned users within the post's body.
+     *
+     * @return array
+     */
+    public function mentionedUsers()
+    {
+        preg_match_all('/@([\w\-]+)/', $this->body, $matches);
+        return $matches[1];
+    }
+
 
     /**
      * Checks if the post is liked by the user

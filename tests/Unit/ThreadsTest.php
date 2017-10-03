@@ -14,6 +14,15 @@ class ThreadsTest extends TestCase
 		$this->thread = factory('App\Thread')->create();
 	}
 
+    /** @test */
+    function a_thread_has_a_path()
+    {
+        $thread = create('App\Thread');
+        $this->assertEquals(
+            "/threads/{$thread->id}", $thread->path()
+        );
+    }
+
     /**
 	 * Test that threads are visible
      *
@@ -30,7 +39,7 @@ class ThreadsTest extends TestCase
     {
     	// when we visit a thread page
     	$this->get('/threads/' . $this->thread->id)
-    		->see($this->thread->name);
+    		->assertSee($this->thread->name);
     }
 
 
@@ -43,7 +52,7 @@ class ThreadsTest extends TestCase
 
     	// when we visit a thread page
     	$this->get('/threads/' . $this->thread->id)
-    		->see($post->body);
+    		->assertSee($post->body);
     }
 
      /** @test */
@@ -59,9 +68,9 @@ class ThreadsTest extends TestCase
     function a_thread_can_add_a_reply()
     {
         // add that thread 
-        $this->thread->addReply([
+        $this->thread->addPost([
             'body' => 'Foobar',
-            'user_id' => 1
+            'created_by' => 1
             ]);
     }
 
@@ -70,18 +79,18 @@ class ThreadsTest extends TestCase
     function an_authenticated_user_may_participate_in_threads()
     {
         // given we have an authenticated user
-        $user = factory('App\User')->create();
+        $user = create('App\User');
 
         $this->be($user);
 
-        $thread = factory('App\Thread')->create();
+        $thread = create('App\Thread');
 
-        $post = factory('App\Post')->make();
+        $post = make('App\Post');
 
-        $this->post('/threads/'.$thread->id.'/post', $post->toArray());
+        $this->post('/threads/'.$thread->id.'/posts', $post->toArray());
 
         // then their reply should be visible
-        $this->get($this->thread->path());
+        $this->get($thread->path());
     }
 
     /** @test */
@@ -91,7 +100,7 @@ class ThreadsTest extends TestCase
 
         $thread = factory('App\Thread')->make();
 
-        $response = $this->post('/threads', $thread->toArray());
+        $response = $this->post('/threads/create', $thread->toArray());
 
         $this->get($response->headers->get('Location'))
             ->assertSee($thread->name)
@@ -145,7 +154,7 @@ class ThreadsTest extends TestCase
         $category = create('App\ThreadCategory');
         $threadInCategory = create('App\Thread', ['thread_category_id' => $category->id]);
         $threadNotInCategory = create('App\Thread');
-
+        
         $this->get('/threads/category/' . $category->name)
             ->assertSee($threadInCategory->name)
             ->assertDontSee($threadNotInCategory->name);

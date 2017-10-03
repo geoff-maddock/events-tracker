@@ -374,7 +374,6 @@ class PostsController extends Controller
         flash()->success('Success',  'You are no longer following the post.');
 
         return back();
-
     }
 
 }
