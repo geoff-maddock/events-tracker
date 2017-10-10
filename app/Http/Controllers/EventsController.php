@@ -1236,8 +1236,6 @@ class EventsController extends Controller
         $spl = explode("/", $str);
         $event_id = $spl[4];
         
-        //dd($fb->getJavaScriptHelper()->getAccessToken());
-
         try {
             $token = $fb->getJavaScriptHelper()->getAccessToken();
             $response = $fb->get($event_id.'?fields='.$fields, $token);
@@ -1265,11 +1263,9 @@ class EventsController extends Controller
             $event->addPhoto($photo);
 
         } catch(\Facebook\Exceptions\FacebookSDKException $e) {
-            flash()->error('Error', 'You could not import the image.  Error: '.$e->getMessage());
-            dd($e->getMessage().' '.$token);
+            flash()->error('Error', 'You could not import the image.  Error: '.$e->getMesage());
         }
 
-       // die('nope');
         flash()->success('Success', 'Successfully imported the event cover photo.');
         return back();
 
@@ -1384,7 +1380,7 @@ class EventsController extends Controller
 		// check the elements in the tag list, and if any don't match, add the tag
 		foreach ($tagArray as $key => $tag)
 		{
-			if (!DB::table('tags')->where('id', $tag)->get())
+            if (!Tag::find($tag))
 			{
 				$newTag = new Tag;
 				$newTag->name = ucwords(strtolower($tag));
@@ -1924,15 +1920,11 @@ class EventsController extends Controller
 	{
 		$this->rpp = 7;
 
-		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
-
 		$events = Event::future()->get();
 		$events->filter(function($e)
 		{
 			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
 		});
-
 
 		return view('events.indexWeek', compact('events'));
 	}

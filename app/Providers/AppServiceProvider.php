@@ -24,6 +24,7 @@ class AppServiceProvider extends ServiceProvider {
 	    // get the user, set the theme and pass to the view
         \View::composer('app', function($view) {
             if (Auth::check() && Auth::user()->profile->default_theme) {
+                // use the set theme if the user has one
                 $theme = Auth::user()->profile->default_theme;
             } else {
                 $theme = config('app.default_theme');
@@ -31,6 +32,7 @@ class AppServiceProvider extends ServiceProvider {
             $view->with('theme', $theme);
         });
 
+        // always include these values in the events edit view
         \View::composer('events.edit', function($view) {
             $view->with('venues',[''=>''] + Entity::getVenues()->pluck('name','id')->all());
             $view->with('promoters',[''=>''] + Entity::whereHas('roles', function($q)
