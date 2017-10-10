@@ -154,10 +154,22 @@ class ThreadsTest extends TestCase
         $category = create('App\ThreadCategory');
         $threadInCategory = create('App\Thread', ['thread_category_id' => $category->id]);
         $threadNotInCategory = create('App\Thread');
-        
+
         $this->get('/threads/category/' . $category->name)
             ->assertSee($threadInCategory->name)
             ->assertDontSee($threadNotInCategory->name);
     }
 
+    /** @test */
+    function a_user_can_filter_threads_by_any_username()
+    {
+        $this->signIn(create('App\User', ['name' => 'JohnDoe']));
+
+        $threadByJohn = create('App\Thread', ['created_by' => auth()->id()]);
+        $threadNotByJohn = create('App\Thread');
+
+        $this->get('threads?created_by=JohnDoe')
+            ->assertSee($threadByJohn->title)
+            ->assertDontSee($threadNotByJohn->title);
+    }
 }
