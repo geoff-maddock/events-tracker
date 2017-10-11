@@ -13,13 +13,13 @@ class Forum extends Eloquent {
 
 		static::creating(function($event)
 		{
-			$event->created_by = Auth::user()->id;
-			$event->updated_by =  Auth::user() ? Auth::user()->id : NULL;	
+			$event->created_by = Auth::user() ? Auth::user()->id : 1;
+			$event->updated_by = Auth::user() ? Auth::user()->id : 1;
 		});
 
 		static::updating(function($event)
 		{
-			$event->updated_by = Auth::user() ? Auth::user()->id : NULL;			
+			$event->updated_by = Auth::user() ? Auth::user()->id : 1;
 		});
 	}
 

@@ -22,13 +22,12 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
 $factory->define(App\Forum::class, function (Faker\Generator $faker) {
     $user = factory('App\User')->create()->id;
     return [
-        'created_by' => $user,
         'name' => $faker->sentence,
         'slug' => $faker->sentence,
-        'body' => $faker->paragraph,
-        'description' => $faker->paragraph,
-        'visibility_id' => 1,
-        'is_active' => 1
+        'description' => $faker->sentence,
+        'visibility_id' => 3,
+        'is_active' => 1,
+        'created_by' => 1
     ];
 });
 
@@ -36,15 +35,12 @@ $factory->define(App\Thread::class, function (Faker\Generator $faker) {
 	$user = factory('App\User')->create()->id;
 	return [
 		'forum_id' => 1,
-		
 		'created_by' => $user,
-		
-		//'created_by' => 1,
 		'name' => $faker->sentence,
 		'slug' => $faker->sentence,
 		'body' => $faker->paragraph,
 		'description' => $faker->paragraph,
-		'visibility_id' => 1
+		'visibility_id' => 3
 	];
 });
 
