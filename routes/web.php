@@ -222,7 +222,7 @@ Route::get('entities/reset', array('as' => 'entities.reset', 'uses' => 'Entities
 
 Route::get('entities/tag/{tag}', 'EntitiesController@indexTags')->name('entities.tag');
 Route::get('entities/alias/{alias}', 'EntitiesController@indexAliases')->name('entities.alias');
-
+Route::get('entities/slug/{slug}', 'EntitiesController@indexSlug')->name('entities.slug');
 
 Route::get('entities/{id}/follow', [
     'as' => 'entities.follow',

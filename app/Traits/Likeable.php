@@ -27,7 +27,7 @@ trait Likeable
         $like = new Like;
         $like->object_id = $id;
         $like->user_id = $this->user->id;
-        $like->object_type = 'entity'; /
+        $like->object_type = 'entity';
         $like->save();
 
         Log::info('User '.$id.' is likeing '.$entity->name);

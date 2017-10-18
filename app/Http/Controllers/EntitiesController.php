@@ -592,6 +592,22 @@ class EntitiesController extends Controller {
             ->render();
 	}
 
+    /**
+     * Display an entity when passed the slug
+     *
+     * @return Response
+     */
+    public function indexSlug($slug)
+    {
+        $hasFilter = 1;
+
+        $entity = Entity::getBySlug(strtolower($slug))->firstOrFail();
+
+        return view('entities.show')
+            ->with(['hasFilter' => $hasFilter])
+            ->with(compact('entity'))
+            ->render();
+    }
 
 	/**
 	 * Show the form for creating a new resource.
@@ -663,8 +679,6 @@ class EntitiesController extends Controller {
 				$aliasSyncArray[$key] = $alias;
 			};
 		}
-
-
 
 		$entity = $entity->create($input);
 

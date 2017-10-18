@@ -67,7 +67,9 @@
 		<P><b>Tags:</b>
 		
 		@foreach ($entity->tags as $tag)
-		<span class="label label-tag"><a href="/entities/tag/{{ $tag->name }}">{{ $tag->name }}</a></span>
+				<span class="label label-tag"><a href="/entities/tag/{{ urlencode($tag->name) }}" class="label-link">{{ $tag->name }}</a>
+                        <a href="{!! route('tags.show', ['slug' => $tag->name]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a>
+                    </span>
 		@endforeach
 
 	@endunless

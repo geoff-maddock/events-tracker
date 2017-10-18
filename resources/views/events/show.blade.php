@@ -101,7 +101,9 @@
 	@unless ($event->entities->isEmpty())
 	Related Entities:
 		@foreach ($event->entities as $entity)
-		<span class="label label-tag"><a href="/events/relatedto/{{ $entity->slug }}">{{ $entity->name }}</a></span>
+					<span class="label label-tag"><a href="/events/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a>
+					<a href="{!! route('entities.show', ['id' => $entity->id]) !!}" title="Show this entity."><span class='glyphicon glyphicon-link text-info'></span></a>
+				</span>
 		@endforeach
 	@endunless
 	</P>
@@ -109,7 +111,9 @@
 	@unless ($event->tags->isEmpty())
 	<P>Tags:
 	@foreach ($event->tags as $tag)
-		<span class="label label-tag"><a href="/events/tag/{{ $tag->name }}">{{ $tag->name }}</a></span>
+			<span class="label label-tag"><a href="/events/tag/{{ urlencode($tag->name) }}" class="label-link">{{ $tag->name }}</a>
+                        <a href="{!! route('tags.show', ['slug' => $tag->name]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a>
+			</span>
 		@endforeach
 	@endunless
 	</P>

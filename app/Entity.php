@@ -383,6 +383,22 @@ class Entity extends Eloquent {
 
 		return $entities;
 	}
+
+    /**
+     * Return an entity
+     *
+     * @pra
+     * @return Entity $entity
+     *
+     **/
+    public static function getBySlug($slug)
+    {
+        // get a single entity by slug
+        $entity = self::where('slug', $slug);
+
+        return $entity;
+    }
+
 	/**
 	 * Return a collection of entities with the passed type
 	 * 

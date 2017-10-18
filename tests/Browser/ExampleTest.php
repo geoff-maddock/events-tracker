@@ -28,20 +28,20 @@ class ExampleTest extends DuskTestCase
 //                ->assertPathIs('/home');
 //        });
 //    }
-
-    /**
-     * A basic browser test example.
-     *
-     * @return void
-     */
-    public function testBrowseExample()
-    {
-        $this->browse(function (Browser $browser) {
-            $browser->visit('/')
-                    ->assertSee('Laravel');
-        });
-    }
-
+//
+//    /**
+//     * A basic browser test example.
+//     *
+//     * @return void
+//     */
+//    public function testBrowseExample()
+//    {
+//        $this->browse(function (Browser $browser) {
+//            $browser->visit('/')
+//                    ->assertSee('Laravel');
+//        });
+//    }
+//
     public function testApplication()
     {
         $response = $this->withSession(['foo' => 'bar'])

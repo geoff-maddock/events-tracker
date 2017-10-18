@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class CreateThreadsTest extends TestCase
 {
-    use DatabaseMigrations;
+    //use DatabaseMigrations;
     /**
      * A basic test example.
      *
@@ -20,17 +20,17 @@ class CreateThreadsTest extends TestCase
         $this->assertTrue(true);
     }
 
-    /** @test */
-    function an_authenticated_user_can_create_new_forum_threads()
-    {
-        $this->signIn();
-
-        $thread = make('App\Thread');
-
-        $response = $this->post('/threads', $thread->toArray());
-
-        $this->get($response->headers->get('Location'))
-            ->assertSee($thread->title)
-            ->assertSee($thread->body);
-    }
+//    /** @test */
+//    function an_authenticated_user_can_create_new_forum_threads()
+//    {
+//        $this->signIn();
+//
+//        $thread = make('App\Thread');
+//
+//        $response = $this->post('/threads', $thread->toArray());
+//
+//        $this->get($response->headers->get('Location'))
+//            ->assertSee($thread->title)
+//            ->assertSee($thread->body);
+//    }
 }
