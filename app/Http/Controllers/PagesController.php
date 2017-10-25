@@ -13,6 +13,7 @@ use App\Series;
 use App\Activity;
 use App\Tag;
 use App\User;
+use App\Thread;
 
 class PagesController extends Controller {
 
@@ -45,7 +46,10 @@ class PagesController extends Controller {
  		};
 	}
 
-	public function index()
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function index()
 	{
 		$future_events = Event::where('start_at','>=',Carbon::now())
 						->orderBy('start_at', 'asc')
@@ -60,7 +64,11 @@ class PagesController extends Controller {
 
 	}
 
-	public function search(Request $request)
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function search(Request $request)
 	{
 		$slug = $request->input('keyword');
 
@@ -121,7 +129,15 @@ class PagesController extends Controller {
 				->orderBy('name', 'ASC')
 				->simplePaginate($this->rpp);
 
-		return view('events.search', compact('events', 'entities', 'series','users','tags','slug'));
+        $threads = Thread::where('name','like','%'.$slug.'%')
+            ->orWhereHas('tags', function($q) use ($slug)
+            {
+                $q->where('name','=', ucfirst($slug));
+            })
+            ->orderBy('name', 'ASC')
+            ->simplePaginate($this->rpp);
+
+		return view('events.search', compact('events', 'entities', 'series','users','threads','tags','slug'));
 
 	}
 
