@@ -79,7 +79,7 @@ Route::get('events/reset', array('as' => 'events.reset', 'uses' => 'EventsContro
 
 Route::get('events/tag/{tag}', 'EventsController@indexTags')->name('events.tag');
 Route::get('events/venue/{slug}', 'EventsController@indexVenues')->name('events.venue');
-Route::get('events/relatedto/{slug}', 'EventsController@indexRelatedTo');
+Route::get('events/relatedto/{slug}', 'EventsController@indexRelatedTo')->name('events.relatedto');
 Route::get('events/type/{slug}', 'EventsController@indexTypes');
 Route::get('events/series/{slug}', 'EventsController@indexSeries');
 Route::get('events/feed', 'EventsController@feed');

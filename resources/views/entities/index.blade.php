@@ -83,7 +83,8 @@
                                     'filter_name' => isset($filter_name) ? $filter_name : NULL,
             ])->render() !!}
         @endif
-            @include('entities.list', ['entities' => $entities])
+
+		@include('entities.list', ['entities' => $entities])
 
         </div>
     </div>

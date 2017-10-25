@@ -1,7 +1,7 @@
 @if (isset($entities) && count($entities) > 0)
 
 <?php $type = NULL;?>
-<ul class='list' style="display:inline-block;">
+<ul class='list'>
 	@foreach ($entities as $entity)
 
 	<li class="@if ($entity->entityStatus->name === "Inactive") mute-card @else card @endif" style="clear: both;">
@@ -64,19 +64,12 @@
             </li>
 		@endforeach
 		@endif
-		@if ($events = $entity->pastEvents()->take(3))
-		@foreach ($events as $event)
-            <br style="clear: both;">
-			<li>
-                @if ($primary = $event->getPrimaryPhoto())
-                    <div class="week-text" style="float: left; padding: 5px;">
-                        <a href="/{{ $event->getPrimaryPhoto()->path }}" data-lightbox="{{ $event->getPrimaryPhoto()->path }}"><img src="/{{ $event->getPrimaryPhoto()->thumbnail }}" alt="{{ $event->name}}" ></a>
-                    </div>
-                @endif
-			<b>{{ $event->start_at->format('m.d.y')  }}</b> {!! link_to_route('events.show', $event->name, [$event->id], ['class' =>'butt']) !!} </li>
-		@endforeach
-		@endif
-            <a href="events/filter?filter_venue={{ $entity->name }}">...</a>
+			@if ($entity->hasRole('venue'))
+            <a href="events/filter?filter_venue={{ $entity->name }}" title="Show events at this venue.">...</a>
+			@else
+				<a href="{!! route('events.relatedto', ['slug' => $entity->slug]) !!}" title="Show related event.">...</a>
+			@endif
+
 		</ul>
 	</li>
 	@endforeach

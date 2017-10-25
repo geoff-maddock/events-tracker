@@ -538,4 +538,11 @@ class Entity extends Eloquent {
 
         return $users;
     }
+
+    public function hasRole($role)
+    {
+        $role = $this->roles()->where('name', $role)->count();
+        return $role;
+    }
+
 }
