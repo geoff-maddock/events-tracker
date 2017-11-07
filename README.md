@@ -35,10 +35,12 @@ $ composer update
 
 ### Configuration
 * Configure .env based on .env.example
+* Run `composer update`
 * Run migrations:
   - php artisan migrate
 * Seed database tables from existing seeds, or update the seed files with your own defaults:
   - php artisan db:seed
+* Fix permissions with ./fix_permission.sh
 * Point web server to /html/index.php
 
 
