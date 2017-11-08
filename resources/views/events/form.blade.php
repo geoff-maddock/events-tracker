@@ -222,7 +222,19 @@
 
 			// get the content of the link
 			console.log(str);
-			console.log(event_id); // should be the position of the event
+			console.log('event_id:'+event_id); // should be the position of the event
+
+            if (str == undefined || str == '')
+            {
+                $('#primary_link').attr('placeholder','You must enter a valid FB event link to import an event.');
+                throw new Error('Error: The import link was empty.');
+            }
+
+            if (event_id == undefined || event_id == '')
+            {
+                $('#import-link').after('<div id="import-error"><small>The FB API did not return anything for that event link.</small></div>');
+                throw new Error('Error:  Could not detect the FB event.');
+            }
 
             // check that there is a login first
             FB.getLoginStatus(function(response) {
@@ -239,8 +251,11 @@
             // try to pull info from the fb object
             FB.api('/'+event_id+'?fields='+fields, function(response) {
                 if (!response || response.error) {
+                    $('#import-link').after('<div id="import-error"><small>The FB API did not return anything for that event link.</small></div>');
                     handleError(response.error);
                 } else {
+                    // hide any import errors
+                    $('#import-error').hide();
                     // process the response and try to set the event form fields
                     if (response.name)
                     {
@@ -303,7 +318,6 @@
                 }
                 console.log(response);
 
-
                 App.init();
 
 			});
@@ -346,7 +360,6 @@
                     {
                         url = response.cover.source;
                         $('#api-show').html("<img src='"+url+"'>");
-                        console.log('set photo');
                     };
                     
                 }
