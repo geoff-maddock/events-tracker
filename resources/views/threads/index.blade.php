@@ -39,7 +39,7 @@
 			{!! Form::select('filter_tag', $tags, (isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a tag']) !!}
 			</div>
 
-			<div class="form-group col-sm-2">
+			<div class="form-group col-sm-1">
 				{!! Form::label('filter_rpp','RPP') !!}
 				<?php $rpp_options =  [''=>'&nbsp;', 5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000];?>
 				{!! Form::select('filter_rpp', $rpp_options, (isset($filters['filter_rpp']) ? $filters['filter_rpp'] : NULL), ['class' =>'form-control']) !!}

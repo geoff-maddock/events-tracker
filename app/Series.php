@@ -315,8 +315,11 @@ class Series extends Eloquent {
 	 */
 	public function length()
 	{
+        if ($this->start_at) {
+            return $this->start_at->diffInHours($this->end_time, false);
+        };
 
-		return $this->start_at->diffInHours($this->end_time);
+        return 0;
 	}
 	/**
 	 * An event is created by one user
@@ -434,6 +437,7 @@ class Series extends Eloquent {
 	 * Get all series that would fall on the passed date
 	 * 
 	 * @param $date
+     * @return mixed
 	 */
 	public static function byNextDate($date)
 	{

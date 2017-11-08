@@ -93,7 +93,7 @@
 	{!! $errors->first('soundcheck_at','<span class="help-block">:message</span>') !!}
 	</div>
 
-	<div class="form-group col-md-2"> 
+	<div class="form-group col-md-2">
 	{!! Form::label('door_at','Door At:') !!}
 	{!! Form::dateTimeLocal('door_at', (isset($action) && isset($series->door_at)) ? $series->door_at->format('Y-m-d\\TH:i') : NULL, ['class' =>'form-control']) !!}
 	{!! $errors->first('door_at','<span class="help-block">:message</span>') !!}
@@ -113,15 +113,15 @@
 	{!! $errors->first('end_at','<span class="help-block">:message</span>') !!}
 	</div>
 
-	<div class="form-group col-md-2 {{$errors->has('end_at') ? 'has-error' : '' }}">
+	<div class="form-group col-md-2 {{$errors->has('length') ? 'has-error' : '' }}">
 	{!! Form::label('length','Length (hours):') !!}
-	{!! Form::text('length', null, ['class' =>'form-control']) !!}
+	{!! Form::text('length', '', ['class' =>'form-control']) !!}
 	{!! $errors->first('length','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
 
 <div class="row">
- 
+
 
 	<div class="form-group col-md-2">
 	{!! Form::label('presale_price','Presale Price:') !!}
@@ -186,5 +186,5 @@
 </div>
 
 <div class="form-group">
-{!! Form::submit(isset($action) ? 'Update Series' : 'Add Series', null, ['class' =>'btn btn-primary']) !!}
+{!! Form::submit(isset($action) && $action == 'update' ? 'Update Series' : 'Add Series', null, ['class' =>'btn btn-primary']) !!}
 </div>

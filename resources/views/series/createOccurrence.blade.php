@@ -7,9 +7,9 @@
 	<h1>{{ $series->name}} </h1> 
 	<h2>Add Occurrence: {{ $event->name }}</h2>
 
-	{!! Form::model($event, ['route' => ['events.create', $event->id], 'method' => 'PATCH']) !!}
+	{!! Form::model($event, ['route' => ['events.store']]) !!}
 
-		@include('events.form', ['action' => 'createOccurence'])
+		@include('events.form', ['action' => 'createOccurrence'])
 
 	{!! Form::close() !!}
 

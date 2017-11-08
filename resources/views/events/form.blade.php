@@ -232,7 +232,7 @@
 
             if (event_id == undefined || event_id == '')
             {
-                $('#import-link').after('<div id="import-error"><small>The FB API did not return anything for that event link.</small></div>');
+                $('#importlink').after('<small>The link does not contain a FB event ID.</small>');
                 throw new Error('Error:  Could not detect the FB event.');
             }
 
@@ -251,11 +251,9 @@
             // try to pull info from the fb object
             FB.api('/'+event_id+'?fields='+fields, function(response) {
                 if (!response || response.error) {
-                    $('#import-link').after('<div id="import-error"><small>The FB API did not return anything for that event link.</small></div>');
+                    $('#import_link').after('<small>The FB API did not return anything for that event link.</small>');
                     handleError(response.error);
                 } else {
-                    // hide any import errors
-                    $('#import-error').hide();
                     // process the response and try to set the event form fields
                     if (response.name)
                     {

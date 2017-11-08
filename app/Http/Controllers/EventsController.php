@@ -4,6 +4,9 @@ use App\EventFilters;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventRequest;
+use App\OccurrenceDay;
+use App\OccurrenceType;
+use App\OccurrenceWeek;
 use App\Traits\Followable;
 use Illuminate\View\View;
 use PhpParser\Node\Expr\Array_;
@@ -2055,7 +2058,57 @@ class EventsController extends Controller
 	}
 
 
-	public function rss(RssFeed $feed)
+    public function createSeries(Request $request)
+    {
+        // create a series from a single event
+
+        $event = Event::find($request->id);
+
+        // get a list of venues
+        $venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
+
+        // get a list of promoters
+        $promoters = [''=>''] + Entity::whereHas('roles', function($q)
+            {
+                $q->where('name','=','Promoter');
+            })->orderBy('name','ASC')->pluck('name','id')->all();
+
+        $eventTypes = [''=>''] + EventType::orderBy('name','ASC')->pluck('name', 'id')->all();
+
+        $visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
+
+        $tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
+        $entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
+
+        $occurrenceTypes = [''=>''] + OccurrenceType::pluck('name', 'id')->all();
+        $days = [''=>''] + OccurrenceDay::pluck('name', 'id')->all();
+        $weeks = [''=>''] + OccurrenceWeek::pluck('name', 'id')->all();
+
+        // initialize the form object with the values from the template
+        $series = new \App\Series(['name' => $event->name,
+            'slug' => $event->slug,
+            'short' => $event->short,
+            'venue_id' => $event->venue_id,
+            'description' => $event->description,
+            'event_type_id' => $event->event_type_id,
+            'promoter_id' => $event->promoter_id,
+            'soundcheck_at' => $event->soundcheck_at,
+            'door_at' => $event->door_at,
+            'founded_at' => $event->start_at,
+            'start_at' => $event->start_at,
+            'end_at' => $event->end_at,
+            'presale_price' => $event->presale_price,
+            'door_price' => $event->door_price,
+            'min_age' => $event->min_age,
+            'visibility_id' => $event->visibility_id,
+        ]);
+
+
+        return view('events.createSeries', compact('series','venues','occurrenceTypes','days','weeks','eventTypes','visibilities','tags','entities','promoters'))->with(['event' => $event]);
+    }
+
+
+    public function rss(RssFeed $feed)
 	{
 	    $rss = $feed->getRSS();
 

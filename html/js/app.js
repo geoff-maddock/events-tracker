@@ -8,7 +8,6 @@ var App = (function()
         this.setupControls();
         this.setupLoadingModal();
 
-        console.log('App init complete');
     };
 
     var initTooltip = function () {
@@ -101,3 +100,57 @@ $(function()
 {
     App.init();
 });
+
+// FlashMessage module
+var FlashMessage = (function()
+{
+    var fadeout = function(id)
+    {
+        $(id).delay(4000).fadeOut(200);
+    };
+
+    var show = function(type, message, fadeout)
+    {
+        var i = Math.floor(Math.random()*1000000);
+        // remove success messages when adding a new one to prevent stacking
+        if(type == 'success')
+        {
+            $('.alert-'+type).remove();
+        }
+        $('#flash').append('<div class="alert alert-'+type+' align-center" style="display:none;" id="flash-'+i+'"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>'+message+'</div>');
+        $('#flash-'+i).fadeIn(200);
+        if(fadeout && fadeout === true) {
+            this.fadeout('#flash-'+i);
+        }
+    };
+
+    var showError = function(message, fadeout)
+    {
+        Util.loadStop();
+        this.show('danger', message, fadeout);
+    };
+
+    var showSuccess = function(message, fadeout)
+    {
+        this.show('success', message, fadeout);
+    };
+
+    var showWarning = function(message, fadeout)
+    {
+        this.show('warning', message, fadeout);
+    };
+
+    var showInfo = function(message, fadeout)
+    {
+        this.show('info', message, fadeout);
+    };
+
+    return {
+        fadeout: fadeout,
+        show: show,
+        showError: showError,
+        showSuccess: showSuccess,
+        showWarning: showWarning,
+        showInfo: showInfo
+    }
+})();

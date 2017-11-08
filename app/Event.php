@@ -326,7 +326,12 @@ class Event extends Eloquent {
 	 */
 	public function getLengthInHoursAttribute()
 	{
-		return $this->start_at->diffInHours($this->end_time, false);
+	    if ($this->start_at) {
+            return $this->start_at->diffInHours($this->end_time, false);
+        };
+
+	    return 0;
+
 	}
 
 	/**

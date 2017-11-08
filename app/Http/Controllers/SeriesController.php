@@ -429,6 +429,8 @@ class SeriesController extends Controller {
 		$s->tags()->attach($syncArray);
 		$s->entities()->attach($request->input('entity_list'));
 
+		// TODO LINK any events with the same slug as part of this series
+
 		flash()->success('Success', 'Your event template has been created');
 
 		return redirect()->route('series.index');
@@ -464,7 +466,7 @@ class SeriesController extends Controller {
 
 	public function createOccurrence(Request $request)
 	{
-		// create an event occurence based on the event template
+		// create an event occurrence based on the series template
 
 		$series = Series::find($request->id);
 
@@ -485,7 +487,7 @@ class SeriesController extends Controller {
 		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
 		$entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
 
-		// calculate the next occurrance date based on template settings
+		// calculate the next occurrence date based on template settings
 		$nextDate = $series->nextOccurrenceDate();
 		$endDate = $nextDate->copy()->addHours($series->length);
 
@@ -505,7 +507,8 @@ class SeriesController extends Controller {
 		 'presale_price' => $series->presale_price,
 		 'door_price' => $series->door_price,
 		 'min_age' => $series->min_age,
-		 'visibility_id' => $series->visibility_id
+		 'visibility_id' => $series->visibility_id,
+            'length' => 0,
 		 ]);
 
 		return view('series.createOccurrence', compact('seriesList','event','venues','eventTypes','visibilities','tags','entities','promoters'))->with(['series' => $series]);

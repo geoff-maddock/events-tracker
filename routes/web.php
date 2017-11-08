@@ -65,6 +65,10 @@ Route::post('photos/{id}/setPrimary', 'PhotosController@setPrimary');
 Route::post('photos/{id}/unsetPrimary', 'PhotosController@unsetPrimary');
 
 # EVENTS
+Route::get('events/createSeries', [
+    'as' => 'events.createSeries',
+    'uses' => 'EventsController@createSeries'
+]);
 Route::get('events/all', 'EventsController@indexAll');
 Route::get('events/timeline', 'EventsController@indexTimeline')->name('events.timeline');
 Route::get('events/future', 'EventsController@indexFuture')->name('events.future');

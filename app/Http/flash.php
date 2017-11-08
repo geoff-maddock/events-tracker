@@ -27,7 +27,6 @@ class Flash {
    }
 
 
-
 	public function error( $title, $message)
 	{
 		\Session::flash('flash_message', [
