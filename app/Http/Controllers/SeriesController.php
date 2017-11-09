@@ -12,6 +12,7 @@ use DB;
 use Log;
 use Mail;
 use App\Series;
+use App\Event;
 use App\Thread;
 use App\EventType;
 use App\Entity;
@@ -429,9 +430,15 @@ class SeriesController extends Controller {
 		$s->tags()->attach($syncArray);
 		$s->entities()->attach($request->input('entity_list'));
 
-		// TODO LINK any events with the same slug as part of this series
+		// link the passed event if there was one to the series
+		if ($request->eventLinkId) {
+			if ($event = Event::find($request->eventLinkId))	{
+				$event->series_id = $s->id;
+				$event->save();
+			};
+		}
 
-		flash()->success('Success', 'Your event template has been created');
+		flash()->success('Success', 'Your event series has been created');
 
 		return redirect()->route('series.index');
 	}

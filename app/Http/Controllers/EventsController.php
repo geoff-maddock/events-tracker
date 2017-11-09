@@ -2103,7 +2103,6 @@ class EventsController extends Controller
             'visibility_id' => $event->visibility_id,
         ]);
 
-
         return view('events.createSeries', compact('series','venues','occurrenceTypes','days','weeks','eventTypes','visibilities','tags','entities','promoters'))->with(['event' => $event]);
     }
 

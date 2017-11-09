@@ -9,7 +9,7 @@
 
     {!! Form::model($series, ['route' => ['series.store']]) !!}
 
-        @include('series.form', ['action' => 'createSeries'])
+        @include('series.form', ['action' => 'createSeries', 'eventLinkId' => $event->id])
 
     {!! Form::close() !!}
 
