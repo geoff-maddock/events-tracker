@@ -7,6 +7,7 @@ use App\Http\Requests\EventRequest;
 use App\OccurrenceDay;
 use App\OccurrenceType;
 use App\OccurrenceWeek;
+use App\Thread;
 use App\Traits\Followable;
 use Illuminate\View\View;
 use PhpParser\Node\Expr\Array_;
@@ -1364,7 +1365,11 @@ class EventsController extends Controller
             abort(404);
         };
 
-		return view('events.show', compact('event'));
+        $thread = Thread::where('event_id','=',$event->id)->get();
+
+
+
+        return view('events.show', compact('event', 'thread'))->with(['thread' => $thread]);
 	}
 
 
@@ -2058,6 +2063,10 @@ class EventsController extends Controller
 	}
 
 
+    /**
+     * @param Request $request
+     * @return $this
+     */
     public function createSeries(Request $request)
     {
         // create a series from a single event
@@ -2106,6 +2115,32 @@ class EventsController extends Controller
         return view('events.createSeries', compact('series','venues','occurrenceTypes','days','weeks','eventTypes','visibilities','tags','entities','promoters'))->with(['event' => $event]);
     }
 
+    /**
+     * @param Request $request
+     * @return $this
+     */
+    public function createThread(Request $request)
+    {
+        // create a thread from a single event
+
+        $event = Event::find($request->id);
+
+        // initialize the form object with the values from the template
+        $thread = new \App\Thread([
+            'forum_id' => 1,
+            'name' => $event->name,
+            'slug' => $event->slug,
+            'description' => $event->short,
+            'body' => $event->short,
+            'thread_category_id' => 1,
+            'visibility_id' => $event->visibility_id,
+            'event_id' => $event->id
+        ]);
+
+        $thread->save();
+
+        return view('events.show', compact('thread'))->with(['event' => $event]);
+    }
 
     public function rss(RssFeed $feed)
 	{

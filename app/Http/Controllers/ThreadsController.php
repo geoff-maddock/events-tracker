@@ -271,16 +271,9 @@ class ThreadsController extends Controller
      * @param Request $request
      * @return View
      */
-    public function index(Request $request)
+    public function index(Request $request, ThreadFilters $filters)
     {
-         // if the gate does not allow this user to show a forum redirect to home
-        /*
-        if (Gate::denies('show_thread')) {
-            flash()->error('Unauthorized', 'Your cannot view the forum');
-
-            return redirect()->back();
-        }
-        */
+        //$threads = Thread::filter($filters)->get();
 
         // get filters from session
         $filters = $this->getFilters($request);
@@ -288,9 +281,7 @@ class ThreadsController extends Controller
  		// updates sort, rpp from request
  		$this->updatePaging($request);
 
-
  		// initialize the query
- 		//$query = Thread::orderBy($this->sortBy, $this->sortOrder);
  		$query = $this->buildCriteria($request);
 
         // get the threads
@@ -309,7 +300,6 @@ class ThreadsController extends Controller
             });
         }
 
-
         return view('threads.index')
         			->with(compact('threads'))
                     ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder,
@@ -319,7 +309,6 @@ class ThreadsController extends Controller
                         'filter_user' => isset($filters['filter_user']) ? $filters['filter_user'] : NULL,
                         'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL
                     ])->render();
-
     }
 
   /**
@@ -392,7 +381,7 @@ class ThreadsController extends Controller
         });
 
         return view('threads.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter, 'filters' => $filters,
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter, 'filters' => $filters,
                 'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
                 'filter_user' => isset($filters['filter_user']) ? $filters['filter_user'] : NULL,
                 'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL
@@ -404,13 +393,12 @@ class ThreadsController extends Controller
     /**
      * Builds the criteria from the session
      *
-     * @return $query
+     * @param Request $request
+     * @return $this $query
      */
     public function buildCriteria(Request $request)
     {
-        $hasFilter = 1;
-
-        // get all the filters from the session
+        // get all the filters from the session and put into an array
         $filters = $this->getFilters($request);
 
         // base criteria
@@ -465,8 +453,7 @@ class ThreadsController extends Controller
      */
     public function reset(Request $request)
     {
-        // doesn't have filter, but temp
-        $hasFilter = 1; 
+
         // set the filters to empty
         $this->setFilters($request, $this->getDefaultFilters());
  
@@ -484,7 +471,7 @@ class ThreadsController extends Controller
         $filters = array();
 
         return view('threads.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter,  'filters' => $filters])
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter,  'filters' => $filters])
             ->with(compact('threads'))
             ->render();
 
@@ -533,14 +520,6 @@ class ThreadsController extends Controller
      */
 	public function indexCategories(Request $request, $slug)
 	{
-        // if the gate does not allow this user to show a forum redirect to home
-        /*
-        if (Gate::denies('show_forum')) {
-            flash()->error('Unauthorized', 'Your cannot view the forum');
-
-            return redirect()->back();
-        }
-		*/
         $hasFilter = 1;
 
  		// updates sort, rpp from request

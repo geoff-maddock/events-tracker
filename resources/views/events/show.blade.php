@@ -16,6 +16,11 @@
 @if (!$event->series_id && $user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )
 	<a href="{!! route('events.createSeries', ['id' => $event->id]) !!}" title="Create an event series based on this event." class="btn btn-primary"><span class='glyphicon glyphicon-fire'></span> Create Series</a>
 @endif
+
+	@if (!$event->thread && $user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )
+		<a href="{!! route('events.createThread', ['id' => $event->id]) !!}" title="Create an thread related to this event." class="btn btn-primary"><span class='glyphicon glyphicon-comment'></span> Create Thread</a>
+	@endif
+
 	<a href="{!! URL::route('events.index') !!}" class="btn btn-info">Return to list</a>
 </P>
 
@@ -154,7 +159,25 @@
 		@endforeach
 		</div>
 
-	</div>
+	@if (isset($thread) && count($thread) > 0)
+		<div class="col-lg-6">
+			<div class="panel panel-info">
+
+				<div class="panel-heading">
+					<h3 class="panel-title">Posts
+						<a href="#" ><span class='label label-tag pull-right' data-toggle="tooltip" data-placement="bottom"  title="# of Threads that match this search term.">{{ count($thread)}}</span></a>
+					</h3>
+				</div>
+
+				<div class="panel-body">
+					@include('posts.list', ['thread' => $thread->first(), 'posts' => $thread->first()->posts])
+				</div>
+
+			</div>
+		</div>
+	@endif
+
+</div>
 
 <div class="row">
 	<div class="col-md-4">

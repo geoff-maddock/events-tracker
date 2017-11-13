@@ -255,7 +255,18 @@ class Event extends Eloquent {
 		return $this->belongsToMany('App\Photo')->withTimestamps();
     }
 
-	/**
+    /**
+     * An event belongs to one thread
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function thread()
+    {
+        return $this->belongsTo('App\Thread','event_id');
+    }
+
+
+    /**
 	 * An event has one visibility
 	 *
 	 */

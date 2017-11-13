@@ -69,6 +69,10 @@ Route::get('events/createSeries', [
     'as' => 'events.createSeries',
     'uses' => 'EventsController@createSeries'
 ]);
+Route::get('events/createThread', [
+    'as' => 'events.createThread',
+    'uses' => 'EventsController@createThread'
+]);
 Route::get('events/all', 'EventsController@indexAll');
 Route::get('events/timeline', 'EventsController@indexTimeline')->name('events.timeline');
 Route::get('events/future', 'EventsController@indexFuture')->name('events.future');
