@@ -7,6 +7,7 @@ var App = (function()
         this.setupConfirm();
         this.setupControls();
         this.setupLoadingModal();
+        $('.auto-submit').autoSubmit();
 
     };
 
