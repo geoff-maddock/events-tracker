@@ -21,9 +21,16 @@
 
 			@if ($signedIn && (($thread->ownedBy($user) && $thread->isRecent()) || $user->hasGroup('super_admin')))
 			<a href="{!! route('threads.edit', ['id' => $thread->id]) !!}" title="Edit this thread."><span class='glyphicon glyphicon-pencil'></span></a>
+
+                @if ($event = $thread->event)
+                <a href="{!! route('events.show', ['id' => $event->id]) !!}" title="Show event."><span class='glyphicon glyphicon-calendar'></span></a>
+                @endif
             {!! link_form_icon('glyphicon-trash text-warning', $thread, 'DELETE', 'Delete the thread') !!}
 			@endif
-			<br>
+
+            <br>
+
+
             @unless ($thread->series->isEmpty())
             Series:
                 @foreach ($thread->series as $series)
