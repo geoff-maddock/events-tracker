@@ -44,6 +44,7 @@ class Thread extends Eloquent {
 	'visibility_id', 
 	'forum_id',
 	'views',
+    'event_id',
 	'locked_at',
 	'locked_by'
 	];
@@ -335,13 +336,13 @@ class Thread extends Eloquent {
 	}
 
 	/**
-	 * The events that belong to the thread
+	 * A thread has one event at most
 	 *
 	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
 	 */
-	public function events()
+	public function event()
 	{
-		return $this->belongsToMany('App\Event')->withTimestamps();
+        return $this->hasOne('App\Event','id','event_id');
 	}
 
 

@@ -15,8 +15,13 @@
 			{!! link_to_route('events.show', $event->name, [$event->id], ['class' => 'item-title']) !!} 
 	
 			@if ($signedIn && $event->ownedBy($user))
-			<a href="{!! route('events.edit', ['id' => $event->id]) !!}" title="Edit this event."><span class='glyphicon glyphicon-pencil'></span></a>
+				<a href="{!! route('events.edit', ['id' => $event->id]) !!}" title="Edit this event."><span class='glyphicon glyphicon-pencil'></span></a>
 			@endif
+
+			@if ($event->threads && $thread = $event->threads->first())
+				<a href="{!! route('threads.show', ['id' => $thread->id]) !!}" title="Show the related thread."><span class='glyphicon glyphicon-comment'></span></a>
+			@endif
+
 
 			@if ($link = $event->primary_link)
 				<a href="{{ $link }}" title="External link for this event" target="_blank"><span class='glyphicon glyphicon-link'></span></a>

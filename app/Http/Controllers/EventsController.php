@@ -1367,9 +1367,7 @@ class EventsController extends Controller
 
         $thread = Thread::where('event_id','=',$event->id)->get();
 
-
-
-        return view('events.show', compact('event', 'thread'))->with(['thread' => $thread]);
+        return view('events.show', compact('event'))->with(['thread' => $thread->first()]);
 	}
 
 
@@ -2134,12 +2132,16 @@ class EventsController extends Controller
             'body' => $event->short,
             'thread_category_id' => 1,
             'visibility_id' => $event->visibility_id,
-            'event_id' => $event->id
+            'event_id' => $event->id,
+            'likes' => 0,
         ]);
 
         $thread->save();
 
-        return view('events.show', compact('thread'))->with(['event' => $event]);
+        $th = Thread::where('event_id','=',$event->id)->get();
+
+        return view('events.show', compact('event'))->with(['thread' => $th->first()]);
+
     }
 
     public function rss(RssFeed $feed)

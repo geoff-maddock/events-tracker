@@ -256,13 +256,13 @@ class Event extends Eloquent {
     }
 
     /**
-     * An event belongs to one thread
+     * An event can belong to many threads
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function thread()
+    public function threads()
     {
-        return $this->belongsTo('App\Thread','event_id');
+        return $this->hasMany('App\Thread');
     }
 
 
