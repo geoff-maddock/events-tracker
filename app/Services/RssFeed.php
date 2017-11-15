@@ -46,7 +46,7 @@ class RssFeed
       ->appendTo($feed);
 
     $events = Event::future()->orderBy('start_at','desc')->take(config('event.rss_size'))->get();
-      
+
     foreach ($events as $event) {
       $item = new Item();
       $item
