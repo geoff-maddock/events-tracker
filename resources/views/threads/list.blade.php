@@ -13,7 +13,6 @@
       </tr>
     </thead>
 <tbody>
-
 	@foreach ($threads as $thread)
 
 	<tr>

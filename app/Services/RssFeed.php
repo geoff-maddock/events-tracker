@@ -39,21 +39,14 @@ class RssFeed
     $channel
       ->title(config('event.title'))
       ->description(config('event.description'))
-      ->url(url())
+      ->url(url('/'))
       ->language('en')
       ->copyright('Copyright (c) '.config('event.author'))
       ->lastBuildDate($now->timestamp)
       ->appendTo($feed);
 
-    /*$posts = Post::where('published_at', '<=', $now)
-      ->where('is_draft', 0)
-      ->orderBy('published_at', 'desc')
-      ->take(config('event.rss_size'))
-      ->get();
-    */
-
     $events = Event::future()->orderBy('start_at','desc')->take(config('event.rss_size'))->get();
-
+      
     foreach ($events as $event) {
       $item = new Item();
       $item
@@ -75,6 +68,7 @@ class RssFeed
       '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">',
       $feed
     );
+
     $feed = str_replace(
       '<channel>',
       '<channel>'."\n".'    <atom:link href="'.url('/rss').
