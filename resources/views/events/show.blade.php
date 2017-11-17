@@ -128,7 +128,7 @@
 	</div>
 	</div>
 
-	<div class="col-md-5">
+	<div class="col-md-6">
 		@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )	
 		<form action="/events/{{ $event->id }}/photos" class="dropzone" id="myDropzone" method="POST">
 			<input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -138,28 +138,28 @@
 		<br style="clear: left;"/>
 
 		@foreach ($event->photos->chunk(4) as $set)
-		<div class="row">
-		@foreach ($set as $photo)
-			<div class="col-md-2">
-			<a href="/{{ $photo->path }}" data-lightbox="{{ $photo->path }}" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="/{{ $photo->thumbnail }}" alt="{{ $event->name}}"  style="max-width: 100%;"></a>
-			@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )	
-			@if ($signedIn || $user->id == Config::get('app.superuser')) 
-				{!! link_form_icon('glyphicon-trash text-warning', $photo, 'DELETE', 'Delete the photo') !!}
-				@if ($photo->is_primary)
-				{!! link_form_icon('glyphicon-star text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
-				@else
-				{!! link_form_icon('glyphicon-star-empty text-info', '/photos/'.$photo->id.'/setPrimary', 'POST', 'Set as primary photo') !!}
+			<div class="row">
+			@foreach ($set as $photo)
+				<div class="col-md-2">
+				<a href="/{{ $photo->path }}" data-lightbox="{{ $photo->path }}" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="/{{ $photo->thumbnail }}" alt="{{ $event->name}}"  style="max-width: 100%;"></a>
+				@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )
+					@if ($signedIn || $user->id == Config::get('app.superuser'))
+						{!! link_form_icon('glyphicon-trash text-warning', $photo, 'DELETE', 'Delete the photo') !!}
+						@if ($photo->is_primary)
+						{!! link_form_icon('glyphicon-star text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
+						@else
+						{!! link_form_icon('glyphicon-star-empty text-info', '/photos/'.$photo->id.'/setPrimary', 'POST', 'Set as primary photo') !!}
+						@endif
+					@endif
 				@endif
-			@endif
-			@endif
+				</div>
+			@endforeach
 			</div>
-		@endforeach
-		</div>
 		@endforeach
 		</div>
 
 	@if (isset($thread) && count($thread) > 0)
-		<div class="col-lg-6">
+		<div class="col-md-6">
 			<div class="panel panel-info">
 
 				<div class="panel-heading">
@@ -170,11 +170,31 @@
 
 				<div class="panel-body">
 					<table class="table forum table-striped">
-					@include('threads.first', ['thread' => $thread])
-					@include('posts.list', ['thread' => $thread, 'posts' => $thread->posts])
+					@include('threads.briefFirst', ['thread' => $thread])
+					@include('posts.briefList', ['thread' => $thread, 'posts' => $thread->posts])
 					</table>
-				</div>
 
+					<div class="col-lg-12">
+
+						@if ($thread->is_locked)
+							<P class="text-center">This thread has been locked.</P>
+						@else
+							@if ($signedIn)
+								Add new post as <strong>{{ $user->name }}</strong>
+								<form method="POST" action="{{ $thread->path().'/posts' }}">
+									{{ csrf_field() }}
+									<div class="form-group">
+										<textarea name="body" id="body" class="form-control" placeholder="Have something to say?" rows="5"></textarea>
+									</div>
+									<button type="submit" class="btn btn-default">Post</button>
+								</form>
+
+							@else
+								<p class="text-center">Please <a href="{{ url('/login')}}">sign in</a> to participate in this discussion.</p>
+							@endif
+						@endif
+					</div>
+				</div>
 			</div>
 		</div>
 	@endif

@@ -300,6 +300,11 @@ class ThreadsController extends Controller
             });
         }
 
+        // return json only
+        if (request()->wantsJson()) {
+            return $threads;
+        }
+
         return view('threads.index')
         			->with(compact('threads'))
                     ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder,
