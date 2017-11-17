@@ -203,3 +203,25 @@ li.selected:hover {
 	-moz-opacity: 0.6;
 	opacity: 0.6;
 }
+
+#event-repo h2, .h2 {
+    font-size: 32px;
+    font-weight: 600;
+    font-variant-caps: normal;
+    color: chocolate;
+}
+
+#event-repo .table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: #1b2e40;
+}
+
+#event-repo .table>thead>tr>th, .table>tbody>tr>th, .table>tfoot>tr>th, .table>thead>tr>td, .table>tbody>tr>td, .table>tfoot>tr>td {
+    padding: 6px;
+    line-height: 1.42857143;
+    vertical-align: top;
+    border-top: 1px solid #000;
+}
+
+#event-repo table>thead>tr>th, .table>thead>tr>th, table>tbody>tr>th, .table>tbody>tr>th, table>tfoot>tr>th, .table>tfoot>tr>th, table>thead>tr>td, .table>thead>tr>td, table>tbody>tr>td, .table>tbody>tr>td, table>tfoot>tr>td, .table>tfoot>tr>td {
+    border-color: #000;
+}

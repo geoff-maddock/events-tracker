@@ -17,7 +17,7 @@
 	<tr>
 		<td colspan='6' class="post-body">
 			<!-- TO DO: change this to storing the trust in the user at post save -->
-			@if ($post->user->can('trust_post'))
+			@if (isset($post->user) && $post->user->can('trust_post'))
 				{!! $post->body !!}
 			@else
 				{{ $post->body }}

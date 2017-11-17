@@ -5,7 +5,7 @@
 @section('content')
 
 <h1>Event
-	@include('events.crumbs', ['slug' => $event->slug])
+	@include('events.crumbs', ['slug' => '#'.$event->id])
 </h1>
 
 <P>
@@ -140,7 +140,7 @@
 		@foreach ($event->photos->chunk(4) as $set)
 			<div class="row">
 			@foreach ($set as $photo)
-				<div class="col-md-2">
+				<div class="col-md-2" style="padding-bottom: 10px;">
 				<a href="/{{ $photo->path }}" data-lightbox="{{ $photo->path }}" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="/{{ $photo->thumbnail }}" alt="{{ $event->name}}"  style="max-width: 100%;"></a>
 				@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )
 					@if ($signedIn || $user->id == Config::get('app.superuser'))

@@ -208,3 +208,11 @@ li.selected:hover {
 #event-repo .navbar-default .navbar-nav > li > a:hover {
 	background-color: #e7e7e7;
 }
+
+
+#event-repo h2, .h2 {
+    font-size: 32px;
+    font-weight: 600;
+    font-variant-caps: normal;
+    color: initial;
+}
