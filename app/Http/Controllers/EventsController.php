@@ -361,6 +361,7 @@ class EventsController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param Request $request
      * @return View
      */
     public function index(Request $request)
@@ -401,6 +402,45 @@ class EventsController extends Controller
             ])
             ->with(compact('future_events'))
             ->with(compact('past_events'))
+            ->render();
+    }
+
+
+    /**
+     * Display a grid listing of the resource.
+     *
+     * @param Request $request
+     * @return View
+     */
+    public function grid(Request $request)
+    {
+        $hasFilter = 1;
+
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        $this->rpp = 64;
+
+        // get filters from session
+        $filters = $this->getFilters($request);
+
+        // base criteria
+        $query = $this->buildCriteria($request);//,'start_at', 'desc' );
+
+        // get future events
+        $events = $query->orderBy('created_at', 'desc')->paginate($this->rpp);
+        $events->filter(function ($e) {
+            return ((isset($e->visibility) && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
+
+        return view('events.grid')
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter,  'filters' => $filters,
+                'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
+                'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL,
+                'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL,
+                'filter_rpp' => isset($filters['filter_rpp']) ? $filters['filter_rpp'] : NULL
+            ])
+            ->with(compact('events'))
             ->render();
     }
 
