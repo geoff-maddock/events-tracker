@@ -9,7 +9,7 @@
 		</li>
 		@endif
 
-		<li class="event-card" style="clear: both;">
+		<li class="series-card" style="clear: both;">
 			@if ($primary = $series->getPrimaryPhoto())
 			<div style="float: left; padding: 5px;">
 
