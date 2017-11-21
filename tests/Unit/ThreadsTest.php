@@ -59,7 +59,7 @@ class ThreadsTest extends TestCase
     function a_thread_has_a_creator()
     {
         // add that thread 
-        $thread = factory('App\Thread')->create();
+        $thread = factory('App\Thread')->make();
  
         $this->assertInstanceOf('App\User', $thread->creator);
     }
@@ -70,6 +70,7 @@ class ThreadsTest extends TestCase
         // add that thread 
         $this->thread->addPost([
             'body' => 'Foobar',
+            'name' => 'Generic Reply',
             'created_by' => 1
             ]);
     }

@@ -188,7 +188,7 @@
 
 <div class="form-group">
  
-@if ($eventLinkId)
+@if (isset($eventLinkId))
 	{!! Form::hidden('eventLinkId', $eventLinkId) !!}
 @endif
 {!! Form::submit(isset($action) && $action == 'update' ? 'Update Series' : 'Add Series', null, ['class' =>'btn btn-primary']) !!}
