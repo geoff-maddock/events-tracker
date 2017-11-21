@@ -250,7 +250,7 @@ return [
 		'Validator' => 'Illuminate\Support\Facades\Validator',
 		'View'      => 'Illuminate\Support\Facades\View',
 		#'Form'		=> 'Illuminate\Html\FormFacade',
-		'Socialize' => 'Laravel\Socialite\Facades\Socialite',
+        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
 		'Image'     => 'Intervention\Image\Facades\Image',
 		'Calendar'  => 'MaddHatter\LaravelFullcalendar\Facades\Calendar',
         'Form' => Collective\Html\FormFacade::class,
