@@ -12,7 +12,9 @@
 		<li class="series-card" style="clear: both;">
 			@if ($primary = $series->getPrimaryPhoto())
 			<div style="float: left; padding: 5px;">
-					<img src="/{{ $series->getPrimaryPhoto()->thumbnail }}" alt="{{ $series->name}}"  style="max-width: 100px; ">
+
+				<a href="/{{ $primary->path }}" data-lightbox="{{ $primary->path }}" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="/{{ $primary->thumbnail }}" alt="{{ $series->name}}"  ></a>
+
 			</div>
 			@endif
 		 	{!! link_to_route('series.show', $series->name, [$series->id], ['class' => 'item-title']) !!} {{ $series->short }}

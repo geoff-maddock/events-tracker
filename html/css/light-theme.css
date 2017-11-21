@@ -80,11 +80,12 @@ body {
 
 .label-tag {
  	background-color: #dddddd;
-	margin: .1em;
+	margin: .2em;
 }
 
 .label-related{
 	background-color: #ffffff;
+	margin: .2em;
 }
 
 .card-thumb {

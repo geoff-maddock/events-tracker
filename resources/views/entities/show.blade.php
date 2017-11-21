@@ -77,7 +77,7 @@
 		
 		<P>		
 		@foreach ($entity->locations as $location)
-		@if ($location->visibility->name != 'Guarded' || ($location->visibility->name == 'Guarded' && $signedIn))
+		@if (isset($location->visibility) && ($location->visibility->name != 'Guarded' || ($location->visibility->name == 'Guarded' && $signedIn)))
 
 		<span><B>{{ isset($location->locationType) ? $location->locationType->name : '' }}</B>  {{ $location->address_one }} {{ $location->neighborhood or '' }}  {{ $location->city }} {{ $location->state }} {{ $location->country }}
 				
@@ -220,6 +220,7 @@
 		</div>
 		@endforeach
 
+			<br>
 		<div class="row">
 
 				<div class="col-lg-6">
