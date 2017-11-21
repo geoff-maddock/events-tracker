@@ -16,6 +16,7 @@
 		          <a href="{{ url('/events') }}" class="dropdown-toggle" data-hover="dropdown" role="button" aria-haspopup="true" aria-expanded="false" data-toggle="xtooltipx"  data-placement="bottom"  title="Show paginated list of events">Events <span class="caret"></span></a>
 		          <ul class="dropdown-menu">
 		            <li class="{{ Request::is('events/all') ? 'active' : '' }}"><a href="{{ url('/events/all') }}">All Events</a></li>
+					<li class="{{ Request::is('events/grid') ? 'active' : '' }}"><a href="{{ url('/events/grid') }}">Event Grid</a></li>
                     <li class="{{ Request::is('events/week') ? 'active' : '' }}"><a href="{{ url('/events/week') }}">Week's Events</a></li>
                     <li class="{{ Request::is('events/attending') ? 'active' : '' }}"><a href="{{ url('/events/attending') }}">Events Attending</a></li>
 		            <li class="{{ Request::is('events/feed') ? 'active' : '' }}"><a href="{{ url('/events/feed') }}" target="_blank">Events Text Only</a></li>
