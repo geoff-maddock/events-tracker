@@ -160,8 +160,6 @@ class Event extends Eloquent {
 	 */
 	public function scopeStarting($query, $date)
 	{
-
-		$cdate = Carbon::parse($date);
 		$cdate_yesterday = Carbon::parse($date)->subDay(1);
 		$cdate_tomorrow = Carbon::parse($date)->addDay(1);
 
