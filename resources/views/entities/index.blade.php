@@ -48,7 +48,7 @@
 			<div class="form-group col-sm-1">
 				{!! Form::label('filter_rpp','RPP') !!}
 				<?php $rpp_options =  [''=>'&nbsp;', 5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000];?>
-				{!! Form::select('filter_rpp', $rpp_options, (isset($rpp) ? $rpp : NULL), ['class' =>'form-control']) !!}
+				{!! Form::select('filter_rpp', $rpp_options, (isset($rpp) ? $rpp : NULL), ['class' =>'auto-submit form-control']) !!}
 			</div>
 			@endif
 

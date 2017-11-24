@@ -70,20 +70,25 @@ class EventsController extends Controller
      */
     protected function updatePaging($request)
     {
-        // set sort by column
-        if ($request->input('sort_by')) {
-            $this->sortBy = $request->input('sort_by');
+        $filters = array();
+        if (!empty($request->input('filter_sort_by'))) {
+            $this->sortBy = $request->input('filter_sort_by');
+            $filters['filter_sort_by'] = $this->sortBy;
         };
 
-        // set sort direction
-        if ($request->input('sort_direction')) {
-            $this->sortOrder = $request->input('sort_direction');
+        if (!empty($request->input('filter_sort_order'))) {
+            $this->sortOrder = $request->input('filter_sort_order');
+            $filters['filter_sort_order'] = $this->sortOrder;
         };
 
-        // set results per page
-        if ($request->input('rpp')) {
-            $this->rpp = $request->input('rpp');
+        if (!empty($request->input('filter_rpp'))) {
+            $this->rpp = $request->input('filter_rpp');
+            $filters['filter_rpp'] = $this->rpp;
         };
+
+        // save filters to session
+        $this->setFilters($request, $filters);
+
     }
 
 
@@ -135,7 +140,10 @@ class EventsController extends Controller
         // change this - should be separate
         if (!empty($filters['filter_rpp'])) {
             $this->rpp = $filters['filter_rpp'];
+            dump($this->rpp);
+            dump($filters['filter_rpp']);
         }
+
 
         return $query;
     }
@@ -512,6 +520,7 @@ class EventsController extends Controller
         $query_past = $this->event->past()->orderBy($this->sortBy, $this->sortOrder);
 
         // add the criteria from the session
+
         // check request for passed filter values
 
         if (!empty($request->input('filter_name'))) {

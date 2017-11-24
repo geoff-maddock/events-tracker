@@ -77,7 +77,7 @@ Route::get('events/createThread', [
     'uses' => 'EventsController@createThread'
 ]);
 Route::get('events/all', 'EventsController@indexAll');
-Route::get('events/grid', 'EventsController@grid');
+Route::get('events/grid', 'EventsController@grid')->name('events.grid');
 Route::get('events/timeline', 'EventsController@indexTimeline')->name('events.timeline');
 Route::get('events/future', 'EventsController@indexFuture')->name('events.future');
 Route::get('events/past', 'EventsController@indexPast');
