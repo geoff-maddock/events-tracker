@@ -140,8 +140,6 @@ class EventsController extends Controller
         // change this - should be separate
         if (!empty($filters['filter_rpp'])) {
             $this->rpp = $filters['filter_rpp'];
-            dump($this->rpp);
-            dump($filters['filter_rpp']);
         }
 
 
