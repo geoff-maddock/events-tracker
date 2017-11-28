@@ -7,6 +7,7 @@ use App\Visibility;
 use App\Tag;
 use App\Series;
 
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Dusk\DuskServiceProvider;
@@ -21,6 +22,12 @@ class AppServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
+        Relation::morphMap([
+            'entity' => 'App\Entity',
+            'events' => 'App\Event',
+            'tags' => 'App\Tag'
+        ]);
+
 	    // get the user, set the theme and pass to the view
         \View::composer('app', function($view) {
             if (Auth::check() && Auth::user()->profile && Auth::user()->profile->default_theme) {

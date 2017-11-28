@@ -20,6 +20,11 @@
 	<div class="profile-card col-md-5">
 	<h2 class='item-title'>{{ $entity->name }}</h2>
 
+		<div>
+			<img src="/{{ $entity->getPrimaryPhoto()->path }}" class="listing">
+		</div>
+
+
 	@unless ($entity->aliases->isEmpty())
 		
 		<P><b>Aliases:</b>
@@ -44,6 +49,7 @@
 
 	@if ($signedIn)
 	<br>
+	{{ count($entity->follows) }} Follows | 	
 	@if ($follow = $entity->followedBy($user))
 	<b>You Are Following</b> <a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}" title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
 	@else

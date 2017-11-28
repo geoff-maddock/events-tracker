@@ -8,35 +8,28 @@
 	@include('events.crumbs', ['slug' => '#'.$event->id])
 </h1>
 
-<P>
-	@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )
-		<a href="{!! route('events.edit', ['id' => $event->id]) !!}" class="btn btn-primary">Edit Event</a>
-	@endif
+<p id="show_actions">
+	@include('events.show.actions', ['event' => $event, 'user' => $user])
+</p>
 
-	@if (!$event->series_id && $user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )
-		<a href="{!! route('events.createSeries', ['id' => $event->id]) !!}" title="Create an event series based on this event." class="btn btn-primary"><span class='glyphicon glyphicon-fire'></span> Create Series</a>
-	@endif
-
-	@if (!$thread && $user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser')) )
-		<a href="{!! route('events.createThread', ['id' => $event->id]) !!}" title="Create an thread related to this event." class="btn btn-primary"><span class='glyphicon glyphicon-comment'></span> Create Thread</a>
-	@endif
-
-	<a href="{!! URL::route('events.index') !!}" class="btn btn-info">Return to list</a>
-</P>
 
 <div class="row">
 <div class="col-md-6">
 	<div class="event-card">
-	<div class='event-date'>
+	<div class="event-date">
         @if ($event->visibility->name == 'Cancelled')
             <span class="text-warning">Cancelled on {{ $event->cancelled_at->format('l F jS Y') }}</span><br>
         @endif
-	<h2>{!! $event->start_at->format('l F jS Y') !!}</h2>
-
-	{!! $event->start_at->format('h:i A') !!} {!! $event->end_time ? 'until '.$event->end_time->format('h:i A') : '' !!}
+	<h3 class="listing">{!! $event->start_at->format('l F jS Y') !!}</h3>
+			<h4 class="listing">{!! $event->start_at->format('h:i A') !!} {!! $event->end_time ? 'until '.$event->end_time->format('h:i A') : '' !!}</h4>
 	</div>
 
 	<h2>{{ $event->name }}</h2>
+
+	<div>
+		<img src="/{{ $event->getPrimaryPhoto()->path }}" class="listing">
+	</div>
+
 	<i>{{ $event->short }}</i><br>
 
 

@@ -213,6 +213,24 @@ li.selected:hover {
     color: chocolate;
 }
 
+#event-repo h3.listing {
+	font-size: 28px;
+	font-weight: 600;
+	font-variant-caps: normal;
+	color: chocolate;
+}
+
+#event-repo h4.listing {
+	font-size: 18px;
+	font-weight: 400;
+	color: chocolate;
+	margin-top: -10px;
+}
+
+#event-repo .listing {
+	max-width: 100%
+}
+
 #event-repo .table-striped>tbody>tr:nth-of-type(odd) {
     background-color: #1b2e40;
 }

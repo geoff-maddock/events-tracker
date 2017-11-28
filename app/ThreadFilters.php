@@ -24,5 +24,11 @@ class ThreadFilters extends QueryFilter
 		}
 	}
 
+	protected function popular()
+    {
+        $this->builder->getQuery()->orders = [];
+
+        return $this->builder->orderBy('posts_count', 'desc');
+    }
 
 }

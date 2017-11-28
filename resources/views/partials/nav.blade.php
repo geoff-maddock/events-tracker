@@ -41,6 +41,7 @@
 		            <li class="{{ Request::is('calendar/free') ? 'active' : '' }}"><a href="{!! url('/calendar/free') !!}" >Free Shows</a></li>
 		            <li class="{{ Request::is('calendar/min_age/0') ? 'active' : '' }}"><a href="{!! url('/calendar/min_age/0') !!}" >All Ages</a></li>
 		            <li class="{{ Request::is('calendar/type/club night') ? 'active' : '' }}"><a href="{!! url('/calendar/type/club night') !!}" >Club Night</a></li>
+					<li class="{{ Request::is('calendar/type/concert') ? 'active' : '' }}"><a href="{!! url('/calendar/type/concert') !!}" >Live Concert</a></li>
 					<li class="{{ Request::is('calendar/attending') ? 'active' : '' }}"><a href="{!! url('/calendar/attending') !!}" >Attending</a></li>
 		          </ul>
 		        </li>

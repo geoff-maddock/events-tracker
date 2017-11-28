@@ -42,13 +42,13 @@ class Follow extends Eloquent {
 	public function getObject()
 	{
 		// how can i derive this class from a string?
-		if (!$object = call_user_func("App\\".ucfirst($this->getObjectType())."::find", $this->getObjectId())) // Tag::find($id)) 
+		if (!$object = call_user_func("App\\".ucfirst($this->getObjectType())."::find", $this->getObjectId())) // Tag::find($id))
 		{
 			return $object;
 		};
 	}
 
-	public function followable()
+	public function object()
 	{
 		return $this->morphTo();
 	}

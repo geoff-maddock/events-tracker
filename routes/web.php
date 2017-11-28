@@ -174,6 +174,7 @@ Route::get('threads/{id}/follow', [
     'uses' => 'ThreadsController@follow'
 ]);
 
+
 Route::get('threads/{id}/unfollow', [
     'as' => 'threads.unfollow',
     'uses' => 'ThreadsController@unfollow'
@@ -237,6 +238,11 @@ Route::get('entities/alias/{alias}', 'EntitiesController@indexAliases')->name('e
 Route::get('entities/slug/{slug}', 'EntitiesController@indexSlug')->name('entities.slug');
 
 Route::get('entities/{id}/follow', [
+    'as' => 'entities.follow',
+    'uses' => 'EntitiesController@follow'
+]);
+
+Route::post('entities/{id}/follow', [
     'as' => 'entities.follow',
     'uses' => 'EntitiesController@follow'
 ]);

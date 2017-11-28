@@ -18,6 +18,18 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
     ];
 });
 
+$factory->define(App\Entity::class, function (Faker\Generator $faker) {
+    return [
+        'name' => $faker->name,
+        'slug' => $faker->name,
+        'short' => $faker->paragraph,
+        'description' => $faker->paragraph,
+        'entity_type_id' => rand(1,5),
+        'entity_status_id' => rand(1,5),
+        'created_by' => 1
+    ];
+});
+
 $factory->define(App\Series::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->name,

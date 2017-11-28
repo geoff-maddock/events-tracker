@@ -142,4 +142,6 @@ class ThreadsTest extends TestCase
             ->assertSee($threadByJohn->name)
             ->assertDontSee($threadNotByJohn->name);
     }
+
+
 }
