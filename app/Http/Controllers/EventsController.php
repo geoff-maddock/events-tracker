@@ -259,7 +259,7 @@ class EventsController extends Controller
      */
     public function getRpp(Request $request)
     {
-        return $this->getAttribute('rpp', $this->rpp);
+        return $this->getAttribute('rpp', $this->rpp, $request);
     }
 
     /**
@@ -269,14 +269,14 @@ class EventsController extends Controller
      */
     public function getSort(Request $request)
     {
-        return $this->getAttribute('sort', $this->getDefaultSort());
+        return $this->getAttribute('sort', $this->getDefaultSort(), $request);
     }
 
 
     /**
      * Get the default sort array
      *
-     * @return Array
+     * @return array
      */
     public function getDefaultSort()
     {
@@ -287,7 +287,7 @@ class EventsController extends Controller
     /**
      * Get the default filters array
      *
-     * @return Array
+     * @return array
      */
     public function getDefaultFilters()
     {
@@ -304,8 +304,7 @@ class EventsController extends Controller
      */
     public function setAttribute($attribute, $value, Request $request)
     {
-        return $request->session()
-            ->put($this->prefix . $attribute, $value);
+        return $request->session()->put($this->prefix . $attribute, $value);
     }
 
     /**
@@ -388,13 +387,13 @@ class EventsController extends Controller
         $query_future->future();
 
         // get future events
-        $future_events = $query_future->where('start_at','>', Carbon::today()->startOfDay())->paginate($this->rpp);
+        $future_events = $query_future->where('start_at','>', Carbon::today()->startOfDay())->with('visibility')->paginate($this->rpp);
         $future_events->filter(function ($e) {
             return ((isset($e->visibility) && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
 
         // get past events
-        $past_events = $query_past->where('start_at','<', Carbon::today()->startOfDay())->paginate($this->rpp);
+        $past_events = $query_past->where('start_at','<', Carbon::today()->startOfDay())->with('visibility')->paginate($this->rpp);
         $past_events->filter(function ($e) {
             return ((isset($e->visibility) && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
@@ -473,13 +472,13 @@ class EventsController extends Controller
         $query_future->future();
 
         // get future events
-        $future_events = $query_future->where('start_at','>', Carbon::today()->startOfDay())->paginate($this->rpp);
+        $future_events = $query_future->where('start_at','>', Carbon::today()->startOfDay())->with('visibility')->paginate($this->rpp);
         $future_events->filter(function ($e) {
             return ((isset($e->visibility) && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
 
         // get past events
-        $past_events = $query_past->where('start_at','<', Carbon::today()->startOfDay())->paginate($this->rpp);
+        $past_events = $query_past->where('start_at','<', Carbon::today()->startOfDay())->with('visibility')->paginate($this->rpp);
         $past_events->filter(function ($e) {
             return ((isset($e->visibility) && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });

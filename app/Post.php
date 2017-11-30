@@ -104,7 +104,7 @@ class Post extends Eloquent {
      */
     public function likes()
     {
-        return $this->belongsToMany('App\Like')->withTimestamps();
+        return $this->morphMany('App\Like','object', 'object_type', 'object_id');
     }
 
 	/**

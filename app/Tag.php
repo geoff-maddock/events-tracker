@@ -98,4 +98,14 @@ class Tag extends Eloquent {
 
 		return $users;
 	}
+
+    /**
+     * The follows that belong to the entity
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\Morph
+     */
+    public function follows()
+    {
+        return $this->morphMany('App\Follow','object', 'object_type', 'object_id');
+    }
 }

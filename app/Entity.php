@@ -168,7 +168,7 @@ class Entity extends Eloquent {
 	 */
 	public function locations()
 	{
-		return $this->hasMany('App\Location');
+		return $this->hasMany('App\Location')->with('visibility');
 	}
 
 
@@ -224,11 +224,11 @@ class Entity extends Eloquent {
     /**
      * The likes that belong to the entity
      *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @ return \Illuminate\Database\Eloquent\Relations\Morph
      */
     public function likes()
     {
-        return $this->belongsToMany('App\Like')->withTimestamps();
+        return $this->morphMany('App\Like','object', 'object_type', 'object_id');
     }
 
 	/**
@@ -462,7 +462,7 @@ class Entity extends Eloquent {
 		$address = '';
 
 		// get a list of events that start on the passed date
-		$primary = $this->locations()->first();
+		$primary = $this->locations()->with('visibility')->first();
 
 		if ($primary && ($primary->visibility->name != 'Guarded' || ($primary->visibility->name == 'Guarded') && $signedIn))
 		{

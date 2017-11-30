@@ -135,20 +135,12 @@ class EntitiesController extends Controller {
         return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
     }
 
-    /**
-     * Criteria provides a way to define criteria to be applied to a tab on the index page.
-     *
-     * @return array
-     */
-    protected function getCriteria()
-    {
-        return $this->criteria;
-    }
+
 
     /**
      * Get the current page for this module
      *
-     * @return integner
+     * @return integer
      */
     protected function getPage()
     {

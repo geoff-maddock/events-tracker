@@ -31,6 +31,7 @@ $factory->define(App\Entity::class, function (Faker\Generator $faker) {
 });
 
 $factory->define(App\Series::class, function (Faker\Generator $faker) {
+    $user = factory('App\User')->create();
     return [
         'name' => $faker->name,
         'slug' => $faker->name,
@@ -41,29 +42,27 @@ $factory->define(App\Series::class, function (Faker\Generator $faker) {
         'occurrence_type' => rand(1,3),
         'start_at' => now(),
         'is_active' => 1,
-        'created_by' => 1
+        'created_by' => $user->id
     ];
 });
 
 $factory->define(App\Forum::class, function (Faker\Generator $faker) {
-    $user = factory('App\User')->create()->id;
+    $user = factory('App\User')->create();
     return [
         'name' => $faker->sentence,
         'slug' => $faker->sentence,
         'description' => $faker->sentence,
         'visibility_id' => 3,
         'is_active' => 1,
-        'created_by' => 1
+        'created_by' => $user->id
     ];
 });
 
 $factory->define(App\Thread::class, function (Faker\Generator $faker) {
-	$user = factory('App\User')->create()->id;
+	$user = factory('App\User')->create();
 	return [
 		'forum_id' => 1,
-        'created_by' => function() {
-            return App\User::all()->last()->id;
-        },
+        'created_by' => $user->id,
 		'name' => $faker->sentence,
 		'slug' => $faker->sentence,
 		'body' => $faker->paragraph,

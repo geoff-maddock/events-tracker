@@ -395,8 +395,8 @@ class Series extends Eloquent {
 	{ 
 		$repeat = '';
 
-		$week = $this->occurrenceWeek ? $this->occurrenceWeek->name : '';
-		$day = $this->occurrenceDay ? $this->occurrenceDay->name.'s' : '';
+		$week = $this->occurrenceWeekId ? $this->occurrenceWeek->name : '';
+		$day = $this->occurrenceDayId ? $this->occurrenceDay->name.'s' : '';
 
 		switch ($this->occurrenceType->name)
 		{
@@ -444,9 +444,9 @@ class Series extends Eloquent {
 		$list = array();
 
 		// get all the upcoming series events
-		$series = Series::active()->get();
+		$series = Series::active()->with(['visibility', 'occurrenceType'])->get();
 
-		$series = $series->filter(function($e)
+        $series = $series->filter(function($e)
 		{
 			// all public events
 			// and all events with a schedule
@@ -530,7 +530,6 @@ class Series extends Eloquent {
 	public function cycleForward($date)
 	{ 
 		//$days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'); 
-
 
 		switch ($this->occurrenceType->name)
 		{

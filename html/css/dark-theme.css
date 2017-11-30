@@ -208,9 +208,9 @@ li.selected:hover {
 
 #event-repo h2, .h2 {
     font-size: 32px;
-    font-weight: 600;
+    font-weight: 800;
     font-variant-caps: normal;
-    color: chocolate;
+    color: #5bc0de;
 }
 
 #event-repo h3.listing {

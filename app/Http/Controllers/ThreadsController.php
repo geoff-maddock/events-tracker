@@ -285,7 +285,7 @@ class ThreadsController extends Controller
  		$query = $this->buildCriteria($request);
 
         // get the threads
-		$threads = $query->paginate($this->rpp);
+		$threads = $query->with('visibility')->paginate($this->rpp);
 
         // filter only public threads or those created by the logged in user
 		$threads->filter(function($e)
@@ -493,13 +493,13 @@ class ThreadsController extends Controller
     {
 
         // if the gate does not allow this user to show a forum redirect to home
-        /*
+
         if (Gate::denies('show_forum')) {
             flash()->error('Unauthorized', 'Your cannot view the forum');
 
             return redirect()->back();
         }
- 		*/
+
         $hasFilter = 1;
 
  		// updates sort, rpp from request
@@ -555,13 +555,12 @@ class ThreadsController extends Controller
 	public function indexTags(Request $request, $tag)
 	{
         // if the gate does not allow this user to show a forum redirect to home
-        /*
         if (Gate::denies('show_forum')) {
             flash()->error('Unauthorized', 'Your cannot view the forum');
 
             return redirect()->back();
         }
-		*/
+
         $hasFilter = 1;
 
         // updates sort, rpp from request
@@ -791,14 +790,13 @@ class ThreadsController extends Controller
     public function show(Thread $thread)
     {
         // if the gate does not allow this user to show a forum redirect to home
-        /*
+
         if (Gate::denies('show_forum')) {
             flash()->error('Unauthorized', 'Your cannot view the forum');
 
             return redirect()->back();
         }
- 		*/
-        
+
     	// call a log for this and prevent it from going out of control
     	$thread->views++;
     	$thread->save();

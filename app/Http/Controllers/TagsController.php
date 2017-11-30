@@ -55,6 +55,7 @@ class TagsController extends Controller {
      * @param Tag $tag
      * @return Response
      * @internal param int $id
+     * @throws \Exception
      */
     public function destroy(Tag $tag)
     {
@@ -84,6 +85,7 @@ class TagsController extends Controller {
  		// get all the events linked to the tag
 		$events = Event::orderBy('start_at', 'DESC')
 					->orderBy('name', 'ASC')
+                    ->with('visibility')
 					->simplePaginate($this->rpp);
 
 		$events->filter(function($e)

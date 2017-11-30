@@ -147,11 +147,9 @@ class Event extends Eloquent {
 	 */
 	public function scopeVisible($query, $user)
 	{
-
 		$public = Visibility::where('name','=','Public')->first();
 		
  		$query->where('visibility_id','=', $public ? $public->id : NULL )->orWhere('created_by','=',($user ? $user->id : NULL));
-
 	}
 
 	/**
@@ -165,7 +163,8 @@ class Event extends Eloquent {
 
 		$query->where('start_at','>', $cdate_yesterday->toDateString().' 23:59:59')
 					->where('start_at','<',$cdate_tomorrow->toDateString().' 00:00:00')
-					->orderBy('start_at','ASC');
+					->orderBy('start_at','ASC')
+                    ->with('visibility');
 	}
 
     /**
@@ -498,6 +497,7 @@ class Event extends Eloquent {
 
 		$events = Event::where('start_at','>', $cdate_yesterday->toDateString())
 					->where('start_at','<',$cdate_tomorrow->toDateString())
+                    ->with('visibilities')
 					->orderBy('start_at', 'ASC')
 					->orderBy('name', 'ASC');
 

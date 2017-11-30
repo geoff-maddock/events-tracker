@@ -25,7 +25,9 @@ class AppServiceProvider extends ServiceProvider {
         Relation::morphMap([
             'entity' => 'App\Entity',
             'events' => 'App\Event',
-            'tags' => 'App\Tag'
+            'tags' => 'App\Tag',
+            'post' => 'App\Post',
+            'thread' => 'App\Thread',
         ]);
 
 	    // get the user, set the theme and pass to the view
@@ -72,6 +74,7 @@ class AppServiceProvider extends ServiceProvider {
 
         if ($this->app->environment('local', 'testing')) {
             $this->app->register(DuskServiceProvider::class);
+            $this->app->register(\Barryvdh\Debugbar\ServiceProvider::class);
         };
 	}
 
