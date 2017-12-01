@@ -497,7 +497,7 @@ class Event extends Eloquent {
 
 		$events = Event::where('start_at','>', $cdate_yesterday->toDateString())
 					->where('start_at','<',$cdate_tomorrow->toDateString())
-                    ->with('visibilities')
+                    ->with('visibility')
 					->orderBy('start_at', 'ASC')
 					->orderBy('name', 'ASC');
 
