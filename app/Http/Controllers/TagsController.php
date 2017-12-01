@@ -80,12 +80,13 @@ class TagsController extends Controller {
 					})
 					->orderBy('start_at', 'ASC')
 					->orderBy('name', 'ASC')
+                    ->with('tags','entities','occurrenceType')
 					->paginate();
 
  		// get all the events linked to the tag
 		$events = Event::orderBy('start_at', 'DESC')
 					->orderBy('name', 'ASC')
-                    ->with('visibility')
+                    ->with('visibility', 'tags','entities','venue','eventType','threads')
 					->simplePaginate($this->rpp);
 
 		$events->filter(function($e)
@@ -101,6 +102,7 @@ class TagsController extends Controller {
 					})
 					->orderBy('entity_type_id', 'ASC')
 					->orderBy('name', 'ASC')
+                     ->with('tags','locations','roles')
 					->simplePaginate($this->rpp);
 
 

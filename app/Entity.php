@@ -462,7 +462,7 @@ class Entity extends Eloquent {
 		$address = '';
 
 		// get a list of events that start on the passed date
-		$primary = $this->locations()->with('visibility')->first();
+		$primary = $this->locations()->first();
 
 		if ($primary && ($primary->visibility->name != 'Guarded' || ($primary->visibility->name == 'Guarded') && $signedIn))
 		{

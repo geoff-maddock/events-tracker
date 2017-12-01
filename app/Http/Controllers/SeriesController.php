@@ -249,7 +249,7 @@ class SeriesController extends Controller {
         // base criteria
         $query = $this->baseCriteria();
 
-        $series = $query->paginate($this->rpp);
+        $series = $query->with('occurrenceType', 'visibilities', 'tags')->paginate($this->rpp);
 
 		$series = $series->filter(function($e)
 		{
@@ -286,11 +286,12 @@ class SeriesController extends Controller {
             ->render();
 	}
 
-	/**
-	 * Display a listing of event series in a week view
-	 *
-	 * @return Response
-	 */
+    /**
+     * Display a listing of event series in a week view
+     *
+     * @return Response
+     * @throws \Throwable
+     */
 	public function indexWeek()
 	{
 		$hasFilter = 1;
@@ -307,11 +308,12 @@ class SeriesController extends Controller {
 	}
 
 
-	/**
-	 * Display a listing of series related to entity
-	 *
-	 * @return Response
-	 */
+    /**
+     * Display a listing of series related to entity
+     *
+     * @return Response
+     * @throws \Throwable
+     */
 	public function indexRelatedTo($slug)
 	{
 		$hasFilter = 1;
@@ -332,11 +334,12 @@ class SeriesController extends Controller {
             ->render();
 	}
 
-	/**
-	 * Display a listing of events by tag
-	 *
-	 * @return Response
-	 */
+    /**
+     * Display a listing of events by tag
+     *
+     * @return Response
+     * @throws \Throwable
+     */
 	public function indexTags($tag)
 	{
  		$hasFilter = 1;
