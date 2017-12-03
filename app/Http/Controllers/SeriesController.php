@@ -249,7 +249,7 @@ class SeriesController extends Controller {
         // base criteria
         $query = $this->baseCriteria();
 
-        $series = $query->with('occurrenceType', 'visibilities', 'tags')->paginate($this->rpp);
+        $series = $query->with('occurrenceType', 'visibility', 'tags')->paginate($this->rpp);
 
 		$series = $series->filter(function($e)
 		{
