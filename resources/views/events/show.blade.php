@@ -26,9 +26,11 @@
 
 	<h2>{{ $event->name }}</h2>
 
-	<div>
-		<img src="/{{ $event->getPrimaryPhoto()->path }}" class="listing">
-	</div>
+		@if ($event->getPrimaryPhoto())
+		<div>
+			<img src="/{{ $event->getPrimaryPhoto()->path }}" class="listing">
+		</div>
+		@endif
 
 	<i>{{ $event->short }}</i><br>
 

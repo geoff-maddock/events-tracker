@@ -453,6 +453,7 @@ class EventsController extends Controller
      * Display a listing of events from this point in time both future and past
      *
      * @return View
+     * @throws \Throwable
      */
     public function indexTimeline(Request $request)
     {
@@ -1413,7 +1414,7 @@ class EventsController extends Controller
 
         $thread = Thread::where('event_id','=',$event->id)->get();
 
-        return view('events.show', compact('event'))->with(['thread' => $thread->first()]);
+        return view('events.show', compact('event'))->with(['thread' => $thread ? $thread->first() : NULL]);
 	}
 
 
