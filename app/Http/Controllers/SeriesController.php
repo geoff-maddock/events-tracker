@@ -37,6 +37,7 @@ class SeriesController extends Controller {
 
         // default list variables
         $this->rpp = 100;
+        $this->childRpp = 10;
         $this->page = 1;
         $this->sort = array('name', 'desc');
         $this->sortBy = 'name';
@@ -394,8 +395,8 @@ class SeriesController extends Controller {
 
 	public function show(Series $series)
 	{
-		$events = $series->events()->paginate($this->rpp);
-		$threads = $series->threads()->paginate($this->rpp);
+		$events = $series->events()->paginate($this->childRpp);
+		$threads = $series->threads()->paginate($this->childRpp);
 
 		return view('series.show', compact('series','events','threads'));
 	}
