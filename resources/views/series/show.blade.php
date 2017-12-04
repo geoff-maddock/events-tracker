@@ -86,7 +86,7 @@
 						</div>
 						<div class="panel-body">
 								<div class="panel-body">
-								@include('events.list', ['events' => $series->events])
+								@include('events.list', ['events' => $events])
 								{!! $events->render() !!}
 								</div>
 						</div>
