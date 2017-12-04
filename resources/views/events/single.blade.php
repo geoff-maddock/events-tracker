@@ -24,7 +24,7 @@
 
 
 			@if ($link = $event->primary_link)
-				<a href="{{ $link }}" title="External link for this event" target="_blank"><span class='glyphicon glyphicon-link'></span></a>
+				<a href="{{ $link }}" title="External link for this event" target="_blank" rel="noopener"><span class='glyphicon glyphicon-link'></span></a>
 			@endif
 			
 			@if ($ticket = $event->ticket_link)
