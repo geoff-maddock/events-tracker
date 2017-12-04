@@ -14,3 +14,7 @@
 .series-card img {
     max-width: 100px;
 }
+
+#event-repo img {
+    max-width: 100%;
+}
