@@ -49,7 +49,7 @@
 
 	@if ($signedIn)
 	<br>
-	{{ count($entity->follows) }} Follows | 	
+	{{ count($entity->follows) }} Follows |
 	@if ($follow = $entity->followedBy($user))
 	<b>You Are Following</b> <a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}" title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
 	@else
@@ -240,7 +240,7 @@
 
 							<div class="panel-body">
 							@include('events.list', ['events' => $entity->pastEvents()])
-
+								{!! $entity->pastEvents()->render() !!}
 							</div>
 
 						</div>

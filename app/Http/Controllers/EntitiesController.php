@@ -173,7 +173,7 @@ class EntitiesController extends Controller {
     /**
      * Get the default sort array
      *
-     * @return Array
+     * @return array
      */
     protected function getDefaultSort()
     {
@@ -184,7 +184,7 @@ class EntitiesController extends Controller {
     /**
      * Get the default filters array
      *
-     * @return Array
+     * @return array
      */
     protected function getDefaultFilters()
     {
@@ -260,10 +260,11 @@ class EntitiesController extends Controller {
 
 
     /**
-	 * Display a listing of the resource.
-	 *
-	 * @return Response
-	 */
+     * Display a listing of the resource.
+     *
+     * @return Response
+     * @throws \Throwable
+     */
 	public function index(Request $request, EntityFilters $filters)
     {
         $hasFilter = 1;
@@ -588,6 +589,7 @@ class EntitiesController extends Controller {
      * Display an entity when passed the slug
      *
      * @return Response
+     * @throws \Throwable
      */
     public function indexSlug($slug)
     {

@@ -18,7 +18,7 @@
 				<a href="{!! route('events.edit', ['id' => $event->id]) !!}" title="Edit this event."><span class='glyphicon glyphicon-pencil'></span></a>
 			@endif
 
-			@if ($event->threads && $thread = $event->threads->first())
+			@if ($thread = $event->threads->first())
 				<a href="{!! route('threads.show', ['id' => $thread->id]) !!}" title="Show the related thread."><span class='glyphicon glyphicon-comment'></span></a>
 			@endif
 

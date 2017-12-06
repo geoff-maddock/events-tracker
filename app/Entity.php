@@ -150,7 +150,7 @@ class Entity extends Eloquent {
 		return $this->belongsTo('App\EntityStatus');
 	}
 
-	
+
 	/**
 	 * The events that belong to the entity
 	 *
@@ -158,7 +158,7 @@ class Entity extends Eloquent {
 	 */
 	public function events()
 	{
-		return $this->belongsToMany('App\Event')->withTimestamps();
+		return $this->belongsToMany('App\Event')->with('visibility','venue')->withTimestamps();
 	}
 
 	/**
@@ -247,9 +247,13 @@ class Entity extends Eloquent {
 	 *
 	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
 	 */
-	public function pastEvents()
+	public function pastEvents($rpp = NULL)
 	{
-		$events = $this->events()->where('start_at','<',Carbon::now())->orderBy('start_at', 'DESC')->get();
+		$events = $this->events()
+            ->where('start_at','<',Carbon::now())
+            ->orderBy('start_at', 'DESC')
+            ->paginate($rpp);
+
 		return $events;
 	}
 
