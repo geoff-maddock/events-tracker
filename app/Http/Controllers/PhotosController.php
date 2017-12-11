@@ -42,7 +42,6 @@ class PhotosController extends Controller {
 
 	public function create()
 	{
-
 		$tags = Tag::pluck('name','id');
 		$entities = Entity::pluck('name','id');
 

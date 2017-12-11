@@ -28,13 +28,7 @@ class Kernel extends ConsoleKernel {
 	 */
 	protected function schedule(Schedule $schedule)
 	{
-
-		/* RUN COMMAND
-		$schedule->command('inspire')
-				 ->hourly();
-		*/
-
-		// test schedule
+	    // test schedule
 		/*
 		$schedule->call(function() {
 			Log::info('test.');	
@@ -88,4 +82,14 @@ class Kernel extends ConsoleKernel {
 
 	}
 
+    /**
+     * Register the commands for the application.
+     *
+     * @return void
+     */
+    protected function commands()
+    {
+        $this->load(__DIR__.'/Commands');
+        require base_path('routes/console.php');
+    }
 }

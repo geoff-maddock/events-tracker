@@ -14,7 +14,7 @@ class Photo extends Eloquent {
      *
      * @var string
      */
-    protected $dateFormat = 'Y-m-d\\TH:i';
+    //protected $dateFormat = 'Y-m-d\\TH:i';
 
 	/**
 	 * @var Array

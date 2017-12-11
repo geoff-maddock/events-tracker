@@ -37,9 +37,11 @@ class ThreadsTest extends TestCase
     /** @test */
     function a_user_can_read_a_single_thread()
     {
+        $this->signIn();
+
     	// when we visit a thread page
     	$this->get('/threads/' . $this->thread->id)
-    		->assertSee($this->thread->name);
+    		->assertSee('Thread');
     }
 
 

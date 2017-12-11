@@ -4,7 +4,7 @@
 <ul class='list'>
 	@foreach ($entities as $entity)
 
-	<li class="@if ($entity->entityStatus->name === "Inactive") mute-card @else card @endif" style="clear: both;">
+	<li class="@if ($entity->entityStatus && $entity->entityStatus->name === "Inactive") mute-card @else card @endif" style="clear: both;">
 		@if ($primary = $entity->getPrimaryPhoto())
 		<div class="card-thumb" style="float: left; padding: 5px;">
 				<img src="/{!! str_replace(' ','%20',$entity->getPrimaryPhoto()->thumbnail) !!}" alt="{{ $entity->name}}"  style="max-width: 100px; ">
@@ -12,7 +12,7 @@
 		@endif
 
 		{!! link_to_route('entities.show', $entity->name, [$entity->id], ['class' => 'item-title']) !!}
-		@if ($entity->entityStatus->name === "Inactive")
+		@if ($entity->entityStatus && $entity->entityStatus->name === "Inactive")
 		[Inactive]
 		@endif
 

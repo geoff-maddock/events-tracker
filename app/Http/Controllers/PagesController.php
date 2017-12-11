@@ -73,7 +73,7 @@ class PagesController extends Controller {
 		$slug = $request->input('keyword');
 
 		// override rpp, while not breaking template that tries to render 
-		$this->rpp = 1000;
+		$this->rpp = 20;
 
 		$events = Event::getByEntity(strtolower($slug))
 					->orWhereHas('tags', function($q) use ($slug)
