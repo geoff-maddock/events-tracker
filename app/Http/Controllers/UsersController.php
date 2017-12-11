@@ -26,7 +26,7 @@ class UsersController extends Controller {
 	{
 		$this->middleware('auth', ['except' => array('index', 'show',)]);
 		$this->user = $user;
-		$this->rpp = 5;
+		$this->rpp = 25;
         $this->page = 1;
         $this->sort = array('name', 'desc');
         $this->sortBy = 'created_at';
@@ -43,8 +43,7 @@ class UsersController extends Controller {
  	 */
 	public function index()
 	{
-
-		$users = User::orderBy('name','ASC')->get();
+		$users = User::orderBy('name','ASC')->with('photos')->paginate($this->rpp);
 
 		return view('users.index',compact('users'));
 	}
