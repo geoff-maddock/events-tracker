@@ -164,7 +164,7 @@ class PostsController extends Controller
         // notify users following any of the series
         $seriess = $thread->series()->get();
 
-        foreach ($seriess as $series)
+        foreach ($series as $series)
         {
             foreach ($series->followers() as $user)
             {

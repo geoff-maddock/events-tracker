@@ -11,7 +11,7 @@
 
 		@foreach ($activities as $activity)  
 		<li class="list-group-item {{ $activity->style }} ">
-			{{ $activity->id }} 
+			<a href="{{ strtolower($activity->getShowLink()) }}">{{ $activity->id }}</a>
 
 			{{ $activity->message }}<br>
 

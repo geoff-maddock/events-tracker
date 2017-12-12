@@ -73,6 +73,14 @@ class Activity extends Eloquent {
 		return '';
 	}
 
+    /**
+     * Get a link to show the activity
+     */
+    public function getShowLink()
+    {
+        return '/'.str_plural($this->object_table).'/'.$this->object_id;
+    }
+
 	/**
 	 * Get the age of the activity
 	 */

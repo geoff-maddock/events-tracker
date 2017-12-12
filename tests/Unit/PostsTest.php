@@ -9,6 +9,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class PostsTest extends TestCase
 {
+    private $post;
 
 	public function setUp()
 	{
@@ -45,27 +46,20 @@ class PostsTest extends TestCase
     }
 
     /**
-	 * Test that threads are visible
+	 * Test that a seletect post is visible
      *
      * @test void
      */
-    public function threads_browsable()
+    public function posts_browsable()
     {
-        $response = $this->get('/threads');
+        $user = \App\User::find(1);
+
+        $post = \App\Post::find(257);
+        // when we visit a thread page
+        $response = $this->followingRedirects()->actingAs($user)
+            ->get('/posts/'. $post->id)
+            ->assertSee($post->body);
     }
-
-//    /** @test */
-//    function a_post_has_a_body()
-//    {
-//        $this->withExceptionHandling()->signIn();
-//
-//        $thread =  factory('App\Thread')->create();
-//        $post = factory('App\Post', ['body' => null])->make();
-//
-//        $this->post($thread->path() . '/posts', $post->toArray())
-//            ->assertSessionHasErrors('body');
-//    }
-
 
 
 }

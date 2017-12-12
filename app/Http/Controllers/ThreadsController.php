@@ -177,7 +177,7 @@ class ThreadsController extends Controller
     /**
      * Get the default sort array
      *
-     * @return Array
+     * @return array
      */
     public function getDefaultSort()
     {
@@ -187,7 +187,7 @@ class ThreadsController extends Controller
     /**
      * Get the default filters array
      *
-     * @return Array
+     * @return array
      */
     public function getDefaultFilters()
     {

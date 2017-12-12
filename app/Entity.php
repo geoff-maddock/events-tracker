@@ -423,7 +423,7 @@ class Entity extends Eloquent {
 
 	public function addPhoto(Photo $photo)
 	{
-		return $this->photos()->attach($photo->id);;
+		return $this->photos()->attach($photo->id);
 	}
 
 	/**

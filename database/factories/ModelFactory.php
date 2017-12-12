@@ -1,4 +1,5 @@
 <?php
+
 /*
 |--------------------------------------------------------------------------
 | Model Factories
@@ -70,6 +71,7 @@ $factory->define(App\Thread::class, function (Faker\Generator $faker) {
 		'visibility_id' => 3
 	];
 });
+
 
 $factory->define(App\ThreadCategory::class, function (Faker\Generator $faker) {
     return [

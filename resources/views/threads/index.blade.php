@@ -10,7 +10,7 @@
 
 	<p>
 	<a href="{{ url('/threads/all') }}" class="btn btn-info">Show all threads</a>
-	<a href="{!! URL::route('threads.index') !!}" class="btn btn-info">Show paginated threads</a>
+	<a href="{!! URL::route('threads.index') !!}" class="btn btn-info">Show paged threads</a>
 	<a href="{!! URL::route('threads.create') !!}" class="btn btn-primary">Add a thread</a>
 
 	<!-- NAV / FILTER -->

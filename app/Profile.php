@@ -40,6 +40,17 @@ class Profile extends Eloquent {
 	protected $dates = ['updated_at'];
 
 
+    /**
+     * An profile is owned by a user
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function getFullNameAttribute()
+    {
+        $user = $this->user();
+        return $user->first_name.' '.$user->last_name;
+    }
+
 	/**
 	 * An profile is owned by a user
 	 *
@@ -61,7 +72,6 @@ class Profile extends Eloquent {
 		return $this->belongsToMany('App\Link');
 	}
 
-	
 
     /**
      * Get all of the entities photos

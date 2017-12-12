@@ -22,6 +22,8 @@ class Series extends Eloquent {
 		});
 	}
 
+	//protected $with = ['occurrenceType','occurrenceWeek','occurrenceDay'];
+
 	/**
 	 * @var Array
 	 *

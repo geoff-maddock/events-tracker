@@ -72,8 +72,13 @@ class EntitiesTest extends TestCase
     /** @test */
     function an_entity_can_add_a_photo()
     {
-        // add that thread
-        $this->entity->addPhoto(\App\Photo::all()->last());
+        // add a photo
+        $photo = \App\Photo::all()->first();
+        $this->entity->addPhoto($photo);
+
+        $one = $this->entity->photos->first();
+
+        $this->assertInstanceOf('App\Photo', $one);
     }
 
 

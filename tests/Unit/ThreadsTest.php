@@ -1,11 +1,14 @@
 <?php
 namespace Tests;
+use App\User;
+use App\Thread;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class ThreadsTest extends TestCase
 {
+    private $thread;
 
 	public function setUp()
 	{
@@ -28,9 +31,10 @@ class ThreadsTest extends TestCase
      *
      * @test void
      */
-    public function threads_browsable()
+    function threads_browsable()
     {
-        $response = $this->get('/threads');
+        $response = $this->get('/threads')
+        ->assertSee('Thread');
     }
 
 
@@ -39,8 +43,12 @@ class ThreadsTest extends TestCase
     {
         $this->signIn();
 
+        $user = \App\User::find(1);
+        $temp = $this->thread->id;
+
     	// when we visit a thread page
-    	$this->get('/threads/' . $this->thread->id)
+    	$this->actingAs($user)
+            ->get('/threads/' . $temp)
     		->assertSee('Thread');
     }
 
@@ -48,13 +56,20 @@ class ThreadsTest extends TestCase
     /** @test */
     function a_user_can_read_posts_that_are_associated_with_a_thread()
     {
+        //$this->signIn();
+
+        //$user = factory('App\User')->create();
+        $user = \App\User::find(1);
     	// add that thread includes replies
     	$post = factory('App\Post')
     		->create(['thread_id' => $this->thread->id]);
 
-    	// when we visit a thread page
-    	$this->get('/threads/' . $this->thread->id)
-    		->assertSee($post->body);
+        $response = $this->actingAs($user)
+            ->withSession(['foo' => 'bar'])
+            ->get('/threads/' . $this->thread->id);
+
+    	// when we visit a thread page, see that post body
+        $response->assertSee($post->body);
     }
 
      /** @test */
@@ -69,12 +84,14 @@ class ThreadsTest extends TestCase
      /** @test */
     function a_thread_can_add_a_reply()
     {
-        // add that thread 
-        $this->thread->addPost([
+        // add a post to the thread
+        $posts = $this->thread->addPost([
             'body' => 'Foobar',
             'name' => 'Generic Reply',
             'created_by' => 1
             ]);
+
+        $this->assertInstanceOf('App\Post', $this->thread->posts->first());
     }
 
 
@@ -93,19 +110,6 @@ class ThreadsTest extends TestCase
     }
 
 
-    /** @test */
-    function a_thread_requires_a_valid_forum()
-    {
-        $forum = create('App\Forum', ['created_by' => 41178]);
-
-        $this->publishThread(['forum_id' => null]);
-        // do something here to confirm that this did not work
-
-
-        $this->publishThread(['forum_id' => $forum->id]);
-        // do something here to check that this worked
-
-    }
 
     public function publishThread($overrides = [])
     {

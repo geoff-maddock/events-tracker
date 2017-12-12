@@ -43,7 +43,7 @@ class UsersController extends Controller {
  	 */
 	public function index()
 	{
-		$users = User::orderBy('name','ASC')->with('photos')->paginate($this->rpp);
+		$users = User::orderBy('name','ASC')->paginate($this->rpp);
 
 		return view('users.index',compact('users'));
 	}
