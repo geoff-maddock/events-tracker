@@ -168,7 +168,6 @@ class PagesController extends Controller {
 					})
 					->orderBy('start_at', 'ASC')
 					->orderBy('name', 'ASC')
-                    ->with('follows')
 					->paginate();
 
 		// handle the request if ajax
@@ -177,7 +176,7 @@ class PagesController extends Controller {
 		        	->with(['rpp' => $this->rpp, 'dayOffset' => $this->dayOffset])
         			->with(compact('events'))
         			->render();
-		} 
+		}
 
 		return view('pages.home')
 		        	->with(['rpp' => $this->rpp, 'dayOffset' => $this->dayOffset])
