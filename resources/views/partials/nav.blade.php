@@ -71,15 +71,6 @@
 
 			<ul class="nav navbar-nav navbar-right">
 
-				<li class="dropdown ">
-					<a href="{{ url('/help') }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Help"><span class="glyphicon glyphicon-question-sign" title="Help"></span><span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<li><a href="{{ url('/help')}}">Help</a></li>
-                        <li><a href="{{ url('/register') }}" class="hidden-md hidden-lg">Register</a></li>
-						<li><a href="mailto:{{ config('app.feedback') }}" title="Send email to {{ config('app.feedback') }}">Feedback</a></li>
-					</ul>
-				</li>
-
 				@if (Auth::guest())
 					<li><a href="{{ url('/login') }}" class="visible-lg">Login</a></li>
 					<li><a href="{{ url('/register') }}" class="visible-lg">Register</a></li>
@@ -113,7 +104,16 @@
 							</li>
 						</ul>
 					</li>
-				@endif 
+				@endif
+
+					<li class="dropdown ">
+						<a href="{{ url('/help') }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Help"><span class="glyphicon glyphicon-question-sign" title="Help"></span><span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="{{ url('/help')}}">Help</a></li>
+							<li><a href="{{ url('/register') }}" class="hidden-md hidden-lg">Register</a></li>
+							<li><a href="mailto:{{ config('app.feedback') }}" title="Send email to {{ config('app.feedback') }}">Feedback</a></li>
+						</ul>
+					</li>
 			</ul>
 		</div>
 	</div>

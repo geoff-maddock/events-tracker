@@ -137,11 +137,20 @@ class EventsController extends Controller
             $filters['filter_venue'] = $venue;
         };
 
+        if (!empty($filters['filter_related'])) {
+            $related = $filters['filter_related'];
+            $query->whereHas('entities', function ($q) use ($related) {
+                $q->where('name', '=', ucfirst($related));
+            });
+
+            // add to filters array
+            $filters['filter_related'] = $related;
+        }
+
         // change this - should be separate
         if (!empty($filters['filter_rpp'])) {
             $this->rpp = $filters['filter_rpp'];
         }
-
 
         return $query;
     }
@@ -368,6 +377,7 @@ class EventsController extends Controller
      *
      * @param Request $request
      * @return View
+     * @throws \Throwable
      */
     public function index(Request $request)
     {
@@ -403,6 +413,7 @@ class EventsController extends Controller
                 'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
                 'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL,
                 'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL,
+                'filter_related' => isset($filters['filter_related']) ? $filters['filter_related'] : NULL,
                 'filter_rpp' => isset($filters['filter_rpp']) ? $filters['filter_rpp'] : NULL
             ])
             ->with(compact('future_events'))
@@ -438,15 +449,19 @@ class EventsController extends Controller
             return ((isset($e->visibility) && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
 
-        return view('events.grid')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter,  'filters' => $filters,
-                'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
-                'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL,
-                'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL,
-                'filter_rpp' => isset($filters['filter_rpp']) ? $filters['filter_rpp'] : NULL
-            ])
-            ->with(compact('events'))
-            ->render();
+        try {
+            return view('events.grid')
+                ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter, 'filters' => $filters,
+                    'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
+                    'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL,
+                    'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL,
+                    'filter_related' => isset($filters['filter_related']) ? $filters['filter_related'] : NULL,
+                    'filter_rpp' => isset($filters['filter_rpp']) ? $filters['filter_rpp'] : NULL
+                ])
+                ->with(compact('events'))
+                ->render();
+        } catch (\Throwable $e) {
+        }
     }
 
     /**
@@ -489,6 +504,7 @@ class EventsController extends Controller
                 'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
                 'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL,
                 'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL,
+                'filter_related' => isset($filters['filter_related']) ? $filters['filter_related'] : NULL,
                 'filter_rpp' => isset($filters['filter_rpp']) ? $filters['filter_rpp'] : NULL
             ])
             ->with(compact('future_events'))
@@ -502,6 +518,7 @@ class EventsController extends Controller
      * @param Request $request
      * @return View
      * @internal param $Request
+     * @throws \Throwable
      */
     public function filter(Request $request, EventFilters $filters)
     {
@@ -557,6 +574,18 @@ class EventsController extends Controller
             $filters['filter_tag'] = $tag;
         }
 
+        if (!empty($request->input('filter_related'))) {
+            $related = $request->input('filter_related');
+            $query_future->whereHas('entities', function ($q) use ($related) {
+                $q->where('name', '=', ucfirst($related));
+            });
+            $query_past->whereHas('entities', function ($q) use ($related) {
+                $q->where('name', '=', ucfirst($related));
+            });
+            // add to filters array
+            $filters['filter_related'] = $related;
+        }
+
         // change this - should be seperate
         if (!empty($request->input('filter_rpp'))) {
             $this->rpp = $request->input('filter_rpp');
@@ -584,6 +613,7 @@ class EventsController extends Controller
                 'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
                 'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL,
                 'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL,
+                'filter_related' => isset($filters['filter_related']) ? $filters['filter_related'] : NULL,
                 'filter_rpp' => isset($filters['filter_rpp']) ? $filters['filter_rpp'] : NULL
             ])
             ->with(compact('future_events'))
