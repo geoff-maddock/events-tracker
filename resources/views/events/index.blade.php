@@ -103,9 +103,9 @@
 				<div class="panel-body">
 					{!! $past_events->appends(['sort_by' => $sortBy,
 										'rpp' => $rpp,
-										'filter_venue' => isset($filter_venue) ? $filter_venue : NULL,
-										'filter_tag' => isset($filter_tag) ? $filter_tag : NULL,
-										'filter_name' => isset($filter_name) ? $filter_name : NULL,
+										'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL,
+										'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL,
+										'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,
 					])->render() !!}
 					@include('events.list', ['events' => $past_events])
 				</div>
