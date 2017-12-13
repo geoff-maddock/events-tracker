@@ -54,7 +54,8 @@ class EventsController extends Controller
         $this->prefix = 'app.events.';
 
         // default list variables
-        $this->rpp = 10;
+        $this->rpp = 8;
+        $this->gridRpp = 16;
         $this->page = 1;
         $this->sort = array('name', 'desc');
         $this->sortBy = 'name';
