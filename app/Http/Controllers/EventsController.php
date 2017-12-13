@@ -88,9 +88,35 @@ class EventsController extends Controller
 
         // save filters to session
         $this->setFilters($request, $filters);
-
     }
 
+    /**
+     * Update the filters parameters from the request
+     *
+     */
+    protected function updateFilters($request)
+    {
+        $filters = array();
+
+        if (!empty($request->input('filter_name'))) {
+            $filters['filter_name'] = $request->input('filter_name');
+        };
+
+        if (!empty($request->input('filter_venue'))) {
+            $filters['filter_venue'] = $request->input('filter_venue');
+        };
+
+        if (!empty($request->input('filter_tag'))) {
+            $filters['filter_tag'] = $request->input('filter_tag');
+        };
+
+        if (!empty($request->input('filter_related'))) {
+            $filters['filter_related'] = $request->input('filter_related');
+        };
+
+        // save filters to session
+        $this->setFilters($request, $filters);
+    }
 
     /**
      * Builds the criteria from the session
@@ -431,11 +457,13 @@ class EventsController extends Controller
     public function grid(Request $request)
     {
         $hasFilter = 1;
+        $this->rpp = 64;
 
         // updates sort, rpp from request
         $this->updatePaging($request);
 
-        $this->rpp = 64;
+        // updates the filters in the session
+        $this->updateFilters($request);
 
         // get filters from session
         $filters = $this->getFilters($request);
@@ -776,7 +804,12 @@ class EventsController extends Controller
             return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
 
-        return view('events.index')
+        if ($redirect = $request->input('redirect'))
+        {
+            return redirect()->route($redirect);
+        };
+
+        return view($redirect)
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
             ->with(compact('future_events'))
             ->with(compact('past_events'))

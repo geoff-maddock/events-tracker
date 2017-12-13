@@ -57,9 +57,8 @@
 					{!! Form::close() !!}
 
 					{!! Form::open(['route' => ['events.reset'], 'method' => 'GET']) !!}
-
+					{!! Form::hidden('redirect','events.grid') !!}
 					{!! Form::submit('Reset',  ['class' =>'btn btn-primary btn-sm btn-tb', 'id' => 'primary-filter-reset']) !!}
-
 					{!! Form::close() !!}
 				</div>
 			</div>
