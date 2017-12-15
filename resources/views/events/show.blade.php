@@ -232,6 +232,7 @@
 
 @section('scripts.footer')
 <script src="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.2.0/dropzone.js"></script>
+@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )
 <script>
 Dropzone.autoDiscover = false;
 $(document).ready(function(){
@@ -259,7 +260,7 @@ $(document).ready(function(){
 	
 })
 </script>
-
+@endif
 <script type="text/javascript">
 $('button.delete').on('click', function(e){
   e.preventDefault();
