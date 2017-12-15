@@ -157,7 +157,7 @@ class EventsController extends Controller
             $venue = $filters['filter_venue'];
             // add has clause
             $query->whereHas('venue', function ($q) use ($venue) {
-                $q->where('slug', '=', $venue);
+                $q->where('name', '=', $venue);
             });
 
             // add to filters array
@@ -581,10 +581,10 @@ class EventsController extends Controller
             $venue = $request->input('filter_venue');
             // add has clause
             $query_future->whereHas('venue', function ($q) use ($venue) {
-                $q->where('slug', '=', $venue);
+                $q->where('name', '=', $venue);
             });
             $query_past->whereHas('venue', function ($q) use ($venue) {
-                $q->where('slug', '=', $venue);
+                $q->where('name', '=', $venue);
             });
 
             // add to filters array
@@ -777,6 +777,7 @@ class EventsController extends Controller
      * Reset the filtering of entities
      *
      * @return Response
+     * @throws \Throwable
      */
     public function reset(Request $request)
     {
@@ -810,7 +811,7 @@ class EventsController extends Controller
             return redirect()->route($redirect);
         };
 
-        return view($redirect)
+        return view('events.index')
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
             ->with(compact('future_events'))
             ->with(compact('past_events'))

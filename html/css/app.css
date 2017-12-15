@@ -18,3 +18,7 @@
 #event-repo img {
     max-width: 100%;
 }
+
+#event-repo img.listing{
+    max-width: 100%;
+}
