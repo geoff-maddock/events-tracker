@@ -89,7 +89,7 @@
 								<li role="separator" class="divider"></li>
 								<li><a href="#"><b>Admin</b></a></li>
 								<li><a href="{{ url('/forums')}}" title="Show discussion forums">Forum</a></li>
-								<li><a href="{{ url('/threads')}}" title="Show discussion threads and posts">Threads</a></li>
+								<li><a href="{{ url('/posts')}}" title="Show all the latests posts">Posts</a></li>
 								<li><a href="{{ url('/permissions')}}" title="Show a list of user permissions">Permissions</a></li>
 								<li><a href="{{ url('/groups')}}" title="Show a list of user permission groups">Groups</a></li>
 							@endcan

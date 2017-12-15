@@ -209,10 +209,11 @@ class PostsController extends Controller
         return redirect($route);
     }
 
+
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param Post $post
      * @return \Illuminate\Http\Response
      */
     public function edit(Post $post)
@@ -236,7 +237,6 @@ class PostsController extends Controller
      */
     public function update(Post $post, PostRequest $request)
     {
-
         $msg = '';
 
         $post->fill($request->input())->save();

@@ -1,4 +1,3 @@
-
 <div class="row">
  
 	<div class="form-group col-md-8 {{$errors->has('name') ? 'has-error' : '' }}">
@@ -25,9 +24,8 @@
 	{!! Form::textarea('body', null, ['class' =>'form-control']) !!}
 	{!! $errors->first('body','<span class="help-block">:message</span>') !!}
 	</div>
+
 </div>
-
-
 
 <div class="row">
 
@@ -38,7 +36,6 @@
 	</div>
 
 </div>
-
 
 <div class="row">
 	<div class="form-group col-md-2 {{$errors->has('visibility_id') ? 'has-error' : '' }}">
@@ -83,7 +80,6 @@
 	</div>
 </div>
 
-
 <div class="row">
 	<div class="form-group col-md-2">
 	{!! Form::label('tag_list','Tags:') !!}
@@ -104,14 +100,16 @@
 
 @section('footer')
 	<script>
-
-		function handleError(error) {
-			console.log('Error code:'+error.code);
-			console.log(error.message);
-		}
-
-		function threadPhotos(thread){
-			// get the photos from the api
-		}
+        // javascript to enable the select2 for the tag and entity list
+        $('#tag_list').select2(
+            {
+                placeholder: 'Choose a tag',
+                tags: true,
+            });
+        $('#entity_list').select2(
+            {
+                placeholder: 'Choose a related artist, producer, dj',
+                tags: false,
+            });
 	</script>
 @endsection

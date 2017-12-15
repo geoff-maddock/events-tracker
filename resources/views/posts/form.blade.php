@@ -1,4 +1,3 @@
-
 <div class="row">
  
 	<div class="form-group col-md-8">
@@ -15,27 +14,6 @@
 	{!! $errors->first('visibility_id','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
-
-
-
-<div class="row">
-	<div class="form-group col-md-2">
-	{!! Form::label('entity_list','Related Entities:') !!}
-	{!! Form::select('entity_list[]', $entities, null, ['id' => 'entity_list', 'class' =>'form-control', 'multiple']) !!}
-	{!! $errors->first('entities','<span class="help-block">:message</span>') !!}
-	</div>
-</div>
-
-
-
-<div class="row">
-	<div class="form-group col-md-2">
-	{!! Form::label('tag_list','Tags:') !!}
-	{!! Form::select('tag_list[]', $tags, null, ['id' => 'tag_list', 'class' =>'form-control', 'multiple']) !!}
-	{!! $errors->first('tags','<span class="help-block">:message</span>') !!}
-	</div>
-</div>
-
 
 <div class="form-group">
 {!! Form::hidden('thread_id', (isset($post) ? $post->thread_id : NULL), array('id' => (isset($post) ? $post->thread_id : NULL))) !!}
@@ -56,14 +34,5 @@
 				placeholder: 'Choose a related artist, producer, dj',
 				tags: false,
 			});
-
-		function handleError(error) {
-			console.log('Error code:'+error.code);
-			console.log(error.message);
-		}
-
-		function threadPhotos(thread){
-			// get the photos from the api
-		}
 	</script>
 @endsection

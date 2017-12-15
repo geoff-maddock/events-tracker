@@ -4,8 +4,7 @@
 
 @section('content')
 
-    <h1>Forum
-        @include('threads.crumbs')
+    <h1>Forum . Latest Posts
     </h1>
 
     <p>
@@ -16,12 +15,22 @@
     <div class="row">
 
     @if (count($posts) > 0)
-    <table>
+        <div class="col-md-12">
+        <table class="table forum table-striped">
+        <thead>
+        <tr>
+            <th>
+                User
+            </th>
+            <th class="cell-stat hidden-xs">Category</th>
+            <th class="cell-stat text-center hidden-xs hidden-sm">Views</th>
+            <th class="cell-stat hidden-xs">Last Post</th>
+        </tr>
+        </thead>
         @foreach ($posts as $post)
+
             <tbody class='thread-post'>
             <tr id='post-{{ $post->id }}'>
-                <td></td>
-                <td class="hidden-xs hidden-sm"></td>
                 <td>
                     @if (isset($post->user))
                         @include('users.avatar', ['user' => $post->user])
@@ -30,8 +39,7 @@
                         User deleted
                     @endif
                 </td>
-                <td class="hidden-xs hidden-sm"></td>
-                <td class="hidden-xs hidden-sm"></td>
+                <td class="hidden-xs hidden-sm">{{ $post->thread->threadCategory ? $post->thread->threadCategory->name : 'General' }}</td>
                 <td class="cell-stat text-center hidden-xs hidden-sm">{{ $post->likes }}</td>
                 <td class="hidden-xs">{{ $post->created_at->diffForHumans() }}</td>
             </tr>
@@ -79,7 +87,8 @@
             </tr>
             </tbody>
         @endforeach
-
+            {!! $posts->render() !!}
+        </div>
     @else
         <tr>
             <td colspan="7"><i>No posts listed</i></td>
