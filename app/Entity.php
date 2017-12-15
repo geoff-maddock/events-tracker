@@ -120,6 +120,16 @@ class Entity extends Eloquent {
 		return $this->belongsToMany('App\Contact');
 	}
 
+    /**
+     * The contacts that belong to the entity
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function series()
+    {
+        return $this->belongsToMany('App\Series');
+    }
+
 	/**
 	 * The links that belong to the entity
 	 *
