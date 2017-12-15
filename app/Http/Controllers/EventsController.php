@@ -55,7 +55,7 @@ class EventsController extends Controller
 
         // default list variables
         $this->rpp = 8;
-        $this->gridRpp = 16;
+        $this->gridRpp = 24;
         $this->page = 1;
         $this->sort = array('name', 'desc');
         $this->sortBy = 'name';
@@ -464,7 +464,6 @@ class EventsController extends Controller
 
         // updates the filters in the session
         $this->updateFilters($request);
-
 
         // get filters from session
         $filters = $this->getFilters($request);
