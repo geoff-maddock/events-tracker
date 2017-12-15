@@ -20,10 +20,11 @@
 	<div class="profile-card col-md-5">
 	<h2 class='item-title'>{{ $entity->name }}</h2>
 
+		@if ($photo = $entity->getPrimaryPhoto())
 		<div>
-			<img src="/{{ $entity->getPrimaryPhoto()->path }}" class="listing">
+			<img src="/{{ $entity->getPrimaryPhoto()->path  }}" class="listing">
 		</div>
-
+		@endif
 
 	@unless ($entity->aliases->isEmpty())
 		
