@@ -70,7 +70,6 @@ class GroupsController extends Controller {
 	}
 
 
-
 	/**
 	 * Display a listing of groups by user
 	 *
@@ -99,7 +98,6 @@ class GroupsController extends Controller {
 	 */
 	public function indexPermissions($permission)
 	{
- 
 		$groups = Group::getByPermission(ucfirst($permission))
 					->orderBy('name', 'ASC')
 					->get();

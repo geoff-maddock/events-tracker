@@ -19,7 +19,7 @@ class PagesController extends Controller {
 
 	public function __construct(Event $event)
 	{
-		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
+		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update','activity','tools')]);
 		$this->event = $event;
 
 		// default list variables
@@ -185,11 +185,33 @@ class PagesController extends Controller {
 
 	public function activity()
 	{
+        $this->middleware('auth');
 
 		$activities = Activity::orderBy('created_at', 'DESC')
 					->paginate();
 
 		return view('pages.activity', compact('activities'));
 	}
+
+    public function tools(Request $request)
+    {
+
+        $this->middleware('auth');
+
+        $user = $request->user();
+        if (!$user->can('show_admin')) {
+            die('cannot show admin)');
+        }
+
+        // get all the events with no photo
+        $events = Event::has('photos', '<', 1)
+            ->where('primary_link','<>','')
+            ->where('primary_link','like','%facebook%')
+            ->get();
+
+
+        return view('pages.tools',compact('events'));
+    }
+
 
 }

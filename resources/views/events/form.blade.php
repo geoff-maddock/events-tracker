@@ -18,17 +18,14 @@
 </div>
 
 <div class="row">
- 
-	<div class="form-group col-md-12 {{$errors->has('name') ? 'has-error' : '' }}">
+ 	<div class="form-group col-md-12 {{$errors->has('name') ? 'has-error' : '' }}">
 	{!! Form::label('name','Name') !!}
 	{!! Form::text('name', null, ['class' =>'form-control']) !!}
 	{!! $errors->first('name','<span class="help-block">:message</span>') !!}
 	</div>
-
 </div>
 
 <div class="row">
- 
 	<div class="form-group col-md-12 {{$errors->has('slug') ? 'has-error' : '' }}">
 	{!! Form::label('slug','Slug') !!}
 	{!! Form::text('slug', null, ['placeholder' => 'Unique name for this event (will validate)', 'class' =>'form-control']) !!}
@@ -37,18 +34,15 @@
 </div>
 
 <div class="row">
- 
-	<div class="form-group col-md-12 {{$errors->has('slug') ? 'has-error' : '' }}">
+ 	<div class="form-group col-md-12 {{$errors->has('slug') ? 'has-error' : '' }}">
 	{!! Form::label('short','Short Description') !!}
 	{!! Form::text('short', null, ['class' =>'form-control']) !!}
 	{!! $errors->first('short','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
 
-
 <div class="row">
- 
-	<div class="form-group col-md-12">
+ 	<div class="form-group col-md-12">
 	{!! Form::label('description','Description') !!}
 	{!! Form::textarea('description', null, ['class' =>'form-control']) !!}
 	{!! $errors->first('description','<span class="help-block">:message</span>') !!}
@@ -113,9 +107,7 @@
 </div>
 
 <div class="row">
- 
-
-	<div class="form-group col-md-3">
+ 	<div class="form-group col-md-3">
 	{!! Form::label('presale_price','Presale Price:') !!}
 	{!! Form::text('presale_price', null, ['class' =>'form-control']) !!}
 	{!! $errors->first('presale_price','<span class="help-block">:message</span>') !!}
@@ -135,8 +127,6 @@
 </div>
 
 <div class="row">
-
-
 	<div class="form-group col-md-6 {{$errors->has('ticket_link') ? 'has-error' : '' }}">
 	{!! Form::label('ticket_link','Ticket Link:') !!}
 	{!! Form::text('ticket_link', null, ['class' =>'form-control']) !!}
@@ -160,7 +150,6 @@
 	</div>
 </div>
 
-
 <div class="row">
 	<div class="form-group col-md-6">
 	{!! Form::label('entity_list','Related Entities:') !!}
@@ -168,7 +157,6 @@
 	{!! $errors->first('entities','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
-
 
 <div class="row">
 	<div class="form-group col-md-6">
@@ -182,7 +170,6 @@
 	</div>
 </div>
 
-
 <div class="row">
 	<div class="form-group col-md-3">
 	{!! Form::label('attending','Attending') !!}
@@ -193,7 +180,6 @@
 	@endif
 	</div>
 </div>
-
 
 <div class="form-group">
 {!! Form::submit(isset($action) && $action == 'update' ? 'Update Event' : 'Add Event', null, ['class' =>'btn btn-primary']) !!}
@@ -323,51 +309,6 @@
 
 		})
 
-        // queries the primary link to get the FB cover photo
-        $('#import-photo').click(function(e){
-
-            // get the id out of the link
-            var str = $('#primary_link').val();
-            var spl = str.split("/");
-            var event_id = spl[4];
-            var updateStatusCallback = false;
-
-            // get the content of the link
-            console.log(str);
-            console.log(event_id); // should be the position of the event
-
-            // check that there is a login first
-            FB.getLoginStatus(function(response) {
-                if (response.status === 'connected') {
-                    console.log('Logged in.');
-                }
-                else {
-                    FB.login();
-                }
-            });
-
-            let fields =  'description,end_time,id,name,place,start_time,cover,attending_count,interested_count,maybe_count,noreply_count';
-
-            // try to pull info from the fb object
-            FB.api('/'+event_id+'?fields='+fields, function(response) {
-                if (!response || response.error) {
-                    handleError(response.error);
-                } else {
-                    // process the response and try to set the event form fields
-                    if (response.cover)
-                    {
-                        url = response.cover.source;
-                        $('#api-show').html("<img src='"+url+"'>");
-                    };
-                    
-                }
-                console.log(response);
-
-                App.init();
-            });
-
-        })
-
         function capitalizeNth(text, n) {
             return text.slice(0,n) + text.charAt(n).toUpperCase() + text.slice(n+1)
         }
@@ -377,8 +318,5 @@
 			console.log(error.message);
 		}
 
-		function eventPhotos(event){
-			// get the photos from the api
-		}
 	</script>
 @endsection

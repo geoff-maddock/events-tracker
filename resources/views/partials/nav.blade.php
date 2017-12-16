@@ -96,6 +96,9 @@
 							@can('show_activity')
 								<li><a href="{{ url('/activity')}}">Activity</a></li>
 							@endcan
+							@can('show_admin')
+								<li><a href="{{ url('/tools')}}">Tools</a></li>
+							@endcan
 							<li role="separator" class="divider"></li>
 
 							<li>

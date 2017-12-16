@@ -50,6 +50,12 @@ Route::get('calendar/min_age/{age}', 'EventsController@calendarMinAge')->name('c
 Route::get('search','PagesController@search');
 
 Route::get('activity','PagesController@activity');
+Route::get('tools','PagesController@tools')->name('page.tools');
+
+Route::get('events/importPhotos', [
+    'as' => 'events.importPhotos',
+    'uses' => 'EventsController@importPhotos'
+]);
 
 Route::bind('users', function($id)
 {

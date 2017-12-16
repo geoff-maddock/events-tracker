@@ -1339,6 +1339,7 @@ class EventsController extends Controller
      * Makes a call to the FB API if there is a link present and downloads the event cover photo
      * @param Int $id
      * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Container\EntryNotFoundException
      */
     public function importPhoto($id)
     {
@@ -1387,9 +1388,73 @@ class EventsController extends Controller
     }
 
     /**
+     * Makes a call to the FB API if there is a link present and downloads the event cover photo
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Container\EntryNotFoundException
+     */
+    public function importPhotos()
+    {
+        // get all the events with no photo, but a fb url
+        $events = Event::has('photos', '<', 1)
+            ->where('primary_link','<>','')
+            ->where('primary_link','like','%facebook%')
+            ->get();
+
+        
+        $fb = app(SammyK\LaravelFacebookSdk\LaravelFacebookSdk::class);
+        $fields = 'attending_count,category,cover,interested_count,name,noreply_count,maybe_count';
+
+        foreach ($events as $event)
+        {
+            $str = $event->primary_link;
+            $spl = explode("/", $str);
+            $event_id = $spl[4];
+
+            try {
+                $token = $fb->getJavaScriptHelper()->getAccessToken();
+                $response = $fb->get($event_id.'?fields='.$fields, $token);
+
+                $cover = $response->getGraphNode()->getField('cover');
+                $source = $cover->getField('source');
+
+
+                $content = file_get_contents($source);
+                $path = file_put_contents('photos/temp.jpg', $content);
+
+                $file = new UploadedFile('photos/temp.jpg', 'temp.jpg', NULL,NULL, UPLOAD_ERR_OK, TRUE);
+
+                // make the photo object from the file in the request
+                $photo = $this->makePhoto($file);
+
+                // count existing photos, and if zero, make this primary
+                if (count($event->photos) == 0)
+                {
+                    $photo->is_primary=1;
+                };
+
+                $photo->save();
+
+                // attach to event
+                $event->addPhoto($photo);
+
+            } catch(\Facebook\Exceptions\FacebookSDKException $e) {
+
+                flash()->error('Error', 'You could not import the image.  Error: '.$e->getMessage());
+                return back();
+            }
+        }
+
+
+        flash()->success('Success', 'Successfully imported the event cover photos.');
+        return back();
+
+    }
+
+    /**
      * Makes a call to the FB API and posts the link of the specified event to the wall
      * @param Event $event
      * @return \Illuminate\Contracts\View\Factory|View
+     * @throws \Illuminate\Container\EntryNotFoundException
      */
     public function postEvent(Event $event)
     {
@@ -1602,7 +1667,6 @@ class EventsController extends Controller
 		$this->middleware('auth');
 
         // moved necessary lists into AppServiceProvider
-
 
 		return view('events.edit', compact('event'));
 	}
