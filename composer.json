@@ -14,7 +14,9 @@
 		"suin/php-rss-writer": "^1.5",
 		"barryvdh/laravel-debugbar": "^2.4",
 		"laravel/tinker": "^1.0",
-		"sammyk/laravel-facebook-sdk": "^3.5"
+		"sammyk/laravel-facebook-sdk": "^3.5",
+		"sentry/sentry": "^1.8",
+		"sentry/sentry-laravel": "^0.8.0"
 	},
 	"require-dev": {
 		"fzaninotto/faker": "~1.4",
