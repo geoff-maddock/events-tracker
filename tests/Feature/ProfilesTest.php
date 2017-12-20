@@ -12,10 +12,12 @@ class ProfilesTest extends TestCase
     public function a_user_has_a_profile ()
     {
         $profile = factory('App\Profile')->create();
-        $response = $this->get('/users/1');
+        $user = $profile->user;
+
+        $response = $this->get('/users/'.$user->id);
 
         $response->assertStatus(200);
-        //$response->assertSee('<h2>'');
+        $response->assertSee($profile->first_name);
     }
 
 }

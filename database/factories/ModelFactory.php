@@ -19,6 +19,17 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
     ];
 });
 
+$factory->define(App\Profile::class, function (Faker\Generator $faker) {
+    $user = factory('App\User')->create();
+    return [
+        'user_id' => $user->id,
+        'first_name' => $faker->name,
+        'last_name' => $faker->name,
+        'default_theme' => 'light-theme',
+        'bio' => 'a new test user'
+    ];
+});
+
 $factory->define(App\Entity::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->name,

@@ -54,7 +54,7 @@ class PostsTest extends TestCase
     {
         $user = \App\User::find(1);
 
-        $post = \App\Post::find(257);
+        $post = \App\Post::first();
         // when we visit a thread page
         $response = $this->followingRedirects()->actingAs($user)
             ->get('/posts/'. $post->id)

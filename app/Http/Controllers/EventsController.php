@@ -1400,7 +1400,7 @@ class EventsController extends Controller
             ->where('primary_link','like','%facebook%')
             ->get();
 
-        
+
         $fb = app(SammyK\LaravelFacebookSdk\LaravelFacebookSdk::class);
         $fields = 'attending_count,category,cover,interested_count,name,noreply_count,maybe_count';
 
@@ -1410,38 +1410,34 @@ class EventsController extends Controller
             $spl = explode("/", $str);
             $event_id = $spl[4];
 
-            try {
-                $token = $fb->getJavaScriptHelper()->getAccessToken();
-                $response = $fb->get($event_id.'?fields='.$fields, $token);
+            $token = $fb->getJavaScriptHelper()->getAccessToken();
+            $response = $fb->get($event_id.'?fields='.$fields, $token);
 
-                $cover = $response->getGraphNode()->getField('cover');
-                $source = $cover->getField('source');
+            // get the cover from FB
+            $cover = $response->getGraphNode()->getField('cover');
 
-
+            // if a cover was returned, get the source
+            if ($source = $cover->getField('source')) {
                 $content = file_get_contents($source);
-                $path = file_put_contents('photos/temp.jpg', $content);
+                file_put_contents('photos/temp.jpg', $content);
 
-                $file = new UploadedFile('photos/temp.jpg', 'temp.jpg', NULL,NULL, UPLOAD_ERR_OK, TRUE);
+                $file = new UploadedFile('photos/temp.jpg', 'temp.jpg', NULL, NULL, UPLOAD_ERR_OK, TRUE);
 
                 // make the photo object from the file in the request
+                /** @var Photo $photo */
                 $photo = $this->makePhoto($file);
 
                 // count existing photos, and if zero, make this primary
-                if (count($event->photos) == 0)
-                {
-                    $photo->is_primary=1;
+                if (count($event->photos) == 0) {
+                    $photo->is_primary = 1;
                 };
 
                 $photo->save();
 
                 // attach to event
+                /** @var Event $event */
                 $event->addPhoto($photo);
-
-            } catch(\Facebook\Exceptions\FacebookSDKException $e) {
-
-                flash()->error('Error', 'You could not import the image.  Error: '.$e->getMessage());
-                return back();
-            }
+            };
         }
 
 
