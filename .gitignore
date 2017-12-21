@@ -15,3 +15,4 @@ composer.phar
 composer.lock
 Homestead.yaml
 Homestead.json
+php-latest
