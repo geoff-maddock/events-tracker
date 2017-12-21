@@ -34,7 +34,7 @@
 
 				<div class="panel-body">
 				@include('tags.list', ['tags' => $tags])
-				{!! $series->render() !!}
+				{!! $tags->appends(['keyword' => $slug])->render() !!}
 				</div>
 
 			</div>
@@ -54,7 +54,7 @@
 
 				<div class="panel-body">
 				@include('series.list', ['series' => $series])
-				{!! $series->render() !!}
+				{!! $series->appends(['keyword' => $slug])->render() !!}
 				</div>
 
 			</div>
@@ -73,7 +73,7 @@
 
 				<div class="panel-body">
 				@include('events.list', ['events' => $events])
-				{!! $events->render() !!}
+				{!! $events->appends(['keyword' => $slug])->links() !!}
 				</div>
 
 			</div>
@@ -96,7 +96,7 @@
 
 				<div class="panel-body">
 				@include('users.list', ['users' => $users])
-				{!! $series->render() !!}
+				{!! $users->appends(['keyword' => $slug])->links() !!}
 				</div>
 
 			</div>
@@ -115,7 +115,7 @@
 
 					<div class="panel-body">
 					@include('entities.list', ['entities' => $entities])
-					{!! $entities->render() !!}
+					{!! $entities->appends(['keyword' => $slug])->render() !!}
 					</div>
 
 				</div>
@@ -134,7 +134,7 @@
 
 						<div class="panel-body">
 							@include('threads.list', ['threads' => $threads])
-							{!! $threads->render() !!}
+							{!! $threads->appends(['keyword' => $slug])->render() !!}
 						</div>
 
 					</div>

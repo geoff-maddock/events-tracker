@@ -91,7 +91,7 @@ class PagesController extends Controller {
 					})
 					->orderBy('start_at', 'DESC')
 					->orderBy('name', 'ASC')
-					->simplePaginate($this->rpp);
+					->paginate($this->rpp);
 
 		$series = Series::getByEntity(strtolower($slug))
 					->orWhereHas('tags', function($q) use ($slug)
@@ -105,7 +105,7 @@ class PagesController extends Controller {
 					})
 					->orderBy('start_at', 'DESC')
 					->orderBy('name', 'ASC')
-					->simplePaginate($this->rpp);
+					->paginate($this->rpp);
 
 
 		$entities = Entity::where('name','like','%'.$slug.'%')
@@ -119,7 +119,7 @@ class PagesController extends Controller {
 								})
 				->orderBy('entity_type_id', 'ASC')
 				->orderBy('name', 'ASC')
-				->simplePaginate($this->rpp);
+				->paginate($this->rpp);
 
 		$tags = Tag::where('name','like','%'.$slug.'%')
 				->orderBy('name', 'ASC')
@@ -135,7 +135,7 @@ class PagesController extends Controller {
                 $q->where('name','=', ucfirst($slug));
             })
             ->orderBy('name', 'ASC')
-            ->simplePaginate($this->rpp);
+            ->paginate($this->rpp);
 
 		return view('events.search', compact('events', 'entities', 'series','users','threads','tags','slug'));
 
