@@ -15,7 +15,7 @@ class Activity extends Eloquent {
      *
      * @var string
      */
-    protected $dateFormat = 'Y-m-d\\TH:i';
+    protected $dateFormat = 'Y-m-d H:i:s';
 
 	/**
 	 * @var Array
@@ -26,9 +26,8 @@ class Activity extends Eloquent {
 	];
 
 
-	protected $dates = ['created_at','updated_at'];
+	protected $dates = ['created_at', 'updated_at'];
 
-	
 
 	/**
 	 * Get the events that belong to the activity

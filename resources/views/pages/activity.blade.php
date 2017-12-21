@@ -15,7 +15,7 @@
 
 			{{ $activity->message }}<br>
 
-			<small>by {{ $activity->userName }} {{ (isset($activity->ip_address) ? 'at '.$activity->ip_address : '') }} </small>
+			<small>by <a href="users/{{ $activity->user_id }}">{{ $activity->userName }}</a> {{ isset($activity->created_at) ? ' on '.$activity->created_at->format('m/d/Y H:i') : '' }} {{ (isset($activity->ip_address) ? ' ['.$activity->ip_address.']' : '') }} </small>
 		 </li>
 		@endforeach
 		{!! $activities->render() !!}
