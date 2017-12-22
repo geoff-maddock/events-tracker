@@ -23,7 +23,7 @@
 	</div>
 
 	<section class="4days">
- 	@include('pages.4days')
+        @include('pages.4daysAjax')
  	</section>
 @stop
 
@@ -31,12 +31,19 @@
 <script type="text/javascript">
 
 $(function() {
+
+    // load the heavier part after page load
+    var url ='/home';
+    getEvents(url);
+    window.history.pushState("", "", url);
+
     $('body').on('click', '.pagination a', function(e) {
         e.preventDefault();
         var url = $(this).attr('href');  
         getEvents(url);
         window.history.pushState("", "", url);
     });
+
 
     function getEvents(url) {
         $.ajax({

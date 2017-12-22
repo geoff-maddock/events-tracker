@@ -13,13 +13,10 @@
 			</div>
 
 			<div class="panel-body">
-			<?php $events = App\Event::starting($day->format('Y-m-d'))->get();	?>
-			@include('events.list', ['events' => $events])
-
-			<!-- find all series that would fall on this date -->
-			<?php $series = App\Series::byNextDate($day->format('Y-m-d'));?>
-			@include('series.list', ['series' => $series])
-
+				<div class="load-spinner">
+					<div class="double-bounce1"></div>
+					<div class="double-bounce2"></div>
+				</div>
 			</div>
 		</div>
 	</div>

@@ -30,7 +30,7 @@
 	 $day = \Carbon\Carbon::parse($today)->addDay($offset);
 
 	 ?>
-		@include('events.day', ['day' => $day, 'position' => $i ])
+		@include('events.dayAjax', ['day' => $day, 'position' => $i ])
 	@endfor
 
 </div>
