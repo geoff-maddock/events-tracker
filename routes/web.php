@@ -91,6 +91,7 @@ Route::get('events/past', 'EventsController@indexPast');
 Route::get('events/week', 'EventsController@indexWeek')->name('events.week');
 Route::get('events/starting/{date}', 'EventsController@indexStarting');
 Route::get('events/daily', 'EventsController@daily');
+Route::get('events/day/{day}', 'EventsController@day')->name('events.day');
 Route::get('events/attending', 'EventsController@indexAttending')->name('events.attending');
 
 Route::get('events/filter', array('as' => 'events.filter', 'uses' => 'EventsController@filter'));

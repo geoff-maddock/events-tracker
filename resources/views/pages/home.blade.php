@@ -32,10 +32,14 @@
 
 $(function() {
 
-    // load the heavier part after page load
-    var url ='/home';
-    getEvents(url);
-    window.history.pushState("", "", url);
+    // check the day sections and load via ajax
+    $('body section.day').each(function(e) {
+        console.log($(this).attr('href'));
+        var url = $(this).attr('href')
+        var num = $(this).attr('data-num');
+        getDayEvents(url, num);
+    });
+
 
     $('body').on('click', '.pagination a', function(e) {
         e.preventDefault();
@@ -44,6 +48,16 @@ $(function() {
         window.history.pushState("", "", url);
     });
 
+    function getDayEvents(url, num) {
+        console.log(url);
+        $.ajax({
+            url : url
+        }).done(function (data) {
+            $('#day-'+num).html(data);
+        }).fail(function () {
+            alert('No events could be loaded.');
+        });
+    }
 
     function getEvents(url) {
         $.ajax({

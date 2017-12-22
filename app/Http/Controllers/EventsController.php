@@ -848,6 +848,29 @@ class EventsController extends Controller
 
 
     /**
+     * Get the events for one passed day
+     *
+     * @return Response
+     * @return String $day
+     * @throws \Throwable
+     */
+    public function day(Request $request, $day)
+    {
+
+        if (!$day)
+        {
+            flash()->error('Error',  'No such day');
+            return back();
+        };
+        $day = \Carbon\Carbon::parse($day);
+        return view('events.day')
+            ->with(['day' => $day, 'position' => 0, 'offset' => 0])
+            ->render();
+
+
+    }
+
+    /**
      * Send a reminder to all users about all events they are attending
      *
      * @return Response
