@@ -4,11 +4,11 @@
 
 			<div class="panel-heading">
 				<h3 class="panel-title">
-				@if ($offset == 0) 
-				Today's Events
-				@else
-				{{ $day->format('l M jS Y') }}
-				@endif
+					@if (\Carbon\Carbon::now()->format('Y-m-d') == $day->format('Y-m-d'))
+						Today's Events
+					@else
+						{{ $day->format('l M jS Y') }}
+					@endif
 				</h3>
 			</div>
 
