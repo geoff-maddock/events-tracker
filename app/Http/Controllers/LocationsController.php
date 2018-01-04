@@ -124,13 +124,14 @@ class LocationsController extends Controller {
 		return redirect()->route('entities.show', $entity->id);
 	}
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  \App\Entity 		$entity
-	 * @param  \App\Location  	$location
-	 * @return Response
-	 */
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Entity $entity
+     * @param  \App\Location $location
+     * @return Response
+     * @throws \Exception
+     */
 	public function destroy(Entity $entity, Location $location)
 	{
 		$location->delete();

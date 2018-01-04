@@ -1,11 +1,10 @@
 <?php namespace App;
 
-use Image;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 //use App\Http\Controllers\UploadedFile;
 
-class EventResponse extends Eloquent {
+class EventReview extends Eloquent {
 
 
     /**
@@ -13,14 +12,14 @@ class EventResponse extends Eloquent {
      *
      * @var string
      */
-    protected $dateFormat = 'Y-m-d\\TH:i';
+    //protected $dateFormat = 'Y-m-d\\TH:i';
 
 	/**
 	 * @var Array
 	 *
 	 **/
 	protected $fillable = [
-	'event_id','user_id','response_type_id'
+	'event_id','user_id','review_type_id','attended','confirmed','expectation','rating','review'
 	];
 
  
@@ -28,31 +27,31 @@ class EventResponse extends Eloquent {
 
 
 	/**
-	 * Get the event that the response belongs to
+	 * Get the event that the review belongs to
 	 *
 	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
 	 */
-	public function events()
+	public function event()
 	{
-		return $this->belongsToMany('App\Event')->withTimestamps();
+		return $this->hasOne('App\Event')();
 	}
 
 	/**
 	 * Get the user that the response belongs to
 	 *
 	 */
-	public function users()
+	public function user()
 	{
-		return $this->belongsToMany('App\User')->withTimestamps();
+		return $this->hasOne('App\User');
 	}
 
 	/**
 	 * Get the response type that the response belongs to
 	 *
 	 */
-	public function responseType()
+	public function reviewType()
 	{
-		return $this->belongsTo('App\ResponseType');;
+		return $this->belongsTo('App\ReviewType');;
 	}
 
 	

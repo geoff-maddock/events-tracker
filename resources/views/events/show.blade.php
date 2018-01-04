@@ -75,17 +75,27 @@
 	</a>
 	@endif
 
+		{{ $event->attendingCount }} users attending {{ $event->countAttended > 0 ? ', '.$event->countAttended.' user attended' : '' }}
+		<br>
+
 	<!-- display attend - x-editable or just dropdown -->
 
 	@if ($signedIn)
 		@if ($response = $event->getEventResponse($user))
 		<a href="{!! route('events.unattend', ['id' => $event->id]) !!}" title="Click to mark unattending"><span class='glyphicon glyphicon-star text-warning'></span> {{ $response->responseType->name }}</a>
+
+			@if ($review = $event->getEventReview($user))
+					<span class='glyphicon glyphicon-heart text-warning' title="You rated {!! $review->rating !!}"></span> Rated {!! number_format($event->avgRating,2) !!} by {{ $event->countReviews }} users
+			@else
+			<span>
+				<a href="{!! route('events.reviews.create', ['id' => $event->id]) !!}" title="Add a review"><span class='glyphicon glyphicon-heart-empty text-warning'></span> Add Review</a>
+
+				@endif
 		@else
 		<a href="{!! route('events.attend', ['id' => $event->id]) !!}" title="Click to mark attending"><span class='glyphicon glyphicon-star text-info'></span>  No response</a>
 		@endif
 	@endif
 
-	{{ $event->attendingCount }} users attending
 
  	<br><br>
 

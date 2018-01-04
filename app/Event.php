@@ -466,20 +466,73 @@ class Event extends Eloquent {
 
 	/**
 	 * Returns the response status for the passed user
-	 * 
-	 * @return Collection $events
+	 *
+     * @param User $user
+	 * @return Collection $eventResponse
 	 * 
 	 **/
 	public function getEventResponse($user)
 	{
-		$event = $this;
-		$response = EventResponse::where('event_id','=', $event->id)
+		return EventResponse::where('event_id','=', $this->id)
 		->where('user_id','=',$user->id)->first();
-		// get a list of events that have the passed entity
-	
 
-		return $response;
 	}
+
+
+    /**
+     * Returns the review from the passed use if there is one
+     *
+     * @param User $user
+     * @return Collection $eventReview
+     *
+     **/
+    public function getEventReview($user)
+    {
+        return EventReview::where('event_id','=', $this->id)
+            ->where('user_id','=',$user->id)->first();
+
+    }
+
+    /**
+     * Returns a count of reviews
+     *
+     * @return integer
+     *
+     **/
+    public function getCountReviewsAttribute()
+    {
+        return EventReview::where('event_id','=', $this->id)
+            ->count();
+
+    }
+
+    /**
+     * Returns a count of confirmed attendees
+     *
+     * @return integer
+     *
+     **/
+    public function getCountAttendedAttribute()
+    {
+        return EventReview::where('event_id','=', $this->id)
+            ->where('attended', '=' , 1)
+            ->count();
+
+    }
+
+
+    /**
+     * Returns an average of reviews
+     *
+     * @return float
+     *
+     **/
+    public function getAvgRatingAttribute()
+    {
+        return EventReview::where('event_id','=', $this->id)
+            ->avg('rating');
+
+    }
 
 	/**
 	 * Return a collection of events that begin on the passed date

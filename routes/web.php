@@ -296,6 +296,7 @@ Route::bind('comments', function($id)
 Route::resource('entities.comments','CommentsController');
 Route::resource('events.comments','CommentsController');
 
+Route::resource('events.reviews','EventReviewsController');
 
 # SERIES
 Route::get('series/createOccurrence', [

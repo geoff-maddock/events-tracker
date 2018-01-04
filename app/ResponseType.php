@@ -20,12 +20,12 @@ class ResponseType extends Eloquent {
 	 */
 	protected $dates = [];
 
-	
-	/**
-	 * A response type can have many event responses
-	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
-	 */
+
+    /**
+     * A response type can have many event responses
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
 	public function eventResponses()
 	{
 		return $this->belongsTo('App\EventResponse');
