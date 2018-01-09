@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Permission;
+use App\Policies\ThreadPolicy;
+use App\Thread;
 use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 //use Illuminate\Support\Facades\Gate;
@@ -17,6 +19,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         'App\Model' => 'App\Policies\ModelPolicy',
         Post::class => PostPolicy::class,
+        Thread::class => ThreadPolicy::class,
     ];
 
     /**
@@ -28,12 +31,6 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(GateContract $gate)
     {
         $this->registerPolicies($gate);
-
-//        Gate::resource('posts', 'PostPolicy');
-//
-//        Gate::define('show_forum', function ($user, $post) {
-//            return 1;
-//        });
 
         // super admins can do anything
         $gate->before(function ($user, $ability) {

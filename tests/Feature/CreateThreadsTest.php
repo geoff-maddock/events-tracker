@@ -20,6 +20,20 @@ class CreateThreadsTest extends TestCase
         $this->assertTrue(true);
     }
 
+    /** @test  */
+    function unauthorized_users_may_not_delete_threads()
+    {
+        $this->withExceptionHandling();
+
+        $thread = create('App\Thread');
+
+        $this->delete($thread->path())->assertRedirect('/login');
+
+        $this->signIn();
+
+        $this->delete($thread->path())->assertRedirect('/login');
+    }
+
 //    /** @test */
 //    function an_authenticated_user_can_create_new_forum_threads()
 //    {
@@ -30,7 +44,7 @@ class CreateThreadsTest extends TestCase
 //        $response = $this->post('/threads', $thread->toArray());
 //
 //        $this->get($response->headers->get('Location'))
-//            ->assertSee($thread->title)
+//            ->assertSee($thread->name)
 //            ->assertSee($thread->body);
 //    }
 }

@@ -39,7 +39,7 @@ class ThreadsController extends Controller
 
 	public function __construct(Thread $thread)
 	{
-		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
+		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update', 'destroy')]);
 		$this->thread = $thread;
 
         // prefix for session storage
@@ -269,7 +269,9 @@ class ThreadsController extends Controller
      * Display a listing of the resource.
      *
      * @param Request $request
+     * @param ThreadFilters $filters
      * @return View
+     * @throws \Throwable
      */
     public function index(Request $request, ThreadFilters $filters)
     {
@@ -455,6 +457,7 @@ class ThreadsController extends Controller
      * Reset the filtering of entities
      *
      * @return Response
+     * @throws \Throwable
      */
     public function reset(Request $request)
     {
@@ -939,9 +942,20 @@ class ThreadsController extends Controller
      * @param Thread $thread
      * @return \Illuminate\Http\Response
      * @internal param int $id
+     * @throws \Exception
      */
-    public function destroy(Thread $thread)
+    public function destroy(Thread $thread, Request $request)
     {
+        $this->authorize('update', $thread);
+
+        if ($thread->user_id != auth()->id()) {
+            if ($request->wantsJson()) {
+                return response(['status' => 'Permission Denied'], 403);
+            }
+
+            return redirect('/login');
+        }
+
 		// add to activity log
 		Activity::log($thread, $this->user, 3);
 

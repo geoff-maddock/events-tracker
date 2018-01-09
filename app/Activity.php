@@ -117,7 +117,7 @@ class Activity extends Eloquent {
 
 		// log the activity here
 		$activity = new Activity();
-		$activity->user_id = $user->id;
+		$activity->user_id = $user ? $user->id : 1;
 		$activity->object_table = $table;
 		$activity->object_id = $object->id;
 		$activity->action_id = $a;
