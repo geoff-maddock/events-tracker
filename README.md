@@ -14,11 +14,10 @@ Run an instance to create your own community where events, event series, entitie
 * Tagging events and entities for better categorization and searchability.
 * Calendar layout of all events and recurring events
 
-### REQUIREMENTS
+### Build On
 
-* Laravel 5.1+
-* Database flexible
-* Unix like operating system (OS X, Ubuntu, Debian)
+* Laravel 5.5+
+* Database agnostic
 
 ### FUTURE
 
@@ -30,12 +29,12 @@ In a later version we'll add intelligence to help event planning based on vector
 ```bash
 $ git clone git@github.com:geoff-maddock/events-tracker.git
 $ cd events-tracker
-$ composer update
+$ composer install
 ```
 
 ### Configuration
 * Configure .env based on .env.example
-* Run `composer update`
+* Run `composer install`
 * Run migrations:
   - php artisan migrate
 * Seed database tables from existing seeds, or update the seed files with your own defaults:

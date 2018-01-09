@@ -298,6 +298,12 @@ Route::resource('events.comments','CommentsController');
 
 Route::resource('events.reviews','EventReviewsController');
 
+# REVIEWS
+Route::resource('reviews','ReviewsController');
+Route::get('reviews/filter', array('as' => 'reviews.filter', 'uses' => 'ReviewsController@filter'));
+Route::get('reviews/reset', array('as' => 'reviews.reset', 'uses' => 'ReviewsController@reset'));
+
+
 # SERIES
 Route::get('series/createOccurrence', [
     'as' => 'series.createOccurrence',

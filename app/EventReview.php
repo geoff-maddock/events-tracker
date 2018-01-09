@@ -33,7 +33,7 @@ class EventReview extends Eloquent {
 	 */
 	public function event()
 	{
-		return $this->hasOne('App\Event')();
+		return $this->belongsTo('App\Event');
 	}
 
 	/**
@@ -44,6 +44,19 @@ class EventReview extends Eloquent {
 	{
 		return $this->hasOne('App\User');
 	}
+
+
+    /**
+     * An review is created by one user
+     *
+     * @ param User $user
+     *
+     * @ return boolean
+     */
+    public function ownedBy(User $user)
+    {
+        return $this->user_id == $user->id;
+    }
 
 	/**
 	 * Get the response type that the response belongs to

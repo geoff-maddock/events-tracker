@@ -88,6 +88,7 @@
 							@can('show_admin')
 								<li role="separator" class="divider"></li>
 								<li><a href="#"><b>Admin</b></a></li>
+								<li><a href="{{ url('/reviews')}}" title="Show event reviews">Reviews</a></li>
 								<li><a href="{{ url('/forums')}}" title="Show discussion forums">Forum</a></li>
 								<li><a href="{{ url('/posts')}}" title="Show all the latests posts">Posts</a></li>
 								<li><a href="{{ url('/permissions')}}" title="Show a list of user permissions">Permissions</a></li>

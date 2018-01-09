@@ -62,7 +62,6 @@ class EventReviewsController extends Controller {
      */
     public function store(Request $request, Event $event)
     {
-
         $msg = '';
 
         // get the request

@@ -348,11 +348,12 @@ class EntitiesController extends Controller {
         return $query;
     }
 
-	/**
-	 * Display a listing of entities by type
-	 *
-	 * @return Response
-	 */
+    /**
+     * Display a listing of entities by type
+     *
+     * @return Response
+     * @throws \Throwable
+     */
 	public function indexTypes($type)
 	{
         $hasFilter = 1;
@@ -373,11 +374,12 @@ class EntitiesController extends Controller {
 	}
 
 
-	/**
-	 * Display a listing of entities by role
-	 *
-	 * @return Response
-	 */
+    /**
+     * Display a listing of entities by role
+     *
+     * @return Response
+     * @throws \Throwable
+     */
 	public function indexRoles($role)
 	{
         $hasFilter = 1;
