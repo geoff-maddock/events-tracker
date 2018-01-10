@@ -183,13 +183,24 @@ class PagesController extends Controller {
         			->with(compact('events'));
 	}
 
-	public function activity()
+	public function activity(Request $request)
 	{
         $this->middleware('auth');
+        $offset = 0;
+        if ($request->input('offset')) {
+            $offset = $request->input('offset');
+        };
 
 		$activities = Activity::orderBy('created_at', 'DESC')
-					->paginate();
+                    ->take(100)
+                    ->offset($offset)
+                    ->get()
+                    ->groupBy(function($activity) {
+                        return $activity->created_at->format('Y-m-d');
+                    });
+            //->paginate();
 
+//		return $activities;
 		return view('pages.activity', compact('activities'));
 	}
 
