@@ -181,6 +181,7 @@ return [
 #        App\Providers\BroadcastServiceProvider::class,
 #		'App\Providers\BusServiceProvider',
 #		'App\Providers\ConfigServiceProvider',
+        'AltThree\Bus\BusServiceProvider',
 		'App\Providers\EventServiceProvider',
 		'App\Providers\RouteServiceProvider',
 		'App\Providers\ViewComposerServiceProvider',
