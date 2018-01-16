@@ -59,6 +59,10 @@
 		<div class="row">
 			<div class="col-md-12">
 				@yield('content')
+
+
+				<flash message="Temporary message"></flash>
+				<example></example>
 			</div>
 		</div>
 	</div>
