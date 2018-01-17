@@ -5,6 +5,7 @@
 /node_modules
 /planning
 /public/hot
+/public/photos
 /vendor
 .env.local.php
 .env.php

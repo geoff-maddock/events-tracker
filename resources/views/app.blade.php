@@ -15,6 +15,9 @@
 	<!-- default css - this is generic bootstrap -->
 	<link href="{{ asset('/css/app.css') }}" rel="stylesheet">
 
+	<!-- custom css - this used to be app.css -->
+	<link href="{{ asset('/css/custom.css') }}" rel="stylesheet">
+
     <!-- select based on default-theme -->
     @if ($theme != config('app.default_theme'))
     	<link href="{{ asset('/css/'.$theme.'.css') }}" rel="stylesheet">
@@ -60,7 +63,6 @@
 			<div class="col-md-12">
 				@yield('content')
 
-
 				<flash message="Temporary message"></flash>
 				<example></example>
 			</div>
@@ -76,7 +78,8 @@
 	<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.8.2/js/lightbox.min.js"></script>
     <script src="{{ asset('/js/jquery.ba-throttle-debounce.min.js') }}"></script>
 	<script src="{{ asset('/js/auto-submit.js') }}"></script>
-    <script src="{{ asset('/js/app.js') }}"></script>
+	<script src="{{ asset('/js/custom.js') }}"></script>
+    {{--<script src="{{ asset('/js/app.js') }}"></script>--}}
 	<script src="{{ asset('/js/sweetalert-dev.js') }}"></script>
 
 	@yield('scripts.footer')
