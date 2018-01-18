@@ -8,6 +8,7 @@
 	<meta property="og:title" content="@yield('title')">
 	<meta property="og:description" content="A guide and calender of events, weekly and  monthly series, promoters, artists, producers, djs, venues and other entities.">
 	<meta property="fb:app_id" content="{{ config('app.fb_app_id') }}">
+	<meta name="csrf-token" content="{{ csrf_token() }}">
 	<title>{{ config('app.app_name')}} - Event + Club Guide - @yield('title')</title>
   	<link rel="alternate" type="application/rss+xml" href="{{ url('rss') }}"
     	    title="RSS Feed {{ config('blog.title') }}">
@@ -57,29 +58,28 @@
 
 	@include('partials.nav')
 
-	<div class="container-fluid">
+	<div id="app-container" class="container-fluid">
 
 		<div class="row">
 			<div class="col-md-12">
 				@yield('content')
 
-				<flash message="Temporary message"></flash>
-				<example></example>
 			</div>
 		</div>
 	</div>
 	<!-- Scripts -->
-	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	{{--<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>--}}
+	{{--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>--}}
+	<script src="{{ asset('/js/app.js') }}"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-hover-dropdown/2.2.1/bootstrap-hover-dropdown.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.1/js/select2.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.1/moment.min.js"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.6.0/fullcalendar.min.js"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.8.2/js/lightbox.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.3.1/fullcalendar.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox.min.js"></script>
     <script src="{{ asset('/js/jquery.ba-throttle-debounce.min.js') }}"></script>
 	<script src="{{ asset('/js/auto-submit.js') }}"></script>
 	<script src="{{ asset('/js/custom.js') }}"></script>
-    {{--<script src="{{ asset('/js/app.js') }}"></script>--}}
+
 	<script src="{{ asset('/js/sweetalert-dev.js') }}"></script>
 
 	@yield('scripts.footer')

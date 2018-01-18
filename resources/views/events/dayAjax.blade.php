@@ -1,4 +1,4 @@
-<div class="col-lg-3"">
+<div class="col-lg-3">
 	<div class="bs-component">
 		<div class="panel panel-info">
 

@@ -761,6 +761,8 @@ module.exports = __webpack_require__(35);
 
 __webpack_require__(9);
 
+// add any other dependencies - things i'm including manually in app.layout
+
 // window.Vue = require('vue');
 //
 // /**
@@ -772,7 +774,7 @@ __webpack_require__(9);
 // Vue.component('example', require('./components/Example.vue'));
 //
 // const app = new Vue({
-//     el: '#event-repo'
+//     el: '#app-container'
 // });
 
 /***/ }),
