@@ -462,6 +462,8 @@ class EventsController extends Controller
         // updates sort, rpp from request
         $this->updatePaging($request);
 
+        $this->rpp = $this->gridRpp;
+
         // updates the filters in the session
         $this->updateFilters($request);
 

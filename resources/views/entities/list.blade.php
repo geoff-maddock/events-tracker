@@ -13,12 +13,11 @@
 
 		{!! link_to_route('entities.show', $entity->name, [$entity->id], ['class' => 'item-title']) !!}
 		@if ($entity->entityStatus && $entity->entityStatus->name === "Inactive")
-		[Inactive]
+		 <span class='glyphicon glyphicon-warning-sign text-warning' title="Inactive"></span>
 		@endif
 
 		@if ($signedIn && $entity->ownedBy($user))
-		<a href="{!! route('entities.edit', ['id' => $entity->id]) !!}">
-		<span class='glyphicon glyphicon-pencil'></span></a>
+		<a href="{!! route('entities.edit', ['id' => $entity->id]) !!}" title="Click to edit"><span class='glyphicon glyphicon-pencil'></span></a>
 		@endif 
 		
 		@if ($signedIn)
