@@ -151,7 +151,17 @@ class PagesController extends Controller {
 		return view('pages.about');
 	}
 
-	public function settings()
+    public function privacy()
+    {
+        return view('pages.privacy');
+    }
+
+    public function tos()
+    {
+        return view('pages.tos');
+    }
+
+    public function settings()
 	{
 		return view('pages.settings');
 	}

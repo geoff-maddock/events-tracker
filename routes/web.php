@@ -36,6 +36,8 @@ Route::get('/', 'PagesController@home')->name('home');
 Route::get('/home', 'PagesController@home')->name('home');
 
 Route::get('about', 'PagesController@about');
+Route::get('privacy', 'PagesController@privacy');
+Route::get('tos', 'PagesController@tos');
 
 Route::get('help', 'PagesController@help');
 
