@@ -2,7 +2,7 @@
 
 @section('content')
 
-	<h2>{{ config('app.app_name')}} - Terms of Service</h2>
+	<h1>{{ config('app.app_name')}} - Terms of Service</h1>
 
 	<div style="min-height:600px">
 		<table style="margin:0; padding:0">

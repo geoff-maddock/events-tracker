@@ -6,6 +6,7 @@ use App\EventType;
 use App\Visibility;
 use App\Tag;
 use App\Series;
+use App\User;
 
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Auth;
@@ -53,6 +54,7 @@ class AppServiceProvider extends ServiceProvider {
             $view->with('tags',Tag::orderBy('name','ASC')->pluck('name','id')->all());
             $view->with('entities',Entity::orderBy('name','ASC')->pluck('name','id')->all());
             $view->with('seriesList',[''=>''] + Series::orderBy('name', 'ASC')->pluck('name', 'id')->all());
+            $view->with('userList',[''=>''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all());
         });
 	}
 

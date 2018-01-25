@@ -41,7 +41,8 @@ class Series extends Eloquent {
 	'door_at', 'start_at', 'end_at', 'length','min_age', 
 	'hold_date',
 	'visibility_id', 
-	'primary_link','ticket_link'
+	'primary_link','ticket_link',
+        'created_by'
 	];
 
 	/**

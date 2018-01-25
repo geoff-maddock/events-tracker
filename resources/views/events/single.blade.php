@@ -14,7 +14,7 @@
 	
 			{!! link_to_route('events.show', $event->name, [$event->id], ['class' => 'item-title']) !!} 
 	
-			@if ($signedIn && $event->ownedBy($user))
+			@if ($signedIn && ($event->ownedBy($user) || $user->hasGroup('super_admin')))
 				<a href="{!! route('events.edit', ['id' => $event->id]) !!}" title="Edit this event."><span class='glyphicon glyphicon-pencil'></span></a>
 			@endif
 

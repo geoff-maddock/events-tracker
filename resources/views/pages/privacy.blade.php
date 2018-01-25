@@ -2,7 +2,7 @@
 
 @section('content')
 
-	<h2>{{ config('app.app_name')}} Privacy Policy</h2>
+	<h1>{{ config('app.app_name')}} Privacy Policy</h1>
 
 	<p>
 	<ul>

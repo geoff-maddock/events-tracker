@@ -79,6 +79,15 @@
 	</div>
 </div>
 
+
+<div class="row">
+	<div class="form-group col-md-3">
+		{!! Form::label('created_by','Owner:') !!}
+		{!! Form::select('created_by', $userList, (isset($event->created_by) ? $event->created_by : NULL), ['class' =>'form-control select2']) !!}
+		{!! $errors->first('created_by','<span class="help-block">:message</span>') !!}
+	</div>
+</div>
+
 <div class="form-group">
 {!! Form::submit(isset($action) ? 'Update Entity' : 'Add Entity', null, ['class' =>'btn btn-primary']) !!}
 </div>

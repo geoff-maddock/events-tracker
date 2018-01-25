@@ -31,7 +31,7 @@ class Entity extends Eloquent {
 	 *
 	 **/
 	protected $fillable = [
-	'name', 'slug', 'short', 'description', 'entity_type_id', 'entity_status_id','entity_address_id'
+	'name', 'slug', 'short', 'description', 'entity_type_id', 'entity_status_id','entity_address_id', 'created_by'
 	];
 
 

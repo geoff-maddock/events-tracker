@@ -45,7 +45,7 @@ class Event extends Eloquent {
 	'ticket_link','primary_link',
 	'series_id',
 	'soundcheck_at','door_at', 'start_at', 'end_at','cancelled_at',
-	'min_age',
+	'min_age', 'created_by'
 	
 	];
 

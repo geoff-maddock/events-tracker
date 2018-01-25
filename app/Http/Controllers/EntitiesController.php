@@ -21,6 +21,7 @@ use App\Alias;
 use App\Role;
 use App\Photo;
 use App\Follow;
+use App\User;
 
 class EntitiesController extends Controller
 {
@@ -34,6 +35,7 @@ class EntitiesController extends Controller
     protected $sortOrder;
     protected $defaultCriteria;
     protected $hasFilter;
+    private $criteria;
 
     public function __construct (Entity $entity)
     {
@@ -146,6 +148,20 @@ class EntitiesController extends Controller
     protected function getFilters (Request $request)
     {
         return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
+    }
+
+    /**
+     * Get user session attribute
+     *
+     * @param String $attribute
+     * @param Mixed $default
+     * @param Request $request
+     * @return Mixed
+     */
+    protected function getAttribute ($attribute, $default = null, Request $request)
+    {
+        return $request->session()
+            ->get($this->prefix . $attribute, $default);
     }
 
     /**
@@ -370,9 +386,24 @@ class EntitiesController extends Controller
     }
 
     /**
+     * Set user session attribute
+     *
+     * @param String $attribute
+     * @param Mixed $value
+     * @param Request $request
+     * @return Mixed
+     */
+    protected function setAttribute ($attribute, $value, Request $request)
+    {
+        return $request->session()
+            ->put($this->prefix . $attribute, $value);
+    }
+
+    /**
      * Reset the filtering of entities
      *
      * @return Response
+     * @throws \Throwable
      */
     public function reset (Request $request)
     {
@@ -405,6 +436,7 @@ class EntitiesController extends Controller
      * Display a listing of entities by tag
      *
      * @return Response
+     * @throws \Throwable
      */
     public function indexTags ($role)
     {
@@ -431,6 +463,7 @@ class EntitiesController extends Controller
      * Display a listing of entities by alias
      *
      * @return Response
+     * @throws \Throwable
      */
     public function indexAliases ($role)
     {
@@ -482,8 +515,9 @@ class EntitiesController extends Controller
         $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
         $aliases = Alias::orderBy('name', 'ASC')->pluck('name', 'id')->all();
         $roles = Role::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $userList = ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('entities.create', compact('entityTypes', 'entityStatuses', 'tags', 'aliases', 'roles'));
+        return view('entities.create', compact('entityTypes', 'entityStatuses', 'tags', 'aliases', 'roles', 'userList'));
     }
 
     /**
@@ -577,7 +611,9 @@ class EntitiesController extends Controller
         $aliases = Alias::orderBy('name')->pluck('name', 'id')->all();
         $roles = Role::orderBy('name')->pluck('name', 'id')->all();
 
-        return view('entities.edit', compact('entity', 'entityTypes', 'entityStatuses', 'tags', 'aliases', 'roles'));
+        $userList = User::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+
+        return view('entities.edit', compact('entity', 'entityTypes', 'entityStatuses', 'tags', 'aliases', 'roles', 'userList'));
     }
 
     /**
@@ -777,34 +813,6 @@ class EntitiesController extends Controller
     protected function setPage ($input)
     {
         return $this->setAttribute('page', $input);
-    }
-
-    /**
-     * Get user session attribute
-     *
-     * @param String $attribute
-     * @param Mixed $default
-     * @param Request $request
-     * @return Mixed
-     */
-    protected function getAttribute ($attribute, $default = null, Request $request)
-    {
-        return $request->session()
-            ->get($this->prefix . $attribute, $default);
-    }
-
-    /**
-     * Set user session attribute
-     *
-     * @param String $attribute
-     * @param Mixed $value
-     * @param Request $request
-     * @return Mixed
-     */
-    protected function setAttribute ($attribute, $value, Request $request)
-    {
-        return $request->session()
-            ->put($this->prefix . $attribute, $value);
     }
 
     /**
