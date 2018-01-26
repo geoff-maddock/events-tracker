@@ -71,7 +71,7 @@ Dropzone.autoDiscover = false;
 $(document).ready(function(){
 
   var myDropzone = new Dropzone('#myDropzone', {
-      dictDefaultMessage: "Drop a file here to add an entity profile picture."
+      dictDefaultMessage: "Drop a file here to add an event image."
   });
 
   $('div.dz-default.dz-message > span').show(); // Show message span

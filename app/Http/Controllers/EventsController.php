@@ -1356,11 +1356,22 @@ class EventsController extends Controller
     {
         $event = Event::findOrFail($id);
 
+        if (!$event->primary_link || $event->primary_link == '') {
+            flash()->error('Error', 'You must have a valid Facebook event linked to import the photo.  To add from your desktop, drop an image file to the right.');
+            return back();
+        };
+
         $fb = app(SammyK\LaravelFacebookSdk\LaravelFacebookSdk::class);
         $fields = 'attending_count,category,cover,interested_count,type,name,noreply_count,maybe_count,owner,place,roles';
 
         $str = $event->primary_link;
         $spl = explode("/", $str);
+
+        if (!isset($spl[4])) {
+            flash()->error('Error', 'The link supplied does not have an importable photo.  Using a facebook event link is recommended.');
+            return back();
+        }
+
         $event_id = $spl[4];
 
         try {
