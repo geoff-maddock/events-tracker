@@ -94,7 +94,7 @@ class UsersController extends Controller {
 
 		$user->tags()->attach($request->input('tag_list'));
 
-		\Session::flash('flash_message', 'Your user has been created!');
+		flash('Success', 'Your user has been created!');
 
 	}
 
@@ -112,10 +112,13 @@ class UsersController extends Controller {
 	{
 		$user->profile->fill($request->input())->save();
 
+        $user->groups()->sync($request->input('group_list', []));
+
 		flash('Success', 'Your user has been updated');
 
 		return view('users.show', compact('user'));
 	}
+
 
 	public function destroy(User $user)
 	{
@@ -127,12 +130,13 @@ class UsersController extends Controller {
 	}
 
 
-	/**
-	 * Add a photo to a user
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
+    /**
+     * Add a photo to a user
+     *
+     * @param  int $id
+     * @param Request $request
+     * @return void
+     */
 	public function addPhoto($id, Request $request)
 	{
 		$this->validate($request, [

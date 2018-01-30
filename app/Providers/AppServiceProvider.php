@@ -7,6 +7,7 @@ use App\Visibility;
 use App\Tag;
 use App\Series;
 use App\User;
+use App\Group;
 
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Auth;
@@ -55,6 +56,11 @@ class AppServiceProvider extends ServiceProvider {
             $view->with('entities',Entity::orderBy('name','ASC')->pluck('name','id')->all());
             $view->with('seriesList',[''=>''] + Series::orderBy('name', 'ASC')->pluck('name', 'id')->all());
             $view->with('userList',[''=>''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all());
+        });
+
+        // always include these values in the user edit view
+        \View::composer('users.edit', function($view) {
+            $view->with('groups', Group::orderBy('name', 'ASC')->pluck('name', 'id')->all());
         });
 	}
 

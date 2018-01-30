@@ -174,7 +174,6 @@ class GroupsController extends Controller {
 	 */
 	 public function store(GroupRequest $request, Group $group)
  	{
-
  		$msg = "";
  		
  		$input = $request->all();
@@ -189,23 +188,23 @@ class GroupsController extends Controller {
  		return redirect()->route('groups.index');
  	}
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
+    /**
+     * Display the specified resource.
+     *
+     * @param Group $group
+     * @return Response
+     */
 	public function show(Group $group)
 	{
 		return view('groups.show', compact('group'));
 	}
 
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param Group $group
+     * @return Response
+     */
 	public function edit(Group $group)
 	{
 		$this->middleware('auth');
@@ -216,12 +215,13 @@ class GroupsController extends Controller {
 		return view('groups.edit', compact('group','permissions','users'));
 	}
 
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param Group $group
+     * @param Request $request
+     * @return Response
+     */
 	public function update(Group $group, Request $request)
 	{
 		$msg = '';
@@ -236,7 +236,6 @@ class GroupsController extends Controller {
 		};
 		*/
 
-
 		$group->permissions()->sync($request->input('permission_list', []));
 
 		$group->users()->sync($request->input('user_list', []));
@@ -244,12 +243,13 @@ class GroupsController extends Controller {
 		return redirect('groups');
 	}
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param Group $group
+     * @return Response
+     * @throws \Exception
+     */
 	public function destroy(Group $group)
 	{
 		$group->delete();

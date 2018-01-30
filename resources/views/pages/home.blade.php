@@ -22,7 +22,7 @@
 
 	</div>
 
-	<section class="4days">
+	<section id="4days">
         @include('pages.4daysAjax')
  	</section>
 @stop
@@ -35,11 +35,10 @@ $(function() {
     // check the day sections and load via ajax
     $('body section.day').each(function(e) {
         console.log($(this).attr('href'));
-        var url = $(this).attr('href')
+        var url = $(this).attr('href');
         var num = $(this).attr('data-num');
         getDayEvents(url, num);
     });
-
 
     $('body').on('click', '.pagination a', function(e) {
         e.preventDefault();
@@ -63,7 +62,7 @@ $(function() {
         $.ajax({
             url : url  
         }).done(function (data) {
-            $('.4days').html(data);  
+            $('#4days').html(data);
         }).fail(function () {
             alert('No events could be loaded.');
         });
