@@ -58,6 +58,10 @@ class AppServiceProvider extends ServiceProvider {
             $view->with('userList',[''=>''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all());
         });
 
+	\View::composer('series.createOccurrence', function($view) {
+	     $view->with('userList',[''=>''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all());
+	});
+
         // always include these values in the user edit view
         \View::composer('users.edit', function($view) {
             $view->with('groups', Group::orderBy('name', 'ASC')->pluck('name', 'id')->all());
