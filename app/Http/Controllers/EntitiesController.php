@@ -527,10 +527,11 @@ class EntitiesController extends Controller
      */
     public function store (EntityRequest $request, Entity $entity)
     {
-
         $msg = "";
 
         $input = $request->all();
+        dd($input);
+        $input['slug'] = str_slug($request->input('slug','-'));
 
         $tagArray = $request->input('tag_list', []);
         $aliasArray = $request->input('alias_list', []);
@@ -628,7 +629,11 @@ class EntitiesController extends Controller
     {
         $msg = '';
 
-        $entity->fill($request->input())->save();
+        $input = $request->all();
+
+        $input['slug'] = str_slug($request->input('slug','-'));
+
+        $entity->fill($input)->save();
 
         if (!$entity->ownedBy(\Auth::user())) {
             $this->unauthorized($request);

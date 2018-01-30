@@ -11,7 +11,7 @@
 
 <P>
 @if ($user && Auth::user()->id == $entity->user->id)	
-	<a href="{!! route('entities.edit', ['id' => $entity->id]) !!}" class="btn btn-primary">Edit Entity</a>
+	<a href="{!! route('entities.edit', ['id' => $entity->slug]) !!}" class="btn btn-primary">Edit Entity</a>
 @endif
 	<a href="{!! URL::route('entities.index') !!}" class="btn btn-info">Return to list</a>
 </P>

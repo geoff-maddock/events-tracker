@@ -26,6 +26,7 @@ class Entity extends Eloquent {
 		});
 	}
 
+
 	/**
 	 * @var Array
 	 *
@@ -37,6 +38,10 @@ class Entity extends Eloquent {
 
 	protected $dates = ['updated_at'];
 
+    public function getRouteKeyName ()
+    {
+        return 'slug';
+    }
 
     /**
      * Get all of the entities comments

@@ -6,13 +6,13 @@
 
 <h2>Entity . EDIT 
 	@include('events.crumbs', ['slug' => $entity->slug ? $entity->slug : $entity->id])
-	  <br> 	<a href="{!! route('entities.show', ['id' => $entity->id]) !!}" class="btn btn-primary">Show Entity</a> <a href="{!! URL::route('entities.index') !!}" class="btn btn-info">Return to list</a>
+	  <br> 	<a href="{!! route('entities.show', ['id' => $entity->slug]) !!}" class="btn btn-primary">Show Entity</a> <a href="{!! URL::route('entities.index') !!}" class="btn btn-info">Return to list</a>
 </h2>
 
 <div class="row">
 	<div class="col-md-6">
 
-	{!! Form::model($entity, ['route' => ['entities.update', $entity->id], 'method' => 'PATCH']) !!}
+	{!! Form::model($entity, ['route' => ['entities.update', $entity->slug], 'method' => 'PATCH']) !!}
 
 		@include('entities.form', ['action' => 'update', 'entityTypes' => $entityTypes])
 
