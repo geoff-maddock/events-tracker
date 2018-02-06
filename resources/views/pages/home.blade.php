@@ -34,12 +34,13 @@ $(function() {
 
     // check the day sections and load via ajax
     $('body section.day').each(function(e) {
-        console.log($(this).attr('href'));
+
         var url = $(this).attr('href');
         var num = $(this).attr('data-num');
         getDayEvents(url, num);
     });
 
+    // when a pagination link is clicked, load the results of the url
     $('body').on('click', '.pagination a', function(e) {
         e.preventDefault();
         var url = $(this).attr('href');  
@@ -47,14 +48,14 @@ $(function() {
         window.history.pushState("", "", url);
     });
 
+    // load a day's events
     function getDayEvents(url, num) {
-        console.log(url);
         $.ajax({
             url : url
         }).done(function (data) {
             $('#day-'+num).html(data);
         }).fail(function () {
-            alert('No events could be loaded.');
+            alert('No events could be loaded')
         });
     }
 

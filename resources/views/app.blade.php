@@ -79,7 +79,6 @@
     <script src="{{ asset('/js/jquery.ba-throttle-debounce.min.js') }}"></script>
 	<script src="{{ asset('/js/auto-submit.js') }}"></script>
 	<script src="{{ asset('/js/custom.js') }}"></script>
-
 	<script src="{{ asset('/js/sweetalert-dev.js') }}"></script>
 
 	@yield('scripts.footer')
