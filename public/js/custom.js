@@ -96,6 +96,66 @@ var App = (function()
     };
 })();
 
+// js module for the home page
+var Home = (function()
+{
+    var init = function()
+    {
+        this.loadDays();
+        this.setupPagination();
+    };
+
+    // check the day sections and load via ajax
+    var loadDays = function() {
+        $('body section.day').each(function(e) {
+
+            var url = $(this).attr('href');
+            var num = $(this).attr('data-num');
+            getDayEvents(url, num);
+        });
+    };
+
+    // when a pagination link is clicked, load the results of the url
+    var setupPagination = function() {
+        $('body').on('click', '.pagination a', function(e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+            getEvents(url);
+            window.history.pushState("", "", url);
+        });
+    };
+
+    // load a day's events
+    var getDayEvents = function(url, num) {
+        $.ajax({
+            url : url
+        }).done(function (data) {
+            $('#day-'+num).html(data);
+        }).fail(function () {
+            alert('No events could be loaded')
+        });
+    };
+
+    // load a whole block of events
+    var getEvents = function getEvents(url) {
+        $.ajax({
+            url : url
+        }).done(function (data) {
+            $('#4days').html(data);
+        }).fail(function () {
+            alert('No events could be loaded.');
+        });
+    };
+
+    return {
+        init: init,
+        loadDays: loadDays,
+        setupPagination: setupPagination,
+        getDayEvents: getDayEvents,
+        getEvents: getEvents
+    };
+})();
+
 // init app module on document load
 $(function()
 {

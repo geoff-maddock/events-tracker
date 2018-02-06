@@ -30,45 +30,10 @@
 @section('scripts.footer')
 <script type="text/javascript">
 
-$(function() {
-
-    // check the day sections and load via ajax
-    $('body section.day').each(function(e) {
-
-        var url = $(this).attr('href');
-        var num = $(this).attr('data-num');
-        getDayEvents(url, num);
-    });
-
-    // when a pagination link is clicked, load the results of the url
-    $('body').on('click', '.pagination a', function(e) {
-        e.preventDefault();
-        var url = $(this).attr('href');  
-        getEvents(url);
-        window.history.pushState("", "", url);
-    });
-
-    // load a day's events
-    function getDayEvents(url, num) {
-        $.ajax({
-            url : url
-        }).done(function (data) {
-            $('#day-'+num).html(data);
-        }).fail(function () {
-            alert('No events could be loaded')
-        });
-    }
-
-    function getEvents(url) {
-        $.ajax({
-            url : url  
-        }).done(function (data) {
-            $('#4days').html(data);
-        }).fail(function () {
-            alert('No events could be loaded.');
-        });
-    }
+// init app module on document load
+$(function()
+{
+    Home.init();
 });
-
 </script>
 @stop
