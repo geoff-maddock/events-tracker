@@ -412,7 +412,6 @@ class EntitiesController extends Controller
         // set the filters to empty
         $this->setFilters($request, $this->getDefaultFilters());
 
-        //dd($request->session());
 
         // default
         $query = Entity::where(function ($query) {
@@ -530,7 +529,7 @@ class EntitiesController extends Controller
         $msg = "";
 
         $input = $request->all();
-        dd($input);
+
         $input['slug'] = str_slug($request->input('slug','-'));
 
         $tagArray = $request->input('tag_list', []);
