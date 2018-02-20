@@ -29,7 +29,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      *
      * @var array
      */
-    protected $fillable = ['name', 'email', 'password'];
+    protected $fillable = ['name', 'email', 'password', 'user_status_id'];
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -82,6 +82,16 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     {
         return $this->hasOne('App\Profile');
     }
+
+    /**
+     * A user has a status
+     *
+     */
+    public function status()
+    {
+        return $this->hasOne('App\UserStatus','id','user_status_id');
+    }
+
 
     /**
      * Return the primary photo for this user
@@ -301,6 +311,20 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         return $this->hasOne(Post::class, 'created_by')->latest();
     }
 
+    /**
+     * Check that the user is active
+     *
+     * @ return boolean
+     */
+    public function getIsActiveAttribute()
+    {
+        if ($this->status && $this->status->name == 'Active') {
+            return 1;
+        };
+
+        return 0;
+
+    }
 
     /**
      * Return the feed of user activity

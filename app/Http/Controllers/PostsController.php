@@ -335,7 +335,7 @@ class PostsController extends Controller
 
         Log::info('User '.$id.' is liking '.$post->name);
 
-        flash()->success('Success',  'You are now liking the post - '.$post->name);
+        flash()->success('Success',  'You are now liking the selected post.');
 
         return back();
     }
@@ -371,7 +371,7 @@ class PostsController extends Controller
         $response = Like::where('object_id','=', $id)->where('user_id','=',$this->user->id)->where('object_type','=','post')->first();
         $response->delete();
 
-        flash()->success('Success',  'You are no longer following the post.');
+        flash()->success('Success',  'You are no longer liking the post.');
 
         return back();
     }

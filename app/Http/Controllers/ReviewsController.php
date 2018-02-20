@@ -7,6 +7,7 @@ use App\Http\Requests\EventRequest;
 use App\OccurrenceDay;
 use App\OccurrenceType;
 use App\OccurrenceWeek;
+use App\ReviewType;
 use App\Thread;
 use App\Traits\Followable;
 use Illuminate\View\View;
@@ -644,8 +645,7 @@ class ReviewsController extends Controller
 			$q->where('name','=','Promoter');
 		})->orderBy('name','ASC')->pluck('name','id')->all();
 
-		$reviewTypes = [''=>''] + ReviewType::orderBy('name','ASC')->pluck('name', 'id')->all(); 
-
+		$reviewTypes = [''=>''] + ReviewType::orderBy('name','ASC')->pluck('name', 'id')->all();
 
 		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
 		$events = Event::orderBy('name','ASC')->pluck('name','id')->all();

@@ -275,7 +275,6 @@ class ThreadsController extends Controller
      */
     public function index(Request $request, ThreadFilters $filters)
     {
-        //$threads = Thread::filter($filters)->get();
 
         // get filters from session
         $filters = $this->getFilters($request);

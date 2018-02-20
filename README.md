@@ -1,11 +1,11 @@
 # Event Repo
-> A guide and calender of events, weekly and monthly series, promoters, artists, producers, djs, venues and other entities.
+> A web based event calendar and tracking tool for music and arts communities.
 
-A guide and calender of events, weekly and monthly series, promoters, artists, producers, djs, venues and other entities.
-Run an instance to create your own community where events, event series, entities, attendees and other objects can be added, tagged maintained and followed.  
+Event Repo is a CMS designed to be set up for a music or arts community to track events, weekly and monthly series, promoters, artists, producers, djs, venues and other entities.
+Run an instance to create your own community where events, event series, entities, attendees and other objects can be added, tagged maintained and followed.  Keep the discussion going through a related discussion forum.  
 
 
-## FEATURES (v0.1)
+## FEATURES (v0.2)
 
 * Public, filterable event listings
 * User registration for private homepage with customized private event listings and account settings.
@@ -13,11 +13,12 @@ Run an instance to create your own community where events, event series, entitie
 * Event templating for creation of reoccurring events (series).
 * Tagging events and entities for better categorization and searchability.
 * Calendar layout of all events and recurring events
+* Threaded events forum where posts can be linked to events, entities or topics.
 
-### Build On
+### Built On
 
 * Laravel 5.5+
-* Database agnostic
+* Database agnostic, but using MySQL
 
 ### FUTURE
 

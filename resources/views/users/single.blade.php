@@ -16,6 +16,12 @@
 	<a href="{!! route('users.edit', ['id' => $user->id]) !!}">
 	<span class='glyphicon glyphicon-pencil'></span></a>
     {!! link_form_icon('glyphicon-trash text-warning', $user, 'DELETE', 'Delete the user') !!}
+			@can('grant_access')
+				@if (!$user->isActive)
+				<a href="{!! route('users.activate', ['id' => $user->id]) !!}">
+					<span class='glyphicon glyphicon-ok-circle' title='Activate the user'></span></a>
+					@endif
+				@endcan
 	@endif
 
 	<ul class="list">

@@ -24,14 +24,32 @@ use App\Activity;
 
 class ForumsController extends Controller
 {
+    
+    // define a list of variables
+    protected $rpp;
+    protected $page;
+    protected $sort;
+    protected $sortBy;
+    protected $sortOrder;
+    protected $defaultCriteria;
+    protected $hasFilter;
 
     public function __construct(Forum $forum)
     {
         $this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
         $this->forum = $forum;
 
+        // prefix for session storage
+        $this->prefix = 'app.forums.';
 
-        $this->rpp = 15;
+        // default list variables
+        $this->rpp = 10;
+        $this->page = 1;
+        $this->sort = array('name', 'desc');
+        $this->sortBy = 'created_at';
+        $this->sortOrder = 'desc';
+        $this->defaultCriteria = NULL;
+        $this->hasFilter = 1;
         parent::__construct();
     }
 
@@ -96,13 +114,49 @@ class ForumsController extends Controller
         return redirect()->route('forums.index');
     }
 
+
+    /**
+     * Get session filters
+     *
+     * @return Array
+     */
+    public function getFilters(Request $request)
+    {
+        return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
+    }
+
+
+    /**
+     * Get user session attribute
+     *
+     * @param String $attribute
+     * @param Mixed $default
+     * @param Request $request
+     * @return Mixed
+     */
+    public function getAttribute($attribute, $default = null, Request $request)
+    {
+        return $request->session()
+            ->get($this->prefix . $attribute, $default);
+    }
+
+    /**
+     * Get the default filters array
+     *
+     * @return array
+     */
+    public function getDefaultFilters()
+    {
+        return array();
+    }
+
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int  $forum
      * @return \Illuminate\Http\Response
      */
-    public function show(Forum $forum)
+    public function show(Forum $forum, Request $request)
     {
          // if the gate does not allow this user to show a forum redirect to home
         if (Gate::denies('show_forum')) {
@@ -110,6 +164,9 @@ class ForumsController extends Controller
 
             return redirect()->back();
         }
+
+        // get filters from session
+        $filters = $this->getFilters($request);
 
         $threads = Thread::where('forum_id', $forum->id)->orderBy('created_at', 'desc')->paginate(1000000);
         $threads->filter(function($e)
@@ -120,7 +177,15 @@ class ForumsController extends Controller
         // pass a slug for the forum
         $slug = $forum->description;
         
-        return view('threads.index', compact('threads','slug'));
+        return view('threads.index')
+            ->with(compact('threads','slug'))
+        ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder,
+        'hasFilter' => $this->hasFilter,
+        'filters' => $filters,
+        'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
+        'filter_user' => isset($filters['filter_user']) ? $filters['filter_user'] : NULL,
+        'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL
+        ]);
     }
 
     /**

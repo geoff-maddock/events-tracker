@@ -22,7 +22,17 @@
 {!! $errors->first('bio','<span class="help-block">:message</span>') !!}
 </div>
 
+
 @can('grant_access')
+<div class="row">
+    <div class="form-group col-md-3 {{$errors->has('user_status_id') ? 'has-error' : '' }}">
+        {!! Form::label('user_status_id','Status:') !!}
+        {!! Form::select('user_status_id', $userStatuses, (isset($user->user_status_id) ? $user->user_status_id : NULL), ['class' =>'form-control']) !!}
+        {!! $errors->first('user_status_id','<span class="help-block">:message</span>') !!}
+    </div>
+</div>
+
+
 <div class="row">
     <div class="form-group col-md-2">
         {!! Form::label('group_list','Group:') !!}

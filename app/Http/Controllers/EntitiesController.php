@@ -111,7 +111,6 @@ class EntitiesController extends Controller
         // get the threads
         $entities = $query->paginate($this->rpp);
 
-
         return view('entities.index')
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter, 'filters' => $filters])
             ->with(compact('entities'))

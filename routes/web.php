@@ -69,6 +69,11 @@ Route::resource('users','UsersController');
 Route::post('users/{id}/photos', 'UsersController@addPhoto');
 Route::delete('users/{id}/photos/{photo_id}', 'UsersController@deletePhoto');
 
+Route::get('users/{id}/activate', [
+    'as' => 'users.activate',
+    'uses' => 'UsersController@activate'
+]);
+
 Route::get('profile/{id}', 'UsersController@show')->name('users.profile');
 # PHOTOS
 

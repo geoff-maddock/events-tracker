@@ -4,6 +4,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\ProfileRequest;
+use App\UserStatus;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 use Illuminate\Http\Request;
@@ -58,6 +59,7 @@ class UsersController extends Controller {
 	{
 		$userTypes = [''=>''] + UserType::pluck('name', 'id');
 		$visibilities = [''=>''] + Visibility::pluck('name', 'id');
+        $userStatuses = [''=>''] + UserStatus::orderBy('name','ASC')->pluck('name', 'id')->all();
 		$tags = Tag::pluck('name','id');
 
 		return view('users.create');
@@ -86,6 +88,7 @@ class UsersController extends Controller {
 		$input = $request->all();
 
 		$user->create($input);
+		$user->user_status_id = 1;
 
 		// if there is no profile, create one
 		$profile = new Profile();
@@ -103,13 +106,15 @@ class UsersController extends Controller {
 		$this->middleware('auth');
 
 		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
+        $userStatuses = [''=>''] + UserStatus::orderBy('name','ASC')->pluck('name', 'id')->all();
 		$tags = Tag::pluck('name','id');
 
-		return view('users.edit', compact('user', 'visibilities','tags'));
+		return view('users.edit', compact('user', 'visibilities','userStatuses','tags'));
 	}
 
 	public function update(User $user, ProfileRequest $request)
 	{
+	    $user->fill($request->input())->save();
 		$user->profile->fill($request->input())->save();
 
         $user->groups()->sync($request->input('group_list', []));
@@ -160,13 +165,14 @@ class UsersController extends Controller {
         // attach to user
 		$user->addPhoto($photo);
 	}
-	
-	/**
-	 * Delete a photo
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
+
+    /**
+     * Delete a photo
+     *
+     * @param  int $id
+     * @param Request $request
+     * @return void
+     */
 	public function deletePhoto($id, Request $request)
 	{
 
@@ -184,9 +190,45 @@ class UsersController extends Controller {
 
 	}
 
-	protected function makePhoto(UploadedFile $file)
+    /**
+     * @param UploadedFile $file
+     * @return mixed
+     */
+    protected function makePhoto(UploadedFile $file)
 	{
 		return Photo::named($file->getClientOriginalName())
 			->move($file);
 	}
+
+
+    /**
+     * Mark user as activated
+     *
+     * @return Response
+     */
+    public function activate ($id, Request $request)
+    {
+        // check if there is a logged in user
+        if (!$this->user) {
+            flash()->error('Error', 'No user is logged in.');
+            return back();
+        };
+
+        if (!$user = User::find($id)) {
+            flash()->error('Error', 'No such user');
+            return back();
+        };
+
+        // add the following response
+        $user->user_status_id = 2;
+        $user->save();
+
+
+        Log::info('User ' . $user->name . ' is activated.');
+
+        flash()->success('Success', 'User '.$user->name .' is now activated.');
+
+        return back();
+
+    }
 }

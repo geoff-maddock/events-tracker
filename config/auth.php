@@ -157,4 +157,5 @@ return [
 //		'expire' => 60,
 //	],
 
+    'failed' => 'Unable to log in'
 ];
