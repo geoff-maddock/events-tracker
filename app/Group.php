@@ -6,13 +6,19 @@ class Group extends Model
 {
 
     protected $fillable = ['name','label','description','level'];
-    
-	public function permissions()
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function permissions()
 	{
 		return $this->belongsToMany(Permission::class);
 	}
 
-	public function users()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function users()
 	{
 		return $this->belongsToMany(User::class);
 	}

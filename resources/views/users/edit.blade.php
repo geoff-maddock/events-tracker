@@ -1,5 +1,7 @@
 @extends('app')
 
+@section('title','User Edit')
+
 @section('content')
 
 	<h2>{{ $user->name }}</h2>
@@ -18,27 +20,28 @@
 
 	{!! delete_form(['users.destroy', $user->id]) !!}
 
-	{!! link_to_route('users.index','Return to list') !!}
 @stop
 
 @section('scripts.footer')
 <script type="text/javascript">
-$('input.delete').on('click', function(e){
-  e.preventDefault();
-  var form = $(this).parents('form');
-  swal({   
-    title: "Are you sure?",
-    text: "You will not be able to recover this User!", 
-    type: "warning",   
-    showCancelButton: true,   
-    confirmButtonColor: "#DD6B55",
-    confirmButtonText: "Yes, delete it!", 
-    closeOnConfirm: true
-  }, 
-   function(isConfirm){
-    console.log('clicked');
-    form.submit();
-  });
-})
+    $('input.delete').on('click', function(e){
+        e.preventDefault();
+        var form = $(this).parents('form');
+        swal({
+                title: "Are you sure?",
+                text: "You will not be able to recover this user!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: true
+            },
+            function(isConfirm){
+                if (isConfirm)
+                {
+                    form.submit();
+                };
+            });
+    })
 </script>
 @stop

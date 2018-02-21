@@ -7,7 +7,10 @@ class Permission extends Model
 
     protected $fillable = ['name','label','description','level'];
 
-	public function groups()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function groups()
 	{
 		return $this->belongsToMany(Group::class);
 	}

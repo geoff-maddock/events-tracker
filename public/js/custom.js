@@ -52,7 +52,7 @@ var App = (function()
                 tags: $(this).data('tags'),
                 allowClear: true,
             });
-
+        console.log('set up select 2');
         // enable tooltips
         $(target).tooltip({
             selector: '.tip',

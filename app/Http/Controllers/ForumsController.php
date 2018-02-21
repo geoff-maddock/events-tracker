@@ -24,7 +24,7 @@ use App\Activity;
 
 class ForumsController extends Controller
 {
-    
+
     // define a list of variables
     protected $rpp;
     protected $page;

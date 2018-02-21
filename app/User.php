@@ -296,6 +296,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         );
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function groups ()
     {
         return $this->belongsToMany(Group::class);
@@ -344,5 +347,15 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
                 return $activity->created_at->format('Y-m-d');
             });
 
+    }
+
+    /**
+     * Get a list of group ids associated with the user
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function getGroupListAttribute()
+    {
+        return $this->groups->pluck('id')->all();
     }
 }

@@ -1,3 +1,4 @@
+
 <div class="form-group {{$errors->has('name') ? 'has-error' : '' }}">
 {!! Form::label('first_name','First Name') !!}
 {!! Form::text('first_name', null, ['class' =>'form-control']) !!}
@@ -36,7 +37,11 @@
 <div class="row">
     <div class="form-group col-md-2">
         {!! Form::label('group_list','Group:') !!}
-        {!! Form::select('group_list[]', $groups, null, ['id' => 'group_list','class' =>'form-control select2', 'data-placeholder' => 'Select group memberships', 'data-tags' =>'false', 'multiple']) !!}
+        {!! Form::select('group_list[]', $groups, (isset($user->groups) ? $user->groups->pluck('id')->toArray() : NULL), ['id' => 'group_list', 'class' =>'form-control select2',
+         'data-placeholder' => 'Select group memberships',
+         'data-tags' => 'false',
+         'multiple']) !!}
+
         {!! $errors->first('groups','<span class="help-block">:message</span>') !!}
     </div>
 </div>

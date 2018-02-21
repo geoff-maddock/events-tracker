@@ -5,7 +5,9 @@
 @section('content')
 
 
-	<h2>Edit: {{ $group->name }}</h2>
+	<h2>Group . EDIT : {{ $group->name }}</h2>
+	<br> 	<a href="{!! route('groups.show', ['id' => $group->id]) !!}" class="btn btn-primary">Show Group</a> <a href="{!! URL::route('groups.index') !!}" class="btn btn-info">Return to list</a>
+
 
 	{!! Form::model($group, ['route' => ['groups.update', $group->id], 'method' => 'PATCH']) !!}
 
@@ -15,5 +17,4 @@
 
 	{!! delete_form(['groups.destroy', $group->id]) !!}
 
-	{!! link_to_route('groups.index','Return to list') !!}
 @stop

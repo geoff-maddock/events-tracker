@@ -35,7 +35,8 @@
 <div class="row">
 	<div class="form-group col-md-2">
 	{!! Form::label('permission_list','Permission:') !!}
-	{!! Form::select('permission_list[]', $permissions, null, ['id' => 'permission_list','class' =>'form-control select2', 'data-placeholder' => 'Select a related permission', 'data-tags' =>'false', 'multiple']) !!}
+	{!! Form::select('permission_list[]', $permissions, null,
+	['id' => 'permission_list','class' =>'form-control select2', 'data-placeholder' => 'Select a related permission', 'data-tags' =>'false', 'multiple']) !!}
 	{!! $errors->first('permissions','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -44,7 +45,8 @@
 <div class="row">
 	<div class="form-group col-md-6">
 		{!! Form::label('user_list','Users:') !!}
-		{!! Form::select('user_list[]', $users, null, ['id' => 'user_list', 'class' =>'form-control select2', 'data-placeholder' => 'Select a related user', 'data-tags' =>'false', 'multiple']) !!}
+		{!! Form::select('user_list[]', $users, null,
+		['id' => 'user_list', 'class' =>'form-control select2', 'data-placeholder' => 'Select a related user', 'data-tags' =>'false', 'multiple']) !!}
 		{!! $errors->first('users','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -52,19 +54,3 @@
 <div class="form-group">
 {!! Form::submit(isset($action) ? 'Update Group' : 'Add Group', null, ['class' =>'btn btn-primary']) !!}
 </div>
-
-
-@section('footer')
-	<script>
-		$('#permission_list').select2(
-			{
-				placeholder: 'Choose a permission',
-				tags: true,
-			});
-		$('#user_list').select2(
-			{
-				placeholder: 'Choose a user',
-				tags: false,
-			});
-	</script>
-@endsection

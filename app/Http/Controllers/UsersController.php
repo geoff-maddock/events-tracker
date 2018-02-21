@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers;
 
+use App\Group;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
@@ -107,9 +108,9 @@ class UsersController extends Controller {
 
 		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
         $userStatuses = [''=>''] + UserStatus::orderBy('name','ASC')->pluck('name', 'id')->all();
-		$tags = Tag::pluck('name','id');
+        $groups = Group::orderBy('name')->pluck('name','id')->all();
 
-		return view('users.edit', compact('user', 'visibilities','userStatuses','tags'));
+		return view('users.edit', compact('user', 'visibilities','userStatuses','groups'));
 	}
 
 	public function update(User $user, ProfileRequest $request)
@@ -117,7 +118,9 @@ class UsersController extends Controller {
 	    $user->fill($request->input())->save();
 		$user->profile->fill($request->input())->save();
 
-        $user->groups()->sync($request->input('group_list', []));
+		if ($request->has('group_list')) {
+            $user->groups()->sync($request->input('group_list', []));
+        };
 
 		flash('Success', 'Your user has been updated');
 
