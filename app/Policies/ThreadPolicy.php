@@ -28,7 +28,7 @@ class ThreadPolicy
      */
     public function view(User $user, Thread $thread)
     {
-        //
+        return true;
     }
 
     /**
@@ -39,7 +39,11 @@ class ThreadPolicy
      */
     public function create(User $user)
     {
-        //
+        if (Auth::check()) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -63,6 +67,21 @@ class ThreadPolicy
      */
     public function delete(User $user, Thread $thread)
     {
-        //
+        if (Auth::check()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Determine whether the user can view the thread.
+     *
+     * @param  \App\Thread  $thread
+     * @return mixed
+     */
+    public function all(Thread $thread)
+    {
+        return true;
     }
 }

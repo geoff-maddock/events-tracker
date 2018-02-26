@@ -22,6 +22,11 @@ use App\Follow;
 
 class GenericObjectController extends Controller {
 
+    protected $rpp;
+    protected $page;
+    protected $sortBy;
+    protected $sortDirection;
+
 	public function __construct(Entity $entity)
 	{
 		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
@@ -73,13 +78,13 @@ class GenericObjectController extends Controller {
 	}
 
 
-
-	/**
-	 * Add a photo to an entity
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
+    /**
+     * Add a photo to an entity
+     *
+     * @param  int $id
+     * @param Request $request
+     * @return void
+     */
 	public function addPhoto($id, Request $request)
 	{
 
@@ -217,7 +222,7 @@ class GenericObjectController extends Controller {
     /**
      * Get the default sort array
      *
-     * @return Array
+     * @return array
      */
     public function getDefaultSort()
     {
@@ -228,7 +233,7 @@ class GenericObjectController extends Controller {
     /**
      * Get the default filters array
      *
-     * @return Array
+     * @return array
      */
     public function getDefaultFilters()
     {

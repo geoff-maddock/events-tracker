@@ -182,21 +182,6 @@ class EventsController extends Controller
         return $query;
     }
 
-    /**
-     * Reset filter action.
-     *
-     * @param Request $request
-     */
-    public function executeReset (Request $request)
-    {
-        if ($request->input('criteria')) {
-            $this->setCriteria($request->input('criteria'));
-        }
-        $this->setFilters($this->getDefaultFilters(), NULL);
-        $request->session()->put('defaultFilter', 0);
-        $this->setPage(1);
-        $this->executeFilterRedirect();
-    }
 
     /**
      * Returns true if the user has any filters outside of the default
@@ -1569,6 +1554,13 @@ class EventsController extends Controller
         // get the request
         $input = $request->all();
 
+        // if slug is empty, use name
+        if (!$request->input('slug') || count($request->input('slug')) < 3) {
+            $input['slug'] = str_slug($request->input('name', '-'));
+        } else {
+            $input['slug'] = str_slug($request->input('slug', '-'));
+        };
+
         // validate - hmm, isn't this doing it elsewhere?
 
         $tagArray = $request->input('tag_list', []);
@@ -2283,7 +2275,7 @@ class EventsController extends Controller
             'slug' => $event->slug,
             'description' => $event->short,
             'body' => $event->short,
-            'thread_category_id' => 1,
+            'thread_category_id' => NULL,
             'visibility_id' => $event->visibility_id,
             'event_id' => $event->id,
             'likes' => 0,

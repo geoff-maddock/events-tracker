@@ -28,12 +28,16 @@ use App\Like;
 class PostsController extends Controller
 {
 
+    protected $post;
+    protected $rpp;
+
     public function __construct(Post $post)
     {
         $this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
-        $this->post = $post;
 
+        $this->post = $post;
         $this->rpp = 20;
+
         parent::__construct();
     }
 
@@ -143,7 +147,7 @@ class PostsController extends Controller
         };
 
         // notify users following any tags related to the thread
-        /*  why is this disabled?
+
         foreach ($tags as $tag)
         {
             foreach ($tag->followers() as $user)
@@ -164,11 +168,10 @@ class PostsController extends Controller
         // notify users following any of the series
         $seriess = $thread->series()->get();
 
-        foreach ($series as $series)
+        foreach ($seriess as $series)
         {
             foreach ($series->followers() as $user)
             {
-
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users))
                 {
@@ -181,7 +184,7 @@ class PostsController extends Controller
                 };
             };
         };
-        */
+
         return back();
     }
 

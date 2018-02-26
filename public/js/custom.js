@@ -41,7 +41,7 @@ var App = (function()
 
     var setupControls = function(target)
     {
-        if(!target)
+        if(typeof target === 'undefined' || !target)
         {
             var target = 'body';
         }
@@ -52,7 +52,8 @@ var App = (function()
                 tags: $(this).data('tags'),
                 allowClear: true,
             });
-        console.log('set up select 2');
+
+        // console.log('Set up select to, applied to select2 class.');
         // enable tooltips
         $(target).tooltip({
             selector: '.tip',
@@ -132,7 +133,7 @@ var Home = (function()
         }).done(function (data) {
             $('#day-'+num).html(data);
         }).fail(function () {
-            alert('No events could be loaded')
+           console.log('No events could be loaded')
         });
     };
 
@@ -143,7 +144,7 @@ var Home = (function()
         }).done(function (data) {
             $('#4days').html(data);
         }).fail(function () {
-            alert('No events could be loaded.');
+            console.log('No events could be loaded.');
         });
     };
 

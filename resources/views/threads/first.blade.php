@@ -25,9 +25,7 @@
 
         @if ($event = $thread->event)
             Event:
-            <span class="label label-tag"><a href="{!! route('events.show', ['id' => $event->id]) !!}">{{ $event->name }}</a>
-
-                                    </span>
+            <span class="label label-tag"><a href="{!! route('events.show', ['id' => $event->id]) !!}">{{ $event->name }}</a></span>
         @endif
 
         @unless ($thread->series->isEmpty())

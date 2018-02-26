@@ -529,7 +529,13 @@ class EntitiesController extends Controller
 
         $input = $request->all();
 
-        $input['slug'] = str_slug($request->input('slug','-'));
+        // if slug is empty, use name
+        if (!$request->input('slug') || count($request->input('slug')) < 3) {
+            $input['slug'] = str_slug($request->input('name', '-'));
+        } else {
+            $input['slug'] = str_slug($request->input('slug', '-'));
+        };
+
 
         $tagArray = $request->input('tag_list', []);
         $aliasArray = $request->input('alias_list', []);

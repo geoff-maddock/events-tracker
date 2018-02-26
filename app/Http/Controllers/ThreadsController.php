@@ -79,21 +79,6 @@ class ThreadsController extends Controller
         };
 	}
 
-    /**
-     * Reset filter action.
-     *
-     * @param Request $request
-     */
-    public function executeReset(Request $request)
-    {
-        if ($request->input('criteria')) {
-            $this->setCriteria($request->input('criteria'));
-        }
-        $this->setFilters($this->getDefaultFilters(), NULL);
-        $request->session()->put('defaultFilter', 0);
-        $this->setPage(1);
-        $this->executeFilterRedirect();
-    }
 
     /**
      * Returns true if the user has any filters outside of the default
@@ -460,7 +445,6 @@ class ThreadsController extends Controller
      */
     public function reset(Request $request)
     {
-
         // set the filters to empty
         $this->setFilters($request, $this->getDefaultFilters());
  
@@ -493,15 +477,6 @@ class ThreadsController extends Controller
      */
     public function indexAll(Request $request)
     {
-
-        // if the gate does not allow this user to show a forum redirect to home
-
-        if (Gate::denies('show_forum')) {
-            flash()->error('Unauthorized', 'Your cannot view the forum');
-
-            return redirect()->back();
-        }
-
         $hasFilter = 1;
 
  		// updates sort, rpp from request
@@ -556,13 +531,6 @@ class ThreadsController extends Controller
      */
 	public function indexTags(Request $request, $tag)
 	{
-        // if the gate does not allow this user to show a forum redirect to home
-        if (Gate::denies('show_forum')) {
-            flash()->error('Unauthorized', 'Your cannot view the forum');
-
-            return redirect()->back();
-        }
-
         $hasFilter = 1;
 
         // updates sort, rpp from request
@@ -588,7 +556,6 @@ class ThreadsController extends Controller
      */
 	public function indexSeries(Request $request, $tag)
 	{
-
  		// updates sort, rpp from request
  		$this->updatePaging($request);
 
@@ -793,11 +760,11 @@ class ThreadsController extends Controller
     {
         // if the gate does not allow this user to show a forum redirect to home
 
-        if (Gate::denies('show_forum')) {
-            flash()->error('Unauthorized', 'Your cannot view the forum');
-
-            return redirect()->back();
-        }
+//        if (Gate::denies('show_forum')) {
+//            flash()->error('Unauthorized', 'Your cannot view the forum');
+//
+//            return redirect()->back();
+//        }
 
     	// call a log for this and prevent it from going out of control
     	$thread->views++;
@@ -947,11 +914,11 @@ class ThreadsController extends Controller
     {
         $this->authorize('update', $thread);
 
-        if ($thread->user_id != auth()->id()) {
+        if ($thread->created_by != auth()->id()) {
             if ($request->wantsJson()) {
                 return response(['status' => 'Permission Denied'], 403);
             }
-
+            die('destroying thread need login'.auth()->id());
             return redirect('/login');
         }
 
