@@ -59,6 +59,13 @@
 	@include('partials.nav')
 
 	<div id="app-container" class="container-fluid">
+		<div id="app-mobile-search" class="container-fluid visible-xs-block">
+			<form class="col-xs-12" role="search" action="/search">
+				<div class="form-group">
+					<input type="text" class="form-control" placeholder="Search" name="keyword"  value="{{ isset($slug) ? $slug : '' }}">
+				</div>
+			</form>
+		</div>
 
 		<div class="row">
 			<div class="col-md-12">

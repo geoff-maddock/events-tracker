@@ -81,7 +81,7 @@
 					<li></li>
 					@endif
 					<li class="dropdown ">
-						<a href="{{ url('/users/'.Auth::user()->id) }}" class="dropdown-toggle hidden-lg" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user" title="Login"></span> <span class="caret"></span></a>
+						<a href="{{ url('/users/'.Auth::user()->id) }}" class="dropdown-toggle visible-xs-block visible-sm-block visible-md-block" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user" title="Login"></span> <span class="caret"></span></a>
                         <a href="{{ url('/users/'.Auth::user()->id) }}" class="dropdown-toggle visible-lg" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ Auth::user()->name }} <span class="caret"></span></a>
                         <ul class="dropdown-menu">
 							<li><a href="{{ url('/users/'.Auth::user()->id) }}">Profile</a></li>
@@ -99,8 +99,13 @@
 							@can('show_admin')
 								<li><a href="{{ url('/tools')}}">Tools</a></li>
 							@endcan
-							<li role="separator" class="divider"></li>
 
+							<li role="separator" class="divider" class="visible-xs-block visible-sm-block"></li>
+							<li><a href="{{ url('/help')}}" class="visible-xs-block visible-sm-block">Help</a></li>
+							<li><a href="{{ url('/register') }}" class="class="visible-xs-block visible-sm-block"">Register</a></li>
+							<li><a href="mailto:{{ config('app.feedback') }}" title="Send email to {{ config('app.feedback') }}" class="visible-xs-block visible-sm-block">Feedback</a></li>
+
+							<li role="separator" class="divider"></li>
 							<li>
 								<a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
 								<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">{{ csrf_field() }}</form>
@@ -110,7 +115,7 @@
 				@endif
 
 					<li class="dropdown ">
-						<a href="{{ url('/help') }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Help"><span class="glyphicon glyphicon-question-sign" title="Help"></span><span class="caret"></span></a>
+						<a href="{{ url('/help') }}" class="dropdown-toggle hidden-xs hidden-sm" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Help"><span class="glyphicon glyphicon-question-sign" title="Help"></span><span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li><a href="{{ url('/help')}}">Help</a></li>
 							<li><a href="{{ url('/register') }}" class="hidden-md hidden-lg">Register</a></li>
