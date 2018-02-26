@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Permission;
+use App\Policies\PostPolicy;
 use App\Policies\ThreadPolicy;
+use App\Post;
 use App\Thread;
 use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -17,7 +19,6 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        'App\Model' => 'App\Policies\ModelPolicy',
         Post::class => PostPolicy::class,
         Thread::class => ThreadPolicy::class,
     ];

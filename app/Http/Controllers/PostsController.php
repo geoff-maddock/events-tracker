@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 use Carbon\Carbon;
@@ -24,6 +26,7 @@ use App\Tag;
 use App\Visibility;
 use App\Activity;
 use App\Like;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class PostsController extends Controller
 {
@@ -287,12 +290,19 @@ class PostsController extends Controller
      *
      * @param Post $post
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      * @internal param int $id
      */
     public function destroy(Post $post)
     {
         $id = $post->thread_id;
         $thread = $post->thread;
+
+        if ($this->user->cannot('destroy', $post))
+        {
+            flash('Error', 'Your are not authorized to delete the post.');
+            return redirect()->route('threads.show',['id' => $id]);
+        };
 
         // add to activity log
         Activity::log($post, $this->user, 3);
