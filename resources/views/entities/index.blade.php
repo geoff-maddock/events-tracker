@@ -19,12 +19,15 @@
 
 	<!-- NAV / FILTER -->
 	<div class="row" class="tab-content filters-content">
-		<div class="col-sm-12">
+
+		<div id="filters-container" class="col-sm-12">
+
+			<a href="#" id="filters" class="btn btn-primary">Filters <span id="filters-toggle" class="glyphicon @if (!$hasFilter) glyphicon-chevron-down @else glyphicon-chevron-up @endif"></span></a>
 			{!! Form::open(['route' => ['entities.filter'], 'method' => 'GET']) !!}
 
-			<!-- BEGIN: FILTERS -->
-			@if ($hasFilter)
+			<div id="filter-list" @if (!$hasFilter)style="display: none"@endif >
 
+			<!-- BEGIN: FILTERS -->
 			<div class="form-group col-sm-2">
 
 			{!! Form::label('filter_name','Filter By Name') !!}
@@ -36,13 +39,13 @@
 
 			{!! Form::label('filter_role','Filter By Role') !!}
 			<?php $roles = [''=>'&nbsp;'] + App\Role::orderBy('name', 'ASC')->pluck('name', 'name')->all();?>
-			{!! Form::select('filter_role', $roles, (isset($filters['filter_role']) ? $filters['filter_role'] : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a role']) !!}
+			{!! Form::select('filter_role', $roles, (isset($filters['filter_role']) ? $filters['filter_role'] : NULL), ['data-width' => '100%', 'class' =>'form-control select2', 'data-placeholder' => 'Select a role']) !!}
 			</div>
 
 			<div class="form-group col-sm-2">
 			{!! Form::label('filter_tag','Filter By Tag') !!}
 			<?php $tags =  [''=>'&nbsp;'] + App\Tag::orderBy('name','ASC')->pluck('name', 'name')->all();?>
-			{!! Form::select('filter_tag', $tags, (isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a tag']) !!}
+			{!! Form::select('filter_tag', $tags, (isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL), ['class' =>'form-control select2','data-width' => '100%', 'data-placeholder' => 'Select a tag']) !!}
 			</div>
 
 			<div class="form-group col-sm-1">
@@ -50,7 +53,7 @@
 				<?php $rpp_options =  [''=>'&nbsp;', 5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000];?>
 				{!! Form::select('filter_rpp', $rpp_options, (isset($rpp) ? $rpp : NULL), ['class' =>'auto-submit form-control']) !!}
 			</div>
-			@endif
+
 
 			<div class="col-sm-2">
 				<div class="btn-group col-sm-1">
@@ -64,6 +67,7 @@
 
 				{!! Form::close() !!}
 				</div>
+			</div>
 			</div>
 
 		</div>
@@ -89,3 +93,21 @@
         </div>
     </div>
 @stop
+
+@section('footer')
+	<script>
+        $(document).ready(function() {
+            $('#filters').click(function () {
+                $('#filter-list').toggle();
+                if ($('#filters-toggle').hasClass('glyphicon-chevron-down'))
+                {
+                    $('#filters-toggle').removeClass('glyphicon-chevron-down');
+                    $('#filters-toggle').addClass('glyphicon-chevron-up');
+                } else {
+                    $('#filters-toggle').removeClass('glyphicon-chevron-up');
+                    $('#filters-toggle').addClass('glyphicon-chevron-down');
+                }
+            });
+        });
+	</script>
+@endsection

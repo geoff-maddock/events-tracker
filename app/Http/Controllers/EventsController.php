@@ -393,13 +393,13 @@ class EventsController extends Controller
      */
     public function index (Request $request)
     {
-        $hasFilter = 1;
-
         // updates sort, rpp from request
         $this->updatePaging($request);
 
         // get filters from session
         $filters = $this->getFilters($request);
+
+        $hasFilter = count($filters);
 
         // base criteria
         $query_past = $this->buildCriteria($request);//,'start_at', 'desc' );
@@ -768,7 +768,7 @@ class EventsController extends Controller
     public function reset (Request $request)
     {
         // doesn't have filter, but temp
-        $hasFilter = 1;
+        $hasFilter = 0;
 
         // set the filters to empty
         $this->setFilters($request, $this->getDefaultFilters());

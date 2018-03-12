@@ -17,11 +17,13 @@
 
 	<!-- NAV / FILTER -->
 
-		<div class="col-md-6">
-		{!! Form::open(['route' => ['events.filter'], 'method' => 'GET']) !!}
+		<div id="filters-container" class="col-md-6">
 
+			<a href="#" id="filters" class="btn btn-primary">Filters <span id="filters-toggle" class="glyphicon @if (!$hasFilter) glyphicon-chevron-down @else glyphicon-chevron-up @endif"></span></a>
+			{!! Form::open(['route' => ['events.filter'], 'method' => 'GET']) !!}
+
+			<div id="filter-list" @if (!$hasFilter)style="display: none"@endif >
 		<!-- BEGIN: FILTERS -->
-			@if ($hasFilter)
 
 				<div class="form-group col-sm-3">
 					{!! Form::label('filter_name','Filter By Name') !!}
@@ -31,19 +33,19 @@
 				<div class="form-group col-sm-2">
 					{!! Form::label('filter_venue','Filter By Venue') !!}
 					<?php $venues = [''=>''] + App\Entity::getVenues()->pluck('name','name')->all();?>
-					{!! Form::select('filter_venue', $venues, (isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a venue']) !!}
+					{!! Form::select('filter_venue', $venues, (isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL), ['data-width' => '100%','class' =>'form-control select2', 'data-placeholder' => 'Select a venue']) !!}
 				</div>
 
 				<div class="form-group col-sm-2">
 					{!! Form::label('filter_tag','Filter By Tag') !!}
 					<?php $tags =  [''=>'&nbsp;'] + App\Tag::orderBy('name','ASC')->pluck('name', 'name')->all();?>
-					{!! Form::select('filter_tag', $tags, (isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a tag']) !!}
+					{!! Form::select('filter_tag', $tags, (isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL), ['data-width' => '100%', 'class' =>'form-control select2', 'data-placeholder' => 'Select a tag']) !!}
 				</div>
 
 				<div class="form-group col-sm-2">
 					{!! Form::label('filter_related','Filter By Related') !!}
                     <?php $related = [''=>''] + App\Entity::orderBy('name','ASC')->pluck('name','name')->all();?>
-					{!! Form::select('filter_related', $related, (isset($filters['filter_related']) ? $filters['filter_related'] : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select an entity']) !!}
+					{!! Form::select('filter_related', $related, (isset($filters['filter_related']) ? $filters['filter_related'] : NULL), ['data-width' => '100%', 'class' =>'form-control select2', 'data-placeholder' => 'Select an entity']) !!}
 				</div>
 
 				<div class="form-group col-sm-2">
@@ -51,7 +53,6 @@
 					<?php $rpp_options =  [''=>'&nbsp;', 5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000];?>
 					{!! Form::select('filter_rpp', $rpp_options, (isset($filters['filter_rpp']) ? $filters['filter_rpp'] : NULL), ['class' =>'form-control auto-submit']) !!}
 				</div>
-			@endif
 
 			<div class="col-sm-2">
 				<div class="btn-group col-sm-1">
@@ -61,6 +62,7 @@
 					{!! Form::submit('Reset',  ['class' =>'btn btn-primary btn-sm btn-tb', 'id' => 'primary-filter-reset']) !!}
 					{!! Form::close() !!}
 				</div>
+			</div>
 			</div>
 
 		</div>
@@ -143,8 +145,20 @@
 
 @stop
 
-
 @section('footer')
 	<script>
+        $(document).ready(function() {
+            $('#filters').click(function () {
+                $('#filter-list').toggle();
+                if ($('#filters-toggle').hasClass('glyphicon-chevron-down'))
+				{
+				   $('#filters-toggle').removeClass('glyphicon-chevron-down');
+                   $('#filters-toggle').addClass('glyphicon-chevron-up');
+				} else {
+                    $('#filters-toggle').removeClass('glyphicon-chevron-up');
+                    $('#filters-toggle').addClass('glyphicon-chevron-down');
+				}
+            });
+        });
 	</script>
 @endsection

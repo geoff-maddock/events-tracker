@@ -95,8 +95,6 @@ class EntitiesController extends Controller
      */
     public function index (Request $request, EntityFilters $filters)
     {
-        $hasFilter = 1;
-
         // get all active entites plus those created by the logged in user, ordered by type and name
 
         // updates sort, rpp from request
@@ -104,6 +102,8 @@ class EntitiesController extends Controller
 
         // get filters from session
         $filters = $this->getFilters($request);
+
+        $hasFilter = count($filters);
 
         // base criteria
         $query = $this->buildCriteria($request);
@@ -406,11 +406,10 @@ class EntitiesController extends Controller
      */
     public function reset (Request $request)
     {
-        // doesn't have filter, but temp
-        $hasFilter = 1;
         // set the filters to empty
         $this->setFilters($request, $this->getDefaultFilters());
 
+        $hasFilter = 0;
 
         // default
         $query = Entity::where(function ($query) {
