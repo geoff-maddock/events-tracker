@@ -20,7 +20,7 @@ Here is a reminder about these upcoming events that you are attending.
 	<br>
 
 	@if (!empty($event->venue_id))
-	<a href="{{ $url }}/entities/{{$event->venue->id }}">{!! $event->venue->name !!}</a>
+	<a href="{{ $url }}/entities/{{$event->venue->slug }}">{!! $event->venue->name !!}</a>
 
 	@if ($event->venue->getPrimaryLocationAddress() )
 		{{ $event->venue->getPrimaryLocationAddress() }}

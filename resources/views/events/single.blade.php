@@ -47,7 +47,7 @@
 		<a href="/events/type/{{ urlencode($event->eventType->name) }}">{{ $event->eventType->name }}</a>
 
 		@if ($event->venue)
-		<br><a href="/entities/{{$event->venue->id }}">{{ $event->venue->name or 'No venue specified' }}</a>
+		<br><a href="/entities/{{$event->venue->slug }}">{{ $event->venue->name or 'No venue specified' }}</a>
 			@if ($event->venue->getPrimaryLocationAddress() )
 				{{ $event->venue->getPrimaryLocationAddress() }}
 			@endif
