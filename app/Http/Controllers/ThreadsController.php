@@ -1,9 +1,8 @@
-<?php namespace App\Http\Controllers;
+<?php
+namespace App\Http\Controllers;
 
 use App\Http\Requests\ThreadRequest;
 use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -58,66 +57,6 @@ class ThreadsController extends Controller
 	}
 
     /**
-     * Update the page list parameters from the request
-     * @param $request
-     */
-	protected function updatePaging($request)
-	{
-        // set sort by column
-        if ($request->input('sort_by')) {
-            $this->sortBy = $request->input('sort_by');
-        };
-
-        // set sort direction
-        if ($request->input('sort_direction')) {
-            $this->sortOrder = $request->input('sort_direction');
-        };
-
-        // set results per page
-        if ($request->input('rpp')) {
-            $this->rpp = $request->input('rpp');
-        };
-	}
-
-
-    /**
-     * Returns true if the user has any filters outside of the default
-     *
-     * @return Boolean
-     */
-    protected function getIsFiltered(Request $request)
-    {
-        if (($filters = $this->getFilters($request)) == $this->getDefaultFilters()) {
-            return false;
-        }
-        return (bool)count($filters);
-    }
-
-   /**
-     * Get user session attribute
-     *
-     * @param String $attribute
-     * @param Mixed $default
-     * @param Request $request
-     * @return Mixed
-     */
-    public function getAttribute($attribute, $default = null, Request $request)
-    {
-        return $request->session()
-            ->get($this->prefix . $attribute, $default);
-    }
-
-    /**
-     * Get session filters
-     *
-     * @return Array
-     */
-    public function getFilters(Request $request)
-    {
-        return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
-    }
-
-    /**
      * Criteria provides a way to define criteria to be applied to a tab on the index page.
      *
      * @return array
@@ -138,45 +77,14 @@ class ThreadsController extends Controller
     }
 
     /**
-     * Get the current results per page
+     * Set page attribute
      *
-     * @param Request $request
+     * @param integer $input
      * @return integer
      */
-    public function getRpp(Request $request)
+    public function setPage($input)
     {
-        return $this->getAttribute('rpp', $this->rpp);
-    }
-
-    /**
-     * Get the sort order and column
-     *
-     * @return array
-     */
-    public function getSort(Request $request)
-    {
-        return $this->getAttribute('sort', $this->getDefaultSort());
-    }
-
-
-    /**
-     * Get the default sort array
-     *
-     * @return array
-     */
-    public function getDefaultSort()
-    {
-        return array('id', 'desc');
-    }
-
-    /**
-     * Get the default filters array
-     *
-     * @return array
-     */
-    public function getDefaultFilters()
-    {
-        return array();
+        return $this->setAttribute('page', $input);
     }
 
     /**
@@ -194,14 +102,56 @@ class ThreadsController extends Controller
     }
 
     /**
-     * Set filters attribute
+     * Get the current results per page
+     *
+     * @param Request $request
+     * @return integer
+     */
+    public function getRpp(Request $request)
+    {
+        return $this->getAttribute('rpp', $this->rpp);
+    }
+
+    /**
+     * Set results per page attribute
+     *
+     * @param integer $input
+     * @return integer
+     */
+    public function setRpp($input)
+    {
+        return $this->setAttribute('rpp', 5);
+    }
+
+    /**
+     * Get the sort order and column
+     *
+     * @return array
+     */
+    public function getSort(Request $request)
+    {
+        return $this->getAttribute('sort', $this->getDefaultSort());
+    }
+
+    /**
+     * Set sort order attribute
      *
      * @param array $input
      * @return array
      */
-    public function setFilters(Request $request, array $input)
+    public function setSort(array $input)
     {
-        return $this->setAttribute('filters', $input, $request);
+        return $this->setAttribute('sort', $input);
+    }
+
+    /**
+     * Get the default sort array
+     *
+     * @return array
+     */
+    public function getDefaultSort()
+    {
+        return array('id', 'desc');
     }
 
     /**
@@ -217,40 +167,6 @@ class ThreadsController extends Controller
     }
 
     /**
-     * Set page attribute
-     *
-     * @param integer $input
-     * @return integer
-     */
-    public function setPage($input)
-    {
-        return $this->setAttribute('page', $input);
-    }
-
-    /**
-     * Set results per page attribute
-     *
-     * @param integer $input
-     * @return integer
-     */
-    public function setRpp($input)
-    {
-        return $this->setAttribute('rpp', 5);
-    }
-
-    /**
-     * Set sort order attribute
-     *
-     * @param array $input
-     * @return array
-     */
-    public function setSort(array $input)
-    {
-        return $this->setAttribute('sort', $input);
-    }
-
-
-    /**
      * Display a listing of the resource.
      *
      * @param Request $request
@@ -260,12 +176,13 @@ class ThreadsController extends Controller
      */
     public function index(Request $request, ThreadFilters $filters)
     {
+        // updates sort, rpp from request
+        $this->updatePaging($request);
 
         // get filters from session
         $filters = $this->getFilters($request);
 
- 		// updates sort, rpp from request
- 		$this->updatePaging($request);
+        $this->hasFilter = count($filters);
 
  		// initialize the query
  		$query = $this->buildCriteria($request);
@@ -300,6 +217,84 @@ class ThreadsController extends Controller
                         'filter_user' => isset($filters['filter_user']) ? $filters['filter_user'] : NULL,
                         'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL
                     ])->render();
+    }
+
+    /**
+     * Update the page list parameters from the request
+     * @param $request
+     */
+	protected function updatePaging($request)
+	{
+        // set sort by column
+        if ($request->input('sort_by')) {
+            $this->sortBy = $request->input('sort_by');
+        };
+
+        // set sort direction
+        if ($request->input('sort_direction')) {
+            $this->sortOrder = $request->input('sort_direction');
+        };
+
+        // set results per page
+        if ($request->input('rpp')) {
+            $this->rpp = $request->input('rpp');
+        };
+	}
+
+    /**
+     * Builds the criteria from the session
+     *
+     * @param Request $request
+     * @return $this $query
+     */
+    public function buildCriteria(Request $request)
+    {
+        // get all the filters from the session and put into an array
+        $filters = $this->getFilters($request);
+
+        // base criteria
+        $query = $this->thread->orderBy($this->sortBy, $this->sortOrder);
+
+        // add the criteria from the session
+        // check request for passed filter values
+
+        if (!empty($filters['filter_name'])) {
+            // getting name from the request
+            $name = $filters['filter_name'];
+            $query->where('name', 'like', '%' . $name . '%');
+        }
+
+        if (!empty($filters['filter_user'])) {
+            $user = $filters['filter_user'];
+
+            // add has clause
+            $query->whereHas('user', function ($q) use ($user) {
+                $q->where('name', '=', $user);
+            });
+
+            // add to filters array
+            $filters['filter_user'] = $user;
+        }
+
+        if (!empty($filters['filter_tag'])) {
+            $tag = $filters['filter_tag'];
+            $query->whereHas('tags', function ($q) use ($tag) {
+                $q->where('name', '=', ucfirst($tag));
+            });
+
+            // add to filters array
+            $filters['filter_tag'] = $tag;
+        }
+
+        // change this - should be seperate
+        if (!empty($filters['filter_rpp'])) {
+            $this->rpp = $filters['filter_rpp'];
+        }
+
+        // save filters to session
+        //$this->setFilters($request, $filters);
+
+        return $query;
     }
 
   /**
@@ -380,61 +375,15 @@ class ThreadsController extends Controller
             ->with(compact('threads'));
     }
 
-
     /**
-     * Builds the criteria from the session
+     * Set filters attribute
      *
-     * @param Request $request
-     * @return $this $query
+     * @param array $input
+     * @return array
      */
-    public function buildCriteria(Request $request)
+    public function setFilters(Request $request, array $input)
     {
-        // get all the filters from the session and put into an array
-        $filters = $this->getFilters($request);
-
-        // base criteria
-        $query = $this->thread->orderBy($this->sortBy, $this->sortOrder);
-
-        // add the criteria from the session
-        // check request for passed filter values
-
-        if (!empty($filters['filter_name'])) {
-            // getting name from the request
-            $name = $filters['filter_name'];
-            $query->where('name', 'like', '%' . $name . '%');
-        }
-
-        if (!empty($filters['filter_user'])) {
-            $user = $filters['filter_user'];
-
-            // add has clause
-            $query->whereHas('user', function ($q) use ($user) {
-                $q->where('name', '=', $user);
-            });
-
-            // add to filters array
-            $filters['filter_user'] = $user;
-        }
-
-        if (!empty($filters['filter_tag'])) {
-            $tag = $filters['filter_tag'];
-            $query->whereHas('tags', function ($q) use ($tag) {
-                $q->where('name', '=', ucfirst($tag));
-            });
-
-            // add to filters array
-            $filters['filter_tag'] = $tag;
-        }
-
-        // change this - should be seperate
-        if (!empty($filters['filter_rpp'])) {
-            $this->rpp = $filters['filter_rpp'];
-        }
-
-        // save filters to session
-        //$this->setFilters($request, $filters);
-
-        return $query;
+        return $this->setAttribute('filters', $input, $request);
     }
 
     /**
@@ -447,8 +396,10 @@ class ThreadsController extends Controller
     {
         // set the filters to empty
         $this->setFilters($request, $this->getDefaultFilters());
- 
-        // default 
+
+        $this->hasFilter = 0;
+
+        // default
         $query = Thread::where(function($query)
                     {
                         $query->visible($this->user);
@@ -467,7 +418,6 @@ class ThreadsController extends Controller
             ->render();
 
     }
-
 
     /**
      * Display a listing of the resource.
@@ -520,7 +470,6 @@ class ThreadsController extends Controller
         			->with(compact('threads'));
 
 	}
-
 
     /**
      * Display a listing of threads by tag
@@ -593,7 +542,6 @@ class ThreadsController extends Controller
         			->with(compact('threads'));
 	}
 
-
     /**
      * Show the form for creating a new resource.
      *
@@ -601,7 +549,7 @@ class ThreadsController extends Controller
      */
     public function create()
     {
-		$threadCategories = [''=>''] + ThreadCategory::orderBy('name','ASC')->pluck('name', 'id')->all(); 
+		$threadCategories = [''=>''] + ThreadCategory::orderBy('name','ASC')->pluck('name', 'id')->all();
 		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
 
 		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
@@ -666,21 +614,6 @@ class ThreadsController extends Controller
 		return redirect()->route('threads.index');
 	}
 
-	/**
-	 * Create a conversation slug.
-	 *
-	 * @param  string $title
-	 * @return string
-	 */
-	public function makeSlugFromTitle($title)
-	{
-	    $slug = Str::slug($title);
-
-	    $count = Thread::whereRaw("slug RLIKE '^{$slug}(-[0-9]+)?$'")->count();
-
-	    return $count ? "{$slug}-{$count}" : $slug;
-	}
-
     /**
      * @param $thread
      * @return \Illuminate\Http\RedirectResponse
@@ -736,18 +669,20 @@ class ThreadsController extends Controller
         return back();
     }
 
-	protected function unauthorized(ThreadRequest $request)
+	/**
+	 * Create a conversation slug.
+	 *
+	 * @param  string $title
+	 * @return string
+	 */
+	public function makeSlugFromTitle($title)
 	{
-		if($request->ajax())
-		{
-			return response(['message' => 'No way.'], 403);
-		}
+	    $slug = Str::slug($title);
 
-		\Session::flash('flash_message', 'Not authorized');
+	    $count = Thread::whereRaw("slug RLIKE '^{$slug}(-[0-9]+)?$'")->count();
 
-		return redirect('/');
+	    return $count ? "{$slug}-{$count}" : $slug;
 	}
-
 
     /**
      * Display the specified resource.
@@ -773,7 +708,6 @@ class ThreadsController extends Controller
 		return view('threads.show', compact('thread'));
     }
 
-
     /**
      * Lock the specified resource.
      *
@@ -798,7 +732,6 @@ class ThreadsController extends Controller
 
 		return back();
     }
-
 
     /**
      * Unlock the specified resource.
@@ -826,7 +759,6 @@ class ThreadsController extends Controller
 		return back();
     }
 
-
     /**
      * Show the form for editing the specified resource.
      *
@@ -839,7 +771,7 @@ class ThreadsController extends Controller
 		$this->middleware('auth');
 
 		$threadCategories = [''=>''] + ThreadCategory::orderBy('name','ASC')->pluck('name', 'id')->all();
-        
+
 		$visibilities = [''=>''] + Visibility::pluck('name', 'id')->all();
 		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
 		$entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
@@ -865,7 +797,7 @@ class ThreadsController extends Controller
 
 		if (!$thread->ownedBy($this->user))
 		{
-			$this->unauthorized($request); 
+			$this->unauthorized($request);
 		};
 
 		$tagArray = $request->input('tag_list',[]);
@@ -901,6 +833,18 @@ class ThreadsController extends Controller
 
 		return redirect('threads');
     }
+
+	protected function unauthorized(ThreadRequest $request)
+	{
+		if($request->ajax())
+		{
+			return response(['message' => 'No way.'], 403);
+		}
+
+		\Session::flash('flash_message', 'Not authorized');
+
+		return redirect('/');
+	}
 
     /**
      * Remove the specified resource from storage.
@@ -1075,5 +1019,52 @@ class ThreadsController extends Controller
         flash()->success('Success',  'You are no longer liking the thread.');
 
         return back();
+    }
+
+    /**
+     * Returns true if the user has any filters outside of the default
+     *
+     * @return Boolean
+     */
+    protected function getIsFiltered(Request $request)
+    {
+        if (($filters = $this->getFilters($request)) == $this->getDefaultFilters()) {
+            return false;
+        }
+        return (bool)count($filters);
+    }
+
+    /**
+     * Get session filters
+     *
+     * @return Array
+     */
+    public function getFilters(Request $request)
+    {
+        return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
+    }
+
+   /**
+     * Get user session attribute
+     *
+     * @param String $attribute
+     * @param Mixed $default
+     * @param Request $request
+     * @return Mixed
+     */
+    public function getAttribute($attribute, $default = null, Request $request)
+    {
+        return $request->session()
+            ->get($this->prefix . $attribute, $default);
+    }
+
+    /**
+     * Get the default filters array
+     *
+     * @return array
+     */
+    public function getDefaultFilters()
+    {
+        return array();
     }
 }

@@ -54,7 +54,6 @@
 				{!! Form::select('filter_rpp', $rpp_options, (isset($rpp) ? $rpp : NULL), ['class' =>'auto-submit form-control']) !!}
 			</div>
 
-
 			<div class="col-sm-2">
 				<div class="btn-group col-sm-1">
 				{!! Form::submit('Filter',  ['class' =>'btn btn-primary btn-sm btn-tb', 'id' => 'primary-filter-submit']) !!}

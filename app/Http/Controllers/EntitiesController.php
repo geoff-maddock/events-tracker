@@ -52,7 +52,6 @@ class EntitiesController extends Controller
         $this->sortBy = 'name';
         $this->sortOrder = 'asc';
         $this->defaultCriteria = NULL;
-        $this->hasFilter = 1;
         parent::__construct();
     }
 
@@ -259,9 +258,15 @@ class EntitiesController extends Controller
      * @return Response
      * @throws \Throwable
      */
-    public function indexRoles ($role)
+    public function indexRoles (Request $request, $role)
     {
-        $hasFilter = 1;
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        // get filters from session
+        $filters = $this->getFilters($request);
+
+        $this->hasFilter = count($filters);
 
         $entities = Entity::getByRole(ucfirst($role))
             ->where(function ($query) {
@@ -273,7 +278,7 @@ class EntitiesController extends Controller
             ->paginate();
 
         return view('entities.index')
-            ->with(['role' => $role, 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(['role' => $role, 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
             ->with(compact('entities'))
             ->render();
 
@@ -288,11 +293,17 @@ class EntitiesController extends Controller
     public function filter (Request $request, EntityFilters $filters)
     {
         // EntityFilters is a class that defines
-        // indicate if there are any filters
-        $hasFilter = 1;
 
         // get all the filters from the session
         $filters = $this->getFilters($request);
+
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        // get filters from session
+        $filters = $this->getFilters($request);
+
+        $this->hasFilter = count($filters);
 
         // updates sort, rpp from request - TODO add other filters?
         $this->updatePaging($request);
@@ -362,7 +373,7 @@ class EntitiesController extends Controller
         $entities = $query->paginate($this->rpp);
 
         return view('entities.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'filters' => $filters, 'hasFilter' => $hasFilter,
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'filters' => $filters, 'hasFilter' => $this->hasFilter,
                 'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
                 'filter_role' => isset($filters['filter_role']) ? $filters['filter_role'] : NULL,
                 'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL
@@ -435,10 +446,17 @@ class EntitiesController extends Controller
      * @return Response
      * @throws \Throwable
      */
-    public function indexTags ($role)
+    public function indexTags (Request $request, $role)
     {
-        $hasFilter = 1;
         $this->rpp = 1000;
+
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        // get filters from session
+        $filters = $this->getFilters($request);
+
+        $this->hasFilter = count($filters);
 
         $query = Entity::getByTag(ucfirst($role))
             ->where(function ($query) {
@@ -451,7 +469,7 @@ class EntitiesController extends Controller
         $entities = $query->paginate($this->rpp);
 
         return view('entities.index')
-            ->with(['role' => $role, 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(['role' => $role, 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
             ->with(compact('entities'))
             ->render();
     }

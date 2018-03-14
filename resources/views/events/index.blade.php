@@ -23,7 +23,7 @@
 			{!! Form::open(['route' => ['events.filter'], 'method' => 'GET']) !!}
 
 			<div id="filter-list" @if (!$hasFilter)style="display: none"@endif >
-		<!-- BEGIN: FILTERS -->
+			<!-- BEGIN: FILTERS -->
 
 				<div class="form-group col-sm-3">
 					{!! Form::label('filter_name','Filter By Name') !!}

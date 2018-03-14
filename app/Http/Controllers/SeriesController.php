@@ -1,34 +1,36 @@
 <?php namespace App\Http\Controllers;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\SeriesRequest;
-use App\User;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-
-use Illuminate\Http\Request;
-use Carbon\Carbon;
-
-use DB;
-use Log;
-use Mail;
-use App\Series;
-use App\Event;
-use App\Thread;
-use App\EventType;
 use App\Entity;
+use App\Event;
+use App\EventType;
+use App\Follow;
+use App\Http\Requests\SeriesRequest;
 use App\OccurrenceDay;
 use App\OccurrenceType;
 use App\OccurrenceWeek;
-use App\Tag;
-use App\Visibility;
 use App\Photo;
-use App\Follow;
+use App\Series;
+use App\Tag;
+use App\User;
+use App\Visibility;
+use DB;
+use Illuminate\Http\Request;
+use Log;
+use Mail;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 
 class SeriesController extends Controller
 {
-
+    protected $prefix;
+    protected $childRpp;
+    protected $rpp;
+    protected $page;
+    protected $sort;
+    protected $sortBy;
+    protected $sortOrder;
+    protected $defaultCriteria;
+    protected $hasFilter;
 
     public function __construct (Series $series)
     {
@@ -156,7 +158,7 @@ class SeriesController extends Controller
 
     /**
      * Update the page list parameters from the request
-     *
+     * @param $request
      */
     protected function updatePaging ($request)
     {
@@ -195,6 +197,7 @@ class SeriesController extends Controller
     /**
      * Set filters attribute
      *
+     * @param Request $request
      * @param array $input
      * @return array
      */
@@ -220,12 +223,14 @@ class SeriesController extends Controller
     /**
      * Reset the filtering of entities
      *
+     * @param Request $request
      * @return Response
+     * @throws \Throwable
      */
     public function reset (Request $request)
     {
         // doesn't have filter, but temp
-        $hasFilter = 1;
+        $this->hasFilter = 0;
 
         // set the filters to empty
         $this->setFilters($request, $this->getDefaultFilters());
@@ -244,18 +249,25 @@ class SeriesController extends Controller
 
 
         return view('series.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
             ->with(compact('series'))
             ->render();
 
     }
 
-    public function index ()
+    public function index (Request $request)
     {
-        $hasFilter = 1;
 
         // base criteria
         $query = $this->baseCriteria();
+
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        // get filters from session
+        $filters = $this->getFilters($request);
+
+        $this->hasFilter = count($filters);
 
         $series = $query->with('occurrenceType', 'visibility', 'tags')->paginate($this->rpp);
 
@@ -264,7 +276,7 @@ class SeriesController extends Controller
         });
 
         return view('series.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
             ->with(compact('series'))
             ->render();
     }
@@ -316,6 +328,7 @@ class SeriesController extends Controller
     /**
      * Display a listing of series related to entity
      *
+     * @param $slug
      * @return Response
      * @throws \Throwable
      */
@@ -341,6 +354,7 @@ class SeriesController extends Controller
     /**
      * Display a listing of events by tag
      *
+     * @param $tag
      * @return Response
      * @throws \Throwable
      */
@@ -393,7 +407,7 @@ class SeriesController extends Controller
         $userList = ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
 
-        return view('series.create', compact('venues', 'eventTypes', 'visibilities', 'tags', 'entities', 'promoters', 'weeks', 'days', 'occurrenceTypes','userList'));
+        return view('series.create', compact('venues', 'eventTypes', 'visibilities', 'tags', 'entities', 'promoters', 'weeks', 'days', 'occurrenceTypes', 'userList'));
     }
 
     public function show (Series $series)
@@ -582,7 +596,8 @@ class SeriesController extends Controller
      * Add a photo to a series
      *
      * @param  int $id
-     * @return Response
+     * @param Request $request
+     * @return void
      */
     public function addPhoto ($id, Request $request)
     {
@@ -617,7 +632,8 @@ class SeriesController extends Controller
      * Delete a photo
      *
      * @param  int $id
-     * @return Response
+     * @param Request $request
+     * @return void
      */
     public function deletePhoto ($id, Request $request)
     {
@@ -639,6 +655,8 @@ class SeriesController extends Controller
     /**
      * Mark user as following the series
      *
+     * @param $id
+     * @param Request $request
      * @return Response
      */
     public function follow ($id, Request $request)
@@ -672,6 +690,8 @@ class SeriesController extends Controller
     /**
      * Mark user as unfollowing the series
      *
+     * @param $id
+     * @param Request $request
      * @return Response
      */
     public function unfollow ($id, Request $request)
@@ -763,6 +783,7 @@ class SeriesController extends Controller
     /**
      * Get the sort order and column
      *
+     * @param Request $request
      * @return array
      */
     public function getSort (Request $request)
@@ -773,7 +794,7 @@ class SeriesController extends Controller
     /**
      * Get the default sort array
      *
-     * @return Array
+     * @return array
      */
     public function getDefaultSort ()
     {
@@ -827,7 +848,7 @@ class SeriesController extends Controller
 
     /**
      * Apply the filters to the query
-     *
+     * @param array|null $filters
      */
     protected function buildCriteria (array $filters = null)
     {
@@ -839,6 +860,7 @@ class SeriesController extends Controller
     /**
      * Get session filters
      *
+     * @param Request $request
      * @return Array
      */
     public function getFilters (Request $request)
@@ -863,7 +885,7 @@ class SeriesController extends Controller
     /**
      * Get the default filters array
      *
-     * @return Array
+     * @return array
      */
     public function getDefaultFilters ()
     {
@@ -873,6 +895,7 @@ class SeriesController extends Controller
     /**
      * Returns true if the user has any filters outside of the default
      *
+     * @param Request $request
      * @return Boolean
      */
     protected function getIsFiltered (Request $request)
