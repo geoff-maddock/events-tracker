@@ -13,7 +13,7 @@ use DB;
 use Log;
 use Auth;
 use App\Entity;
-use App\EntityFilters;
+use App\Filters\EntityFilters;
 use App\EntityType;
 use App\EntityStatus;
 use App\Tag;
@@ -290,7 +290,7 @@ class EntitiesController extends Controller
      * @return Response
      * @throws \Throwable
      */
-    public function filter (Request $request, EntityFilters $filters)
+    public function filter (Request $request,  EntityFilters $filters)
     {
         // EntityFilters is a class that defines
 
@@ -482,7 +482,13 @@ class EntitiesController extends Controller
      */
     public function indexAliases ($role)
     {
-        $hasFilter = 1;
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        // get filters from session
+        $filters = $this->getFilters($request);
+
+        $this->hasFilter = count($filters);
 
         $entities = Entity::getByAlias(ucfirst($role))
             ->where(function ($query) {
@@ -494,7 +500,7 @@ class EntitiesController extends Controller
             ->get();
 
         return view('entities.index')
-            ->with(['role' => $role, 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(['role' => $role, 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
             ->with(compact('entities'))
             ->render();
     }
@@ -899,7 +905,7 @@ class EntitiesController extends Controller
      * Set criteria.
      *
      * @param array $input
-     * @return string
+     * @return array
      */
     protected function setCriteria ($input)
     {

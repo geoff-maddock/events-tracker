@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Filters;
 
 class EventFilters extends QueryFilter
 {

@@ -22,10 +22,15 @@ use App\Follow;
 
 class GenericObjectController extends Controller {
 
+    protected $prefix;
     protected $rpp;
     protected $page;
+    protected $sort;
     protected $sortBy;
+    protected $sortOrder;
     protected $sortDirection;
+    protected $defaultCriteria;
+    protected $hasFilter;
 
 	public function __construct(Entity $entity)
 	{

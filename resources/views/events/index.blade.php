@@ -54,15 +54,15 @@
 					{!! Form::select('filter_rpp', $rpp_options, (isset($filters['filter_rpp']) ? $filters['filter_rpp'] : NULL), ['class' =>'form-control auto-submit']) !!}
 				</div>
 
-			<div class="col-sm-2">
-				<div class="btn-group col-sm-1">
-					{!! Form::submit('Filter',  ['class' =>'btn btn-primary btn-sm btn-tb', 'id' => 'primary-filter-submit']) !!}
-					{!! Form::close() !!}
-					{!! Form::open(['route' => ['events.reset'], 'method' => 'GET']) !!}
-					{!! Form::submit('Reset',  ['class' =>'btn btn-primary btn-sm btn-tb', 'id' => 'primary-filter-reset']) !!}
-					{!! Form::close() !!}
+				<div class="col-sm-2">
+					<div class="btn-group col-sm-1">
+						{!! Form::submit('Filter',  ['class' =>'btn btn-primary btn-sm btn-tb', 'id' => 'primary-filter-submit']) !!}
+						{!! Form::close() !!}
+						{!! Form::open(['route' => ['events.reset'], 'method' => 'GET']) !!}
+						{!! Form::submit('Reset',  ['class' =>'btn btn-primary btn-sm btn-tb', 'id' => 'primary-filter-reset']) !!}
+						{!! Form::close() !!}
+					</div>
 				</div>
-			</div>
 			</div>
 
 		</div>

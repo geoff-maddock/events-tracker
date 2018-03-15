@@ -306,13 +306,13 @@ class ThreadsController extends Controller
      */
     public function filter(Request $request, ThreadFilters $filters)
     {
-        $hasFilter = 1;
-
-        // get all the filters from the session
-        $filters = $this->getFilters($request);
-
         // updates sort, rpp from request
         $this->updatePaging($request);
+
+        // get filters from session
+        $filters = $this->getFilters($request);
+
+        $this->hasFilter = count($filters);
 
         // base criteria
         $query = $this->thread->orderBy($this->sortBy, $this->sortOrder);
@@ -365,6 +365,7 @@ class ThreadsController extends Controller
         $threads->filter(function ($e) {
             return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
+
 
         return view('threads.index')
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter, 'filters' => $filters,
@@ -427,10 +428,13 @@ class ThreadsController extends Controller
      */
     public function indexAll(Request $request)
     {
-        $hasFilter = 1;
+        // updates sort, rpp from request
+        $this->updatePaging($request);
 
- 		// updates sort, rpp from request
- 		$this->updatePaging($request);
+        // get filters from session
+        $filters = $this->getFilters($request);
+
+        $this->hasFilter = count($filters);
 
         $threads = Thread::orderBy('created_at', 'desc')->paginate(1000000);
 		$threads->filter(function($e)
@@ -439,7 +443,7 @@ class ThreadsController extends Controller
 		});
 
         return view('threads.index')
-                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+                	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
         			->with(compact('threads'));
     }
 
@@ -695,12 +699,6 @@ class ThreadsController extends Controller
     {
         // if the gate does not allow this user to show a forum redirect to home
 
-//        if (Gate::denies('show_forum')) {
-//            flash()->error('Unauthorized', 'Your cannot view the forum');
-//
-//            return redirect()->back();
-//        }
-
     	// call a log for this and prevent it from going out of control
     	$thread->views++;
     	$thread->save();
@@ -858,11 +856,12 @@ class ThreadsController extends Controller
     {
         $this->authorize('update', $thread);
 
-        if ($thread->created_by != auth()->id()) {
+        // if not created by the user or super_admin
+        if ($thread->created_by != auth()->id() || !$this->user->hasGroup('super_admin')) {
             if ($request->wantsJson()) {
                 return response(['status' => 'Permission Denied'], 403);
             }
-            die('destroying thread need login'.auth()->id());
+
             return redirect('/login');
         }
 

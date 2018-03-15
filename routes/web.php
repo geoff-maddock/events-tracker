@@ -64,7 +64,7 @@ Route::bind('users', function($id)
     return App\User::whereId($id)->firstOrFail();
 });
 
-Route::resource('users','UsersController');
+
 
 Route::post('users/{id}/photos', 'UsersController@addPhoto');
 Route::delete('users/{id}/photos/{photo_id}', 'UsersController@deletePhoto');
@@ -73,6 +73,11 @@ Route::get('users/{id}/activate', [
     'as' => 'users.activate',
     'uses' => 'UsersController@activate'
 ]);
+
+Route::get('users/filter', array('as' => 'users.filter', 'uses' => 'UsersController@filter'));
+Route::get('users/reset', array('as' => 'users.reset', 'uses' => 'UsersController@reset'));
+
+Route::resource('users','UsersController');
 
 Route::get('profile/{id}', 'UsersController@show')->name('users.profile');
 # PHOTOS

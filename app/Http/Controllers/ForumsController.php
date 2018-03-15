@@ -94,7 +94,8 @@ class ForumsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param ForumRequest $request
+     * @param Forum $forum
      * @return \Illuminate\Http\Response
      */
     public function store(ForumRequest $request, Forum $forum)
@@ -114,6 +115,72 @@ class ForumsController extends Controller
         return redirect()->route('forums.index');
     }
 
+    /**
+     * Update the page list parameters from the request
+     * @param $request
+     */
+    protected function updatePaging($request)
+    {
+        // set sort by column
+        if ($request->input('sort_by')) {
+            $this->sortBy = $request->input('sort_by');
+        };
+
+        // set sort direction
+        if ($request->input('sort_direction')) {
+            $this->sortOrder = $request->input('sort_direction');
+        };
+
+        // set results per page
+        if ($request->input('rpp')) {
+            $this->rpp = $request->input('rpp');
+        };
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param Forum $forum
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Forum $forum, Request $request)
+    {
+         // if the gate does not allow this user to show a forum redirect to home
+        if (Gate::denies('show_forum')) {
+            flash()->error('Unauthorized', 'Your cannot view the forum');
+
+            return redirect()->back();
+        }
+
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        // get filters from session
+        $filters = $this->getFilters($request);
+
+        $this->hasFilter = count($filters);
+
+
+        $threads = Thread::where('forum_id', $forum->id)->orderBy('created_at', 'desc')->paginate(1000000);
+        $threads->filter(function($e)
+        {
+            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
+
+        // pass a slug for the forum
+        $slug = $forum->description;
+
+        return view('threads.index')
+            ->with(compact('threads','slug'))
+        ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder,
+        'hasFilter' => $this->hasFilter,
+        'filters' => $filters,
+        'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
+        'filter_user' => isset($filters['filter_user']) ? $filters['filter_user'] : NULL,
+        'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL
+        ]);
+    }
 
     /**
      * Get session filters
@@ -124,7 +191,6 @@ class ForumsController extends Controller
     {
         return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
     }
-
 
     /**
      * Get user session attribute
@@ -148,44 +214,6 @@ class ForumsController extends Controller
     public function getDefaultFilters()
     {
         return array();
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $forum
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Forum $forum, Request $request)
-    {
-         // if the gate does not allow this user to show a forum redirect to home
-        if (Gate::denies('show_forum')) {
-            flash()->error('Unauthorized', 'Your cannot view the forum');
-
-            return redirect()->back();
-        }
-
-        // get filters from session
-        $filters = $this->getFilters($request);
-
-        $threads = Thread::where('forum_id', $forum->id)->orderBy('created_at', 'desc')->paginate(1000000);
-        $threads->filter(function($e)
-        {
-            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-        });
-
-        // pass a slug for the forum
-        $slug = $forum->description;
-        
-        return view('threads.index')
-            ->with(compact('threads','slug'))
-        ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder,
-        'hasFilter' => $this->hasFilter,
-        'filters' => $filters,
-        'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
-        'filter_user' => isset($filters['filter_user']) ? $filters['filter_user'] : NULL,
-        'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL
-        ]);
     }
 
     /**

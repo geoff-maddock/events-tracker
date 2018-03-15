@@ -5,11 +5,11 @@
         <th>
           Threads
         </th>
-        <th class="cell-stat hidden-xs">Category</th>
+        <th class="cell-stat ">Category</th>
         <th class="cell-stat hidden-xs hidden-sm">Users</th>
         <th class="cell-stat text-center hidden-xs hidden-sm">Posts</th>
         <th class="cell-stat text-center hidden-xs hidden-sm">Views</th>
-        <th class="cell-stat hidden-xs">Last Post</th>
+        <th class="cell-stat ">Last Post</th>
       </tr>
     </thead>
 <tbody>

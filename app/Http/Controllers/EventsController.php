@@ -1,6 +1,6 @@
 <?php namespace App\Http\Controllers;
 
-use App\EventFilters;
+use App\Filters\EventFilters;
 use App\Http\Requests\EventRequest;
 use App\OccurrenceDay;
 use App\OccurrenceType;
@@ -514,6 +514,7 @@ class EventsController extends Controller
      * @param Request $request
      * @param EventFilters $filters
      * @return View
+     * @throws \Throwable
      * @internal param $Request
      */
     public function filter (Request $request, EventFilters $filters)

@@ -26,21 +26,21 @@
 			@else
 				{{ $post->body }}
 			@endcan
-			<span>
-			
+			<hr>
+			<div class="btn-group" role="group" aria-label="...">
 			@if ($signedIn && (($post->ownedBy($user) && $post->isRecent()) || $user->hasGroup('super_admin')))
-				<a href="{!! route('posts.edit', ['id' => $post->id]) !!}" title="Edit this post."><span class='glyphicon glyphicon-pencil text-primary'></span></a>
-				{!! link_form_icon('glyphicon-trash text-warning', $post, 'DELETE', 'Delete the [post]') !!}
+				<a href="{!! route('posts.edit', ['id' => $post->id]) !!}" class="btn btn-sm btn-default" title="Edit this post.">Edit <span class='glyphicon glyphicon-pencil text-primary'></span></a>
+				{!! link_form_icon('glyphicon-trash text-warning', $post, 'DELETE', 'Delete the [post]','Delete','btn btn-sm btn-default') !!}
 			@endif
             @if ($signedIn)
                 @if ($like = $post->likedBy($user))
-                    <a href="{!! route('posts.unlike', ['id' => $post->id]) !!}" title="Click to unlike"><span class='glyphicon glyphicon-star text-success'></span></a>
+                    <a href="{!! route('posts.unlike', ['id' => $post->id]) !!}" title="Click to unlike" class="btn btn-sm btn-default">Unlike <span class='glyphicon glyphicon-star text-success'></span></a>
                 @else
-                    <a href="{!! route('posts.like', ['id' => $post->id]) !!}" title="Click to like"><span class='glyphicon glyphicon-star-empty text-warning'></span></a>
+                    <a href="{!! route('posts.like', ['id' => $post->id]) !!}" title="Click to like" class="btn btn-sm btn-default">Like <span class='glyphicon glyphicon-star-empty text-warning'></span></a>
                 @endif
             @endif
 
-            </span>
+            </div>
 
 		<br>
 
