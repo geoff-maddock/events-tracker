@@ -13,7 +13,7 @@ use Log;
 use Mail;
 use Auth;
 use App\Thread;
-use App\ThreadFilters;
+use App\Filters\ThreadFilters;
 use App\Entity;
 use App\ThreadCategory;
 use App\Series;
