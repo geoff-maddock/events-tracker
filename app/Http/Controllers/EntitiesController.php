@@ -34,6 +34,7 @@ class EntitiesController extends Controller
     protected $sortBy;
     protected $sortOrder;
     protected $defaultCriteria;
+    protected $filters;
     protected $hasFilter;
     private $criteria;
 
@@ -179,8 +180,6 @@ class EntitiesController extends Controller
      */
     public function buildCriteria (Request $request)
     {
-        $hasFilter = 1;
-
         // get all the filters from the session
         $filters = $this->getFilters($request);
 
@@ -203,9 +202,6 @@ class EntitiesController extends Controller
             $query->whereHas('tags', function ($q) use ($tag) {
                 $q->where('name', '=', ucfirst($tag));
             });
-
-            // add to filters array
-            $filters['filter_tag'] = $tag;
         }
 
         if (!empty($filters['filter_role'])) {
@@ -215,10 +211,18 @@ class EntitiesController extends Controller
                 $q->where('slug', '=', strtolower($role));
             });
 
-            // add to filters array
-            $filters['filter_role'] = $role;
-
         };
+
+        if (!empty($filters['filter_alias'])) {
+            $alias = $filters['filter_alias'];
+            $query = Entity::getByAlias(ucfirst($alias))
+                ->where(function ($query) {
+                    $query->active()
+                        ->orWhere('created_by', '=', ($this->user ? $this->user->id : NULL));
+                })
+                ->orderBy('entity_type_id', 'ASC')
+                ->orderBy('name', 'ASC');
+        }
 
         // change this - should be seperate
         if (!empty($filters['filter_rpp'])) {
@@ -290,93 +294,79 @@ class EntitiesController extends Controller
      * @return Response
      * @throws \Throwable
      */
-    public function filter (Request $request,  EntityFilters $filters)
+    public function filter (Request $request)
     {
-        // EntityFilters is a class that defines
-
         // get all the filters from the session
-        $filters = $this->getFilters($request);
+        $this->filters = $this->getFilters($request);
+
+        // update filters based on the request input
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->input()));
+
+        // get the merged filters
+        $this->filters = $this->getFilters($request);
 
         // updates sort, rpp from request
         $this->updatePaging($request);
 
-        // get filters from session
-        $filters = $this->getFilters($request);
+        // flag that there are filters
+        $this->hasFilter = count($this->filters);
 
-        $this->hasFilter = count($filters);
-
-        // updates sort, rpp from request - TODO add other filters?
-        $this->updatePaging($request);
-
-        // base criteria
+        // get the criteria given the request - this might be correct
         $query = $this->buildCriteria($request);
 
         // add the criteria from the session
-        // check request for passed filter values
+        // this may just be repeating the above buildCriteria and should be merged
 
-        if (!empty($request->input('filter_name'))) {
-            // getting name from the request
-            $name = $request->input('filter_name');
-            $query->where('name', 'like', '%' . $name . '%')
-                ->orWherehas('aliases', function ($q) use ($name) {
-                    $q->where('name', '=', ucfirst($name));
-                });
-            // add to filters array
-            $filters['filter_name'] = $name;
-        }
-
-        if (!empty($request->input('filter_role'))) {
-            $role = $request->input('filter_role');
-            // add has clause
-            $query->whereHas('roles', function ($q) use ($role) {
-                $q->where('slug', '=', strtolower($role));
-            });
-
-            // add to filters array
-            $filters['filter_role'] = $role;
-        };
-
-        if (!empty($request->input('filter_tag'))) {
-            $tag = $request->input('filter_tag');
-            $query->whereHas('tags', function ($q) use ($tag) {
-                $q->where('name', '=', ucfirst($tag));
-            });
-
-            // add to filters array
-            $filters['filter_tag'] = $tag;
-        }
-
-        if (!empty($request->input('filter_alias'))) {
-            $alias = $request->input('filter_alias');
-            $query = Entity::getByAlias(ucfirst($alias))
-                ->where(function ($query) {
-                    $query->active()
-                        ->orWhere('created_by', '=', ($this->user ? $this->user->id : NULL));
-                })
-                ->orderBy('entity_type_id', 'ASC')
-                ->orderBy('name', 'ASC');
-            // add to filters array
-            $filters['filter_alias'] = $alias;
-        }
-
-        // change this - should be seperate
-        if (!empty($request->input('filter_rpp'))) {
-            $this->rpp = $request->input('filter_rpp');
-            $filters['filter_rpp'] = $this->rpp;
-        }
-
-        // save filters to session
-        $this->setFilters($request, $filters);
+//        if (!empty($this->filters['filter_name'])) {
+//            // update the query
+//            $name = $this->filters['filter_name'];
+//            $query->where('name', 'like', '%' . $name . '%')
+//                ->orWherehas('aliases', function ($q) use ($name) {
+//                    $q->where('name', '=', ucfirst($name));
+//                });
+//        }
+//
+//        if (!empty($this->filters['filter_role'])) {
+//            $role = $request->input('filter_role');
+//            // add has clause
+//            $query->whereHas('roles', function ($q) use ($role) {
+//                $q->where('slug', '=', strtolower($role));
+//            });
+//        };
+//
+//        if (!empty($this->filters['filter_tag'])) {
+//            $tag = $this->filters['filter_tag'];
+//            $query->whereHas('tags', function ($q) use ($tag) {
+//                $q->where('name', '=', ucfirst($tag));
+//            });
+//        }
+//
+//        if (!empty($this->filters['filter_alias'])) {
+//            $alias = $this->filters['filter_alias'];
+//            $query = Entity::getByAlias(ucfirst($alias))
+//                ->where(function ($query) {
+//                    $query->active()
+//                        ->orWhere('created_by', '=', ($this->user ? $this->user->id : NULL));
+//                })
+//                ->orderBy('entity_type_id', 'ASC')
+//                ->orderBy('name', 'ASC');
+//        }
+//
+//        // change this - should be seperate
+//        if (!empty($this->filters['filter_rpp'])) {
+//            $this->rpp = $this->filters['filter_rpp'];
+//        }
 
         // apply the filters to the query
         // get the entities and paginate
         $entities = $query->paginate($this->rpp);
 
         return view('entities.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'filters' => $filters, 'hasFilter' => $this->hasFilter,
-                'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
-                'filter_role' => isset($filters['filter_role']) ? $filters['filter_role'] : NULL,
-                'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL
+            ->with(['rpp' => $this->rpp,
+                'sortBy' => $this->sortBy,
+                'sortOrder' => $this->sortOrder,
+                'filters' => $this->filters,
+                'hasFilter' => $this->hasFilter,
             ])
             ->with(compact('entities', 'role', 'tag', 'alias', 'name'))
             ->render();

@@ -536,10 +536,7 @@ class EventsController extends Controller
         $query_future = $this->event->future()->orderBy($this->sortBy, $this->sortOrder);
         $query_past = $this->event->past()->orderBy($this->sortBy, $this->sortOrder);
 
-        // add the criteria from the session
-
-        // check request for passed filter values
-
+        // add the criteria from the session - move this?
         if (!empty($this->filters['filter_name'])) {
             $query_future->where('name', 'like', '%' . $this->filters['filter_name'] . '%');
             $query_past->where('name', 'like', '%' . $this->filters['filter_name'] . '%');
@@ -710,7 +707,6 @@ class EventsController extends Controller
         $filters = $this->getFilters($request);
 
         $this->hasFilter = count($filters);
-
 
         $this->rpp = 10;
 
