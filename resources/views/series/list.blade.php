@@ -46,7 +46,7 @@
 			@endif
 
 			@if ($venue = $series->venue)
-			<br><a href="{!! route('entities.show', ['id' => $series->venue->id]) !!}">{{ $series->venue->name }}</a> at {{ $series->venue->getPrimaryLocationAddress() }}
+			<br><a href="{!! route('entities.show', ['id' => $series->venue->slug]) !!}">{{ $series->venue->name }}</a> at {{ $series->venue->getPrimaryLocationAddress() }}
 			@endunless
 
 			@if ($event = $series->nextEvent())

@@ -52,9 +52,9 @@
 	<br>
 	{{ count($entity->follows) }} Follows |
 	@if ($follow = $entity->followedBy($user))
-	<b>You Are Following</b> <a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}" title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
+	<b>You Are Following</b> <a href="{!! route('entities.unfollow', ['id' => $entity->slug]) !!}" title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
 	@else
-	Click to Follow <a href="{!! route('entities.follow', ['id' => $entity->id]) !!}" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
+	Click to Follow <a href="{!! route('entities.follow', ['id' => $entity->slug]) !!}" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
 	@endif
 
 	@endif 
@@ -105,7 +105,7 @@
 
 
 				@if ($signedIn && $entity->ownedBy($user))
-				<a href="{!! route('entities.locations.edit', ['entity' => $entity->id, 'id' => $location->id]) !!}" title="Edit this location.">
+				<a href="{!! route('entities.locations.edit', ['entity' => $entity->slug, 'id' => $location->id]) !!}" title="Edit this location.">
 				<span class='glyphicon glyphicon-pencil'></span></a>
 				@endif
 				
@@ -123,7 +123,7 @@
 	<P>
 	@if ($user && Auth::user()->id == $entity->user->id)	
 		<span> 
-			<a href="{!! route('entities.locations.create', ['id' => $entity->id]) !!}" class="btn btn-primary">Add Location</a>
+			<a href="{!! route('entities.locations.create', ['id' => $entity->slug]) !!}" class="btn btn-primary">Add Location</a>
 		</span>
 	@endif
 	</P>
@@ -135,7 +135,7 @@
 		@foreach ($entity->contacts as $contact)
 		<span><B>{{ $contact->name }}</B>  {{ $contact->email or '' }} {{ $contact->phone or '' }}  
 				@if ($signedIn && $entity->ownedBy($user))
-				<a href="{!! route('entities.contacts.edit', ['entity' => $entity->id, 'id' => $contact->id]) !!}">
+				<a href="{!! route('entities.contacts.edit', ['entity' => $entity->slug, 'id' => $contact->id]) !!}">
 				<span class='glyphicon glyphicon-pencil'></span></a>
 				@endif
 		</span><br>
@@ -146,7 +146,7 @@
 	<P>
 	@if ($user && Auth::user()->id == $entity->user->id)	
 		<span> 
-			<a href="{!! route('entities.contacts.create', ['id' => $entity->id]) !!}" class="btn btn-primary">Add Contact</a>
+			<a href="{!! route('entities.contacts.create', ['id' => $entity->slug]) !!}" class="btn btn-primary">Add Contact</a>
 		</span>
 	@endif
 	</P>
@@ -157,7 +157,7 @@
                 @foreach ($entity->links as $link)
                 <span><B>{!! $link->tag !!}</B>
                                 @if ($signedIn && $entity->ownedBy($user))
-                                <a href="{!! route('entities.links.edit', ['entity' => $entity->id, 'id' => $link->id]) !!}">
+                                <a href="{!! route('entities.links.edit', ['entity' => $entity->slug, 'id' => $link->id]) !!}">
                                 <span class='glyphicon glyphicon-pencil'></span></a>
                                 @endif
                 </span><br>
@@ -168,7 +168,7 @@
         <P>
         @if ($user && Auth::user()->id == $entity->user->id)
                 <span>
-                        <a href="{!! route('entities.links.create', ['id' => $entity->id]) !!}" class="btn btn-primary">Add Link</a>
+                        <a href="{!! route('entities.links.create', ['id' => $entity->slug]) !!}" class="btn btn-primary">Add Link</a>
                 </span>
         @endif
         </P>
@@ -190,9 +190,9 @@
 			{!! $comment->message !!}<br>
 			{{ $comment->created_at->diffForHumans() }} <br>
 			@if ($signedIn && $comment->createdBy($user))
-			<a href="{!! route('entities.comments.edit', ['entity' => $entity->id, 'id' => $comment->id]) !!}">
+			<a href="{!! route('entities.comments.edit', ['entity' => $entity->slug, 'id' => $comment->id]) !!}">
 			<span class='glyphicon glyphicon-pencil'></span></a>
-			{!! Form::open(['route' => ['events.comments.destroy', 'entity' => $entity->id, 'id' => $comment->id], 'method' => 'delete']) !!}
+			{!! Form::open(['route' => ['events.comments.destroy', 'entity' => $entity->slug, 'id' => $comment->id], 'method' => 'delete']) !!}
 			<button type="submit" class="btn btn-danger btn-mini">Delete</button>
 			{!! Form::close() !!}
 			@endif
@@ -202,7 +202,7 @@
 	<P>
 	@if (Auth::user())	
 		<span> 
-			<a href="{!! route('entities.comments.create', ['id' => $entity->id]) !!}" class="btn btn-primary">Add Comment</a>
+			<a href="{!! route('entities.comments.create', ['id' => $entity->slug]) !!}" class="btn btn-primary">Add Comment</a>
 		</span>
 	@endif
 	</P>
@@ -211,7 +211,7 @@
 
 	<div class="col-md-6">
 		@if ($user && (Auth::user()->id == $entity->user->id || $user->id == Config::get('app.superuser')))	
-		<form action="/entities/{{ $entity->id }}/photos" class="dropzone" id="myDropzone" method="POST">
+		<form action="/entities/{{ $entity->slug }}/photos" class="dropzone" id="myDropzone" method="POST">
 			<input type="hidden" name="_token" value="{{ csrf_token() }}">
 		</form>
 		@endif
@@ -300,7 +300,7 @@ $(document).ready(function(){
 		dictDefaultMessage: "Drop a file here to add a picture",
 		init: function () {
 	            myDropzone.on("complete", function (file) {
-	                location.href = 'entities/{{ $entity->id }}'
+	                location.href = 'entities/{{ $entity->slug }}'
 	                location.reload();
 
 	            });

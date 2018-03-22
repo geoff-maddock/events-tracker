@@ -76,7 +76,7 @@ class LinksController extends Controller {
 
 		flash()->success('Success', 'Your link has been created');
 
-		return redirect()->route('entities.show', $entity->id);
+		return redirect()->route('entities.show', $entity->slug);
 	}
 
 	/**
@@ -115,29 +115,28 @@ class LinksController extends Controller {
 	 */
 	public function update(Request $request, Entity $entity, Link $link)
 	{
-		$msg = '';
-
 		$link->fill($request->input())->save();
  
 		flash()->success('Success', 'Your link has been updated!');
 
-		return redirect()->route('entities.show', $entity->id);
+		return redirect()->route('entities.show', $entity->slug);
 	}
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  \App\Entity 		$entity
-	 * @param  \App\Link    	$link
-	 * @return Response
-	 */
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Entity $entity
+     * @param  \App\Link $link
+     * @return Response
+     * @throws \Exception
+     */
 	public function destroy(Entity $entity, Link $link)
 	{
 		$link->delete();
 
-		\Session::flash('flash_message', 'Your links has been deleted!');
+        flash()->success('Success', 'Your link has been deleted!');
 
-		return redirect()->route('entities.show', $entity->id);
+		return redirect()->route('entities.show', $entity->slug);
 
 	}
 

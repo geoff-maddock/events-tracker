@@ -11,134 +11,136 @@ use App\Entity;
 use App\Contact;
 use App\Visibility;
 
-class ContactsController extends Controller {
+class ContactsController extends Controller
+{
 
 
-	protected $rules = [
-		'name' => ['required', 'min:3'],
+    protected $rules = [
+        'name' => ['required', 'min:3'],
         'visibility_id' => ['required']
-	];
+    ];
 
-	public function __construct(Entity $entity)
-	{
-		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
-		$this->entity = $entity;
+    public function __construct (Entity $entity)
+    {
+        $this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
+        $this->entity = $entity;
 
-		parent::__construct();
-	}
+        parent::__construct();
+    }
 
-	/**
-	 * Display a listing of the resource.
-	 *
-	 * @param  \App\Entity 		$entity
-	 * @return Response
-	 */
-	public function index(Entity $entity)
-	{
-		return view('contacts.index', compact('entity'));
-	}
+    /**
+     * Display a listing of the resource.
+     *
+     * @param  \App\Entity $entity
+     * @return Response
+     */
+    public function index (Entity $entity)
+    {
+        return view('contacts.index', compact('entity'));
+    }
 
-	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @param  \App\Entity 		$entity
-	 * @return Response
-	 */
-	public function create(Entity $entity)
-	{
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @param  \App\Entity $entity
+     * @return Response
+     */
+    public function create (Entity $entity)
+    {
 
-		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
+        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-		return view('contacts.create', compact('entity','visibilities'));
-	}
+        return view('contacts.create', compact('entity', 'visibilities'));
+    }
 
-	/**
-	 * Store a newly created resource in storage.
-	 *
-	 * @param  Request 			$request
-	 * @param  \App\Entity 		$entity
-	 * @return Response
-	 */
-	public function store(Request $request, Entity $entity)
-	{
-		$msg = '';
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  Request $request
+     * @param  \App\Entity $entity
+     * @return Response
+     */
+    public function store (Request $request, Entity $entity)
+    {
+        $msg = '';
 
-		// get the request
-		$input = $request->all();
-		$input['entity_id'] = $entity->id;
+        // get the request
+        $input = $request->all();
+        $input['entity_id'] = $entity->id;
 
-		$this->validate($request, $this->rules);
+        $this->validate($request, $this->rules);
 
-		$contact = Contact::create($input);
+        $contact = Contact::create($input);
 
-		$entity->contacts()->attach($contact->id);
+        $entity->contacts()->attach($contact->id);
 
-		flash()->success('Success', 'Your contact has been created');
+        flash()->success('Success', 'Your contact has been created');
 
-		return redirect()->route('entities.show', $entity->id);
-	}
+        return redirect()->route('entities.show', $entity->slug);
+    }
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  \App\Entity 		$entity
-	 * @param  \App\Contact  	$contact
-	 * @return Response
-	 */
-	public function show(Entity $entity, Contact $contact)
-	{
-		return view('contacts.show', compact('entity', 'contact'));
-	}
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Entity $entity
+     * @param  \App\Contact $contact
+     * @return Response
+     */
+    public function show (Entity $entity, Contact $contact)
+    {
+        return view('contacts.show', compact('entity', 'contact'));
+    }
 
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  \App\Entity 		$entity
-	 * @param  \App\Contact  	$contact
-	 * @return Response
-	 */
-	public function edit(Entity $entity, Contact $contact)
-	{
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Entity $entity
+     * @param  \App\Contact $contact
+     * @return Response
+     */
+    public function edit (Entity $entity, Contact $contact)
+    {
 
-		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
+        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-		return view('contacts.edit', compact('entity', 'contact', 'visibilities' ));
-	}
+        return view('contacts.edit', compact('entity', 'contact', 'visibilities'));
+    }
 
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  Request 			$request
-	 * @param  \App\Entity 		$entity
-	 * @param  \App\Contact  	$contact
-	 * @return Response
-	 */
-	public function update(Request $request, Entity $entity, Contact $contact)
-	{
-		$msg = '';
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  Request $request
+     * @param  \App\Entity $entity
+     * @param  \App\Contact $contact
+     * @return Response
+     */
+    public function update (Request $request, Entity $entity, Contact $contact)
+    {
+        $msg = '';
 
-		$contact->fill($request->input())->save();
- 
-		flash()->success('Success', 'Your contact has been updated!');
+        $contact->fill($request->input())->save();
 
-		return redirect()->route('entities.show', $entity->id);
-	}
+        flash()->success('Success', 'Your contact has been updated!');
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  \App\Entity 		$entity
-	 * @param  \App\Contact  	$contact
-	 * @return Response
-	 */
-	public function destroy(Entity $entity, Contact $contact)
-	{
-		$contact->delete();
+        return redirect()->route('entities.show', $entity->slug);
+    }
 
-		\Session::flash('flash_message', 'Your contacts has been deleted!');
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Entity $entity
+     * @param  \App\Contact $contact
+     * @return Response
+     * @throws \Exception
+     */
+    public function destroy (Entity $entity, Contact $contact)
+    {
+        $contact->delete();
 
-		return redirect()->route('entities.show', $entity->id);
+        flash()->success('Success', 'Your contacts has been deleted!');
 
-	}
+        return redirect()->route('entities.show', $entity->slug);
+
+    }
 
 }

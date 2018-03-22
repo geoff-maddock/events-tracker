@@ -8,7 +8,7 @@
 
 	<h3>Add a New Comment</h3>
 
-	{!! Form::open(['route' => [str_plural($type).'.comments.store', $object->id], 'method' => 'POST']) !!}
+	{!! Form::open(['route' => [str_plural($type).'.comments.store', $object->getRouteKey()], 'method' => 'POST']) !!}
 
 		@include('comments.form')
 

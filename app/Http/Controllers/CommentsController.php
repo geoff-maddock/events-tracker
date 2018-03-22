@@ -96,7 +96,7 @@ class CommentsController extends Controller {
 		flash()->success('Success', 'Your comment has been created');
 
 
-		return redirect()->route($type.'.show', $comment->commentable->id);
+		return redirect()->route($type.'.show', $comment->commentable->getRouteKey());
 	}
 
 	/**
@@ -111,13 +111,13 @@ class CommentsController extends Controller {
 		return view('comments.show', compact('entity', 'comment'));
 	}
 
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  \App\Entity 		$entity
-	 * @param  \App\Comment  	$comment
-	 * @return Response
-	 */
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param $object
+     * @param  \App\Comment $comment
+     * @return Response
+     */
 	public function edit($object, Comment $comment)
 	{
 		if (get_class($object) == 'Entity')
@@ -152,16 +152,17 @@ class CommentsController extends Controller {
  
  		\Session::flash('flash_message', 'Your comment has been updated!');
 
-		return redirect()->route('entities.show', $entity->id);
+		return redirect()->route('entities.show', $entity->getRouteKey());
 	}
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	* @param  \App\Comment  	$comment
-	 * @param  \App\Entity 		$entity
-	 * @return Response
-	 */
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param Event $event
+     * @param  \App\Comment $comment
+     * @return Response
+     * @throws \Exception
+     */
 	public function destroy( Event $event, Comment $comment )
 	{
 		$comment->delete();

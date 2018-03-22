@@ -75,7 +75,7 @@ class LocationsController extends Controller {
 
 		flash()->success('Success', 'Your location has been created');
 
-		return redirect()->route('entities.show', $entity->id);
+		return redirect()->route('entities.show', $entity->slug);
 	}
 
 	/**
@@ -121,7 +121,7 @@ class LocationsController extends Controller {
  
 		flash()->success('Success', 'Your location has been updated!');
 
-		return redirect()->route('entities.show', $entity->id);
+		return redirect()->route('entities.show', $entity->slug);
 	}
 
     /**
@@ -136,9 +136,9 @@ class LocationsController extends Controller {
 	{
 		$location->delete();
 
-		\Session::flash('flash_message', 'Your locations has been deleted!');
+        flash()->success('Success', 'Your location has been deleted!');
 
-		return redirect()->route('entities.show', $entity->id);
+		return redirect()->route('entities.show', $entity->slug);
 
 	}
 

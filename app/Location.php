@@ -11,7 +11,7 @@ class Location extends Eloquent {
      *
      * @var string
      */
-    protected $dateFormat = 'Y-m-d\\TH:i';
+    //protected $dateFormat = 'Y-m-d\\TH:i';
 
 	/**
 	 * @var Array
@@ -65,10 +65,6 @@ class Location extends Eloquent {
         $guarded = Visibility::where('name','=','Guarded')->first();
 
         $query->where('visibility_id','=', $public ? $public->id : NULL )->orWhere('created_by','=',($user ? $user->id : NULL));
-        /*
-        $query->orWhere(function ($query) {
-        	$query->where('visibility_id','=', $guarded ? $guarded->id : NULL );
-        });
-		*/
+
     }
 }

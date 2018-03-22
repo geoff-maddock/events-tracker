@@ -20,7 +20,7 @@ use App\Role;
 use App\Photo;
 use App\Follow;
 
-class GenericObjectController extends Controller {
+class GenericController extends Controller {
 
     protected $prefix;
     protected $rpp;

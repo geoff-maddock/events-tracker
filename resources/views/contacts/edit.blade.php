@@ -8,14 +8,14 @@
 
 	<h1>Edit Contact: <i>{{ $contact->name }}</i> </h1> 
 
-	{!! Form::model($contact, ['route' => ['entities.contacts.update', $entity->id, $contact->id], 'method' => 'PATCH']) !!}
+	{!! Form::model($contact, ['route' => ['entities.contacts.update', $entity->slug, $contact->id], 'method' => 'PATCH']) !!}
 
 		@include('contacts.form', ['action' => 'update'])
 
 	{!! Form::close() !!}
 
 	<div class="col-md-3">
-	<P>{!! delete_form(['entities.contacts.destroy', $entity->id,  $contact->id]) !!}</P>
+	<P>{!! delete_form(['entities.contacts.destroy', $entity->slug,  $contact->id]) !!}</P>
 	</div>
 
 @stop

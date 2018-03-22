@@ -2,9 +2,9 @@
  
 @section('content')
     <h2>
-        {!! link_to_route('entities.show', $entity, [$entity->id]) !!} -
-        {{ $contact->name }}
+        {!! link_to_route('entities.show', $entity, [$entity->slug]) !!} -
+        {{ $link->title }}
     </h2>
  
-    {{ $contact->city }}
+    {{ $contact->url }}
 @endsection
