@@ -41,7 +41,7 @@ Route::get('tos', 'PagesController@tos');
 
 Route::get('help', 'PagesController@help');
 
-Route::get('calendar', 'EventsController@calendar');
+Route::get('calendar', 'EventsController@calendar')->name('calendar');
 Route::get('calendar/tag/{tag}', 'EventsController@calendarTags')->name('calendar.tag');
 Route::get('calendar/relatedto/{slug}', 'EventsController@calendarRelatedTo');
 Route::get('calendar/free', 'EventsController@calendarFree')->name('calendar.free');
