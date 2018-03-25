@@ -7,17 +7,19 @@
 	<h4>Events
 		@include('events.crumbs')
 	</h4>
-	<div class="row" class="tab-content filters-content">
-		<div class="col-md-6">
+
+	<P>
 		<a href="{!! URL::route('events.index') !!}" class="btn btn-info">Show event index</a>
-			<a href="{!! URL::route('calendar') !!}" class="btn btn-info">Show calendar</a>
+		<a href="{!! URL::route('calendar') !!}" class="btn btn-info">Show calendar</a>
 		<a href="{!! URL::route('events.week') !!}" class="btn btn-info">Show week's events</a>
 		<a href="{!! URL::route('events.create') !!}" class="btn btn-primary">Add an event</a>	<a href="{!! URL::route('series.create') !!}" class="btn btn-primary">Add an event series</a>
-		</div>
+	</P>
+
+	<div class="row" class="tab-content filters-content">
 
 	<!-- NAV / FILTER -->
 
-		<div id="filters-container" class="col-md-6">
+		<div id="filters-container" class="col-lg-12">
 
 			<a href="#" id="filters" class="btn btn-primary">Filters <span id="filters-toggle" class="glyphicon @if (!$hasFilter) glyphicon-chevron-down @else glyphicon-chevron-up @endif"></span></a>
 			{!! Form::open(['route' => ['events.filter'], 'method' => 'GET']) !!}

@@ -58,102 +58,45 @@ class SeriesController extends Controller
      * @param Request $request
      * @return View
      * @internal param $Request
+     * @throws \Throwable
      */
     public function filter (Request $request)
     {
-        $hasFilter = 1;
-
         // get all the filters from the session
-        $filters = $this->getFilters($request);
+        $this->filters = $this->getFilters($request);
+
+        // update filters based on the request input
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->input()));
+
+        // get the merged filters
+        $this->filters = $this->getFilters($request);
 
         // updates sort, rpp from request
         $this->updatePaging($request);
 
-        // base criteria
-        $query = $this->baseCriteria();
+        // flag that there are filters
+        $this->hasFilter = count($this->filters);
 
-        // add the criteria from the session
-        // check request for passed filter values
+        // get the criteria given the request (could pass filters instead?)
+        $query = $this->buildCriteria($request);
 
-        if (!empty($request->input('filter_name'))) {
-            // getting name from the request
-            $name = $request->input('filter_name');
-            $query->where('name', 'like', '%' . $name . '%');
-            // add to filters array
-            $filters['filter_name'] = $name;
-        }
-
-        if (!empty($request->input('filter_occurrence_type'))) {
-            $type = $request->input('filter_occurrence_type');
-            // add has clause
-            $query->whereHas('occurrenceType',
-                function ($q) use ($type) {
-                    $q->where('name', '=', ucfirst($type));
-                });
-
-            // add to filters array
-            $filters['filter_occurrence_type'] = $type;
-        };
-
-        if (!empty($request->input('filter_occurrence_week'))) {
-            $week = $request->input('filter_occurrence_week');
-            // add has clause
-            $query->whereHas('occurrenceWeek',
-                function ($q) use ($week) {
-                    $q->where('name', '=', ucfirst($week));
-                });
-
-            // add to filters array
-            $filters['filter_occurrence_week'] = $week;
-        };
-
-
-        if (!empty($request->input('filter_occurrence_day'))) {
-            $day = $request->input('filter_occurrence_day');
-            // add has clause
-            $query->whereHas('occurrenceDay',
-                function ($q) use ($day) {
-                    $q->where('name', '=', ucfirst($day));
-                });
-
-            // add to filters array
-            $filters['filter_occurrence_day'] = $day;
-        };
-
-
-        if (!empty($request->input('filter_tag'))) {
-            $tag = $request->input('filter_tag');
-            $query->whereHas('tags', function ($q) use ($tag) {
-                $q->where('name', '=', ucfirst($tag));
-            });
-
-            // add to filters array
-            $filters['filter_tag'] = $tag;
-        }
-
-
-        // change this - should be seperate
-        if (!empty($request->input('filter_rpp'))) {
-            $this->rpp = $request->input('filter_rpp');
-        }
-
-        // save filters to session
-        $this->setFilters($request, $filters);
-
-        // get series
+        // apply the filters to the query
+        // get the entities and paginate
         $series = $query->paginate($this->rpp);
         $series->filter(function ($e) {
             return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
 
         return view('series.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter,
-                'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
-                'filter_occurrence_type' => isset($filters['filter_occurrence_type']) ? $filters['filter_occurrence_type'] : NULL,
-                'filter_occurrence_week' => isset($filters['filter_occurrence_week']) ? $filters['filter_occurrence_week'] : NULL,
-                'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL
+            ->with(['rpp' => $this->rpp,
+                'sortBy' => $this->sortBy,
+                'sortOrder' => $this->sortOrder,
+                'filters' => $this->filters,
+                'hasFilter' => $this->hasFilter,
             ])
-            ->with(compact('series'));
+            ->with(compact('series', 'role', 'tag', 'alias', 'name'))
+            ->render();
+
     }
 
     /**
@@ -257,10 +200,6 @@ class SeriesController extends Controller
 
     public function index (Request $request)
     {
-
-        // base criteria
-        $query = $this->baseCriteria();
-
         // updates sort, rpp from request
         $this->updatePaging($request);
 
@@ -269,6 +208,9 @@ class SeriesController extends Controller
 
         $this->hasFilter = count($filters);
 
+        // base criteria
+        $query = $this->buildCriteria($request);
+
         $series = $query->with('occurrenceType', 'visibility', 'tags')->paginate($this->rpp);
 
         $series = $series->filter(function ($e) {
@@ -276,14 +218,20 @@ class SeriesController extends Controller
         });
 
         return view('series.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter, 'filters' => $filters])
             ->with(compact('series'))
             ->render();
     }
 
     public function indexCancelled ()
     {
-        $hasFilter = 1;
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        // get filters from session
+        $filters = $this->getFilters($request);
+
+        $this->hasFilter = count($filters);
 
         $series = $this->series
             ->whereNotNull('cancelled_at')
@@ -310,9 +258,15 @@ class SeriesController extends Controller
      * @return Response
      * @throws \Throwable
      */
-    public function indexWeek ()
+    public function indexWeek (Request $request)
     {
-        $hasFilter = 1;
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        // get filters from session
+        $filters = $this->getFilters($request);
+
+        $this->hasFilter = count($filters);
 
         $this->rpp = 5;
 
@@ -358,9 +312,15 @@ class SeriesController extends Controller
      * @return Response
      * @throws \Throwable
      */
-    public function indexTags ($tag)
+    public function indexTags (Request $request, $tag)
     {
-        $hasFilter = 1;
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        // get filters from session
+        $filters = $this->getFilters($request);
+
+        $this->hasFilter = count($filters);
         $tag = urldecode($tag);
 
         $series = Series::getByTag(ucfirst($tag))
@@ -373,7 +333,7 @@ class SeriesController extends Controller
 
 
         return view('series.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter, 'filters' => $filters])
             ->with(compact('series', 'tag'))
             ->render();
     }
@@ -846,15 +806,71 @@ class SeriesController extends Controller
         return $this->setAttribute('sort', $input);
     }
 
+
     /**
-     * Apply the filters to the query
-     * @param array|null $filters
+     * Builds the criteria from the session
+     *
+     * @return $query
      */
-    protected function buildCriteria (array $filters = null)
+    public function buildCriteria (Request $request)
     {
-        if (is_null($filters)) {
-            $filters = $this->getFilters();
+        // get all the filters from the session
+        $filters = $this->getFilters($request);
+
+        // base criteria
+        $query = $this->baseCriteria();
+
+        // add the criteria from the session
+        // check request for passed filter values
+
+        if (!empty($filters['filter_name'])) {
+            // getting name from the request
+            $name = $filters['filter_name'];
+            $query->where('name', 'like', '%' . $name . '%');
         }
+
+        if (!empty($filters['filter_occurrence_type'])) {
+            $type = $filters['filter_occurrence_type'];
+            // add has clause
+            $query->whereHas('occurrenceType',
+                function ($q) use ($type) {
+                    $q->where('name', '=', ucfirst($type));
+                });
+        };
+
+        if (!empty($filters['filter_occurrence_week'])) {
+            $week = $filters['filter_occurrence_week'];
+            // add has clause
+            $query->whereHas('occurrenceWeek',
+                function ($q) use ($week) {
+                    $q->where('name', '=', ucfirst($week));
+                });
+        };
+
+
+        if (!empty($filters['filter_occurrence_day'])) {
+            $day = $filters['filter_occurrence_day'];
+            // add has clause
+            $query->whereHas('occurrenceDay',
+                function ($q) use ($day) {
+                    $q->where('name', '=', ucfirst($day));
+                });
+        };
+
+        if (!empty($filters['filter_tag'])) {
+            $tag = $filters['filter_tag'];
+            $query->whereHas('tags', function ($q) use ($tag) {
+                $q->where('name', '=', ucfirst($tag));
+            });
+
+        }
+
+        // change this - should be separate
+        if (!empty($filters['filter_rpp'])) {
+            $this->rpp = $filters['filter_rpp'];
+        }
+
+        return $query;
     }
 
     /**

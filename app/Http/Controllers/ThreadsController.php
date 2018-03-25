@@ -28,6 +28,7 @@ use App\Event;
 class ThreadsController extends Controller
 {
     // define a list of variables
+    protected $prefix;
     protected $rpp;
     protected $page;
     protected $sort;
@@ -35,6 +36,7 @@ class ThreadsController extends Controller
     protected $sortOrder;
     protected $defaultCriteria;
     protected $hasFilter;
+    protected $filters;
 
 	public function __construct(Thread $thread)
 	{
@@ -170,11 +172,10 @@ class ThreadsController extends Controller
      * Display a listing of the resource.
      *
      * @param Request $request
-     * @param ThreadFilters $filters
      * @return View
      * @throws \Throwable
      */
-    public function index(Request $request, ThreadFilters $filters)
+    public function index (Request $request)
     {
         // updates sort, rpp from request
         $this->updatePaging($request);
@@ -210,12 +211,11 @@ class ThreadsController extends Controller
 
         return view('threads.index')
         			->with(compact('threads'))
-                    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder,
+                    ->with(['rpp' => $this->rpp,
+                        'sortBy' => $this->sortBy,
+                        'sortOrder' => $this->sortOrder,
                         'hasFilter' => $this->hasFilter,
                         'filters' => $filters,
-                        'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
-                        'filter_user' => isset($filters['filter_user']) ? $filters['filter_user'] : NULL,
-                        'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL
                     ])->render();
     }
 
@@ -291,9 +291,6 @@ class ThreadsController extends Controller
             $this->rpp = $filters['filter_rpp'];
         }
 
-        // save filters to session
-        //$this->setFilters($request, $filters);
-
         return $query;
     }
 
@@ -304,61 +301,25 @@ class ThreadsController extends Controller
      * @return View
      * @internal param $Request
      */
-    public function filter(Request $request, ThreadFilters $filters)
+    public function filter (Request $request)
     {
+        // get all the filters from the session
+        $this->filters = $this->getFilters($request);
+
+        // update filters based on the request input
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->input()));
+
+        // get the merged filters
+        $this->filters = $this->getFilters($request);
+
         // updates sort, rpp from request
         $this->updatePaging($request);
 
-        // get filters from session
-        $filters = $this->getFilters($request);
+        // flag that there are filters
+        $this->hasFilter = count($this->filters);
 
-        $this->hasFilter = count($filters);
-
-        // base criteria
-        $query = $this->thread->orderBy($this->sortBy, $this->sortOrder);
-
-        // add the criteria from the session
-        // check request for passed filter values
-
-        if (!empty($request->input('filter_name'))) {
-            // getting name from the request
-            $name = $request->input('filter_name');
-            $query->where('name', 'like', '%' . $name . '%');
-
-            // add to filters array
-            $filters['filter_name'] = $name;
-        }
-
-        if (!empty($request->input('filter_user'))) {
-            $user = $request->input('filter_user');
-
-            // add has clause
-            $query->whereHas('user', function ($q) use ($user) {
-                $q->where('name', '=', $user);
-            });
-
-            // add to filters array
-            $filters['filter_user'] = $user;
-        }
-
-        if (!empty($request->input('filter_tag'))) {
-            $tag = $request->input('filter_tag');
-            $query->whereHas('tags', function ($q) use ($tag) {
-                $q->where('name', '=', ucfirst($tag));
-            });
-
-            // add to filters array
-            $filters['filter_tag'] = $tag;
-        }
-
-        // change this - should be separate
-        if (!empty($request->input('filter_rpp'))) {
-            $this->rpp = $request->input('filter_rpp');
-            $filters['filter_rpp'] = $this->rpp;
-        }
-
-        // save filters to session
-        $this->setFilters($request, $filters);
+        // get the criteria given the request (could pass filters instead?)
+        $query = $this->buildCriteria($request);
 
         // get threads
         $threads = $query->paginate($this->rpp);
@@ -368,10 +329,8 @@ class ThreadsController extends Controller
 
 
         return view('threads.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter, 'filters' => $filters,
-                'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
-                'filter_user' => isset($filters['filter_user']) ? $filters['filter_user'] : NULL,
-                'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter, 'filters' => $this->filters,
+
             ])
             ->with(compact('threads'));
     }

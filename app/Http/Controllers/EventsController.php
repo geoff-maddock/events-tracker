@@ -233,8 +233,6 @@ class EventsController extends Controller
         // get filters from session
         $filters = $this->getFilters($request);
 
-//        dd($filters);
-
         $this->hasFilter = count($filters);
 
         // base criteria
@@ -465,6 +463,7 @@ class EventsController extends Controller
      *
      * @param Request $request
      * @return View
+     * @throws \Throwable
      */
     public function indexTimeline (Request $request)
     {

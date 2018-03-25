@@ -25,8 +25,6 @@ use App\User;
 
 class EntitiesController extends Controller
 {
-
-    // define a list of variables
     protected $prefix;
     protected $rpp;
     protected $page;
@@ -36,7 +34,7 @@ class EntitiesController extends Controller
     protected $defaultCriteria;
     protected $filters;
     protected $hasFilter;
-    private $criteria;
+
 
     public function __construct (Entity $entity)
     {
@@ -311,51 +309,8 @@ class EntitiesController extends Controller
         // flag that there are filters
         $this->hasFilter = count($this->filters);
 
-        // get the criteria given the request - this might be correct
+        // get the criteria given the request (could pass filters instead?)
         $query = $this->buildCriteria($request);
-
-        // add the criteria from the session
-        // this may just be repeating the above buildCriteria and should be merged
-
-//        if (!empty($this->filters['filter_name'])) {
-//            // update the query
-//            $name = $this->filters['filter_name'];
-//            $query->where('name', 'like', '%' . $name . '%')
-//                ->orWherehas('aliases', function ($q) use ($name) {
-//                    $q->where('name', '=', ucfirst($name));
-//                });
-//        }
-//
-//        if (!empty($this->filters['filter_role'])) {
-//            $role = $request->input('filter_role');
-//            // add has clause
-//            $query->whereHas('roles', function ($q) use ($role) {
-//                $q->where('slug', '=', strtolower($role));
-//            });
-//        };
-//
-//        if (!empty($this->filters['filter_tag'])) {
-//            $tag = $this->filters['filter_tag'];
-//            $query->whereHas('tags', function ($q) use ($tag) {
-//                $q->where('name', '=', ucfirst($tag));
-//            });
-//        }
-//
-//        if (!empty($this->filters['filter_alias'])) {
-//            $alias = $this->filters['filter_alias'];
-//            $query = Entity::getByAlias(ucfirst($alias))
-//                ->where(function ($query) {
-//                    $query->active()
-//                        ->orWhere('created_by', '=', ($this->user ? $this->user->id : NULL));
-//                })
-//                ->orderBy('entity_type_id', 'ASC')
-//                ->orderBy('name', 'ASC');
-//        }
-//
-//        // change this - should be seperate
-//        if (!empty($this->filters['filter_rpp'])) {
-//            $this->rpp = $this->filters['filter_rpp'];
-//        }
 
         // apply the filters to the query
         // get the entities and paginate

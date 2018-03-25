@@ -18,8 +18,8 @@
 				<!-- BEGIN: FILTERS -->
 
 				<div class="form-group col-sm-3">
-					{!! Form::label('filter_username','Username') !!}
-					{!! Form::text('filter_username', (isset($filters['filter_username']) ? $filters['filter_username'] : NULL), ['class' =>'form-control']) !!}
+					{!! Form::label('filter_email','Email') !!}
+					{!! Form::text('filter_email', (isset($filters['filter_email']) ? $filters['filter_email'] : NULL), ['class' =>'form-control']) !!}
 				</div>
 
 				<div class="form-group col-sm-3">

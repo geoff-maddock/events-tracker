@@ -20,7 +20,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UsersController extends Controller
 {
-
     protected $prefix;
     protected $rpp;
     protected $page;
@@ -29,11 +28,16 @@ class UsersController extends Controller
     protected $sortOrder;
     protected $defaultCriteria;
     protected $hasFilter;
+    protected $filters;
 
     public function __construct (User $user)
     {
         $this->middleware('auth', ['except' => array('index', 'show',)]);
         $this->user = $user;
+
+        // prefix for session storage
+        $this->prefix = 'app.threads.';
+
         $this->rpp = 25;
         $this->page = 1;
         $this->sort = array('name', 'desc');
@@ -75,28 +79,29 @@ class UsersController extends Controller
      *
      * @return Response
      */
-    public function index (Request $request)
+    public function index(Request $request)
     {
         // updates sort, rpp from request
         $this->updatePaging($request);
 
         // get filters from session
-        $filters = $this->getFilters($request);
+        $this->filters = $this->getFilters($request);
 
-        $this->hasFilter = count($filters);
+        $this->hasFilter = count($this->filters);
 
-        $users = User::orderBy('name', 'ASC')->paginate($this->rpp);
+        // initialize the query
+        $query = $this->buildCriteria($request);
+
+        // get the threads
+        $users = $query->paginate($this->rpp);
+
 
         return view('users.index')
             ->with(['rpp' => $this->rpp,
                 'sortBy' => $this->sortBy,
                 'sortOrder' => $this->sortOrder,
                 'hasFilter' => $this->hasFilter,
-                'filters' => $filters,
-                'filter_username' => isset($filters['filter_username']) ? $filters['filter_username'] : NULL,  // there should be a better way to do this..
-                'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
-                'filter_status' => isset($filters['filter_status']) ? $filters['filter_status'] : NULL,
-                'filter_rpp' => isset($filters['filter_rpp']) ? $filters['filter_rpp'] : NULL
+                'filters' => $this->filters,
             ])
             ->with(compact('users'));
     }
@@ -107,69 +112,36 @@ class UsersController extends Controller
      * @return Response
      * @throws \Throwable
      */
-    public function filter (Request $request, UserFilters $filters)
+    public function filter (Request $request)
     {
-
         // get all the filters from the session
-        $filters = $this->getFilters($request);
+        $this->filters = $this->getFilters($request);
+
+        // update filters based on the request input
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->input()));
+
+        // get the merged filters
+        $this->filters = $this->getFilters($request);
 
         // updates sort, rpp from request
         $this->updatePaging($request);
 
-        // get filters from session
-        $filters = $this->getFilters($request);
+        // flag that there are filters
+        $this->hasFilter = count($this->filters);
 
-        $this->hasFilter = count($filters);
-
-        // updates sort, rpp from request - TODO add other filters?
-        $this->updatePaging($request);
-
-        // base criteria
+        // get the criteria given the request (could pass filters instead?)
         $query = $this->buildCriteria($request);
 
-        // add the criteria from the session
-        // check request for passed filter values
-
-        if (!empty($request->input('filter_username'))) {
-            // getting name from the request
-            $username = $request->input('filter_username');
-            $query->where('username', 'like', '%' . $username . '%');
-
-            // add to filters array
-            $filters['filter_name'] = $username;
-        }
-
-        if (!empty($request->input('filter_status'))) {
-            $status = $request->input('filter_status');
-            $query->where('status', '=', $status);
-
-            // add to filters array
-            $filters['filter_status'] = $status;
-        }
-
-        // change this - should be seperate
-        if (!empty($request->input('filter_rpp'))) {
-            $this->rpp = $request->input('filter_rpp');
-            $filters['filter_rpp'] = $this->rpp;
-        }
-
-        // save filters to session
-        $this->setFilters($request, $filters);
-
-        // apply the filters to the query
-        // get the entities and paginate
-        $users = User::orderBy('name', 'ASC')->paginate($this->rpp);
+        // get the threads
+        $users = $query->paginate($this->rpp);
 
         return view('users.index')
             ->with(['rpp' => $this->rpp,
                 'sortBy' => $this->sortBy,
                 'sortOrder' => $this->sortOrder,
                 'hasFilter' => $this->hasFilter,
-                'filters' => $filters,
-                'filter_username' => isset($filters['filter_username']) ? $filters['filter_username'] : NULL,  // there should be a better way to do this..
-                'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
-                'filter_status' => isset($filters['filter_status']) ? $filters['filter_status'] : NULL,
-                'filter_rpp' => isset($filters['filter_rpp']) ? $filters['filter_rpp'] : NULL
+                'filters' => $this->filters,
+
             ])
             ->with(compact('users'));
 
@@ -182,23 +154,27 @@ class UsersController extends Controller
      */
     public function buildCriteria (Request $request)
     {
-        $hasFilter = 1;
 
         // get all the filters from the session
         $filters = $this->getFilters($request);
 
         // base criteria
         $query = $this->user
-            ->orderBy('username', 'ASC')
+            ->orderBy('name', 'ASC')
             ->orderBy($this->sortBy, $this->sortOrder);
 
         // add the criteria from the session
         // check request for passed filter values
-
-        if (!empty($filters['filter_username'])) {
+        if (!empty($filters['filter_email'])) {
             // getting name from the request
-            $name = $filters['filter_username'];
-            $query->where('username', 'like', '%' . $name . '%');
+            $name = $filters['filter_email'];
+            $query->where('email', 'like', '%' . $name . '%');
+        }
+
+        if (!empty($filters['filter_name'])) {
+            // getting name from the request
+            $name = $filters['filter_name'];
+            $query->where('name', 'like', '%' . $name . '%');
         }
 
         if (!empty($filters['filter_status'])) {
