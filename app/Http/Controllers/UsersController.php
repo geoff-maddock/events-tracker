@@ -179,7 +179,7 @@ class UsersController extends Controller
 
         if (!empty($filters['filter_status'])) {
             $status = $filters['filter_status'];
-            $query->where('status', '=', $status);
+            $query->where('user_status_id', '=', $status);
 
             // add to filters array
             $filters['filter_status'] = $status;
