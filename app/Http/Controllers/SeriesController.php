@@ -127,8 +127,7 @@ class SeriesController extends Controller
      */
     protected function baseCriteria ()
     {
-        $query = $this->series
-            ->where('cancelled_at', NULL)
+        $query = Series::where('cancelled_at', NULL)
             ->orderBy('occurrence_type_id', 'ASC')
             ->orderBy('occurrence_week_id', 'ASC')
             ->orderBy('occurrence_day_id', 'ASC')
@@ -223,7 +222,7 @@ class SeriesController extends Controller
             ->render();
     }
 
-    public function indexCancelled ()
+    public function indexCancelled (Request $request)
     {
         // updates sort, rpp from request
         $this->updatePaging($request);
@@ -846,7 +845,6 @@ class SeriesController extends Controller
                     $q->where('name', '=', ucfirst($week));
                 });
         };
-
 
         if (!empty($filters['filter_occurrence_day'])) {
             $day = $filters['filter_occurrence_day'];

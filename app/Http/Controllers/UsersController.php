@@ -40,9 +40,9 @@ class UsersController extends Controller
 
         $this->rpp = 25;
         $this->page = 1;
-        $this->sort = array('name', 'desc');
-        $this->sortBy = 'created_at';
-        $this->sortOrder = 'desc';
+        $this->sort = array('name', 'asc');
+        $this->sortBy = 'name';
+        $this->sortOrder = 'asc';
         $this->defaultCriteria = NULL;
         $this->hasFilter = 0;
 
@@ -152,16 +152,16 @@ class UsersController extends Controller
      *
      * @return $query
      */
-    public function buildCriteria (Request $request)
+    public function buildCriteria(Request $request)
     {
-
         // get all the filters from the session
         $filters = $this->getFilters($request);
 
         // base criteria
-        $query = $this->user
-            ->orderBy('name', 'ASC')
-            ->orderBy($this->sortBy, $this->sortOrder);
+        //$query = $this->user->orderBy($this->sortBy, $this->sortOrder);
+
+        $query = User::orderBy($this->sortBy, $this->sortOrder);
+
 
         // add the criteria from the session
         // check request for passed filter values

@@ -464,7 +464,7 @@ class TagsController extends Controller {
     /**
      * Get the default sort array
      *
-     * @return Array
+     * @return array
      */
     public function getDefaultSort()
     {
@@ -475,7 +475,7 @@ class TagsController extends Controller {
     /**
      * Get the default filters array
      *
-     * @return Array
+     * @return array
      */
     public function getDefaultFilters()
     {
@@ -553,4 +553,35 @@ class TagsController extends Controller {
         return $this->setAttribute('sort', $input);
     }
 
+    /**
+     * Builds the criteria from the session
+     *
+     * @param Request $request
+     * @return \Illuminate\Database\Eloquent\Builder $query
+     */
+    public function buildCriteria (Request $request)
+    {
+        // get all the filters from the session
+        $filters = $this->getFilters($request);
+
+        // base criteria
+        $query = Tag::query();
+
+        // add the criteria from the session
+        // check request for passed filter values
+        if (!empty($filters['filter_name'])) {
+            // getting name from the request
+            $name = $filters['filter_name'];
+            $query->where('name', 'like', '%' . $name . '%');
+            $filters['filter_name'] = $name;
+        }
+
+
+        // change this - should be separate
+        if (!empty($filters['filter_rpp'])) {
+            $this->rpp = $filters['filter_rpp'];
+        }
+
+        return $query;
+    }
 }

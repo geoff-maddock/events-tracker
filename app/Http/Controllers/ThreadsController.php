@@ -175,7 +175,7 @@ class ThreadsController extends Controller
      * @return View
      * @throws \Throwable
      */
-    public function index (Request $request)
+    public function index(Request $request)
     {
         // updates sort, rpp from request
         $this->updatePaging($request);
@@ -253,7 +253,7 @@ class ThreadsController extends Controller
         $filters = $this->getFilters($request);
 
         // base criteria
-        $query = $this->thread->orderBy($this->sortBy, $this->sortOrder);
+        $query = Thread::orderBy($this->sortBy, $this->sortOrder);
 
         // add the criteria from the session
         // check request for passed filter values

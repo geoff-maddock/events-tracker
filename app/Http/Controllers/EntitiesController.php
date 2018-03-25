@@ -171,6 +171,19 @@ class EntitiesController extends Controller
         return array();
     }
 
+
+    /**
+     * Gets the base criteria
+     *
+     * @return $query
+     */
+    public function getBaseCriteria (Request $request)
+    {
+        return $this->entity->active()
+            ->orderBy('entity_type_id', 'ASC')
+            ->orderBy($this->sortBy, $this->sortOrder);
+    }
+
     /**
      * Builds the criteria from the session
      *
@@ -182,7 +195,7 @@ class EntitiesController extends Controller
         $filters = $this->getFilters($request);
 
         // base criteria
-        $query = $this->entity->active()
+        $query = Entity::active()
             ->orderBy('entity_type_id', 'ASC')
             ->orderBy($this->sortBy, $this->sortOrder);
 

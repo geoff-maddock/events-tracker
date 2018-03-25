@@ -108,7 +108,7 @@
 
 	<br>
 
-	<i>Added by <a href="/users/{{ $event->user->id }}">{{ $event->user->name or '' }}</a></i>
+	<i>Added by <a href="/users/{{ $event->user ? $event->user->id : ''}}">{{ $event->user ? $event->user->name : '' }}</a></i>
 
 	<P>
 	@unless ($event->entities->isEmpty())
