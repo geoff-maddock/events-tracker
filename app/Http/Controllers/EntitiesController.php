@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers;
 
+use App\Activity;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EntityRequest;
@@ -177,7 +178,7 @@ class EntitiesController extends Controller
      *
      * @return $query
      */
-    public function getBaseCriteria (Request $request)
+    public function getBaseCriteria(Request $request)
     {
         return $this->entity->active()
             ->orderBy('entity_type_id', 'ASC')
@@ -189,7 +190,7 @@ class EntitiesController extends Controller
      *
      * @return $query
      */
-    public function buildCriteria (Request $request)
+    public function buildCriteria(Request $request)
     {
         // get all the filters from the session
         $filters = $this->getFilters($request);
@@ -283,6 +284,7 @@ class EntitiesController extends Controller
 
         $this->hasFilter = count($filters);
 
+        // modify the criteria
         $entities = Entity::getByRole(ucfirst($role))
             ->where(function ($query) {
                 $query->active()
@@ -305,7 +307,7 @@ class EntitiesController extends Controller
      * @return Response
      * @throws \Throwable
      */
-    public function filter (Request $request)
+    public function filter(Request $request)
     {
         // get all the filters from the session
         $this->filters = $this->getFilters($request);
@@ -504,7 +506,7 @@ class EntitiesController extends Controller
      *
      * @return Response
      */
-    public function store (EntityRequest $request, Entity $entity)
+    public function store(EntityRequest $request, Entity $entity)
     {
         $msg = "";
 
@@ -531,6 +533,9 @@ class EntitiesController extends Controller
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->tag_type_id = 1;
                 $newTag->save();
+
+                // log adding of new tag
+                Activity::log($newTag, $this->user, 1);
 
                 $syncArray[] = $newTag->id;
 
@@ -561,6 +566,9 @@ class EntitiesController extends Controller
         $entity->tags()->attach($syncArray);
         $entity->aliases()->attach($aliasSyncArray);
         $entity->roles()->attach($request->input('role_list', []));
+
+        // add to activity log
+        Activity::log($entity, $this->user, 1);
 
         flash()->success('Success', 'Your entity has been created');
 
@@ -610,7 +618,7 @@ class EntitiesController extends Controller
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      * @internal param int $id
      */
-    public function update (Entity $entity, EntityRequest $request)
+    public function update(Entity $entity, EntityRequest $request)
     {
         $msg = '';
 
@@ -641,6 +649,9 @@ class EntitiesController extends Controller
                 $newTag->tag_type_id = 1;
                 $newTag->save();
 
+                // log adding of new tag
+                Activity::log($newTag, $this->user, 1);
+
                 $syncArray[strtolower($tag)] = $newTag->id;
 
                 $msg .= ' Added tag ' . $tag . '.';
@@ -668,6 +679,9 @@ class EntitiesController extends Controller
         $entity->aliases()->attach($aliasSyncArray);
         $entity->roles()->sync($request->input('role_list', []));
 
+        // add to activity log
+        Activity::log($entity, $this->user, 2);
+
         // flash this message
         flash()->success('Success', $msg);
 
@@ -684,6 +698,9 @@ class EntitiesController extends Controller
      */
     public function destroy (Entity $entity)
     {
+        // add to activity log
+        Activity::log($entity, $this->user, 3);
+
         $entity->delete();
 
         return redirect('entities');

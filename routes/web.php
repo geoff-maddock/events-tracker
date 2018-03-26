@@ -51,8 +51,12 @@ Route::get('calendar/min_age/{age}', 'EventsController@calendarMinAge')->name('c
 
 Route::get('search','PagesController@search');
 
-Route::get('activity','PagesController@activity');
-Route::get('tools','PagesController@tools')->name('page.tools');
+Route::get('activity','PagesController@activity')->name('pages.activity');
+
+Route::get('activity/filter', array('as' => 'activity.filter', 'uses' => 'PagesController@filter'));
+Route::get('activity/reset', array('as' => 'activity.reset', 'uses' => 'PagesController@reset'));
+
+Route::get('tools','PagesController@tools')->name('pages.tools');
 
 Route::get('events/importPhotos', [
     'as' => 'events.importPhotos',

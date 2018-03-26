@@ -9,7 +9,7 @@
 
 		<!-- NAV / FILTER -->
 
-		<div id="filters-container" class="col-md-6">
+		<div id="filters-container" class="col-md-12">
 
 			<a href="#" id="filters" class="btn btn-primary">Filters <span id="filters-toggle" class="glyphicon @if (!$hasFilter) glyphicon-chevron-down @else glyphicon-chevron-up @endif"></span></a>
 			{!! Form::open(['route' => ['users.filter'], 'method' => 'GET']) !!}
@@ -53,8 +53,19 @@
 		</div>
 		<!-- END: FILTERS -->
 
+		<br style="clear: left;"/>
 		<div class="row">
-		@include('users.list', ['users' => $users])
+			<div class='col-md-12 col-lg-6'>
+
+				@if (!$users->isEmpty())
+					{!! $users->appends(['sort_by' => $sortBy,
+                                            'rpp' => $rpp
+                    ])->render() !!}
+				@endif
+
+				@include('users.list', ['users' => $users])
+
+			</div>
 		</div>
 @stop
 

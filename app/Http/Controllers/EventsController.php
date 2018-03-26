@@ -1532,7 +1532,7 @@ class EventsController extends Controller
         return view('events.show', compact('event'))->with(['thread' => $thread ? $thread->first() : NULL]);
     }
 
-    public function store (EventRequest $request, Event $event)
+    public function store(EventRequest $request, Event $event)
     {
         $msg = '';
 
@@ -1558,6 +1558,8 @@ class EventsController extends Controller
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->tag_type_id = 1;
                 $newTag->save();
+                // log adding of new tag
+                Activity::log($newTag, $this->user, 1);
 
                 $syncArray[] = $newTag->id;
 
@@ -1663,6 +1665,9 @@ class EventsController extends Controller
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->tag_type_id = 1;
                 $newTag->save();
+
+                // log adding of new tag
+                Activity::log($newTag, $this->user, 1);
 
                 $syncArray[strtolower($tag)] = $newTag->id;
 
@@ -2135,18 +2140,12 @@ class EventsController extends Controller
      */
     public function deletePhoto ($id, Request $request)
     {
-
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif'
         ]);
-
-        // detach from event
-        $event = Event::find($id);
-        $event->removePhoto($photo);
-
+        
         $photo = $this->deletePhoto($request->file('file'));
         $photo->save();
-
 
     }
 

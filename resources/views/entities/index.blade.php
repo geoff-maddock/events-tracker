@@ -70,7 +70,7 @@
 			</div>
 
 		</div>
-			<!-- END: FILTERS -->
+		<!-- END: FILTERS -->
 	</div>
 
 	<br style="clear: left;"/>
@@ -80,10 +80,7 @@
 
         @if (!$entities->isEmpty())
             {!! $entities->appends(['sort_by' => $sortBy,
-                                    'rpp' => $rpp,
-                                    'filter_role' => isset($filter_role) ? $filter_role : NULL,
-                                    'filter_tag' => isset($filter_tag) ? $filter_tag : NULL,
-                                    'filter_name' => isset($filter_name) ? $filter_name : NULL
+                                    'rpp' => $rpp
             ])->render() !!}
         @endif
 

@@ -1,7 +1,6 @@
 <?php namespace App\Http\Controllers;
 
 use App\Activity;
-use App\Filters\UserFilters;
 use App\Group;
 use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\UserRequest;
@@ -10,10 +9,9 @@ use App\Profile;
 use App\Tag;
 use App\User;
 use App\UserStatus;
-use App\UserType;
 use App\Visibility;
-use DB;
 use Illuminate\Http\Request;
+use DB;
 use Log;
 use Mail;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -286,7 +284,6 @@ class UsersController extends Controller
 
     public function create ()
     {
-        $userTypes = ['' => ''] + UserType::pluck('name', 'id');
         $visibilities = ['' => ''] + Visibility::pluck('name', 'id');
         $userStatuses = ['' => ''] + UserStatus::orderBy('name', 'ASC')->pluck('name', 'id')->all();
         $tags = Tag::pluck('name', 'id');
@@ -294,6 +291,10 @@ class UsersController extends Controller
         return view('users.create');
     }
 
+    /**
+     * @param User $user
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View
+     */
     public function show (User $user)
     {
         // if there is no profile, create one?
@@ -311,6 +312,10 @@ class UsersController extends Controller
     }
 
 
+    /**
+     * @param UserRequest $request
+     * @param User $user
+     */
     public function store (UserRequest $request, User $user)
     {
         $input = $request->all();
@@ -329,6 +334,10 @@ class UsersController extends Controller
 
     }
 
+    /**
+     * @param User $user
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function edit (User $user)
     {
         $this->middleware('auth');
@@ -340,6 +349,11 @@ class UsersController extends Controller
         return view('users.edit', compact('user', 'visibilities', 'userStatuses', 'groups'));
     }
 
+    /**
+     * @param User $user
+     * @param ProfileRequest $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function update (User $user, ProfileRequest $request)
     {
         $user->fill($request->input())->save();
@@ -349,14 +363,23 @@ class UsersController extends Controller
             $user->groups()->sync($request->input('group_list', []));
         };
 
+        // add to activity log
+        Activity::log($user, $this->user, 3);
+
         flash('Success', 'Your user has been updated');
 
         return view('users.show', compact('user'));
     }
 
 
+    /**
+     * @param User $user
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @throws \Exception
+     */
     public function destroy (User $user)
     {
+        // add to activity log
         Activity::log($user, $this->user, 3);
 
         $user->delete();

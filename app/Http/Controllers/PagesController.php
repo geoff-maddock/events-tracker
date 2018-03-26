@@ -17,15 +17,34 @@ use App\Thread;
 
 class PagesController extends Controller {
 
+    protected $prefix;
+    protected $rpp;
+    protected $page;
+    protected $sort;
+    protected $sortBy;
+    protected $sortOrder;
+    protected $defaultCriteria;
+    protected $filters;
+    protected $hasFilter;
+    protected $dayOffset;
+
 	public function __construct(Event $event)
 	{
 		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update','activity','tools')]);
-		$this->event = $event;
 
 		// default list variables
-		$this->rpp = 5;
 		$this->dayOffset = 0;
 
+        // prefix for session storage
+        $this->prefix = 'app.pages.';
+
+        // default list variables
+        $this->rpp = 100;
+        $this->page = 1;
+        $this->sort = array('created_at', 'desc');
+        $this->sortBy = 'created_at';
+        $this->sortOrder = 'desc';
+        $this->defaultCriteria = NULL;
 		parent::__construct();
 	}
 
@@ -197,22 +216,230 @@ class PagesController extends Controller {
 	{
         $this->middleware('auth');
         $offset = 0;
+
         if ($request->input('offset')) {
             $offset = $request->input('offset');
         };
 
-		$activities = Activity::orderBy('created_at', 'DESC')
-                    ->take(100)
-                    ->offset($offset)
-                    ->get()
-                    ->groupBy(function($activity) {
-                        return $activity->created_at->format('Y-m-d');
-                    });
-            //->paginate();
+        // get all the filters from the session
+        $this->filters = $this->getFilters($request);
 
-//		return $activities;
-		return view('pages.activity', compact('activities'));
+        // update filters based on the request input
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->input()));
+
+        // get the merged filters
+        $this->filters = $this->getFilters($request);
+
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        // flag that there are filters
+        $this->hasFilter = count($this->filters);
+
+        // get the criteria given the request (could pass filters instead?)
+        $query = $this->buildActivityCriteria($request);
+
+        $activities = $query->take($this->rpp)
+            ->offset($offset)
+            ->get()
+            ->groupBy(function($activity) {
+                return $activity->created_at->format('Y-m-d');
+            });
+
+		return view('pages.activity')
+            ->with(['rpp' => $this->rpp,
+                'sortBy' => $this->sortBy,
+                'sortOrder' => $this->sortOrder,
+                'filters' => $this->filters,
+                'hasFilter' => $this->hasFilter,
+                'filters' => $this->filters,
+            ])
+            ->with(compact('activities'));
 	}
+
+    /**
+     * Filter the list of entities
+     *
+     * @return Response
+     * @throws \Throwable
+     */
+    public function filter(Request $request)
+    {
+        $offset = 0;
+        // get all the filters from the session
+        $this->filters = $this->getFilters($request);
+
+        // update filters based on the request input
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->input()));
+
+        // get the merged filters
+        $this->filters = $this->getFilters($request);
+
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        // flag that there are filters
+        $this->hasFilter = count($this->filters);
+
+        // get the criteria given the request (could pass filters instead?)
+        $query = $this->buildActivityCriteria($request);
+
+        $activities = $query->take($this->rpp)
+            ->offset($offset)
+            ->get()
+            ->groupBy(function($activity) {
+                return $activity->created_at->format('Y-m-d');
+            });
+
+        return view('pages.activity')
+            ->with(['rpp' => $this->rpp,
+                'sortBy' => $this->sortBy,
+                'sortOrder' => $this->sortOrder,
+                'filters' => $this->filters,
+                'hasFilter' => $this->hasFilter,
+            ])
+            ->with(compact('activities'))
+            ->render();
+
+    }
+
+
+    /**
+     * Reset the filtering of activities
+     *
+     * @return Response
+     * @throws \Throwable
+     */
+    public function reset (Request $request)
+    {
+        $offset = 0;
+
+        // set the filters to empty
+        $this->setFilters($request, $this->getDefaultFilters());
+
+        $this->hasFilter = 0;
+
+        // get the criteria given the request (could pass filters instead?)
+        $query = $this->buildActivityCriteria($request);
+
+        $activities = $query->take($this->rpp)
+            ->offset($offset)
+            ->get()
+            ->groupBy(function($activity) {
+                return $activity->created_at->format('Y-m-d');
+            });
+
+        return view('pages.activity')
+            ->with(['rpp' => $this->rpp,
+                'sortBy' => $this->sortBy,
+                'sortOrder' => $this->sortOrder,
+                'filters' => $this->filters,
+                'hasFilter' => $this->hasFilter,
+            ])
+            ->with(compact('activities'));
+
+    }
+
+
+    /**
+     * Get session filters
+     *
+     * @return Array
+     */
+    protected function getFilters (Request $request)
+    {
+        return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
+    }
+
+    /**
+     * Get user session attribute
+     *
+     * @param String $attribute
+     * @param Mixed $default
+     * @param Request $request
+     * @return Mixed
+     */
+    protected function getAttribute ($attribute, $default = null, Request $request)
+    {
+        return $request->session()
+            ->get($this->prefix . $attribute, $default);
+    }
+
+    /**
+     * Get the default filters array
+     *
+     * @return array
+     */
+    protected function getDefaultFilters ()
+    {
+        return array();
+    }
+
+    /**
+     * Set filters attribute
+     *
+     * @param array $input
+     * @return array
+     */
+    protected function setFilters (Request $request, array $input)
+    {
+        // example: $input = array('filter_tag' => 'role', 'filter_name' => 'xano');
+        return $this->setAttribute('filters', $input, $request);
+    }
+
+    /**
+     * Set user session attribute
+     *
+     * @param String $attribute
+     * @param Mixed $value
+     * @param Request $request
+     * @return Mixed
+     */
+    protected function setAttribute ($attribute, $value, Request $request)
+    {
+        return $request->session()
+            ->put($this->prefix . $attribute, $value);
+    }
+
+
+    /**
+     * Builds the criteria from the session
+     *
+     * @return $query
+     */
+    public function buildActivityCriteria(Request $request)
+    {
+        // get all the filters from the session
+        $filters = $this->getFilters($request);
+
+        // base criteria
+        $query = Activity::orderBy($this->sortBy, $this->sortOrder);
+
+        // add the criteria from the session
+        // check request for passed filter values
+
+        if (!empty($filters['filter_name'])) {
+            // getting name from the request
+            $name = $filters['filter_name'];
+            $query->where('object_name', 'like', '%' . $name . '%');
+        }
+
+        if (!empty($filters['filter_user'])) {
+            $user = $filters['filter_user'];
+
+            // add has clause
+            $query->whereHas('user', function ($q) use ($user) {
+                $q->where('name', '=', $user);
+            });
+        }
+
+        // change this - should be seperate
+        if (!empty($filters['filter_rpp'])) {
+            $this->rpp = $filters['filter_rpp'];
+        }
+
+        return $query;
+    }
 
     public function tools(Request $request)
     {

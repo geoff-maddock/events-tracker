@@ -72,11 +72,23 @@ class Activity extends Eloquent {
 		return '';
 	}
 
+
     /**
      * Get a link to show the activity
      */
     public function getShowLink()
     {
+        if ($this->object_table == 'Tag')
+        {
+            $tag = Tag::find($this->object_id);
+            return '/'.str_plural($this->object_table).'/'.$tag->name;
+        };
+
+        if ($this->object_table == 'Entity')
+        {
+            $entity = Entity::find($this->object_id);
+            return '/'.str_plural($this->object_table).'/'.$entity->slug;
+        };
         return '/'.str_plural($this->object_table).'/'.$this->object_id;
     }
 

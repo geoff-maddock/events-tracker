@@ -5,11 +5,6 @@ use App\Entity;
 use App\Event;
 use App\EventType;
 use App\Follow;
-use App\Http\Requests\SeriesRequest;
-use App\OccurrenceDay;
-use App\OccurrenceType;
-use App\OccurrenceWeek;
-use App\Photo;
 use App\Series;
 use App\Tag;
 use App\User;
@@ -18,10 +13,9 @@ use DB;
 use Illuminate\Http\Request;
 use Log;
 use Mail;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 
-class SeriesController extends Controller
+class ActivityController extends Controller
 {
     protected $prefix;
     protected $childRpp;
@@ -32,14 +26,16 @@ class SeriesController extends Controller
     protected $sortOrder;
     protected $defaultCriteria;
     protected $hasFilter;
+    protected $entityType;
 
     public function __construct (Series $series)
     {
         $this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
-        $this->series = $series;
+
+        $this->entityType = 'activities';
 
         // prefix for session storage
-        $this->prefix = 'app.series.';
+        $this->prefix = 'app.activities.';
 
         // default list variables
         $this->rpp = 100;
@@ -54,7 +50,7 @@ class SeriesController extends Controller
     }
 
     /**
-     * Filter the list of events
+     * Filter the list of activities
      *
      * @param Request $request
      * @return View
@@ -88,7 +84,7 @@ class SeriesController extends Controller
             return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
 
-        return view('series.index')
+        return view('activity.index')
             ->with(['rpp' => $this->rpp,
                 'sortBy' => $this->sortBy,
                 'sortOrder' => $this->sortOrder,
@@ -128,11 +124,7 @@ class SeriesController extends Controller
      */
     protected function baseCriteria ()
     {
-        $query = Series::where('cancelled_at', NULL)
-            ->orderBy('occurrence_type_id', 'ASC')
-            ->orderBy('occurrence_week_id', 'ASC')
-            ->orderBy('occurrence_day_id', 'ASC')
-            ->orderBy('name', 'ASC');
+        $query = Activity::query();
 
         return $query;
     }
@@ -395,8 +387,6 @@ class SeriesController extends Controller
                 $newTag->tag_type_id = 1;
                 $newTag->save();
 
-                // log adding of new tag
-                Activity::log($newTag, $this->user, 1);
                 $syncArray[] = $newTag->id;
 
                 $msg .= ' Added tag ' . $tag . '.';
@@ -417,9 +407,6 @@ class SeriesController extends Controller
                 $event->save();
             };
         }
-
-        // add to activity log
-        Activity::log($series, $this->user, 1);
 
         flash()->success('Success', 'Your event series has been created');
 
@@ -522,8 +509,6 @@ class SeriesController extends Controller
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->tag_type_id = 1;
                 $newTag->save();
-                // log adding of new tag
-                Activity::log($newTag, $this->user, 1);
 
                 $syncArray[strtolower($tag)] = $newTag->id;
 
@@ -535,9 +520,6 @@ class SeriesController extends Controller
 
         $series->tags()->sync($syncArray);
         $series->entities()->sync($request->input('entity_list', []));
-
-        // add to activity log
-        Activity::log($series, $this->user, 2);
 
         flash('Success', 'Your event template has been updated');
 
@@ -557,73 +539,11 @@ class SeriesController extends Controller
 
     public function destroy (Series $series)
     {
-        // add to activity log
-        Activity::log($series, $this->user, 3);
-
         $series->delete();
 
         return redirect('series');
     }
 
-    /**
-     * Add a photo to a series
-     *
-     * @param  int $id
-     * @param Request $request
-     * @return void
-     */
-    public function addPhoto ($id, Request $request)
-    {
-        $this->validate($request, [
-            'file' => 'required|mimes:jpg,jpeg,png,gif'
-        ]);
-
-        // attach to series
-        $series = Series::find($id);
-
-        // make the photo object from the file in the request
-        $photo = $this->makePhoto($request->file('file'));
-
-        // count existing photos, and if zero, make this primary
-        if (count($series->photos) == 0) {
-            $photo->is_primary = 1;
-        };
-
-        $photo->save();
-
-        // attach to series
-        $series->addPhoto($photo);
-    }
-
-    protected function makePhoto (UploadedFile $file)
-    {
-        return Photo::named($file->getClientOriginalName())
-            ->move($file);
-    }
-
-    /**
-     * Delete a photo
-     *
-     * @param  int $id
-     * @param Request $request
-     * @return void
-     */
-    public function deletePhoto ($id, Request $request)
-    {
-
-        $this->validate($request, [
-            'file' => 'required|mimes:jpg,jpeg,png,gif'
-        ]);
-
-        // detach from event
-        $series = Series::find($id);
-        $series->removePhoto($photo);
-
-        $photo = $this->deletePhoto($request->file('file'));
-        $photo->save();
-
-
-    }
 
     /**
      * Mark user as following the series
@@ -691,36 +611,6 @@ class SeriesController extends Controller
 
     }
 
-    /**
-     * Gets the reporting options from the request and saves to session
-     *
-     * @param Request $request
-     */
-    public function getReportingOptions (Request $request)
-    {
-        foreach (array('page', 'rpp', 'sort', 'criteria') as $option) {
-            if (!$request->has($option)) {
-                continue;
-            }
-            switch ($option) {
-                case 'sort':
-                    $value = array
-                    (
-                        $request->input($option),
-                        $request->input('sort_order', 'asc'),
-                    );
-                    break;
-                default:
-                    $value = $request->input($option);
-                    break;
-            }
-            call_user_func
-            (
-                array($this, sprintf('set%s', ucwords($option))),
-                $value
-            );
-        }
-    }
 
     /**
      * Criteria provides a way to define criteria to be applied to a tab on the index page.
@@ -842,41 +732,6 @@ class SeriesController extends Controller
             $query->where('name', 'like', '%' . $name . '%');
         }
 
-        if (!empty($filters['filter_occurrence_type'])) {
-            $type = $filters['filter_occurrence_type'];
-            // add has clause
-            $query->whereHas('occurrenceType',
-                function ($q) use ($type) {
-                    $q->where('name', '=', ucfirst($type));
-                });
-        };
-
-        if (!empty($filters['filter_occurrence_week'])) {
-            $week = $filters['filter_occurrence_week'];
-            // add has clause
-            $query->whereHas('occurrenceWeek',
-                function ($q) use ($week) {
-                    $q->where('name', '=', ucfirst($week));
-                });
-        };
-
-        if (!empty($filters['filter_occurrence_day'])) {
-            $day = $filters['filter_occurrence_day'];
-            // add has clause
-            $query->whereHas('occurrenceDay',
-                function ($q) use ($day) {
-                    $q->where('name', '=', ucfirst($day));
-                });
-        };
-
-        if (!empty($filters['filter_tag'])) {
-            $tag = $filters['filter_tag'];
-            $query->whereHas('tags', function ($q) use ($tag) {
-                $q->where('name', '=', ucfirst($tag));
-            });
-
-        }
-
         // change this - should be separate
         if (!empty($filters['filter_rpp'])) {
             $this->rpp = $filters['filter_rpp'];
@@ -920,18 +775,5 @@ class SeriesController extends Controller
         return array();
     }
 
-    /**
-     * Returns true if the user has any filters outside of the default
-     *
-     * @param Request $request
-     * @return Boolean
-     */
-    protected function getIsFiltered (Request $request)
-    {
-        if (($filters = $this->getFilters($request)) == $this->getDefaultFilters()) {
-            return false;
-        }
-        return (bool)count($filters);
-    }
 
 }

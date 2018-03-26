@@ -1,7 +1,7 @@
 		@if (isset($users) && $users)
 
 		<?php $type = NULL;?>
-		<ul class='list col-md-6'>
+		<ul class='list'>
 			@foreach ($users as $user)
 
 					@include('users.single', ['user' => $user])

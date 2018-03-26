@@ -22,6 +22,10 @@ class Tag extends Eloquent {
 	'name', 'tag_type_id'
 	];
 
+    public function getRouteKeyName ()
+    {
+        return 'slug';
+    }
 
 	protected $dates = ['created_at','updated_at'];
 

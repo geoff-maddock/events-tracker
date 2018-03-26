@@ -271,9 +271,6 @@ class ThreadsController extends Controller
             $query->whereHas('user', function ($q) use ($user) {
                 $q->where('name', '=', $user);
             });
-
-            // add to filters array
-            $filters['filter_user'] = $user;
         }
 
         if (!empty($filters['filter_tag'])) {
@@ -281,9 +278,6 @@ class ThreadsController extends Controller
             $query->whereHas('tags', function ($q) use ($tag) {
                 $q->where('name', '=', ucfirst($tag));
             });
-
-            // add to filters array
-            $filters['filter_tag'] = $tag;
         }
 
         // change this - should be seperate
@@ -326,7 +320,6 @@ class ThreadsController extends Controller
         $threads->filter(function ($e) {
             return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
-
 
         return view('threads.index')
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter, 'filters' => $this->filters,
@@ -549,6 +542,8 @@ class ThreadsController extends Controller
 				$newTag->name = ucwords(strtolower($tag));
 				$newTag->tag_type_id = 1;
 				$newTag->save();
+                // log adding of new tag
+                Activity::log($newTag, $this->user, 1);
 
 				$syncArray[strtolower($tag)] = $newTag->id;
 
@@ -770,6 +765,8 @@ class ThreadsController extends Controller
 				$newTag->name = ucwords(strtolower($tag));
 				$newTag->tag_type_id = 1;
 				$newTag->save();
+                // log adding of new tag
+                Activity::log($newTag, $this->user, 1);
 
 				$syncArray[strtolower($tag)] = $newTag->id;
 
