@@ -2143,7 +2143,7 @@ class EventsController extends Controller
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif'
         ]);
-        
+
         $photo = $this->deletePhoto($request->file('file'));
         $photo->save();
 
