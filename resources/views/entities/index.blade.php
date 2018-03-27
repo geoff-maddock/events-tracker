@@ -11,9 +11,11 @@
 	<P>
 		<a href="{!! URL::route('entities.create') !!}" class="btn btn-primary">Add an entity</a>
 		<a href="{!! URL::route('entities.role', ['role' => 'artist']) !!}" class="btn btn-info">Show artists</a>
+		<a href="{!! URL::route('entities.role', ['role' => 'band']) !!}" class="btn btn-info">Show bands</a>
 		<a href="{!! URL::route('entities.role', ['role' => 'dj']) !!}" class="btn btn-info">Show DJs</a>
 		<a href="{!! URL::route('entities.role', ['role' => 'producer']) !!}" class="btn btn-info">Show producers</a>
 		<a href="{!! URL::route('entities.role', ['role' => 'promoter']) !!}" class="btn btn-info">Show promoters</a>
+		<a href="{!! URL::route('entities.role', ['role' => 'shop']) !!}" class="btn btn-info">Show shops</a>
 		<a href="{!! URL::route('entities.role', ['role' => 'venue']) !!}" class="btn btn-info">Show venues</a>
 	</P>
 
