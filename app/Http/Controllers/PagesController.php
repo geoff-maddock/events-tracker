@@ -443,7 +443,6 @@ class PagesController extends Controller {
 
     public function tools(Request $request)
     {
-
         $this->middleware('auth');
 
         $user = $request->user();

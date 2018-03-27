@@ -1316,7 +1316,6 @@ class EventsController extends Controller
      * Makes a call to the FB API if there is a link present and downloads the event cover photo
      * @param Int $id
      * @return \Illuminate\Http\RedirectResponse
-     * @throws \Illuminate\Container\EntryNotFoundException
      */
     public function importPhoto ($id)
     {
@@ -1327,6 +1326,16 @@ class EventsController extends Controller
             return back();
         };
 
+        if ($this->addFbPhoto($event)) {
+            flash()->success('Success', 'Successfully imported the event cover photo.');
+        }
+
+        return back();
+
+    }
+
+    protected function addFbPhoto($event)
+    {
         $fb = app(SammyK\LaravelFacebookSdk\LaravelFacebookSdk::class);
         $fields = 'attending_count,category,cover,interested_count,type,name,noreply_count,maybe_count,owner,place,roles';
 
@@ -1368,11 +1377,10 @@ class EventsController extends Controller
 
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             flash()->error('Error', 'You could not import the image.  Error: ' . $e->getMesage());
-        }
+            return false;
+        };
 
-        flash()->success('Success', 'Successfully imported the event cover photo.');
-        return back();
-
+        return true;
     }
 
     protected function makePhoto (UploadedFile $file)
@@ -1546,7 +1554,7 @@ class EventsController extends Controller
             $input['slug'] = str_slug($request->input('slug', '-'));
         };
 
-        // validate - hmm, isn't this doing it elsewhere?
+        // validation happening in EventRequest->rules
 
         $tagArray = $request->input('tag_list', []);
         $syncArray = array();
@@ -1558,6 +1566,7 @@ class EventsController extends Controller
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->tag_type_id = 1;
                 $newTag->save();
+
                 // log adding of new tag
                 Activity::log($newTag, $this->user, 1);
 
@@ -1574,13 +1583,19 @@ class EventsController extends Controller
         $event->tags()->attach($syncArray);
         $event->entities()->attach($request->input('entity_list'));
 
-        // here, make a call to notify all users who are following any of the sync'd tags
+        // make a call to notify all users who are following any of the sync'd tags
         $this->notifyFollowing($event);
 
         // add to activity log
         Activity::log($event, $this->user, 1);
 
         flash()->success('Success', 'Your event has been created');
+
+        // check if a FB link was included
+        if (strpos($event->primary_link, 'facebook') !== false) {
+            // try to import the photo
+            $this->addFbPhoto($event);
+        }
 
         return redirect()->route('events.index');
     }

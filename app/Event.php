@@ -35,18 +35,17 @@ class Event extends Eloquent {
 	 *
 	 **/
 	protected $fillable = [
-	'name', 'slug', 'short',
-	'description',
-	'visibility_id', 
-	'event_status_id',
-	'event_type_id',
-	'is_benefit', 'promoter_id', 'venue_id',
-	'presale_price','door_price',
-	'ticket_link','primary_link',
-	'series_id',
-	'soundcheck_at','door_at', 'start_at', 'end_at','cancelled_at',
-	'min_age', 'created_by'
-	
+        'name', 'slug', 'short',
+        'description',
+        'visibility_id',
+        'event_status_id',
+        'event_type_id',
+        'is_benefit', 'promoter_id', 'venue_id',
+        'presale_price','door_price',
+        'ticket_link','primary_link',
+        'series_id',
+        'soundcheck_at','door_at', 'start_at', 'end_at','cancelled_at',
+        'min_age', 'created_by'
 	];
 
 
