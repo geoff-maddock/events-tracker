@@ -9,9 +9,12 @@
 	</h1>
 
 	<p>
-	<a href="{!! URL::route('events.index') !!}" class="btn btn-info">Show event index</a>
+		<a href="{!! URL::route('events.index') !!}" class="btn btn-info">Show event index</a>
 		<a href="{!! URL::route('calendar') !!}" class="btn btn-info">Show event calendar</a>
-	<a href="{!! URL::route('events.create') !!}" class="btn btn-primary">Add an event</a>	<a href="{!! URL::route('series.create') !!}" class="btn btn-primary">Add an event series</a>
+		<a href="{!! URL::route('events.create') !!}" class="btn btn-primary">Add an event</a>
+		<a href="{!! URL::route('series.create') !!}" class="btn btn-primary">Add an event series</a>
+		<a href="{!! URL::route('entities.create') !!}" class="btn btn-primary">Add an entity</a>
+		<a href="{!! URL::route('threads.create') !!}" class="btn btn-primary">Add a thread</a>
 	</p>
 
 	<br style="clear: left;"/>
