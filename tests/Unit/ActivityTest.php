@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Thread;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
@@ -14,12 +15,16 @@ class ActivityTest extends TestCase
     {
         $this->signIn();
 
-        $thread = create('App\Thread');
+        $thread = make('App\Thread');
 
-        $this->assetDatabaseHas('activities', [
-            'object_table' => get_class($thread),
+        $this->post('/threads', $thread->toArray());
+
+        $savedThread = Thread::orderBy('created_at', 'desc')->first();
+
+        $this->assertDatabaseHas('activities', [
+            'object_table' => 'Thread',
             'user_id' => auth()->id(),
-            'object_id' => $thread->id,
+            'object_id' => $savedThread->id,
             'action_id' => 1,
             ]);
     }

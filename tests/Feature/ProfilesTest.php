@@ -15,6 +15,8 @@ class ProfilesTest extends TestCase
         $user = $profile->user;
 
         $response = $this->get('/users/'.$user->id);
+//        dump($user->name);
+//        dump($profile->first_name);
 
         $response->assertStatus(200);
         $response->assertSee($profile->first_name);

@@ -569,7 +569,7 @@ class ThreadsController extends Controller
 
 		flash()->success('Success', 'Your thread has been created. '.$msg);
 
-		return redirect()->route('threads.index');
+		return redirect()->route('threads.show', compact('thread'));
 	}
 
     /**

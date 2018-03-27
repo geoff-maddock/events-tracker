@@ -101,11 +101,10 @@ trait Filterable
         return $this->getAttribute('sort', $this->getDefaultSort());
     }
 
-
     /**
      * Get the default sort array
      *
-     * @return Array
+     * @return array
      */
     public function getDefaultSort()
     {

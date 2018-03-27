@@ -12,7 +12,16 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class EventsTest extends TestCase {
 
-    //use DatabaseMigrations;
+
+    /**
+     * Test that events are browsable
+     *
+     * @test void
+     */
+    public function eventsBrowsable()
+    {
+        $this->get('/events')->assertSee('Events');
+    }
 
 	/**
 	 * A basic functional test example.
@@ -26,4 +35,17 @@ class EventsTest extends TestCase {
 		$this->assertEquals(200, $response->getStatusCode());
 	}
 
+    /**
+     * A basic functional test example.
+     *
+     * @return void
+     */
+    public function calendarBrowsable()
+    {
+        $response = $this->call('GET', '/calendar');
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $response->assertSee('Events Calendar');
+    }
 }

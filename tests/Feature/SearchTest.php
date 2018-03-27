@@ -12,8 +12,10 @@ class SearchTest extends TestCase
      */
     public function a_search_returns_results()
     {
+        $this->signIn();
         $faker = Faker::create();
-        $keyword = $faker->name;
+        $keyword = $faker->domainWord;
+
 
         $response = $this->get('/search?keyword='.$keyword);
 

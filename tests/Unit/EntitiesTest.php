@@ -15,7 +15,6 @@ class EntitiesTest extends TestCase
         $this->entity = factory('App\Entity')->create();
     }
 
-
     /**
      * Test that entities are browsable
      *
@@ -27,18 +26,18 @@ class EntitiesTest extends TestCase
     }
 
 
-//    /** @test */
-//    function a_user_can_view_a_single_entity()
-//    {
-//        // create an entity
-//        $entity = factory('App\Entity')->create();
-//
-//        // when we visit an entity page
-//        $this->get('/entities/' . $entity->id)
-//            ->assertSee($entity->name);
-//
-//        // show failing for some unknown reason
-//    }
+    /** @test */
+    function a_user_can_view_a_single_entity()
+    {
+        // create an entity
+        $entity = factory('App\Entity')->create();
+
+        // when we visit an entity page
+        $this->get('/entities/' . $entity->slug)
+            ->assertSee($entity->name);
+
+        // show failing for some unknown reason
+    }
 
     /** @test */
     function a_user_can_edit_an_entity_they_own()
@@ -52,7 +51,7 @@ class EntitiesTest extends TestCase
 
         // try to edit the entity as the user who created
         $this->actingAs($user)
-            ->get('/entities/' . $entity->id .'/edit')
+            ->get('/entities/' . $entity->slug .'/edit')
             ->assertStatus(200)
             ->assertSee($entity->name);
     }

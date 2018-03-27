@@ -2,6 +2,7 @@
 namespace Tests\Feature;
 
 use App\Activity;
+use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -25,26 +26,33 @@ class CreateThreadsTest extends TestCase
     {
         $this->withExceptionHandling();
 
+        $this->signIn();
+
         $thread = create('App\Thread');
 
-        $this->delete($thread->path())->assertRedirect('/login');
+        Auth::logout();
+
+        $result = $this->delete($thread->path());
+
+        //dump($result);
+        $result->assertSee('login');
+
+
+    }
+
+    /** @test */
+    function an_authenticated_user_can_create_new_forum_threads()
+    {
+        $this->withExceptionHandling();
 
         $this->signIn();
 
-        $this->delete($thread->path())->assertRedirect('/login');
-    }
+        $thread = make('App\Thread');
 
-//    /** @test */
-//    function an_authenticated_user_can_create_new_forum_threads()
-//    {
-//        $this->signIn();
-//
-//        $thread = make('App\Thread');
-//
-//        $response = $this->post('/threads', $thread->toArray());
-//
-//        $this->get($response->headers->get('Location'))
-//            ->assertSee($thread->name)
-//            ->assertSee($thread->body);
-//    }
+        $response = $this->post('/threads', $thread->toArray());
+
+        $this->get($response->headers->get('Location'))
+            ->assertSee($thread->name)
+            ->assertSee($thread->body);
+    }
 }
