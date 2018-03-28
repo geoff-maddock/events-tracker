@@ -80,14 +80,17 @@ class Activity extends Eloquent {
     {
         if ($this->object_table == 'Tag')
         {
-            $tag = Tag::find($this->object_id);
-            return '/'.str_plural($this->object_table).'/'.$tag->name;
+            if ($tag = Tag::find($this->object_id)) {
+            	return '/'.str_plural($this->object_table).'/'.$tag->name;
+		};
         };
 
         if ($this->object_table == 'Entity')
         {
-            $entity = Entity::find($this->object_id);
-            return '/'.str_plural($this->object_table).'/'.$entity->slug;
+            if ($entity = Entity::find($this->object_id))
+	    {
+        	return '/'.str_plural($this->object_table).'/'.$entity->slug;
+		};
         };
         return '/'.str_plural($this->object_table).'/'.$this->object_id;
     }
