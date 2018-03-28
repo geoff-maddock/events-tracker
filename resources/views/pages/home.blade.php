@@ -24,7 +24,7 @@
 	</div>
 
 	<section id="4days">
-        @include('pages.4daysAjax')
+        @include('pages.4days')
  	</section>
 @stop
 
