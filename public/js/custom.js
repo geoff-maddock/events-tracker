@@ -7,6 +7,7 @@ var App = (function()
         this.setupConfirm();
         this.setupControls();
         this.setupLoadingModal();
+        this.setupAjaxAction('body');
         $('.auto-submit').autoSubmit();
 
     };
@@ -64,7 +65,24 @@ var App = (function()
 
     };
 
-    var setupLoadingModal = function()
+    // ajax submit follow
+    var setupAjaxAction = function(init) {
+        $(init).on('click', 'a.ajax-action', function(e) {
+            e.preventDefault();
+            let target = $(this).data("target");
+            $.ajax({
+                url : $(this).attr('href'),
+            }).done(function (data) {
+                // fire a flash message
+                $(target).replaceWith(data);
+                console.log('Updated target ' +target);
+            }).fail(function () {
+                console.log('No events could be loaded')
+            });
+        });
+    };
+
+    let setupLoadingModal = function()
     {
         $('#content').on('click', '.loading-modal', function(e) {
             e.preventDefault();
@@ -75,7 +93,7 @@ var App = (function()
         });
     };
 
-    var showLoadingModal = function(message)
+    let showLoadingModal = function(message)
     {
         $('#loading-modal .modal-body p').html('<div class="modal-loading"><div class="modal-loading-spinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div><div class="modal-loading-message">' + message +'</div></div>');
         $('#loading-modal').modal({
@@ -86,11 +104,11 @@ var App = (function()
 
 
     return {
-
         init: init,
         initTooltip: initTooltip,
         setupConfirm: setupConfirm,
         setupControls: setupControls,
+        setupAjaxAction: setupAjaxAction,
         setupLoadingModal: setupLoadingModal,
         showLoadingModal: showLoadingModal,
 
@@ -126,6 +144,7 @@ var Home = (function()
         });
     };
 
+
     // load a day's events
     var getDayEvents = function(url, num) {
         $.ajax({
@@ -133,7 +152,7 @@ var Home = (function()
         }).done(function (data) {
             $('#day-'+num).html(data);
         }).fail(function () {
-           console.log('No events could be loaded')
+            console.log('No events could be loaded')
         });
     };
 

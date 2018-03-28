@@ -1,4 +1,4 @@
-<li class="event-card" style="clear: both;">
+<li id="event-{{ $event->id }}" class="event-card" style="clear: both;">
 
 		@if ($primary = $event->getPrimaryPhoto())
 		<div style="float: left; padding: 5px;">
@@ -33,9 +33,9 @@
 
 			@if ($signedIn)
 				@if ($response = $event->getEventResponse($user))
-				<a href="{!! route('events.unattend', ['id' => $event->id]) !!}" title="{{ $response->responseType->name }}"><span class='glyphicon glyphicon-star text-warning'></span></a>
+				<a href="{!! route('events.unattend', ['id' => $event->id]) !!}" data-target="#event-{{ $event->id }}" class="ajax-action" title="{{ $response->responseType->name }}"><span class='glyphicon glyphicon-star text-warning'></span></a>
 				@else
-				<a href="{!! route('events.attend', ['id' => $event->id]) !!}" title="Click star to mark attending"><span class='glyphicon glyphicon-star text-info'></span></a>
+				<a href="{!! route('events.attend', ['id' => $event->id]) !!}" data-target="#event-{{ $event->id }}" class="ajax-action" title="Click star to mark attending"><span class='glyphicon glyphicon-star text-info'></span></a>
 				@endif
 			@endif
 

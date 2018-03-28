@@ -1733,8 +1733,9 @@ class EventsController extends Controller
      * @param $id
      * @param Request $request
      * @return Response
+     * @throws \Throwable
      */
-    public function attend ($id, Request $request)
+    public function attend($id, Request $request)
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -1761,6 +1762,14 @@ class EventsController extends Controller
 
         flash()->success('Success', 'You are now attending the event - ' . $event->name);
 
+        // handle the request if ajax
+        if ($request->ajax()) {
+            return view('events.single')
+                ->with(compact('event'))
+                ->with('month', '')
+                ->render();
+        };
+
         return back();
 
     }
@@ -1771,6 +1780,7 @@ class EventsController extends Controller
      * @param $id
      * @param Request $request
      * @return Response
+     * @throws \Throwable
      */
     public function unattend ($id, Request $request)
     {
@@ -1795,6 +1805,14 @@ class EventsController extends Controller
         Activity::log($event, $this->user, 7);
 
         flash()->success('Success', 'You are no longer attending the event - ' . $event->name);
+
+        // handle the request if ajax
+        if ($request->ajax()) {
+            return view('events.single')
+                ->with(compact('event'))
+                ->with('month', '')
+                ->render();
+        };
 
         return back();
 
@@ -2171,7 +2189,7 @@ class EventsController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function follow ($id, Request $request)
+    public function follow($id, Request $request)
     {
         // check if there is a logged in user
         if (!$this->user) {

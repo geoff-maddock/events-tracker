@@ -631,6 +631,7 @@ class SeriesController extends Controller
      * @param $id
      * @param Request $request
      * @return Response
+     * @throws \Throwable
      */
     public function follow ($id, Request $request)
     {
@@ -656,6 +657,13 @@ class SeriesController extends Controller
 
         flash()->success('Success', 'You are now following the series - ' . $series->name);
 
+        // handle the request if ajax
+        if ($request->ajax()) {
+            return view('series.single')
+                ->with(compact('series'))
+                ->render();
+        };
+
         return back();
 
     }
@@ -666,6 +674,7 @@ class SeriesController extends Controller
      * @param $id
      * @param Request $request
      * @return Response
+     * @throws \Throwable
      */
     public function unfollow ($id, Request $request)
     {
@@ -686,6 +695,13 @@ class SeriesController extends Controller
         $response->delete();
 
         flash()->success('Success', 'You are no longer following the series.');
+
+        // handle the request if ajax
+        if ($request->ajax()) {
+            return view('series.single')
+                ->with(compact('series'))
+                ->render();
+        };
 
         return back();
 

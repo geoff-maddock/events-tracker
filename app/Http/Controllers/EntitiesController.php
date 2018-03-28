@@ -744,7 +744,7 @@ class EntitiesController extends Controller
      *
      * @return Response
      */
-    public function follow ($id, Request $request)
+    public function follow($id, Request $request)
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -768,6 +768,13 @@ class EntitiesController extends Controller
 
         flash()->success('Success', 'You are now following the entity - ' . $entity->name);
 
+        // handle the request if ajax
+        if ($request->ajax()) {
+            return view('entities.single')
+                ->with(compact('entity'))
+                ->render();
+        }
+
         return back();
 
     }
@@ -775,11 +782,13 @@ class EntitiesController extends Controller
     /**
      * Mark user as unfollowing the entity.
      *
+     * @param $id
+     * @param Request $request
      * @return Response
+     * @throws \Throwable
      */
     public function unfollow ($id, Request $request)
     {
-
         // check if there is a logged in user
         if (!$this->user) {
             flash()->error('Error', 'No user is logged in.');
@@ -792,10 +801,17 @@ class EntitiesController extends Controller
         };
 
         // delete the follow
-        $response = Follow::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'entity')->first();
-        $response->delete();
+        $follow = Follow::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'entity')->first();
+        $follow->delete();
 
         flash()->success('Success', 'You are no longer following the entity.');
+
+        // handle the request if ajax
+        if ($request->ajax()) {
+            return view('entities.single')
+                ->with(compact('entity'))
+                ->render();
+        }
 
         return back();
 
