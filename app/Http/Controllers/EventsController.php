@@ -1597,7 +1597,8 @@ class EventsController extends Controller
             $this->addFbPhoto($event);
         }
 
-        return redirect()->route('events.index');
+        //return redirect('events');
+        return redirect()->route('events.show', compact('event'));
     }
 
     /**
@@ -1701,7 +1702,8 @@ class EventsController extends Controller
 
         flash()->success('Success', 'Your event has been updated');
 
-        return redirect('events');
+        //return redirect('events');
+        return redirect()->route('events.show', compact('event'));
     }
 
     protected function unauthorized (EventRequest $request)

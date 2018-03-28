@@ -519,7 +519,6 @@ class EntitiesController extends Controller
             $input['slug'] = str_slug($request->input('slug', '-'));
         };
 
-
         $tagArray = $request->input('tag_list', []);
         $aliasArray = $request->input('alias_list', []);
         $syncArray = array();
@@ -572,7 +571,8 @@ class EntitiesController extends Controller
 
         flash()->success('Success', 'Your entity has been created');
 
-        return redirect()->route('entities.index');
+        // return redirect()->route('entities.index');
+        return redirect()->route('entities.show', compact('entity'));
     }
 
     /**
@@ -685,7 +685,8 @@ class EntitiesController extends Controller
         // flash this message
         flash()->success('Success', $msg);
 
-        return redirect('entities');
+        //return redirect('entities');
+        return redirect()->route('entities.show', compact('entity'));
     }
 
     /**

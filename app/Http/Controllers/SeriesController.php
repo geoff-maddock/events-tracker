@@ -378,7 +378,7 @@ class SeriesController extends Controller
         return view('series.show', compact('series', 'events', 'threads'));
     }
 
-    public function store (SeriesRequest $request, Series $series)
+    public function store(SeriesRequest $request, Series $series)
     {
         $msg = "";
         $input = $request->all();
@@ -405,15 +405,15 @@ class SeriesController extends Controller
             };
         }
 
-        $s = $series->create($input);
+        $series = $series->create($input);
 
-        $s->tags()->attach($syncArray);
-        $s->entities()->attach($request->input('entity_list'));
+        $series->tags()->attach($syncArray);
+        $series->entities()->attach($request->input('entity_list'));
 
         // link the passed event if there was one to the series
         if ($request->eventLinkId) {
             if ($event = Event::find($request->eventLinkId)) {
-                $event->series_id = $s->id;
+                $event->series_id = $series->id;
                 $event->save();
             };
         }
@@ -423,7 +423,8 @@ class SeriesController extends Controller
 
         flash()->success('Success', 'Your event series has been created');
 
-        return redirect()->route('series.index');
+        //return redirect('series');
+        return redirect()->route('series.show', compact('series'));
     }
 
     public function edit (Series $series)
@@ -501,7 +502,7 @@ class SeriesController extends Controller
         return view('series.createOccurrence', compact('seriesList', 'event', 'venues', 'eventTypes', 'visibilities', 'tags', 'entities', 'promoters'))->with(['series' => $series]);
     }
 
-    public function update (Series $series, SeriesRequest $request)
+    public function update(Series $series, SeriesRequest $request)
     {
         $msg = '';
 
@@ -541,7 +542,8 @@ class SeriesController extends Controller
 
         flash('Success', 'Your event template has been updated');
 
-        return redirect('series');
+        //return redirect('series');
+        return redirect()->route('series.show', compact('series'));
     }
 
     protected function unauthorized (SeriesRequest $request)
