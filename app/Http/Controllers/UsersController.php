@@ -354,7 +354,7 @@ class UsersController extends Controller
      * @param ProfileRequest $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function update (User $user, ProfileRequest $request)
+    public function update(User $user, ProfileRequest $request)
     {
         $user->fill($request->input())->save();
         $user->profile->fill($request->input())->save();
@@ -364,7 +364,7 @@ class UsersController extends Controller
         };
 
         // add to activity log
-        Activity::log($user, $this->user, 3);
+        Activity::log($user, $this->user, 2);
 
         flash('Success', 'Your user has been updated');
 

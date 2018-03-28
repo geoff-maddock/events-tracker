@@ -1,4 +1,4 @@
-Here are the events your are attending today.
+Here are the events you are attending today.
 
 @foreach ($events as $event)
 <div class='event-date'>
