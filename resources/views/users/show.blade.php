@@ -15,18 +15,24 @@
 
 	</p>
 	<div class="col-lg-6 profile-card">
-	<b>Name </b> {{ $user->profile->first_name }} {{ $user->profile->last_name }}<br>
-		<b>Status </b> {{ $user->status ? $user->status->name : '' }}<br>
+	<b>Name </b> {{ $user->full_name }}<br>
+	<b>Status </b> {{ $user->status ? $user->status->name : '' }}<br>
+	@if ($user->profile->alias )
 	<b>Alias </b> {{ $user->profile->alias }}<br>
+	@endif
 	<b>Contact </b> <a href="mailto:{{ $user->email }}">{{ $user->email }}</a><br>
 	<b>Default Theme </b> {{ $user->profile->default_theme ? $user->profile->default_theme : Config::get('app.default_theme') }}<br>
 
+	@if ($user->profile->bio)
 	<div class="bio">
-	<b>Bio</b><br>
-	<p>
-		{{ $user->profile->bio or 'No bio available'}}
-	</p>
+
+		<b>Bio</b><br>
+		<p>
+			{{ $user->profile->bio or 'No bio available'}}
+		</p>
 	</div>
+	@endif
+
 
 	<div class="groups">
 	@unless ($user->groups->isEmpty())

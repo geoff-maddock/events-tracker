@@ -162,6 +162,21 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     }
 
     /**
+     * An profile is owned by a user
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function getFullNameAttribute()
+    {
+        if ($profile = $this->profile)
+        {
+            $full = $profile->first_name.' '.$profile->last_name;
+            return strlen($full) > 1 ? $full : $this->name;//$profile->first_name.' '.$profile->last_name;
+        }
+        return $this->name;
+    }
+
+    /**
      * Return a list of events the user is attending in the future
      *
      */
