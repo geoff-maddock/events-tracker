@@ -78,6 +78,16 @@ Route::get('users/{id}/activate', [
     'uses' => 'UsersController@activate'
 ]);
 
+Route::get('users/{id}/suspend', [
+    'as' => 'users.suspend',
+    'uses' => 'UsersController@suspend'
+]);
+
+Route::get('users/{id}/delete', [
+    'as' => 'users.delete',
+    'uses' => 'UsersController@delete'
+]);
+
 Route::get('users/filter', array('as' => 'users.filter', 'uses' => 'UsersController@filter'));
 Route::get('users/reset', array('as' => 'users.reset', 'uses' => 'UsersController@reset'));
 

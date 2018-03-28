@@ -5,6 +5,7 @@ use App\User;
 use App\Profile;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 class RegisterController extends Controller
@@ -73,8 +74,31 @@ class RegisterController extends Controller
         $profile->user_id = $user->id;
         $profile->save();
 
+        // log the registration
         Activity::log($user, $user, 1);
 
+        // send a notification to admin to approve the new user
+        $this->notifyAdmin($user);
+
         return $user;
+    }
+
+    /**
+     * @param $user
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function notifyAdmin($user)
+    {
+        $admin_email = config('app.admin');
+        $site = config('app.app_name');
+        $url = config('app.url');
+
+        Mail::send('emails.register', ['user' => $user, 'admin_email' => $admin_email, 'site' => $site, 'url' => $url], function ($m) use ($user,  $admin_email, $site, $url) {
+            $m->from($admin_email, $site);
+
+            $m->to($admin_email, $user->name)->subject($site . ': New User Registered: ' . $user->name . ' :: ' . $user->created_at->format('D F jS') );
+        });
+
+        return back();
     }
 }

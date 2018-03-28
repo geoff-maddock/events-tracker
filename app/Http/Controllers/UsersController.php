@@ -459,7 +459,7 @@ class UsersController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function activate ($id, Request $request)
+    public function activate($id, Request $request)
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -480,6 +480,77 @@ class UsersController extends Controller
         Log::info('User ' . $user->name . ' is activated.');
 
         flash()->success('Success', 'User ' . $user->name . ' is now activated.');
+
+        return back();
+
+    }
+
+    /**
+     * Mark user as suspended
+     *
+     * @param $id
+     * @param Request $request
+     * @return Response
+     */
+    public function suspend($id, Request $request)
+    {
+        // check if there is a logged in user
+        if (!$this->user) {
+            flash()->error('Error', 'No user is logged in.');
+            return back();
+        };
+
+        if (!$user = User::find($id)) {
+            flash()->error('Error', 'No such user');
+            return back();
+        };
+
+        // add the following response
+        $user->user_status_id = 3;
+        $user->save();
+
+
+        Log::info('User ' . $user->name . ' is suspended.');
+
+        flash()->success('Success', 'User ' . $user->name . ' is now suspended.');
+
+        return back();
+
+    }
+
+    /**
+     * Mark user as deleted
+     *
+     * @param $id
+     * @param Request $request
+     * @return Response
+     */
+    public function delete($id, Request $request)
+    {
+        // check if there is a logged in user
+        if (!$this->user) {
+            flash()->error('Error', 'No user is logged in.');
+            return back();
+        };
+
+        if (!$user = User::find($id)) {
+            flash()->error('Error', 'No such user');
+            return back();
+        };
+
+        // add the following response
+        $user->user_status_id = 5;
+        $user->save();
+
+
+        Log::info('User ' . $user->name . ' is deleted.');
+
+        flash()->success('Success', 'User ' . $user->name . ' is now deleted.');
+
+        // add to activity log
+        Activity::log($user, $this->user, 3);
+
+        $user->delete();
 
         return back();
 
