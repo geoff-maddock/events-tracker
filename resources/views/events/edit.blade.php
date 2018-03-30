@@ -5,7 +5,7 @@
 @section('content')
 <script src="{{ asset('/js/facebook-sdk.js') }}"></script>
 
-<h2>Event . EDIT 
+<h2>Event . EDIT
 	@include('events.crumbs', ['slug' => $event->slug ? $event->slug : $event->id])<br>
   <a href="{!! route('events.show', ['id' => $event->id]) !!}" class="btn btn-primary">Show Event</a>
 

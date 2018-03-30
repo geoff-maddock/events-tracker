@@ -4,9 +4,9 @@
 
 @section('content')
 
-<h1>Event
+<h2>Event
 	@include('events.crumbs', ['slug' => '#'.$event->id])
-</h1>
+</h2>
 
 <p id="show_actions">
 	@include('events.show.actions', ['event' => $event, 'user' => $user])

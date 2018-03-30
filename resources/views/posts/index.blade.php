@@ -28,7 +28,6 @@
         </tr>
         </thead>
         @foreach ($posts as $post)
-
             <tbody class='thread-post'>
             <tr id='post-{{ $post->id }}'>
                 <td>

@@ -61,7 +61,7 @@ class PostsController extends Controller
         $posts = Post::orderBy('created_at', 'desc')->paginate($this->rpp);
         $posts->filter(function($e)
         {
-            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+            return (($e->visibility && $e->visibility->name === 'Public') || ($this->user && $e->created_by === $this->user->id));
         });
 
         return view('posts.index', compact('posts'));

@@ -46,6 +46,6 @@
 	</head>
 
 	<body id="event-repo">
-			<div class="title">Be right back.</a>
+			<div class="title">Be right back.</div>
 	</body>
 @stop
