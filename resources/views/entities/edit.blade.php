@@ -5,7 +5,7 @@
 @section('content')
 
 <h2>Entity . EDIT 
-	@include('events.crumbs', ['slug' => $entity->slug ? $entity->slug : $entity->id])
+	@include('events.crumbs', ['slug' => $entity->slug ?: $entity->id])
 	  <br> 	<a href="{!! route('entities.show', ['id' => $entity->slug]) !!}" class="btn btn-primary">Show Entity</a> <a href="{!! URL::route('entities.index') !!}" class="btn btn-info">Return to list</a>
 </h2>
 
@@ -22,7 +22,7 @@
 	</div>
 
 	<div class="col-md-6">
-		@if ($user && (Auth::user()->id == $entity->user->id || $user->id == Config::get('app.superuser')))	
+		@if ($user && (Auth::user()->id === $entity->user->id || $user->id === Config::get('app.superuser')))
 		<form action="/entities/{{ $entity->id }}/photos" class="dropzone" id="myDropzone" method="POST">
 			<input type="hidden" name="_token" value="{{ csrf_token() }}">
 		</form>
@@ -36,7 +36,7 @@
 			<div class="col-md-2">
 			
 			<a href="/{{ $photo->path }}" data-lightbox="{{ $photo->path }}"><img src="/{{ $photo->thumbnail }}" alt="{{ $entity->name}}"  style="max-width: 100%;"></a>
-			@if ($user && (Auth::user()->id == $entity->user->id || $user->id == Config::get('app.superuser')))	
+			@if ($user && (Auth::user()->id === $entity->user->id || $user->id === Config::get('app.superuser')))
 				{!! link_form_icon('glyphicon-trash text-warning', $photo, 'DELETE', 'Delete the photo') !!}
 				@if ($photo->is_primary)
 				{!! link_form_icon('glyphicon-star text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}

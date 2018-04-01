@@ -5,12 +5,12 @@
 @section('content')
 
 
-<h1>Entity
+<h2>Entity
 	@include('entities.crumbs', ['slug' => $entity->slug])
-</h1>
+</h2>
 
 <P>
-@if ($user && Auth::user()->id == $entity->user->id)	
+@if ($user && Auth::user()->id === $entity->user->id)
 	<a href="{!! route('entities.edit', ['id' => $entity->slug]) !!}" class="btn btn-primary">Edit Entity</a>
 @endif
 	<a href="{!! URL::route('entities.index') !!}" class="btn btn-info">Return to list</a>
@@ -127,7 +127,6 @@
 		</span>
 	@endif
 	</P>
- 
 
  	@unless ($entity->contacts->isEmpty())
  		<P><b>Contacts:</b>
@@ -144,7 +143,7 @@
 	@endunless
 
 	<P>
-	@if ($user && Auth::user()->id == $entity->user->id)	
+	@if ($user && Auth::user()->id === $entity->user->id)
 		<span> 
 			<a href="{!! route('entities.contacts.create', ['id' => $entity->slug]) !!}" class="btn btn-primary">Add Contact</a>
 		</span>
@@ -166,7 +165,7 @@
         @endunless
 
         <P>
-        @if ($user && Auth::user()->id == $entity->user->id)
+        @if ($user && Auth::user()->id === $entity->user->id)
                 <span>
                         <a href="{!! route('entities.links.create', ['id' => $entity->slug]) !!}" class="btn btn-primary">Add Link</a>
                 </span>
@@ -174,7 +173,7 @@
         </P>
 
 	<P>
-	@if ($user && Auth::user()->id == $entity->user->id)	
+	@if ($user && Auth::user()->id === $entity->user->id)
 		<span> 
 			<a href="{!! route('events.create') !!}" class="btn btn-primary">Add Event</a>
 		</span>
@@ -211,7 +210,7 @@
 
 	<div class="col-md-6">
 		@if ($user && (Auth::user()->id == $entity->user->id || $user->id == Config::get('app.superuser')))	
-		<form action="/entities/{{ $entity->slug }}/photos" class="dropzone" id="myDropzone" method="POST">
+		<form action="/entities/{{ $entity->id }}/photos" class="dropzone" id="myDropzone" method="POST">
 			<input type="hidden" name="_token" value="{{ csrf_token() }}">
 		</form>
 		@endif
@@ -237,11 +236,10 @@
 		</div>
 		@endforeach
 
-			<br>
+		<br>
 		<div class="row">
 
 				<div class="col-lg-6">
-
 					<div class="bs-component">
 						<div class="panel panel-info">
 
@@ -259,7 +257,6 @@
 				</div>
 
 				<div class="col-lg-6">
-
 					<div class="bs-component">
 						<div class="panel panel-info">
 
@@ -268,17 +265,15 @@
 							</div>
 
 							<div class="panel-body">
-							@include('events.list', ['events' => $entity->futureEvents()])
-
+								@include('events.list', ['events' => $entity->futureEvents()])
 							</div>
-
 						</div>
 					</div>
 				</div>
 		</div>
 
 	</div>
-
+</div>
 @stop
  
 @section('scripts.footer')

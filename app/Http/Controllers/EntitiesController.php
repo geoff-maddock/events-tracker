@@ -719,19 +719,20 @@ class EntitiesController extends Controller
         ]);
 
         // attach to entity
-        $entity = Entity::find($id);
+        if ($entity = Entity::find($id)) {
 
-        $photo = $this->makePhoto($request->file('file'));
+            $photo = $this->makePhoto($request->file('file'));
 
-        // count existing photos, and if zero, make this primary
-        if (count($entity->photos) == 0) {
-            $photo->is_primary = 1;
-        };
+            // count existing photos, and if zero, make this primary
+            if ($entity->photos && count($entity->photos) == 0) {
+                $photo->is_primary = 1;
+            };
 
-        $photo->save();
+            $photo->save();
 
-        // attach to entity
-        $entity->addPhoto($photo);
+            // attach to entity
+            $entity->addPhoto($photo);
+        }
     }
 
     protected function makePhoto (UploadedFile $file)
@@ -744,6 +745,7 @@ class EntitiesController extends Controller
      * Mark user as following the entity
      *
      * @return Response
+     * @throws \Throwable
      */
     public function follow($id, Request $request)
     {
