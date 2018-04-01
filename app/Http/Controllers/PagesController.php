@@ -418,6 +418,21 @@ class PagesController extends Controller {
             $query->where('object_name', 'like', '%' . $name . '%');
         }
 
+        if (!empty($filters['filter_type'])) {
+            // getting name from the request
+            $type = $filters['filter_type'];
+            $query->where('object_table', 'like', '%' . $type . '%');
+        }
+
+        if (!empty($filters['filter_action'])) {
+            $action = $filters['filter_action'];
+
+            // add has clause
+            $query->whereHas('action', function ($q) use ($action) {
+                $q->where('name', '=', $action);
+            });
+        }
+
         if (!empty($filters['filter_user'])) {
             $user = $filters['filter_user'];
 

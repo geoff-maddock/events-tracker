@@ -79,9 +79,9 @@ class ActivityController extends Controller
 
         // apply the filters to the query
         // get the entities and paginate
-        $series = $query->paginate($this->rpp);
-        $series->filter(function ($e) {
-            return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        $activities = $query->paginate($this->rpp);
+        $activities->filter(function ($e) {
+            return (($e->visibility && $e->visibility->name === 'Public') || ($this->user && $e->created_by === $this->user->id));
         });
 
         return view('activity.index')
@@ -91,7 +91,7 @@ class ActivityController extends Controller
                 'filters' => $this->filters,
                 'hasFilter' => $this->hasFilter,
             ])
-            ->with(compact('series', 'role', 'tag', 'alias', 'name'))
+            ->with(compact('activities'))
             ->render();
 
     }
@@ -203,135 +203,17 @@ class ActivityController extends Controller
         // base criteria
         $query = $this->buildCriteria($request);
 
-        $series = $query->with('occurrenceType', 'visibility', 'tags')->paginate($this->rpp);
+        $activities = $query->paginate($this->rpp);
 
-        $series = $series->filter(function ($e) {
-            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-        });
-
-        return view('series.index')
+        return view('activity.index')
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter, 'filters' => $filters])
-            ->with(compact('series'))
+            ->with(compact('activities'))
             ->render();
     }
 
-    public function indexCancelled (Request $request)
-    {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
-
-        // get filters from session
-        $filters = $this->getFilters($request);
-
-        $this->hasFilter = count($filters);
-
-        $series = $this->series
-            ->whereNotNull('cancelled_at')
-            ->orderBy('occurrence_type_id', 'ASC')
-            ->orderBy('occurrence_week_id', 'ASC')
-            ->orderBy('occurrence_day_id', 'ASC')
-            ->orderBy('name', 'ASC')
-            ->get();
-
-        $series = $series->filter(function ($e) {
-            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-        });
-
-
-        return view('series.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
-            ->with(compact('series'))
-            ->render();
-    }
 
     /**
-     * Display a listing of event series in a week view
-     *
-     * @return Response
-     * @throws \Throwable
-     */
-    public function indexWeek (Request $request)
-    {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
-
-        // get filters from session
-        $filters = $this->getFilters($request);
-
-        $this->hasFilter = count($filters);
-
-        $this->rpp = 5;
-
-        // this is more complex because we want to show weeklies that fall on the days, plus monthlies that fall on the days
-        // may be an iterative process that is called from the template to the series model that checks against each criteria and builds a list that way
-        $series = Series::future()->get();
-        return view('series.indexWeek')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
-            ->with(compact('series'))
-            ->render();
-    }
-
-    /**
-     * Display a listing of series related to entity
-     *
-     * @param $slug
-     * @return Response
-     * @throws \Throwable
-     */
-    public function indexRelatedTo ($slug)
-    {
-        $hasFilter = 1;
-        $slug = urldecode($slug);
-
-        $series = Series::getByEntity(strtolower($slug))
-            ->where(function ($query) {
-                $query->visible($this->user);
-            })
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
-            ->paginate();
-
-        return view('series.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
-            ->with(compact('series', 'slug'))
-            ->render();
-    }
-
-    /**
-     * Display a listing of events by tag
-     *
-     * @param $tag
-     * @return Response
-     * @throws \Throwable
-     */
-    public function indexTags (Request $request, $tag)
-    {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
-
-        // get filters from session
-        $filters = $this->getFilters($request);
-
-        $this->hasFilter = count($filters);
-        $tag = urldecode($tag);
-
-        $series = Series::getByTag(ucfirst($tag))
-            ->where(function ($query) {
-                $query->visible($this->user);
-            })
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
-            ->paginate();
-
-
-        return view('series.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter, 'filters' => $filters])
-            ->with(compact('series', 'tag'))
-            ->render();
-    }
-
-    /**
-     * Show a form to create a new series.
+     * Show a form to create a new activities.
      *
      * @return view
      **/
@@ -744,9 +626,9 @@ class ActivityController extends Controller
      * Get session filters
      *
      * @param Request $request
-     * @return Array
+     * @return array
      */
-    public function getFilters (Request $request)
+    public function getFilters (Request $request) : array
     {
         return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
     }

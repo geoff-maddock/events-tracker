@@ -59,6 +59,16 @@ class Activity extends Eloquent {
 		return $this->belongsTo('App\User','user_id');
 	}
 
+    /**
+     * An activity has one action
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function action()
+    {
+        return $this->belongsTo('App\Action','action_id');
+    }
+
 	/**
 	 * Get the style of an activity
 	 */
@@ -78,14 +88,14 @@ class Activity extends Eloquent {
      */
     public function getShowLink()
     {
-        if ($this->object_table == 'Tag')
+        if ($this->object_table === 'Tag')
         {
             if ($tag = Tag::find($this->object_id)) {
             	return '/'.str_plural($this->object_table).'/'.$tag->name;
 		};
         };
 
-        if ($this->object_table == 'Entity')
+        if ($this->object_table === 'Entity')
         {
             if ($entity = Entity::find($this->object_id))
 	    {

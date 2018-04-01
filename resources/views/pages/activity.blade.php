@@ -16,23 +16,31 @@
 
 				<!-- BEGIN: FILTERS -->
 				<div class="form-group col-sm-2">
-
 					{!! Form::label('filter_name','Filter By Name') !!}
+					{!! Form::text('filter_name', (isset($filters['filter_name']) ?? NULL), ['class' =>'form-control']) !!}
+				</div>
 
-					{!! Form::text('filter_name', (isset($filters['filter_name']) ? $filters['filter_name'] : NULL), ['class' =>'form-control']) !!}
+				<div class="form-group col-sm-2">
+					{!! Form::label('filter_type','Filter By Type') !!}
+					{!! Form::text('filter_type', (isset($filters['filter_type']) ?? NULL), ['class' =>'form-control']) !!}
+				</div>
+
+				<div class="form-group col-sm-2">
+					{!! Form::label('filter_action','Filter By Action') !!}
+                    <?php $actions = [''=>'&nbsp;'] + App\Action::orderBy('name', 'ASC')->pluck('name', 'name')->all();?>
+					{!! Form::select('filter_action', $actions, (isset($filters['filter_action']) ?? NULL), ['data-width' => '100%', 'class' =>'form-control  auto-submit', 'data-placeholder' => 'Select an action']) !!}
 				</div>
 
 				<div class="form-group col-sm-2">
 					{!! Form::label('filter_user_id','Filter By User') !!}
                     <?php $users = [''=>'&nbsp;'] + App\User::orderBy('name', 'ASC')->pluck('name', 'name')->all();?>
-					{!! Form::select('filter_user', $users, (isset($filters['filter_user']) ? $filters['filter_user'] : NULL), ['data-width' => '100%', 'class' =>'form-control select2  auto-submit', 'data-placeholder' => 'Select a user']) !!}
+					{!! Form::select('filter_user', $users, (isset($filters['filter_user']) ?? NULL), ['data-width' => '100%', 'class' =>'form-control select2  auto-submit', 'data-placeholder' => 'Select a user']) !!}
 				</div>
-
 
 				<div class="form-group col-sm-1">
 					{!! Form::label('filter_rpp','RPP') !!}
                     <?php $rpp_options =  [''=>'&nbsp;', 5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000];?>
-					{!! Form::select('filter_rpp', $rpp_options, (isset($rpp) ? $rpp : NULL), ['class' =>'auto-submit form-control']) !!}
+					{!! Form::select('filter_rpp', $rpp_options, (isset($rpp) ?? NULL), ['class' =>'auto-submit form-control']) !!}
 				</div>
 
 				<div class="col-sm-2">
