@@ -30,7 +30,8 @@
 	 $day = \Carbon\Carbon::parse($today)->addDay($offset);
 
 	 ?>
+		<section class="day" data-num="{{ $i }}" id="day-{{ $i }}" href="/events/day/{{ $day->format('Y-m-d') }}">
 		@include('events.day', ['day' => $day, 'position' => $i ])
+		</section>
 	@endfor
-
 </div>

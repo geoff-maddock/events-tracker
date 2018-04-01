@@ -9,7 +9,6 @@ var App = (function()
         this.setupLoadingModal();
         this.setupAjaxAction('body');
         $('.auto-submit').autoSubmit();
-
     };
 
     var initTooltip = function () {

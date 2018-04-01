@@ -24,11 +24,10 @@
 <?php $today = \Carbon\Carbon::now('America/New_York'); ?>
 
 <div class="row small-gutter">
-	@for ($i = 0; $i < 4; $i++)  
+	@for ($i = 0; $i < 4; $i++)
 	<?php
 	 $offset = $i + $dayOffset;
 	 $day = \Carbon\Carbon::parse($today)->addDay($offset);
-
 	 ?>
 		<section class="day" data-num="{{ $i }}" id="day-{{ $i }}" href="/events/day/{{ $day->format('Y-m-d') }}">
 		@include('events.dayAjax', ['day' => $day, 'position' => $i ])
@@ -36,3 +35,10 @@
 	@endfor
 
 </div>
+<script type="text/javascript">
+    // init app module on document load
+    $(function()
+    {
+        Home.loadDays();
+    });
+</script>

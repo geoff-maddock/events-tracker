@@ -190,19 +190,9 @@ class PagesController extends Controller {
  		// updates sort, rpp from request
  		$this->updatePaging($request);
 
-//  not using these events
-//		$events = Event::getByStartAt(Carbon::today())
-//					->where(function($query)
-//					{
-//						$query->visible($this->user);
-//					})
-//					->orderBy('start_at', 'ASC')
-//					->orderBy('name', 'ASC')
-//					->paginate();
-
 		// handle the request if ajax
 		if ($request->ajax()) {
-            return view('pages.4days')
+            return view('pages.4daysAjax')
 		        	->with(['rpp' => $this->rpp, 'dayOffset' => $this->dayOffset])
         			->render();
 		}
@@ -212,14 +202,18 @@ class PagesController extends Controller {
 
 	}
 
-	public function activity(Request $request)
+    /**
+     * @param Request $request
+     * @return $this
+     */
+    public function activity(Request $request)
 	{
         $this->middleware('auth');
         $offset = 0;
 
         if ($request->input('offset')) {
             $offset = $request->input('offset');
-        };
+        }
 
         // get all the filters from the session
         $this->filters = $this->getFilters($request);

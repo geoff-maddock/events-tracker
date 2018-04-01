@@ -98,32 +98,32 @@
 	</div>
 </div>
 
-	<div class="col-md-6">
-	@if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser') ) )
-	<form action="/series/{{ $series->id }}/photos" class="dropzone" id="myDropzone" method="POST">
-		<input type="hidden" name="_token" value="{{ csrf_token() }}">
-	</form>
-	@endif
+<div class="col-md-6">
+@if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser') ) )
+<form action="/series/{{ $series->id }}/photos" class="dropzone" id="myDropzone" method="POST">
+	<input type="hidden" name="_token" value="{{ csrf_token() }}">
+</form>
+@endif
 
-	<br style="clear: left;"/>
+<br style="clear: left;"/>
 
-	@foreach ($series->photos->chunk(4) as $set)
-		<div class="row">
-		@foreach ($set as $photo)
-			<div class="col-md-2" style="padding-bottom: 10px;">
-				<a href="/{{ $photo->path }}" data-lightbox="{{ $photo->path }}" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="/{{ $photo->thumbnail }}" alt="{{$photo->name}}"  style="max-width: 100%;" ></a>
-				@if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser') ))
-							{!! link_form_icon('glyphicon-trash text-warning', $photo, 'DELETE', 'Delete the photo') !!}
-							@if ($photo->is_primary)
-							{!! link_form_icon('glyphicon-star text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
-							@else
-							{!! link_form_icon('glyphicon-star-empty text-info', '/photos/'.$photo->id.'/setPrimary', 'POST', 'Set as primary photo') !!}
-							@endif
-				@endif
-			</div>
-		@endforeach
+@foreach ($series->photos->chunk(4) as $set)
+	<div class="row">
+	@foreach ($set as $photo)
+		<div class="col-md-2" style="padding-bottom: 10px;">
+			<a href="/{{ $photo->path }}" data-lightbox="{{ $photo->path }}" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="/{{ $photo->thumbnail }}" alt="{{$photo->name}}"  style="max-width: 100%;" ></a>
+			@if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser') ))
+						{!! link_form_icon('glyphicon-trash text-warning', $photo, 'DELETE', 'Delete the photo') !!}
+						@if ($photo->is_primary)
+						{!! link_form_icon('glyphicon-star text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
+						@else
+						{!! link_form_icon('glyphicon-star-empty text-info', '/photos/'.$photo->id.'/setPrimary', 'POST', 'Set as primary photo') !!}
+						@endif
+			@endif
 		</div>
 	@endforeach
+	</div>
+@endforeach
 </div>
 	<br>
 	<div class="row">
@@ -187,13 +187,14 @@ $(document).ready(function(){
     var myDropzone = new Dropzone('#myDropzone', {
         dictDefaultMessage: "Drop a file here to add a picture."
     });
-
+    console.log('running dropzone');
     $('div.dz-default.dz-message > span').show(); // Show message span
     $('div.dz-default.dz-message').css({'color': '#000000', 'opacity':1, 'background-image': 'none'});
 
 	myDropzone.options.addPhotosForm = {
 		maxFilesize: 3,
 		accept: ['.jpg','.png','.gif'],
+        dictDefaultMessage: "Drop a file here to add a picture",
 		init: function () {
 	            myDropzone.on("complete", function (file) {
 	                location.href = 'series/{{ $series->id }}'
@@ -204,7 +205,7 @@ $(document).ready(function(){
 	};
 
 	myDropzone.options.addPhotosForm.init();
-	
+
 })
 </script>
 @stop
