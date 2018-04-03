@@ -6,12 +6,12 @@
 		</div>
 		@endif
 
-		@if ($month != $event->start_at->format('F')) 
+		@if ($month !== $event->start_at->format('F'))
 			<?php $month = $event->start_at->format('F')?>
 		@endif
-			@if ($event->visibility->name == 'Proposal')
-				<span class="text-warning">Proposal</span><br>
-			@endif
+		@if ($event->visibility->name !== 'Public')
+			<span class="text-warning">{{ $event->visibility->name }}</span><br>
+		@endif
 		<div class='event-date'>{!! $event->start_at->format('l F jS Y') !!} </div>
 	
 			{!! link_to_route('events.show', $event->name, [$event->id], ['class' => 'item-title']) !!} 

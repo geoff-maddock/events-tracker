@@ -480,24 +480,22 @@ class EventsController extends Controller
         $query_future->future();
 
         // get future events
-        $future_events = $query_future->where('start_at', '>', Carbon::today()->startOfDay())->with('visibility')->paginate($this->rpp);
-        $future_events->filter(function ($e) {
-            return ((isset($e->visibility) && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-        });
+        $future_events = $query_future->where('start_at', '>', Carbon::today()->startOfDay())
+            ->where(function($query) {
+            return $query->where('visibility_id', '=', 3)
+                ->orWhere('created_by', '=', $this->user ? $this->user->id : NULL);
+            })
+            ->with('visibility')->paginate($this->rpp);
 
         // get past events
-        $past_events = $query_past->where('start_at', '<', Carbon::today()->startOfDay())->with('visibility')->paginate($this->rpp);
-        $past_events->filter(function ($e) {
-            return ((isset($e->visibility) && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-        });
+        $past_events = $query_past->where('start_at', '<', Carbon::today()->startOfDay())            ->where(function($query) {
+            return $query->where('visibility_id', '=', 3)
+                ->orWhere('created_by', '=', $this->user ? $this->user->id : NULL);
+        })
+            ->with('visibility')->paginate($this->rpp);
 
         return view('events.index')
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter, 'filters' => $filters,
-                'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
-                'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL,
-                'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL,
-                'filter_related' => isset($filters['filter_related']) ? $filters['filter_related'] : NULL,
-                'filter_rpp' => isset($filters['filter_rpp']) ? $filters['filter_rpp'] : NULL
             ])
             ->with(compact('future_events'))
             ->with(compact('past_events'))
@@ -819,7 +817,6 @@ class EventsController extends Controller
      */
     public function day (Request $request, $day)
     {
-
         if (!$day) {
             flash()->error('Error', 'No such day');
             return back();

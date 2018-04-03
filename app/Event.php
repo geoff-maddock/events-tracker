@@ -162,6 +162,10 @@ class Event extends Eloquent {
 
 		$query->where('start_at','>', $cdate_yesterday->toDateString().' 23:59:59')
 					->where('start_at','<',$cdate_tomorrow->toDateString().' 00:00:00')
+                    ->where(function($query) {
+                        return $query->where('visibility_id', '=', 3)
+                            ->orWhere('created_by', '=', Auth::user() ? Auth::user()->id : NULL);
+                    })
 					->orderBy('start_at','ASC')
                     ->with('visibility');
 	}
