@@ -2,7 +2,7 @@
 //
 //use App\User;
 //use Validator;
-//use Illuminate\Contracts\Auth\Registr as RegistrarContract;
+//use Illuminate\Contracts\Auth\Registrar as RegistrarContract;
 //
 //class Registrar implements RegistrarContract {
 //

@@ -6,10 +6,10 @@
 <script src="{{ asset('/js/facebook-sdk.js') }}"></script>
 
 <h2>Event . EDIT
-	@include('events.crumbs', ['slug' => $event->slug ? $event->slug : $event->id])<br>
+	@include('events.crumbs', ['slug' => $event->slug ?: $event->id])<br>
   <a href="{!! route('events.show', ['id' => $event->id]) !!}" class="btn btn-primary">Show Event</a>
 
-  @if (!empty($event->threads) && $user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser')) )
+  @if (!empty($event->threads) && $user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser')) )
     <a href="{!! route('events.createThread', ['id' => $event->id]) !!}" title="Create an thread related to this event." class="btn btn-primary"><span class='glyphicon glyphicon-comment'></span> Create Thread</a>
   @endif
 
@@ -29,7 +29,7 @@
   </div>
 
   <div class="col-md-4">
-    @if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )  
+    @if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser') ) )
     <form action="/events/{{ $event->id }}/photos" class="dropzone" id="myDropzone" method="POST">
       <input type="hidden" name="_token" value="{{ csrf_token() }}">
     </form>

@@ -53,7 +53,7 @@
 				<div class="form-group col-sm-2">
 					{!! Form::label('filter_rpp','RPP') !!}
 					<?php $rpp_options =  [''=>'&nbsp;', 5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000];?>
-					{!! Form::select('filter_rpp', $rpp_options, (isset($filters['filter_rpp']) ? $filters['filter_rpp'] : NULL), ['class' =>'form-control auto-submit']) !!}
+					{!! Form::select('filter_rpp', $rpp_options, (isset($filters['filter_rpp']) ?? NULL), ['class' =>'form-control auto-submit']) !!}
 				</div>
 
 				<div class="col-sm-2">
@@ -107,9 +107,9 @@
 				<div class="panel-body">
 					{!! $past_events->appends(['sort_by' => $sortBy,
 										'rpp' => $rpp,
-										'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL,
-										'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL,
-										'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,
+										'filter_venue' => isset($filters['filter_venue']) ?? NULL,
+										'filter_tag' => isset($filters['filter_tag']) ?? NULL,
+										'filter_name' => isset($filters['filter_name']) ?? NULL,
 					])->render() !!}
 					@include('events.list', ['events' => $past_events])
 				</div>

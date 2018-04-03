@@ -17,6 +17,9 @@
 <div class="col-md-6">
 	<div class="event-card">
 	<div class="event-date">
+		@if ($event->visibility->name == 'Proposal')
+			<span class="text-warning">Proposal</span><br>
+		@endif
         @if ($event->visibility->name == 'Cancelled')
             <span class="text-warning">Cancelled on {{ $event->cancelled_at->format('l F jS Y') }}</span><br>
         @endif
