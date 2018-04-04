@@ -239,20 +239,38 @@ class EventsController extends Controller
         $query_future->future();
 
         // get future events
-        $future_events = $query_future->where('start_at', '>', Carbon::today()->startOfDay())
+        $query_future//->where('start_at', '>', Carbon::today()->startOfDay())
+            // public or where created by
             ->where(function($query) {
-                return $query->where('visibility_id', '=', 3)
-                    ->orWhere('created_by', '=', $this->user ? $this->user->id : NULL);
-            })
+            $query->whereIn('visibility_id',  [1,2])
+                    ->where('created_by', '=', $this->user ? $this->user->id : NULL);
+                // if logged in, can see guarded
+                if ($this->user) {
+                    $query->orWhere('visibility_id', '=', 4);
+                }
+                $query->orWhere('visibility_id', '=', 3);
+                return $query;
+            });
+        
+        $future_events = $query_future
             ->with('visibility')
             ->paginate($this->rpp);
 
         // get past events
-        $past_events = $query_past->where('start_at', '<', Carbon::today()->startOfDay())
+        $query_past//->where('start_at', '<', Carbon::today()->startOfDay())
+            // public or where created by
             ->where(function($query) {
-                return $query->where('visibility_id', '=', 3)
-                    ->orWhere('created_by', '=', $this->user ? $this->user->id : NULL);
-            })
+                $query->whereIn('visibility_id',  [1,2])
+                    ->where('created_by', '=', $this->user ? $this->user->id : NULL);
+                // if logged in, can see guarded
+                if ($this->user) {
+                    $query->orWhere('visibility_id', '=', 4);
+                }
+                $query->orWhere('visibility_id', '=', 3);
+                return $query;
+            });
+
+        $past_events = $query_past
             ->with('visibility')
             ->paginate($this->rpp);
 
@@ -1018,7 +1036,7 @@ class EventsController extends Controller
             // all public events
             // all events that you created
             // all events that you are invited to
-            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by === $this->user->id));
         });
 
         // get all the upcoming series events
@@ -1028,7 +1046,7 @@ class EventsController extends Controller
             // all public events
             // all events that you created
             // all events that you are invited to
-            return ((($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id)) AND $e->occurrenceType->name != 'No Schedule');
+            return ((($e->visibility->name == 'Public') || ($this->user && $e->created_by === $this->user->id)) AND $e->occurrenceType->name != 'No Schedule');
         });
 
 

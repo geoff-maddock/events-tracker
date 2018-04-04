@@ -9,6 +9,8 @@ use App\Post;
 use App\Thread;
 use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
+
 //use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
@@ -46,6 +48,12 @@ class AuthServiceProvider extends ServiceProvider
                 return $user->hasGroup($permission->groups);
             });
         }
+
+        Gate::before(function ($user) {
+            if ($user->hasGroup('admin')) {
+                return true;
+            }
+        });
     }
 
     protected function getPermissions()

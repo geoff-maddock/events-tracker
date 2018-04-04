@@ -68,7 +68,10 @@ Route::bind('users', function($id)
     return App\User::whereId($id)->firstOrFail();
 });
 
-
+Route::get('impersonate/{user}', function (App\User $user) {
+    Auth::login($user);
+    return redirect('/');
+})->middleware('can:admin')->name('user.impersonate');
 
 Route::post('users/{id}/photos', 'UsersController@addPhoto');
 Route::delete('users/{id}/photos/{photo_id}', 'UsersController@deletePhoto');

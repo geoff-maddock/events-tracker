@@ -92,7 +92,7 @@ class EntitiesController extends Controller
      * @return Response
      * @throws \Throwable
      */
-    public function index (Request $request, EntityFilters $filters)
+    public function index (Request $request)
     {
         // get all active entites plus those created by the logged in user, ordered by type and name
 
@@ -351,7 +351,6 @@ class EntitiesController extends Controller
      */
     protected function setFilters (Request $request, array $input)
     {
-        // example: $input = array('filter_tag' => 'role', 'filter_name' => 'xano');
         return $this->setAttribute('filters', $input, $request);
     }
 
@@ -594,7 +593,7 @@ class EntitiesController extends Controller
      * @return Response
      * @internal param int $id
      */
-    public function edit (Entity $entity)
+    public function edit(Entity $entity)
     {
         $this->middleware('auth');
 

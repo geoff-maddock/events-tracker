@@ -68,20 +68,17 @@ class PermissionsController extends Controller {
  		};
 	}
 
-
-
 	/**
 	 * Display a listing of permissions by group
 	 *
 	 * @return Response
 	 */
-	public function indexGroups($group)
+	public function indexGroups(Request $request, $group)
 	{
- 
   		// updates sort, rpp from request
  		$this->updatePaging($request);
 
-		$permissions = Permission::getByUser(ucfirst($user))
+		$permissions = Permission::getByGroup(ucfirst($group))
 					->orderBy('name', 'ASC')
 					->get();
 
@@ -111,16 +108,11 @@ class PermissionsController extends Controller {
 						->get();
  		};
 
-
    		if ($request->input('filter_name'))
  		{
  			$name = $request->input('filter_name');
 			$permissions = Permission::where('name', $name)->get();
  		}
-
- 		// revisit filtering here
-		// $permissions->filter($filters);
-		//$permissions->get();
 
 		return view('permissions.index', compact('permissions', 'role', 'tag','name'));
 	}
@@ -153,15 +145,18 @@ class PermissionsController extends Controller {
 
 	/**
 	 * Store a newly created resource in storage.
-	 *
+	 * @param PermissionRequest $request
+     * @param Permission $permission
+     *
 	 * @return Response
 	 */
 	 public function store(PermissionRequest $request, Permission $permission)
  	{
-
  		$msg = "";
  		
  		$input = $request->all();
+
+        $permission = $permission->create($input);
 
 		$permission->groups()->attach($request->input('group_list',[]));
 
@@ -184,14 +179,14 @@ class PermissionsController extends Controller {
 	/**
 	 * Show the form for editing the specified resource.
 	 *
-	 * @param  int  $id
+	 * @param  Permission $permission
 	 * @return Response
 	 */
 	public function edit(Permission $permission)
 	{
 		$this->middleware('auth');
 
-		$groups = Group::orderBy('name','ASC')->pluck('name','id')->all();
+		$groups = Group::orderBy('name')->pluck('name','id')->all();
 
 		return view('permissions.edit', compact('permission', 'groups'));
 	}
@@ -208,25 +203,18 @@ class PermissionsController extends Controller {
 		
 		$permission->fill($request->input())->save();
 
-		// check to see if the user can update the permission here
-		/*
-		if (!$permission->ownedBy(\Auth::user()))
-		{
-			$this->unauthorized($request); 
-		};
-		*/
-
 		$permission->groups()->sync($request->input('group_list', []));
 
 		return redirect('permissions');
 	}
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param Permission $permission
+     * @return Response
+     * @throws \Exception
+     */
 	public function destroy(Permission $permission)
 	{
 		$permission->delete();

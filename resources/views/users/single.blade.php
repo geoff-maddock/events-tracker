@@ -11,8 +11,7 @@
 
 	{!! link_to_route('users.show', $user->name, [$user->id]) !!}
 
-
-	@if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser') ))
+	@if ($signedIn && (Auth::user()->id === $user->id || Auth::user()->id === Config::get('app.superuser') || Auth::user()->hasGroup('super_admin') ))
 	<a href="{!! route('users.edit', ['id' => $user->id]) !!}">
 	<span class='glyphicon glyphicon-pencil'></span></a>
     {!! link_form_icon('glyphicon-trash text-warning', $user, 'DELETE', 'Delete the user') !!}
@@ -20,8 +19,13 @@
 				@if (!$user->isActive)
 				<a href="{!! route('users.activate', ['id' => $user->id]) !!}">
 					<span class='glyphicon glyphicon-ok-circle' title='Activate the user'></span></a>
-					@endif
-				@endcan
+				@endif
+			@endcan
+			@can('impersonate_user')
+				<a href="{!! route('user.impersonate', ['id' => $user->id]) !!}" title="Impersonate {{ $user->name }}">
+					<span class='glyphicon glyphicon-user'></span>
+				</a>
+			@endif
 	@endif
 
 	<ul class="list">
