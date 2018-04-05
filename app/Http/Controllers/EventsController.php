@@ -46,7 +46,7 @@ class EventsController extends Controller
     protected $event;
     protected $criteria;
 
-    public function __construct (Event $event)
+    public function __construct(Event $event)
     {
         $this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update', 'indexAttending', 'calendarAttending')]);
         $this->event = $event;
@@ -71,7 +71,7 @@ class EventsController extends Controller
      *
      * @param Request $request
      */
-    public function getReportingOptions (Request $request)
+    public function getReportingOptions(Request $request)
     {
         foreach (array('page', 'rpp', 'sort', 'criteria') as $option) {
             if (!$request->has($option)) {
@@ -95,7 +95,7 @@ class EventsController extends Controller
      *
      * @return array
      */
-    public function getCriteria () : array
+    public function getCriteria() : array
     {
         return $this->criteria;
     }
@@ -105,7 +105,7 @@ class EventsController extends Controller
      *
      * @return integer
      */
-    public function getPage ()
+    public function getPage()
     {
         return $this->getAttribute('page', 1);
     }
@@ -116,7 +116,7 @@ class EventsController extends Controller
      * @param integer $input
      * @return integer
      */
-    public function setPage ($input)
+    public function setPage($input)
     {
         return $this->setAttribute('page', $input);
     }
@@ -129,7 +129,7 @@ class EventsController extends Controller
      * @param Request $request
      * @return Mixed
      */
-    public function getAttribute ($attribute, $default = null, Request $request)
+    public function getAttribute($attribute, $default = null, Request $request)
     {
         return $request->session()
             ->get($this->prefix . $attribute, $default);
@@ -143,7 +143,7 @@ class EventsController extends Controller
      * @param Request $request
      * @return Mixed
      */
-    public function setAttribute ($attribute, $value, Request $request)
+    public function setAttribute($attribute, $value, Request $request)
     {
         return $request->session()->put($this->prefix . $attribute, $value);
     }
@@ -154,7 +154,7 @@ class EventsController extends Controller
      * @param Request $request
      * @return integer
      */
-    public function getRpp (Request $request)
+    public function getRpp(Request $request)
     {
         return $this->getAttribute('rpp', $this->rpp, $request);
     }
@@ -165,7 +165,7 @@ class EventsController extends Controller
      * @param integer $input
      * @return integer
      */
-    public function setRpp ($input)
+    public function setRpp($input)
     {
         return $this->setAttribute('rpp', 5);
     }
@@ -176,7 +176,7 @@ class EventsController extends Controller
      * @param Request $request
      * @return array
      */
-    public function getSort (Request $request)
+    public function getSort(Request $request)
     {
         return $this->getAttribute('sort', $this->getDefaultSort(), $request);
     }
@@ -187,7 +187,7 @@ class EventsController extends Controller
      * @param array $input
      * @return array
      */
-    public function setSort (array $input)
+    public function setSort(array $input)
     {
         return $this->setAttribute('sort', $input);
     }
@@ -238,8 +238,8 @@ class EventsController extends Controller
         $query_past->past();
         $query_future->future();
 
-        // get future events
-        $query_future//->where('start_at', '>', Carbon::today()->startOfDay())
+        // build future events query
+        $query_future
             // public or where created by
             ->where(function($query) {
             $query->whereIn('visibility_id',  [1,2])
@@ -251,13 +251,13 @@ class EventsController extends Controller
                 $query->orWhere('visibility_id', '=', 3);
                 return $query;
             });
-        
+        // get future events
         $future_events = $query_future
             ->with('visibility')
             ->paginate($this->rpp);
 
-        // get past events
-        $query_past//->where('start_at', '<', Carbon::today()->startOfDay())
+        // build past events query
+        $query_past
             // public or where created by
             ->where(function($query) {
                 $query->whereIn('visibility_id',  [1,2])
@@ -269,7 +269,7 @@ class EventsController extends Controller
                 $query->orWhere('visibility_id', '=', 3);
                 return $query;
             });
-
+        // get past events
         $past_events = $query_past
             ->with('visibility')
             ->paginate($this->rpp);
@@ -286,23 +286,22 @@ class EventsController extends Controller
      * Update the page list parameters from the request
      * @param $request
      */
-    protected function updatePaging ($request)
+    protected function updatePaging($request)
     {
-
         if (!empty($request->input('filter_sort_by'))) {
             $this->sortBy = $request->input('filter_sort_by');
             $this->filters['filter_sort_by'] = $this->sortBy;
-        };
+        }
 
         if (!empty($request->input('filter_sort_order'))) {
             $this->sortOrder = $request->input('filter_sort_order');
             $this->filters['filter_sort_order'] = $this->sortOrder;
-        };
+        }
 
         if (!empty($request->input('filter_rpp'))) {
             $this->rpp = $request->input('filter_rpp');
             $this->filters['filter_rpp'] = $this->rpp;
-        };
+        }
 
     }
 
@@ -312,7 +311,7 @@ class EventsController extends Controller
      * @param Request $request
      * @return array
      */
-    public function getFilters (Request $request)
+    public function getFilters(Request $request)
     {
         return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
     }
@@ -324,7 +323,7 @@ class EventsController extends Controller
      * @param array $input
      * @return array
      */
-    public function setFilters (Request $request, array $input)
+    public function setFilters(Request $request, array $input)
     {
         return $this->setAttribute('filters', $input, $request);
     }
@@ -334,7 +333,7 @@ class EventsController extends Controller
      *
      * @return array
      */
-    public function getDefaultFilters ()
+    public function getDefaultFilters()
     {
         return array();
     }
@@ -1225,7 +1224,7 @@ class EventsController extends Controller
      * @param $type
      * @return Response
      */
-    public function calendarEventTypes ($type)
+    public function calendarEventTypes($type) : Response
     {
         $tag = urldecode($type);
 
@@ -1253,7 +1252,7 @@ class EventsController extends Controller
                     //'color' => '#fc0'
                 ]
             );
-        };
+        }
 
         // get all the upcoming series events
         $series = Series::getByType(ucfirst($tag))->active()->get();
@@ -1299,7 +1298,7 @@ class EventsController extends Controller
      *
      * @return view
      **/
-    public function create ()
+    public function create()
     {
         // get a list of venues
         $venues = ['' => ''] + Entity::getVenues()->pluck('name', 'id')->all();
@@ -1348,7 +1347,7 @@ class EventsController extends Controller
      * @param $event
      * @return bool|\Illuminate\Http\RedirectResponse
      */
-    protected function addFbPhoto ($event)
+    protected function addFbPhoto($event)
     {
         $fb = app(SammyK\LaravelFacebookSdk\LaravelFacebookSdk::class);
         $fields = 'attending_count,category,cover,interested_count,type,name,noreply_count,maybe_count,owner,place,roles';
@@ -1397,7 +1396,7 @@ class EventsController extends Controller
         return true;
     }
 
-    protected function makePhoto (UploadedFile $file)
+    protected function makePhoto(UploadedFile $file)
     {
         return Photo::named($file->getClientOriginalName())
             ->move($file);
@@ -1464,7 +1463,7 @@ class EventsController extends Controller
      * @return \Illuminate\Contracts\View\Factory|View
      * @throws \Illuminate\Container\EntryNotFoundException
      */
-    public function postEvent (Event $event)
+    public function postEvent(Event $event)
     {
         if (empty((array)$event)) {
             abort(404);
@@ -1494,7 +1493,7 @@ class EventsController extends Controller
     /**
      * Makes a call to the FB API if there is a link present and downloads the event cover photo
      */
-    public function getToken ()
+    public function getToken()
     {
         $fb = app(SammyK\LaravelFacebookSdk\LaravelFacebookSdk::class);
 
@@ -1539,7 +1538,7 @@ class EventsController extends Controller
         $fb->setDefaultAccessToken($token);
     }
 
-    public function show (Event $event)
+    public function show(Event $event)
     {
         if (empty((array)$event)) {
             abort(404);
@@ -1550,7 +1549,7 @@ class EventsController extends Controller
         return view('events.show', compact('event'))->with(['thread' => $thread ? $thread->first() : NULL]);
     }
 
-    public function store (EventRequest $request, Event $event)
+    public function store(EventRequest $request, Event $event)
     {
         $msg = '';
 
@@ -1565,13 +1564,13 @@ class EventsController extends Controller
         };
 
         // validation happening in EventRequest->rules
-
         $tagArray = $request->input('tag_list', []);
         $syncArray = array();
 
         // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
             if (!Tag::find($tag)) {
+
                 $newTag = new Tag;
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->tag_type_id = 1;
@@ -1583,7 +1582,9 @@ class EventsController extends Controller
                 $syncArray[] = $newTag->id;
 
                 $msg .= ' Added tag ' . $tag . '.';
+
             } else {
+                die('sync?');
                 $syncArray[$key] = $tag;
             };
         }
@@ -1671,7 +1672,7 @@ class EventsController extends Controller
         return view('events.edit', compact('event'));
     }
 
-    public function update (Event $event, EventRequest $request)
+    public function update(Event $event, EventRequest $request)
     {
         $msg = '';
 
@@ -1686,7 +1687,9 @@ class EventsController extends Controller
 
         // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
+
             if (!Tag::find($tag)) {
+
                 $newTag = new Tag;
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->tag_type_id = 1;
