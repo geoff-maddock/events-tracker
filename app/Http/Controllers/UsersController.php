@@ -12,8 +12,10 @@ use App\UserStatus;
 use App\Visibility;
 use Illuminate\Http\Request;
 use DB;
+use Illuminate\Http\Response;
 use Log;
 use Mail;
+use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UsersController extends Controller
@@ -156,10 +158,7 @@ class UsersController extends Controller
         $filters = $this->getFilters($request);
 
         // base criteria
-        //$query = $this->user->orderBy($this->sortBy, $this->sortOrder);
-
         $query = User::orderBy($this->sortBy, $this->sortOrder);
-
 
         // add the criteria from the session
         // check request for passed filter values
@@ -437,19 +436,15 @@ class UsersController extends Controller
      */
     public function deletePhoto ($id, Request $request)
     {
-
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif'
         ]);
 
         // detach from user
         $user = User::find($id);
-        $user->removePhoto($photo);
 
         $photo = $this->deletePhoto($request->file('file'));
         $photo->save();
-
-
     }
 
     /**
@@ -476,13 +471,14 @@ class UsersController extends Controller
         $user->user_status_id = 2;
         $user->save();
 
-
         Log::info('User ' . $user->name . ' is activated.');
 
         flash()->success('Success', 'User ' . $user->name . ' is now activated.');
 
-        return back();
+        // email the user
+        $this->notifyUserActivated($user);
 
+        return back();
     }
 
     /**
@@ -515,7 +511,38 @@ class UsersController extends Controller
         flash()->success('Success', 'User ' . $user->name . ' is now suspended.');
 
         return back();
+    }
 
+    /**
+     * Send a site update reminder to the user
+     *
+     * @param $id
+     * @param Request $request
+     * @return Response
+     */
+    public function reminder($id, Request $request)
+    {
+        // check if there is a logged in user
+        if (!$this->user) {
+            flash()->error('Error', 'No user is logged in.');
+            return back();
+        };
+
+        if (!$user = User::find($id)) {
+            flash()->error('Error', 'No such user');
+            return back();
+        };
+
+
+
+        // email the user
+        $this->notifyUser($user);
+
+        Log::info('User ' . $user->name . ' was sent a reminder');
+
+        flash()->success('Success', 'A reminder email was sent to  ' . $user->name . ' at ' . $user->email);
+
+        return back();
     }
 
     /**
@@ -542,7 +569,6 @@ class UsersController extends Controller
         $user->user_status_id = 5;
         $user->save();
 
-
         Log::info('User ' . $user->name . ' is deleted.');
 
         flash()->success('Success', 'User ' . $user->name . ' is now deleted.');
@@ -553,6 +579,56 @@ class UsersController extends Controller
         $user->delete();
 
         return back();
+    }
 
+    /**
+     * @param $user
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function notifyUser($user)
+    {
+        $admin_email = config('app.admin');
+        $site = config('app.app_name');
+        $url = config('app.url');
+
+        $events = array();
+
+        // build an array of events that are in the future based on what the user follows
+        if ($entities = $user->getEntitiesFollowing())
+        {
+            foreach ($entities as $entity)
+            {
+                if (count($entity->futureEvents()) > 0)
+                {
+                    $events[$entity->name] = $entity->futureEvents();
+                }
+            }
+        }
+
+
+        Mail::send('emails.user-reminder', ['user' => $user, 'admin_email' => $admin_email, 'site' => $site, 'url' => $url, 'events' => $events], function ($m) use ($user,  $admin_email, $site) {
+            $m->from($admin_email, $site);
+            $m->to($user->email, $user->name)->subject($site . ': Site updates for ' . $user->name . ' :: ' . $user->created_at->format('D F jS') );
+        });
+
+        return back();
+    }
+
+    /**
+     * @param $user
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function notifyUserActivated($user)
+    {
+        $admin_email = config('app.admin');
+        $site = config('app.app_name');
+        $url = config('app.url');
+
+        Mail::send('emails.user-activated', ['user' => $user, 'admin_email' => $admin_email, 'site' => $site, 'url' => $url], function ($m) use ($user,  $admin_email, $site) {
+            $m->from($admin_email, $site);
+            $m->to($user->email, $user->name)->subject($site . ': Account activated for ' . $user->name . ' :: ' . $user->created_at->format('D F jS') );
+        });
+
+        return back();
     }
 }

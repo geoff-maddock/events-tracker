@@ -5,7 +5,7 @@
 </div>
 <P></P>
 <div>
-	Username: <b>{{ $user->name }}</b><br>
+	Username: <b><a href="{{ $url }}/users/{{$user->id }}">{{ $user->name }}</a></b><br>
 	Full Name: <b>{{ $user->full_name }}</b><br>
 </div>
 <P></P>

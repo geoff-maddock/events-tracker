@@ -74,6 +74,12 @@ var App = (function()
             }).done(function (data) {
                 // fire a flash message
                 $(target).replaceWith(data);
+                swal({
+                        title: "Success",
+                        text: "You successfully followed an event.",
+                        type: "success",
+                        timer: 2000,
+                    });
                 console.log('Updated target ' +target);
             }).fail(function () {
                 console.log('No events could be loaded')

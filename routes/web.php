@@ -81,6 +81,11 @@ Route::get('users/{id}/activate', [
     'uses' => 'UsersController@activate'
 ]);
 
+Route::get('users/{id}/reminder', [
+    'as' => 'users.reminder',
+    'uses' => 'UsersController@reminder'
+]);
+
 Route::get('users/{id}/suspend', [
     'as' => 'users.suspend',
     'uses' => 'UsersController@suspend'

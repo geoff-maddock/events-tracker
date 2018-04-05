@@ -21,6 +21,12 @@
 					<span class='glyphicon glyphicon-ok-circle' title='Activate the user'></span></a>
 				@endif
 			@endcan
+			@can('grant_access')
+				@if ($user->isActive)
+					<a href="{!! route('users.reminder', ['id' => $user->id]) !!}">
+						<span class='glyphicon glyphicon-pushpin' title='Send reminder'></span></a>
+				@endif
+			@endcan
 			@can('impersonate_user')
 				<a href="{!! route('user.impersonate', ['id' => $user->id]) !!}" title="Impersonate {{ $user->name }}">
 					<span class='glyphicon glyphicon-user'></span>
