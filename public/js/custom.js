@@ -73,10 +73,10 @@ var App = (function()
                 url : $(this).attr('href'),
             }).done(function (data) {
                 // fire a flash message
-                $(target).replaceWith(data);
+                $(target).replaceWith(data.Success);
                 swal({
                         title: "Success",
-                        text: "You successfully followed an event.",
+                        text: data.Message,
                         type: "success",
                         timer: 2000,
                     });
