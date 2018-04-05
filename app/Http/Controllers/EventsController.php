@@ -1584,7 +1584,6 @@ class EventsController extends Controller
                 $msg .= ' Added tag ' . $tag . '.';
 
             } else {
-                die('sync?');
                 $syncArray[$key] = $tag;
             };
         }

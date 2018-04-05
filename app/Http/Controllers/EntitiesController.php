@@ -768,8 +768,6 @@ class EntitiesController extends Controller
 
         Log::info('User ' . $id . ' is following ' . $entity->name);
 
-        //flash()->success('Success', 'You are now following the entity - ' . $entity->name);
-
         // handle the request if ajax
         if ($request->ajax()) {
             return [
@@ -809,8 +807,6 @@ class EntitiesController extends Controller
         $follow = Follow::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'entity')->first();
         $follow->delete();
 
-        //flash()->success('Success', 'You are no longer following the entity.');
-        
         // handle the request if ajax
         if ($request->ajax()) {
             return [
