@@ -768,14 +768,17 @@ class EntitiesController extends Controller
 
         Log::info('User ' . $id . ' is following ' . $entity->name);
 
-        flash()->success('Success', 'You are now following the entity - ' . $entity->name);
+        //flash()->success('Success', 'You are now following the entity - ' . $entity->name);
 
         // handle the request if ajax
         if ($request->ajax()) {
-            return view('entities.single')
-                ->with(compact('entity'))
-                ->render();
-        }
+            return [
+                'Message' => 'You are no longer following the entity - ' . $entity->name,
+                'Success' => view('entities.single')
+                    ->with(compact('entity'))
+                    ->render()
+            ];
+        };
 
         return back();
 
@@ -806,14 +809,17 @@ class EntitiesController extends Controller
         $follow = Follow::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'entity')->first();
         $follow->delete();
 
-        flash()->success('Success', 'You are no longer following the entity.');
-
+        //flash()->success('Success', 'You are no longer following the entity.');
+        
         // handle the request if ajax
         if ($request->ajax()) {
-            return view('entities.single')
-                ->with(compact('entity'))
-                ->render();
-        }
+            return [
+                'Message' => 'You are no longer following the entity.',
+                'Success' => view('entities.single')
+                    ->with(compact('entity'))
+                    ->render()
+            ];
+        };
 
         return back();
 
