@@ -657,14 +657,18 @@ class SeriesController extends Controller
 
         Log::info('User ' . $id . ' is following ' . $series->name);
 
-        flash()->success('Success', 'You are now following the series - ' . $series->name);
+        // add to activity log
+        Activity::log($series, $this->user, 6);
 
-        // handle the request if ajax
         if ($request->ajax()) {
-            return view('series.single')
-                ->with(compact('series'))
-                ->render();
-        };
+            return [
+                'Message' => 'You are now following the series - ' . $series->name,
+                'Success' => view('series.single')
+                    ->with(compact('series'))
+                    ->render()
+            ];
+        }
+        flash()->success('Success', 'You are now following the series - ' . $series->name);
 
         return back();
 
@@ -680,7 +684,6 @@ class SeriesController extends Controller
      */
     public function unfollow ($id, Request $request)
     {
-
         // check if there is a logged in user
         if (!$this->user) {
             flash()->error('Error', 'No user is logged in.');
@@ -696,15 +699,19 @@ class SeriesController extends Controller
         $response = Follow::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'series')->first();
         $response->delete();
 
-        flash()->success('Success', 'You are no longer following the series.');
+        // add to activity log
+        Activity::log($series, $this->user, 7);
 
-        // handle the request if ajax
         if ($request->ajax()) {
-            return view('series.single')
-                ->with(compact('series'))
-                ->render();
+            return [
+                'Message' => 'You are no longer following the series - ' . $series->name,
+                'Success' => view('series.single')
+                    ->with(compact('series'))
+                    ->render()
+            ];
         };
 
+        flash()->success('Success', 'You are no longer following the series - ' . $series->name);
         return back();
 
     }

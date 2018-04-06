@@ -95,7 +95,7 @@
 
 				@endif
 		@else
-		<a href="{!! route('events.attend', ['id' => $event->id]) !!}" title="Click to mark attending"><span class='glyphicon glyphicon-star text-info'></span>  No response</a>
+		<a href="{!! route('events.attend', ['id' => $event->id]) !!}" title="Click to mark attending"><span class='glyphicon glyphicon-star-empty text-info'></span>  No response</a>
 		@endif
 	@endif
 
@@ -208,44 +208,45 @@
 	@endif
 
 </div>
+<!-- MAY DEPRECATE COMMENTS -->
+{{--<div class="row">--}}
+	{{--<div class="col-md-4">--}}
 
-<div class="row">
-	<div class="col-md-4">
-		@if ($comments = $event->comments AND count($comments) > 0)
-		<b>Comments:</b><br>
-		@foreach ($comments as $comment)
-			<div class="well well-sm">
-				<b>{{ $comment->author->name }}</b><br>
-				{!! $comment->message !!}<br>
-				{{ $comment->created_at->diffForHumans() }} <br>
-				@if ($signedIn && $comment->createdBy($user))
-				<a href="{!! route('events.comments.edit', ['event' => $event->id, 'id' => $comment->id]) !!}">
-				<span class='glyphicon glyphicon-pencil'></span></a>
-				{!! Form::open(['route' => ['events.comments.destroy', 'event' => $event->id, 'id' => $comment->id], 'method' => 'delete']) !!}
-    			<button type="submit" class="btn btn-danger btn-mini delete">Delete</button>
-				{!! Form::close() !!}
+		{{--@if ($comments = $event->comments())--}}
+		{{--<b>Comments:</b><br>--}}
+		{{--@foreach ($event->comments as $comment)--}}
+			{{--<div class="well well-sm">--}}
+				{{--<b>{{ $comment->author->name }}</b><br>--}}
+				{{--{!! $comment->message !!}<br>--}}
+				{{--{{ $comment->created_at->diffForHumans() }} <br>--}}
+				{{--@if ($signedIn && $comment->createdBy($user))--}}
+				{{--<a href="{!! route('events.comments.edit', ['event' => $event->id, 'id' => $comment->id]) !!}">--}}
+				{{--<span class='glyphicon glyphicon-pencil'></span></a>--}}
+				{{--{!! Form::open(['route' => ['events.comments.destroy', 'data-type'=> 'comment', 'event' => $event->id, 'id' => $comment->id], 'method' => 'delete']) !!}--}}
+    			{{--<button type="submit" class="btn btn-danger btn-mini delete">Delete</button>--}}
+				{{--{!! Form::close() !!}--}}
 
-				@endif
-			</div>
-		@endforeach
-		@endif
-	</div>
+				{{--@endif--}}
+			{{--</div>--}}
+		{{--@endforeach--}}
+		{{--@endif--}}
+	{{--</div>--}}
 
-</div>
+{{--</div>--}}
 
-<P>
-@if (Auth::user())	
-	<span> 
-		<a href="{!! route('events.comments.create', ['id' => $event->id]) !!}" class="btn btn-primary">Add Comment</a>
-	</span>
-@endif
-</P>
+{{--<P>--}}
+{{--@if (Auth::user())	--}}
+	{{--<span> --}}
+		{{--<a href="{!! route('events.comments.create', ['id' => $event->id]) !!}" class="btn btn-primary">Add Comment</a>--}}
+	{{--</span>--}}
+{{--@endif--}}
+{{--</P>--}}
 
 @stop
 
 @section('scripts.footer')
 <script src="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.2.0/dropzone.js"></script>
-@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )
+@if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser') ) )
 <script>
 Dropzone.autoDiscover = false;
 $(document).ready(function(){

@@ -473,6 +473,9 @@ class UsersController extends Controller
 
         Log::info('User ' . $user->name . ' is activated.');
 
+        // add to activity log
+        Activity::log($user, $this->user, 10);
+
         flash()->success('Success', 'User ' . $user->name . ' is now activated.');
 
         // email the user
@@ -505,6 +508,8 @@ class UsersController extends Controller
         $user->user_status_id = 3;
         $user->save();
 
+        // add to activity log
+        Activity::log($user, $this->user, 11);
 
         Log::info('User ' . $user->name . ' is suspended.');
 
@@ -533,10 +538,11 @@ class UsersController extends Controller
             return back();
         };
 
-
-
         // email the user
         $this->notifyUser($user);
+
+        // add to activity log
+        Activity::log($user, $this->user, 12);
 
         Log::info('User ' . $user->name . ' was sent a reminder');
 
@@ -605,10 +611,11 @@ class UsersController extends Controller
             }
         }
 
-
         Mail::send('emails.user-reminder', ['user' => $user, 'admin_email' => $admin_email, 'site' => $site, 'url' => $url, 'events' => $events], function ($m) use ($user,  $admin_email, $site) {
             $m->from($admin_email, $site);
-            $m->to($user->email, $user->name)->subject($site . ': Site updates for ' . $user->name . ' :: ' . $user->created_at->format('D F jS') );
+            $m->to($user->email, $user->name)
+                ->bcc($admin_email)
+                ->subject($site . ': Site updates for ' . $user->name . ' :: ' . $user->created_at->format('D F jS') );
         });
 
         return back();
@@ -626,7 +633,9 @@ class UsersController extends Controller
 
         Mail::send('emails.user-activated', ['user' => $user, 'admin_email' => $admin_email, 'site' => $site, 'url' => $url], function ($m) use ($user,  $admin_email, $site) {
             $m->from($admin_email, $site);
-            $m->to($user->email, $user->name)->subject($site . ': Account activated for ' . $user->name . ' :: ' . $user->created_at->format('D F jS') );
+            $m->to($user->email, $user->name)
+                ->bcc($admin_email)
+                ->subject($site . ': Account activated for ' . $user->name . ' :: ' . $user->created_at->format('D F jS') );
         });
 
         return back();

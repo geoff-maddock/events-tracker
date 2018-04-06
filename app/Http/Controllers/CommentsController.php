@@ -57,7 +57,6 @@ class CommentsController extends Controller {
 			$type = 'events';
 		}
 
-
 		return view('comments.create', compact('object', 'type'));
 	}
 
@@ -77,14 +76,14 @@ class CommentsController extends Controller {
 
 		if (isset($entity->id))
 		{
-			$input['commentable_type'] = 'App\\Entity';
+			$input['commentable_type'] = 'entity';
 			$input['commentable_id'] = $entity->id;
 			$type = "entities";
 		};
 
 		if (isset($event->id))
 		{
-			$input['commentable_type'] = 'App\\Event';
+			$input['commentable_type'] = 'event';
 			$input['commentable_id'] = $event->id;
 			$type = "events";
 		};
@@ -92,9 +91,9 @@ class CommentsController extends Controller {
 		$this->validate($request, $this->rules);
 
 		$comment = Comment::create($input);
+		$comment->save();
 
 		flash()->success('Success', 'Your comment has been created');
-
 
 		return redirect()->route($type.'.show', $comment->commentable->getRouteKey());
 	}
@@ -114,26 +113,27 @@ class CommentsController extends Controller {
     /**
      * Show the form for editing the specified resource.
      *
-     * @param $object
+     * @param String $id
      * @param  \App\Comment $comment
      * @return Response
      */
-	public function edit($object, Comment $comment)
+	public function edit($id, Comment $comment)
 	{
-		if (get_class($object) == 'Entity')
+	    $object = $comment->commentable;
+
+		if (get_class($object) == 'App\Entity')
 		{
 			$entity = $object;
 			$type = 'entities';
 		};
 
-		if (get_class($object) == 'Entity')
+		if (get_class($object) == 'App\Event')
 		{
 			$event = $object;
 			$type = 'events';
 		}
 
-
-		return view('comments.edit', compact('entity', 'object', 'event', 'comment','type'));
+		return view('comments.edit', compact('entity', 'object', 'event', 'comment', 'type'));
 	}
 
 	/**

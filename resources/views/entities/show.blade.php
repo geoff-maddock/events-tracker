@@ -51,18 +51,17 @@
 	@if ($signedIn)
 	<br>
 	{{ count($entity->follows) }} Follows |
-	@if ($follow = $entity->followedBy($user))
-	<b>You Are Following</b> <a href="{!! route('entities.unfollow', ['id' => $entity->slug]) !!}" title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
-	@else
-	Click to Follow <a href="{!! route('entities.follow', ['id' => $entity->slug]) !!}" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
+        @if ($follow = $entity->followedBy($user))
+        <b>You Are Following</b> <a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}"  title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
+        @else
+        Click to Follow <a href="{!! route('entities.follow', ['id' => $entity->id]) !!}" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
+        @endif
+
 	@endif
 
-	@endif 
 
-	@unless ($entity->roles->isEmpty())
-		
+    @unless ($entity->roles->isEmpty())
 		<P><b>Roles:</b>
-		
 		@foreach ($entity->roles as $role)
 		<span class="label label-tag"><a href="/entities/role/{{ $role->name }}">{{ $role->name }}</a></span>
 		@endforeach

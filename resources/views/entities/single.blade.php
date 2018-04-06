@@ -5,22 +5,22 @@
 	</div>
 	@endif
 
-	{!! link_to_route('entities.show', $entity->name, [$entity->id], ['class' => 'item-title']) !!}
+	{!! link_to_route('entities.show', $entity->name, [$entity->slug], ['class' => 'item-title']) !!}
 	@if ($entity->entityStatus->name === "Inactive")
 	[Inactive]
 	@endif
 
 	@if ($signedIn && $entity->ownedBy($user))
-	<a href="{!! route('entities.edit', ['id' => $entity->id]) !!}">
+	<a href="{!! route('entities.edit', ['id' => $entity->slug]) !!}">
 	<span class='glyphicon glyphicon-pencil'></span></a>
 	@endif 
 	
 	@if ($signedIn)
-	@if ($follow = $entity->followedBy($user))
-	<a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}" data-target="#entity-{{ $entity->id }}" class="ajax-action" title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
-	@else
-	<a href="{!! route('entities.follow', ['id' => $entity->id]) !!}" data-target="#entity-{{ $entity->id }}" class="ajax-action" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
-	@endif
+		@if ($follow = $entity->followedBy($user))
+		<a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}" data-target="#entity-{{ $entity->id }}" class="ajax-action" title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
+		@else
+		<a href="{!! route('entities.follow', ['id' => $entity->id]) !!}" data-target="#entity-{{ $entity->id }}" class="ajax-action" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
+		@endif
 	@endif 
 
 

@@ -1785,7 +1785,7 @@ class EventsController extends Controller
                     ];
 
         };
-
+        flash()->success('Success', 'You are now attending the event - ' . $event->name);
         return back();
 
     }
@@ -1828,7 +1828,7 @@ class EventsController extends Controller
                     ->render()
             ];
         };
-
+        flash()->success('Success', 'You are no longer attending the event - ' . $event->name);
         return back();
 
     }
@@ -2233,7 +2233,7 @@ class EventsController extends Controller
     }
 
     /**
-     * Mark user as unfollowing the entity.
+     * Mark user as unfollowing the event.
      *
      * @param $id
      * @param Request $request
@@ -2241,7 +2241,6 @@ class EventsController extends Controller
      */
     public function unfollow ($id, Request $request)
     {
-
         // check if there is a logged in user
         if (!$this->user) {
             flash()->error('Error', 'No user is logged in.');

@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers;
 
+use App\Activity;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventRequest;
@@ -336,6 +337,8 @@ class TagsController extends Controller {
 			return back();
 		};
 
+		$tag = $object;
+
 		// add the following response
 		$follow = new Follow;
 		$follow->object_id = $id;
@@ -345,17 +348,33 @@ class TagsController extends Controller {
 
      	Log::info('User '.$id.' is following '.$object->name);
 
+        // add to activity log
+        Activity::log($tag, $this->user, 6);
+
+        // handle the request if ajax
+        if ($request->ajax()) {
+            return [
+                'Message' => 'You are now following the tag - ' . $object->name,
+                'Success' => view('tags.link')
+                    ->with(compact('tag'))
+                    ->render()
+            ];
+        };
+
 		flash()->success('Success',  'You are now following the '.$type.' - '.$object->name);
 
 		return back();
 
 	}
 
-	/**
-	 * Mark user as unfollowing the entity.
-	 *
-	 * @return Response
-	 */
+    /**
+     * Mark user as unfollowing the tag.
+     *
+     * @param $id
+     * @param Request $request
+     * @return Response
+     * @throws \Throwable
+     */
 	public function unfollow($id, Request $request)
 	{
 		$type = 'tag';
@@ -367,17 +386,30 @@ class TagsController extends Controller {
 			return back();
 		};
 
-		if (!$event = Event::find($id))
+		if (!$tag = Tag::find($id))
 		{
 			flash()->error('Error',  'No such '.$type);
 			return back();
 		};
 
+		// add to activity log
+        Activity::log($tag, $this->user, 7);
+
 		// delete the follow
 		$response = Follow::where('object_id','=', $id)->where('user_id','=',$this->user->id)->where('object_type','=',$type)->first();
 		$response->delete();
 
-		flash()->success('Success',  'You are no longer following the '.$type);
+        // handle the request if ajax
+        if ($request->ajax()) {
+            return [
+                'Message' => 'You are no longer following the tag - ' . $tag->name,
+                'Success' => view('tags.link')
+                    ->with(compact('tag'))
+                    ->render()
+            ];
+        };
+
+		flash()->success('Success',  'You are no longer following the ' . $type . ' ' . $tag->name);
 
 		return back();
 	}

@@ -18,7 +18,6 @@ class Comment extends Model {
   protected $fillable = ['message', 'commentable_id','commentable_type'];
 
 
-
     /**
      * Get all of the owning commentable models.
      */

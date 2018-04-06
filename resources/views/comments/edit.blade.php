@@ -8,13 +8,13 @@
 
 	<h1>Edit Comment: <i>{{ $comment->name }}</i> </h1> 
 
-	{!! Form::model($comment, ['route' => ['entities.comments.update', $object->id, $comment->id], 'method' => 'PATCH']) !!}
+	{!! Form::model($comment, ['route' => [str_plural($type).'.comments.update', $object->id, $comment->id], 'method' => 'PATCH']) !!}
 
 		@include('comments.form', ['action' => 'update'])
 
 	{!! Form::close() !!}
 
-	<P>{!! delete_form(['entities.comments.destroy', $object->id,  $comment->id]) !!}</P>
+	<P>{!! delete_form([str_plural($type).'.comments.destroy', $object->id,  $comment->id]) !!}</P>
 
 
 @stop
