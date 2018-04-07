@@ -266,8 +266,24 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
             ->where('follows.object_type', '=', 'series')
             ->where('follows.user_id', '=', $this->id)
             ->orderBy('follows.created_at', 'desc')
-            ->select('series.*');
+            ->select('series.*')
+            ->get();
         return $series;
+    }
+
+    /**
+     * Return a list of threads the user is following
+     *
+     */
+    public function getThreadsFollowing ()
+    {
+        $threads = Thread::join('follows', 'threads.id', '=', 'follows.object_id')
+            ->where('follows.object_type', '=', 'thread')
+            ->where('follows.user_id', '=', $this->id)
+            ->orderBy('follows.created_at', 'desc')
+            ->select('threads.*')
+            ->get();
+        return $threads;
     }
 
     /**

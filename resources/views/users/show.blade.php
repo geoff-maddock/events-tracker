@@ -117,6 +117,7 @@
                                 @include('tags.list', ['tags' => $user->getTagsFollowing()->take(20)])
                                 @include('entities.list', ['entities' => $user->getEntitiesFollowing()->take(20)])
                                 @include('series.list', ['series' => $user->getSeriesFollowing()->take(20)])
+                                @include('threads.list', ['threads' => $user->getThreadsFollowing()->take(20)])
                             </div>
 
                         </div>
@@ -125,8 +126,7 @@
                     <div class="panel panel-info">
 
                         <div class="panel-heading">
-                            <h3 class="panel-title">Attending <span
-                                        class="label label-primary">{{ $user->attendingCount }}</span></h3>
+                            <h3 class="panel-title">Attending <span class="label label-primary">{{ $user->attendingCount }}</span></h3>
                         </div>
 
                         <div class="panel-body">
