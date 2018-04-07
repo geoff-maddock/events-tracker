@@ -1224,7 +1224,7 @@ class EventsController extends Controller
      * @param $type
      * @return Response
      */
-    public function calendarEventTypes ($type): Response
+    public function calendarEventTypes ($type)
     {
         $tag = urldecode($type);
 
