@@ -5,6 +5,7 @@ var App = (function()
     {
         this.initTooltip();
         this.setupConfirm();
+        this.setupDeleteConfirm();
         this.setupControls();
         this.setupLoadingModal();
         this.setupAjaxAction('body');
@@ -15,11 +16,11 @@ var App = (function()
         $('[data-toggle="tooltip"]').tooltip();
     };
 
-    var setupConfirm = function() {
+    var setupDeleteConfirm = function() {
         $('button.delete').on('click', function (e) {
-            e.preventDefault();
             var form = $(this).parents('form');
             var type = $(this).data('type');
+            e.preventDefault();
             swal({
                     title: "Are you sure?",
                     text: "You will not be able to recover this " + type + "!",
@@ -35,6 +36,28 @@ var App = (function()
                     }
                     ;
                     //
+                });
+        });
+    };
+
+    var setupConfirm = function() {
+        $('.confirm').on('click', function (e) {
+            var link = $(this).attr('href');
+            e.preventDefault();
+            var form = $(this).parents('form');
+            var type = $(this).data('type');
+            swal({
+                    title: "Are you sure?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirm",
+                    closeOnConfirm: true
+                },
+                function (isConfirm) {
+                    if (isConfirm) {
+                        window.location.href = link;
+                    }
                 });
         });
     };
@@ -112,6 +135,7 @@ var App = (function()
         init: init,
         initTooltip: initTooltip,
         setupConfirm: setupConfirm,
+        setupDeleteConfirm: setupDeleteConfirm,
         setupControls: setupControls,
         setupAjaxAction: setupAjaxAction,
         setupLoadingModal: setupLoadingModal,

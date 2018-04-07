@@ -49,7 +49,6 @@ EOT;
 		$csrf = csrf_token();
 		$object = "object";
 
-
 		if (is_object($path)) {
 
 			$object = get_class_name(get_class($path));
