@@ -14,6 +14,9 @@ class EventServiceProvider extends ServiceProvider {
 		'event.name' => [
 			'EventListener',
 		],
+        'Illuminate\Routing\Events\RouteMatched' => [
+            'App\Listeners\RouterMatchedListener',
+        ],
         'Illuminate\Auth\Events\Login' => [
             'App\Listeners\LogSuccessfulLogin',
         ],

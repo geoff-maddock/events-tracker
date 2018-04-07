@@ -152,7 +152,7 @@ class Activity extends Eloquent {
 
 		if ($message)
 		{
-			$activity->message = sprintf("Created user %s", $user->email);
+			$activity->message = sprintf($message);
 		} else {
 			// otherwise build message
 			$m = $act->name.' '.strtolower($table).' '.$object->name;
