@@ -30,7 +30,7 @@ class Kernel extends ConsoleKernel {
 	    // test schedule
 		/*
 		$schedule->call(function() {
-			Log::info('test.');	
+			Log::info('test.');
 		})->everyMinute();
 		*/
 
@@ -44,10 +44,34 @@ class Kernel extends ConsoleKernel {
 			// get each user
 			$users = User::orderBy('name','ASC')->get();
 			$show_count = 12;
+            $interests = array();
 
 			// cycle through all the users
 			foreach ($users as $user)
 			{
+                // build an array of events that are in the future based on what the user follows
+                if ($entities = $user->getEntitiesFollowing())
+                {
+                    foreach ($entities as $entity)
+                    {
+                        if (count($entity->futureEvents()) > 0)
+                        {
+                            $interests[$entity->name] = $entity->futureEvents();
+                        }
+                    }
+                }
+                // build an array of future events based on tags the user follows
+                if ($tags = $user->getTagsFollowing())
+                {
+                    foreach ($tags as $tag)
+                    {
+                        if (count($tag->futureEvents()) > 0)
+                        {
+                            $interests[$tag->name] = $tag->futureEvents();
+                        }
+                    }
+                }
+
 				// get the next x events they are attending
 				if ($events = $user->getAttendingFuture()->take($show_count) )
 				{
@@ -55,7 +79,7 @@ class Kernel extends ConsoleKernel {
 					if ($events->count() > 0)
 					{
 						// send an email containing that list
-						Mail::send('emails.weekly-events', ['user' => $user, 'events' => $events, 'url' => $url], function ($m) use ($user, $events, $url, $reply_email, $site) {
+						Mail::send('emails.weekly-events', ['user' => $user, 'interests' => $interests, 'events' => $events, 'url' => $url, 'site' => $site], function ($m) use ($user, $reply_email, $site) {
 							$m->from($reply_email, $site);
 
 							$dt = Carbon::now();
@@ -77,7 +101,7 @@ class Kernel extends ConsoleKernel {
 		})->weekly()->mondays()->timezone('America/New_York')->at('5:00');
 
 		// schedule daily email of events each user is attending today
-		$schedule->command('notify')->daily()->timezone('America/New_York')->at('6:00');
+		$schedule->command('notify')->daily()->timezone('America/New_York')->at('9:00');
 
 	}
 

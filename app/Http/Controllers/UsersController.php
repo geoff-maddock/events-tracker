@@ -10,6 +10,7 @@ use App\Tag;
 use App\User;
 use App\UserStatus;
 use App\Visibility;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use DB;
 use Illuminate\Http\Response;
@@ -610,12 +611,23 @@ class UsersController extends Controller
                 }
             }
         }
+        // build an array of future events based on tags the user follows
+        if ($tags = $user->getTagsFollowing())
+        {
+            foreach ($tags as $tag)
+            {
+                if (count($tag->futureEvents()) > 0)
+                {
+                    $events[$tag->name] = $tag->futureEvents();
+                }
+            }
+        }
 
         Mail::send('emails.user-reminder', ['user' => $user, 'admin_email' => $admin_email, 'site' => $site, 'url' => $url, 'events' => $events], function ($m) use ($user,  $admin_email, $site) {
             $m->from($admin_email, $site);
             $m->to($user->email, $user->name)
                 ->bcc($admin_email)
-                ->subject($site . ': Site updates for ' . $user->name . ' :: ' . $user->created_at->format('D F jS') );
+                ->subject($site . ': Site updates for ' . $user->name . ' :: ' . Carbon::now()->format('D F jS') );
         });
 
         return back();
@@ -635,7 +647,7 @@ class UsersController extends Controller
             $m->from($admin_email, $site);
             $m->to($user->email, $user->name)
                 ->bcc($admin_email)
-                ->subject($site . ': Account activated for ' . $user->name . ' :: ' . $user->created_at->format('D F jS') );
+                ->subject($site . ': Account activated for ' . $user->name . ' :: ' . Carbon::now()->format('D F jS') );
         });
 
         return back();

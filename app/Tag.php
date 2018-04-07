@@ -112,4 +112,15 @@ class Tag extends Eloquent {
     {
         return $this->morphMany('App\Follow','object', 'object_type', 'object_id');
     }
+
+    /**
+     * If there is a future event, return it
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function futureEvents()
+    {
+        $events = $this->events()->where('start_at','>=',Carbon::now())->orderBy('start_at', 'ASC')->get();
+        return $events;
+    }
 }

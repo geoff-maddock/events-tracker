@@ -1,4 +1,7 @@
-Here is a reminder about these upcoming events that you are attending.
+<html>
+<body>
+<div>
+Here is a reminder from <a href="{{ $url }}">{{ $url }}</a> about these upcoming events that you are attending.
 
 @foreach ($events as $event)
 <div class='event-date'>
@@ -86,3 +89,73 @@ Here is a reminder about these upcoming events that you are attending.
 </div>
 
 @endforeach
+
+	@if (count($events) > 0)
+		<h3>Here's some updates on who you are following:</h3>
+		@foreach ($interests as $entity => $list)
+			<h2>{{ $entity }}</h2>
+			@foreach ($list as $event)
+				<div>
+					{!! $event->start_at->format('l F jS Y') !!} <br>
+					<b><a href="{{ $url }}/events/{{ $event->id }}">{{ $event->name }}</a></b><br>
+					<i>{{ $event->short }}</i>
+
+					@if (!empty($event->series_id))
+						<br><a href="/series/{{$event->series_id }}">{!! $event->series->name !!}</a> series
+					@endif
+					<br>
+					{{ $event->eventType->name }}
+
+					@if ($event->venue)
+						<br>{{ $event->venue->name or 'No venue specified' }}
+						@if ($event->venue->getPrimaryLocationAddress() )
+							{{ $event->venue->getPrimaryLocationAddress() }}
+						@endif
+					@else
+						no venue specified
+					@endif
+
+					@if ($event->start_at)
+						at {{ $event->start_at->format('g:i A') }}
+					@endif
+
+					@if ($event->door_price)
+						${{ number_format($event->door_price,0) }}
+					@endif
+
+
+					@unless ($event->entities->isEmpty())
+						<br>
+						Related:
+						@foreach ($event->entities as $entity)
+							{{ $entity->name }},
+						@endforeach
+					@endunless
+
+					@unless ($event->tags->isEmpty())
+						Tags:
+						@foreach ($event->tags as $tag)
+							{{ $tag->name }},
+						@endforeach
+					@endunless
+
+					@if ($event->primary_link)
+						<br>{{ $event->primary_link or ''}}
+					@endif
+					<br>
+				</div>
+				<br>
+			@endforeach
+		@endforeach
+		<br><br>
+	@endif
+	We're constantly adding new features, functionality and updates to improve your experience. <br>
+	If you have any feedback, don't hesitate to drop us a line.
+
+
+	<P></P>
+	Thanks!<br>
+	{{ $site }}<br>
+	{{ $url }}
+	</body>
+	</html>
