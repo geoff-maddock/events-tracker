@@ -49,7 +49,7 @@
                 <!-- MORE only shown when collapsed down to medium desktops or smaller -->
 				<li class="dropdown visible-xs-block visible-sm-block visible-md-block">
 					<a href="#" class="dropdown-toggle visible-xs-block visible-sm-block visible-md-block" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">More <span class="caret"></span></a>
-				
+
 					<ul class="dropdown-menu">
 						<li class="{{ Request::is('threads') ? 'active' : '' }}"><a href="{{ url('/threads')}}" title="Show a list of discussion forums.">Forum</a></li>
 						<li class="{{ Request::is('tags') ? 'active' : '' }}"><a href="{{ url('/tags') }}" title="Show a list of tag topics.">Tags</a></li>

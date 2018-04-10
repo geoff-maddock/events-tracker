@@ -40,23 +40,25 @@ class Kernel extends ConsoleKernel {
 			$reply_email = config('app.noreplyemail');
 			$site = config('app.app_name');
 			$url = config('app.url');
+            $admin_email = config('app.admin');
 
 			// get each user
 			$users = User::orderBy('name','ASC')->get();
 			$show_count = 12;
-            $interests = array();
 
 			// cycle through all the users
 			foreach ($users as $user)
 			{
+                $interests = array();
+
                 // build an array of events that are in the future based on what the user follows
                 if ($entities = $user->getEntitiesFollowing())
                 {
                     foreach ($entities as $entity)
                     {
-                        if (count($entity->futureEvents()) > 0)
+                        if (count($entity->todaysEvents()) > 0)
                         {
-                            $interests[$entity->name] = $entity->futureEvents();
+                            $interests[$entity->name] = $entity->todaysEvents();
                         }
                     }
                 }
@@ -79,11 +81,15 @@ class Kernel extends ConsoleKernel {
 					if ($events->count() > 0)
 					{
 						// send an email containing that list
-						Mail::send('emails.weekly-events', ['user' => $user, 'interests' => $interests, 'events' => $events, 'url' => $url, 'site' => $site], function ($m) use ($user, $reply_email, $site) {
+						Mail::send('emails.weekly-events',
+                            ['user' => $user, 'interests' => $interests, 'events' => $events, 'url' => $url, 'site' => $site],
+                            function ($m) use ($user, $admin_email, $reply_email, $site) {
 							$m->from($reply_email, $site);
 
 							$dt = Carbon::now();
-							$m->to($user->email, $user->name)->subject($site.': Weekly Reminder - '.$dt->format('l F jS Y'));
+							$m->to($user->email, $user->name)
+                                ->bcc($admin_email)
+                                ->subject($site.': Weekly Reminder - '.$dt->format('l F jS Y'));
 						});
 
 						// log that the weekly email was sent

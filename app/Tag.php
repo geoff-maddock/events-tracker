@@ -123,4 +123,15 @@ class Tag extends Eloquent {
         $events = $this->events()->where('start_at','>=',Carbon::now())->orderBy('start_at', 'ASC')->get();
         return $events;
     }
+
+    /**
+     * Return any events that match today for the start date
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function todaysEvents()
+    {
+        $events = $this->events()->whereDate('start_at', '=', Carbon::today()->toDateString())->orderBy('start_at', 'ASC')->get();
+        return $events;
+    }
 }

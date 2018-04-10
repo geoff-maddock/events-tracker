@@ -257,6 +257,17 @@ class Entity extends Eloquent {
 		return $events;
 	}
 
+    /**
+     * Return any events that match today for the start date
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function todaysEvents()
+    {
+        $events = $this->events()->whereDate('start_at', '=', Carbon::today()->toDateString())->orderBy('start_at', 'ASC')->get();
+        return $events;
+    }
+
 	/**
 	 * If there is a future event, return it
 	 *

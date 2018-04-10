@@ -7,21 +7,21 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
-class Notify extends Command {
+class NotifyWeekly extends Command {
 
         /**
          * The console command name.
          *
          * @var string
          */
-        protected $name = 'notify';
+        protected $name = 'notifyWeekly';
 
         /**
          * The console command description.
          *
          * @var string
          */
-        protected $description = 'Generate and send specified notification(s).';
+        protected $description = 'Generate and send specified weekly notification(s).';
 
         /**
          * Execute the console command.
@@ -39,34 +39,10 @@ class Notify extends Command {
                 $users = User::orderBy('name','ASC')->get();
                 $show_count = 12;
 
+
                 // cycle through all the users
                 foreach ($users as $user)
                 {
-                        $interests = array();
-
-                        // build an array of events that are today based on what the user follows
-                        if ($entities = $user->getEntitiesFollowing())
-                        {
-                            foreach ($entities as $entity)
-                            {
-                                if (count($entity->futureEvents()) > 0)
-                                {
-                                    $interests[$entity->name] = $entity->futureEvents();
-                                }
-                            }
-                        }
-                        // build an array of future events based on tags the user follows
-                        if ($tags = $user->getTagsFollowing())
-                        {
-                            foreach ($tags as $tag)
-                            {
-                                if (count($tag->futureEvents()) > 0)
-                                {
-                                    $interests[$tag->name] = $tag->futureEvents();
-                                }
-                            }
-                        }
-
                         // get the next x events they are attending
                         if ($events = $user->getAttendingToday()->take($show_count))
                         {
@@ -74,7 +50,7 @@ class Notify extends Command {
                                 if ($events->count() > 0)
                                 {
                                         // send an email containing that list
-                                        Mail::send('emails.daily-events', ['user' => $user, 'events' => $events, 'interests' => $interests,  'admin_email' => $admin_email, 'url' => $url, 'site' => $site], function ($m) use ($user,  $admin_email, $reply_email, $site) {
+                                        Mail::send('emails.daily-events', ['user' => $user, 'events' => $events, 'admin_email' => $admin_email, 'url' => $url], function ($m) use ($user,  $admin_email, $reply_email, $site) {
                                                 $m->from($reply_email, $site);
 
                                                 $dt = Carbon::now();
