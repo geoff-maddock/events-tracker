@@ -612,17 +612,15 @@ class Event extends Eloquent {
     {
         $action = 'TEMPLATE';
         $text = $this->name;
-        $start = Carbon::parse($this->start_at)->format('Ymd\THms\Z');
-        $end = Carbon::parse($this->start_at)->format('Ymd\THms\Z');
+        $start = Carbon::parse($this->start_at)->format('Ymd\THis');
+        $end = Carbon::parse($this->start_at)->format('Ymd\THis');
         $details = $this->description;
-        //$details = 'test details';
         $location = $this->venue ? $this->venue->name : 'Unknown';
         $sf = "true";
 
         $url = sprintf('https://www.google.com/calendar/render?action=%s&text=%s&dates=%s/%s&details=%s&location=%s&sf=%s&output=xml', $action, $text, $start, $end, $details, $location, $sf);
 
         return $url;
-
     }
 
 }
