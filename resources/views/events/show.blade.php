@@ -77,6 +77,9 @@
 	<span class='glyphicon glyphicon-shopping-cart'></span>
 	</a>
 	@endif
+		<a href="{!! $event->getGoogleCalendarLink() !!}" target="_" rel="nofollow" title="Add to Google Calendar">
+			<span class='glyphicon glyphicon-calendar'></span>
+		</a>
 
 		{{ $event->attendingCount }} users attending {{ $event->countAttended > 0 ? ', '.$event->countAttended.' user attended' : '' }}
 		<br>

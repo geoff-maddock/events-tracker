@@ -74,7 +74,7 @@ class Notify extends Command {
                                 if ($events->count() > 0)
                                 {
                                         // send an email containing that list
-                                        Mail::send('emails.daily-events', ['user' => $user, 'events' => $events, 'interests' => $interests,  'admin_email' => $admin_email, 'url' => $url, 'site' => $site], function ($m) use ($user,  $admin_email, $reply_email, $site) {
+                                        Mail::send('emails.daily-events', ['user' => $user, 'events' => $events, 'interests' => $interests, 'admin_email' => $admin_email, 'url' => $url, 'site' => $site], function ($m) use ($user,  $admin_email, $reply_email, $site) {
                                                 $m->from($reply_email, $site);
 
                                                 $dt = Carbon::now();

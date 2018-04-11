@@ -6,6 +6,9 @@
 
         </div>
     @endif
+        @if ($series->visibility->name !== 'Public')
+            <span class="text-warning">{{ $series->visibility->name }}</span><br>
+        @endif
     {!! link_to_route('series.show', $series->name, [$series->id], ['class' => 'item-title']) !!} {{ $series->short }}
 
     @if ($signedIn && ($series->ownedBy($user) || $user->hasGroup('super_admin')))

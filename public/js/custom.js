@@ -74,6 +74,7 @@ var App = (function()
                 placeholder: $(this).data('placeholder'),
                 tags: $(this).data('tags'),
                 allowClear: true,
+                width: '100%',
             });
 
         // console.log('Set up select to, applied to select2 class.');

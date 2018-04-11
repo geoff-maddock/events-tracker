@@ -33,13 +33,13 @@
 				</div>
 
 				<div class="form-group col-sm-2">
-					{!! Form::label('filter_venue','Filter By Venue') !!}
+					{!! Form::label('filter_venue', 'Filter By Venue', array('width' => '100%')) !!}<br>
 					<?php $venues = [''=>''] + App\Entity::getVenues()->pluck('name','name')->all();?>
 					{!! Form::select('filter_venue', $venues, (isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL), ['data-width' => '100%','class' =>'form-control select2', 'data-placeholder' => 'Select a venue']) !!}
 				</div>
 
 				<div class="form-group col-sm-2">
-					{!! Form::label('filter_tag','Filter By Tag') !!}
+					{!! Form::label('filter_tag', 'Filter By Tag') !!}
 					<?php $tags =  [''=>'&nbsp;'] + App\Tag::orderBy('name','ASC')->pluck('name', 'name')->all();?>
 					{!! Form::select('filter_tag', $tags, (isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL), ['data-width' => '100%', 'class' =>'form-control select2', 'data-placeholder' => 'Select a tag']) !!}
 				</div>

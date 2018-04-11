@@ -198,6 +198,11 @@ class SeriesController extends Controller
 
     }
 
+    /**
+     * @param Request $request
+     * @return string
+     * @throws \Throwable
+     */
     public function index (Request $request)
     {
         // updates sort, rpp from request
@@ -223,6 +228,11 @@ class SeriesController extends Controller
             ->render();
     }
 
+    /**
+     * @param Request $request
+     * @return string
+     * @throws \Throwable
+     */
     public function indexCancelled (Request $request)
     {
         // updates sort, rpp from request
@@ -247,7 +257,7 @@ class SeriesController extends Controller
 
 
         return view('series.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
             ->with(compact('series'))
             ->render();
     }
