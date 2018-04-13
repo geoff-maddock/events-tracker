@@ -1,12 +1,14 @@
 @if (session()->has('flash_message'))
 
 	<script>
-	swal({ 
-	  title: "{{ session('flash_message.title') }}",   
-	  text: "{!! session('flash_message.message') !!}",   
-	  type: "{{ session('flash_message.level') }}",   
+	swal({
+	  title: "{{ session('flash_message.title') }}",
+	  text: "{!! session('flash_message.message') !!}",
+	  type: "{{ session('flash_message.level') }}",
 	  timer: 1700,
-	  showConfirmation: false,
+		showConfirmButton: true,
+		closeModal: true,
+		closeOnCancel: true,
 	});
 	</script>
 
