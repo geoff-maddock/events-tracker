@@ -7,8 +7,7 @@
 	  type: "{{ session('flash_message.level') }}",
 	  timer: 1700,
 		showConfirmButton: true,
-		closeModal: true,
-		closeOnCancel: true,
+		closeOnConfirm: true,
 	});
 	</script>
 

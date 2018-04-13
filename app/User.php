@@ -153,6 +153,50 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     }
 
     /**
+     * Return the count of tags the user is following
+     *
+     */
+    public function getTagsFollowingCountAttribute ()
+    {
+        $responses = $this->follows()->get();
+        $responses->filter(function ($e) {
+            return ($e->object_type == 'tag');
+        });
+
+        return count($responses);
+    }
+
+
+    /**
+     * Return the count of series the user is following
+     *
+     */
+    public function getSeriesFollowingCountAttribute ()
+    {
+        $responses = $this->follows()->get();
+        $responses->filter(function ($e) {
+            return ($e->object_type == 'series');
+        });
+
+        return count($responses);
+    }
+
+
+    /**
+     * Return the count of threads the user is following
+     *
+     */
+    public function getThreadsFollowingCountAttribute ()
+    {
+        $responses = $this->follows()->get();
+        $responses->filter(function ($e) {
+            return ($e->object_type == 'thread');
+        });
+
+        return count($responses);
+    }
+
+    /**
      * A user can follow many objects
      *
      */

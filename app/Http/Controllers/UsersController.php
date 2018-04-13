@@ -30,6 +30,7 @@ class UsersController extends Controller
     protected $defaultCriteria;
     protected $hasFilter;
     protected $filters;
+    protected $tabs;
 
     public function __construct (User $user)
     {
@@ -60,6 +61,18 @@ class UsersController extends Controller
     public function setFilters (Request $request, array $input)
     {
         return $this->setAttribute('filters', $input, $request);
+    }
+
+    /**
+     * Set tabs attribute
+     *
+     * @param Request $request
+     * @param array $input
+     * @return array
+     */
+    public function setTabs (Request $request, array $input)
+    {
+        return $this->setAttribute('tabs', $input, $request);
     }
 
     /**
@@ -239,6 +252,8 @@ class UsersController extends Controller
         if ($request->input('rpp')) {
             $this->rpp = $request->input('rpp');
         };
+
+
     }
 
     /**
@@ -250,6 +265,17 @@ class UsersController extends Controller
     public function getFilters (Request $request)
     {
         return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
+    }
+
+    /**
+     * Get session tabs
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function getTabs (Request $request)
+    {
+        return $this->getAttribute('tabs', $this->getDefaultTabs(), $request);
     }
 
     /**
@@ -277,6 +303,16 @@ class UsersController extends Controller
     }
 
     /**
+     * Get the default tags array
+     *
+     * @return array
+     */
+    public function getDefaultTabs ()
+    {
+        return array(0 => 'created', 1 => 'tags');
+    }
+
+    /**
      * Show a form to create a new user.
      *
      * @return view
@@ -295,10 +331,22 @@ class UsersController extends Controller
      * @param User $user
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View
      */
-    public function show (User $user)
+    public function show (User $user, Request $request)
     {
-        // if there is no profile, create one?
+        //$this->setTabs($request, $this->getDefaultTabs());
 
+        // get all the tabs from the session
+        $this->tabs = $this->getTabs($request);
+
+        // update tabs based on the request input
+        $this->setTabs($request, array_replace($this->getTabs($request), $request->input('tabs') ? $request->input('tabs') : []));
+
+        // get the merged tabs
+        $this->tabs = $this->getTabs($request);
+
+        $tabs = $this->tabs;
+
+        // if there is no profile, create one?
         if (!$user->profile) {
             $profile = new Profile();
             $profile->user_id = $user->id;
@@ -308,7 +356,7 @@ class UsersController extends Controller
             return redirect('users/' . $user->id);
         }
 
-        return view('users.show', compact('user'));
+        return view('users.show', compact('user', 'tabs'));
     }
 
 
