@@ -1350,7 +1350,10 @@ class EventsController extends Controller
     protected function addFbPhoto ($event)
     {
         $fb = app(SammyK\LaravelFacebookSdk\LaravelFacebookSdk::class);
-        $fields = 'attending_count,category,cover,interested_count,type,name,noreply_count,maybe_count,owner,place,roles';
+
+        // some fields may have been deprecated - only need cover here
+        //$fields = 'attending_count,category,cover,interested_count,type,name,noreply_count,maybe_count,owner,place,roles';
+        $fields = 'cover';
 
         $str = $event->primary_link;
         $spl = explode("/", $str);
@@ -1362,9 +1365,11 @@ class EventsController extends Controller
 
         $event_id = $spl[4];
 
+
         try {
             $token = $fb->getJavaScriptHelper()->getAccessToken();
             $response = $fb->get($event_id . '?fields=' . $fields, $token);
+
 
             if ($cover = $response->getGraphNode()->getField('cover')) {
                 $source = $cover->getField('source');
@@ -1380,7 +1385,7 @@ class EventsController extends Controller
                 // count existing photos, and if zero, make this primary
                 if (count($event->photos) == 0) {
                     $photo->is_primary = 1;
-                };
+                }
 
                 $photo->save();
 
@@ -1389,7 +1394,7 @@ class EventsController extends Controller
             }
 
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
-            flash()->error('Error', 'You could not import the image.  Error: ' . $e->getMesage());
+            flash()->error('Error', 'You could not import the image.  Error: ' . $e->getMessage());
             return false;
         }
 
