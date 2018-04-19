@@ -780,6 +780,24 @@ class EventsController extends Controller
     }
 
     /**
+     * Display a simple text feed of future events by tag
+     *
+     * @return Response
+     */
+    public function feedTags ($tag)
+    {
+        // set number of results per page
+        $this->rpp = 10000;
+
+        $events = Event::getByTag(ucfirst($tag))->future()->simplePaginate($this->rpp);
+        $events->filter(function ($e) {
+            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
+
+        return view('events.feed', compact('events'));
+    }
+
+    /**
      * Reset the filtering of entities
      *
      * @param Request $request
@@ -2380,6 +2398,20 @@ class EventsController extends Controller
     public function rss (RssFeed $feed)
     {
         $rss = $feed->getRSS();
+
+        return response($rss)
+            ->header('Content-type', 'application/rss+xml');
+    }
+
+    /**
+     * @param RssFeed $feed
+     * @param $tag
+     * @return mixed
+     */
+    public function rssTags (RssFeed $feed, $tag)
+    {
+
+        $rss = $feed->getTagRSS(ucfirst($tag));
 
         return response($rss)
             ->header('Content-type', 'application/rss+xml');

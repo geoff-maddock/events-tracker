@@ -20,18 +20,37 @@ class RssFeed
       return Cache::get('rss-feed');
     }
 
-    $rss = $this->buildRssData();
+    $events = Event::future()->orderBy('start_at','desc')->take(config('event.rss_size'))->get();
+
+    $rss = $this->buildRssData($events);
     Cache::add('rss-feed', $rss, 120);
 
     return $rss;
   }
+
+    /**
+     * Return the content of the RSS feed
+     */
+    public function getTagRSS($tag)
+    {
+        if (Cache::has('rss-feed-'.$tag)) {
+            return Cache::get('rss-feed'.$tag);
+        }
+
+        $events = Event::getByTag(ucfirst($tag))->future()->orderBy('start_at','desc')->take(config('event.rss_size'))->get();
+
+        $rss = $this->buildRssData($events);
+        Cache::add('rss-feed'.$tag, $rss, 120);
+
+        return $rss;
+    }
 
   /**
    * Return a string with the feed data
    *
    * @return string
    */
-  protected function buildRssData()
+  protected function buildRssData($events)
   {
     $now = Carbon::now();
     $feed = new Feed();
@@ -45,7 +64,7 @@ class RssFeed
       ->lastBuildDate($now->timestamp)
       ->appendTo($feed);
 
-    $events = Event::future()->orderBy('start_at','desc')->take(config('event.rss_size'))->get();
+
 
     foreach ($events as $event) {
       $item = new Item();

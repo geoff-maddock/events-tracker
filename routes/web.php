@@ -138,6 +138,7 @@ Route::get('events/relatedto/{slug}', 'EventsController@indexRelatedTo')->name('
 Route::get('events/type/{slug}', 'EventsController@indexTypes');
 Route::get('events/series/{slug}', 'EventsController@indexSeries');
 Route::get('events/feed', 'EventsController@feed');
+Route::get('events/feed/tag/{tag}', 'EventsController@feedTags');
 
 Route::get('events/{id}/importPhoto', [
     'as' => 'events.importPhoto',
@@ -392,3 +393,4 @@ Route::resource('tags','TagsController');
 
 // Add the route for rss
 Route::get('rss', 'EventsController@rss');
+Route::get('rss/tag/{tag}', 'EventsController@rssTags');
