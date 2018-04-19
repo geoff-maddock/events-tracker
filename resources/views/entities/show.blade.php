@@ -205,6 +205,25 @@
 	@endif
 	</P>
 
+	@if (isset($threads) && count($threads) > 0)
+		<div class="bs-component">
+			<div class="panel panel-info">
+
+				<div class="panel-heading">
+					<h3 class="panel-title">Threads
+						<a href="#" ><span class='label label-tag pull-right' data-toggle="tooltip" data-placement="bottom"  title="# of Threads that match this search term.">{{ count($threads)}}</span></a>
+					</h3>
+				</div>
+
+				<div class="panel-body">
+					@include('threads.list', ['threads' => $threads])
+					{!! $threads->render() !!}
+				</div>
+
+			</div>
+		</div>
+	@endif
+
 	</div>
 
 	<div class="col-md-6">

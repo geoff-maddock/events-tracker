@@ -583,7 +583,8 @@ class EntitiesController extends Controller
      */
     public function show (Entity $entity)
     {
-        return view('entities.show', compact('entity'));
+        $threads = $entity->threads()->paginate($this->rpp);
+        return view('entities.show', compact('entity','threads'));
     }
 
     /**
