@@ -58,7 +58,7 @@ class Kernel extends ConsoleKernel {
                     {
                         if (count($entity->todaysEvents()) > 0)
                         {
-                            $interests[$entity->name] = $entity->todaysEvents();
+                            $interests[$entity->name] = $entity->futureEvents();
                         }
                     }
                 }
@@ -75,33 +75,29 @@ class Kernel extends ConsoleKernel {
                 }
 
 				// get the next x events they are attending
-				if ($events = $user->getAttendingFuture()->take($show_count) )
-				{
-					// if there are more than 0 events
-					if ($events->count() > 0)
-					{
-						// send an email containing that list
-						Mail::send('emails.weekly-events',
-                            ['user' => $user, 'interests' => $interests, 'events' => $events, 'url' => $url, 'site' => $site],
-                            function ($m) use ($user, $admin_email, $reply_email, $site) {
-							$m->from($reply_email, $site);
+				$events = $user->getAttendingFuture()->take($show_count);
 
-							$dt = Carbon::now();
-							$m->to($user->email, $user->name)
-                                ->bcc($admin_email)
-                                ->subject($site.': Weekly Reminder - '.$dt->format('l F jS Y'));
-						});
+                // if there are more than 0 events
+                if ((NULL !== $events && $events->count() > 0) || (NULL !== $interests && $interests->count() > 0))
+                {
+                    // send an email containing that list
+                    Mail::send('emails.weekly-events',
+                        ['user' => $user, 'interests' => $interests, 'events' => $events, 'url' => $url, 'site' => $site],
+                        function ($m) use ($user, $admin_email, $reply_email, $site) {
+                        $m->from($reply_email, $site);
 
-						// log that the weekly email was sent
-						Log::info('Weekly events email was sent to '.$user->name.' at '.$user->email.'.');
-					} else {
-						// log that no email was sent
-						Log::info('No weekly events email was sent to '.$user->name.' at '.$user->email.'.');
-					};
-				} else {
-					// log that no email was sent
-					Log::info('No weekly events email was sent to '.$user->name.' at '.$user->email.'.');
-				};
+                        $dt = Carbon::now();
+                        $m->to($user->email, $user->name)
+                            ->bcc($admin_email)
+                            ->subject($site.': Weekly Reminder - '.$dt->format('l F jS Y'));
+                    });
+
+                    // log that the weekly email was sent
+                    Log::info('Weekly events email was sent to '.$user->name.' at '.$user->email.'.');
+                } else {
+                    // log that no email was sent
+                    Log::info('No weekly events email was sent to '.$user->name.' at '.$user->email.'.');
+                };
 			
 			};
 		})->weekly()->mondays()->timezone('America/New_York')->at('5:00');

@@ -51,7 +51,7 @@ class Notify extends Command {
                             {
                                 if (count($entity->futureEvents()) > 0)
                                 {
-                                    $interests[$entity->name] = $entity->futureEvents();
+                                    $interests[$entity->name] = $entity->todaysEvents();
                                 }
                             }
                         }
@@ -62,37 +62,34 @@ class Notify extends Command {
                             {
                                 if (count($tag->futureEvents()) > 0)
                                 {
-                                    $interests[$tag->name] = $tag->futureEvents();
+                                    $interests[$tag->name] = $tag->todaysEvents();
                                 }
                             }
                         }
 
                         // get the next x events they are attending
-                        if ($events = $user->getAttendingToday()->take($show_count))
+                        $events = $user->getAttendingToday()->take($show_count);
+
+                        // if there are more than 0 events
+                        if ((NULL !== $events && $events->count() > 0) || (NULL !== $interests && $interests->count() > 0))
                         {
-                                // if there are more than 0 events
-                                if ($events->count() > 0)
-                                {
-                                        // send an email containing that list
-                                        Mail::send('emails.daily-events', ['user' => $user, 'events' => $events, 'interests' => $interests, 'admin_email' => $admin_email, 'url' => $url, 'site' => $site], function ($m) use ($user,  $admin_email, $reply_email, $site) {
-                                                $m->from($reply_email, $site);
+                                // send an email containing that list
+                                Mail::send('emails.daily-events', ['user' => $user, 'events' => $events, 'interests' => $interests, 'admin_email' => $admin_email, 'url' => $url, 'site' => $site], function ($m) use ($user,  $admin_email, $reply_email, $site) {
+                                        $m->from($reply_email, $site);
 
-                                                $dt = Carbon::now();
-                                                $m->to($user->email, $user->name)
-                                                    ->bcc($admin_email)
-                                                    ->subject($site.': Daily Reminder - '.$dt->format('l F jS Y'));
-                                        });
+                                        $dt = Carbon::now();
+                                        $m->to($user->email, $user->name)
+                                            ->bcc($admin_email)
+                                            ->subject($site.': Daily Reminder - '.$dt->format('l F jS Y'));
+                                });
 
-                                        // log that the weekly email was sent
-                                        Log::info('Daily events email was sent to '.$user->name.' at '.$user->email.'.');
-                                } else {
-                                        // log that no email was sent
-                                        Log::info('No daily events email was sent to '.$user->name.' at '.$user->email.'.');
-                                }
+                                // log that the weekly email was sent
+                                Log::info('Daily events email was sent to '.$user->name.' at '.$user->email.'.');
                         } else {
                                 // log that no email was sent
                                 Log::info('No daily events email was sent to '.$user->name.' at '.$user->email.'.');
-                        };
+                        }
+
 
                 };
 
