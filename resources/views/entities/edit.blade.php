@@ -18,7 +18,7 @@
 
 	{!! Form::close() !!}
 
-	{!! delete_form(['entities.destroy', $entity->id]) !!}
+	{!! delete_form(['entities.destroy', $entity->slug]) !!}
 	</div>
 
 	<div class="col-md-6">
