@@ -127,6 +127,13 @@ class Event extends Eloquent {
 		}
 	}
 
+
+    public function scopeToday($query)
+    {
+        return $query->whereDate('start_at', '=', Carbon::today()->toDateString())
+            ->orderBy('start_at', 'asc');
+    }
+
 	public function scopeFuture($query)
 	{
 		return $query->where('start_at','>=', Carbon::today()->startOfDay())

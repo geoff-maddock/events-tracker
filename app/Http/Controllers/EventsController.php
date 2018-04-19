@@ -673,6 +673,35 @@ class EventsController extends Controller
             ->with(compact('future_events'));
     }
 
+
+    /**
+     * Display a listing of today's events
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function indexToday (Request $request)
+    {
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        // get filters from session
+        $filters = $this->getFilters($request);
+
+        $this->hasFilter = count($filters);
+
+        $this->rpp = 10;
+
+        $events = Event::today()->paginate($this->rpp);
+        $events->filter(function ($e) {
+            return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
+
+        return view('events.index')
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
+            ->with(compact('events'));
+    }
+
     /**
      * Display a listing of the resource.
      *
