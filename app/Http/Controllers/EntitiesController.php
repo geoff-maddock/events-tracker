@@ -439,7 +439,7 @@ class EntitiesController extends Controller
      * @return Response
      * @throws \Throwable
      */
-    public function indexAliases ($role)
+    public function indexAliases (Request $request, $role)
     {
         // updates sort, rpp from request
         $this->updatePaging($request);

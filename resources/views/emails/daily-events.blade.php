@@ -1,3 +1,6 @@
+
+@if (count($events) > 0)
+
 Here are the events you are attending today.
 
 @foreach ($events as $event)
@@ -83,11 +86,11 @@ Here are the events you are attending today.
 
 	</div>
 </div>
-	@endforeach
-
+@endforeach
+@endif
 	<br><br>
 
-	@if (count($events) > 0)
+	@if (count($interests) > 0)
 		<h3>Here's some events happening today that you might be interested in:</h3>
 		@foreach ($interests as $entity => $list)
 			<h2>{{ $entity }}</h2>

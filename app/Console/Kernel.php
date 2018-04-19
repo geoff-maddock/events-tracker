@@ -78,7 +78,7 @@ class Kernel extends ConsoleKernel {
 				$events = $user->getAttendingFuture()->take($show_count);
 
                 // if there are more than 0 events
-                if ((NULL !== $events && $events->count() > 0) || (NULL !== $interests && $interests->count() > 0))
+                if ((NULL !== $events && count($events) > 0) || (NULL !== $interests && count($interests) > 0))
                 {
                     // send an email containing that list
                     Mail::send('emails.weekly-events',
@@ -103,7 +103,7 @@ class Kernel extends ConsoleKernel {
 		})->weekly()->mondays()->timezone('America/New_York')->at('5:00');
 
 		// schedule daily email of events each user is attending today
-		$schedule->command('notify')->daily()->timezone('America/New_York')->at('9:00');
+		$schedule->command('notify')->daily()->timezone('America/New_York')->at('13:00');
 
 	}
 

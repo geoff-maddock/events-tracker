@@ -53,6 +53,11 @@ class Notify extends Command {
                                 {
                                     $interests[$entity->name] = $entity->todaysEvents();
                                 }
+
+                                if (count($interests[$tag->name]) === 0)
+                                {
+                                    unset($interests[$tag->name]);
+                                }
                             }
                         }
                         // build an array of future events based on tags the user follows
@@ -64,6 +69,11 @@ class Notify extends Command {
                                 {
                                     $interests[$tag->name] = $tag->todaysEvents();
                                 }
+
+                                if (count($interests[$tag->name]) === 0)
+                                {
+                                    unset($interests[$tag->name]);
+                                }
                             }
                         }
 
@@ -71,7 +81,7 @@ class Notify extends Command {
                         $events = $user->getAttendingToday()->take($show_count);
 
                         // if there are more than 0 events
-                        if ((NULL !== $events && $events->count() > 0) || (NULL !== $interests && $interests->count() > 0))
+                        if ((NULL !== $events && count($events) > 0) || (NULL !== $interests && count($interests) > 0))
                         {
                                 // send an email containing that list
                                 Mail::send('emails.daily-events', ['user' => $user, 'events' => $events, 'interests' => $interests, 'admin_email' => $admin_email, 'url' => $url, 'site' => $site], function ($m) use ($user,  $admin_email, $reply_email, $site) {
