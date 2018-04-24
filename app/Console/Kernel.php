@@ -103,7 +103,7 @@ class Kernel extends ConsoleKernel {
 		})->weekly()->mondays()->timezone('America/New_York')->at('5:00');
 
 		// schedule daily email of events each user is attending today
-		$schedule->command('notify')->daily()->timezone('America/New_York')->at('13:00');
+		$schedule->command('notify')->daily()->timezone('America/New_York')->at('12:00');
 
 	}
 
