@@ -49,7 +49,6 @@
 	</div>
 </div>
 
-
 <div class="row">
 
 	<div class="form-group col-md-3 {{$errors->has('event_type_id') ? 'has-error' : '' }}">
@@ -162,10 +161,10 @@
 	<div class="form-group col-md-6">
 	{!! Form::label('tag_list','Tags:') !!}
 	{!! Form::select('tag_list[]', $tags, old('tag_list'), ['id' => 'tag_list',
-	'class' =>'form-control select2',
-	'data-placeholder' => 'Choose a tag',
-	'data-tags' =>'true',
-	'multiple' => 'true']) !!}
+		'class' =>'form-control select2',
+		'data-placeholder' => 'Choose a tag',
+		'data-tags' => 'true',
+		'multiple' => 'true']) !!}
 	{!! $errors->first('tags','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
