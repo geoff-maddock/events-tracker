@@ -78,6 +78,15 @@ body {
 	padding-left: 0px;
 }
 
+ul.list-click {
+	margin-left: -40px;
+}
+
+ul.list-click li {
+	list-style-type:none;
+	font-size: 1.3em;
+}
+
 .label-tag {
  	background-color: #000000;
 	margin: .2em;

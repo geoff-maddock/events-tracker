@@ -20,7 +20,6 @@
 			<div class="bs-component">
 			<div class="panel panel-info">
 
-
 				<div class="panel-heading">
 					<h3 class="panel-title">Tags
 						<a href="#" ><span class='glyphicon glyphicon-question-sign pull-right' data-toggle="tooltip" data-placement="bottom"  title="Click on a tag name in the left panel to find all related events or entites.  Click on the plus next to the tag to follow, minus to unfollow."></span></a>
@@ -28,11 +27,43 @@
 				</div>
 
 				<div class="panel-body">
-				<ul style="margin-left: -30px;">
+					<div class="col-lg-2">
+						<ul class="list-click">
+							<li><a href="#A">A</a></li>
+							<li><a href="#B">B</a></li>
+							<li><a href="#C">C</a></li>
+							<li><a href="#D">D</a></li>
+							<li><a href="#E">E</a></li>
+							<li><a href="#F">F</a></li>
+							<li><a href="#G">G</a></li>
+							<li><a href="#H">H</a></li>
+							<li><a href="#I">I</a></li>
+							<li><a href="#J">J</a></li>
+							<li><a href="#K">K</a></li>
+							<li><a href="#L">L</a></li>
+							<li><a href="#M">M</a></li>
+							<li><a href="#N">N</a></li>
+							<li><a href="#O">O</a></li>
+							<li><a href="#P">P</a></li>
+							<li><a href="#Q">Q</a></li>
+							<li><a href="#R">R</a></li>
+							<li><a href="#S">S</a></li>
+							<li><a href="#T">T</a></li>
+							<li><a href="#U">U</a></li>
+							<li><a href="#V">V</a></li>
+							<li><a href="#W">W</a></li>
+							<li><a href="#X">X</a></li>
+							<li><a href="#Y">Y</a></li>
+							<li><a href="#Z">Z</a></li>
+						</ul>
+
+					</div>
+					<div class="col-lg-10">
+						<ul style="margin-left: -30px;">
 				@foreach ($tags as $t)
 					@if (isset($tag) && (strtolower($tag) === strtolower($t->name)))
 						<?php $match = $t;?>
-						<li class='list selected'><a href="/tags/{{ $t->name }}" title="Click to show all related events and entities.">{{ $t->name }}</a>
+						<li class='list selected'><a href="/tags/{{ $t->name }}" title="Click to show all related events and entities." name="{{ $t->name[0] }}">{{ $t->name }}</a>
 							@if ($signedIn)
 								@if ($follow = $t->followedBy($user))
 								<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
@@ -42,7 +73,7 @@
 							@endif 
 						</li>
 					@else 
-						<li class='list'><a href="/tags/{{ $t->name }}">{{ $t->name }}</a>
+						<li class='list'><a href="/tags/{{ $t->name }}"  name="{{ $t->name[0] }}">{{ $t->name }}</a>
 							@if ($signedIn)
 								@if ($follow = $t->followedBy($user))
 								<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
@@ -54,6 +85,8 @@
 					@endif
 				@endforeach
 				</ul>
+					</div>
+
 				</div>
 			</div>
 		</div>

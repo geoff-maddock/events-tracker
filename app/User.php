@@ -294,7 +294,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         $tags = Tag::join('follows', 'tags.id', '=', 'follows.object_id')
             ->where('follows.object_type', '=', 'tag')
             ->where('follows.user_id', '=', $this->id)
-            ->orderBy('follows.created_at', 'desc')
+            ->orderBy('tags.name', 'asc')
             ->select('tags.*')
             ->get();
         return $tags;

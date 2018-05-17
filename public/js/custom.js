@@ -78,13 +78,7 @@ var App = (function()
                 allowClear: true,
                 width: '100%',
             });
-        })
-        // $(target + ' .select2').select2({
-        //         placeholder: $(this).data('placeholder'),
-        //         tags: $(this).data('tags'),
-        //         allowClear: true,
-        //         width: '100%',
-        //     });
+        });
 
         // console.log('Set up select to, applied to select2 class.');
         // enable tooltips
