@@ -10,6 +10,7 @@
 
 	<p>
 	<a href="{{ url('/tags') }}" class="btn btn-info">Show all tags</a>
+		<a href="{!! URL::route('tags.create') !!}" class="btn btn-primary">Add a tag</a>
 	</p>
 
 	<br style="clear: left;"/>
@@ -60,31 +61,31 @@
 					</div>
 					<div class="col-lg-10">
 						<ul style="margin-left: -30px;">
-				@foreach ($tags as $t)
-					@if (isset($tag) && (strtolower($tag) === strtolower($t->name)))
-						<?php $match = $t;?>
-						<li class='list selected'><a href="/tags/{{ $t->name }}" title="Click to show all related events and entities." name="{{ $t->name[0] }}">{{ $t->name }}</a>
-							@if ($signedIn)
-								@if ($follow = $t->followedBy($user))
-								<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
-								@else
-								<a href="{!! route('tags.follow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
-								@endif
-							@endif 
-						</li>
-					@else 
-						<li class='list'><a href="/tags/{{ $t->name }}"  name="{{ $t->name[0] }}">{{ $t->name }}</a>
-							@if ($signedIn)
-								@if ($follow = $t->followedBy($user))
-								<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
-								@else
-								<a href="{!! route('tags.follow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
-								@endif
-							@endif 
-						</li>
-					@endif
-				@endforeach
-				</ul>
+						@foreach ($tags as $t)
+							@if (isset($tag) && (strtolower($tag) === strtolower($t->name)))
+								<?php $match = $t;?>
+								<li class='list selected'><a href="/tags/{{ $t->name }}" title="Click to show all related events and entities." name="{{ $t->name[0] }}">{{ $t->name }}</a>
+									@if ($signedIn)
+										@if ($follow = $t->followedBy($user))
+										<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
+										@else
+										<a href="{!! route('tags.follow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
+										@endif
+									@endif
+								</li>
+							@else
+								<li class='list'><a href="/tags/{{ $t->name }}"  name="{{ $t->name[0] }}">{{ $t->name }}</a>
+									@if ($signedIn)
+										@if ($follow = $t->followedBy($user))
+										<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
+										@else
+										<a href="{!! route('tags.follow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
+										@endif
+									@endif
+								</li>
+							@endif
+						@endforeach
+						</ul>
 					</div>
 
 				</div>
@@ -96,7 +97,6 @@
 	<div class="col-lg-10">
 		<div class="bs-component">
 			<div class="panel panel-info">
-
 
 				<div class="panel-heading">
 					<h3 class="panel-title">Info</h3>
@@ -112,19 +112,18 @@
 	</div>
 	@endif
 
-
 	@if (!isset($match) && isset($userTags))
+
 		<div class="col-lg-5">
 			<div class="bs-component">
 				<div class="panel panel-info">
-
 
 					<div class="panel-heading">
 						<h3 class="panel-title">Tags</h3>
 					</div>
 
 					<div class="panel-body">
-					@include('tags.list', ['tags' => $userTags])
+						@include('tags.list', ['tags' => $userTags])
 					</div>
 
 				</div>
@@ -133,14 +132,12 @@
 	@endif
 
 
-	@if (isset($events) && count($events) > 0)
-	<div class="col-lg-5">
 
+	<div class="col-lg-5">
 
 		@if (isset($match) )
 		<div class="bs-component">
 			<div class="panel panel-info">
-
 
 				<div class="panel-heading">
 					<h3 class="panel-title">Tags</h3>
@@ -174,9 +171,10 @@
 			</div>
 		</div>
 		@endif
+
+		@if (isset($events) && count($events) > 0)
 		<div class="bs-component">
 			<div class="panel panel-info">
-
 
 				<div class="panel-heading">
 					<h3 class="panel-title">Events
@@ -192,8 +190,9 @@
 
 			</div>
 		</div>
+		@endif
 	</div>
-	@endif
+
 
 	@if (isset($entities) && count($entities) > 0)
 	<div class="col-lg-5">
@@ -225,5 +224,26 @@
 $(document).ready(function(){
     $('[data-toggle="tooltip"]').tooltip(); 
 });
+</script>
+<script type="text/javascript">
+    $('button.delete').on('click', function(e){
+        e.preventDefault();
+        var form = $(this).parents('form');
+        swal({
+                title: "Are you sure?",
+                text: "You will not be able to recover this event!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: true
+            },
+            function(isConfirm){
+                if (isConfirm)
+                {
+                    form.submit();
+                };
+            });
+    })
 </script>
 @stop

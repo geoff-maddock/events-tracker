@@ -66,7 +66,7 @@ EOT;
 		<form method="POST" action="{$action}" style="display: inline;">
 			<input type='hidden' name='_method' value='{$type}'>
 			<input type="hidden" name="_token" value="{$csrf}">
-			<button type="submit" class="no-button {$class}" data-type="{$object}">{$label} <span class="glyphicon {$icon}" title="{$title}"></span></button>
+			<button type="submit" class="delete confirm no-button {$class}" data-type="{$object}">{$label} <span class="glyphicon {$icon}" title="{$title}"></span></button>
 		</form>
 EOT;
 	}

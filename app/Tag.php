@@ -12,7 +12,7 @@ class Tag extends Eloquent {
      *
      * @var string
      */
-    protected $dateFormat = 'Y-m-d\\TH:i';
+//    protected $dateFormat = 'Y-m-d\\TH:i';
 
 	/**
 	 * @var Array
@@ -24,7 +24,7 @@ class Tag extends Eloquent {
 
     public function getRouteKeyName ()
     {
-        return 'slug';
+        return 'id';
     }
 
 	protected $dates = ['created_at','updated_at'];

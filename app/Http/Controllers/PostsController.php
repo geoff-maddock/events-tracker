@@ -93,6 +93,7 @@ class PostsController extends Controller
      */
     public function store(Thread $thread)
     {
+        // TODO change this to use the trust_post permission to allow html
         if (auth()->id() == config('app.superuser'))
         {
             $allow_html = 1;

@@ -13,6 +13,7 @@
 				@endif
 
                     @if ($signedIn &&  Auth::user()->id == Config::get('app.superuser'))
+						<a href="{!! route('tags.edit', ['id' => $tag->id]) !!}" title="Click to edit"><span class='glyphicon glyphicon-pencil text-warning'></span></a>
                         {!! link_form_icon('glyphicon-trash text-warning', $tag, 'DELETE', 'Delete the tag') !!}
                     @endif
 			@endif 

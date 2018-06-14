@@ -4,6 +4,8 @@ use App\Activity;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 use Illuminate\Http\Request;
@@ -186,7 +188,6 @@ class TagsController extends Controller {
 	}
 
 
-
     /**
      * Display a listing of events by tag
      *
@@ -234,91 +235,72 @@ class TagsController extends Controller {
         return view('tags.index', compact('series','entities','events', 'tag', 'tags'));
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param Tag $tag
+     * @return Response
+     * @internal param int $id
+     */
+    public function edit(Tag $tag)
+    {
+        $this->middleware('auth');
 
+        return view('tags.edit', compact('tag'));
+    }
 
     /**
-	 * Show a form to create a new Article.
+	 * Show a form to create a new tag.
 	 *
 	 * @return view
 	 **/
 
 	public function create()
 	{
-		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
-
-		// get a list of promoters
-		$promoters = [''=>''] + Entity::whereHas('roles', function($q)
-		{
-			$q->where('name','=','Promoter');
-		})->orderBy('name','ASC')->pluck('name','id')->all();
-
-		$eventTypes = [''=>''] + EventType::orderBy('name','ASC')->pluck('name', 'id')->all(); 
-		$seriesList = [''=>''] + Series::orderBy('name','ASC')->pluck('name', 'id')->all(); 
-		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
-
-		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
-		$entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
-
-		return view('events.create', compact('venues','eventTypes','visibilities','tags','entities','promoters','seriesList'));
+		return view('tags.create');
 	}
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param Request $request
+     * @param Tag $tag
+     * @return \Illuminate\Http\Response
+     * @internal param Request $request
+     */
+    public function store(Request $request, Tag $tag)
+    {
+        $msg = '';
 
-	/**
-	 * Add a photo to an event
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function addPhoto($id, Request $request)
-	{
+        // get the request
+        $input = $request->all();
 
-		$this->validate($request, [
-			'file' =>'required|mimes:jpg,jpeg,png,gif'
-		]);
+        // check if the tag already exists
+        if (!Tag::where('name','=', $input['name'])->first()) {
 
-		$photo = $this->makePhoto($request->file('file'));
-		$photo->save();
+            $tag = $tag->create($input);
 
-		// attach to event
-		$event = Event::find($id);
-		$event->addPhoto($photo);
-	}
-	
-	/**
-	 * Delete a photo
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function deletePhoto($id, Request $request)
-	{
+            flash()->success('Success',  sprintf('You added a new tag %s.', $tag->name));
 
-		$this->validate($request, [
-			'file' =>'required|mimes:jpg,jpeg,png,gif'
-		]);
+            // add to activity log
+            Activity::log($tag, $this->user, 1);
 
-		// detach from event
-		$event = Event::find($id);
-		$event->removePhoto($photo);
+        } else {
+            flash()->error('Error',  sprintf('The tag %s already exists.', $input['name']));
+        }
 
-		$photo = $this->deletePhoto($request->file('file'));
-		$photo->save();
+        return back();
+    }
 
 
-	}
-
-	protected function makePhoto(UploadedFile $file)
-	{
-		return Photo::named($file->getClientOriginalName())
-			->move($file);
-	}
-
-	/**
-	 * Mark user as following the tag
-	 *
-	 * @return Response
-	 */
+    /**
+     * Mark user as following the tag
+     *
+     * @param $id
+     * @param Request $request
+     * @return Response
+     * @throws \Throwable
+     */
 	public function follow($id, Request $request)
 	{
 		$type = 'tag';
@@ -615,5 +597,51 @@ class TagsController extends Controller {
         }
 
         return $query;
+    }
+
+    /**
+     * @param Tag $tag
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function notifyFollowing($tag)
+    {
+        $reply_email = config('app.noreplyemail');
+        $site = config('app.app_name');
+        $url = config('app.url');
+
+        // notify users following any of the tags
+        $users = array();
+
+        foreach ($tag->followers() as $user)
+        {
+            // if the user hasn't already been notified, then email them
+            if (!array_key_exists($user->id, $users))
+            {
+                Mail::send('emails.following-thread', ['user' => $user, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $tag, $reply_email, $site, $url) {
+                    $m->from($reply_email, $site);
+
+                    $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$thread->created_at->format('D F jS').' '.$thread->name);
+                });
+                $users[$user->id] = $tag->name;
+            };
+        };
+
+        return back();
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param Tag $tag
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function update(Tag $tag, Request $request) : RedirectResponse
+    {
+        $msg = '';
+
+        $tag->fill($request->input())->save();
+
+        return redirect('tags');
     }
 }
