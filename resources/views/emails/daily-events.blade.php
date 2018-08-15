@@ -1,6 +1,3 @@
-
-@if (count($events) > 0)
-
 Here are the events you are attending today.
 
 @foreach ($events as $event)
@@ -10,9 +7,8 @@ Here are the events you are attending today.
 	{!! $event->start_at->format('h:i A') !!} {!! $event->end_time ? 'until '.$event->end_time->format('h:i A') : '' !!}
 	</div>
 
-	<h2>{{ $event->name }}</h2>
+	<h2><a href="{{ $url }}/events/{{$event->id }}">{{ $event->name }}</h2>
 	<i>{{ $event->short }}</i><br>
-
 
 	<b>
 	@if (!empty($event->series_id))
@@ -86,11 +82,10 @@ Here are the events you are attending today.
 
 	</div>
 </div>
-@endforeach
-@endif
+	@endforeach
+
 	<br><br>
 
-	@if (count($interests) > 0)
 		<h3>Here's some events happening today that you might be interested in:</h3>
 		@foreach ($interests as $entity => $list)
 			<h2>{{ $entity }}</h2>
@@ -148,7 +143,6 @@ Here are the events you are attending today.
 			@endforeach
 		@endforeach
 		<br><br>
-	@endif
 
 	<br><br>
 	We're constantly adding new features, functionality and updates to improve your experience. <br>

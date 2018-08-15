@@ -13,7 +13,6 @@ Here is a reminder from <a href="{{ $url }}">{{ $url }}</a> about these upcoming
 	<h2>{{ $event->name }}</h2>
 	<i>{{ $event->short }}</i><br>
 
-
 	<b>
 	@if (!empty($event->series_id))
 	<a href="{{ $url }}/series/{{$event->series_id }}">{!! $event->series->name !!}</a> series
@@ -53,7 +52,6 @@ Here is a reminder from <a href="{{ $url }}">{{ $url }}</a> about these upcoming
 	</a>
 	@endif
 
-
 	{{ $event->attendingCount }} users attending
 
  	<br><br>
@@ -90,7 +88,6 @@ Here is a reminder from <a href="{{ $url }}">{{ $url }}</a> about these upcoming
 
 @endforeach
 
-	@if (count($events) > 0)
 		<h3>Here's some updates on who you are following:</h3>
 		@foreach ($interests as $entity => $list)
 			<h2>{{ $entity }}</h2>
@@ -148,7 +145,7 @@ Here is a reminder from <a href="{{ $url }}">{{ $url }}</a> about these upcoming
 			@endforeach
 		@endforeach
 		<br><br>
-	@endif
+
 	We're constantly adding new features, functionality and updates to improve your experience. <br>
 	If you have any feedback, don't hesitate to drop us a line.
 
