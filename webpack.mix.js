@@ -17,3 +17,18 @@ let mix = require('laravel-mix');
 
 mix.js('resources/assets/js/app.js', 'public/js')
     .sass('resources/assets/sass/app.scss', 'public/css');
+
+mix.styles([
+    'public/css/app.css',
+    'resources/assets/css/custom.css',
+    'resources/assets/css/dark-theme.css',
+    'resources/assets/css/superhero-bootstrap.min.css',
+    'resources/assets/css/sweetalert.css'
+], 'public/css/dark.css');
+
+mix.styles([
+    'public/css/app.css',
+    'resources/assets/css/custom.css',
+    'resources/assets/css/light-theme.css',
+    'resources/assets/css/sweetalert.css'
+], 'public/css/light.css');

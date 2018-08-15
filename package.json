@@ -20,6 +20,11 @@
     "vue": "^2.5.16"
   },
   "dependencies": {
-    "npm": "^5.7.1"
+    "dropzone": "^5.5.1",
+    "fullcalendar": "^3.9.0",
+    "npm": "^5.7.1",
+    "select2": "^4.0.6-rc.1",
+    "select2-bootstrap-css": "^1.4.6",
+    "sweetalert": "^2.1.0"
   }
 }
