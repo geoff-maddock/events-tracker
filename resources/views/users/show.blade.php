@@ -88,8 +88,7 @@
             <div class="col-lg-6">
                 <div class="bs-component">
                     <div class="panel panel-info">
-
-
+                        @if (isset($tabs))
                             @if ($tabs[0] === 'created')
                             <div class="panel-heading">
                                 <h3 class="panel-title">Events  <span  class="label label-primary">{{ $user->eventCount }}</span></h3>
@@ -113,7 +112,7 @@
                                 @include('events.list', ['events' => $user->getAttending()->get()->take(20)])
                                 </div>
                             @endif
-
+                        @endif
 
                     </div>
                 </div>
@@ -123,8 +122,6 @@
 
                     <div class="bs-component">
                         <div class="panel panel-info">
-
-
                                 @switch($tabs[1])
                                     @case('tags')
                                         <div class="panel-heading">

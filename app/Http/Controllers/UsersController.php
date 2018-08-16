@@ -333,6 +333,7 @@ class UsersController extends Controller
      */
     public function show (User $user, Request $request)
     {
+
         //$this->setTabs($request, $this->getDefaultTabs());
 
         // get all the tabs from the session
@@ -356,6 +357,7 @@ class UsersController extends Controller
             return redirect('users/' . $user->id);
         }
 
+        dump($tabs);
         return view('users.show', compact('user', 'tabs'));
     }
 
@@ -411,12 +413,15 @@ class UsersController extends Controller
             $user->groups()->sync($request->input('group_list', []));
         };
 
+        // get all the tabs from the session
+        $tabs = $this->getTabs($request);
+
         // add to activity log
         Activity::log($user, $this->user, 2);
 
         flash('Success', 'Your user has been updated');
 
-        return view('users.show', compact('user'));
+        return view('users.show', compact('user','tabs'));
     }
 
 
