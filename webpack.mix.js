@@ -12,12 +12,10 @@ let mix = require('laravel-mix');
  */
 
 // base app js and css
-// mix.js('resources/assets/js/app.js', 'public/js')
-//     .sass('resources/assets/sass/app.scss', 'public/css');
-
 mix.js('resources/assets/js/app.js', 'public/js')
     .sass('resources/assets/sass/app.scss', 'public/css');
 
+// build dark theme
 mix.styles([
     'public/css/app.css',
     'resources/assets/css/custom.css',
@@ -26,9 +24,41 @@ mix.styles([
     'resources/assets/css/sweetalert.css'
 ], 'public/css/dark.css');
 
+// build light theme
 mix.styles([
     'public/css/app.css',
     'resources/assets/css/custom.css',
     'resources/assets/css/light-theme.css',
     'resources/assets/css/sweetalert.css'
 ], 'public/css/light.css');
+
+// mix.styles([
+//     'public/css/app.css',
+//     'resources/assets/css/custom.css',
+//     'resources/assets/css/dark-theme.css',
+//     'resources/assets/css/superhero-bootstrap.min.css',
+//     'resources/assets/css/sweetalert.css'
+// ], 'public/css/dark.css').options({
+//
+//     purifyCss: {
+//         paths: ['resources/views/**/*.blade.php'],
+//         verbose: false,
+//         minimize: true,
+//     }
+//
+// });
+//
+// mix.styles([
+//     'public/css/app.css',
+//     'resources/assets/css/custom.css',
+//     'resources/assets/css/light-theme.css',
+//     'resources/assets/css/sweetalert.css'
+// ], 'public/css/light.css').options({
+//
+//     purifyCss: {
+//         paths: ['resources/views/**/*.blade.php'],
+//         verbose: false,
+//         minimize: true,
+//     }
+//
+// });

@@ -357,7 +357,6 @@ class UsersController extends Controller
             return redirect('users/' . $user->id);
         }
 
-        dump($tabs);
         return view('users.show', compact('user', 'tabs'));
     }
 

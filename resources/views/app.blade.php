@@ -12,7 +12,7 @@
 	<title>{{ config('app.app_name')}} - Event + Club Guide - @yield('title')</title>
   	<link rel="alternate" type="application/rss+xml" href="{{ url('rss') }}"
     	    title="RSS Feed {{ config('blog.title') }}">
-	
+
     <!-- select based on default-theme -->
     @if ($theme != config('app.default_theme'))
     	<link href="{{ asset('/css/light.css') }}" rel="stylesheet">
