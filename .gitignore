@@ -6,6 +6,9 @@
 /planning
 /public/hot
 /public/photos
+/public/css/app.css
+/public/css/dark.css
+/public/css/light.css
 /vendor
 .env.local.php
 .env.php
