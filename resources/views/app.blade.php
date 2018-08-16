@@ -20,7 +20,8 @@
         {{--<link href="{{ asset('/css/'.$theme.'.css') }}" rel="stylesheet">--}}
 		<link href="{{ asset('/css/dark.css') }}" rel="stylesheet">
     @endif
-
+	<link href="{{ asset('/css/select2.css') }}" rel="stylesheet">
+	<link href="{{ asset('/css/select2-bootstrap.min.css') }}" rel="stylesheet">
 	<!-- Material Icons -->
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<!-- Fonts -->

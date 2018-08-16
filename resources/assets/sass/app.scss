@@ -8,9 +8,9 @@
 // Bootstrap
 @import "~bootstrap-sass/assets/stylesheets/bootstrap";
 
-// Select2
-@import "~select2/dist/css/select2.min.css";
-@import "~select2-bootstrap-css/select2-bootstrap.min.css";
+// Select2 - not working with bootstrap 3
+//@import "~select2/dist/css/select2.min.css";
+//@import "~select2-bootstrap-css/select2-bootstrap.min.css";
 
 // Full Calendar
 @import "~fullcalendar/dist/fullcalendar.min.css";
