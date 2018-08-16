@@ -8,8 +8,10 @@
 	<meta property="og:title" content="@yield('title')">
 	<meta property="og:description" content="A guide and calender of events, weekly and  monthly series, promoters, artists, producers, djs, venues and other entities.">
 	<meta property="fb:app_id" content="{{ config('app.fb_app_id') }}">
+	<meta name="theme-color" content="#636b6f;"/>
 	<meta name="csrf-token" content="{{ csrf_token() }}">
 	<title>{{ config('app.app_name')}} - Event + Club Guide - @yield('title')</title>
+	<link rel="manifest" href="/manifest.json">
   	<link rel="alternate" type="application/rss+xml" href="{{ url('rss') }}"
     	    title="RSS Feed {{ config('blog.title') }}">
 

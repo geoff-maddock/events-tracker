@@ -1,5 +1,11 @@
 {
- "name": "App",
+ "name": "Arcane City",
+ "short_name": "Arcane City",
+ "background_color": "#636b6f;",
+ "theme_color": "#636b6f;",
+ "orientation": "portrait",
+ "start_url": "/",
+ "display": "standalone",
  "icons": [
   {
    "src": "\/android-icon-36x36.png",
