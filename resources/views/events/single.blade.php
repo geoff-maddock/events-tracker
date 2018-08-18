@@ -14,10 +14,10 @@
 		@endif
 		<div class='event-date'>{!! $event->start_at->format('l F jS Y') !!} </div>
 	
-			{!! link_to_route('events.show', $event->name, [$event->id], ['class' => 'item-title']) !!} 
+			{!! link_to_route('events.show', $event->name, [$event->id], ['class' => 'item-title', 'alt' => $event->name, 'aria-label' => $event->name]) !!}
 	
 			@if ($signedIn && ($event->ownedBy($user) || $user->hasGroup('super_admin')))
-				<a href="{!! route('events.edit', ['id' => $event->id]) !!}" title="Edit this event."><span class='glyphicon glyphicon-pencil'></span></a>
+				<a href="{!! route('events.edit', ['id' => $event->id],  ['alt' => 'Edit '.$event->name, 'aria-label' => 'Edit '.$event->name]) !!}" title="Edit this event."><span class='glyphicon glyphicon-pencil'></span></a>
 			@endif
 
 			@if ($thread = $event->threads->first())

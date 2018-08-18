@@ -9,10 +9,10 @@
         @if ($series->visibility->name !== 'Public')
             <span class="text-warning">{{ $series->visibility->name }}</span><br>
         @endif
-    {!! link_to_route('series.show', $series->name, [$series->id], ['class' => 'item-title']) !!} {{ $series->short }}
+    {!! link_to_route('series.show', $series->name, [$series->id], ['class' => 'item-title', 'alt' => $series->name, 'aria-label' => $series->name]) !!} {{ $series->short }}
 
     @if ($signedIn && ($series->ownedBy($user) || $user->hasGroup('super_admin')))
-        <a href="{!! route('series.edit', ['id' => $series->id]) !!}"><span class='glyphicon glyphicon-pencil'></span></a>
+        <a href="{!! route('series.edit', ['id' => $series->id],  ['alt' => 'Edit '.$series->name, 'aria-label' => 'Edit '.$series->name]) !!}"><span class='glyphicon glyphicon-pencil'></span></a>
         <a href="{!! route('series.createOccurrence', ['id' => $series->id]) !!}" title="Create the next occurrence of {{ $series->name }}"><span class='glyphicon glyphicon-fire'></span></a>
     @endif
 

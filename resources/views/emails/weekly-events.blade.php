@@ -1,8 +1,9 @@
 <html>
 <body>
 <div>
-Here is a reminder from <a href="{{ $url }}">{{ $url }}</a> about these upcoming events that you are attending.
+Here is a reminder from <a href="{{ $url }}">{{ $url }}</a> about these upcoming events that you are attending.<br>
 
+@if (count($events) > 0)
 @foreach ($events as $event)
 <div class='event-date'>
 	<h2>{!! $event->start_at->format('l F jS Y') !!}</h2>
@@ -10,7 +11,7 @@ Here is a reminder from <a href="{{ $url }}">{{ $url }}</a> about these upcoming
 	{!! $event->start_at->format('h:i A') !!} {!! $event->end_time ? 'until '.$event->end_time->format('h:i A') : '' !!}
 	</div>
 
-	<h2>{{ $event->name }}</h2>
+	<h2><a href="{{ $url }}events/{{$event->id }}">{{ $event->name }}</h2>
 	<i>{{ $event->short }}</i><br>
 
 	<b>
@@ -87,7 +88,9 @@ Here is a reminder from <a href="{{ $url }}">{{ $url }}</a> about these upcoming
 </div>
 
 @endforeach
+@endif
 
+@if (count($interests) > 0)
 		<h3>Here's some updates on who you are following:</h3>
 		@foreach ($interests as $entity => $list)
 			<h2>{{ $entity }}</h2>
@@ -145,6 +148,7 @@ Here is a reminder from <a href="{{ $url }}">{{ $url }}</a> about these upcoming
 			@endforeach
 		@endforeach
 		<br><br>
+	@endif
 
 	We're constantly adding new features, functionality and updates to improve your experience. <br>
 	If you have any feedback, don't hesitate to drop us a line.
