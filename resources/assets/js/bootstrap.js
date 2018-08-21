@@ -43,6 +43,8 @@ if (token) {
  * allows your team to easily build robust real-time web applications.
  */
 
+import Visibility from './utilities/visibility'
+Visibility.init('body');
 // import Echo from 'laravel-echo'
 
 // window.Pusher = require('pusher-js');

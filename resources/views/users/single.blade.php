@@ -33,6 +33,12 @@
 					<span class='glyphicon glyphicon-user'></span>
 				</a>
 			@endif
+			@can('grant_access')
+				@if ($user->isActive)
+					<a href="{!! route('users.weekly', ['id' => $user->id]) !!}"  class="confirm">
+						<span class='glyphicon glyphicon-envelope' title='Send weekly update'></span></a>
+				@endif
+			@endcan
 	@endif
 
 	<ul class="list">

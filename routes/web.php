@@ -86,6 +86,11 @@ Route::get('users/{id}/reminder', [
     'uses' => 'UsersController@reminder'
 ]);
 
+Route::get('users/{id}/weekly', [
+    'as' => 'users.weekly',
+    'uses' => 'UsersController@weekly'
+]);
+
 Route::get('users/{id}/suspend', [
     'as' => 'users.suspend',
     'uses' => 'UsersController@suspend'

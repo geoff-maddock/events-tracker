@@ -71,7 +71,7 @@ class Kernel extends ConsoleKernel {
 				$events = $user->getAttendingFuture()->take($show_count);
 
                 // if there are more than 0 events
-                if ((NULL !== $events && $events->count() > 0) || (NULL !== $interests && $interests->count() > 0))
+                if ((NULL !== $events && $events->count() > 0) || (NULL !== $interests && count($interests) > 0))
                 {
                     // send an email containing that list
                     Mail::send('emails.weekly-events',
