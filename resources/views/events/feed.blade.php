@@ -3,7 +3,6 @@
 	<?php $month = '';?>
 	@foreach ($events as $event)
 
-
 		@if ($month != $event->start_at->format('F')) 
 		<?php $month = $event->start_at->format('F')?>
 		@endif

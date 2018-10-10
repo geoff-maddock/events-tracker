@@ -14,6 +14,9 @@ use App\Activity;
 use App\Tag;
 use App\User;
 use App\Thread;
+use Mail;
+use DB;
+use Log;
 
 class PagesController extends Controller {
 
@@ -469,5 +472,65 @@ class PagesController extends Controller {
         return view('pages.tools',compact('events'));
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function invite(Request $request)
+    {
+        $email = $request->input('email');
 
+        // check that a user with that email does not already exist.
+        $users = User::where('email','like','%'.$email.'%')->orderBy('name', 'ASC')->count();
+        if ($users > 0) {
+            flash()->success('Error', 'No email sent - a user with the address - ' . $email . ' - already exists on the site.'.count($users));
+
+            return back();
+        }
+
+        // email the user
+        $this->inviteUser($email);
+
+        // add to activity log - email address was invited
+        // Activity::log($user, $this->user, 12);
+
+        Log::info('Email ' . $email . ' was invited to join the site');
+
+        flash()->success('Success', 'An email was sent to ' . $email . ' inviting them to join the site');
+
+        return back();
+
+    }
+
+    /**
+     * @param $user
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function inviteUser($email)
+    {
+        $admin_email = config('app.admin');
+        $reply_email = config('app.admin');
+        $site = config('app.app_name');
+        $url = config('app.url');
+
+        $show_count = 100;
+        $events = array();
+        $interests = array();
+
+        $events = Event::future()->simplePaginate(10);
+
+        // send an email inviting the user to join
+        Mail::send('emails.invite',
+            ['email' => $email,  'events' => $events, 'url' => $url, 'site' => $site],
+            function ($m) use ($email, $admin_email, $reply_email, $site) {
+                $m->from($reply_email, $site);
+
+                $dt = Carbon::now();
+                $m->to($email, $email)
+                    ->bcc($admin_email)
+                    ->subject($site.': Event Tracker Invite - '.$dt->format('l F jS Y'));
+            });
+
+        return back();
+    }
 }

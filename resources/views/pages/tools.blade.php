@@ -13,18 +13,25 @@
 	<br>
 	<ul class="list-group">
 	@if (count($events) > 0)
-
 		@foreach ($events as $event)
 		<li class="list-group-item">
 			<a href="events/{{ $event->id }}">{{ $event->name }}</a>
 			<a class="btn btn-default" href="events/{{ $event->id }}/importPhoto">Import Photo</a>
 		 </li>
-
 		@endforeach
-
 	@endif
-
 	</ul>
+	<div>
+		{!! Form::open(['route' => 'pages.invite']) !!}
+
+		<input id="email" name="email" size="64">
+		<div class="form-group">
+		{!! Form::submit('Send Invites', ['class' =>'btn btn-primary']) !!}
+		</div>
+		{!! Form::close() !!}
+
+	</div>
+
 @stop
 
 @section('footer')

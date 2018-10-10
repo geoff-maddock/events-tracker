@@ -57,6 +57,7 @@ Route::get('activity/filter', array('as' => 'activity.filter', 'uses' => 'PagesC
 Route::get('activity/reset', array('as' => 'activity.reset', 'uses' => 'PagesController@reset'));
 
 Route::get('tools','PagesController@tools')->name('pages.tools');
+Route::post('invite','PagesController@invite')->name('pages.invite');
 
 Route::get('events/importPhotos', [
     'as' => 'events.importPhotos',
