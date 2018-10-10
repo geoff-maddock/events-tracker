@@ -66,7 +66,7 @@
 	@endforeach
 </P>
 <div>
-On <b>{{ url }}You can follow events, artists, venues, promoters or tags to receive daily and weekly updates on related events,<br>
+On <b>{{ $url }}You can follow events, artists, venues, promoters or tags to receive daily and weekly updates on related events,<br>
 add your own events for others to discover, add the site to your RSS feed, or just visit the site at your leisure without<br>
 registering or sharing any of your information.  It's up to you!
 </div>
