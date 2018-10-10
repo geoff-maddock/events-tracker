@@ -18,7 +18,8 @@ class LocationsController extends Controller {
 	protected $rules = [
 		'name' => ['required', 'min:3'],
 		'city' => ['required', 'min:3'],
-        'visibility_id' => ['required']
+        'visibility_id' => ['required'],
+        'location_type_id' => ['required'],
 	];
 
 	public function __construct(Entity $entity)

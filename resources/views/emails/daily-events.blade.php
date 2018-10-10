@@ -16,7 +16,7 @@
 		<a href="{{ $url }}series/{{$event->series_id }}">{!! $event->series->name !!}</a> series
 		@endif
 
-		<a href="{{ $url }}events/type/{{$event->eventType->name }}">{{ $event->eventType->name }}</a>
+		<a href="{{ $url }}events/type/{{$event->eventType->name }}">{{ $event->even tType->name }}</a>
 		<br>
 
 		@if (!empty($event->venue_id))
@@ -86,7 +86,47 @@
 	@endforeach
 @endif
 
-	<br><br>
+@if (count($series) > 0)
+	Here are event series you follow that happen today.
+
+	@foreach ($series as $s)
+		<div class='series-date'>
+			<h2>{{ $s->name }}</h2>
+			<b>{{ $s->occurrenceType->name }}  {{ $s->occurrenceRepeat() }}</b>
+		</div>
+
+		<h2><a href="{{ $url }}series/{{$s->id }}">{{ $s->name }}</a></h2>
+		@if ($s->description)
+			<description class="body">
+				{!! nl2br($s->description) !!}
+			</description>
+		@endif
+
+		<p>	{{ $s->eventType->name or ''}} at {{ $s->venue->name or 'No venue specified' }}</p>
+
+		<P>
+			@unless ($s->entities->isEmpty())
+				Related Entities:
+				@foreach ($s->entities as $entity)
+					<span class="label label-tag"><a href="{{ $url }}events/relatedto/{{ $entity->slug }}">{{ $entity->name }}</a></span>
+				@endforeach
+			@endunless
+		</P>
+
+		@unless ($s->tags->isEmpty())
+			<P>Tags:
+				@foreach ($s->tags as $tag)
+					<span class="label label-tag"><a href="{{ $url }}events/tag/{{ $tag->name }}">{{ $tag->name }}</a></span>
+				@endforeach
+		@endunless
+			</P>
+
+	</div>
+	</div>
+	@endforeach
+@endif
+
+<br><br>
 
 		<h3>Here are some events happening today that you might be interested in:</h3>
 		@foreach ($interests as $entity => $list)

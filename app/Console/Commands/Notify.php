@@ -43,13 +43,14 @@ class Notify extends Command {
                 foreach ($users as $user)
                 {
                         $interests = array();
+                        $seriesList = array();
 
                         // build an array of events that are today based on what the user follows
                         if ($entities = $user->getEntitiesFollowing())
                         {
                             foreach ($entities as $entity)
                             {
-                                if (count($entity->todaysEvents()) > 0)
+                                if (count($entity->futureEvents()) > 0)
                                 {
                                     $interests[$entity->name] = $entity->todaysEvents();
                                 }
@@ -60,22 +61,38 @@ class Notify extends Command {
                         {
                             foreach ($tags as $tag)
                             {
-                                if (count($tag->todaysEvents()) > 0)
+                                if (count($tag->futureEvents()) > 0)
                                 {
                                     $interests[$tag->name] = $tag->todaysEvents();
                                 }
-
                             }
                         }
+
+                        // build an array of series that the user is following
+                        if ($series = $user->getSeriesFollowing())
+                        {
+                            foreach ($series as $s)
+                            {
+                                // add matches to list
+                                $next_date = $s->nextOccurrenceDate()->format('Y-m-d');
+
+                                // today's date is the next series date
+                                if ($next_date === Carbon::now()->format('Y-m-d'))
+                                {
+                                    $seriesList[] = $s;
+                                }
+                            }
+                        }
+
 
                         // get the next x events they are attending
                         $events = $user->getAttendingToday()->take($show_count);
 
                         // if there are more than 0 events
-                        if ((NULL !== $events && count($events) > 0) || (NULL !== $interests && count($interests) > 0))
+                        if ((NULL !== $events && $events->count() > 0) || (NULL !== $series && $series->count() > 0) || (NULL !== $interests && $interests->count() > 0))
                         {
                                 // send an email containing that list
-                                Mail::send('emails.daily-events', ['user' => $user, 'events' => $events, 'interests' => $interests, 'admin_email' => $admin_email, 'url' => $url, 'site' => $site], function ($m) use ($user,  $admin_email, $reply_email, $site) {
+                                Mail::send('emails.daily-events', ['user' => $user, 'events' => $events, 'seriesList' => $seriesList, 'interests' => $interests, 'admin_email' => $admin_email, 'url' => $url, 'site' => $site], function ($m) use ($user,  $admin_email, $reply_email, $site) {
                                         $m->from($reply_email, $site);
 
                                         $dt = Carbon::now();
