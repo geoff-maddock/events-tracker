@@ -88,7 +88,7 @@
 <div class="row">
 	<div class="form-group col-md-3 {{$errors->has('start_at') ? 'has-error' : '' }}">
 	{!! Form::label('start_at','Start At:') !!}
-	{!! Form::dateTimeLocal('start_at', (isset($action) && isset($event->start_at)) ?  $event->start_at->format('Y-m-d\\TH:i') : Carbon\Carbon::now()->format('Y-m-d\\TH:i'), ['class' =>'form-control']) !!}
+	{!! Form::dateTimeLocal('start_at', (isset($action) && isset($event->start_at)) ?  $event->start_at->format('Y-m-d\\TH:i') : NULL, ['class' =>'form-control']) !!}
 	{!! $errors->first('start_at','<span class="help-block">:message</span>') !!}
 	</div>
 
