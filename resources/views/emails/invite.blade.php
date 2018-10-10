@@ -3,12 +3,15 @@
 <div>
 	You're invited to join {{ $site }}, a site that keeps you on top of local events, artists, music and other happenings.
 </div>
-<P></P>
 <div>
-	Visit us at <b><a href="{{ $url }}">{{ $url }}</a></b> or register by going to <b><a href="{{ $url }}/register">{{ $url }}/register</a></b><br>
+	On <b>{{ $url }} you can follow events, artists, venues, promoters or tags to receive daily and weekly updates on related events,<br>
+		add your own events for others to discover, add the site to your RSS feed, or just visit the site at your leisure without<br>
+		registering or sharing any of your information.  It's up to you!
 </div>
-<P>
+<P></P>
 
+<P>
+	<h3>Here's a sampling of some of the upcoming events listed on the site...</h3>
     <?php $month = '';?>
 	@foreach ($events as $event)
 
@@ -66,9 +69,7 @@
 	@endforeach
 </P>
 <div>
-On <b>{{ $url }}You can follow events, artists, venues, promoters or tags to receive daily and weekly updates on related events,<br>
-add your own events for others to discover, add the site to your RSS feed, or just visit the site at your leisure without<br>
-registering or sharing any of your information.  It's up to you!
+	Visit us at <b><a href="{{ $url }}">{{ $url }}</a></b> or register by going to <b><a href="{{ $url }}/register">{{ $url }}/register</a></b><br>
 </div>
 
 <P></P>
