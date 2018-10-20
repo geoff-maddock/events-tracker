@@ -4,7 +4,12 @@
 
 @section('content')
 
-	<div class="jumbotron">
+	<div class="jumbotron"
+		@if ($theme == config('app.default_theme'))
+			style="background-color: #FF3CAC;background-image: linear-gradient(225deg, #FF3CAC 0%, #784BA0 50%, #2B86C5 100%);"
+		@endif
+		>
+		{{--https://www.grabient.com/--}}
 
 		<h3>Event Repo <a href="#" id="event-close-box" data-toggle="visibility" data-target="#jumbo-container">...</a></h3>
 		<div id="jumbo-container">

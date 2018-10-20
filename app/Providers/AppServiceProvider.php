@@ -33,7 +33,7 @@ class AppServiceProvider extends ServiceProvider {
         ]);
 
 	    // get the user, set the theme and pass to the view
-        \View::composer('app', function($view) {
+        \View::composer('*', function($view) {
             if (Auth::check() && Auth::user()->profile && Auth::user()->profile->default_theme) {
                 // use the set theme if the user has one
                 $theme = Auth::user()->profile->default_theme;
