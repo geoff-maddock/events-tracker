@@ -3,8 +3,9 @@
 <div>
 	You're invited to join {{ $site }}, a site that keeps you on top of local events, artists, music and other happenings.
 </div>
+<P></P>
 <div>
-	On <b>{{ $url }} you can follow events, artists, venues, promoters or tags to receive daily and weekly updates on related events,<br>
+	On <b>{{ $url }}</b> you can follow events, artists, venues, promoters or tags to receive daily and weekly updates on related events,<br>
 		add your own events for others to discover, add the site to your RSS feed, or just visit the site at your leisure without<br>
 		registering or sharing any of your information.  It's up to you!
 </div>
@@ -20,8 +21,7 @@
 		@endif
 
 		{!! $event->start_at->format('l F jS Y') !!} <br>
-		{{ $event->name }}
-
+		<h4>{{ $event->name }}</h4>
 
 		@if (!empty($event->series_id))
 			<br><a href="/series/{{$event->series_id }}">{!! $event->series->name !!}</a> series
