@@ -7,6 +7,8 @@
 	<div class="jumbotron"
 		@if ($theme == config('app.default_theme'))
 			style="background-color: #FF3CAC;background-image: linear-gradient(225deg, #FF3CAC 0%, #784BA0 50%, #2B86C5 100%);"
+		 @else
+			style="background-color: #F4D03F;background-image: linear-gradient(132deg, #F4D03F 0%, #16A085 100%);"
 		@endif
 		>
 		{{--https://www.grabient.com/--}}

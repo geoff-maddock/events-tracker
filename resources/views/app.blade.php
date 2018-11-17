@@ -6,7 +6,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta property="og:url" content="{{ Request::url() }}">
 	<meta property="og:title" content="@yield('title')">
-	<meta property="og:description" content="A guide and calender of events, weekly and  monthly series, promoters, artists, producers, djs, venues and other entities.">
+	<meta property="og:description" content="A calender of events, converts, club nights, weekly and monthly events series, promoters, artists, producers, djs, venues and other entities.">
+	<meta name="description" content="A calender of events, converts, club nights, weekly and monthly events series, promoters, artists, producers, djs, venues and other entities.">
 	<meta property="fb:app_id" content="{{ config('app.fb_app_id') }}">
 	<meta name="theme-color" content="#636b6f"/>
 	<meta name="csrf-token" content="{{ csrf_token() }}">
