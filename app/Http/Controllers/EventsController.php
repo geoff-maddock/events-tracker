@@ -1177,7 +1177,7 @@ class EventsController extends Controller
 
 
         // get all the upcoming series events
-        $series = $this->user->getSeriesFollowing()->get();
+        $series = $this->user->getSeriesFollowing();
 
         $series = $series->filter(function ($e) {
             // all public events
