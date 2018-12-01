@@ -9,6 +9,7 @@
 /public/css/app.css
 /public/css/dark.css
 /public/css/light.css
+/public/google*.html
 /vendor
 .env.local.php
 .env.php

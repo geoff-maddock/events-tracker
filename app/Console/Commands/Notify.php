@@ -89,7 +89,7 @@ class Notify extends Command {
                         $events = $user->getAttendingToday()->take($show_count);
 
                         // if there are more than 0 events
-                        if ((NULL !== $events && $events->count() > 0) || (NULL !== $series && $series->count() > 0) || (NULL !== $interests && $interests->count() > 0))
+                        if ((NULL !== $events && $events->count() > 0) || (NULL !== $seriesList && count($seriesList) > 0) || (NULL !== $interests && count($interests) > 0))
                         {
                                 // send an email containing that list
                                 Mail::send('emails.daily-events', ['user' => $user, 'events' => $events, 'seriesList' => $seriesList, 'interests' => $interests, 'admin_email' => $admin_email, 'url' => $url, 'site' => $site], function ($m) use ($user,  $admin_email, $reply_email, $site) {

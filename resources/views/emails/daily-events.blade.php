@@ -16,7 +16,7 @@
 		<a href="{{ $url }}series/{{$event->series_id }}">{!! $event->series->name !!}</a> series
 		@endif
 
-		<a href="{{ $url }}events/type/{{$event->eventType->name }}">{{ $event->even tType->name }}</a>
+		<a href="{{ $url }}events/type/{{$event->eventType->name }}">{{ $event->eventType->name }}</a>
 		<br>
 
 		@if (!empty($event->venue_id))
@@ -86,10 +86,10 @@
 	@endforeach
 @endif
 
-@if (count($series) > 0)
+@if (count($seriesList) > 0)
 	Here are event series you follow that happen today.
 
-	@foreach ($series as $s)
+	@foreach ($seriesList as $s)
 		<div class='series-date'>
 			<h2>{{ $s->name }}</h2>
 			<b>{{ $s->occurrenceType->name }}  {{ $s->occurrenceRepeat() }}</b>
