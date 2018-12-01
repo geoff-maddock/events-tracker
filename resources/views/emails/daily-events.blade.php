@@ -129,8 +129,8 @@
 <br><br>
 
 		<h3>Here are some events happening today that you might be interested in:</h3>
-		@foreach ($interests as $entity => $list)
-			<h2>{{ $entity }}</h2>
+		@foreach ($interests as $tag => $list)
+			<h2>{{ $tag }}</h2>
 			@foreach ($list as $event)
 				<div>
 					{!! $event->start_at->format('l F jS Y') !!} <br>
@@ -159,7 +159,6 @@
 					@if ($event->door_price)
 						${{ number_format($event->door_price,0) }}
 					@endif
-
 
 					@unless ($event->entities->isEmpty())
 						<br>

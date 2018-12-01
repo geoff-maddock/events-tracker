@@ -50,7 +50,7 @@ class Notify extends Command {
                         {
                             foreach ($entities as $entity)
                             {
-                                if (count($entity->futureEvents()) > 0)
+                                if (count($entity->todaysEvents()) > 0)
                                 {
                                     $interests[$entity->name] = $entity->todaysEvents();
                                 }
@@ -61,7 +61,7 @@ class Notify extends Command {
                         {
                             foreach ($tags as $tag)
                             {
-                                if (count($tag->futureEvents()) > 0)
+                                if (count($tag->todaysEvents()) > 0)
                                 {
                                     $interests[$tag->name] = $tag->todaysEvents();
                                 }
@@ -83,7 +83,6 @@ class Notify extends Command {
                                 }
                             }
                         }
-
 
                         // get the next x events they are attending
                         $events = $user->getAttendingToday()->take($show_count);
