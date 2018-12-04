@@ -73,14 +73,17 @@ class Notify extends Command {
                         {
                             foreach ($series as $s)
                             {
-                                // add matches to list
-                                $next_date = $s->nextOccurrenceDate()->format('Y-m-d');
+                                if ($s->occurrenceType->name !== 'No Schedule') {
+                                    // add matches to list
+                                    $next_date = $s->nextOccurrenceDate()->format('Y-m-d');
 
-                                // today's date is the next series date
-                                if ($next_date === Carbon::now()->format('Y-m-d'))
-                                {
-                                    $seriesList[] = $s;
+                                    // today's date is the next series date
+                                    if ($next_date === Carbon::now()->format('Y-m-d'))
+                                    {
+                                        $seriesList[] = $s;
+                                    }
                                 }
+
                             }
                         }
 
