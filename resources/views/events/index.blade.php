@@ -88,6 +88,7 @@
 				<div class="panel-body">
 					{!! $events->render() !!}
 					@include('events.list', ['events' => $events])
+					{!! $events->render() !!}
 				</div>
 
 			</div>
@@ -112,6 +113,12 @@
 										'filter_name' => isset($filters['filter_name']) ?? NULL,
 					])->render() !!}
 					@include('events.list', ['events' => $past_events])
+					{!! $past_events->appends(['sort_by' => $sortBy,
+                    'rpp' => $rpp,
+                    'filter_venue' => isset($filters['filter_venue']) ?? NULL,
+                    'filter_tag' => isset($filters['filter_tag']) ?? NULL,
+                    'filter_name' => isset($filters['filter_name']) ?? NULL,
+					])->render() !!}
 				</div>
 
 			</div>
@@ -136,7 +143,12 @@
                     'filter_name' => isset($filter_name) ? $filter_name : NULL,
 					])->render() !!}
 				@include('events.list', ['events' => $future_events])
-
+					{!! $future_events->appends(['sort_by' => $sortBy,
+                    'rpp' => $rpp,
+                    'filter_venue' => isset($filter_venue) ? $filter_venue : NULL,
+                    'filter_tag' => isset($filter_tag) ? $filter_tag : NULL,
+                    'filter_name' => isset($filter_name) ? $filter_name : NULL,
+					])->render() !!}
 				</div>
 
 			</div>

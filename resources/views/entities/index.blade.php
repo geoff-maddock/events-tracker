@@ -88,6 +88,11 @@
 
 		@include('entities.list', ['entities' => $entities])
 
+		@if (!$entities->isEmpty())
+			{!! $entities->appends(['sort_by' => $sortBy,
+									'rpp' => $rpp
+			])->render() !!}
+		@endif
         </div>
     </div>
 @stop

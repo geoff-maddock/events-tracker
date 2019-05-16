@@ -64,6 +64,11 @@
 
 				@include('users.list', ['users' => $users])
 
+				@if (!$users->isEmpty())
+					{!! $users->appends(['sort_by' => $sortBy,
+											'rpp' => $rpp
+					])->render() !!}
+				@endif
 			</div>
 		</div>
 @stop
