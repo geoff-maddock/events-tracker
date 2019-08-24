@@ -73,7 +73,8 @@ class Notify extends Command {
                         {
                             foreach ($series as $s)
                             {
-                                if ($s->occurrenceType->name !== 'No Schedule' && NULL === $s->cancelledAt) {
+                                // if the series does not have NO SCHEDULE AND CANCELLED AT IS NULL
+                                if ($s->occurrenceType->name !== 'No Schedule' && (NULL === $s->cancelled_at)) {
                                     // add matches to list
                                     $next_date = $s->nextOccurrenceDate()->format('Y-m-d');
 

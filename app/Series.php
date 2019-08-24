@@ -426,7 +426,7 @@ class Series extends Eloquent {
 	{ 
 		$event = NULL;
 
-		if ($this->cancelledAt != NULL)
+		if ($this->cancelledAt !== NULL)
 		{
 			$event = Event::where('series_id','=',$this->id)->where('start_at','>=',Carbon::now())
 						->orderBy('start_at', 'asc')->first();
