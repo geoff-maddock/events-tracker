@@ -2,6 +2,7 @@
 
 use App\Filters\EventFilters;
 use App\Http\Requests\EventRequest;
+use App\Notifications\EventPublished;
 use App\OccurrenceDay;
 use App\OccurrenceType;
 use App\OccurrenceWeek;
@@ -1659,7 +1660,9 @@ class EventsController extends Controller
             $this->addFbPhoto($event);
         }
 
-        //return redirect('events');
+        // add a twitter notification
+        $event->notify(new EventPublished());
+
         return redirect()->route('events.show', compact('event'));
     }
 

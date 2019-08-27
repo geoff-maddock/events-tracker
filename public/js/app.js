@@ -31861,7 +31861,7 @@ var Visibility = {
 
             $(settings.target).toggleClass('hidden');
             // save into localStorage
-            localStorage.setItem($(settings.target).attr('id'), $(settings.target).attr('class'));
+            //localStorage.setItem($(settings.target).attr('id'), $(settings.target).attr('class'));
         });
     }
 };

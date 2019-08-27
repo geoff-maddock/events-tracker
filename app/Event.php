@@ -1,11 +1,13 @@
 <?php namespace App;
 
 use Carbon\Carbon;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
 class Event extends Eloquent {
 
+    use Notifiable;
 
 	public static function boot()
 	{
@@ -628,6 +630,55 @@ class Event extends Eloquent {
         $url = sprintf('https://www.google.com/calendar/render?action=%s&text=%s&dates=%s/%s&details=%s&location=%s&sf=%s&output=xml', $action, $text, $start, $end, $details, $location, $sf);
 
         return $url;
+    }
+
+    public function getBriefFormat()
+    {
+        $format = $this->start_at->format('l F jS Y') . ' ' . $this->name;
+
+
+		if (!empty($this->series_id)) {
+		    $format .= ' ' . $this->series->name . ' series';
+        }
+
+        $format .= ' ' . $this->eventType->name . ' ';
+
+		if ($this->venue) {
+		    $format .= ' at ';
+		    $format .=  $this->venue->name ?? 'No venue specified';
+        }
+
+
+		if ($this->start_at) {
+		    $format .= ' at ' . $this->start_at->format('gA');
+        }
+
+		if ($this->door_price) {
+		    $format .= ' $' . number_format($this->door_price, 0);
+        }
+
+		if (!$this->entities->isEmpty()) {
+		    $format .= ' Related: ';
+		    foreach ($this->entities as $entity) {
+		        $format .= ' @' . $entity->name;
+            }
+        }
+
+        if (!$this->tags->isEmpty()) {
+            $format .= ' Tag: ';
+            foreach ($this->tags as $tag) {
+                $format .= ' #' . $tag->name;
+            }
+        }
+
+		if ($this->primary_link) {
+            $format .= $this->primary_link ?? '';
+        }
+
+        $format .= ' https://arcane.city/events/'.$this->id;
+
+        return $format;
+
     }
 
 }

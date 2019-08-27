@@ -68,15 +68,15 @@
 
 	@endunless
 
-		@unless ($entity->roles->isEmpty())
+	@unless ($entity->series->isEmpty())
 
-			<P><b>Series:</b>
+		<P><b>Series:</b>
 
-				@foreach ($entity->series as $series)
-					<span class="label label-tag"><a href="/series/{{ $series->id }}">{{ $series->name }}</a></span>
-			@endforeach
+			@foreach ($entity->series as $series)
+				<span class="label label-tag"><a href="/series/{{ $series->id }}">{{ $series->name }}</a></span>
+		@endforeach
 
-		@endunless
+	@endunless
 
 	@unless ($entity->tags->isEmpty())
 		

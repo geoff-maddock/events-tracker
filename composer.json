@@ -17,7 +17,8 @@
 		"sammyk/laravel-facebook-sdk": "^3.5",
 		"sentry/sentry": "^1.8",
 		"sentry/sentry-laravel": "^0.8.0",
-		"alt-three/bus": "^3.0"
+		"alt-three/bus": "^3.0",
+		"laravel-notification-channels/twitter": "^1.0"
 	},
 	"require-dev": {
 		"fzaninotto/faker": "~1.4",

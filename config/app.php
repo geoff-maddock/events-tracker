@@ -202,6 +202,8 @@ return [
 
         #facebook SDK
         SammyK\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
+
+        NotificationChannels\Twitter\TwitterServiceProvider::class,
 	],
 
 	/*
