@@ -13,7 +13,7 @@
 		>
 		{{--https://www.grabient.com/--}}
 
-		<h3>Event Repo <a href="#" id="event-close-box" data-toggle="visibility" data-target="#jumbo-container">...</a></h3>
+		<h3 class="font-weight-bold">Event Repository <a href="#" id="event-close-box" data-toggle="visibility" data-target="#jumbo-container">...</a></h3>
 		<div id="jumbo-container">
 
 		<p>A guide and calender of events, weekly and  monthly series, promoters, artists, producers, djs, venues and other entities.</p>

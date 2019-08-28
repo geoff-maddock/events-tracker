@@ -64,10 +64,9 @@ class EventPublished extends Notification
     public function toTwitter($notifiable) {
         if ($photo = $notifiable->getPrimaryPhoto()) {
             return (new TwitterStatusUpdate($notifiable->getBriefFormat()))->withImage($photo->path);
-        } else {
-            return new TwitterStatusUpdate($notifiable->getBriefFormat() );
-        }
-        //return new TwitterStatusUpdate($notifiable->name . ' was posted by @arcanecity412 https://arcane.city/');
+        };
+
+        return new TwitterStatusUpdate($notifiable->getBriefFormat() );
 
     }
 }

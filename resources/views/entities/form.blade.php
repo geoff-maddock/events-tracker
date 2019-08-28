@@ -46,6 +46,21 @@
 	</div>
 </div>
 
+
+<div class="row">
+	<div class="form-group col-md-6">
+		{!! Form::label('facebook_username','FB Username') !!}
+		{!! Form::text('facebook_username', null, ['placeholder' => 'Add the related facebook username if there is one.','class' =>'form-control']) !!}
+		{!! $errors->first('facebook_username','<span class="help-block">:message</span>') !!}
+	</div>
+
+	<div class="form-group col-md-6">
+		{!! Form::label('twitter_username','Twitter Username') !!}
+		{!! Form::text('twitter_username', null, ['placeholder' => 'Add the related twitter username if there is one.','class' =>'form-control']) !!}
+		{!! $errors->first('twitter_username','<span class="help-block">:message</span>') !!}
+	</div>
+</div>
+
 <div class="row">
 	<div class="form-group col-md-6">
 	{!! Form::label('role_list','Roles:') !!}
@@ -78,7 +93,6 @@
 	{!! $errors->first('aliases','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
-
 
 <div class="row">
 	<div class="form-group col-md-3">

@@ -611,7 +611,7 @@ class Event extends Eloquent {
         // grab the title and slugify it
         if ($value === '')
         {
-        	$this->attributes['slug'] = str_slug($this->name);
+            $this->attributes['slug'] = str_slug($this->name);
         } else {
         	$this->attributes['slug'] = $value;
         }
@@ -634,7 +634,7 @@ class Event extends Eloquent {
 
     public function getBriefFormat()
     {
-        $format = $this->start_at->format('l F jS Y') . ' ' . $this->name;
+        $format = $this->start_at->format('l F jS Y') . ' | ' . $this->name;
 
 
 		if (!empty($this->series_id)) {
@@ -648,7 +648,6 @@ class Event extends Eloquent {
 		    $format .=  $this->venue->name ?? 'No venue specified';
         }
 
-
 		if ($this->start_at) {
 		    $format .= ' at ' . $this->start_at->format('gA');
         }
@@ -660,19 +659,19 @@ class Event extends Eloquent {
 		if (!$this->entities->isEmpty()) {
 		    $format .= ' Related: ';
 		    foreach ($this->entities as $entity) {
-		        $format .= ' @' . $entity->name;
+		        $format .= ' @' . ($entity->twitter_username ?? $entity->slug);
             }
         }
 
         if (!$this->tags->isEmpty()) {
             $format .= ' Tag: ';
             foreach ($this->tags as $tag) {
-                $format .= ' #' . $tag->name;
+                $format .= ' #' . str_slug($tag->name);
             }
         }
 
 		if ($this->primary_link) {
-            $format .= $this->primary_link ?? '';
+            $format .= ' ' . $this->primary_link ?? '';
         }
 
         $format .= ' https://arcane.city/events/'.$this->id;

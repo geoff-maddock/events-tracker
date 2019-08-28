@@ -138,8 +138,16 @@
 				@endif
 		</span><br>
 		@endforeach
-		
 	@endunless
+
+		@if ($entity->facebook_username)
+			<br>
+				<b>Facebook:</b> <a href="https://facebook.com/{{ $entity->facebook_username  }}">{{$entity->facebook_username}}</a>
+		@endif
+
+		@if ($entity->twitter_username)
+				<b>Twitter:</b> <a href="https://twitter.com/{{ $entity->twitter_username }}">{{ '@' }}{{  $entity->twitter_username }}</a>
+		@endif
 
 	<P>
 	@if ($user && Auth::user()->id === $entity->user->id)

@@ -28,7 +28,6 @@
 		<div class="bs-component">
 			<div class="panel panel-info">
 
-
 				<div class="panel-heading">
 					<h3 class="panel-title">Tags
 						<a href="#" ><span class='label label-tag pull-right' data-toggle="tooltip" data-placement="bottom"  title="# of Tags that match this search term.">{{ count($tags)}}</span></a>
@@ -48,7 +47,6 @@
 		<div class="bs-component">
 			<div class="panel panel-info">
 
-
 				<div class="panel-heading">
 					<h3 class="panel-title">Series
 						<a href="#" ><span class='label label-tag pull-right' data-toggle="tooltip" data-placement="bottom"  title="# of Series that match this search term.">{{ count($series)}}</span></a>
@@ -67,7 +65,6 @@
 		<div class="bs-component">
 			<div class="panel panel-info">
 
-
 				<div class="panel-heading">
 					<h3 class="panel-title">Events
 						<a href="#" ><span class='label label-tag pull-right' data-toggle="tooltip" data-placement="bottom"  title="# of Events that match this search term.">{{ count($events)}}</span></a>
@@ -81,9 +78,15 @@
 
 			</div>
 		</div>
-
-
 	</div>
+	@else
+		<div class="col-lg-12">
+			<div class="bs-component">
+
+					No matching events found.
+
+			</div>
+		</div>
 	@endif
 
 	<div class="col-lg-6">
@@ -104,6 +107,14 @@
 
 			</div>
 		</div>
+		@else
+
+				<div class="bs-component">
+
+					No matching users found.
+
+				</div>
+
 		@endif
 	
 		@if (isset($entities) && count($entities) > 0)
@@ -123,7 +134,15 @@
 
 				</div>
 			</div>
-		@endif
+			@else
+
+					<div class="bs-component">
+
+						No matching entities found.
+
+					</div>
+
+			@endif
 
 		@if (isset($threads) && count($threads) > 0)
 			<div class="bs-component">
