@@ -161,6 +161,11 @@ Route::get('events/{id}/remind', [
     'uses' => 'EventsController@remind'
 ]);
 
+Route::get('events/{id}/tweet', [
+    'as' => 'events.tweet',
+    'uses' => 'EventsController@tweet'
+]);
+
 Route::get('events/{id}/attend', [
     'as' => 'events.attend',
     'uses' => 'EventsController@attend'

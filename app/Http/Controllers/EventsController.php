@@ -1797,6 +1797,36 @@ class EventsController extends Controller
     }
 
     /**
+     * Tweet this event
+     *
+     * @param $id
+     * @return Response
+     * @throws \Throwable
+     */
+    public function tweet ($id)
+    {
+        // check if there is a logged in user
+        if (!$this->user) {
+            flash()->error('Error', 'No user is logged in.');
+            return back();
+        };
+
+        if (!$event = Event::find($id)) {
+            flash()->error('Error', 'No such event');
+            return back();
+        };
+
+        // add a twitter notification
+        $event->notify(new EventPublished());
+
+        Log::info('User ' . $id . ' tweeted ' . $event->name);
+
+        flash()->success('Success', 'You tweeted the event - ' . $event->name);
+        return back();
+
+    }
+
+    /**
      * Mark user as attending the event.
      *
      * @param $id
@@ -1837,7 +1867,7 @@ class EventsController extends Controller
                     ->with(compact('event'))
                     ->with('month', '')
                     ->render()
-                    ];
+            ];
 
         };
         flash()->success('Success', 'You are now attending the event - ' . $event->name);
