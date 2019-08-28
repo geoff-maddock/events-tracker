@@ -1,15 +1,20 @@
 <ul class='event-list'>
 
-<?php $type = NULL;?>
-	@foreach ($series as $series)
-		@if ($type != $series->occurrence_type_id)
+    @php $type = NULL @endphp
+	@if (count($series) > 0)
+	@foreach ($series as $s)
+		@if ($type != $s->occurrence_type_id)
 			<li style="margin-left: 10px;">			<br style="clear: left;"/>
-				<h3>{{ $series->occurrenceType->name }}</h3>
-                <?php $type = $series->occurrence_type_id; ?>
+				<h3>{{ $s->occurrenceType->name }}</h3>
+                <?php $type = $s->occurrence_type_id; ?>
 			</li>
 		@endif
-		@include('series.single', ['series' => $series])
+		@include('series.single', ['series' => $s])
 	@endforeach
- </ul>
+	@else
+		<ul class='event-list'><li style='clear:both;'><i>No series listed</i></li></ul>
+	@endif
+
+</ul>
 
 <br>

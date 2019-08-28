@@ -78,7 +78,7 @@
 </tbody>
 </table>
 @else
-	<ul class='thread-list'><li style='clear:both;'><i>No threads listed</i></li></ul> 
+	<ul class='event-list'><li style='clear:both;'><i>No threads listed</i></li></ul>
 @endif
 
 @section('scripts.footer')
