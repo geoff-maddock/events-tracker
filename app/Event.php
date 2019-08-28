@@ -641,7 +641,7 @@ class Event extends Eloquent {
 		    $format .= ' ' . $this->series->name . ' series';
         }
 
-        $format .= ' ' . $this->eventType->name . ' ';
+        $format .= ' ' . $this->eventType->name;
 
 		if ($this->venue) {
 		    $format .= ' at ';
