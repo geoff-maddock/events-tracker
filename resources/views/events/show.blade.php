@@ -100,8 +100,9 @@
 		@else
 		<a href="{!! route('events.attend', ['id' => $event->id]) !!}" title="Click to mark attending"><span class='glyphicon glyphicon-star-empty text-info'></span>  No response</a>
 		@endif
-
-		<a href="{!! route('events.tweet', ['id' => $event->id]) !!}" title="Click to tweet event"><span class='glyphicon glyphicon-music text-info'></span></a>
+		@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )
+			<a href="{!! route('events.tweet', ['id' => $event->id]) !!}" title="Click to tweet event"><span class='glyphicon glyphicon-music text-info'></span></a>
+		@endif
 	@endif
 
 
