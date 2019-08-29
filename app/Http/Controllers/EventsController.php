@@ -1660,8 +1660,10 @@ class EventsController extends Controller
             $this->addFbPhoto($event);
         }
 
-        // add a twitter notification
-        $event->notify(new EventPublished());
+        // add a twitter notification if the user is admin
+        if ($this->user->hasGroup('super_admin')) {
+            $event->notify(new EventPublished());
+        }
 
         return redirect()->route('events.show', compact('event'));
     }

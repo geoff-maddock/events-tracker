@@ -152,7 +152,12 @@
 <div class="row">
 	<div class="form-group col-md-6">
 	{!! Form::label('entity_list','Related Entities:') !!}
-	{!! Form::select('entity_list[]', $entities, null, ['id' => 'entity_list', 'class' =>'form-control select2', 'data-placeholder' => 'Choose a related artist, producer, dj', 'data-tags' =>'false', 'multiple']) !!}
+	{!! Form::select('entity_list[]', $entities, null, [
+			'id' => 'entity_list',
+			'class' =>'form-control select2',
+			'data-placeholder' => 'Choose a related artist, producer, dj',
+			'data-tags' =>'false',
+			'multiple']) !!}
 	{!! $errors->first('entities','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -160,11 +165,12 @@
 <div class="row">
 	<div class="form-group col-md-6">
 	{!! Form::label('tag_list','Tags:') !!}
-	{!! Form::select('tag_list[]', $tags, old('tag_list'), ['id' => 'tag_list',
+	{!! Form::select('tag_list[]', $tags, old('tag_list'), [
+		'id' => 'tag_list',
 		'class' =>'form-control select2',
 		'data-placeholder' => 'Choose a tag',
 		'data-tags' => 'true',
-		'multiple' => 'true']) !!}
+		'multiple']) !!}
 	{!! $errors->first('tags','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
