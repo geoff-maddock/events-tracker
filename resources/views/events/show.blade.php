@@ -63,7 +63,7 @@
 	@endif
  	
  	@if ($event->min_age)
-	{{ $event->min_age }}
+	{{ is_int($event->min_age) ? $event->min_age.'+' :  $event->min_age  }}
 	@endif
 
 	<br>

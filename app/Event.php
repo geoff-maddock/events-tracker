@@ -659,14 +659,18 @@ class Event extends Eloquent {
 		if (!$this->entities->isEmpty()) {
 		    $format .= ' Related: ';
 		    foreach ($this->entities as $entity) {
-		        $format .= ' @' . ($entity->twitter_username ?? $entity->slug);
+		        if ($entity->twitter_username !== '') {
+                    $format .= ' @' . $entity->twitter_username;
+                } else {
+                    $format .= ' @' . studly_case($entity->slug);
+                }
             }
         }
 
         if (!$this->tags->isEmpty()) {
             $format .= ' Tag: ';
             foreach ($this->tags as $tag) {
-                $format .= ' #' . str_slug($tag->name);
+                $format .= ' #' . studly_case($tag->name);
             }
         }
 
