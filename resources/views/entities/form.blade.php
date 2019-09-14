@@ -77,7 +77,7 @@
 	{!! Form::label('tag_list','Tags:') !!}
 	{!! Form::select('tag_list[]', $tags, null, ['id' => 'tag_list', 'class' =>'form-control select2',
 	'data-placeholder' => 'Choose a tag',
-	'data-tags' =>'true',
+	'data-tags' =>'false',
 	 'multiple']) !!}
 	{!! $errors->first('tags','<span class="help-block">:message</span>') !!}
 	</div>
