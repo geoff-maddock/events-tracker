@@ -636,7 +636,6 @@ class Event extends Eloquent {
     {
         $format = $this->start_at->format('l F jS Y') . ' | ' . $this->name;
 
-
 		if (!empty($this->series_id)) {
 		    $format .= ' ' . $this->series->name . ' series';
         }
@@ -680,7 +679,7 @@ class Event extends Eloquent {
 
         $format .= ' https://arcane.city/events/'.$this->id;
 
-        return $format;
+        return substr($format, 0, 140);
 
     }
 

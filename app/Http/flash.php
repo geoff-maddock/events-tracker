@@ -5,16 +5,13 @@ use Illuminate\Support\Facades\Session;
 
 class Flash {
 
-
 	public function message($title, $message)
 	{
-
 		\Session::flash('flash_message', [
 			'title' => $title,
 			'message' => $message,
 			'level' => 'info',
 			]);
-				//dd('calling msg11');
 	}
 
    public function create($title, $message, $level)
