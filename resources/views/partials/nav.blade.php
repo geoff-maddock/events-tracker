@@ -99,6 +99,8 @@
 								<li><a href="{{ url('/activity')}}">Activity</a></li>
 							@endcan
 							@can('show_admin')
+								<li><a href="{{ url('/blogs')}}">Blogs</a></li>
+								<li><a href="{{ url('/menus')}}">Menus</a></li>
 								<li><a href="{{ url('/tools')}}">Tools</a></li>
 							@endcan
 

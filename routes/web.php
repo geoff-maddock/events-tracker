@@ -256,6 +256,26 @@ Route::get('posts/{id}/unlike', [
 ]);
 Route::resource('posts','PostsController');
 
+# BLOGS
+Route::get('blogs/all', 'BlogsController@indexAll');
+
+Route::bind('blogs', function($id)
+{
+    return App\Blog::whereId($id)->firstOrFail();
+});
+
+Route::resource('blogs','BlogsController');
+
+# MENUS
+Route::get('menus/all', 'MenusController@indexAll');
+
+Route::bind('menus', function($id)
+{
+    return App\Menu::whereId($id)->firstOrFail();
+});
+
+Route::resource('menus','MenusController');
+
 # PERMISSIONS
 Route::get('permissions/all', 'PermissionsController@indexAll');
 

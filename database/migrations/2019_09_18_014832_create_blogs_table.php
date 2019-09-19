@@ -34,6 +34,7 @@ class CreateBlogsTable extends Migration
             $table->integer('sort_order');
             $table->boolean('is_active')->default(1);
             $table->boolean('is_admin')->default(0);
+            $table->boolean('allow_html')->default(0);
             $table->integer('created_by')->default(1);
             $table->integer('updated_by')->nullable();
             $table->timestamps();
