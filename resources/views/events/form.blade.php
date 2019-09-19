@@ -169,7 +169,7 @@
 		'id' => 'tag_list',
 		'class' =>'form-control select2',
 		'data-placeholder' => 'Choose a tag',
-		'data-tags' => 'false',
+		'data-tags' => 'true',
 		'multiple' => 'multiple']) !!}
 	{!! $errors->first('tags','<span class="help-block">:message</span>') !!}
 	</div>
