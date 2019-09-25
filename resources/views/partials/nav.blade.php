@@ -74,6 +74,9 @@
 			<ul class="nav navbar-nav navbar-right">
 
 				@if (Auth::guest())
+					@foreach ($menus as $menu)
+						<li><a href="{{ url('/menus/'.$menu->id.'/content') }}" class="visible-lg">{{ $menu->name  }}</a></li>
+					@endforeach
 					<li><a href="{{ url('/login') }}" class="visible-lg">Login</a></li>
 					<li><a href="{{ url('/register') }}" class="visible-lg">Register</a></li>
                     <li><a href="{{ url('/login') }}" class="hidden-lg"><span class="glyphicon glyphicon-user" title="Login"></span></a></li>
@@ -82,6 +85,9 @@
 					@if ($latest)
 					<li></li>
 					@endif
+						@foreach ($menus as $menu)
+							<li><a href="{{ url('/menus/'.$menu->id.'/content') }}" class="visible-lg">{{ $menu->name  }}</a></li>
+						@endforeach
 					<li class="dropdown">
 						<a href="{{ url('/users/'.Auth::user()->id) }}" class="dropdown-toggle visible-xs-block visible-sm-block visible-md-block" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user" title="Login"></span> <span class="caret"></span></a>
                         <a href="{{ url('/users/'.Auth::user()->id) }}" class="dropdown-toggle visible-lg" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ Auth::user()->name }} <span class="caret"></span></a>

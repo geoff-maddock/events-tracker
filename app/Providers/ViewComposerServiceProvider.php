@@ -33,6 +33,7 @@ class ViewComposerServiceProvider extends ServiceProvider {
 		view()->composer('partials.nav', function($view) {
 			$view->with('latest', \App\Event::latest()->first());
 			$view->with('roles', \App\Role::orderBy('name','ASC')->get());
+			$view->with('menus', \App\Menu::orderBy('name','ASC')->visible(auth()->user())->get());
 		});
 	}
 }

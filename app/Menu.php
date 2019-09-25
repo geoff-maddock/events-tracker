@@ -50,11 +50,9 @@ class Menu extends Eloquent {
      */
     public function scopeVisible($query, $user)
     {
-
         $public = Visibility::where('name','=','Public')->first();
-        $guarded = Visibility::where('name','=','Guarded')->first();
 
-        $query->where('visibility_id','=', $public ? $public->id : NULL )->orWhere('created_by','=',($user ? $user->id : NULL));
+        $query->where('visibility_id','=', $public ? $public->id : NULL );
 
     }
 }

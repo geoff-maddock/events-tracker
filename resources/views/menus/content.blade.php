@@ -5,16 +5,10 @@
 @section('content')
 
 
-<h1>Menu
+<h1>{{ $menu->name }}
 	@include('menus.crumbs', ['slug' => $menu->label])
 </h1>
 
-<P>
-@can('edit_menu')
-	<a href="{!! route('menus.edit', ['id' => $menu->id]) !!}" class="btn btn-primary">Edit Menu</a>
-@endcan
-	<a href="{!! URL::route('menus.index') !!}" class="btn btn-info">Return to list</a>
-</P>
 
 <div class="row">
 	<div class="profile-card col-md-4">

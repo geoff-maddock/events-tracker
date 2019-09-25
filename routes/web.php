@@ -273,8 +273,8 @@ Route::bind('menus', function($id)
 {
     return App\Menu::whereId($id)->firstOrFail();
 });
-
 Route::resource('menus','MenusController');
+Route::get('menus/{id}/content', 'MenusController@content');
 
 # PERMISSIONS
 Route::get('permissions/all', 'PermissionsController@indexAll');

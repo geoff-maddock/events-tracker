@@ -1,19 +1,19 @@
 @extends('app')
 
-@section('title','Blog Edit')
+@section('title','Menu Edit')
 
 @section('content')
 
 
-	<h2>Edit: {{ $blog->name }}</h2>
+	<h2>Edit: {{ $menu->name }}</h2>
 
-	{!! Form::model($blog, ['route' => ['blogs.update', $blog->id], 'method' => 'PATCH']) !!}
+	{!! Form::model($menu, ['route' => ['menus.update', $menu->id], 'method' => 'PATCH']) !!}
 
-		@include('blogs.form', ['action' => 'update'])
+		@include('menus.form', ['action' => 'update'])
 
 	{!! Form::close() !!}
 
-	{!! delete_form(['blogs.destroy', $blog->id]) !!}
+	{!! delete_form(['menus.destroy', $menu->id]) !!}
 
-	{!! link_to_route('blogs.index','Return to list') !!}
+	{!! link_to_route('menus.index','Return to list') !!}
 @stop

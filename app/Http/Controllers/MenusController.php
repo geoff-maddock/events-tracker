@@ -25,7 +25,7 @@ class MenusController extends Controller {
 
 	public function __construct(Menu $menu)
 	{
-		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
+		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update', 'content')]);
 		$this->menu = $menu;
 
 		// default list variables
@@ -117,7 +117,7 @@ class MenusController extends Controller {
 	public function create()
 	{
         $visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
-		$parents = Menu::orderBy('name','ASC')->pluck('name','id')->all();
+		$parents =  [''=>''] + Menu::orderBy('name','ASC')->pluck('name','id')->all();
 
 		return view('menus.create', compact('visibilities', 'parents'));
 	}
@@ -153,6 +153,17 @@ class MenusController extends Controller {
 		return view('menus.show', compact('menu'));
 	}
 
+    /**
+     * Display the specified menu content
+     *
+     * @param  Menu $menu
+     * @return Response
+     */
+    public function content(Menu $menu)
+    {
+        return view('menus.content', compact('menu'));
+    }
+
 	/**
 	 * Show the form for editing the specified resource.
 	 *
@@ -163,9 +174,11 @@ class MenusController extends Controller {
 	{
 		$this->middleware('auth');
 
-		$parents = Menu::orderBy('name')->pluck('name','id')->all();
+        $visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
+        $parents =  [''=>''] + Menu::orderBy('name','ASC')->pluck('name','id')->all();
 
-		return view('menus.edit', compact('menu', 'parents'));
+
+		return view('menus.edit', compact('menu', 'visibilities', 'parents'));
 	}
 
 	/**
@@ -181,7 +194,7 @@ class MenusController extends Controller {
 		
 		$menu->fill($request->input())->save();
 
-		return redirect('menu');
+		return redirect('menus');
 	}
 
     /**
