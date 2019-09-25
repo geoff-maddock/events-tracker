@@ -679,7 +679,7 @@ class Event extends Eloquent {
 
         $format .= ' https://arcane.city/events/'.$this->id;
 
-        return substr($format, 0, 220);
+        return substr($format, 0, 280);
 
     }
 
