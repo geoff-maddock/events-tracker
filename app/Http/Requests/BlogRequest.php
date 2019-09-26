@@ -26,6 +26,7 @@ class BlogRequest extends Request {
 			'slug' => 'required|min:3',
             'body' => 'required|min:3',
             'visibility_id' => 'required',
+            'content_type_id' => 'required',
 		];
 	}
 

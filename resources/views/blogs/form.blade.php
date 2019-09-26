@@ -27,7 +27,7 @@
 
 	<div class="form-group col-md-2 {{$errors->has('menu_id') ? 'has-error' : '' }}">
 		{!! Form::label('menu_id', 'Menu:') !!}
-		{!! Form::select('menu_id', $menus, (isset($blog->menu_id) ?? NULL), ['class' =>'form-control']) !!}
+		{!! Form::select('menu_id', $menus, ($blog->menu_id ?? NULL), ['class' =>'form-control']) !!}
 		{!! $errors->first('menu_id','<span class="help-block">:message</span>') !!}
 	</div>
 

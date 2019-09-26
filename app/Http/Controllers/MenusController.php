@@ -156,11 +156,19 @@ class MenusController extends Controller {
     /**
      * Display the specified menu content
      *
-     * @param  Menu $menu
+     * @param  int $id
      * @return Response
      */
-    public function content(Menu $menu)
+    public function content(int $id, Request $request)
     {
+        // get the menu
+        if (!$menu = Menu::find($id)) {
+            flash()->error('Error', 'No such menu');
+            return back();
+        };
+
+        // todo - confirm the menu is visible
+
         return view('menus.content', compact('menu'));
     }
 

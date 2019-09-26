@@ -35,8 +35,9 @@ class Blog extends Eloquent {
 	'slug',
 	'description',
 	'visibility_id',
+    'content_type_id',
 	'body',
-	'menu_id'
+	'menu_id',
 	];
 
 	protected $guarded = [];
@@ -335,5 +336,25 @@ class Blog extends Eloquent {
             ->get();
 
         return $users;
+    }
+
+    /**
+     * Returns html events
+     *
+     */
+    public function scopeHtml($query, $user)
+    {
+        $htmlType = ContentType::where('name','=','HTML')->first();
+
+        $query->where('content_type_id','=', $htmlType ? $htmlType->id : NULL );
+    }
+
+    /**
+     * An event has one contentType
+     *
+     */
+    public function contentType()
+    {
+        return $this->hasOne('App\ContentType','id','content_type_id');
     }
 }

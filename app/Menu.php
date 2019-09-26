@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use App\Blog;
 
 class Menu extends Eloquent {
 
@@ -54,5 +55,16 @@ class Menu extends Eloquent {
 
         $query->where('visibility_id','=', $public ? $public->id : NULL );
 
+    }
+
+
+    /**
+     * The blogs that belong to the menu
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function blogs()
+    {
+        return $this->hasMany(Blog::class);
     }
 }

@@ -6,29 +6,27 @@
 
 
 <h1>{{ $menu->name }}
-	@include('menus.crumbs', ['slug' => $menu->label])
+	@include('menus.crumbs', ['slug' => $menu->slug])
 </h1>
 
 
 <div class="row">
-	<div class="profile-card col-md-4">
-	<h2 class='item-title'>{{ $menu->label }}</h2>
 
-	<p>
+    @forelse ($menu->blogs as $blog)
+        <div class="profile-card col-md-4">
+            @if ($blog->contentType->name === "HTML")
+                {!! $blog->body !!}
+            @else
+                {{ $blog->body }}
+            @endif
+            <br>
+            <small>{{ $blog->created_at->format('l F jS Y') }}</small>
+        </div>
 
-	@if ($menu->name)
-	<label>Name: </label> <i>{{ $menu->name }} </i><br><br>
-	@endif 
+    @empty
+        <p>No blog posts</p>
+    @endforelse
 
-	@if ($menu->slug)
-	<label>Slug: </label> <i>{{ $menu->slug }} </i><br><br>
-	@endif 
-
-
-	@can('edit_menu')
-		{!! link_form_icon('glyphicon-trash text-warning', $menu, 'DELETE', 'Delete the [menu]') !!}
-	@endcan
-  </div>
 
 
 @stop
