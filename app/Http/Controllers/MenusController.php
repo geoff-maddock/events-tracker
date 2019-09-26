@@ -25,7 +25,7 @@ class MenusController extends Controller {
 
 	public function __construct(Menu $menu)
 	{
-		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update', 'content')]);
+		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
 		$this->menu = $menu;
 
 		// default list variables
