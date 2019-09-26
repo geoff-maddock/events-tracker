@@ -17,7 +17,7 @@
 <div class="col-md-4">
 	<div class="event-card">
 	<h2>{{ $series->name }}</h2>
-	<b>{{ $series->occurrenceType->name }}  {{ $series->occurrenceRepeat() }}</b>
+	<b>{{ $series->occurrenceType->name }}   {{ $series->occurrence_repeat }}</b>
 
 	<p>
 	Founded {!! $series->founded_at ? $series->founded_at->format('l F jS Y') : 'unknown'!!}<br>

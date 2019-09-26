@@ -32,4 +32,8 @@ class OccurrenceDay extends Eloquent {
 	}
 
 
+    public function __toString()
+    {
+        return (string) $this->name;
+    }
 }

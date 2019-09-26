@@ -25,8 +25,8 @@
 
     @endif
     <br>
-    {{ $series->occurrenceType->name }}  {{ $series->occurrenceRepeat() }}
-    @if ($series->occurrenceType->name != 'No Schedule')
+    {{ $series->occurrenceType->name }}  {{ $series->occurrence_repeat }}
+    @if ($series->occurrenceType->name !== 'No Schedule')
         next is
         {{ $series->nextEvent() ? $series->nextEvent()->start_at->format('l F jS Y') : $series->cycleFromFoundedAt()->format('l F jS Y') }}
     @endif

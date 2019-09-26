@@ -392,28 +392,30 @@ class Series extends Eloquent {
 
 	/**
 	 * Returns when the occurrence repeats
-	 *
+	 * @return string
 	 */
-	public function occurrenceRepeat()
+	public function getOccurrenceRepeatAttribute():string
 	{ 
 		$repeat = '';
 
-		$week = $this->occurrenceWeekId ? $this->occurrenceWeek->name : '';
-		$day = $this->occurrenceDayId ? $this->occurrenceDay->name.'s' : '';
+		$week = $this->occurrenceWeek ? $this->occurrenceWeek->name : '';
+		$day = $this->occurrenceDay ? $this->occurrenceDay->name.'s' : '';
 
 		switch ($this->occurrenceType->name)
 		{
-			case 'Monthly':
-			case 'Bimonthly':
-
+			case "Monthly":
+                $repeat = $week.' '.$day;
+                break;
+			case "Bimonthly":
 				$repeat = $week.' '.$day;
 				break;
-			case 'Weekly':
-			case 'Biweekly':
+			case "Weekly":
+                $repeat = $day;
+                break;
+			case "Biweekly":
 				$repeat = $day;
 				break;
 		}
-
 		return $repeat;
 	}
 
