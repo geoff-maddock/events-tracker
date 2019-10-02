@@ -31,6 +31,7 @@
     "npm": "^6.11.3",
     "select2": "^4.0.10",
     "select2-bootstrap-css": "^1.4.6",
-    "sweetalert": "^2.1.2"
+    "sweetalert": "^2.1.2",
+    "sweetalert2": "^8.18.0"
   }
 }

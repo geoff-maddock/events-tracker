@@ -136,13 +136,12 @@ li.selected:hover {
 
 
 .slim-row {
-	height: 10 px;
+	height: 10px;
 	padding: 2px;
 }
 
 .post-body {
-	padding: 10px;
-	padding-bottom: 50px;
+	padding: 10px 10px 50px;
 }
 
 #event-repo .forum .forum-link {
@@ -150,7 +149,7 @@ li.selected:hover {
 	text-decoration: none;
 	font-size: 15px;
 	cursor: pointer;
-	padding: 8px 0px;
+	padding: 8px 0;
 }
 
 #event-repo .forum .forum-link:hover {
@@ -158,7 +157,7 @@ li.selected:hover {
 	text-decoration: none;
 	font-size: 15px;
 	cursor: pointer;
-	padding: 8px 0px;
+	padding: 8px 0;
 }
 
 #event-repo .forum .label-link {

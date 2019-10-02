@@ -69,6 +69,8 @@
 	<script src="{{ asset('/js/auto-submit.js') }}"></script>
 	<script src="{{ asset('/js/custom.js') }}"></script>
 	<script src="{{ asset('/js/sweetalert-dev.js') }}"></script>
+	{{--<script src="//cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>--}}
+
 
 	@yield('scripts.footer')
 	@yield('footer')

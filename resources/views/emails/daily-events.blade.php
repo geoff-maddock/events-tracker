@@ -1,3 +1,5 @@
+Good morning!
+
 @if (count($events) > 0)
 	Here are the events you are attending today.
 
@@ -92,7 +94,7 @@
 	@foreach ($seriesList as $s)
 		<div class='series-date'>
 			<h2>{{ $s->name }}</h2>
-			<b>{{ $s->occurrenceType->name }}  {{ $s->occurrenceRepeat() }}</b>
+			<b>{{ $s->occurrenceType->name }}  {{ $s->occurrence_repeat }}</b>
 		</div>
 
 		<h2><a href="{{ $url }}series/{{$s->id }}">{{ $s->name }}</a></h2>
@@ -128,7 +130,8 @@
 
 <br><br>
 
-		<h3>Here are some events happening today that you might be interested in:</h3>
+		Here are some events happening today that you might be interested in.
+
 		@foreach ($interests as $tag => $list)
 			<h2>{{ $tag }}</h2>
 			@foreach ($list as $event)

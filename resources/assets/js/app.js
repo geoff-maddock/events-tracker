@@ -6,6 +6,7 @@
 
 require('./bootstrap');
 
+import swal from 'sweetalert2';
 
 // add any other dependencies - things i'm including manually in app.layout
 
