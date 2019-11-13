@@ -1,6 +1,7 @@
-<?php namespace App;
+<?php
 
-use DB;
+namespace App;
+
 use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Auth\Authenticatable;
@@ -10,12 +11,16 @@ use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
-use PhpParser\Node\Expr\Array_;
 
+/**
+ * @property mixed id
+ */
 class User extends Model implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
 {
-
-    use Authenticatable, Authorizable, CanResetPassword, Notifiable;
+    use Authenticatable;
+    use Authorizable;
+    use CanResetPassword;
+    use Notifiable;
 
     /**
      * The database table used by the model.
@@ -39,67 +44,60 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     protected $hidden = ['password', 'remember_token'];
 
     /**
-     * A how many events the user created
-     *
+     * A how many events the user created.
      */
-    public function getEventCountAttribute ()
+    public function getEventCountAttribute()
     {
         return $this->hasMany('App\Event', 'created_by')->count();
     }
 
     /**
-     * A user can have many series
-     *
+     * A user can have many series.
      */
-    public function series ()
+    public function series()
     {
         return $this->hasMany('App\Series');
     }
 
     /**
-     * A user can have much activity
-     *
+     * A user can have much activity.
      */
-    public function activity ()
+    public function activity()
     {
         return $this->hasMany('App\Activity');
     }
 
     /**
-     * A user can have many comments
-     *
+     * A user can have many comments.
      */
-    public function comments ()
+    public function comments()
     {
         return $this->hasMany('App\Comment');
     }
 
     /**
-     * A user can have one profile()
-     *
+     * A user can have one profile().
      */
-    public function profile ()
+    public function profile()
     {
         return $this->hasOne('App\Profile');
     }
 
     /**
-     * A user has a status
-     *
+     * A user has a status.
      */
     public function status()
     {
-        return $this->hasOne('App\UserStatus','id','user_status_id');
+        return $this->hasOne('App\UserStatus', 'id', 'user_status_id');
     }
 
-
     /**
-     * Return the primary photo for this user
+     * Return the primary photo for this user.
      *
      * @return Photo $photo
      *
      **/
-    public function getPrimaryPhoto ()
+    public function getPrimaryPhoto()
     {
         // get a list of events that start on the passed date
         $primary = $this->photos()->where('photos.is_primary', '=', '1')->first();
@@ -108,123 +106,114 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     }
 
     /**
-     * Get all of the events photos
+     * Get all of the events photos.
      */
-    public function photos ()
+    public function photos()
     {
         return $this->belongsToMany('App\Photo')->withTimestamps();
     }
 
     /**
-     * Return the count of events the user is attending
-     *
+     * Return the count of events the user is attending.
      */
-    public function getAttendingCountAttribute ()
+    public function getAttendingCountAttribute()
     {
         $responses = $this->eventResponses()->get();
         $responses->filter(function ($e) {
-            return ($e->responseType->name == 'Attending');
+            return 'Attending' == $e->responseType->name;
         });
 
         return count($responses);
     }
 
     /**
-     * A user can have many event responses
-     *
+     * A user can have many event responses.
      */
-    public function eventResponses ()
+    public function eventResponses()
     {
         return $this->hasMany('App\EventResponse');
     }
 
     /**
-     * Return the count of entities the user is following
-     *
+     * Return the count of entities the user is following.
      */
-    public function getEntitiesFollowingCountAttribute ()
+    public function getEntitiesFollowingCountAttribute()
     {
         $responses = $this->follows()->get();
         $responses->filter(function ($e) {
-            return ($e->object_type == 'entity');
+            return 'entity' == $e->object_type;
         });
 
         return count($responses);
     }
 
     /**
-     * Return the count of tags the user is following
-     *
+     * Return the count of tags the user is following.
      */
-    public function getTagsFollowingCountAttribute ()
+    public function getTagsFollowingCountAttribute()
     {
         $responses = $this->follows()->get();
         $responses->filter(function ($e) {
-            return ($e->object_type == 'tag');
-        });
-
-        return count($responses);
-    }
-
-
-    /**
-     * Return the count of series the user is following
-     *
-     */
-    public function getSeriesFollowingCountAttribute ()
-    {
-        $responses = $this->follows()->get();
-        $responses->filter(function ($e) {
-            return ($e->object_type == 'series');
-        });
-
-        return count($responses);
-    }
-
-
-    /**
-     * Return the count of threads the user is following
-     *
-     */
-    public function getThreadsFollowingCountAttribute ()
-    {
-        $responses = $this->follows()->get();
-        $responses->filter(function ($e) {
-            return ($e->object_type == 'thread');
+            return 'tag' == $e->object_type;
         });
 
         return count($responses);
     }
 
     /**
-     * A user can follow many objects
-     *
+     * Return the count of series the user is following.
      */
-    public function follows ()
+    public function getSeriesFollowingCountAttribute()
+    {
+        $responses = $this->follows()->get();
+        $responses->filter(function ($e) {
+            return 'series' == $e->object_type;
+        });
+
+        return count($responses);
+    }
+
+    /**
+     * Return the count of threads the user is following.
+     */
+    public function getThreadsFollowingCountAttribute()
+    {
+        $responses = $this->follows()->get();
+        $responses->filter(function ($e) {
+            return 'thread' == $e->object_type;
+        });
+
+        return count($responses);
+    }
+
+    /**
+     * A user can follow many objects.
+     */
+    public function follows()
     {
         return $this->hasMany('App\Follow');
     }
 
     /**
-     * An profile is owned by a user
+     * An profile is owned by a user.
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function getFullNameAttribute()
     {
-        if ($profile = $this->profile)
-        {
+        if ($profile = $this->profile) {
             $full = $profile->first_name.' '.$profile->last_name;
-            return strlen($full) > 1 ? $full : $this->name;//$profile->first_name.' '.$profile->last_name;
+
+            return strlen($full) > 1 ? $full : $this->name; //$profile->first_name.' '.$profile->last_name;
         }
+
         return $this->name;
     }
 
     /**
-     * Return a list of events the user is attending in the future
-     *
+     * Return a list of events the user is attending in the future.
      */
-    public function getAttendingFuture ()
+    public function getAttendingFuture()
     {
         $events = Event::join('event_responses', 'events.id', '=', 'event_responses.event_id')
             ->join('response_types', 'event_responses.response_type_id', '=', 'response_types.id')
@@ -234,14 +223,14 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
             ->orderBy('events.start_at', 'asc')
             ->select('events.*')
             ->get();
+
         return $events;
     }
 
     /**
-     * Return a list of events the user is attending in the future
-     *
+     * Return a list of events the user is attending in the future.
      */
-    public function getAttendingToday ()
+    public function getAttendingToday()
     {
         $events = Event::join('event_responses', 'events.id', '=', 'event_responses.event_id')
             ->join('response_types', 'event_responses.response_type_id', '=', 'response_types.id')
@@ -252,14 +241,14 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
             ->orderBy('events.start_at', 'asc')
             ->select('events.*')
             ->get();
+
         return $events;
     }
 
     /**
-     * Return a list of events the user is attending
-     *
+     * Return a list of events the user is attending.
      */
-    public function getAttending ()
+    public function getAttending()
     {
         $events = Event::join('event_responses', 'events.id', '=', 'event_responses.event_id')
             ->join('response_types', 'event_responses.response_type_id', '=', 'response_types.id')
@@ -267,14 +256,14 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
             ->where('event_responses.user_id', '=', $this->id)
             ->orderBy('events.start_at', 'desc')
             ->select('events.*');
+
         return $events;
     }
 
     /**
-     * Return a list of entities the user is following
-     *
+     * Return a list of entities the user is following.
      */
-    public function getEntitiesFollowing ()
+    public function getEntitiesFollowing()
     {
         $entities = Entity::join('follows', 'entities.id', '=', 'follows.object_id')
             ->where('follows.object_type', '=', 'entity')
@@ -282,14 +271,14 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
             ->orderBy('follows.created_at', 'desc')
             ->select('entities.*')
             ->get();
+
         return $entities;
     }
 
     /**
-     * Return a list of tags the user is following
-     *
+     * Return a list of tags the user is following.
      */
-    public function getTagsFollowing ()
+    public function getTagsFollowing()
     {
         $tags = Tag::join('follows', 'tags.id', '=', 'follows.object_id')
             ->where('follows.object_type', '=', 'tag')
@@ -297,14 +286,14 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
             ->orderBy('tags.name', 'asc')
             ->select('tags.*')
             ->get();
+
         return $tags;
     }
 
     /**
-     * Return a list of series the user is following
-     *
+     * Return a list of series the user is following.
      */
-    public function getSeriesFollowing ()
+    public function getSeriesFollowing()
     {
         $series = Series::join('follows', 'series.id', '=', 'follows.object_id')
             ->where('follows.object_type', '=', 'series')
@@ -312,14 +301,14 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
             ->orderBy('follows.created_at', 'desc')
             ->select('series.*')
             ->get();
+
         return $series;
     }
 
     /**
-     * Return a list of threads the user is following
-     *
+     * Return a list of threads the user is following.
      */
-    public function getThreadsFollowing ()
+    public function getThreadsFollowing()
     {
         $threads = Thread::join('follows', 'threads.id', '=', 'follows.object_id')
             ->where('follows.object_type', '=', 'thread')
@@ -327,44 +316,45 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
             ->orderBy('follows.created_at', 'desc')
             ->select('threads.*')
             ->get();
+
         return $threads;
     }
 
     /**
-     * Events that were created by the user
+     * Events that were created by the user.
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function createdEvents ()
+    public function createdEvents()
     {
         $events = $this->events()->where('created_at', '=', Auth::user())->orderBy('start_at', 'ASC')->get();
+
         return $events;
     }
 
     /**
-     * A user can have many events
-     *
+     * A user can have many events.
      */
-    public function events ()
+    public function events()
     {
         return $this->hasMany('App\Event', 'created_by')->orderBy('start_at', 'DESC');
     }
 
-    public function addPhoto (Photo $photo)
+    public function addPhoto(Photo $photo)
     {
-        return $this->photos()->attach($photo->id);;
+        return $this->photos()->attach($photo->id);
     }
 
-    public function hasGroup ($group)
+    public function hasGroup($group)
     {
         if (is_string($group)) {
             return $this->groups->contains('name', $group);
         }
 
-        return !!$group->intersect($this->groups)->count();
+        return (bool) $group->intersect($this->groups)->count();
     }
 
-    public function assignGroup ($group)
+    public function assignGroup($group)
     {
         return $this->groups()->save(
             Group::whereName($group)->firstOrFail()
@@ -374,7 +364,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function groups ()
+    public function groups()
     {
         return $this->belongsToMany(Group::class);
     }
@@ -384,34 +374,34 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function lastPost ()
+    public function lastPost()
     {
         return $this->hasOne(Post::class, 'created_by')->latest();
     }
 
     /**
-     * Check that the user is active
+     * Check that the user is active.
      *
      * @ return boolean
      */
     public function getIsActiveAttribute()
     {
-        if ($this->status && $this->status->name == 'Active') {
+        if ($this->status && 'Active' == $this->status->name) {
             return 1;
-        };
+        }
 
         return 0;
-
     }
 
     /**
-     * Return the feed of user activity
+     * Return the feed of user activity.
      *
      * @param $user
      * @param int $take
+     *
      * @return array
      */
-    public function feed ($user, $take = 50)
+    public function feed($user, $take = 50)
     {
         return static::where('user_id', $user->id)
             ->latest()
@@ -421,11 +411,10 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
             ->groupBy(function ($activity) {
                 return $activity->created_at->format('Y-m-d');
             });
-
     }
 
     /**
-     * Get a list of group ids associated with the user
+     * Get a list of group ids associated with the user.
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */

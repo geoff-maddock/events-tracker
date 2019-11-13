@@ -5,6 +5,7 @@ use App\Entity;
 use App\Event;
 use App\EventType;
 use App\Follow;
+use App\Http\Requests\SeriesRequest;
 use App\Series;
 use App\Tag;
 use App\User;
@@ -348,7 +349,7 @@ class ActivityController extends Controller
         $endDate = $nextDate->copy()->addHours($series->length);
 
         // initialize the form object with the values from the template
-        $event = new \App\Event(['name' => $series->name,
+        $event = new Event(['name' => $series->name,
             'slug' => $series->slug,
             'short' => $series->short,
             'venue_id' => $series->venue_id,
