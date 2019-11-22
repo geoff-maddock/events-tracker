@@ -12,6 +12,7 @@ class SocialFacebookAccountService
         $account = SocialFacebookAccount::whereProvider('facebook')
             ->whereProviderUserId($providerUser->getId())
             ->first();
+        // if there was a facebook account found
         if ($account) {
             return $account->user;
         } else {

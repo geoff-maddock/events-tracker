@@ -1,4 +1,6 @@
-<?php namespace App\Http\Controllers;
+<?php
+
+namespace App\Http\Controllers;
 
 use App\Activity;
 use App\Entity;
@@ -6,6 +8,7 @@ use App\Event;
 use App\EventType;
 use App\Follow;
 use App\Http\Requests\SeriesRequest;
+use App\OccurrenceType;
 use App\Series;
 use App\Tag;
 use App\User;
@@ -13,8 +16,6 @@ use App\Visibility;
 use DB;
 use Illuminate\Http\Request;
 use Log;
-use Mail;
-
 
 class ActivityController extends Controller
 {
@@ -29,9 +30,9 @@ class ActivityController extends Controller
     protected $hasFilter;
     protected $entityType;
 
-    public function __construct (Series $series)
+    public function __construct(Series $series)
     {
-        $this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
 
         $this->entityType = 'activities';
 
@@ -42,23 +43,24 @@ class ActivityController extends Controller
         $this->rpp = 100;
         $this->childRpp = 10;
         $this->page = 1;
-        $this->sort = array('name', 'desc');
+        $this->sort = ['name', 'desc'];
         $this->sortBy = 'name';
         $this->sortOrder = 'asc';
-        $this->defaultCriteria = NULL;
+        $this->defaultCriteria = null;
         $this->hasFilter = 0;
         parent::__construct();
     }
 
     /**
-     * Filter the list of activities
+     * Filter the list of activities.
      *
-     * @param Request $request
      * @return View
+     *
      * @internal param $Request
+     *
      * @throws \Throwable
      */
-    public function filter (Request $request)
+    public function filter(Request $request)
     {
         // get all the filters from the session
         $this->filters = $this->getFilters($request);
@@ -82,7 +84,7 @@ class ActivityController extends Controller
         // get the entities and paginate
         $activities = $query->paginate($this->rpp);
         $activities->filter(function ($e) {
-            return (($e->visibility && $e->visibility->name === 'Public') || ($this->user && $e->created_by === $this->user->id));
+            return ($e->visibility && 'Public' === $e->visibility->name) || ($this->user && $e->created_by === $this->user->id);
         });
 
         return view('activity.index')
@@ -94,36 +96,35 @@ class ActivityController extends Controller
             ])
             ->with(compact('activities'))
             ->render();
-
     }
 
     /**
-     * Update the page list parameters from the request
+     * Update the page list parameters from the request.
+     *
      * @param $request
      */
-    protected function updatePaging ($request)
+    protected function updatePaging($request)
     {
         // set sort by column
         if ($request->input('sort_by')) {
             $this->sortBy = $request->input('sort_by');
-        };
+        }
 
         // set sort direction
         if ($request->input('sort_direction')) {
             $this->sortOrder = $request->input('sort_direction');
-        };
+        }
 
         // set results per page
         if ($request->input('rpp')) {
             $this->rpp = $request->input('rpp');
-        };
+        }
     }
 
     /**
-     * Get the base criteria
-     *
+     * Get the base criteria.
      */
-    protected function baseCriteria ()
+    protected function baseCriteria()
     {
         $query = Activity::query();
 
@@ -131,39 +132,37 @@ class ActivityController extends Controller
     }
 
     /**
-     * Set filters attribute
+     * Set filters attribute.
      *
-     * @param Request $request
-     * @param array $input
      * @return array
      */
-    public function setFilters (Request $request, array $input)
+    public function setFilters(Request $request, array $input)
     {
         return $this->setAttribute('filters', $input, $request);
     }
 
     /**
-     * Set user session attribute
+     * Set user session attribute.
      *
-     * @param String $attribute
-     * @param Mixed $value
-     * @param Request $request
-     * @return Mixed
+     * @param string $attribute
+     * @param mixed  $value
+     *
+     * @return mixed
      */
-    public function setAttribute ($attribute, $value, Request $request)
+    public function setAttribute($attribute, $value, Request $request)
     {
         return $request->session()
-            ->put($this->prefix . $attribute, $value);
+            ->put($this->prefix.$attribute, $value);
     }
 
     /**
-     * Reset the filtering of entities
+     * Reset the filtering of entities.
      *
-     * @param Request $request
      * @return Response
+     *
      * @throws \Throwable
      */
-    public function reset (Request $request)
+    public function reset(Request $request)
     {
         // doesn't have filter, but temp
         $this->hasFilter = 0;
@@ -180,18 +179,16 @@ class ActivityController extends Controller
         // get future events
         $series = $query->paginate($this->rpp);
         $series->filter(function ($e) {
-            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+            return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
-
 
         return view('series.index')
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
             ->with(compact('series'))
             ->render();
-
     }
 
-    public function index (Request $request)
+    public function index(Request $request)
     {
         // updates sort, rpp from request
         $this->updatePaging($request);
@@ -212,22 +209,20 @@ class ActivityController extends Controller
             ->render();
     }
 
-
     /**
      * Show a form to create a new activities.
      *
      * @return view
      **/
-
-    public function create ()
+    public function create()
     {
         // get a list of venues
         $venues = ['' => ''] + Entity::getVenues()->pluck('name', 'id')->all();
 
         // get a list of promoters
         $promoters = ['' => ''] + Entity::whereHas('roles', function ($q) {
-                $q->where('name', '=', 'Promoter');
-            })->orderBy('name', 'ASC')->pluck('name', 'id')->all();
+            $q->where('name', '=', 'Promoter');
+        })->orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
         $eventTypes = ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
@@ -241,11 +236,10 @@ class ActivityController extends Controller
         $entities = Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all();
         $userList = ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-
         return view('series.create', compact('venues', 'eventTypes', 'visibilities', 'tags', 'entities', 'promoters', 'weeks', 'days', 'occurrenceTypes', 'userList'));
     }
 
-    public function show (Series $series)
+    public function show(Series $series)
     {
         $events = $series->events()->paginate($this->childRpp);
         $threads = $series->threads()->paginate($this->childRpp);
@@ -253,29 +247,28 @@ class ActivityController extends Controller
         return view('series.show', compact('series', 'events', 'threads'));
     }
 
-    public function store (SeriesRequest $request, Series $series)
+    public function store(SeriesRequest $request, Series $series)
     {
-        $msg = "";
+        $msg = '';
         $input = $request->all();
 
         $tagArray = $request->input('tag_list', []);
-        $syncArray = array();
+        $syncArray = [];
 
         // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
-
             if (!DB::table('tags')->where('id', $tag)->get()) {
-                $newTag = new Tag;
+                $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->tag_type_id = 1;
                 $newTag->save();
 
                 $syncArray[] = $newTag->id;
 
-                $msg .= ' Added tag ' . $tag . '.';
+                $msg .= ' Added tag '.$tag.'.';
             } else {
                 $syncArray[$key] = $tag;
-            };
+            }
         }
 
         $s = $series->create($input);
@@ -288,7 +281,7 @@ class ActivityController extends Controller
             if ($event = Event::find($request->eventLinkId)) {
                 $event->series_id = $s->id;
                 $event->save();
-            };
+            }
         }
 
         flash()->success('Success', 'Your event series has been created');
@@ -296,15 +289,15 @@ class ActivityController extends Controller
         return redirect()->route('series.index');
     }
 
-    public function edit (Series $series)
+    public function edit(Series $series)
     {
         // get a list of venues
         $venues = ['' => ''] + Entity::getVenues()->pluck('name', 'id')->all();
 
         // get a list of promoters
         $promoters = ['' => ''] + Entity::whereHas('roles', function ($q) {
-                $q->where('name', '=', 'Promoter');
-            })->orderBy('name', 'ASC')->pluck('name', 'id')->all();
+            $q->where('name', '=', 'Promoter');
+        })->orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
         $eventTypes = ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
@@ -322,7 +315,10 @@ class ActivityController extends Controller
         return view('series.edit', compact('series', 'venues', 'eventTypes', 'visibilities', 'tags', 'entities', 'promoters', 'weeks', 'days', 'occurrenceTypes', 'userList'));
     }
 
-    public function createOccurrence (Request $request)
+    /**
+     * @return $this
+     */
+    public function createOccurrence(Request $request)
     {
         // create an event occurrence based on the series template
 
@@ -333,8 +329,8 @@ class ActivityController extends Controller
 
         // get a list of promoters
         $promoters = ['' => ''] + Entity::whereHas('roles', function ($q) {
-                $q->where('name', '=', 'Promoter');
-            })->orderBy('name', 'ASC')->pluck('name', 'id')->all();
+            $q->where('name', '=', 'Promoter');
+        })->orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
         $eventTypes = ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
@@ -371,7 +367,7 @@ class ActivityController extends Controller
         return view('series.createOccurrence', compact('seriesList', 'event', 'venues', 'eventTypes', 'visibilities', 'tags', 'entities', 'promoters'))->with(['series' => $series]);
     }
 
-    public function update (Series $series, SeriesRequest $request)
+    public function update(Series $series, SeriesRequest $request)
     {
         $msg = '';
 
@@ -379,26 +375,25 @@ class ActivityController extends Controller
 
         if (!$series->ownedBy($this->user)) {
             $this->unauthorized($request);
-        };
+        }
 
         $tagArray = $request->input('tag_list', []);
-        $syncArray = array();
+        $syncArray = [];
 
         // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
-
             if (!Tag::find($tag)) {
-                $newTag = new Tag;
+                $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->tag_type_id = 1;
                 $newTag->save();
 
                 $syncArray[strtolower($tag)] = $newTag->id;
 
-                $msg .= ' Added tag ' . $tag . '.';
+                $msg .= ' Added tag '.$tag.'.';
             } else {
                 $syncArray[$key] = $tag;
-            };
+            }
         }
 
         $series->tags()->sync($syncArray);
@@ -409,7 +404,7 @@ class ActivityController extends Controller
         return redirect('series');
     }
 
-    protected function unauthorized (SeriesRequest $request)
+    protected function unauthorized(SeriesRequest $request)
     {
         if ($request->ajax()) {
             return response(['message' => 'No way.'], 403);
@@ -420,69 +415,70 @@ class ActivityController extends Controller
         return redirect('/');
     }
 
-    public function destroy (Series $series)
+    public function destroy(Series $series)
     {
         $series->delete();
 
         return redirect('series');
     }
 
-
     /**
-     * Mark user as following the series
+     * Mark user as following the series.
      *
      * @param $id
-     * @param Request $request
+     *
      * @return Response
      */
-    public function follow ($id, Request $request)
+    public function follow($id, Request $request)
     {
         // check if there is a logged in user
         if (!$this->user) {
             flash()->error('Error', 'No user is logged in.');
+
             return back();
-        };
+        }
 
         if (!$series = Series::find($id)) {
             flash()->error('Error', 'No such series');
+
             return back();
-        };
+        }
 
         // add the following response
-        $follow = new Follow;
+        $follow = new Follow();
         $follow->object_id = $id;
         $follow->user_id = $this->user->id;
-        $follow->object_type = 'series'; //
+        $follow->object_type = 'series';
         $follow->save();
 
-        Log::info('User ' . $id . ' is following ' . $series->name);
+        Log::info('User '.$id.' is following '.$series->name);
 
-        flash()->success('Success', 'You are now following the series - ' . $series->name);
+        flash()->success('Success', 'You are now following the series - '.$series->name);
 
         return back();
-
     }
 
     /**
-     * Mark user as unfollowing the series
+     * Mark user as unfollowing the series.
      *
      * @param $id
-     * @param Request $request
+     *
      * @return Response
      */
-    public function unfollow ($id, Request $request)
+    public function unfollow($id, Request $request)
     {
-
         // check if there is a logged in user
         if (!$this->user) {
             flash()->error('Error', 'No user is logged in.');
+
             return back();
-        };
+        }
 
         if (!$series = Series::find($id)) {
             flash()->error('Error', 'No such series');
+
             return back();
-        };
+        }
 
         // delete the follow
         $response = Follow::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'series')->first();
@@ -491,114 +487,112 @@ class ActivityController extends Controller
         flash()->success('Success', 'You are no longer following the series.');
 
         return back();
-
     }
-
 
     /**
      * Criteria provides a way to define criteria to be applied to a tab on the index page.
      *
      * @return array
      */
-    public function getCriteria ()
+    public function getCriteria()
     {
         return $this->criteria;
     }
 
     /**
-     * Get the current page for this module
+     * Get the current page for this module.
      *
      * @return integner
      */
-    public function getPage ()
+    public function getPage()
     {
         return $this->getAttribute('page', 1);
     }
 
     /**
-     * Get the current results per page
+     * Get the current results per page.
      *
-     * @param Request $request
-     * @return integer
+     * @return int
      */
-    public function getRpp (Request $request)
+    public function getRpp(Request $request)
     {
         return $this->getAttribute('rpp', $this->rpp);
     }
 
     /**
-     * Get the sort order and column
+     * Get the sort order and column.
      *
-     * @param Request $request
      * @return array
      */
-    public function getSort (Request $request)
+    public function getSort(Request $request)
     {
         return $this->getAttribute('sort', $this->getDefaultSort());
     }
 
     /**
-     * Get the default sort array
+     * Get the default sort array.
      *
      * @return array
      */
-    public function getDefaultSort ()
+    public function getDefaultSort()
     {
-        return array('id', 'desc');
+        return ['id', 'desc'];
     }
 
     /**
      * Set criteria.
      *
      * @param array $input
+     *
      * @return string
      */
-    public function setCriteria ($input)
+    public function setCriteria($input)
     {
         $this->criteria = $input;
+
         return $this->criteria;
     }
 
     /**
-     * Set page attribute
+     * Set page attribute.
      *
-     * @param integer $input
-     * @return integer
+     * @param int $input
+     *
+     * @return int
      */
-    public function setPage ($input)
+    public function setPage($input)
     {
         return $this->setAttribute('page', $input);
     }
 
     /**
-     * Set results per page attribute
+     * Set results per page attribute.
      *
-     * @param integer $input
-     * @return integer
+     * @param int $input
+     *
+     * @return int
      */
-    public function setRpp ($input)
+    public function setRpp($input)
     {
         return $this->setAttribute('rpp', 5);
     }
 
     /**
-     * Set sort order attribute
+     * Set sort order attribute.
      *
-     * @param array $input
      * @return array
      */
-    public function setSort (array $input)
+    public function setSort(array $input)
     {
         return $this->setAttribute('sort', $input);
     }
 
-
     /**
-     * Builds the criteria from the session
+     * Builds the criteria from the session.
      *
      * @return $query
      */
-    public function buildCriteria (Request $request)
+    public function buildCriteria(Request $request)
     {
         // get all the filters from the session
         $filters = $this->getFilters($request);
@@ -612,7 +606,7 @@ class ActivityController extends Controller
         if (!empty($filters['filter_name'])) {
             // getting name from the request
             $name = $filters['filter_name'];
-            $query->where('name', 'like', '%' . $name . '%');
+            $query->where('name', 'like', '%'.$name.'%');
         }
 
         // change this - should be separate
@@ -624,39 +618,34 @@ class ActivityController extends Controller
     }
 
     /**
-     * Get session filters
-     *
-     * @param Request $request
-     * @return array
+     * Get session filters.
      */
-    public function getFilters (Request $request) : array
+    public function getFilters(Request $request): array
     {
         return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
     }
 
     /**
-     * Get user session attribute
+     * Get user session attribute.
      *
-     * @param String $attribute
-     * @param Mixed $default
-     * @param Request $request
-     * @return Mixed
+     * @param string $attribute
+     * @param mixed  $default
+     *
+     * @return mixed
      */
-    public function getAttribute ($attribute, $default = null, Request $request)
+    public function getAttribute($attribute, $default = null, Request $request)
     {
         return $request->session()
-            ->get($this->prefix . $attribute, $default);
+            ->get($this->prefix.$attribute, $default);
     }
 
     /**
-     * Get the default filters array
+     * Get the default filters array.
      *
      * @return array
      */
-    public function getDefaultFilters ()
+    public function getDefaultFilters()
     {
-        return array();
+        return [];
     }
-
-
 }
