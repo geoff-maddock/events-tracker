@@ -35,10 +35,16 @@ $('#import-link').click(function(e){
     // check that there is a login first
     FB.getLoginStatus(function(response) {
         if (response.status === 'connected') {
-            console.log('Logged in.');
+            console.log('Facebook-event-custom Logged in.');
         }
         else {
-            FB.login();
+            console.log('FB.login - trying to get all scopes')
+            FB.login(function(response) {
+                // handle the response
+            }, {
+                scope: 'public_profile,email,user_events',
+                return_scopes: true
+            })
         }
     });
 
