@@ -96,7 +96,7 @@ class EventsController extends Controller
      *
      * @param array $input
      *
-     * @return string
+     * @return array
      */
     public function setCriteria($input)
     {
