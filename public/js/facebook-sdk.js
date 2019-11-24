@@ -9,6 +9,7 @@ window.fbAsyncInit = function() {
     });
     FB.AppEvents.logPageView();
     console.log('fbAsyncInit complete')
+    console.log('appid: ' + facebookAppId)
   };
 
   (function(d, s, id){
