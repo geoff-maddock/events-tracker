@@ -2,6 +2,7 @@ window.fbAsyncInit = function() {
 
     FB.init({
       appId      : facebookAppId, // should be replaced with FB app id
+      autoLogAppEvents : true,
       status     : true,
       cookie     : true,
       xfbml      : true,
@@ -9,7 +10,6 @@ window.fbAsyncInit = function() {
     });
     FB.AppEvents.logPageView();
     console.log('fbAsyncInit complete')
-    console.log('appid: ' + facebookAppId)
   };
 
   (function(d, s, id){
