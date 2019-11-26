@@ -1,6 +1,6 @@
 <script type="text/javascript">
 $('input.delete').on('click', function(){
-  swal({   
+  Swal.fire({
     title: "Are you sure?",
     text: "You will not be able to recover this User!",         type: "warning",   
     showCancelButton: true,   

@@ -27,7 +27,7 @@
     $('input.delete').on('click', function(e){
         e.preventDefault();
         var form = $(this).parents('form');
-        swal({
+        Swal.fire({
                 title: "Are you sure?",
                 text: "You will not be able to recover this user!",
                 type: "warning",

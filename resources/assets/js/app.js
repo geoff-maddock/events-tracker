@@ -6,7 +6,10 @@
 
 require('./bootstrap');
 
-import swal from 'sweetalert2';
+//import Swal from 'sweetalert2';
+//const Swal = require('sweetalert2')
+
+window.Swal = require('sweetalert2');
 
 // add any other dependencies - things i'm including manually in app.layout
 

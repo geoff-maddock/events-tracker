@@ -1513,9 +1513,7 @@ class EventsController extends Controller
             $token = $fb->getJavaScriptHelper()->getAccessToken();
             $response = $fb->get('1750886384941695?fields='.$fields, $token);
 
-            dd($response->getGraphNode);
             $url = $response->cover->source;
-            dd($url);
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             Log::info(sprintf('Error: %s', $e->getMessage()));
         }
@@ -1574,6 +1572,10 @@ class EventsController extends Controller
         $fb->setDefaultAccessToken($token);
     }
 
+    /**
+     * @param Event $event
+     * @return $this
+     */
     public function show(Event $event)
     {
         if (empty((array) $event)) {

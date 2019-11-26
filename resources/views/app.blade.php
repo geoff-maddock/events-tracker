@@ -68,9 +68,12 @@
     <script src="{{ asset('/js/jquery.ba-throttle-debounce.min.js') }}"></script>
 	<script src="{{ asset('/js/auto-submit.js') }}"></script>
 	<script src="{{ asset('/js/custom.js') }}"></script>
-	<script src="{{ asset('/js/sweetalert-dev.js') }}"></script>
-	{{--<script src="//cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>--}}
 
+	{{--<script src="{{ asset('/js/sweetalert.js') }}"></script>--}}
+	{{--<link rel="stylesheet" href="sweetalert2/dist/sweetalert2.css">--}}
+
+
+	{{--<script src="sweetalert2/dist/sweetalert2.all.min.js"></script>--}}
 
 	@yield('scripts.footer')
 	@yield('footer')

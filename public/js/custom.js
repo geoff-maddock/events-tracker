@@ -21,7 +21,7 @@ var App = (function()
             var form = $(this).parents('form');
             var type = $(this).data('type');
             e.preventDefault();
-            swal({
+            Swal.fire({
                     title: "Are you sure?",
                     text: "You will not be able to recover this " + type + "!",
                     type: "warning",
@@ -46,7 +46,7 @@ var App = (function()
             e.preventDefault();
             var form = $(this).parents('form');
             var type = $(this).data('type');
-            swal({
+            Swal.fire({
                     title: "Are you sure?",
                     type: "warning",
                     showCancelButton: true,
@@ -101,7 +101,7 @@ var App = (function()
             }).done(function (data) {
                 // fire a flash message
                 $(target).replaceWith(data.Success);
-                swal({
+                Swal.fire({
                         title: "Success",
                         text: data.Message,
                         type: "success",
