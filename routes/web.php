@@ -207,7 +207,7 @@ Route::get('threads/category/{slug}', 'ThreadsController@indexCategories');
 Route::get('threads/tag/{tag}', 'ThreadsController@indexTags')->name('threads.tag');
 Route::get('threads/series/{tag}', 'ThreadsController@indexSeries');
 Route::get('threads/relatedto/{slug}', 'ThreadsController@indexRelatedTo');
-Route::post('threads/{threads}/posts','PostsController@store');
+Route::post('threads/{thread}/posts','PostsController@store');
 Route::get('threads/{id}/lock', 'ThreadsController@lock')->name('threads.lock');
 Route::get('threads/{id}/unlock', 'ThreadsController@unlock')->name('threads.unlock');
 

@@ -1,4 +1,6 @@
-<?php namespace App\Http\Controllers;
+<?php
+
+namespace App\Http\Controllers;
 
 use App\Activity;
 use App\Group;
@@ -12,11 +14,9 @@ use App\UserStatus;
 use App\Visibility;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use DB;
 use Illuminate\Http\Response;
 use Log;
 use Mail;
-use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UsersController extends Controller
@@ -32,9 +32,9 @@ class UsersController extends Controller
     protected $filters;
     protected $tabs;
 
-    public function __construct (User $user)
+    public function __construct(User $user)
     {
-        $this->middleware('auth', ['except' => array('index', 'show',)]);
+        $this->middleware('auth', ['except' => ['index', 'show']]);
         $this->user = $user;
 
         // prefix for session storage
@@ -42,50 +42,46 @@ class UsersController extends Controller
 
         $this->rpp = 25;
         $this->page = 1;
-        $this->sort = array('name', 'asc');
+        $this->sort = ['name', 'asc'];
         $this->sortBy = 'name';
         $this->sortOrder = 'asc';
-        $this->defaultCriteria = NULL;
+        $this->defaultCriteria = null;
         $this->hasFilter = 0;
 
         parent::__construct();
     }
 
     /**
-     * Set filters attribute
+     * Set filters attribute.
      *
-     * @param Request $request
-     * @param array $input
      * @return array
      */
-    public function setFilters (Request $request, array $input)
+    public function setFilters(Request $request, array $input)
     {
         return $this->setAttribute('filters', $input, $request);
     }
 
     /**
-     * Set tabs attribute
+     * Set tabs attribute.
      *
-     * @param Request $request
-     * @param array $input
      * @return array
      */
-    public function setTabs (Request $request, array $input)
+    public function setTabs(Request $request, array $input)
     {
         return $this->setAttribute('tabs', $input, $request);
     }
 
     /**
-     * Set user session attribute
+     * Set user session attribute.
      *
-     * @param String $attribute
-     * @param Mixed $value
-     * @param Request $request
-     * @return Mixed
+     * @param string $attribute
+     * @param mixed  $value
+     *
+     * @return mixed
      */
-    public function setAttribute ($attribute, $value, Request $request)
+    public function setAttribute($attribute, $value, Request $request)
     {
-        return $request->session()->put($this->prefix . $attribute, $value);
+        return $request->session()->put($this->prefix.$attribute, $value);
     }
 
     /**
@@ -109,7 +105,6 @@ class UsersController extends Controller
         // get the threads
         $users = $query->paginate($this->rpp);
 
-
         return view('users.index')
             ->with(['rpp' => $this->rpp,
                 'sortBy' => $this->sortBy,
@@ -121,12 +116,13 @@ class UsersController extends Controller
     }
 
     /**
-     * Filter the list of users
+     * Filter the list of users.
      *
      * @return Response
+     *
      * @throws \Throwable
      */
-    public function filter (Request $request)
+    public function filter(Request $request)
     {
         // get all the filters from the session
         $this->filters = $this->getFilters($request);
@@ -155,14 +151,12 @@ class UsersController extends Controller
                 'sortOrder' => $this->sortOrder,
                 'hasFilter' => $this->hasFilter,
                 'filters' => $this->filters,
-
             ])
             ->with(compact('users'));
-
     }
 
     /**
-     * Builds the criteria from the session
+     * Builds the criteria from the session.
      *
      * @return $query
      */
@@ -179,13 +173,13 @@ class UsersController extends Controller
         if (!empty($filters['filter_email'])) {
             // getting name from the request
             $name = $filters['filter_email'];
-            $query->where('email', 'like', '%' . $name . '%');
+            $query->where('email', 'like', '%'.$name.'%');
         }
 
         if (!empty($filters['filter_name'])) {
             // getting name from the request
             $name = $filters['filter_name'];
-            $query->where('name', 'like', '%' . $name . '%');
+            $query->where('name', 'like', '%'.$name.'%');
         }
 
         if (!empty($filters['filter_status'])) {
@@ -205,13 +199,13 @@ class UsersController extends Controller
     }
 
     /**
-     * Reset the filtering of users
+     * Reset the filtering of users.
      *
-     * @param Request $request
      * @return Response
+     *
      * @throws \Throwable
      */
-    public function reset (Request $request)
+    public function reset(Request $request)
     {
         // set the filters to empty
         $this->setFilters($request, $this->getDefaultFilters());
@@ -228,88 +222,83 @@ class UsersController extends Controller
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
             ->with(compact('users'))
             ->render();
-
     }
 
-
     /**
-     * Update the page list parameters from the request
+     * Update the page list parameters from the request.
+     *
      * @param $request
      */
-    protected function updatePaging ($request)
+    protected function updatePaging($request)
     {
         // set sort by column
         if ($request->input('sort_by')) {
             $this->sortBy = $request->input('sort_by');
-        };
+        }
 
         // set sort direction
         if ($request->input('sort_direction')) {
             $this->sortOrder = $request->input('sort_direction');
-        };
+        }
 
         // set results per page
         if ($request->input('rpp')) {
             $this->rpp = $request->input('rpp');
-        };
-
-
+        }
     }
 
     /**
-     * Get session filters
+     * Get session filters.
      *
-     * @param Request $request
-     * @return Array
+     * @return array
      */
-    public function getFilters (Request $request)
+    public function getFilters(Request $request)
     {
         return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
     }
 
     /**
-     * Get session tabs
+     * Get session tabs.
      *
-     * @param Request $request
      * @return array
      */
-    public function getTabs (Request $request)
+    public function getTabs(Request $request)
     {
         return $this->getAttribute('tabs', $this->getDefaultTabs(), $request);
     }
 
     /**
-     * Get user session attribute
+     * Get user session attribute.
      *
-     * @param String $attribute
-     * @param Mixed $default
-     * @param Request $request
-     * @return Mixed
+     * @param string $attribute
+     * @param mixed  $default
+     *
+     * @return mixed
      */
-    public function getAttribute ($attribute, $default = null, Request $request)
+    public function getAttribute($attribute, $default = null, Request $request)
     {
         return $request->session()
-            ->get($this->prefix . $attribute, $default);
+            ->get($this->prefix.$attribute, $default);
     }
 
     /**
-     * Get the default filters array
+     * Get the default filters array.
      *
      * @return array
      */
-    public function getDefaultFilters ()
+    public function getDefaultFilters()
     {
-        return array();
+        return [];
     }
 
     /**
-     * Get the default tags array
+     * Get the default tags array.
      *
      * @return array
      */
-    public function getDefaultTabs ()
+    public function getDefaultTabs()
     {
-        return array(0 => 'created', 1 => 'tags');
+        return [0 => 'created', 1 => 'tags'];
     }
 
     /**
@@ -317,8 +306,7 @@ class UsersController extends Controller
      *
      * @return view
      **/
-
-    public function create ()
+    public function create()
     {
         $visibilities = ['' => ''] + Visibility::pluck('name', 'id');
         $userStatuses = ['' => ''] + UserStatus::orderBy('name', 'ASC')->pluck('name', 'id')->all();
@@ -328,12 +316,10 @@ class UsersController extends Controller
     }
 
     /**
-     * @param User $user
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View
      */
-    public function show (User $user, Request $request)
+    public function show(User $user, Request $request)
     {
-
         //$this->setTabs($request, $this->getDefaultTabs());
 
         // get all the tabs from the session
@@ -354,18 +340,13 @@ class UsersController extends Controller
 
             $profile->save();
 
-            return redirect('users/' . $user->id);
+            return redirect('users/'.$user->id);
         }
 
         return view('users.show', compact('user', 'tabs'));
     }
 
-
-    /**
-     * @param UserRequest $request
-     * @param User $user
-     */
-    public function store (UserRequest $request, User $user)
+    public function store(UserRequest $request, User $user)
     {
         $input = $request->all();
 
@@ -380,14 +361,12 @@ class UsersController extends Controller
         $user->tags()->attach($request->input('tag_list'));
 
         flash('Success', 'Your user has been created!');
-
     }
 
     /**
-     * @param User $user
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function edit (User $user)
+    public function edit(User $user)
     {
         $this->middleware('auth');
 
@@ -399,8 +378,6 @@ class UsersController extends Controller
     }
 
     /**
-     * @param User $user
-     * @param ProfileRequest $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function update(User $user, ProfileRequest $request)
@@ -410,7 +387,7 @@ class UsersController extends Controller
 
         if ($request->has('group_list')) {
             $user->groups()->sync($request->input('group_list', []));
-        };
+        }
 
         // get all the tabs from the session
         $tabs = $this->getTabs($request);
@@ -420,16 +397,15 @@ class UsersController extends Controller
 
         flash('Success', 'Your user has been updated');
 
-        return view('users.show', compact('user','tabs'));
+        return view('users.show', compact('user', 'tabs'));
     }
 
-
     /**
-     * @param User $user
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     *
      * @throws \Exception
      */
-    public function destroy (User $user)
+    public function destroy(User $user)
     {
         // add to activity log
         Activity::log($user, $this->user, 3);
@@ -439,18 +415,17 @@ class UsersController extends Controller
         return redirect('users');
     }
 
-
     /**
-     * Add a photo to a user
+     * Add a photo to a user.
      *
-     * @param  int $id
-     * @param Request $request
+     * @param int $id
+     *
      * @return void
      */
-    public function addPhoto ($id, Request $request)
+    public function addPhoto($id, Request $request)
     {
         $this->validate($request, [
-            'file' => 'required|mimes:jpg,jpeg,png,gif'
+            'file' => 'required|mimes:jpg,jpeg,png,gif',
         ]);
 
         // attach to user
@@ -460,9 +435,9 @@ class UsersController extends Controller
         $photo = $this->makePhoto($request->file('file'));
 
         // count existing photos, and if zero, make this primary
-        if (count($user->photos) == 0) {
+        if (0 == count($user->photos)) {
             $photo->is_primary = 1;
-        };
+        }
 
         $photo->save();
 
@@ -471,26 +446,25 @@ class UsersController extends Controller
     }
 
     /**
-     * @param UploadedFile $file
      * @return mixed
      */
-    protected function makePhoto (UploadedFile $file)
+    protected function makePhoto(UploadedFile $file)
     {
         return Photo::named($file->getClientOriginalName())
             ->move($file);
     }
 
     /**
-     * Delete a photo
+     * Delete a photo.
      *
-     * @param  int $id
-     * @param Request $request
+     * @param int $id
+     *
      * @return void
      */
-    public function deletePhoto ($id, Request $request)
+    public function deletePhoto($id, Request $request)
     {
         $this->validate($request, [
-            'file' => 'required|mimes:jpg,jpeg,png,gif'
+            'file' => 'required|mimes:jpg,jpeg,png,gif',
         ]);
 
         // detach from user
@@ -501,10 +475,10 @@ class UsersController extends Controller
     }
 
     /**
-     * Mark user as activated
+     * Mark user as activated.
      *
      * @param $id
-     * @param Request $request
+     *
      * @return Response
      */
     public function activate($id, Request $request)
@@ -512,24 +486,26 @@ class UsersController extends Controller
         // check if there is a logged in user
         if (!$this->user) {
             flash()->error('Error', 'No user is logged in.');
+
             return back();
-        };
+        }
 
         if (!$user = User::find($id)) {
             flash()->error('Error', 'No such user');
+
             return back();
-        };
+        }
 
         // add the following response
         $user->user_status_id = 2;
         $user->save();
 
-        Log::info('User ' . $user->name . ' is activated.');
+        Log::info('User '.$user->name.' is activated.');
 
         // add to activity log
         Activity::log($user, $this->user, 10);
 
-        flash()->success('Success', 'User ' . $user->name . ' is now activated.');
+        flash()->success('Success', 'User '.$user->name.' is now activated.');
 
         // email the user
         $this->notifyUserActivated($user);
@@ -538,10 +514,10 @@ class UsersController extends Controller
     }
 
     /**
-     * Mark user as suspended
+     * Mark user as suspended.
      *
      * @param $id
-     * @param Request $request
+     *
      * @return Response
      */
     public function suspend($id, Request $request)
@@ -549,13 +525,15 @@ class UsersController extends Controller
         // check if there is a logged in user
         if (!$this->user) {
             flash()->error('Error', 'No user is logged in.');
+
             return back();
-        };
+        }
 
         if (!$user = User::find($id)) {
             flash()->error('Error', 'No such user');
+
             return back();
-        };
+        }
 
         // add the following response
         $user->user_status_id = 3;
@@ -564,18 +542,18 @@ class UsersController extends Controller
         // add to activity log
         Activity::log($user, $this->user, 11);
 
-        Log::info('User ' . $user->name . ' is suspended.');
+        Log::info('User '.$user->name.' is suspended.');
 
-        flash()->success('Success', 'User ' . $user->name . ' is now suspended.');
+        flash()->success('Success', 'User '.$user->name.' is now suspended.');
 
         return back();
     }
 
     /**
-     * Send a site update reminder to the user
+     * Send a site update reminder to the user.
      *
      * @param $id
-     * @param Request $request
+     *
      * @return Response
      */
     public function reminder($id, Request $request)
@@ -583,13 +561,15 @@ class UsersController extends Controller
         // check if there is a logged in user
         if (!$this->user) {
             flash()->error('Error', 'No user is logged in.');
+
             return back();
-        };
+        }
 
         if (!$user = User::find($id)) {
             flash()->error('Error', 'No such user');
+
             return back();
-        };
+        }
 
         // email the user
         $this->notifyUser($user);
@@ -597,18 +577,18 @@ class UsersController extends Controller
         // add to activity log
         Activity::log($user, $this->user, 12);
 
-        Log::info('User ' . $user->name . ' was sent a reminder');
+        Log::info('User '.$user->name.' was sent a reminder');
 
-        flash()->success('Success', 'A reminder email was sent to  ' . $user->name . ' at ' . $user->email);
+        flash()->success('Success', 'A reminder email was sent to  '.$user->name.' at '.$user->email);
 
         return back();
     }
 
     /**
-     * Send a weekly site update reminder to the user
+     * Send a weekly site update reminder to the user.
      *
      * @param $id
-     * @param Request $request
+     *
      * @return Response
      */
     public function weekly($id, Request $request)
@@ -616,13 +596,15 @@ class UsersController extends Controller
         // check if there is a logged in user
         if (!$this->user) {
             flash()->error('Error', 'No user is logged in.');
+
             return back();
-        };
+        }
 
         if (!$user = User::find($id)) {
             flash()->error('Error', 'No such user');
+
             return back();
-        };
+        }
 
         // email the user
         $this->notifyUserWeekly($user);
@@ -630,18 +612,18 @@ class UsersController extends Controller
         // add to activity log
         Activity::log($user, $this->user, 12);
 
-        Log::info('User ' . $user->name . ' was sent a reminder');
+        Log::info('User '.$user->name.' was sent a reminder');
 
-        flash()->success('Success', 'A reminder email was sent to  ' . $user->name . ' at ' . $user->email);
+        flash()->success('Success', 'A reminder email was sent to  '.$user->name.' at '.$user->email);
 
         return back();
     }
 
     /**
-     * Mark user as deleted
+     * Mark user as deleted.
      *
      * @param $id
-     * @param Request $request
+     *
      * @return Response
      */
     public function delete($id, Request $request)
@@ -649,21 +631,23 @@ class UsersController extends Controller
         // check if there is a logged in user
         if (!$this->user) {
             flash()->error('Error', 'No user is logged in.');
+
             return back();
-        };
+        }
 
         if (!$user = User::find($id)) {
             flash()->error('Error', 'No such user');
+
             return back();
-        };
+        }
 
         // add the following response
         $user->user_status_id = 5;
         $user->save();
 
-        Log::info('User ' . $user->name . ' is deleted.');
+        Log::info('User '.$user->name.' is deleted.');
 
-        flash()->success('Success', 'User ' . $user->name . ' is now deleted.');
+        flash()->success('Success', 'User '.$user->name.' is now deleted.');
 
         // add to activity log
         Activity::log($user, $this->user, 3);
@@ -675,6 +659,7 @@ class UsersController extends Controller
 
     /**
      * @param $user
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function notifyUser($user)
@@ -683,26 +668,20 @@ class UsersController extends Controller
         $site = config('app.app_name');
         $url = config('app.url');
 
-        $events = array();
+        $events = [];
 
         // build an array of events that are in the future based on what the user follows
-        if ($entities = $user->getEntitiesFollowing())
-        {
-            foreach ($entities as $entity)
-            {
-                if (count($entity->futureEvents()) > 0)
-                {
+        if ($entities = $user->getEntitiesFollowing()) {
+            foreach ($entities as $entity) {
+                if (count($entity->futureEvents()) > 0) {
                     $events[$entity->name] = $entity->futureEvents();
                 }
             }
         }
         // build an array of future events based on tags the user follows
-        if ($tags = $user->getTagsFollowing())
-        {
-            foreach ($tags as $tag)
-            {
-                if (count($tag->futureEvents()) > 0)
-                {
+        if ($tags = $user->getTagsFollowing()) {
+            foreach ($tags as $tag) {
+                if (count($tag->futureEvents()) > 0) {
                     $events[$tag->name] = $tag->futureEvents();
                 }
             }
@@ -712,7 +691,7 @@ class UsersController extends Controller
             $m->from($admin_email, $site);
             $m->to($user->email, $user->name)
                 ->bcc($admin_email)
-                ->subject($site . ': Site updates for ' . $user->name . ' :: ' . Carbon::now()->format('D F jS') );
+                ->subject($site.': Site updates for '.$user->name.' :: '.Carbon::now()->format('D F jS'));
         });
 
         return back();
@@ -720,6 +699,7 @@ class UsersController extends Controller
 
     /**
      * @param $user
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function notifyUserActivated($user)
@@ -732,7 +712,7 @@ class UsersController extends Controller
             $m->from($admin_email, $site);
             $m->to($user->email, $user->name)
                 ->bcc($admin_email)
-                ->subject($site . ': Account activated for ' . $user->name . ' :: ' . Carbon::now()->format('D F jS') );
+                ->subject($site.': Account activated for '.$user->name.' :: '.Carbon::now()->format('D F jS'));
         });
 
         return back();
@@ -740,6 +720,7 @@ class UsersController extends Controller
 
     /**
      * @param $user
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function notifyUserWeekly($user)
@@ -750,27 +731,21 @@ class UsersController extends Controller
         $url = config('app.url');
 
         $show_count = 100;
-        $events = array();
-        $interests = array();
+        $events = [];
+        $interests = [];
 
         // build an array of events that are in the future based on what the user follows
-        if ($entities = $user->getEntitiesFollowing())
-        {
-            foreach ($entities as $entity)
-            {
-                if (count($entity->todaysEvents()) > 0)
-                {
+        if ($entities = $user->getEntitiesFollowing()) {
+            foreach ($entities as $entity) {
+                if (count($entity->todaysEvents()) > 0) {
                     $interests[$entity->name] = $entity->futureEvents();
                 }
             }
         }
         // build an array of future events based on tags the user follows
-        if ($tags = $user->getTagsFollowing())
-        {
-            foreach ($tags as $tag)
-            {
-                if (count($tag->futureEvents()) > 0)
-                {
+        if ($tags = $user->getTagsFollowing()) {
+            foreach ($tags as $tag) {
+                if (count($tag->futureEvents()) > 0) {
                     $interests[$tag->name] = $tag->futureEvents();
                 }
             }
@@ -780,8 +755,7 @@ class UsersController extends Controller
         $events = $user->getAttendingFuture()->take($show_count);
 
         // if there are more than 0 events
-        if ((NULL !== $events && $events->count() > 0) || (NULL !== $interests && count($interests) > 0))
-        {
+        if ((null !== $events && $events->count() > 0) || (null !== $interests && count($interests) > 0)) {
             // send an email containing that list
             Mail::send('emails.weekly-events',
                 ['user' => $user, 'interests' => $interests, 'events' => $events, 'url' => $url, 'site' => $site],
@@ -793,11 +767,8 @@ class UsersController extends Controller
                         ->bcc($admin_email)
                         ->subject($site.': Weekly Reminder - '.$dt->format('l F jS Y'));
                 });
-
-        };
+        }
 
         return back();
     }
-
-
 }

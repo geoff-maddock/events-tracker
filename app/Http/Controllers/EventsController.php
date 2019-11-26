@@ -2402,9 +2402,7 @@ class EventsController extends Controller
 
         $thread->save();
 
-        $th = Thread::where('event_id', '=', $event->id)->get();
-
-        return view('events.show', compact('event'))->with(['thread' => $th->first()]);
+        return redirect()->route('events.show', ['id' => $event->id]);
     }
 
     public function rss(RssFeed $feed)

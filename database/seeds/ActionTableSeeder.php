@@ -1,5 +1,6 @@
-<?php // database/seeds/EntityTypeTableSeeder.php
+<?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Seeder;
 use App\Action;
 
