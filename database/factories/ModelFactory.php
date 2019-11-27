@@ -21,7 +21,7 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
 });
 
 $factory->define(App\Profile::class, function (Faker\Generator $faker) {
-    $user = factory('App\User')->create();
+    $user = factory(App\User::class)->create();
     return [
         'user_id' => $user->id,
         'first_name' => $faker->name,
@@ -37,22 +37,22 @@ $factory->define(App\Entity::class, function (Faker\Generator $faker) {
         'slug' => $faker->name,
         'short' => $faker->paragraph,
         'description' => $faker->paragraph,
-        'entity_type_id' => rand(1,5),
-        'entity_status_id' => rand(1,5),
+        'entity_type_id' => random_int(1,5),
+        'entity_status_id' => random_int(1,5),
         'created_by' => 1
     ];
 });
 
 $factory->define(App\Series::class, function (Faker\Generator $faker) {
-    $user = factory('App\User')->create();
+    $user = factory(App\User::class)->create();
     return [
         'name' => $faker->name,
         'slug' => $faker->name,
         'short' => $faker->paragraph,
         'description' => $faker->paragraph,
-        'event_type_id' => rand(1,5),
-        'visibility_id' => rand(1,3),
-        'occurrence_type' => rand(1,3),
+        'event_type_id' => random_int(1,5),
+        'visibility_id' => random_int(1,3),
+        'occurrence_type' => random_int(1,3),
         'start_at' => now(),
         'is_active' => 1,
         'created_by' => $user->id
@@ -60,7 +60,7 @@ $factory->define(App\Series::class, function (Faker\Generator $faker) {
 });
 
 $factory->define(App\Forum::class, function (Faker\Generator $faker) {
-    $user = factory('App\User')->create();
+    $user = factory(App\User::class)->create();
     return [
         'name' => $faker->sentence,
         'slug' => $faker->sentence,
@@ -72,7 +72,7 @@ $factory->define(App\Forum::class, function (Faker\Generator $faker) {
 });
 
 $factory->define(App\Thread::class, function (Faker\Generator $faker) {
-	$user = factory('App\User')->create();
+	$user = factory(App\User::class)->create();
 	return [
 		'forum_id' => 1,
         'created_by' => $user->id,

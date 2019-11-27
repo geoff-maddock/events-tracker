@@ -22,8 +22,8 @@ use App\Visibility;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Log;
-use Mail;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use SammyK;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -1573,7 +1573,6 @@ class EventsController extends Controller
     }
 
     /**
-     * @param Event $event
      * @return $this
      */
     public function show(Event $event)
