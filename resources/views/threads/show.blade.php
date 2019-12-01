@@ -17,7 +17,7 @@
 	<br style="clear: left;"/>
 
 	<div class="row">
-		
+
 	<div class="col-lg-12">
 	<table class="table forum table-striped">
 	    <thead>

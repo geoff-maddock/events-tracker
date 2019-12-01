@@ -165,7 +165,8 @@ return [
         \AltThree\Bus\BusServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-		'App\Providers\ViewComposerServiceProvider',
+        \App\Providers\ViewComposerServiceProvider::class,
+
 
 		# for social logins - fb, google, github
 		'Laravel\Socialite\SocialiteServiceProvider',
@@ -184,7 +185,7 @@ return [
         #facebook SDK
         SammyK\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
 
-        NotificationChannels\Twitter\TwitterServiceProvider::class,
+        NotificationChannels\Twitter\TwitterServiceProvider::class
 	],
 
 	/*
@@ -240,7 +241,7 @@ return [
 		'Image'     => \Intervention\Image\Facades\Image::class,
 		'Calendar'  => \MaddHatter\LaravelFullcalendar\Facades\Calendar::class,
         'Form' => Collective\Html\FormFacade::class,
-        'Html' => Collective\Html\HtmlFacade::class,
+        'Html' => Collective\Html\HtmlFacade::class
 	],
 
 ];
