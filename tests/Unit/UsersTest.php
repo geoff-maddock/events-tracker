@@ -13,7 +13,7 @@ class UsersTest extends TestCase
     {
         $user = create('App\User');
         $post = create('App\Post', ['created_by' => $user->id]);
-        //dd($user->id);
+
         $post->created_by = $user->id;
         $this->assertEquals($post->id, $user->lastPost->id);
     }

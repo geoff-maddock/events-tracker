@@ -6,8 +6,13 @@
 	  type: "{{ session('flash_message.level') }}",
 	  timer: 2500,
 	  showConfirmButton: false,
-      closeOnConfirm: true,
-      closeOnCancel: true
+		preConfirm: function() {
+			return new Promise(function(resolve) {
+				setTimeout(function() {
+					resolve()
+				}, 2000)
+			})
+		}
 	});
 	</script>
 @endif
