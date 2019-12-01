@@ -6,7 +6,7 @@
         var settings = $.extend($.fn.autoSubmit.defaults, options);
 
         this.on('change', function() {
-            console.log('test');
+            console.log('auto submit on change');
             var form = this.closest('form');
             form.submit();
         });

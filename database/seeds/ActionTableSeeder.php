@@ -11,31 +11,31 @@ class ActionTableSeeder extends Seeder {
         // CREATE, UPDATE, DELETE, LOGIN, LOGOUT, FOLLOW, UNFOLLOW
         DB::table('actions')->delete();
     
-        Action::create(array(
+        DB::table('actions')->insert(array(
             'name' => 'Create',
         ));
     
-        Action::create(array(
+        DB::table('actions')->insert(array(
             'name' => 'Update',
         ));
     
-        Action::create(array(
+        DB::table('actions')->insert(array(
             'name' => 'Delete',
         ));
     
-        Action::create(array(
+        DB::table('actions')->insert(array(
             'name' => 'Login',
         ));
     
-        Action::create(array(
+        DB::table('actions')->insert(array(
             'name' => 'Logout',
         ));
     
-        Action::create(array(
+        DB::table('actions')->insert(array(
             'name' => 'Follow',
         ));
     
-        Action::create(array(
+        DB::table('actions')->insert(array(
             'name' => 'Unfollow',
         ));
     

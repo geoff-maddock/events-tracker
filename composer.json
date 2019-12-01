@@ -5,29 +5,28 @@
 	"license": "MIT",
 	"type": "project",
 	"require": {
-		"laravel/framework": "5.5.*",
-		"laravelcollective/html": "5.5.*",
+		"laravel/framework": "5.6.*",
+		"laravelcollective/html": "5.6.*",
 		"braunson/laravel-html5-forms": "dev-laravel-5",
 		"laravel/socialite": "~3.0",
 		"intervention/image": "^2.3",
 		"maddhatter/laravel-fullcalendar": "^1.2",
 		"suin/php-rss-writer": "^1.5",
-		"barryvdh/laravel-debugbar": "^2.4",
 		"laravel/tinker": "^1.0",
 		"sammyk/laravel-facebook-sdk": "^3.5",
 		"sentry/sentry": "^1.8",
 		"sentry/sentry-laravel": "^0.8.0",
-		"alt-three/bus": "^3.0",
+		"alt-three/bus": "^4.0",
 		"laravel-notification-channels/twitter": "^1.0"
 	},
 	"require-dev": {
 		"fzaninotto/faker": "~1.4",
 		"mockery/mockery": "0.9.*",
-		"phpunit/phpunit": "~6.0",
-		"phpspec/phpspec": "~2.1",
+		"phpunit/phpunit": "~7.0",
+		"phpspec/phpspec": "~6.0",
 		"symfony/dom-crawler": "~3.1",
 		"symfony/css-selector": "~3.1",
-		"laravel/dusk": "^2.0",
+		"laravel/dusk": "^3.0",
 		"filp/whoops": "~2.0"
 	},
 	"autoload": {
@@ -52,12 +51,10 @@
 	},
 	"scripts": {
 		"post-install-cmd": [
-			"php-latest artisan clear-compiled",
-			"php-latest artisan optimize"
+			"php-latest artisan clear-compiled"
 		],
 		"post-update-cmd": [
-			"php-latest artisan clear-compiled",
-			"php-latest artisan optimize"
+			"php-latest artisan clear-compiled"
 		],
 		"post-create-project-cmd": [
 			"php-latest -r \"copy('.env.example', '.env');\"",

@@ -172,13 +172,13 @@
 		@endforeach
 		</div>
 
-	@if (isset($thread) && count($thread) > 0)
+	@if (isset($thread))
 		<div class="col-md-6">
 			<div class="panel panel-info">
 
 				<div class="panel-heading">
 					<h3 class="panel-title">Posts
-						<a href="#" ><span class='label label-tag pull-right' data-toggle="tooltip" data-placement="bottom"  title="# of Threads that match this search term.">{{ count($thread)}}</span></a>
+						<a href="#" ><span class='label label-tag pull-right' data-toggle="tooltip" data-placement="bottom"  title="# of posts that match this search term.">{{ count($thread->posts) }}</span></a>
 					</h3>
 				</div>
 

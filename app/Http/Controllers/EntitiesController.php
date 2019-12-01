@@ -13,9 +13,9 @@ use App\Photo;
 use App\Role;
 use App\Tag;
 use App\User;
-use DB;
 use Illuminate\Http\Request;
-use Log;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -502,12 +502,7 @@ class EntitiesController extends Controller
 
         $input = $request->all();
 
-        // if slug is empty, use name
-        if (!$request->input('slug') || count($request->input('slug')) < 3) {
-            $input['slug'] = str_slug($request->input('name', '-'));
-        } else {
-            $input['slug'] = str_slug($request->input('slug', '-'));
-        }
+        $input['slug'] = str_slug($request->input('slug', '-'));
 
         $tagArray = $request->input('tag_list', []);
         $aliasArray = $request->input('alias_list', []);

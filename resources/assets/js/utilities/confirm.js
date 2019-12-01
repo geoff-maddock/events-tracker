@@ -20,9 +20,9 @@ const Confirm = {
                 function(isConfirm){
                     if (isConfirm) {
                         form.submit();
-                    };
+                    }
                 });
-        })
+        });
     },
 };
 

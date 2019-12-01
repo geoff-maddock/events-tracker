@@ -17,8 +17,7 @@
 	<br style="clear: left;"/>
 
 	<div class="row">
-
-	@if (isset($thread) && count($thread) > 0)
+		
 	<div class="col-lg-12">
 	<table class="table forum table-striped">
 	    <thead>
@@ -61,6 +60,6 @@
                 @endif
             @endif
         </div>
-        @endif
+
         </div>
     @stop

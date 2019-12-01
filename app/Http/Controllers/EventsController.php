@@ -21,9 +21,9 @@ use App\User;
 use App\Visibility;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\View\View;
 use SammyK;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -1593,12 +1593,8 @@ class EventsController extends Controller
         // get the request
         $input = $request->all();
 
-        // if slug is empty, use name
-        if (!$request->input('slug') || count($request->input('slug')) < 3) {
-            $input['slug'] = str_slug($request->input('name', '-'));
-        } else {
-            $input['slug'] = str_slug($request->input('slug', '-'));
-        }
+        // transform the slug
+        $input['slug'] = str_slug($request->input('slug', '-'));
 
         // validation happening in EventRequest->rules
         $tagArray = $request->input('tag_list', []);

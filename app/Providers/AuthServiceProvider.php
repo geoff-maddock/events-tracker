@@ -28,7 +28,6 @@ class AuthServiceProvider extends ServiceProvider
     /**
      * Register any application authentication / authorization services.
      *
-     * @param  \Illuminate\Contracts\Auth\Access\Gate  $gate
      * @return void
      */
     public function boot(GateContract $gate)
@@ -42,9 +41,9 @@ class AuthServiceProvider extends ServiceProvider
             }
         });
 
-        // gets permissions
+        // adds a gate for each permission name - checks whether the user has a group that matches one of the permission groups
         foreach ($this->getPermissions() as $permission) {
-            $gate->define($permission->name, function($user) use ($permission) {
+            $gate->define($permission->name, function ($user) use ($permission) {
                 return $user->hasGroup($permission->groups);
             });
         }
@@ -60,6 +59,4 @@ class AuthServiceProvider extends ServiceProvider
     {
         return Permission::with('groups')->get();
     }
-
-
 }
