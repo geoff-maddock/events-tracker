@@ -18,10 +18,10 @@
                     @endif
 			@endif 
 		</h1> 
-		<span class="label label-tag">{!! link_to_route('events.tag', 'Events', [$tag->name], ['class' => 'item-title']) !!} {{ count($tag->events) }}</span>
-		<span class="label label-tag">{!! link_to_route('series.tag', 'Series', [$tag->name], ['class' => 'item-title']) !!}  {{ count($tag->series) }}</span>
-		<span class="label label-tag">{!! link_to_route('entities.tag', 'Entities', [$tag->name], ['class' => 'item-title']) !!} {{ count($tag->entities) }}</span>
-		<span class="label label-tag">{!! link_to_route('threads.tag', 'Threads', [$tag->name], ['class' => 'item-title']) !!} {{ count($tag->threads) }}</span>
+		<span class="label label-tag">{!! link_to_route('events.tag', 'Events', [$tag->name], ['class' => 'item-title']) !!} {{ $tag->events ? count($tag->events) : 0 }}</span>
+		<span class="label label-tag">{!! link_to_route('series.tag', 'Series', [$tag->name], ['class' => 'item-title']) !!}  {{ $tag->series ? count($tag->series) : 0 }}</span>
+		<span class="label label-tag">{!! link_to_route('entities.tag', 'Entities', [$tag->name], ['class' => 'item-title']) !!} {{ $tag->entities ? count($tag->entities) : 0}}</span>
+		<span class="label label-tag">{!! link_to_route('threads.tag', 'Threads', [$tag->name], ['class' => 'item-title']) !!} {{ $tag->threads ? count($tag->threads) : 0 }}</span>
 
 	</li>
 
