@@ -4,6 +4,7 @@
 
 @section('content')
 <script src="{{ asset('/js/facebook-sdk.js') }}"></script>
+<script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
 
 	<h1>Add a New Event</h1>
 

@@ -10,7 +10,7 @@ $(document).ready(function(){
     };
 
 // queries the primary link to get data - FB API only for now - and parses to set form inputs
-    $('#import-link').click(function(e){
+    $('#import-entity-link').click(function(e){
 
         // get the id out of the link
         var str = $('#primary_link').val();
@@ -36,22 +36,14 @@ $(document).ready(function(){
         // check that there is a login first
         FB.getLoginStatus(function(response) {
             if (response.status === 'connected') {
-                console.log('Facebook-event.js. Already Logged in.');
+                console.log('Logged in.');
             }
             else {
-               // FB.login();
-                console.log('FB.login - trying to get all scopes')
-                FB.login(function(response) {
-                    // handle the response
-                }, {
-                    scope: 'public_profile,email,user_events',
-                    return_scopes: true
-                })
+                FB.login();
             }
         });
 
-        // let fields =  'description,end_time,id,name,place,start_time,cover,attending_count,interested_count,maybe_count,noreply_count';
-        let fields = 'description,name,end_time,start_time,interested_count,ticket_uri';
+        let fields =  'description,end_time,id,name,place,start_time,cover,attending_count,interested_count,maybe_count,noreply_count';
 
         // try to pull info from the fb object
         FB.api('/'+event_id+'?fields='+fields, function(response) {
@@ -65,12 +57,6 @@ $(document).ready(function(){
                     $('#name').val(response.name);
                     $('#slug').val(slugify(response.name));
                     console.log('set name');
-                };
-
-                if (response.ticket_uri)
-                {
-                    $('#ticket_link').val(response.ticket_uri);
-                    console.log('set ticket link');
                 };
 
                 if (response.description)
