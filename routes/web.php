@@ -12,7 +12,9 @@
 */
 
 // what is this  for?
-Auth::routes();
+use Illuminate\Support\Facades\Route;
+
+Auth::routes(['verify' => true]);
 
 Route::get('/redirect', 'SocialAuthFacebookController@redirect');
 Route::get('/callback', 'SocialAuthFacebookController@callback');

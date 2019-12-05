@@ -28,7 +28,9 @@
 		"symfony/dom-crawler": "~3.1",
 		"symfony/css-selector": "~3.1",
 		"laravel/dusk": "^3.0",
-		"filp/whoops": "~2.0"
+		"filp/whoops": "~2.0",
+		"barryvdh/laravel-debugbar":  "^3.2",
+		"barryvdh/laravel-ide-helper": "^2.6"
 	},
 	"autoload": {
 		"classmap": [

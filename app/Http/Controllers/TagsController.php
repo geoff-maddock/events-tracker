@@ -112,6 +112,8 @@ class TagsController extends Controller {
 		// get a list of all tags
 		$tags = Tag::orderBy('name', 'ASC')->get();
 
+		$userTags = NULL;
+		
 		// get a list of all the user's followed tags
         if (isset($this->user)) {
             $userTags = $this->user->getTagsFollowing();
