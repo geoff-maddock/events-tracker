@@ -51,7 +51,7 @@ class EventsController extends Controller
         $this->prefix = 'app.events.';
 
         // default list variables
-        $this->rpp = 8;
+        $this->rpp = 10;
         $this->gridRpp = 24;
         $this->page = 1;
         $this->sort = ['name', 'desc'];
@@ -221,6 +221,7 @@ class EventsController extends Controller
         // get filters from session
         $filters = $this->getFilters($request);
 
+        // check if there are filters and pass to response
         $this->hasFilter = count($filters);
 
         // base criteria
@@ -263,6 +264,7 @@ class EventsController extends Controller
 
                 return $query;
             });
+
         // get past events
         $past_events = $query_past
             ->with('visibility')
@@ -270,6 +272,7 @@ class EventsController extends Controller
 
         return view('events.index')
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter, 'filters' => $filters,
+            //    'queryStringAppend' => $queryStringAppend
             ])
             ->with(compact('future_events'))
             ->with(compact('past_events'))
@@ -422,7 +425,12 @@ class EventsController extends Controller
         });
 
         return view('events.grid')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter, 'filters' => $filters,
+            ->with([
+                'rpp' => $this->rpp,
+                'sortBy' => $this->sortBy,
+                'sortOrder' => $this->sortOrder,
+                'hasFilter' => $this->hasFilter,
+                'filters' => $filters,
                 'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : null,  // there should be a better way to do this...
                 'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : null,
                 'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : null,
@@ -592,7 +600,8 @@ class EventsController extends Controller
         });
 
         return view('events.index')
-            ->with(['rpp' => $this->rpp,
+            ->with([
+                'rpp' => $this->rpp,
                 'sortBy' => $this->sortBy,
                 'sortOrder' => $this->sortOrder,
                 'hasFilter' => $this->hasFilter,
@@ -817,11 +826,7 @@ class EventsController extends Controller
             return redirect()->route($redirect);
         }
 
-        return view('events.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
-            ->with(compact('future_events'))
-            ->with(compact('past_events'))
-            ->render();
+        return redirect()->route('events.index');
     }
 
     /**

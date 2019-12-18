@@ -322,13 +322,14 @@ class EntitiesController extends Controller
         $entities = $query->paginate($this->rpp);
 
         return view('entities.index')
-            ->with(['rpp' => $this->rpp,
-                'sortBy' => $this->sortBy,
-                'sortOrder' => $this->sortOrder,
-                'filters' => $this->filters,
-                'hasFilter' => $this->hasFilter,
+            ->with([
+                    'rpp' => $this->rpp,
+                    'sortBy' => $this->sortBy,
+                    'sortOrder' => $this->sortOrder,
+                    'filters' => $this->filters,
+                    'hasFilter' => $this->hasFilter,
             ])
-            ->with(compact('entities', 'role', 'tag', 'alias', 'name'))
+            ->with(compact('entities'))
             ->render();
     }
 
@@ -381,10 +382,7 @@ class EntitiesController extends Controller
         // paginate
         $entities = $query->paginate($this->rpp);
 
-        return view('entities.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
-            ->with(compact('entities'))
-            ->render();
+        return redirect()->route('entities.index');
     }
 
     /**
