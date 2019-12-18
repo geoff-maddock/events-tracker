@@ -14,9 +14,9 @@
 		@endif
 
 	</h1> 
-	<span class="label label-tag">{!! link_to_route('events.tag', 'Events', [$tag->name], ['class' => 'item-title']) !!} {{ count($tag->events) }}</span>
-	<span class="label label-tag">{!! link_to_route('series.tag', 'Series', [$tag->name], ['class' => 'item-title']) !!}  {{ count($tag->series) }}</span>
-	<span class="label label-tag">{!! link_to_route('entities.tag', 'Entities', [$tag->name], ['class' => 'item-title']) !!} {{ count($tag->entities) }}</span>
-	<span class="label label-tag">{!! link_to_route('threads.tag', 'Threads', [$tag->name], ['class' => 'item-title']) !!} {{ count($tag->threads) }}</span>
+	<span class="label label-tag">{!! link_to_route('events.tag', 'Events', [$tag->name], ['class' => 'item-title']) !!} @if (is_array($tag->events)){{ count($tag->events) }}@endif</span>
+	<span class="label label-tag">{!! link_to_route('series.tag', 'Series', [$tag->name], ['class' => 'item-title']) !!}  @if (is_array($tag->series)){{ count($tag->series) }}@endif</span>
+	<span class="label label-tag">{!! link_to_route('entities.tag', 'Entities', [$tag->name], ['class' => 'item-title']) !!}  @if (is_array($tag->entities)){{ count($tag->entities) }}@endif</span>
+	<span class="label label-tag">{!! link_to_route('threads.tag', 'Threads', [$tag->name], ['class' => 'item-title']) !!} @if (is_array($tag->threads)){{ count($tag->threads) }}@endif</span>
 
 </li>
