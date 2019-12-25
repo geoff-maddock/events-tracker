@@ -91,12 +91,11 @@ class ThreadsController extends Controller
     /**
      * Set user session attribute.
      *
-     * @param string $attribute
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return mixed
      */
-    public function setAttribute($attribute, $value, Request $request)
+    public function setAttribute(string $attribute, $value, Request $request)
     {
         return $request->session()
             ->put($this->prefix.$attribute, $value);
@@ -788,18 +787,19 @@ class ThreadsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+     *
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      *
      * @internal param int $id
-     *
-     * @throws \Exception
      */
-    public function destroy(Thread $thread, Request $request)
+    public function destroy(Thread $thread,
+                            Request $request)
     {
         $this->authorize('update', $thread);
 
         // if not created by the user or super_admin
-        if ($thread->created_by != auth()->id() || !$this->user->hasGroup('super_admin')) {
+        if ((null !== $thread->user) && ($thread->created_by !== auth()->id()) && !$this->user->hasGroup('super_admin')) {
             if ($request->wantsJson()) {
                 return response(['status' => 'Permission Denied'], 403);
             }

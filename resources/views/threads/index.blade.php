@@ -58,7 +58,7 @@
 
 				{!! Form::open(['route' => ['threads.reset'], 'method' => 'GET']) !!}
 
-					{!! Form::submit('Reset',  ['class' =>'btn btn-primary btn-sm btn-tb', 'id' => 'primary-filter-reset']) !!}
+                {!! Form::submit('Reset',  ['class' =>'btn btn-primary btn-sm btn-tb', 'id' => 'primary-filter-reset']) !!}
 
 				{!! Form::close() !!}
 				</div>
@@ -102,4 +102,3 @@
                 });
 			</script>
 @endsection
- 
