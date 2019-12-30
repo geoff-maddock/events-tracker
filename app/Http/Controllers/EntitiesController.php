@@ -22,6 +22,9 @@ use Symfony\Component\HttpFoundation\Response;
 class EntitiesController extends Controller
 {
     protected $prefix;
+    protected $defaultRpp;
+    protected $defaultSortBy;
+    protected $defaultSortOrder;
     protected $rpp;
     protected $page;
     protected $sort;
@@ -40,46 +43,24 @@ class EntitiesController extends Controller
         $this->prefix = 'app.entities.';
 
         // default list variables
+        $this->defaultRpp = 5;
+        $this->defaultSortBy = 'name';
+        $this->defaultSortOrder = 'asc';
+
         $this->rpp = 5;
-        $this->page = 1;
-        $this->sort = ['name', 'desc'];
         $this->sortBy = 'name';
         $this->sortOrder = 'asc';
+
+        $this->page = 1;
+        $this->sort = ['name', 'desc'];
         $this->defaultCriteria = null;
         parent::__construct();
     }
 
     /**
-     * Gets the reporting options from the request and saves to session.
-     */
-    public function getReportingOptions(Request $request)
-    {
-        foreach (['page', 'rpp', 'sort', 'criteria'] as $option) {
-            if (!$request->has($option)) {
-                continue;
-            }
-            switch ($option) {
-                case 'sort':
-                    $value = [
-                        $request->input($option),
-                        $request->input('sort_order', 'asc'),
-                    ];
-                    break;
-                default:
-                    $value = $request->input($option);
-                    break;
-            }
-            call_user_func(
-                [$this, sprintf('set%s', ucwords($option))],
-                $value
-            );
-        }
-    }
-
-    /**
      * Display a listing of the resource.
      *
-     * @return Response
+     * @return Response | string
      *
      * @throws \Throwable
      */
@@ -105,6 +86,18 @@ class EntitiesController extends Controller
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter, 'filters' => $filters])
             ->with(compact('entities'))
             ->render();
+    }
+
+    /**
+     * Update the page list parameters from the request.
+     *
+     * @param $filters
+     */
+    protected function getPaging($filters): void
+    {
+        $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
+        $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
+        $this->rpp = $filters['rpp'] ?? $this->rpp;
     }
 
     /**
@@ -235,7 +228,7 @@ class EntitiesController extends Controller
     /**
      * Display a listing of entities by type.
      *
-     * @return Response
+     * @return Response | string
      *
      * @throws \Throwable
      */
@@ -260,7 +253,7 @@ class EntitiesController extends Controller
     /**
      * Display a listing of entities by role.
      *
-     * @return Response
+     * @return Response | string
      *
      * @throws \Throwable
      */
@@ -291,28 +284,39 @@ class EntitiesController extends Controller
     }
 
     /**
+     * Checks if there is a valid filter.
+     *
+     * @param $filters
+     */
+    public function hasFilter($filters): bool
+    {
+        $arr = $filters;
+        unset($arr['rpp'], $arr['sortOrder'], $arr['sortBy'], $arr['page']);
+
+        return count(array_filter($arr, function ($x) { return !empty($x); }));
+    }
+
+    /**
      * Filter the list of entities.
      *
-     * @return Response
+     * @return Response | string
      *
      * @throws \Throwable
      */
     public function filter(Request $request)
     {
+        // update filters from request
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+
         // get all the filters from the session
         $this->filters = $this->getFilters($request);
 
-        // update filters based on the request input
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->input()));
-
-        // get the merged filters
-        $this->filters = $this->getFilters($request);
-
-        // updates sort, rpp from request
+        // get  sort, sort order, rpp from session, update from request
+        $this->getPaging($this->filters);
         $this->updatePaging($request);
 
-        // flag that there are filters
-        $this->hasFilter = count($this->filters);
+        // set flag if there are filters
+        $this->hasFilter = $this->hasFilter($this->filters);
 
         // get the criteria given the request (could pass filters instead?)
         $query = $this->buildCriteria($request);
@@ -388,7 +392,7 @@ class EntitiesController extends Controller
     /**
      * Display a listing of entities by tag.
      *
-     * @return Response
+     * @return Response | string
      *
      * @throws \Throwable
      */
@@ -423,7 +427,7 @@ class EntitiesController extends Controller
     /**
      * Display a listing of entities by alias.
      *
-     * @return Response
+     * @return Response | string
      *
      * @throws \Throwable
      */

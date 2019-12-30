@@ -15,15 +15,14 @@
 		<a href="{!! URL::route('events.create') !!}" class="btn btn-primary">Add an event</a>	<a href="{!! URL::route('series.create') !!}" class="btn btn-primary">Add an event series</a>
 	</P>
 
-	<div class="row" class="tab-content filters-content">
+	<div class="row tab-content filters-content">
 
 	<!-- NAV / FILTER -->
 
-		<div id="filters-container" class="col-lg-12">
+		<div id="filters-container" class="col-lg-10">
 
 			<a href="#" id="filters" class="btn btn-primary">Filters <span id="filters-toggle" class="glyphicon @if (!$hasFilter) glyphicon-chevron-down @else glyphicon-chevron-up @endif"></span></a>
 			{!! Form::open(['route' => ['events.filter'], 'method' => 'GET']) !!}
-
 			<div id="filter-list" @if (!$hasFilter)style="display: none"@endif >
 			<!-- BEGIN: FILTERS -->
 
@@ -35,25 +34,19 @@
 				<div class="form-group col-sm-2">
 					{!! Form::label('filter_venue', 'Filter By Venue', array('width' => '100%')) !!}<br>
 					<?php $venues = [''=>''] + App\Entity::getVenues()->pluck('name','name')->all();?>
-					{!! Form::select('filter_venue', $venues, (isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL), ['data-width' => '100%','class' =>'form-control select2', 'data-placeholder' => 'Select a venue']) !!}
+					{!! Form::select('filter_venue', $venues, (isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL), ['data-theme' => 'bootstrap', 'data-width' => '100%','class' =>'form-control select2', 'data-placeholder' => 'Select a venue']) !!}
 				</div>
 
 				<div class="form-group col-sm-2">
 					{!! Form::label('filter_tag', 'Filter By Tag') !!}
 					<?php $tags =  [''=>'&nbsp;'] + App\Tag::orderBy('name','ASC')->pluck('name', 'name')->all();?>
-					{!! Form::select('filter_tag', $tags, (isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL), ['data-width' => '100%', 'class' =>'form-control select2', 'data-placeholder' => 'Select a tag']) !!}
+					{!! Form::select('filter_tag', $tags, (isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL), ['data-theme' => 'bootstrap', 'data-width' => '100%', 'class' =>'form-control select2', 'data-placeholder' => 'Select a tag']) !!}
 				</div>
 
 				<div class="form-group col-sm-2">
 					{!! Form::label('filter_related','Filter By Related') !!}
                     <?php $related = [''=>''] + App\Entity::orderBy('name','ASC')->pluck('name','name')->all();?>
-					{!! Form::select('filter_related', $related, (isset($filters['filter_related']) ? $filters['filter_related'] : NULL), ['data-width' => '100%', 'class' =>'form-control select2', 'data-placeholder' => 'Select an entity']) !!}
-				</div>
-
-				<div class="form-group col-sm-2">
-					{!! Form::label('filter_rpp','RPP') !!}
-					<?php $rpp_options =  [''=>'&nbsp;', 5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000];?>
-					{!! Form::select('filter_rpp', $rpp_options, (isset($filters['filter_rpp']) ? $filters['filter_rpp'] : NULL), ['class' =>'form-control auto-submit']) !!}
+					{!! Form::select('filter_related', $related, (isset($filters['filter_related']) ? $filters['filter_related'] : NULL), ['data-theme' => 'bootstrap', 'data-width' => '100%', 'class' =>'form-control select2', 'data-placeholder' => 'Select an entity']) !!}
 				</div>
 
 				<div class="col-sm-2">
@@ -66,6 +59,22 @@
 					</div>
 				</div>
 			</div>
+
+
+        </div>
+        <div id="list-control" >
+                <form action="{{ url()->action('EventsController@filter') }}" method="GET" class="form-inline">
+                    <div class="form-group">
+                    <?php $rpp_options =  [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000];?>
+                    <?php $sort_by_options = ['name' => 'Name']; ?>
+                    <?php $sort_order_options = ['asc' => 'asc', 'desc' => 'desc']; ?>
+                    {!! Form::select('rpp', $rpp_options, ($rpp ?? 10), ['class' =>'form-control auto-submit']) !!}
+                    {!! Form::select('sortBy', $sort_by_options, ($sortBy ?? 'name'), ['class' =>'form-control auto-submit']) !!}
+                    {!! Form::select('sortOrder', $sort_order_options, ($sortOrder ?? 'asc'), ['class' =>'form-control auto-submit']) !!}
+                    </div>
+                </form>
+        </div>
+    </div>
 
 		</div>
 		<!-- END: FILTERS -->
@@ -115,8 +124,8 @@
 		</div>
 	</div>
 	@endif
-	
-	@if (isset($future_events) && count($future_events) > 0)	
+
+	@if (isset($future_events) && count($future_events) > 0)
 	<div class="col-lg-6">
 		<div class="bs-component">
 			<div class="panel panel-info">

@@ -20,7 +20,9 @@ use App\Thread;
 use App\User;
 use App\Visibility;
 use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
@@ -31,6 +33,9 @@ class EventsController extends Controller
 {
     protected $prefix;
     protected $rpp;
+    protected $defaultRpp;
+    protected $defaultSortBy;
+    protected $defaultSortOrder;
     protected $gridRpp;
     protected $page;
     protected $sort;
@@ -51,12 +56,17 @@ class EventsController extends Controller
         $this->prefix = 'app.events.';
 
         // default list variables
+        $this->defaultRpp = 10;
+        $this->defaultSortBy = 'name';
+        $this->defaultSortOrder = 'asc';
+
+        $this->sortBy = 'name';
+        $this->sortOrder = 'asc';
         $this->rpp = 10;
         $this->gridRpp = 24;
         $this->page = 1;
         $this->sort = ['name', 'desc'];
-        $this->sortBy = 'name';
-        $this->sortOrder = 'asc';
+
         $this->defaultCriteria = null;
         $this->hasFilter = 0;
         parent::__construct();
@@ -84,50 +94,6 @@ class EventsController extends Controller
     }
 
     /**
-     * Criteria provides a way to define criteria to be applied to a tab on the index page.
-     */
-    public function getCriteria(): array
-    {
-        return $this->criteria;
-    }
-
-    /**
-     * Set criteria.
-     *
-     * @param array $input
-     *
-     * @return array
-     */
-    public function setCriteria($input)
-    {
-        $this->criteria = $input;
-
-        return $this->criteria;
-    }
-
-    /**
-     * Get the current page for this module.
-     *
-     * @return int
-     */
-    public function getPage()
-    {
-        return $this->getAttribute('page', 1);
-    }
-
-    /**
-     * Set page attribute.
-     *
-     * @param int $input
-     *
-     * @return int
-     */
-    public function setPage($input)
-    {
-        return $this->setAttribute('page', $input);
-    }
-
-    /**
      * Get user session attribute.
      *
      * @param string $attribute
@@ -135,7 +101,7 @@ class EventsController extends Controller
      *
      * @return mixed
      */
-    public function getAttribute($attribute, $default = null, Request $request)
+    public function getAttribute($attribute, Request $request, $default = null)
     {
         return $request->session()
             ->get($this->prefix.$attribute, $default);
@@ -151,49 +117,9 @@ class EventsController extends Controller
      */
     public function setAttribute($attribute, $value, Request $request)
     {
-        return $request->session()->put($this->prefix.$attribute, $value);
-    }
+        $request->session()->put($this->prefix.$attribute, $value);
 
-    /**
-     * Get the current results per page.
-     *
-     * @return int
-     */
-    public function getRpp(Request $request)
-    {
-        return $this->getAttribute('rpp', $this->rpp, $request);
-    }
-
-    /**
-     * Set results per page attribute.
-     *
-     * @param int $input
-     *
-     * @return int
-     */
-    public function setRpp($input)
-    {
-        return $this->setAttribute('rpp', 5);
-    }
-
-    /**
-     * Get the sort order and column.
-     *
-     * @return array
-     */
-    public function getSort(Request $request)
-    {
-        return $this->getAttribute('sort', $this->getDefaultSort(), $request);
-    }
-
-    /**
-     * Set sort order attribute.
-     *
-     * @return array
-     */
-    public function setSort(array $input)
-    {
-        return $this->setAttribute('sort', $input);
+        return true;
     }
 
     /**
@@ -209,20 +135,26 @@ class EventsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return View
+     * @param Request
+     *
+     * @return View|string
      *
      * @throws \Throwable
      */
     public function index(Request $request)
     {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+        // update filters from request
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
 
-        // get filters from session
+        // get all the filters from the session
         $filters = $this->getFilters($request);
 
-        // check if there are filters and pass to response
-        $this->hasFilter = count($filters);
+        // get  sort, sort order, rpp from session, update from request
+        $this->getPaging($filters);
+        $this->updatePaging($request);
+
+        // set flag if there are filters
+        $this->hasFilter = $this->hasFilter($filters);
 
         // base criteria
         $query_past = $this->buildCriteria($request); //,'start_at', 'desc' );
@@ -245,6 +177,7 @@ class EventsController extends Controller
 
                 return $query;
             });
+
         // get future events
         $future_events = $query_future
             ->with('visibility')
@@ -271,8 +204,11 @@ class EventsController extends Controller
             ->paginate($this->rpp);
 
         return view('events.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter, 'filters' => $filters,
-            //    'queryStringAppend' => $queryStringAppend
+            ->with(['rpp' => $this->rpp,
+                'sortBy' => $this->sortBy,
+                'sortOrder' => $this->sortOrder,
+                'hasFilter' => $this->hasFilter,
+                'filters' => $filters,
             ])
             ->with(compact('future_events'))
             ->with(compact('past_events'))
@@ -286,30 +222,41 @@ class EventsController extends Controller
      */
     protected function updatePaging($request)
     {
-        if (!empty($request->input('filter_sort_by'))) {
-            $this->sortBy = $request->input('filter_sort_by');
-            $this->filters['filter_sort_by'] = $this->sortBy;
+        if (!empty($request->input('sort_by'))) {
+            $this->sortBy = $request->input('sort_by');
         }
 
-        if (!empty($request->input('filter_sort_order'))) {
-            $this->sortOrder = $request->input('filter_sort_order');
-            $this->filters['filter_sort_order'] = $this->sortOrder;
+        if (!empty($request->input('sort_order'))) {
+            $this->sortOrder = $request->input('sort_order');
         }
 
-        if (!empty($request->input('filter_rpp'))) {
-            $this->rpp = $request->input('filter_rpp');
-            $this->filters['filter_rpp'] = $this->rpp;
+        if (!empty($request->input('rpp'))) {
+            $this->rpp = $request->input('rpp');
         }
+    }
+
+    /**
+     * Update the page list parameters from the request.
+     *
+     * @param $filters
+     */
+    protected function getPaging($filters)
+    {
+        $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
+        $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
+        $this->rpp = $filters['rpp'] ?? $this->rpp;
     }
 
     /**
      * Get session filters.
      *
+     * @param Request
+     *
      * @return array
      */
     public function getFilters(Request $request)
     {
-        return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
+        return $this->getAttribute('filters', $request, $this->getDefaultFilters());
     }
 
     /**
@@ -319,6 +266,7 @@ class EventsController extends Controller
      */
     public function setFilters(Request $request, array $input)
     {
+        // only set if the key starts with filter
         return $this->setAttribute('filters', $input, $request);
     }
 
@@ -473,7 +421,7 @@ class EventsController extends Controller
     /**
      * Display a listing of events from this point in time both future and past.
      *
-     * @return View
+     * @return View | string
      *
      * @throws \Throwable
      */
@@ -518,28 +466,39 @@ class EventsController extends Controller
     }
 
     /**
+     * Checks if there is a valid filter.
+     *
+     * @param $filters
+     */
+    public function hasFilter($filters): bool
+    {
+        $arr = $filters;
+        unset($arr['rpp'], $arr['sortOrder'], $arr['sortBy'], $arr['page']);
+
+        return count(array_filter($arr, function ($x) { return !empty($x); }));
+    }
+
+    /**
      * Filter the list of events.
      *
-     * @return View
+     * @return View | string
      *
      * @throws \Throwable
      */
     public function filter(Request $request)
     {
+        // update filters from request
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+
         // get all the filters from the session
         $this->filters = $this->getFilters($request);
 
-        // update filters based on the request input
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->input()));
-
-        // get the merged filters
-        $this->filters = $this->getFilters($request);
-
-        // updates sort, rpp from request
+        // get  sort, sort order, rpp from session, update from request
+        $this->getPaging($this->filters);
         $this->updatePaging($request);
 
-        // flag that there are filters
-        $this->hasFilter = count($this->filters);
+        // set flag if there are filters
+        $this->hasFilter = $this->hasFilter($this->filters);
 
         // base criteria
         $query_future = $this->event->future()->orderBy($this->sortBy, $this->sortOrder);
@@ -582,19 +541,16 @@ class EventsController extends Controller
             });
         }
 
-        // change this - should be seperate
-        if (!empty($this->filters['filter_rpp'])) {
-            $this->rpp = $this->filters['filter_rpp'];
-        }
-
         // get future events
         $future_events = $query_future->paginate($this->rpp);
+
         $future_events->filter(function ($e) {
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         // get past events
         $past_events = $query_past->paginate($this->rpp);
+
         $past_events->filter(function ($e) {
             return ($e->visibility && 'Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
@@ -865,7 +821,7 @@ class EventsController extends Controller
      *
      * @param $day
      *
-     * @return Response
+     * @return Response | string
      *
      * @throws \Throwable
      */
@@ -886,7 +842,7 @@ class EventsController extends Controller
     /**
      * Send a reminder to all users about all events they are attending.
      *
-     * @return Response
+     * @return Response | RedirectResponse
      */
     public function daily()
     {
