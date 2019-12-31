@@ -6,16 +6,13 @@
 		</div>
 		@endif
 
-		@if ($month !== $event->start_at->format('F'))
-			<?php $month = $event->start_at->format('F')?>
-		@endif
 		@if ($event->visibility->name !== 'Public')
 			<span class="text-warning">{{ $event->visibility->name }}</span><br>
 		@endif
-		<div class='event-date'>{!! $event->start_at->format('l F jS Y') !!} </div>
-	
+		<div class='event-date'>{!! $event->start_at->format('D F jS Y') !!} </div>
+
 			{!! link_to_route('events.show', $event->name, [$event->id], ['class' => 'item-title', 'alt' => $event->name, 'aria-label' => $event->name]) !!}
-	
+
 			@if ($signedIn && ($event->ownedBy($user) || $user->hasGroup('super_admin')))
 				<a href="{!! route('events.edit', ['id' => $event->id],  ['alt' => 'Edit '.$event->name, 'aria-label' => 'Edit '.$event->name]) !!}" title="Edit this event."><span class='glyphicon glyphicon-pencil'></span></a>
 			@endif
@@ -28,7 +25,7 @@
 			@if ($link = $event->primary_link)
 				<a href="{{ $link }}" title="External link for this event" target="_blank" rel="noopener"><span class='glyphicon glyphicon-link'></span></a>
 			@endif
-			
+
 			@if ($ticket = $event->ticket_link)
 				<a href="{{ $ticket }}" target="_" title="Ticket link"><span class='glyphicon glyphicon-shopping-cart'></span></a>
 			@endif

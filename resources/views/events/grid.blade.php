@@ -79,13 +79,7 @@
 						@include('events.cell', ['event' => $event])
 					@endforeach
 					</div>
-					{!! $events->appends(['sort_by' => $sortBy,
-										'rpp' => $rpp,
-										'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL,
-										'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL,
-										'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,
-										'filter_related' => isset($filters['filter_related']) ? $filters['filter_related'] : NULL,
-					])->render() !!}
+					{!! $events->render() !!}
 				</div>
 
 			</div>

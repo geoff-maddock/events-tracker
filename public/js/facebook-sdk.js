@@ -6,7 +6,7 @@ window.fbAsyncInit = function() {
       status     : true,
       cookie     : true,
       xfbml      : true,
-      version    : 'v2.12'
+      version    : 'v5.0'
     });
     FB.AppEvents.logPageView();
     console.log('fbAsyncInit complete')

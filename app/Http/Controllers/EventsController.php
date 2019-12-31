@@ -344,7 +344,7 @@ class EventsController extends Controller
     /**
      * Display a grid listing of the resource.
      *
-     * @return View
+     * @return View | string
      *
      * @throws \Throwable
      */
@@ -369,21 +369,13 @@ class EventsController extends Controller
         // get future events
         $events = $query->orderBy('created_at', 'desc')->paginate($this->rpp);
         $events->filter(function ($e) {
-            return (isset($e->visibility) && 'Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+            return (isset($e->visibility) && 'Public' === $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         return view('events.grid')
             ->with([
-                'rpp' => $this->rpp,
-                'sortBy' => $this->sortBy,
-                'sortOrder' => $this->sortOrder,
                 'hasFilter' => $this->hasFilter,
                 'filters' => $filters,
-                'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : null,  // there should be a better way to do this...
-                'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : null,
-                'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : null,
-                'filter_related' => isset($filters['filter_related']) ? $filters['filter_related'] : null,
-                'filter_rpp' => isset($filters['filter_rpp']) ? $filters['filter_rpp'] : null,
             ])
             ->with(compact('events'))
             ->render();
@@ -545,14 +537,14 @@ class EventsController extends Controller
         $future_events = $query_future->paginate($this->rpp);
 
         $future_events->filter(function ($e) {
-            return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+            return ('Public' === $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         // get past events
         $past_events = $query_past->paginate($this->rpp);
 
         $past_events->filter(function ($e) {
-            return ($e->visibility && 'Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+            return ($e->visibility && 'Public' === $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         return view('events.index')
@@ -585,12 +577,12 @@ class EventsController extends Controller
 
         $future_events = Event::future()->paginate(100000);
         $future_events->filter(function ($e) {
-            return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+            return ('Public' === $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         $past_events = Event::past()->paginate(100000);
         $past_events->filter(function ($e) {
-            return ($e->visibility && 'Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+            return ($e->visibility && 'Public' === $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         return view('events.index')
@@ -602,7 +594,7 @@ class EventsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return Response
+     * @return Response | View
      */
     public function indexFuture(Request $request)
     {
@@ -618,7 +610,7 @@ class EventsController extends Controller
 
         $future_events = Event::future()->paginate($this->rpp);
         $future_events->filter(function ($e) {
-            return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+            return ('Public' === $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         return view('events.index')
@@ -629,7 +621,7 @@ class EventsController extends Controller
     /**
      * Display a listing of today's events.
      *
-     * @return Response
+     * @return Response | View
      */
     public function indexToday(Request $request)
     {
@@ -645,7 +637,7 @@ class EventsController extends Controller
 
         $events = Event::today()->paginate($this->rpp);
         $events->filter(function ($e) {
-            return ($e->visibility && 'Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+            return ($e->visibility && 'Public' === $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         return view('events.index')
@@ -656,7 +648,7 @@ class EventsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return Response
+     * @return Response | View
      */
     public function indexPast(Request $request)
     {
@@ -672,7 +664,7 @@ class EventsController extends Controller
 
         $past_events = Event::past()->paginate($this->rpp);
         $past_events->filter(function ($e) {
-            return ($e->visibility && 'Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+            return ($e->visibility && 'Public' === $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         return view('events.index')
@@ -683,7 +675,7 @@ class EventsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return Response
+     * @return Response | View
      */
     public function indexAttending(Request $request)
     {
@@ -705,7 +697,7 @@ class EventsController extends Controller
         $events = $this->user->getAttending()->paginate($this->rpp);
 
         $events->filter(function ($e) {
-            return ($e->visibility && 'Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+            return ($e->visibility && 'Public' === $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         return view('events.index')
@@ -716,7 +708,7 @@ class EventsController extends Controller
     /**
      * Display a simple text feed of future events.
      *
-     * @return Response
+     * @return Response | View
      */
     public function feed()
     {
@@ -725,7 +717,7 @@ class EventsController extends Controller
 
         $events = Event::future()->simplePaginate($this->rpp);
         $events->filter(function ($e) {
-            return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+            return ('Public' === $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         return view('events.feed', compact('events'));
@@ -734,7 +726,7 @@ class EventsController extends Controller
     /**
      * Display a simple text feed of future events by tag.
      *
-     * @return Response
+     * @return Response | View
      */
     public function feedTags($tag)
     {
@@ -743,7 +735,7 @@ class EventsController extends Controller
 
         $events = Event::getByTag(ucfirst($tag))->future()->simplePaginate($this->rpp);
         $events->filter(function ($e) {
-            return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+            return ('Public' === $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         return view('events.feed', compact('events'));
@@ -752,7 +744,7 @@ class EventsController extends Controller
     /**
      * Reset the filtering of entities.
      *
-     * @return Response
+     * @return RedirectResponse | View
      */
     public function reset(Request $request)
     {
@@ -772,13 +764,13 @@ class EventsController extends Controller
         // get future events
         $future_events = $query_future->paginate($this->rpp);
         $future_events->filter(function ($e) {
-            return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+            return ('Public' === $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         // get past events
         $past_events = $query_past->paginate($this->rpp);
         $past_events->filter(function ($e) {
-            return ($e->visibility && 'Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+            return ($e->visibility && 'Public' === $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         if ($redirect = $request->input('redirect')) {
@@ -793,9 +785,9 @@ class EventsController extends Controller
      *
      * @param $id
      *
-     * @return Response
+     * @return Response | RedirectResponse
      */
-    public function remind($id)
+    public function remind($id, Mail $mail)
     {
         if (!$event = Event::find($id)) {
             flash()->error('Error', 'No such event');
@@ -807,7 +799,7 @@ class EventsController extends Controller
         foreach ($event->eventResponses as $response) {
             $user = User::findOrFail($response->user_id);
 
-            Mail::send('emails.reminder', ['user' => $user, 'event' => $event], function ($m) use ($user, $event) {
+            $mail->send('emails.reminder', ['user' => $user, 'event' => $event], static function ($m) use ($user, $event) {
                 $m->from('admin@events.cutupsmethod.com', 'Event Repo');
 
                 $m->to($user->email, $user->name)->subject('Event Repo: '.$event->start_at->format('D F jS').' '.$event->name.' REMINDER');
