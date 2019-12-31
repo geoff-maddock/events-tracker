@@ -35,17 +35,16 @@
                 </div>
 
                 <div class="form-group col-sm-2">
-
-                {!! Form::label('filter_role','Filter By Role',  array('width' => '100%')) !!}<br>
-                <?php $roles = [''=>'&nbsp;'] + App\Role::orderBy('name', 'ASC')->pluck('name', 'name')->all();?>
-                {!! Form::select('filter_role', $roles, (isset($filters['filter_role']) ? $filters['filter_role'] : NULL), ['data-theme' => 'bootstrap', 'data-style' => '100%', 'data-width' => '100%', 'class' =>'form-control select2', 'data-placeholder' => 'Select a role']) !!}
+                    {!! Form::label('filter_role','Filter By Role',  array('width' => '100%')) !!}<br>
+                    <?php $roles = [''=>'&nbsp;'] + App\Role::orderBy('name', 'ASC')->pluck('name', 'name')->all();?>
+                    {!! Form::select('filter_role', $roles, (isset($filters['filter_role']) ? $filters['filter_role'] : NULL), ['data-theme' => 'bootstrap', 'data-style' => '100%', 'data-width' => '100%', 'class' =>'form-control select2', 'data-placeholder' => 'Select a role']) !!}
                 </div>
 
                 <div class="form-group col-sm-2">
-                {!! Form::label('filter_tag','Filter By Tag',  array('width' => '100%')) !!}
-                <?php $tags =  [''=>'&nbsp;'] + App\Tag::orderBy('name','ASC')->pluck('name', 'name')->all();?>
-                {!! Form::select('filter_tag', $tags, (isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL), ['data-theme' => 'bootstrap', 'class' =>'form-control select2', 'data-width' => '100%', 'data-placeholder' => 'Select a tag']) !!}
-                </div>
+                    {!! Form::label('filter_tag','Filter By Tag',  array('width' => '100%')) !!}
+                    <?php $tags =  [''=>'&nbsp;'] + App\Tag::orderBy('name','ASC')->pluck('name', 'name')->all();?>
+                    {!! Form::select('filter_tag', $tags, (isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL), ['data-theme' => 'bootstrap', 'class' =>'form-control select2', 'data-width' => '100%', 'data-placeholder' => 'Select a tag']) !!}
+                    </div>
 
                 <div class="col-sm-2">
                     <div class="btn-group col-sm-1">
@@ -57,6 +56,7 @@
                         {!! Form::close() !!}
                     </div>
                 </div>
+
             </div>
 		</div>
 

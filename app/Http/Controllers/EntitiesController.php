@@ -66,15 +66,18 @@ class EntitiesController extends Controller
      */
     public function index(Request $request)
     {
-        // get all active entites plus those created by the logged in user, ordered by type and name
+        // update filters from request
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
 
-        // updates sort, rpp from request
-        $this->updatePaging($request);
-
-        // get filters from session
+        // get all the filters from the session
         $filters = $this->getFilters($request);
 
-        $hasFilter = \count($filters);
+        // get  sort, sort order, rpp from session, update from request
+        $this->getPaging($this->filters);
+        $this->updatePaging($request);
+
+        // set flag if there are filters
+        $hasFilter = $this->hasFilter($filters);
 
         // base criteria
         $query = $this->buildCriteria($request);
@@ -357,7 +360,7 @@ class EntitiesController extends Controller
      */
     protected function setAttribute($attribute, $value, Request $request)
     {
-        return $request->session()->put($this->prefix.$attribute, $value);
+        $request->session()->put($this->prefix.$attribute, $value);
     }
 
     /**
@@ -458,7 +461,7 @@ class EntitiesController extends Controller
     /**
      * Display an entity when passed the slug.
      *
-     * @return Response
+     * @return Response | string
      *
      * @throws \Throwable
      */
@@ -477,7 +480,7 @@ class EntitiesController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return Response
+     * @return Response | string
      */
     public function create()
     {
@@ -562,7 +565,7 @@ class EntitiesController extends Controller
     /**
      * Display the specified resource.
      *
-     * @return Response
+     * @return Response | string
      *
      * @internal param int $id
      */
@@ -576,7 +579,7 @@ class EntitiesController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @return Response
+     * @return Response | string
      *
      * @internal param int $id
      */
@@ -731,7 +734,7 @@ class EntitiesController extends Controller
     /**
      * Mark user as following the entity.
      *
-     * @return Response
+     * @return Response | array
      *
      * @throws \Throwable
      */
@@ -780,7 +783,7 @@ class EntitiesController extends Controller
      *
      * @param $id
      *
-     * @return Response
+     * @return Response | array
      *
      * @throws \Throwable
      */
@@ -821,71 +824,6 @@ class EntitiesController extends Controller
     }
 
     /**
-     * Get the current page for this module.
-     *
-     * @return int
-     */
-    protected function getPage()
-    {
-        return $this->getAttribute('page', 1);
-    }
-
-    /**
-     * Set page attribute.
-     *
-     * @param int $input
-     *
-     * @return int
-     */
-    protected function setPage($input)
-    {
-        return $this->setAttribute('page', $input);
-    }
-
-    /**
-     * Get the current results per page.
-     *
-     * @return int
-     */
-    protected function getRpp(Request $request)
-    {
-        //$rpp = $request->session()->get('filters', $this->rpp);
-        return $this->getAttribute('rpp', $this->rpp);
-    }
-
-    /**
-     * Set results per page attribute.
-     *
-     * @param int $input
-     *
-     * @return int
-     */
-    protected function setRpp($input)
-    {
-        return $this->setAttribute('rpp', 5);
-    }
-
-    /**
-     * Get the sort order and column.
-     *
-     * @return array
-     */
-    protected function getSort(Request $request)
-    {
-        return $this->getAttribute('sort', $this->getDefaultSort());
-    }
-
-    /**
-     * Set sort order attribute.
-     *
-     * @return array
-     */
-    protected function setSort(array $input)
-    {
-        return $this->setAttribute('sort', $input);
-    }
-
-    /**
      * Get the default sort array.
      *
      * @return array
@@ -893,19 +831,5 @@ class EntitiesController extends Controller
     protected function getDefaultSort()
     {
         return ['id', 'desc'];
-    }
-
-    /**
-     * Set criteria.
-     *
-     * @param array $input
-     *
-     * @return array
-     */
-    protected function setCriteria($input)
-    {
-        $this->criteria = $input;
-
-        return $this->criteria;
     }
 }

@@ -20,6 +20,9 @@ use Log;
 class ActivityController extends Controller
 {
     protected $prefix;
+    protected $defaultRpp;
+    protected $defaultSortBy;
+    protected $defaultSortOrder;
     protected $childRpp;
     protected $rpp;
     protected $page;
@@ -40,6 +43,9 @@ class ActivityController extends Controller
         $this->prefix = 'app.activities.';
 
         // default list variables
+        $this->defaultRpp = 100;
+        $this->defaultSortBy = 'name';
+        $this->defaultSortOrder = 'asc';
         $this->rpp = 100;
         $this->childRpp = 10;
         $this->page = 1;
