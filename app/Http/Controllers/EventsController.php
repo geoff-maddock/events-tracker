@@ -689,15 +689,18 @@ class EventsController extends Controller
     {
         $this->middleware('auth');
 
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+        // update filters from request
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
 
-        // get filters from session
+        // get all the filters from the session
         $filters = $this->getFilters($request);
 
-        $this->hasFilter = count($filters);
+        // get  sort, sort order, rpp from session, update from request
+        $this->getPaging($filters);
+        $this->updatePaging($request);
 
-        $this->rpp = 10;
+        // set flag if there are filters
+        $this->hasFilter = $this->hasFilter($filters);
 
         $events = $this->user->getAttending()->paginate($this->rpp);
 
@@ -1773,7 +1776,7 @@ class EventsController extends Controller
      *
      * @param $id
      *
-     * @return Response
+     * @return Response | string | array
      *
      * @throws \Throwable
      */

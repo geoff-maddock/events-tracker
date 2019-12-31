@@ -4,27 +4,22 @@
 
 @section('content')
 
-	<h4>Events
-		@include('events.crumbs')
-	</h4>
+	<h4>Events @include('events.crumbs')</h4>
 
-	<P>
+	<div id="action-menu" style="margin-bottom: 5px;">
 		<a href="{!! URL::route('events.index') !!}" class="btn btn-info">Show event index</a>
 		<a href="{!! URL::route('calendar') !!}" class="btn btn-info">Show calendar</a>
 		<a href="{!! URL::route('events.week') !!}" class="btn btn-info">Show week's events</a>
 		<a href="{!! URL::route('events.create') !!}" class="btn btn-primary">Add an event</a>	<a href="{!! URL::route('series.create') !!}" class="btn btn-primary">Add an event series</a>
-	</P>
+	</div>
 
-	<div class="row tab-content filters-content">
-
-	<!-- NAV / FILTER -->
-
-		<div id="filters-container" class="col-lg-10">
+	<div id="filters-container" class="row">
+		<div id="filters-content" class="col-lg-9">
 
 			<a href="#" id="filters" class="btn btn-primary">Filters <span id="filters-toggle" class="glyphicon @if (!$hasFilter) glyphicon-chevron-down @else glyphicon-chevron-up @endif"></span></a>
 			{!! Form::open(['route' => ['events.filter'], 'method' => 'GET']) !!}
-			<div id="filter-list" @if (!$hasFilter)style="display: none"@endif >
-			<!-- BEGIN: FILTERS -->
+
+			<div id="filter-list" @if (!$hasFilter)style="display: none"@endif class="row">
 
 				<div class="form-group col-sm-3">
 					{!! Form::label('filter_name','Filter By Name') !!}
@@ -51,6 +46,7 @@
 
 				<div class="col-sm-2">
 					<div class="btn-group col-sm-1">
+                        <label></label>
 						{!! Form::submit('Filter',  ['class' =>'btn btn-primary btn-sm btn-tb', 'id' => 'primary-filter-submit']) !!}
 						{!! Form::close() !!}
 						{!! Form::open(['route' => ['events.reset'], 'method' => 'GET']) !!}
@@ -59,11 +55,9 @@
 					</div>
 				</div>
 			</div>
-
-
         </div>
-        <div id="list-control" >
-                <form action="{{ url()->action('EventsController@filter') }}" method="GET" class="form-inline">
+        <div id="list-control" class="col-lg-3 visible-lg-block visible-md-block text-right">
+                <form action="{{ url()->current() }}" method="GET" class="form-inline">
                     <div class="form-group">
                     <?php $rpp_options =  [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000];?>
                     <?php $sort_by_options = ['name' => 'Name']; ?>
@@ -76,17 +70,12 @@
         </div>
     </div>
 
-		</div>
-		<!-- END: FILTERS -->
-	</div>
-
-
 	<br style="clear: left;"/>
 
-	<div class="row">
+	<div id="list-container" class="row">
 
 	@if (isset($events) && count($events) > 0)
-	<div class="col-lg-6">
+	<div id="all-events-list" class="col-lg-6">
 		<div class="bs-component">
 			<div class="panel panel-info">
 
@@ -106,7 +95,7 @@
 	@endif
 
 	@if (isset($past_events) && count($past_events) > 0)
-	<div class="col-lg-6">
+	<div id="past-events-list" class="col-lg-6">
 		<div class="bs-component">
 			<div class="panel panel-info">
 
@@ -126,7 +115,7 @@
 	@endif
 
 	@if (isset($future_events) && count($future_events) > 0)
-	<div class="col-lg-6">
+	<div id="future-events-list" class="col-lg-6">
 		<div class="bs-component">
 			<div class="panel panel-info">
 
@@ -135,19 +124,9 @@
 				</div>
 
 				<div class="panel-body">
-					{!! $future_events->appends(['sort_by' => $sortBy,
-                    'rpp' => $rpp,
-                    'filter_venue' => isset($filter_venue) ? $filter_venue : NULL,
-                    'filter_tag' => isset($filter_tag) ? $filter_tag : NULL,
-                    'filter_name' => isset($filter_name) ? $filter_name : NULL,
-					])->render() !!}
-				@include('events.list', ['events' => $future_events])
-					{!! $future_events->appends(['sort_by' => $sortBy,
-                    'rpp' => $rpp,
-                    'filter_venue' => isset($filter_venue) ? $filter_venue : NULL,
-                    'filter_tag' => isset($filter_tag) ? $filter_tag : NULL,
-                    'filter_name' => isset($filter_name) ? $filter_name : NULL,
-					])->render() !!}
+                    {!! $future_events->render() !!}
+                    @include('events.list', ['events' => $future_events])
+                    {!! $future_events->render() !!}
 				</div>
 
 			</div>

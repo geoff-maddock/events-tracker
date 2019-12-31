@@ -52,8 +52,8 @@
 			</form>
 		</div>
 
-		<div class="row">
-			<div class="col-md-12">
+		<div id="app-content" class="row">
+			<div id="app-content-columns" class="col-md-12">
 				@yield('content')
 			</div>
 		</div>
@@ -68,12 +68,6 @@
     <script src="{{ asset('/js/jquery.ba-throttle-debounce.min.js') }}"></script>
 	<script src="{{ asset('/js/auto-submit.js') }}"></script>
 	<script src="{{ asset('/js/custom.js') }}"></script>
-
-	{{--<script src="{{ asset('/js/sweetalert.js') }}"></script>--}}
-	{{--<link rel="stylesheet" href="sweetalert2/dist/sweetalert2.css">--}}
-
-
-	{{--<script src="sweetalert2/dist/sweetalert2.all.min.js"></script>--}}
 
 	@yield('scripts.footer')
 	@yield('footer')
