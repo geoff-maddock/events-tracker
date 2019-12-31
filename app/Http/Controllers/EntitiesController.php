@@ -357,8 +357,7 @@ class EntitiesController extends Controller
      */
     protected function setAttribute($attribute, $value, Request $request)
     {
-        return $request->session()
-            ->put($this->prefix.$attribute, $value);
+        return $request->session()->put($this->prefix.$attribute, $value);
     }
 
     /**

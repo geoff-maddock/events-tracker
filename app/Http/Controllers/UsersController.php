@@ -24,6 +24,9 @@ class UsersController extends Controller
     protected $prefix;
     protected $rpp;
     protected $page;
+    protected $defaultRpp;
+    protected $defaultSortBy;
+    protected $defaultSortOrder;
     protected $sort;
     protected $sortBy;
     protected $sortOrder;
@@ -45,6 +48,10 @@ class UsersController extends Controller
         $this->sort = ['name', 'asc'];
         $this->sortBy = 'name';
         $this->sortOrder = 'asc';
+        // default list variables
+        $this->defaultRpp = 25;
+        $this->defaultSortBy = 'name';
+        $this->defaultSortOrder = 'asc';
         $this->defaultCriteria = null;
         $this->hasFilter = 0;
 
@@ -77,17 +84,17 @@ class UsersController extends Controller
      * @param string $attribute
      * @param mixed  $value
      *
-     * @return mixed
+     * @return void
      */
     public function setAttribute($attribute, $value, Request $request)
     {
-        return $request->session()->put($this->prefix.$attribute, $value);
+        $request->session()->put($this->prefix.$attribute, $value);
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @return Response
+     * @return Response | string
      */
     public function index(Request $request)
     {
@@ -116,28 +123,39 @@ class UsersController extends Controller
     }
 
     /**
+     * Checks if there is a valid filter.
+     *
+     * @param $filters
+     */
+    public function hasFilter($filters): bool
+    {
+        $arr = $filters;
+        unset($arr['rpp'], $arr['sortOrder'], $arr['sortBy'], $arr['page']);
+
+        return count(array_filter($arr, function ($x) { return !empty($x); }));
+    }
+
+    /**
      * Filter the list of users.
      *
-     * @return Response
+     * @return Response | string
      *
      * @throws \Throwable
      */
     public function filter(Request $request)
     {
+        // update filters from request
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+
         // get all the filters from the session
         $this->filters = $this->getFilters($request);
 
-        // update filters based on the request input
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->input()));
-
-        // get the merged filters
-        $this->filters = $this->getFilters($request);
-
-        // updates sort, rpp from request
+        // get  sort, sort order, rpp from session, update from request
+        $this->getPaging($this->filters);
         $this->updatePaging($request);
 
-        // flag that there are filters
-        $this->hasFilter = count($this->filters);
+        // set flag if there are filters
+        $this->hasFilter = $this->hasFilter($this->filters);
 
         // get the criteria given the request (could pass filters instead?)
         $query = $this->buildCriteria($request);
@@ -770,5 +788,17 @@ class UsersController extends Controller
         }
 
         return back();
+    }
+
+    /**
+     * Update the page list parameters from the request.
+     *
+     * @param $filters
+     */
+    protected function getPaging($filters): void
+    {
+        $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
+        $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
+        $this->rpp = $filters['rpp'] ?? $this->rpp;
     }
 }

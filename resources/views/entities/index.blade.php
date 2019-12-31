@@ -29,10 +29,9 @@
 
                 <!-- BEGIN: FILTERS -->
                 <div class="form-group col-sm-2">
+                    {!! Form::label('filter_name','Filter By Name') !!}
 
-                {!! Form::label('filter_name','Filter By Name') !!}
-
-                {!! Form::text('filter_name', (isset($filters['filter_name']) ? $filters['filter_name'] : NULL), ['class' =>'form-control']) !!}
+                    {!! Form::text('filter_name', (isset($filters['filter_name']) ? $filters['filter_name'] : NULL), ['class' =>'form-control']) !!}
                 </div>
 
                 <div class="form-group col-sm-2">
@@ -73,13 +72,13 @@
                 </div>
             </form>
         </div>
-		<!-- END: FILTERS -->
+
 	</div>
 
 	<br style="clear: left;"/>
 
     <div id="list-container" class="row">
-        <div class='col-md-12 col-lg-6'>
+        <div class="col-md-12 col-lg-6">
 
         @if (!$entities->isEmpty())
             {!! $entities->render() !!}
