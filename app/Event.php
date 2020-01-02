@@ -5,10 +5,10 @@ namespace App;
 use App\Filters\QueryFilter;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
  * @property int id
@@ -21,20 +21,19 @@ class Event extends Eloquent
 {
     use Notifiable;
 
-
     public static function boot()
     {
         parent::boot();
 
         static::creating(function ($event) {
             $user = Auth::user();
-            $event->created_by = $user ? $user->id : NULL;
-            $event->updated_by = $user ? $user->id : NULL;
+            $event->created_by = $user ? $user->id : null;
+            $event->updated_by = $user ? $user->id : null;
         });
 
         static::updating(function ($event) {
             $user = Auth::user();
-            $event->updated_by = $user ? $user->id : NULL;
+            $event->updated_by = $user ? $user->id : null;
         });
     }
 
@@ -76,13 +75,10 @@ class Event extends Eloquent
 
     protected $dates = ['soundcheck_at', 'door_at', 'start_at', 'end_at', 'cancelled_at'];
 
-
     /**
      * @param $query
-     * @param QueryFilter $filters
-     * @return Builder
      */
-    public function scopeFilter($query, QueryFilter $filters):Builder
+    public function scopeFilter($query, QueryFilter $filters): Builder
     {
         return $filters->apply($query);
     }
@@ -158,7 +154,7 @@ class Event extends Eloquent
     }
 
     /**
-     * Set the door_price attribute
+     * Set the door_price attribute.
      *
      * @param $price
      */
@@ -172,30 +168,60 @@ class Event extends Eloquent
     }
 
     /**
-     * @param Builder $query
-     * @return Builder
+     * Set the promoter attribute.
+     *
+     * @param $value
      */
-    public function scopeToday(Builder $query):Builder
+    public function setPromoterIdAttribute($value): void
+    {
+        if (!empty($value)) {
+            $this->attributes['promoter_id'] = $value;
+        } else {
+            $this->attributes['promoter_id'] = null;
+        }
+    }
+
+    /**
+     * Set the series attribute.
+     *
+     * @param $value
+     */
+    public function setSeriesIdAttribute($value): void
+    {
+        if (!empty($value)) {
+            $this->attributes['series_id'] = $value;
+        } else {
+            $this->attributes['series_id'] = null;
+        }
+    }
+
+    /**
+     * Set the venue attribute.
+     *
+     * @param $value
+     */
+    public function setVenueIdAttribute($value): void
+    {
+        if (!empty($value)) {
+            $this->attributes['venue_id'] = $value;
+        } else {
+            $this->attributes['venue_id'] = null;
+        }
+    }
+
+    public function scopeToday(Builder $query): Builder
     {
         return $query->whereDate('start_at', '=', Carbon::today()->toDateString())
             ->orderBy('start_at', 'asc');
     }
 
-    /**
-     * @param Builder $query
-     * @return Builder
-     */
-    public function scopeFuture(Builder $query):Builder
+    public function scopeFuture(Builder $query): Builder
     {
         return $query->where('start_at', '>=', Carbon::today()->startOfDay())
             ->orderBy('start_at', 'asc');
     }
 
-    /**
-     * @param Builder $query
-     * @return Builder
-     */
-    public function scopePast(Builder $query):Builder
+    public function scopePast(Builder $query): Builder
     {
         return $query->where('start_at', '<', Carbon::today()->startOfDay())
             ->orderBy('start_at', 'desc');
@@ -203,8 +229,9 @@ class Event extends Eloquent
 
     /**
      * Returns visible events.
+     *
      * @param Builder $query
-     * @param User $user
+     * @param User    $user
      */
     public function scopeVisible($query, $user)
     {
@@ -215,6 +242,7 @@ class Event extends Eloquent
 
     /**
      * Returns visible events.
+     *
      * @param Builder $query
      * @param $date
      */
@@ -277,10 +305,8 @@ class Event extends Eloquent
      * @ param User $user
      *
      * @ return boolean
-     * @param User $user
-     * @return bool
      */
-    public function ownedBy(User $user):bool
+    public function ownedBy(User $user): bool
     {
         return $this->created_by === $user->id;
     }
@@ -436,8 +462,8 @@ class Event extends Eloquent
      * Return a collection of events with the passed tag.
      *
      * @param $tag
-     * @return Collection $events
      *
+     * @return Collection $events
      */
     public static function getByTag($tag)
     {
@@ -453,8 +479,8 @@ class Event extends Eloquent
      * Return a collection of events with the passed venue.
      *
      * @param $slug
-     * @return Collection $events
      *
+     * @return Collection $events
      */
     public static function getByVenue($slug)
     {
@@ -470,8 +496,8 @@ class Event extends Eloquent
      * Return a collection of events with the passed event type.
      *
      * @param $slug
-     * @return Collection $events
      *
+     * @return Collection $events
      */
     public static function getByType($slug)
     {
@@ -487,8 +513,8 @@ class Event extends Eloquent
      * Return a collection of events with the passed series.
      *
      * @param $slug
-     * @return Collection $events
      *
+     * @return Collection $events
      */
     public static function getBySeries($slug)
     {
@@ -504,8 +530,8 @@ class Event extends Eloquent
      * Return a collection of events with the passed entity.
      *
      * @param $slug
-     * @return Collection $events
      *
+     * @return Collection $events
      */
     public static function getByEntity($slug)
     {
@@ -586,8 +612,8 @@ class Event extends Eloquent
      * Return a collection of events that begin on the passed date.
      *
      * @param $date
-     * @return Collection $events
      *
+     * @return Collection $events
      */
     public static function getByStartAt($date)
     {
@@ -604,9 +630,6 @@ class Event extends Eloquent
         return $events;
     }
 
-    /**
-     * @param Photo $photo
-     */
     public function addPhoto(Photo $photo)
     {
         return $this->photos()->attach($photo->id);
@@ -634,11 +657,11 @@ class Event extends Eloquent
     {
         // gets the first photo related to this event
         return $this->photos()->where('photos.is_primary', '=', '1')->first();
-
     }
 
     /**
      * Create the slug from the name if none was passed.
+     *
      * @param $value
      */
     public function setSlugAttribute($value)

@@ -44,7 +44,7 @@
 
 	<p>
         @if ($series->eventType)
-        {{ $series->eventType ? $series->eventType->name : ''}} at {{ $series->venue->name or 'No venue specified' }}</p>
+        {{ $series->eventType ? $series->eventType->name : ''}} at {{ $series->venue ? $series->venue->name : 'No venue specified' }}</p>
         @endif
 
 	@if ($signedIn)

@@ -115,7 +115,7 @@
 
 	<div class="form-group col-md-2 {{$errors->has('length') ? 'has-error' : '' }}">
 	{!! Form::label('length','Length (hours):') !!}
-	{!! Form::text('length', '', ['class' =>'form-control']) !!}
+	{!! Form::text('length', null, ['class' =>'form-control']) !!}
 	{!! $errors->first('length','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
