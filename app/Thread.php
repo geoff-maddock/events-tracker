@@ -2,8 +2,10 @@
 
 namespace App;
 
+use App\Filters\QueryFilter;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class Thread extends Eloquent
@@ -34,17 +36,17 @@ class Thread extends Eloquent
      *
      **/
     protected $fillable = [
-    'name',
-    'slug',
-    'description',
-    'body',
-    'thread_category_id',
-    'visibility_id',
-    'forum_id',
-    'views',
-    'event_id',
-    'locked_at',
-    'locked_by',
+        'name',
+        'description',
+        'slug',
+        'body',
+        'thread_category_id',
+        'visibility_id',
+        'forum_id',
+        'views',
+        'event_id',
+        'locked_at',
+        'locked_by',
     ];
 
     //protected $guarded = [];
@@ -106,9 +108,9 @@ class Thread extends Eloquent
 
         if (isset($post)) {
             return $post->created_at;
-        } else {
-            return $this->created_at;
         }
+
+        return $this->created_at;
     }
 
     /**
@@ -359,6 +361,59 @@ class Thread extends Eloquent
     }
 
     /**
+     * Set the event attribute.
+     *
+     * @param $value
+     */
+    public function setEventIdAttribute($value): void
+    {
+        if (!empty($value)) {
+            $this->attributes['event_id'] = $value;
+        } else {
+            $this->attributes['event_id'] = null;
+        }
+    }
+
+    /**
+     * Create the slug from the name if none was passed.
+     */
+    public function setSlugAttribute($value)
+    {
+        // grab the name and slugify it
+        if (!empty($value)) {
+            $this->attributes['slug'] = $value;
+        } else {
+            $this->attributes['slug'] = str_slug($this->name);
+        }
+    }
+
+    /**
+     * Set the name and some other side effects.
+     */
+    public function setNameAttribute($value)
+    {
+        // grab the name and slugify it
+        if (!empty($value)) {
+            $this->attributes['name'] = $value;
+            $this->attributes['slug'] = str_slug($value);
+        } else {
+            // do nothing?
+        }
+    }
+
+    /**
+     * Set the thread category.
+     */
+    public function setThreadCategoryIdAttribute($value)
+    {
+        if (!empty($value)) {
+            $this->attributes['thread_category_id'] = $value;
+        } else {
+            $this->attributes['thread_category_id'] = null;
+        }
+    }
+
+    /**
      * Return a collection of threads with the passed tag.
      *
      * @return Collection $threads
@@ -367,11 +422,9 @@ class Thread extends Eloquent
     public static function getByTag($tag)
     {
         // get a list of threads that have the passed tag
-        $threads = self::whereHas('tags', function ($q) use ($tag) {
+        return self::whereHas('tags', function ($q) use ($tag) {
             $q->where('name', '=', ucfirst($tag));
         });
-
-        return $threads;
     }
 
     /**
@@ -383,11 +436,9 @@ class Thread extends Eloquent
     public static function getBySeries($tag)
     {
         // get a list of threads that have the passed series
-        $threads = self::whereHas('series', function ($q) use ($tag) {
+        return  self::whereHas('series', function ($q) use ($tag) {
             $q->where('slug', '=', ucfirst($tag));
         });
-
-        return $threads;
     }
 
     /**
@@ -399,11 +450,9 @@ class Thread extends Eloquent
     public static function getByCategory($slug)
     {
         // get a list of threads that have the passed category
-        $threads = self::whereHas('threadCategory', function ($q) use ($slug) {
+        return self::whereHas('threadCategory', function ($q) use ($slug) {
             $q->where('name', '=', $slug);
         })->orderBy('name', 'ASC');
-
-        return $threads;
     }
 
     /**
@@ -415,11 +464,9 @@ class Thread extends Eloquent
     public static function getByEntity($slug)
     {
         // get a list of threads that have the passed entity
-        $threads = self::whereHas('entities', function ($q) use ($slug) {
+        return self::whereHas('entities', function ($q) use ($slug) {
             $q->where('slug', '=', $slug);
         });
-
-        return $threads;
     }
 
     public function addPhoto(Photo $photo)
@@ -436,9 +483,7 @@ class Thread extends Eloquent
     public function getFlyer()
     {
         // get a list of threads that start on the passed date
-        $flyer = $this->photos()->first();
-
-        return $flyer;
+        return $this->photos()->first();
     }
 
     /**
@@ -450,21 +495,6 @@ class Thread extends Eloquent
     public function getPrimaryPhoto()
     {
         // gets the first photo related to this thread
-        $primary = $this->photos()->where('photos.is_primary', '=', '1')->first();
-
-        return $primary;
-    }
-
-    /**
-     * Create the slug from the name if none was passed.
-     */
-    public function setSlugAttribute($value)
-    {
-        // grab the name and slugify it
-        if ('' == $value) {
-            $this->attributes['slug'] = str_slug($this->name);
-        } else {
-            $this->attributes['slug'] = $value;
-        }
+        return $this->photos()->where('photos.is_primary', '=', '1')->first();
     }
 }

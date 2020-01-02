@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\View;
 use Symfony\Component\HttpFoundation\Response;
 
 class PostsController extends Controller
@@ -36,7 +37,7 @@ class PostsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response | View | string
      */
     public function index(): Response
     {
@@ -58,7 +59,7 @@ class PostsController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response | View | string
      */
     public function create()
     {
@@ -74,14 +75,14 @@ class PostsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      *
      * @internal param Request $request
      */
     public function store(Thread $thread)
     {
         // TODO change this to use the trust_post permission to allow html
-        if (auth()->id() == config('app.superuser')) {
+        if (auth()->id() === config('app.superuser')) {
             $allow_html = 1;
         } else {
             $allow_html = 0;
@@ -101,8 +102,6 @@ class PostsController extends Controller
 
         // add to activity log
         Activity::log($post, $this->user, 1);
-
-        //dd('getting to end of store before back');
 
         return back();
     }

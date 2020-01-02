@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -338,7 +339,7 @@ class ThreadsController extends Controller
     /**
      * Reset the filtering of entities.
      *
-     * @return Response
+     * @return Response | string
      *
      * @throws \Throwable
      */
