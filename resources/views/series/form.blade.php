@@ -42,13 +42,13 @@
 
 	<div class="form-group col-md-2 {{$errors->has('occurrence_type_id') ? 'has-error' : '' }}">
 	{!! Form::label('occurrence_type_id','Occurrence type:') !!}
-	{!! Form::select('occurrence_type_id', $occurrenceTypes, (isset($series->occurrence_type_id) ? $series->occurrence_type_id : NULL), ['class' =>'form-control']) !!}
+	{!! Form::select('occurrence_type_id', $occurrenceTypes, (isset($series->occurrence_type_id) ? $series->occurrence_type : NULL), ['class' =>'form-control']) !!}
 	{!! $errors->first('occurrence_type_id','<span class="help-block">:message</span>') !!}
 	</div>
 
 	<div class="form-group col-md-2">
 	{!! Form::label('occurrence_week_id','Occurrence Week') !!}
-	{!! Form::select('occurrence_week_id', $weeks, (isset($series->occurrence_week_id) ? $series->occurrence_week_id : NULL), ['class' =>'form-control']) !!}
+	{!! Form::select('occurrence_week_id', $weeks, (isset($series->occurrence_week_id) ? $series->occurrence_week : NULL), ['class' =>'form-control']) !!}
 	{!! $errors->first('occurrence_week_id','<span class="help-block">:message</span>') !!}
 	</div>
 
@@ -196,7 +196,7 @@
 
 
 <div class="form-group">
- 
+
 @if (isset($eventLinkId))
 	{!! Form::hidden('eventLinkId', $eventLinkId) !!}
 @endif

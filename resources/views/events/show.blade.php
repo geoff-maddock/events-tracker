@@ -61,7 +61,7 @@
 	@if ($event->door_price)
 	${{ number_format($event->door_price,0) }}
 	@endif
- 	
+
  	@if ($event->min_age)
 	{{ is_int($event->min_age) ? $event->min_age.'+' :  $event->min_age  }}
 	@endif
@@ -108,11 +108,11 @@
 
  	<br><br>
 
-	<p> 
+	<p>
 	@if ($event->description)
 	<event class="body">
 		{!! nl2br($event->description) !!}
-	</event> 
+	</event>
 	@endif
 
 	<br>
@@ -143,7 +143,7 @@
 	</div>
 
 	<div class="col-md-6">
-		@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )	
+		@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )
 		<form action="/events/{{ $event->id }}/photos" class="dropzone" id="myDropzone" method="POST">
 			<input type="hidden" name="_token" value="{{ csrf_token() }}">
 		</form>
@@ -214,47 +214,14 @@
 	@endif
 
 </div>
-<!-- MAY DEPRECATE COMMENTS -->
-{{--<div class="row">--}}
-	{{--<div class="col-md-4">--}}
-
-		{{--@if ($comments = $event->comments())--}}
-		{{--<b>Comments:</b><br>--}}
-		{{--@foreach ($event->comments as $comment)--}}
-			{{--<div class="well well-sm">--}}
-				{{--<b>{{ $comment->author->name }}</b><br>--}}
-				{{--{!! $comment->message !!}<br>--}}
-				{{--{{ $comment->created_at->diffForHumans() }} <br>--}}
-				{{--@if ($signedIn && $comment->createdBy($user))--}}
-				{{--<a href="{!! route('events.comments.edit', ['event' => $event->id, 'id' => $comment->id]) !!}">--}}
-				{{--<span class='glyphicon glyphicon-pencil'></span></a>--}}
-				{{--{!! Form::open(['route' => ['events.comments.destroy', 'data-type'=> 'comment', 'event' => $event->id, 'id' => $comment->id], 'method' => 'delete']) !!}--}}
-    			{{--<button type="submit" class="btn btn-danger btn-mini delete">Delete</button>--}}
-				{{--{!! Form::close() !!}--}}
-
-				{{--@endif--}}
-			{{--</div>--}}
-		{{--@endforeach--}}
-		{{--@endif--}}
-	{{--</div>--}}
-
-{{--</div>--}}
-
-{{--<P>--}}
-{{--@if (Auth::user())	--}}
-	{{--<span> --}}
-		{{--<a href="{!! route('events.comments.create', ['id' => $event->id]) !!}" class="btn btn-primary">Add Comment</a>--}}
-	{{--</span>--}}
-{{--@endif--}}
-{{--</P>--}}
 
 @stop
 
 @section('scripts.footer')
-<script src="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.2.0/dropzone.js"></script>
+
 @if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser') ) )
 <script>
-Dropzone.autoDiscover = false;
+window.Dropzone.autoDiscover = false;
 $(document).ready(function(){
 
 	var myDropzone = new Dropzone('#myDropzone', {
@@ -277,30 +244,40 @@ $(document).ready(function(){
 	};
 
 	myDropzone.options.addPhotosForm.init();
-	
+
 })
 </script>
 @endif
 <script type="text/javascript">
-$('button.delete').on('click', function(e){
-  e.preventDefault();
-  var form = $(this).parents('form');
-  Swal.fire({
-    title: "Are you sure?",
-    text: "You will not be able to recover this!", 
-    type: "warning",   
-    showCancelButton: true,   
-    confirmButtonColor: "#DD6B55",
-    confirmButtonText: "Yes, delete it!", 
-    closeOnConfirm: true
-  }, 
-   function(isConfirm){
-   	if (isConfirm) {
-   		form.submit();
-   	};
-   // 
-  });
-})
+    $('button.delete').on('click', function(e){
+        e.preventDefault();
+        const form = $(this).parents('form');
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You will not be able to recover this!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, delete it!",
+            preConfirm: function() {
+                return new Promise(function(resolve) {
+                    setTimeout(function() {
+                        resolve()
+                    }, 2000)
+                })
+            }
+        }).then(result => {
+            if (result.value) {
+                // handle Confirm button click
+                // result.value will contain `true` or the input value
+                form.submit();
+            } else {
+                // handle dismissals
+                // result.dismiss can be 'cancel', 'overlay', 'esc' or 'timer'
+                console.log('Cancelled confirm')
+            }
+        });
+    })
 </script>
 
 @stop

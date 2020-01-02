@@ -1,26 +1,29 @@
-<?php namespace App\Http\Controllers;
+<?php
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\EventRequest;
+namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Carbon\Carbon;
-
-use App\Event;
-use App\Entity;
-use App\Series;
 use App\Activity;
+use App\Entity;
+use App\Event;
+use App\Series;
 use App\Tag;
-use App\User;
 use App\Thread;
-use Mail;
-use DB;
-use Log;
+use App\User;
+use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\View\View;
 
-class PagesController extends Controller {
-
+class PagesController extends Controller
+{
     protected $prefix;
+    protected $defaultRpp;
+    protected $defaultSortBy;
+    protected $defaultSortOrder;
+
     protected $rpp;
     protected $page;
     protected $sort;
@@ -31,147 +34,162 @@ class PagesController extends Controller {
     protected $hasFilter;
     protected $dayOffset;
 
-	public function __construct(Event $event)
-	{
-		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update','activity','tools')]);
+    public function __construct(Event $event)
+    {
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'activity', 'tools']]);
 
-		// default list variables
-		$this->dayOffset = 0;
+        // default list variables
+        $this->dayOffset = 0;
 
         // prefix for session storage
         $this->prefix = 'app.pages.';
 
         // default list variables
+        $this->defaultRpp = 100;
+        $this->defaultSortBy = 'created_at';
+        $this->defaultSortOrder = 'desc';
+
         $this->rpp = 100;
         $this->page = 1;
-        $this->sort = array('created_at', 'desc');
+        $this->sort = ['created_at', 'desc'];
         $this->sortBy = 'created_at';
         $this->sortOrder = 'desc';
-        $this->defaultCriteria = NULL;
-		parent::__construct();
-	}
-
-	/**
-	 * Update the page list parameters from the request
-	 *
-	 */
-	protected function updatePaging($request)
-	{
- 		// set starting day offset
- 		if ($request->input('day_offset')) {
- 			$this->dayOffset = $request->input('day_offset');
- 		};
-
- 		// set results per page
- 		if ($request->input('rpp')) {
- 			$this->rpp = $request->input('rpp');
- 		};
-	}
+        $this->defaultCriteria = null;
+        parent::__construct();
+    }
 
     /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Checks if there is a valid filter.
+     *
+     * @param $filters
+     */
+    public function hasFilter($filters): bool
+    {
+        $arr = $filters;
+        unset($arr['rpp'], $arr['sortOrder'], $arr['sortBy'], $arr['page']);
+
+        return count(array_filter($arr, function ($x) { return !empty($x); }));
+    }
+
+    /**
+     * Update the page list parameters from the request.
+     *
+     * @param $filters
+     */
+    protected function getPaging($filters): void
+    {
+        $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
+        $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
+        $this->rpp = $filters['rpp'] ?? $this->rpp;
+    }
+
+    /**
+     * Update the page list parameters from the request.
+     */
+    protected function updatePaging($request)
+    {
+        // set starting day offset
+        if ($request->input('day_offset')) {
+            $this->dayOffset = $request->input('day_offset');
+        }
+
+        // set results per page
+        if ($request->input('rpp')) {
+            $this->rpp = $request->input('rpp');
+        }
+    }
+
+    /**
+     * @return View
      */
     public function index()
-	{
-		$future_events = Event::where('start_at','>=',Carbon::now())
-						->orderBy('start_at', 'asc')
-						->get();
+    {
+        $future_events = Event::where('start_at', '>=', Carbon::now())
+                        ->orderBy('start_at', 'asc')
+                        ->get();
 
-		$past_events = Event::where('start_at','<',Carbon::now())
-						->orderBy('start_at', 'desc')
-						->get();
+        $past_events = Event::where('start_at', '<', Carbon::now())
+                        ->orderBy('start_at', 'desc')
+                        ->get();
 
-
-		return view('events.index', compact('future_events', 'past_events'));
-
-	}
+        return view('events.index', compact('future_events', 'past_events'));
+    }
 
     /**
-     * @param Request $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
     public function search(Request $request)
-	{
-		$slug = $request->input('keyword');
+    {
+        $slug = $request->input('keyword');
 
-		// override rpp, while not breaking template that tries to render 
-		$this->rpp = 20;
+        // override rpp, while not breaking template that tries to render
+        $this->rpp = 20;
 
-		$events = Event::getByEntity(strtolower($slug))
-					->orWhereHas('tags', function($q) use ($slug)
-						{
-							$q->where('name','=', ucfirst($slug));
-						})
-					->orWhereHas('series', function($q) use ($slug)
-						{
-							$q->where('name','=', ucfirst($slug));
-						})
-					->orWhere('name','like','%'.$slug.'%')
-					->where(function($query)
-					{
-						$query->visible($this->user);
-					})
-					->orderBy('start_at', 'DESC')
-					->orderBy('name', 'ASC')
-					->paginate($this->rpp);
+        $events = Event::getByEntity(strtolower($slug))
+                    ->orWhereHas('tags', function ($q) use ($slug) {
+                        $q->where('name', '=', ucfirst($slug));
+                    })
+                    ->orWhereHas('series', function ($q) use ($slug) {
+                        $q->where('name', '=', ucfirst($slug));
+                    })
+                    ->orWhere('name', 'like', '%'.$slug.'%')
+                    ->where(function ($query) {
+                        $query->visible($this->user);
+                    })
+                    ->orderBy('start_at', 'DESC')
+                    ->orderBy('name', 'ASC')
+                    ->paginate($this->rpp);
 
-		$series = Series::getByEntity(strtolower($slug))
-					->orWhereHas('tags', function($q) use ($slug)
-						{
-							$q->where('name','=', ucfirst($slug));
-						})
-					->orWhere('name','like','%'.$slug.'%')
-					->where(function($query)
-					{
-						$query->visible($this->user);
-					})
-					->orderBy('start_at', 'DESC')
-					->orderBy('name', 'ASC')
-					->paginate($this->rpp);
+        $series = Series::getByEntity(strtolower($slug))
+                    ->orWhereHas('tags', function ($q) use ($slug) {
+                        $q->where('name', '=', ucfirst($slug));
+                    })
+                    ->orWhere('name', 'like', '%'.$slug.'%')
+                    ->where(function ($query) {
+                        $query->visible($this->user);
+                    })
+                    ->orderBy('start_at', 'DESC')
+                    ->orderBy('name', 'ASC')
+                    ->paginate($this->rpp);
 
+        $entities = Entity::where('name', 'like', '%'.$slug.'%')
+                ->orWhereHas('tags', function ($q) use ($slug) {
+                    $q->where('name', '=', ucfirst($slug));
+                })
+                ->orWherehas('aliases', function ($q) use ($slug) {
+                    $q->where('name', '=', ucfirst($slug));
+                })
+                ->orderBy('entity_type_id', 'ASC')
+                ->orderBy('name', 'ASC')
+                ->paginate($this->rpp);
 
-		$entities = Entity::where('name','like','%'.$slug.'%')
-				->orWhereHas('tags', function($q) use ($slug)
-								{
-									$q->where('name','=', ucfirst($slug));
-								})
-				->orWherehas('aliases', function($q) use ($slug)
-								{
-									$q->where('name','=', ucfirst($slug));
-								})
-				->orderBy('entity_type_id', 'ASC')
-				->orderBy('name', 'ASC')
-				->paginate($this->rpp);
+        $tags = Tag::where('name', 'like', '%'.$slug.'%')
+                ->orderBy('name', 'ASC')
+                ->simplePaginate($this->rpp);
 
-		$tags = Tag::where('name','like','%'.$slug.'%')
-				->orderBy('name', 'ASC')
-				->simplePaginate($this->rpp);
+        $users = User::where('name', 'like', '%'.$slug.'%')
+                ->orderBy('name', 'ASC')
+                ->simplePaginate($this->rpp);
 
-		$users = User::where('name','like','%'.$slug.'%')
-				->orderBy('name', 'ASC')
-				->simplePaginate($this->rpp);
-
-        $threads = Thread::where('name','like','%'.$slug.'%')
-            ->orWhereHas('tags', function($q) use ($slug)
-            {
-                $q->where('name','=', ucfirst($slug));
+        $threads = Thread::where('name', 'like', '%'.$slug.'%')
+            ->orWhereHas('tags', function ($q) use ($slug) {
+                $q->where('name', '=', ucfirst($slug));
             })
             ->orderBy('name', 'ASC')
             ->paginate($this->rpp);
 
-		return view('events.search', compact('events', 'entities', 'series','users','threads','tags','slug'));
+        return view('events.search', compact('events', 'entities', 'series', 'users', 'threads', 'tags', 'slug'));
+    }
 
-	}
+    public function help()
+    {
+        return view('pages.help');
+    }
 
-	public function help()
-	{
-		return view('pages.help');
-	}
-
-	public function about()
-	{
-		return view('pages.about');
-	}
+    public function about()
+    {
+        return view('pages.about');
+    }
 
     public function privacy()
     {
@@ -184,33 +202,31 @@ class PagesController extends Controller {
     }
 
     public function settings()
-	{
-		return view('pages.settings');
-	}
+    {
+        return view('pages.settings');
+    }
 
-	public function home(Request $request)
-	{
- 		// updates sort, rpp from request
- 		$this->updatePaging($request);
+    public function home(Request $request)
+    {
+        // updates sort, rpp from request
+        $this->updatePaging($request);
 
-		// handle the request if ajax
-		if ($request->ajax()) {
+        // handle the request if ajax
+        if ($request->ajax()) {
             return view('pages.4daysAjax')
-		        	->with(['rpp' => $this->rpp, 'dayOffset' => $this->dayOffset])
-        			->render();
-		}
+                    ->with(['rpp' => $this->rpp, 'dayOffset' => $this->dayOffset])
+                    ->render();
+        }
 
-		return view('pages.home')
-		        	->with(['rpp' => $this->rpp, 'dayOffset' => $this->dayOffset]);
-
-	}
+        return view('pages.home')
+                    ->with(['rpp' => $this->rpp, 'dayOffset' => $this->dayOffset]);
+    }
 
     /**
-     * @param Request $request
-     * @return $this
+     * @return View
      */
     public function activity(Request $request)
-	{
+    {
         $this->middleware('auth');
         $offset = 0;
 
@@ -239,44 +255,42 @@ class PagesController extends Controller {
         $activities = $query->take($this->rpp)
             ->offset($offset)
             ->get()
-            ->groupBy(function($activity) {
+            ->groupBy(function ($activity) {
                 return $activity->created_at->format('Y-m-d');
             });
 
-		return view('pages.activity')
+        return view('pages.activity')
             ->with(['rpp' => $this->rpp,
                 'sortBy' => $this->sortBy,
                 'sortOrder' => $this->sortOrder,
                 'filters' => $this->filters,
                 'hasFilter' => $this->hasFilter,
-                'filters' => $this->filters,
             ])
             ->with(compact('activities'));
-	}
+    }
 
     /**
-     * Filter the list of entities
+     * Filter the list of entities.
      *
-     * @return Response
+     * @return Response | View | string
+     *
      * @throws \Throwable
      */
     public function filter(Request $request)
     {
         $offset = 0;
+        // update filters from request
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+
         // get all the filters from the session
         $this->filters = $this->getFilters($request);
 
-        // update filters based on the request input
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->input()));
-
-        // get the merged filters
-        $this->filters = $this->getFilters($request);
-
-        // updates sort, rpp from request
+        // get  sort, sort order, rpp from session, update from request
+        $this->getPaging($this->filters);
         $this->updatePaging($request);
 
-        // flag that there are filters
-        $this->hasFilter = count($this->filters);
+        // set flag if there are filters
+        $this->hasFilter = $this->hasFilter($this->filters);
 
         // get the criteria given the request (could pass filters instead?)
         $query = $this->buildActivityCriteria($request);
@@ -284,7 +298,7 @@ class PagesController extends Controller {
         $activities = $query->take($this->rpp)
             ->offset($offset)
             ->get()
-            ->groupBy(function($activity) {
+            ->groupBy(static function ($activity) {
                 return $activity->created_at->format('Y-m-d');
             });
 
@@ -297,17 +311,16 @@ class PagesController extends Controller {
             ])
             ->with(compact('activities'))
             ->render();
-
     }
 
-
     /**
-     * Reset the filtering of activities
+     * Reset the filtering of activities.
      *
      * @return Response
+     *
      * @throws \Throwable
      */
-    public function reset (Request $request)
+    public function reset(Request $request)
     {
         $offset = 0;
 
@@ -322,7 +335,7 @@ class PagesController extends Controller {
         $activities = $query->take($this->rpp)
             ->offset($offset)
             ->get()
-            ->groupBy(function($activity) {
+            ->groupBy(function ($activity) {
                 return $activity->created_at->format('Y-m-d');
             });
 
@@ -334,73 +347,68 @@ class PagesController extends Controller {
                 'hasFilter' => $this->hasFilter,
             ])
             ->with(compact('activities'));
-
     }
 
-
     /**
-     * Get session filters
+     * Get session filters.
      *
-     * @return Array
+     * @return array
      */
-    protected function getFilters (Request $request)
+    protected function getFilters(Request $request)
     {
         return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
     }
 
     /**
-     * Get user session attribute
+     * Get user session attribute.
      *
-     * @param String $attribute
-     * @param Mixed $default
-     * @param Request $request
-     * @return Mixed
+     * @param string $attribute
+     * @param mixed  $default
+     *
+     * @return mixed
      */
-    protected function getAttribute ($attribute, $default = null, Request $request)
+    protected function getAttribute($attribute, $default = null, Request $request)
     {
         return $request->session()
-            ->get($this->prefix . $attribute, $default);
+            ->get($this->prefix.$attribute, $default);
     }
 
     /**
-     * Get the default filters array
+     * Get the default filters array.
      *
      * @return array
      */
-    protected function getDefaultFilters ()
+    protected function getDefaultFilters()
     {
-        return array();
+        return [];
     }
 
     /**
-     * Set filters attribute
+     * Set filters attribute.
      *
-     * @param array $input
      * @return array
      */
-    protected function setFilters (Request $request, array $input)
+    protected function setFilters(Request $request, array $input)
     {
         // example: $input = array('filter_tag' => 'role', 'filter_name' => 'xano');
         return $this->setAttribute('filters', $input, $request);
     }
 
     /**
-     * Set user session attribute
+     * Set user session attribute.
      *
-     * @param String $attribute
-     * @param Mixed $value
-     * @param Request $request
-     * @return Mixed
+     * @param string $attribute
+     * @param mixed  $value
+     *
+     * @return void
      */
-    protected function setAttribute ($attribute, $value, Request $request)
+    protected function setAttribute($attribute, $value, Request $request)
     {
-        return $request->session()
-            ->put($this->prefix . $attribute, $value);
+        $request->session()->put($this->prefix.$attribute, $value);
     }
 
-
     /**
-     * Builds the criteria from the session
+     * Builds the criteria from the session.
      *
      * @return $query
      */
@@ -418,13 +426,13 @@ class PagesController extends Controller {
         if (!empty($filters['filter_name'])) {
             // getting name from the request
             $name = $filters['filter_name'];
-            $query->where('object_name', 'like', '%' . $name . '%');
+            $query->where('object_name', 'like', '%'.$name.'%');
         }
 
         if (!empty($filters['filter_type'])) {
             // getting name from the request
             $type = $filters['filter_type'];
-            $query->where('object_table', 'like', '%' . $type . '%');
+            $query->where('object_table', 'like', '%'.$type.'%');
         }
 
         if (!empty($filters['filter_action'])) {
@@ -464,26 +472,24 @@ class PagesController extends Controller {
 
         // get all the events with no photo
         $events = Event::has('photos', '<', 1)
-            ->where('primary_link','<>','')
-            ->where('primary_link','like','%facebook%')
+            ->where('primary_link', '<>', '')
+            ->where('primary_link', 'like', '%facebook%')
             ->get();
 
-
-        return view('pages.tools',compact('events'));
+        return view('pages.tools', compact('events'));
     }
 
     /**
-     * @param Request $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View|RedirectResponse
      */
     public function invite(Request $request)
     {
         $email = $request->input('email');
 
         // check that a user with that email does not already exist.
-        $users = User::where('email','like','%'.$email.'%')->orderBy('name', 'ASC')->count();
+        $users = User::where('email', 'like', '%'.$email.'%')->orderBy('name', 'ASC')->count();
         if ($users > 0) {
-            flash()->success('Error', 'No email sent - a user with the address - ' . $email . ' - already exists on the site.'.count($users));
+            flash()->success('Error', 'No email sent - a user with the address - '.$email.' - already exists on the site.'.count($users));
 
             return back();
         }
@@ -494,16 +500,16 @@ class PagesController extends Controller {
         // add to activity log - email address was invited
         // Activity::log($user, $this->user, 12);
 
-        Log::info('Email ' . $email . ' was invited to join the site');
+        Log::info('Email '.$email.' was invited to join the site');
 
-        flash()->success('Success', 'An email was sent to ' . $email . ' inviting them to join the site');
+        flash()->success('Success', 'An email was sent to '.$email.' inviting them to join the site');
 
         return back();
-
     }
 
     /**
      * @param $user
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function inviteUser($email)
@@ -514,8 +520,8 @@ class PagesController extends Controller {
         $url = config('app.url');
 
         $show_count = 100;
-        $events = array();
-        $interests = array();
+        $events = [];
+        $interests = [];
 
         $events = Event::future()->simplePaginate(10);
 

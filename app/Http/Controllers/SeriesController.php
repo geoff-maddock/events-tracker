@@ -79,6 +79,27 @@ class SeriesController extends Controller
     }
 
     /**
+     * Update the page list parameters from the request.
+     */
+    protected function updatePaging($request)
+    {
+        // set sort by column
+        if ($request->input('sort_by')) {
+            $this->sortBy = $request->input('sort_by');
+        }
+
+        // set sort direction
+        if ($request->input('sort_order')) {
+            $this->sortOrder = $request->input('sort_order');
+        }
+
+        // set results per page
+        if ($request->input('rpp')) {
+            $this->rpp = $request->input('rpp');
+        }
+    }
+
+    /**
      * Checks if there is a valid filter.
      *
      * @param $filters
@@ -134,29 +155,6 @@ class SeriesController extends Controller
             ])
             ->with(compact('series'))
             ->render();
-    }
-
-    /**
-     * Update the page list parameters from the request.
-     *
-     * @param $request
-     */
-    protected function updatePaging($request)
-    {
-        // set sort by column
-        if ($request->input('sort_by')) {
-            $this->sortBy = $request->input('sort_by');
-        }
-
-        // set sort direction
-        if ($request->input('sort_direction')) {
-            $this->sortOrder = $request->input('sort_direction');
-        }
-
-        // set results per page
-        if ($request->input('rpp')) {
-            $this->rpp = $request->input('rpp');
-        }
     }
 
     /**
@@ -319,7 +317,7 @@ class SeriesController extends Controller
         $series = Series::future()->get();
 
         return view('series.indexWeek')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
             ->with(compact('series'))
             ->render();
     }
@@ -425,7 +423,13 @@ class SeriesController extends Controller
         return view('series.show', compact('series', 'events', 'threads'));
     }
 
-    public function store(SeriesRequest $request, Series $series)
+    /**
+     * Stores a series entity.
+     *
+     * @return RedirectResponse
+     */
+    public function store(Request $request,
+                          Series $series)
     {
         $msg = '';
         $input = $request->all();

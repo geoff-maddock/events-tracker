@@ -1,13 +1,14 @@
 @extends('app')
 
-@section('title','Event Repo - Club Guide')
+@section('title','Activity')
 
 @section('content')
 
-	<!-- NAV / FILTER -->
-	<div class="row" class="tab-content filters-content">
+    <h4>Activity</h4>
 
-		<div id="filters-container" class="col-sm-12">
+	<!-- NAV / FILTER -->
+    <div id="filters-container" class="row">
+        <div id="filters-content" class="col-lg-9">
 
 			<a href="#" id="filters" class="btn btn-primary">Filters <span id="filters-toggle" class="glyphicon @if (!$hasFilter) glyphicon-chevron-down @else glyphicon-chevron-up @endif"></span></a>
 			{!! Form::open(['route' => ['activity.filter'], 'method' => 'GET']) !!}
@@ -37,34 +38,37 @@
 					{!! Form::select('filter_user', $users, (isset($filters['filter_user']) ?? NULL), ['data-width' => '100%', 'class' =>'form-control select2  auto-submit', 'data-placeholder' => 'Select a user']) !!}
 				</div>
 
-				<div class="form-group col-sm-1">
-					{!! Form::label('filter_rpp','RPP') !!}
-                    <?php $rpp_options =  [''=>'&nbsp;', 5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000];?>
-					{!! Form::select('filter_rpp', $rpp_options, (isset($rpp) ?? NULL), ['class' =>'auto-submit form-control']) !!}
-				</div>
-
 				<div class="col-sm-2">
 					<div class="btn-group col-sm-1">
+                        <label></label>
 						{!! Form::submit('Filter',  ['class' =>'btn btn-primary btn-sm btn-tb', 'id' => 'primary-filter-submit']) !!}
-
 						{!! Form::close() !!}
-
 						{!! Form::open(['route' => ['activity.reset'], 'method' => 'GET']) !!}
-
 						{!! Form::submit('Reset',  ['class' =>'btn btn-primary btn-sm btn-tb', 'id' => 'primary-filter-reset']) !!}
-
 						{!! Form::close() !!}
 					</div>
 				</div>
 			</div>
-
 		</div>
-		<!-- END: FILTERS -->
+
+        <div id="list-control" class="col-lg-3 visible-lg-block visible-md-block text-right">
+            <form action="{{ url()->action('PagesController@filter') }}" method="GET" class="form-inline">
+                <div class="form-group">
+                    <?php $rpp_options =  [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000];?>
+                    <?php $sort_by_options = ['name' => 'Name', 'object_table' => 'Object', 'action_id' => 'Action', 'created_at' => 'Created']; ?>
+                    <?php $sort_order_options = ['asc' => 'asc', 'desc' => 'desc']; ?>
+                    {!! Form::select('rpp', $rpp_options, ($rpp ?? 10), ['class' =>'form-control auto-submit']) !!}
+                    {!! Form::select('sortBy', $sort_by_options, ($sortBy ?? 'created_at'), ['class' =>'form-control auto-submit']) !!}
+                    {!! Form::select('sortOrder', $sort_order_options, ($sortOrder ?? 'desc'), ['class' =>'form-control auto-submit']) !!}
+                </div>
+            </form>
+        </div>
+
 	</div>
 
 	<br style="clear: left;"/>
 
-	<!-- LIST OF ALL RECENT ACTIVITY --> 
+	<!-- LIST OF ALL RECENT ACTIVITY -->
 	<ul class="list-group">
 	@if (count($activities) > 0)
 

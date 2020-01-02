@@ -27,9 +27,9 @@
 		@endif
 
 	@unless ($entity->aliases->isEmpty())
-		
+
 		<P><b>Aliases:</b>
-		
+
 		@foreach ($entity->aliases as $alias)
 		<span class="label label-tag"><a href="/entities/alias/{{ $alias->name }}">{{ $alias->name }}</a></span>
 		@endforeach
@@ -41,12 +41,12 @@
 	<p>
 	@if ($entity->short)
 		<i>{{ $entity->short }} </i><br><br>
-	@endif 
+	@endif
 
 	@if ($entity->description)
 	<b>Description</b><br>
 		<i>{{ $entity->description }} </i><br>
-	@endif 
+	@endif
 
 	@if ($signedIn)
 	<br>
@@ -79,9 +79,9 @@
 	@endunless
 
 	@unless ($entity->tags->isEmpty())
-		
+
 		<P><b>Tags:</b>
-		
+
 		@foreach ($entity->tags as $tag)
 				<span class="label label-tag"><a href="/entities/tag/{{ urlencode($tag->name) }}" class="label-link">{{ $tag->name }}</a>
                         <a href="{!! route('tags.show', ['slug' => $tag->name]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a>
@@ -90,13 +90,13 @@
 
 	@endunless
 	@unless ($entity->locations->isEmpty())
-		
-		<P>		
+
+		<P>
 		@foreach ($entity->locations as $location)
 		@if (isset($location->visibility) && ($location->visibility->name != 'Guarded' || ($location->visibility->name == 'Guarded' && $signedIn)))
 
 		<span><B>{{ isset($location->locationType) ? $location->locationType->name : '' }}</B>  {{ $location->address_one }} {{ $location->neighborhood or '' }}  {{ $location->city }} {{ $location->state }} {{ $location->country }}
-				
+
 				@if (isset($location->map_url))
 				<a href="{!! $location->map_url !!}" target="_" title="Link to map.">
 				<span class='glyphicon glyphicon-map-marker'></span></a>
@@ -107,21 +107,21 @@
 				<a href="{!! route('entities.locations.edit', ['entity' => $entity->slug, 'id' => $location->id]) !!}" title="Edit this location.">
 				<span class='glyphicon glyphicon-pencil'></span></a>
 				@endif
-				
+
 				<br>
 				@if (isset($location->capacity))
 				 <b>Capacity:</b> {{  $location->capacity }}
-				@endif 
+				@endif
 
 		</span><br>
 		@endif
 		@endforeach
-		
+
 	@endunless
 
 	<P>
-	@if ($user && Auth::user()->id == $entity->user->id)	
-		<span> 
+	@if ($user && Auth::user()->id == $entity->user->id)
+		<span>
 			<a href="{!! route('entities.locations.create', ['id' => $entity->slug]) !!}" class="btn btn-primary">Add Location</a>
 		</span>
 	@endif
@@ -129,9 +129,9 @@
 
  	@unless ($entity->contacts->isEmpty())
  		<P><b>Contacts:</b>
-		<P>		
+		<P>
 		@foreach ($entity->contacts as $contact)
-		<span><B>{{ $contact->name }}</B>  {{ $contact->email or '' }} {{ $contact->phone or '' }}  
+		<span><B>{{ $contact->name }}</B>  {{ $contact->email or '' }} {{ $contact->phone or '' }}
 				@if ($signedIn && $entity->ownedBy($user))
 				<a href="{!! route('entities.contacts.edit', ['entity' => $entity->slug, 'id' => $contact->id]) !!}">
 				<span class='glyphicon glyphicon-pencil'></span></a>
@@ -151,7 +151,7 @@
 
 	<P>
 	@if ($user && Auth::user()->id === $entity->user->id)
-		<span> 
+		<span>
 			<a href="{!! route('entities.contacts.create', ['id' => $entity->slug]) !!}" class="btn btn-primary">Add Contact</a>
 		</span>
 	@endif
@@ -181,7 +181,7 @@
 
 	<P>
 	@if ($user && Auth::user()->id === $entity->user->id)
-		<span> 
+		<span>
 			<a href="{!! route('events.create') !!}" class="btn btn-primary">Add Event</a>
 		</span>
 	@endif
@@ -206,8 +206,8 @@
 	@endforeach
 	@endunless
 	<P>
-	@if (Auth::user())	
-		<span> 
+	@if (Auth::user())
+		<span>
 			<a href="{!! route('entities.comments.create', ['id' => $entity->slug]) !!}" class="btn btn-primary">Add Comment</a>
 		</span>
 	@endif
@@ -235,7 +235,7 @@
 	</div>
 
 	<div class="col-md-6">
-		@if ($user && (Auth::user()->id == $entity->user->id || $user->id == Config::get('app.superuser')))	
+		@if ($user && (Auth::user()->id == $entity->user->id || $user->id == Config::get('app.superuser')))
 		<form action="/entities/{{ $entity->id }}/photos" class="dropzone" id="myDropzone" method="POST">
 			<input type="hidden" name="_token" value="{{ csrf_token() }}">
 		</form>
@@ -247,9 +247,9 @@
 		<div class="row">
 		@foreach ($set as $photo)
 			<div class="col-md-2">
-			
+
 			<a href="/{{ $photo->path }}" data-lightbox="{{ $photo->path }}" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="/{{ $photo->thumbnail }}" alt="{{ $entity->name}}"  style="max-width: 100%;"></a>
-			@if ($user && (Auth::user()->id == $entity->user->id || $user->id == Config::get('app.superuser')))	
+			@if ($user && (Auth::user()->id == $entity->user->id || $user->id == Config::get('app.superuser')))
 				{!! link_form_icon('glyphicon-trash text-warning', $photo, 'DELETE', 'Delete the photo') !!}
 				@if ($photo->is_primary)
 				{!! link_form_icon('glyphicon-star text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
@@ -300,11 +300,10 @@
 	</div>
 </div>
 @stop
- 
+
 @section('scripts.footer')
-<script src="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.2.0/dropzone.js"></script>
 <script>
-Dropzone.autoDiscover = false;
+window.Dropzone.autoDiscover = false;
 $(document).ready(function(){
 
 	var myDropzone = new Dropzone('#myDropzone', {
@@ -328,7 +327,7 @@ $(document).ready(function(){
 	};
 
 	myDropzone.options.addPhotosForm.init();
-	
+
 })
 </script>
 @stop

@@ -180,7 +180,7 @@ class EventsController extends Controller
 
         // get future events
         $future_events = $query_future
-            ->with('visibility')
+            ->with('visibility','venue')
             ->paginate($this->rpp);
 
         // build past events query
@@ -200,7 +200,7 @@ class EventsController extends Controller
 
         // get past events
         $past_events = $query_past
-            ->with('visibility')
+            ->with('visibility','venue')
             ->paginate($this->rpp);
 
         return view('events.index')

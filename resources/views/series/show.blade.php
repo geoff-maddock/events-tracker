@@ -42,7 +42,10 @@
 	</description>
 	@endif
 
-	<p>	{{ $series->eventType->name or ''}} at {{ $series->venue->name or 'No venue specified' }}</p>
+	<p>
+        @if ($series->eventType)
+        {{ $series->eventType ? $series->eventType->name : ''}} at {{ $series->venue->name or 'No venue specified' }}</p>
+        @endif
 
 	@if ($signedIn)
 	<br>
@@ -52,7 +55,7 @@
 	Click to Follow <a href="{!! route('series.follow', ['id' => $series->id]) !!}" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
 	@endif
 
-	@endif 
+	@endif
 
 	<P>
 	@unless ($series->entities->isEmpty())
@@ -179,9 +182,8 @@
 
 
 @section('scripts.footer')
-<script src="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.2.0/dropzone.js"></script>
 <script>
-Dropzone.autoDiscover = false;
+window.Dropzone.autoDiscover = false;
 $(document).ready(function(){
 
     var myDropzone = new Dropzone('#myDropzone', {

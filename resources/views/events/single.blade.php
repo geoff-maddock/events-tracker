@@ -1,5 +1,4 @@
 <li id="event-{{ $event->id }}" class="event-card" style="clear: both;">
-
 		@if ($primary = $event->getPrimaryPhoto())
 		<div style="float: left; padding: 5px;">
 			<a href="/{{ $primary->path }}" data-lightbox="{{ $primary->path }}" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="/{{ $primary->thumbnail }}" alt="{{ $event->name}}"  ></a>
@@ -46,7 +45,7 @@
 		<a href="/events/type/{{ urlencode($event->eventType->name) }}">{{ $event->eventType->name }}</a>
 
 		@if ($event->venue)
-		<br><a href="/entities/{{$event->venue->slug }}">{{ $event->venue->name or 'No venue specified' }}</a>
+		<br><a href="/entities/{{$event->venue->slug }}">{{ $event->venue->name}}</a>
 			@if ($event->venue->getPrimaryLocationAddress() )
 				{{ $event->venue->getPrimaryLocationAddress() }}
 			@endif

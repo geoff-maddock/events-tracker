@@ -10,7 +10,7 @@ require('./bootstrap');
 //const Swal = require('sweetalert2')
 
 window.Swal = require('sweetalert2');
-
+window.Dropzone = require('dropzone');
 // add any other dependencies - things i'm including manually in app.layout
 
 // window.Vue = require('vue');

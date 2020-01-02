@@ -3,18 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Activity;
-use App\Entity;
-use App\Event;
-use App\EventType;
 use App\Follow;
 use App\Http\Requests\SeriesRequest;
-use App\OccurrenceType;
 use App\Series;
-use App\Tag;
 use App\User;
-use App\Visibility;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\View;
 use Log;
 
 class ActivityController extends Controller
@@ -46,6 +41,7 @@ class ActivityController extends Controller
         $this->defaultRpp = 100;
         $this->defaultSortBy = 'name';
         $this->defaultSortOrder = 'asc';
+
         $this->rpp = 100;
         $this->childRpp = 10;
         $this->page = 1;
@@ -60,7 +56,7 @@ class ActivityController extends Controller
     /**
      * Filter the list of activities.
      *
-     * @return View
+     * @return View | string
      *
      * @internal param $Request
      *
@@ -102,6 +98,18 @@ class ActivityController extends Controller
             ])
             ->with(compact('activities'))
             ->render();
+    }
+
+    /**
+     * Update the page list parameters from the request.
+     *
+     * @param $filters
+     */
+    protected function getPaging($filters): void
+    {
+        $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
+        $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
+        $this->rpp = $filters['rpp'] ?? $this->rpp;
     }
 
     /**
@@ -164,7 +172,7 @@ class ActivityController extends Controller
     /**
      * Reset the filtering of entities.
      *
-     * @return Response
+     * @return Response | View | string
      *
      * @throws \Throwable
      */
@@ -215,199 +223,12 @@ class ActivityController extends Controller
             ->render();
     }
 
-    /**
-     * Show a form to create a new activities.
-     *
-     * @return view
-     **/
-    public function create()
-    {
-        // get a list of venues
-        $venues = ['' => ''] + Entity::getVenues()->pluck('name', 'id')->all();
-
-        // get a list of promoters
-        $promoters = ['' => ''] + Entity::whereHas('roles', function ($q) {
-            $q->where('name', '=', 'Promoter');
-        })->orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $eventTypes = ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $occurrenceTypes = ['' => ''] + OccurrenceType::pluck('name', 'id')->all();
-        $days = ['' => ''] + OccurrenceDay::pluck('name', 'id')->all();
-        $weeks = ['' => ''] + OccurrenceWeek::pluck('name', 'id')->all();
-
-        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $entities = Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $userList = ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        return view('series.create', compact('venues', 'eventTypes', 'visibilities', 'tags', 'entities', 'promoters', 'weeks', 'days', 'occurrenceTypes', 'userList'));
-    }
-
     public function show(Series $series)
     {
         $events = $series->events()->paginate($this->childRpp);
         $threads = $series->threads()->paginate($this->childRpp);
 
         return view('series.show', compact('series', 'events', 'threads'));
-    }
-
-    public function store(SeriesRequest $request, Series $series)
-    {
-        $msg = '';
-        $input = $request->all();
-
-        $tagArray = $request->input('tag_list', []);
-        $syncArray = [];
-
-        // check the elements in the tag list, and if any don't match, add the tag
-        foreach ($tagArray as $key => $tag) {
-            if (!DB::table('tags')->where('id', $tag)->get()) {
-                $newTag = new Tag();
-                $newTag->name = ucwords(strtolower($tag));
-                $newTag->tag_type_id = 1;
-                $newTag->save();
-
-                $syncArray[] = $newTag->id;
-
-                $msg .= ' Added tag '.$tag.'.';
-            } else {
-                $syncArray[$key] = $tag;
-            }
-        }
-
-        $s = $series->create($input);
-
-        $s->tags()->attach($syncArray);
-        $s->entities()->attach($request->input('entity_list'));
-
-        // link the passed event if there was one to the series
-        if ($request->eventLinkId) {
-            if ($event = Event::find($request->eventLinkId)) {
-                $event->series_id = $s->id;
-                $event->save();
-            }
-        }
-
-        flash()->success('Success', 'Your event series has been created');
-
-        return redirect()->route('series.index');
-    }
-
-    public function edit(Series $series)
-    {
-        // get a list of venues
-        $venues = ['' => ''] + Entity::getVenues()->pluck('name', 'id')->all();
-
-        // get a list of promoters
-        $promoters = ['' => ''] + Entity::whereHas('roles', function ($q) {
-            $q->where('name', '=', 'Promoter');
-        })->orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $eventTypes = ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $occurrenceTypes = ['' => ''] + OccurrenceType::pluck('name', 'id')->all();
-        $days = ['' => ''] + OccurrenceDay::pluck('name', 'id')->all();
-        $weeks = ['' => ''] + OccurrenceWeek::pluck('name', 'id')->all();
-
-        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $entities = Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $userList = User::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        return view('series.edit', compact('series', 'venues', 'eventTypes', 'visibilities', 'tags', 'entities', 'promoters', 'weeks', 'days', 'occurrenceTypes', 'userList'));
-    }
-
-    /**
-     * @return $this
-     */
-    public function createOccurrence(Request $request)
-    {
-        // create an event occurrence based on the series template
-
-        $series = Series::find($request->id);
-
-        // get a list of venues
-        $venues = ['' => ''] + Entity::getVenues()->pluck('name', 'id')->all();
-
-        // get a list of promoters
-        $promoters = ['' => ''] + Entity::whereHas('roles', function ($q) {
-            $q->where('name', '=', 'Promoter');
-        })->orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $eventTypes = ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $seriesList = ['' => ''] + Series::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $entities = Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        // calculate the next occurrence date based on template settings
-        $nextDate = $series->nextOccurrenceDate();
-        $endDate = $nextDate->copy()->addHours($series->length);
-
-        // initialize the form object with the values from the template
-        $event = new Event(['name' => $series->name,
-            'slug' => $series->slug,
-            'short' => $series->short,
-            'venue_id' => $series->venue_id,
-            'series_id' => $series->id,
-            'description' => $series->description,
-            'event_type_id' => $series->event_type_id,
-            'promoter_id' => $series->promoter_id,
-            'soundcheck_at' => $series->soundcheck_at,
-            'door_at' => $series->door_at,
-            'start_at' => $nextDate,
-            'end_at' => $endDate,
-            'presale_price' => $series->presale_price,
-            'door_price' => $series->door_price,
-            'min_age' => $series->min_age,
-            'visibility_id' => $series->visibility_id,
-            'length' => 0,
-        ]);
-
-        return view('series.createOccurrence', compact('seriesList', 'event', 'venues', 'eventTypes', 'visibilities', 'tags', 'entities', 'promoters'))->with(['series' => $series]);
-    }
-
-    public function update(Series $series, SeriesRequest $request)
-    {
-        $msg = '';
-
-        $series->fill($request->input())->save();
-
-        if (!$series->ownedBy($this->user)) {
-            $this->unauthorized($request);
-        }
-
-        $tagArray = $request->input('tag_list', []);
-        $syncArray = [];
-
-        // check the elements in the tag list, and if any don't match, add the tag
-        foreach ($tagArray as $key => $tag) {
-            if (!Tag::find($tag)) {
-                $newTag = new Tag();
-                $newTag->name = ucwords(strtolower($tag));
-                $newTag->tag_type_id = 1;
-                $newTag->save();
-
-                $syncArray[strtolower($tag)] = $newTag->id;
-
-                $msg .= ' Added tag '.$tag.'.';
-            } else {
-                $syncArray[$key] = $tag;
-            }
-        }
-
-        $series->tags()->sync($syncArray);
-        $series->entities()->sync($request->input('entity_list', []));
-
-        flash('Success', 'Your event template has been updated');
-
-        return redirect('series');
     }
 
     protected function unauthorized(SeriesRequest $request)
