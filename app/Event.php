@@ -209,6 +209,20 @@ class Event extends Eloquent
         }
     }
 
+    /**
+     * Create the slug from the name if none was passed.
+     *
+     * @param $value
+     */
+    public function setPresalePriceAttribute($value)
+    {
+        if (!empty($value)) {
+            $this->attributes['presale_price'] = $value;
+        } else {
+            $this->attributes['presale_price'] = null;
+        }
+    }
+
     public function scopeToday(Builder $query): Builder
     {
         return $query->whereDate('start_at', '=', Carbon::today()->toDateString())
