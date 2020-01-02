@@ -580,7 +580,7 @@ class Series extends Eloquent
                 break;
             case 'Monthly':
             case 'Bimonthly':
-
+                $next = $date->addMonth();
                 if ($date) {
                     $next = $date->nthOfMonth($this->occurrence_week_id, ($this->occurrence_day_id - 1));
                 } else {
