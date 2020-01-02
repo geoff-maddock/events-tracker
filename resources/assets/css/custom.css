@@ -75,7 +75,7 @@
 .site-title a {
     text-decoration: none;
     color: #ffffff;
-    -webkit-mask-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), color-stop(99%, rgba(0,0,0,0)), to(rgba(0,0,0,1)));
+    background: linear-gradient(to right, #ff8a00 0%, #da1b60 100%);
     -webkit-transition: all .3s;
     -moz-transition: all .3s;
     transition: all .3s;
@@ -83,7 +83,7 @@
 
 .site-title a:hover {
     color: #185a50;
-    -webkit-mask-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), color-stop(50%, rgba(0,0,0,.3)), to(rgba(0,0,0,1)));
+    background: linear-gradient(to right, #ff8a00d1 0%, #da1b60d1 100%);
 
 }
 
