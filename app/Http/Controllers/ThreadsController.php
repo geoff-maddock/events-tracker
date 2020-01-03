@@ -29,6 +29,9 @@ class ThreadsController extends Controller
     protected $prefix;
     protected $rpp;
     protected $page;
+    protected $defaultRpp;
+    protected $defaultSortBy;
+    protected $defaultSortOrder;
     protected $sort;
     protected $sortBy;
     protected $sortOrder;
@@ -46,6 +49,10 @@ class ThreadsController extends Controller
         $this->prefix = 'app.threads.';
 
         // default list variables - move to function that set from session or default
+        $this->defaultRpp = 10;
+        $this->defaultSortBy = 'created_at';
+        $this->defaultSortOrder = 'desc';
+
         $this->rpp = 10;
         $this->page = 1;
         $this->sort = ['name', 'desc'];
@@ -55,6 +62,19 @@ class ThreadsController extends Controller
         $this->hasFilter = 1;
 
         parent::__construct();
+    }
+
+    /**
+     * Checks if there is a valid filter.
+     *
+     * @param $filters
+     */
+    public function hasFilter($filters): bool
+    {
+        $arr = $filters;
+        unset($arr['rpp'], $arr['sortOrder'], $arr['sortBy'], $arr['page']);
+
+        return count(array_filter($arr, function ($x) { return !empty($x); }));
     }
 
     /**
@@ -171,19 +191,24 @@ class ThreadsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return View
+     * @return View | string
      *
      * @throws \Throwable
      */
     public function index(Request $request)
     {
-        // updates sort, rpp from request
+        // update filters from request
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+
+        // get all the filters from the session
+        $this->filters = $this->getFilters($request);
+
+        // get  sort, sort order, rpp from session, update from request
+        $this->getPaging($this->filters);
         $this->updatePaging($request);
 
-        // get filters from session
-        $filters = $this->getFilters($request);
-
-        $this->hasFilter = count($filters);
+        // set flag if there are filters
+        $this->hasFilter = $this->hasFilter($this->filters);
 
         // initialize the query
         $query = $this->buildCriteria($request);
@@ -193,13 +218,13 @@ class ThreadsController extends Controller
 
         // filter only public threads or those created by the logged in user
         $threads->filter(function ($e) {
-            return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+            return ('Public' === $e->visibility->name) || ($this->user && $e->created_by === $this->user->id);
         });
 
         // if the user is not authenticated, filter out any guarded threads
         if (!Auth::check()) {
             $threads->filter(function ($e) {
-                return 'Guarded' != $e->visibility->name;
+                return 'Guarded' !== $e->visibility->name;
             });
         }
 
@@ -214,8 +239,20 @@ class ThreadsController extends Controller
                         'sortBy' => $this->sortBy,
                         'sortOrder' => $this->sortOrder,
                         'hasFilter' => $this->hasFilter,
-                        'filters' => $filters,
+                        'filters' => $this->filters,
                     ])->render();
+    }
+
+    /**
+     * Update the page list parameters from the request.
+     *
+     * @param $filters
+     */
+    protected function getPaging($filters): void
+    {
+        $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
+        $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
+        $this->rpp = $filters['rpp'] ?? $this->rpp;
     }
 
     /**
@@ -296,20 +333,18 @@ class ThreadsController extends Controller
      */
     public function filter(Request $request)
     {
+        // update filters from request
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+
         // get all the filters from the session
         $this->filters = $this->getFilters($request);
 
-        // update filters based on the request input
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->input()));
-
-        // get the merged filters
-        $this->filters = $this->getFilters($request);
-
-        // updates sort, rpp from request
+        // get  sort, sort order, rpp from session, update from request
+        $this->getPaging($this->filters);
         $this->updatePaging($request);
 
-        // flag that there are filters
-        $this->hasFilter = count($this->filters);
+        // set flag if there are filters
+        $this->hasFilter = $this->hasFilter($this->filters);
 
         // get the criteria given the request (could pass filters instead?)
         $query = $this->buildCriteria($request);
@@ -317,7 +352,7 @@ class ThreadsController extends Controller
         // get threads
         $threads = $query->paginate($this->rpp);
         $threads->filter(function ($e) {
-            return ($e->visibility && 'Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+            return ($e->visibility && 'Public' === $e->visibility->name) || ($this->user && $e->created_by === $this->user->id);
         });
 
         return view('threads.index')
