@@ -7,10 +7,11 @@
 	<h4>Events @include('events.crumbs')</h4>
 
 	<div id="action-menu" style="margin-bottom: 5px;">
-		<a href="{!! URL::route('events.index') !!}" class="btn btn-info">Show event index</a>
-		<a href="{!! URL::route('calendar') !!}" class="btn btn-info">Show calendar</a>
-		<a href="{!! URL::route('events.week') !!}" class="btn btn-info">Show week's events</a>
-		<a href="{!! URL::route('events.create') !!}" class="btn btn-primary">Add an event</a>	<a href="{!! URL::route('series.create') !!}" class="btn btn-primary">Add an event series</a>
+		<a href="{!! URL::route('events.index') !!}" class="btn btn-info mt-2 mr-2">Show event index</a>
+		<a href="{!! URL::route('calendar') !!}" class="btn btn-info mt-2 mr-2">Show calendar</a>
+		<a href="{!! URL::route('events.week') !!}" class="btn btn-info mt-2 mr-2">Show week's events</a>
+		<a href="{!! URL::route('events.create') !!}" class="btn btn-primary mt-2 mr-2">Add an event</a>
+		<a href="{!! URL::route('series.create') !!}" class="btn btn-primary mt-2 mr-2">Add an event series</a>
 	</div>
 
 	<div id="filters-container" class="row">

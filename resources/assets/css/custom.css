@@ -92,5 +92,29 @@
     content : attr(data-title);
 }
 
+.mt-2 {
+    margin-top: 5px;
+}
 
+.mr-2 {
+    margin-right: 5px;
+}
+
+.mr-2 {
+    margin-right: 5px;
+}
+
+.mb-2 {
+    margin-bottom: 5px;
+}
+
+.my-2 {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.mx-2 {
+    margin-left: 5px;
+    margin-right: 5px;
+}
 
