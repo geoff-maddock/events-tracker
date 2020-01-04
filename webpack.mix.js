@@ -17,7 +17,7 @@ mix.js('resources/assets/js/app.js', 'public/js')
 
 // build dark theme
 mix.styles([
-    'public/css/app.css',
+    'resources/assets/css/app.css',
     'resources/assets/css/custom.css',
     'resources/assets/css/dark-theme.css',
     'resources/assets/css/superhero-bootstrap.min.css',
@@ -26,39 +26,8 @@ mix.styles([
 
 // build light theme
 mix.styles([
-    'public/css/app.css',
+    'resources/assets/css/app.css',
     'resources/assets/css/custom.css',
     'resources/assets/css/light-theme.css',
     'resources/assets/css/sweetalert.css'
 ], 'public/css/light.css');
-
-// mix.styles([
-//     'public/css/app.css',
-//     'resources/assets/css/custom.css',
-//     'resources/assets/css/dark-theme.css',
-//     'resources/assets/css/superhero-bootstrap.min.css',
-//     'resources/assets/css/sweetalert.css'
-// ], 'public/css/dark.css').options({
-//
-//     purifyCss: {
-//         paths: ['resources/views/**/*.blade.php'],
-//         verbose: false,
-//         minimize: true,
-//     }
-//
-// });
-//
-// mix.styles([
-//     'public/css/app.css',
-//     'resources/assets/css/custom.css',
-//     'resources/assets/css/light-theme.css',
-//     'resources/assets/css/sweetalert.css'
-// ], 'public/css/light.css').options({
-//
-//     purifyCss: {
-//         paths: ['resources/views/**/*.blade.php'],
-//         verbose: false,
-//         minimize: true,
-//     }
-//
-// });

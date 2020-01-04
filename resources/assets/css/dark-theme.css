@@ -22,7 +22,7 @@ body {
 	margin-bottom: 15px;
 	border-radius: 5px;
 	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
-	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2); 
+	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
 	min-height: 130px;
 }
 
@@ -33,7 +33,7 @@ body {
 	margin-bottom: 15px;
 	border-radius: 5px;
 	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
-	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2); 
+	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
 	min-height: 130px;
 }
 
@@ -44,7 +44,7 @@ body {
 	margin-bottom: 15px;
 	border-radius: 5px;
 	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
-	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2); 
+	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
 	min-height: 130px;
 }
 
@@ -54,7 +54,7 @@ body {
 	margin-bottom: 15px;
 	border-radius: 5px;
 	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
-	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2); 
+	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
 	min-height: 130px;
 }
 
@@ -64,7 +64,7 @@ body {
 	margin-bottom: 15px;
 	border-radius: 5px;
 	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
-	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2); 
+	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
 	min-height: 130px;
 }
 .event-date {
@@ -254,3 +254,9 @@ li.selected:hover {
 #event-repo table>thead>tr>th, .table>thead>tr>th, table>tbody>tr>th, .table>tbody>tr>th, table>tfoot>tr>th, .table>tfoot>tr>th, table>thead>tr>td, .table>thead>tr>td, table>tbody>tr>td, .table>tbody>tr>td, table>tfoot>tr>td, .table>tfoot>tr>td {
     border-color: #000;
 }
+
+.panel-title {
+    color: #0b406e;
+    font-weight: 600;
+}
+
