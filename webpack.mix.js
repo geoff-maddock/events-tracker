@@ -1,4 +1,5 @@
 const mix = require('laravel-mix');
+require('laravel-mix-purgecss');
 
 /*
  |--------------------------------------------------------------------------
@@ -10,10 +11,6 @@ const mix = require('laravel-mix');
  | file for the application as well as bundling up all the JS files.
  |
  */
-
-// base app js and css
-mix.js('resources/assets/js/app.js', 'public/js')
-    .sass('resources/assets/sass/app.scss', 'public/css');
 
 // build dark theme
 mix.styles([
@@ -31,3 +28,10 @@ mix.styles([
     'resources/assets/css/light-theme.css',
     'resources/assets/css/sweetalert.css'
 ], 'public/css/light.css');
+
+// base app js and css
+mix.js('resources/assets/js/app.js', 'public/js')
+    .sass('resources/assets/sass/app.scss', 'public/css')
+    .purgeCss();
+
+
