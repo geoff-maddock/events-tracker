@@ -17,7 +17,7 @@
     	    title="RSS Feed {{ config('blog.title') }}">
 
     <!-- select based on default-theme -->
-    @if ($theme != config('app.default_theme'))
+    @if ($theme !== config('app.default_theme'))
     	<link href="{{ asset('/css/light.css') }}" rel="stylesheet">
 	@else
         {{--<link href="{{ asset('/css/'.$theme.'.css') }}" rel="stylesheet">--}}
@@ -26,9 +26,9 @@
 	<link href="{{ asset('/css/select2.css') }}" rel="stylesheet">
 	<link href="{{ asset('/css/select2-bootstrap.min.css') }}" rel="stylesheet">
 	<!-- Material Icons -->
-	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap" rel="stylesheet">
 	<!-- Fonts -->
-	<link href='//fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'>
+	<link href="//fonts.googleapis.com/css?family=Roboto:400,300&display=swap" rel="stylesheet" type="text/css">
 	<link href="https://fonts.googleapis.com/css?family=Rubik&display=swap" rel="stylesheet">
 
 </head>
