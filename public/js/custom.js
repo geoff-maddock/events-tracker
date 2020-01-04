@@ -100,7 +100,6 @@ var App = (function()
             });
         });
 
-        // console.log('Set up select to, applied to select2 class.');
         // enable tooltips
         $(target).tooltip({
             selector: '.tip',
@@ -203,7 +202,8 @@ var Home = (function()
         $.ajax({
             url : url
         }).done(function (data) {
-            $('#day-'+num).html(data);
+            // load results into the applicable position
+            $('#day-position-'+num).html(data);
         }).fail(function () {
             console.log('No events could be loaded')
         });

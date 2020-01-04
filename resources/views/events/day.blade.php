@@ -1,4 +1,4 @@
-<div class="col-lg-3" id="day-{{ $position }}">
+<div class="col-lg-3">
     <div class="bs-component">
         <div class="panel panel-info">
 
@@ -14,6 +14,7 @@
 
             <div class="panel-body">
             <?php $events = App\Event::starting($day->format('Y-m-d'))->get();    ?>
+
             @include('events.list', ['events' => $events])
 
             <!-- find all series that would fall on this date -->

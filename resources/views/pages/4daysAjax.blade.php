@@ -11,7 +11,7 @@
 <li></li>
 </ul>
 </div>
- 
+
 <div class="col-sm-3">
 <ul class="pagination pull-right" style="margin-top: 0px;">
 	<li>{!! link_to_route('home', 'Future Day >', ['day_offset' => $dayOffset+1], ['class' => 'item-title', 'style' => 'white-space: nowrap;']) !!}</li>
@@ -20,7 +20,7 @@
 </div>
 </div>
 <br style="clear: left;"/>
-<!-- DISPLAY THE NEXT FOUR DAYS OF EVENTS --> 
+<!-- DISPLAY THE NEXT FOUR DAYS OF EVENTS -->
 <?php $today = \Carbon\Carbon::now('America/New_York'); ?>
 
 <div class="row small-gutter">
@@ -29,7 +29,7 @@
 	 $offset = $i + $dayOffset;
 	 $day = \Carbon\Carbon::parse($today)->addDay($offset);
 	 ?>
-		<section class="day" data-num="{{ $i }}" id="day-{{ $i }}" href="/events/day/{{ $day->format('Y-m-d') }}">
+		<section class="day" data-num="{{ $i }}" id="day-position-{{ $i }}" href="/events/day/{{ $day->format('Y-m-d') }}">
 		@include('events.dayAjax', ['day' => $day, 'position' => $i ])
 		</section>
 	@endfor

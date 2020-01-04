@@ -4,7 +4,7 @@
 
 			<div class="panel-heading">
 				<h3 class="panel-title">
-				@if ($offset == 0)
+				@if (0 === $offset)
 				Today's Events
 				@else
 				{{ $day->format('l M jS Y') }}
