@@ -45,6 +45,7 @@ if (token) {
 
 import Visibility from './utilities/visibility';
 Visibility.init('body');
+
 // import Echo from 'laravel-echo'
 
 // window.Pusher = require('pusher-js');

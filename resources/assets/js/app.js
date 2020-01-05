@@ -9,6 +9,7 @@ require('./bootstrap');
 //import Swal from 'sweetalert2';
 //const Swal = require('sweetalert2')
 
+window.moment = require('moment');
 window.Swal = require('sweetalert2');
 window.Dropzone = require('dropzone');
 // add any other dependencies - things i'm including manually in app.layout
