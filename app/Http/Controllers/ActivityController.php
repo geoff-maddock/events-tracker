@@ -7,10 +7,11 @@ use App\Follow;
 use App\Http\Requests\SeriesRequest;
 use App\Series;
 use App\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
-use Log;
 
 class ActivityController extends Controller
 {
@@ -26,6 +27,7 @@ class ActivityController extends Controller
     protected $sortOrder;
     protected $defaultCriteria;
     protected $hasFilter;
+    protected $filters;
     protected $entityType;
 
     public function __construct(Series $series)
@@ -64,20 +66,18 @@ class ActivityController extends Controller
      */
     public function filter(Request $request)
     {
+        // update filters from request
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+
         // get all the filters from the session
         $this->filters = $this->getFilters($request);
 
-        // update filters based on the request input
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->input()));
-
-        // get the merged filters
-        $this->filters = $this->getFilters($request);
-
-        // updates sort, rpp from request
+        // get  sort, sort order, rpp from session, update from request
+        $this->getPaging($this->filters);
         $this->updatePaging($request);
 
-        // flag that there are filters
-        $this->hasFilter = count($this->filters);
+        // set flag if there are filters
+        $this->hasFilter = $this->hasFilter($this->filters);
 
         // get the criteria given the request (could pass filters instead?)
         $query = $this->buildCriteria($request);
@@ -193,7 +193,7 @@ class ActivityController extends Controller
         // get future events
         $series = $query->paginate($this->rpp);
         $series->filter(function ($e) {
-            return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+            return ('Public' === $e->visibility->name) || ($this->user && $e->created_by === $this->user->id);
         });
 
         return view('series.index')
@@ -204,13 +204,18 @@ class ActivityController extends Controller
 
     public function index(Request $request)
     {
-        // updates sort, rpp from request
+        // update filters from request
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+
+        // get all the filters from the session
+        $this->filters = $this->getFilters($request);
+
+        // get  sort, sort order, rpp from session, update from request
+        $this->getPaging($this->filters);
         $this->updatePaging($request);
 
-        // get filters from session
-        $filters = $this->getFilters($request);
-
-        $this->hasFilter = count($filters);
+        // set flag if there are filters
+        $this->hasFilter = $this->hasFilter($this->filters);
 
         // base criteria
         $query = $this->buildCriteria($request);
@@ -290,7 +295,7 @@ class ActivityController extends Controller
      *
      * @param $id
      *
-     * @return Response
+     * @return Response | RedirectResponse
      */
     public function unfollow($id, Request $request)
     {
@@ -317,19 +322,9 @@ class ActivityController extends Controller
     }
 
     /**
-     * Criteria provides a way to define criteria to be applied to a tab on the index page.
-     *
-     * @return array
-     */
-    public function getCriteria()
-    {
-        return $this->criteria;
-    }
-
-    /**
      * Get the current page for this module.
      *
-     * @return integner
+     * @return int
      */
     public function getPage()
     {
@@ -364,20 +359,6 @@ class ActivityController extends Controller
     public function getDefaultSort()
     {
         return ['id', 'desc'];
-    }
-
-    /**
-     * Set criteria.
-     *
-     * @param array $input
-     *
-     * @return string
-     */
-    public function setCriteria($input)
-    {
-        $this->criteria = $input;
-
-        return $this->criteria;
     }
 
     /**
@@ -427,6 +408,7 @@ class ActivityController extends Controller
         // base criteria
         $query = $this->baseCriteria();
 
+        die('ok');
         // add the criteria from the session
         // check request for passed filter values
 
@@ -434,6 +416,11 @@ class ActivityController extends Controller
             // getting name from the request
             $name = $filters['filter_name'];
             $query->where('name', 'like', '%'.$name.'%');
+        }
+
+        if (!empty($filters['filter_object_table'])) {
+            $object_table = $filters['filter_object_table'];
+            $query->where('object_table', 'like', '%'.$object_table.'%');
         }
 
         // change this - should be separate
