@@ -89,7 +89,7 @@ return [
 	|------------------
 	|
 	| This is the email that will be used for sending application feedback
-	| 
+	|
 	*/
 	'feedback' => env('APP_FEEDBACK_EMAIL', 'admin@localhost'),
 	'admin' => env('APP_ADMIN_EMAIL', 'admin@localhost'),
@@ -160,7 +160,7 @@ return [
 		 */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
-
+        App\Providers\BroadcastServiceProvider::class,
     # replacement for the bus service provider
         \AltThree\Bus\BusServiceProvider::class,
         App\Providers\EventServiceProvider::class,

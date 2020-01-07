@@ -109,9 +109,9 @@
 								<li><a href="{{ url('/tools')}}">Tools</a></li>
 							@endcan
 
-							<li role="separator" class="divider" class="visible-xs-block visible-sm-block"></li>
+							<li role="separator" class="divider visible-xs-block visible-sm-block"></li>
 							<li><a href="{{ url('/help')}}" class="visible-xs-block visible-sm-block">Help</a></li>
-							<li><a href="{{ url('/register') }}" class="class="visible-xs-block visible-sm-block"">Register</a></li>
+
 							<li><a href="mailto:{{ config('app.feedback') }}" title="Send email to {{ config('app.feedback') }}" class="visible-xs-block visible-sm-block">Feedback</a></li>
 
 							<li role="separator" class="divider"></li>
