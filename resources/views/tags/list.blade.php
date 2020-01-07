@@ -4,7 +4,7 @@
 	@foreach ($tags as $tag)
 
 	<li class="event-card" style="clear: both;">
-		<h1>{!! link_to_route('tags.show', $tag->name, [$tag->name], ['class' => 'item-title']) !!}
+		<span style="font-size: 26px;">{!! link_to_route('tags.show', $tag->name, [$tag->name], ['class' => 'item-title']) !!}
 			@if ($signedIn)
 				@if ($follow = $tag->followedBy($user))
 				<a href="{!! route('tags.unfollow', ['id' => $tag->id]) !!}" title="You are following this tag.  Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
@@ -16,8 +16,8 @@
 						<a href="{!! route('tags.edit', ['id' => $tag->id]) !!}" title="Click to edit"><span class='glyphicon glyphicon-pencil text-warning'></span></a>
                         {!! link_form_icon('glyphicon-trash text-warning', $tag, 'DELETE', 'Delete the tag') !!}
                     @endif
-			@endif 
-		</h1> 
+			@endif
+		</span>
 		<span class="label label-tag">{!! link_to_route('events.tag', 'Events', [$tag->name], ['class' => 'item-title']) !!} {{ $tag->events ? count($tag->events) : 0 }}</span>
 		<span class="label label-tag">{!! link_to_route('series.tag', 'Series', [$tag->name], ['class' => 'item-title']) !!}  {{ $tag->series ? count($tag->series) : 0 }}</span>
 		<span class="label label-tag">{!! link_to_route('entities.tag', 'Entities', [$tag->name], ['class' => 'item-title']) !!} {{ $tag->entities ? count($tag->entities) : 0}}</span>
@@ -29,5 +29,5 @@
 </ul>
 
 @else
-	<ul class='event-list'><li style='clear:both;'><i>No tags listed</i></li></ul> 
+	<ul class='event-list'><li style='clear:both;'><i>No tags listed</i></li></ul>
 @endif

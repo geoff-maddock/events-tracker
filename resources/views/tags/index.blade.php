@@ -4,7 +4,7 @@
 
 @section('content')
 
-	<h4>Tags
+	<h4>Keywords
 		@include('tags.crumbs')
 	</h4>
 
@@ -22,8 +22,8 @@
 			<div class="panel panel-info">
 
 				<div class="panel-heading">
-					<h3 class="panel-title">Tags
-						<a href="#" ><span class='glyphicon glyphicon-question-sign pull-right' data-toggle="tooltip" data-placement="bottom"  title="Click on a tag name in the left panel to find all related events or entites.  Click on the plus next to the tag to follow, minus to unfollow."></span></a>
+					<h3 class="panel-title">Keywords
+						<a href="#" ><span class='glyphicon glyphicon-question-sign pull-right' data-toggle="tooltip" data-placement="bottom"  title="Click on a keyword tag name in the left panel to find all related events or entites.  Click on the plus next to the tag to follow, minus to unfollow."></span></a>
 					</h3>
 				</div>
 
@@ -104,11 +104,11 @@
 
 				<div class="panel-body" style="padding: 15px !important;">
 
-				Click on a <b>tag</b> name in the left panel to find all related events or entites.  Click on the <b>plus</b> next to the tag to follow, <b>minus</b> to unfollow.
+				Click on a <b>keyword</b> tag name in the left panel to find all related events or entites.  Click on the <b>plus</b> next to the tag to follow, <b>minus</b> to unfollow.
 				</div>
 
 			</div>
-		</div>	
+		</div>
 	</div>
 	@endif
 
@@ -153,7 +153,7 @@
 		</div>
 		@endif
 
-		
+
 		@if (isset($series) && count($series) > 0)
 		<div class="bs-component">
 			<div class="panel panel-info">
@@ -222,7 +222,7 @@
 @parent
 <script>
 $(document).ready(function(){
-    $('[data-toggle="tooltip"]').tooltip(); 
+    $('[data-toggle="tooltip"]').tooltip();
 });
 </script>
 <script type="text/javascript">

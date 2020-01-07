@@ -1,5 +1,5 @@
 @if (isset($tag))
 	. {{  ucfirst($tag) }}
 @else
-	. Select a TAG to filter
+	. click a <b>keyword</b> tag in the list to filter.
 @endif

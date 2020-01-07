@@ -75,6 +75,7 @@
 	<div class="col-lg-12">
 		{!! $threads->render() !!}
 		@include('threads.list', ['threads' => $threads])
+        {!! $threads->render() !!}
 	</div>
 	@endif
 

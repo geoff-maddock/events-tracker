@@ -57,7 +57,7 @@
 				</li>
                 <!-- MORE end -->
 				<li class="{{ Request::is('threads') ? 'active' : '' }} visible-lg"><a href="{{ url('/threads')}}" title="Show a list of discussion forums.">Forum</a></li>
-				<li class="{{ Request::is('tags') ? 'active' : '' }} visible-lg"><a href="{{ url('/tags') }}" title="Show a list of tag topics.">Tags</a></li>
+				<li class="{{ Request::is('tags') ? 'active' : '' }} visible-lg"><a href="{{ url('/tags') }}" title="Show a list of keyword topics.">Keywords</a></li>
 				@if (!Auth::guest())
 					<li class="{{ Request::is('users') ? 'active' : '' }} visible-lg"><a href="{{ url('/users') }}" title="Show a list of registered users.">Users</a></li>
 		        @endif

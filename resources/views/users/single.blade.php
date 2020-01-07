@@ -41,13 +41,17 @@
 			@endcan
 	@endif
 
-	<ul class="list">
-	@if ($events = $user->events->take(3))
-	@foreach ($events as $event)
-		<li>Events:
-		<b>{{ $event->start_at->format('m.d.y')  }}</b> {!! link_to_route('events.show', $event->name, [$event->id], ['class' =>'butt']) !!} </li>
-	@endforeach
-	@endif
+	<ul class="list" style="display:inline;">
+        <small><br>
+            <b>Joined:</b> {{ $user->created_at->format('m.d.y') }}
 
+        @if ($events = $user->getAttending()->get()->take(3))
+            <br>
+            <b>Events Attending</b>
+            @foreach ($events as $event)
+                <li><b>{{ $event->start_at->format('m.d.y')  }}</b> {!! link_to_route('events.show', $event->name, [$event->id], ['class' =>'butt']) !!} </li>
+            @endforeach
+	    @endif
+        </small>
 	</ul>
 </li>
