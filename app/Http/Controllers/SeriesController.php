@@ -267,11 +267,15 @@ class SeriesController extends Controller
      */
     public function indexCancelled(Request $request)
     {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+        // update filters from request
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
 
-        // get filters from session
-        $filters = $this->getFilters($request);
+        // get all the filters from the session
+        $this->filters = $this->getFilters($request);
+
+        // get  sort, sort order, rpp from session, update from request
+        $this->getPaging($this->filters);
+        $this->updatePaging($request);
 
         // set flag if there are filters
         $this->hasFilter = $this->hasFilter($this->filters);
@@ -282,11 +286,12 @@ class SeriesController extends Controller
             ->orderBy('occurrence_week_id', 'ASC')
             ->orderBy('occurrence_day_id', 'ASC')
             ->orderBy('name', 'ASC')
-            ->get();
+            ->paginate();
 
-        $series = $series->filter(function ($e) {
-            return ('Public' === $e->visibility->name) || ($this->user && $e->created_by === $this->user->id);
-        });
+
+  //      $series = $series->filter(function ($e) {
+  //          return ('Public' === $e->visibility->name) || ($this->user && $e->created_by === $this->user->id);
+ //       });
 
         return view('series.index')
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])

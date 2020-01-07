@@ -4,9 +4,9 @@
 
 @section('content')
 
-	<i>{{ $series->start_at->format('l F jS Y \\a\\t h:i A') }} </i>
-	<h2>{{ $series->name }}</h2>
+	<h4>Series . Edit . {{ $series->name }}</h4>
 
+	<i>{{ $series->start_at->format('l F jS Y \\a\\t h:i A') }} </i>
     <div class="row">
         <div class="col-md-8">
         {!! Form::model($series, ['route' => ['series.update', $series->id], 'method' => 'PATCH']) !!}

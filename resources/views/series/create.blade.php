@@ -2,7 +2,7 @@
 
 @section('content')
 
-	<h3>Add a New Event Series</h3>
+	<h4>Add a New Event Series</h4>
 
 	{!! Form::open(['route' => 'series.store']) !!}
 

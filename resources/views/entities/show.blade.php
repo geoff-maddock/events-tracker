@@ -5,9 +5,9 @@
 @section('content')
 
 
-<h2>Entity
+<h4>Entity
 	@include('entities.crumbs', ['slug' => $entity->slug])
-</h2>
+</h4>
 
 <P>
 @if ($user && Auth::user()->id === $entity->user->id)

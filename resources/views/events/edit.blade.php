@@ -5,8 +5,8 @@
 @section('content')
 <script src="{{ asset('/js/facebook-sdk.js') }}"></script>
 
-<h2>Event . EDIT
-	@include('events.crumbs', ['slug' => $event->slug ?: $event->id])<br>
+<h4>Events. Edit 
+	@include('events.crumbs', ['slug' => $event->slug ?: $event->id])</h4>
   <a href="{!! route('events.show', ['id' => $event->id]) !!}" class="btn btn-primary">Show Event</a>
 
   @if (!empty($event->threads) && $user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser')) )

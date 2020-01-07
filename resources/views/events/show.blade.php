@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h2>Event
+<h4>Events
 	@include('events.crumbs', ['slug' => '#'.$event->id])
 </h2>
 

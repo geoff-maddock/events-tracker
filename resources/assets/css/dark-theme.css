@@ -221,6 +221,12 @@ li.selected:hover {
     color: #5bc0de;
 }
 
+#event-repo h4, .h4 {
+    font-size: 18px;
+    font-weight: 800;
+    color: #5bc0de;
+}
+
 #event-repo h3.listing {
 	font-size: 28px;
 	font-weight: 600;

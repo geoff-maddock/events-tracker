@@ -10,7 +10,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class EventCreated implements ShouldBroadcast
+class EventUpdated implements ShouldBroadcast
 {
     use Dispatchable;
     use InteractsWithSockets;
@@ -23,9 +23,8 @@ class EventCreated implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct(Event $event)
+    public function __construct()
     {
-        $this->event = $event;
     }
 
     /**
