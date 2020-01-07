@@ -43,7 +43,7 @@
 
 	@include('partials.nav')
 
-	<div id="app-container" class="container-fluid">
+	<div id="app-container" class="container-fluid" style="margin-top: 40px;">
 		<div id="app-mobile-search" class="container-fluid visible-xs-block">
 			<form class="col-xs-12" role="search" action="/search">
 				<div class="form-group">

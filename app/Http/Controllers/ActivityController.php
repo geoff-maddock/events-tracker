@@ -408,10 +408,6 @@ class ActivityController extends Controller
         // base criteria
         $query = $this->baseCriteria();
 
-        die('ok');
-        // add the criteria from the session
-        // check request for passed filter values
-
         if (!empty($filters['filter_name'])) {
             // getting name from the request
             $name = $filters['filter_name'];
