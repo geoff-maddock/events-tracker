@@ -43,7 +43,10 @@
 
 	<ul class="list" style="display:inline;">
         <small><br>
-            <b>Joined:</b> {{ $user->created_at->format('m.d.y') }}
+
+            <b>Joined:</b> {{ $user->created_at->format('m.d.y') }}<br>
+            <b>Last Active:</b> {{ $user->lastActivity ?  $user->lastActivity->created_at->format('m.d.y') : 'Never'}}<br>
+
 
         @if ($events = $user->getAttending()->get()->take(3))
             <br>

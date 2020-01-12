@@ -47,7 +47,7 @@
         <form action="{{ url()->action('UsersController@filter') }}" method="GET" class="form-inline">
             <div class="form-group">
                 <?php $rpp_options =  [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000];?>
-                <?php $sort_by_options = ['name' => 'Username',  'created_at' => 'Created']; ?>
+                <?php $sort_by_options = ['name' => 'Username',  'created_at' => 'Created', 'user_status_id' => 'Status']; ?>
                 <?php $sort_order_options = ['asc' => 'asc', 'desc' => 'desc']; ?>
                 {!! Form::select('rpp', $rpp_options, ($rpp ?? 10), ['class' =>'form-control auto-submit']) !!}
                 {!! Form::select('sortBy', $sort_by_options, ($sortBy ?? 'name'), ['class' =>'form-control auto-submit']) !!}

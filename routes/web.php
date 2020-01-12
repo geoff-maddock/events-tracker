@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Events\EventCreated;
 use App\Events\EventUpdated;
+use App\Event;
 
 Auth::routes(['verify' => true]);
 
@@ -131,6 +132,9 @@ Route::get('events/createThread', [
 Route::get('events/dispatch', function() {
     EventUpdated::dispatch();
     return 'test';
+});
+Route::get('update', function () {
+    EventUpdated::dispatch(new Event());
 });
 Route::get('events/all', 'EventsController@indexAll');
 Route::get('events/today', 'EventsController@indexToday');

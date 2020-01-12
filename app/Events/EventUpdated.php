@@ -23,8 +23,9 @@ class EventUpdated implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Event $event)
     {
+        $this->event = $event;
     }
 
     /**

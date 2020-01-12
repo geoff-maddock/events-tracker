@@ -10,6 +10,8 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
 
@@ -363,7 +365,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function groups()
     {
@@ -373,11 +375,21 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * Fetch the last published post for the user.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function lastPost()
     {
         return $this->hasOne(Post::class, 'created_by')->latest();
+    }
+
+    /**
+     * Fetch the login date for the user.
+     *
+     * @return HasOne
+     */
+    public function lastActivity()
+    {
+        return $this->hasOne(Activity::class, 'user_id')->latest();
     }
 
     /**
@@ -387,7 +399,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      */
     public function getIsActiveAttribute()
     {
-        if ($this->status && 'Active' == $this->status->name) {
+        if ($this->status && 'Active' === $this->status->name) {
             return 1;
         }
 

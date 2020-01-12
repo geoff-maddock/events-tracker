@@ -46,13 +46,19 @@ if (token) {
 import Visibility from './utilities/visibility';
 Visibility.init('body');
 
-// import Echo from 'laravel-echo'
+import Echo from 'laravel-echo';
 
-// window.Pusher = require('pusher-js');
+window.Pusher = require('pusher-js');
 
-// window.Echo = new Echo({
-//     broadcaster: 'pusher',
-//     key: 'your-pusher-key',
-//     cluster: 'mt1',
-//     encrypted: true
-// });
+window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: 'eba5ac880f201aaae590',
+    cluster: 'us2',
+    encrypted: true
+});
+
+window.Echo.channel('events')
+    .listen('EventUpdated', e => {
+        console.log('Event with id of ' + e.event.id + ' was updated behind the scenes.');
+        console.log(e);
+    });

@@ -6,6 +6,8 @@ use App\Activity;
 use App\Entity;
 use App\Event;
 use App\EventResponse;
+use App\Events\EventCreated;
+use App\Events\EventUpdated;
 use App\EventType;
 use App\Http\Requests\EventRequest;
 use App\Notifications\EventPublished;
@@ -180,7 +182,7 @@ class EventsController extends Controller
 
         // get future events
         $future_events = $query_future
-            ->with('visibility','venue')
+            ->with('visibility', 'venue')
             ->paginate($this->rpp);
 
         // build past events query
@@ -200,7 +202,7 @@ class EventsController extends Controller
 
         // get past events
         $past_events = $query_past
-            ->with('visibility','venue')
+            ->with('visibility', 'venue')
             ->paginate($this->rpp);
 
         return view('events.index')
@@ -1586,6 +1588,8 @@ class EventsController extends Controller
         // add to activity log
         Activity::log($event, $this->user, 1);
 
+        EventCreated::dispatch($event);
+
         flash()->success('Success', 'Your event has been created');
 
         // check if a FB link was included
@@ -1699,6 +1703,7 @@ class EventsController extends Controller
 
         // add to activity log
         Activity::log($event, $this->user, 2);
+        EventUpdated::dispatch($event);
 
         flash()->success('Success', 'Your event has been updated');
 
