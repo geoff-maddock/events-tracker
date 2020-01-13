@@ -14,7 +14,7 @@ window.Swal = require('sweetalert2');
 window.Dropzone = require('dropzone');
 // add any other dependencies - things i'm including manually in app.layout
 
-// window.Vue = require('vue');
+window.Vue = require('vue');
 //
 // /**
 //  * Next, we will create a fresh Vue application instance and attach it to
@@ -22,7 +22,7 @@ window.Dropzone = require('dropzone');
 //  * or customize the JavaScript scaffolding to fit your unique needs.
 //  */
 //
-// Vue.component('example', require('./components/Example.vue'));
+// Vue.component('event-list', require('./components/EventList.vue'));
 //
 // const app = new Vue({
 //     el: '#app-container'

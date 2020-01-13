@@ -50,15 +50,56 @@ import Echo from 'laravel-echo';
 
 window.Pusher = require('pusher-js');
 
+// import dotenv from 'dotenv';
+//
+// dotenv.config();
+// console.log(process.env.PUSHER_APP_KEY);
+
 window.Echo = new Echo({
     broadcaster: 'pusher',
-    key: 'eba5ac880f201aaae590',
+    //key: 'eba5ac880f201aaae590',
+    key: process.env.MIX_PUSHER_APP_KEY,
     cluster: 'us2',
     encrypted: true
 });
 
 window.Echo.channel('events')
     .listen('EventUpdated', e => {
-        console.log('Event with id of ' + e.event.id + ' was updated behind the scenes.');
+        const message = 'Event #' + e.event.id + ' "' + e.event.name + '" was updated.';
+        Swal.fire({
+            title: "Event Updated",
+            text: message,
+            type: "info",
+            timer: 2500,
+            showConfirmButton: false,
+            preConfirm: function() {
+                return new Promise(function(resolve) {
+                    setTimeout(function() {
+                        resolve()
+                    }, 2000)
+                })
+            }
+        });
+        console.log('Event updated.');
         console.log(e);
-    });
+    })
+    .listen('EventCreated', e => {
+        const message = 'Event #' + e.event.id + ' "' + e.event.name + '" was created.';
+        Swal.fire({
+            title: "New Event Created",
+            text: message,
+            type: "info",
+            timer: 2500,
+            showConfirmButton: false,
+            preConfirm: function() {
+                return new Promise(function(resolve) {
+                    setTimeout(function() {
+                        resolve()
+                    }, 2000)
+                })
+            }
+        });
+        console.log('Event created.');
+        console.log(e);
+    })
+;

@@ -56,6 +56,7 @@
 			<div id="app-content-columns" class="col-md-12">
 				@yield('content')
 			</div>
+            <event-list></event-list>
 		</div>
 	</div>
 
