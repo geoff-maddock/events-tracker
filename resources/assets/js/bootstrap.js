@@ -83,23 +83,23 @@ window.Echo.channel('events')
         console.log('Event updated.');
         console.log(e);
     })
-    .listen('EventCreated', e => {
-        const message = 'Event #' + e.event.id + ' "' + e.event.name + '" was created.';
-        Swal.fire({
-            title: "New Event Created",
-            text: message,
-            type: "info",
-            timer: 2500,
-            showConfirmButton: false,
-            preConfirm: function() {
-                return new Promise(function(resolve) {
-                    setTimeout(function() {
-                        resolve()
-                    }, 2000)
-                })
-            }
-        });
-        console.log('Event created.');
-        console.log(e);
-    })
+    // .listen('EventCreated', e => {
+    //     const message = 'Event #' + e.event.id + ' "' + e.event.name + '" was created.';
+    //     Swal.fire({
+    //         title: "New Event Created",
+    //         text: message,
+    //         type: "info",
+    //         timer: 2500,
+    //         showConfirmButton: false,
+    //         preConfirm: function() {
+    //             return new Promise(function(resolve) {
+    //                 setTimeout(function() {
+    //                     resolve()
+    //                 }, 2000)
+    //             })
+    //         }
+    //     });
+    //     console.log('Event created.');
+    //     console.log(e);
+    // })
 ;

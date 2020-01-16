@@ -26,6 +26,7 @@ class EventCreated implements ShouldBroadcast
     public function __construct(Event $event)
     {
         $this->event = $event;
+        $this->dontBroadcastToCurrentUser();
     }
 
     /**
