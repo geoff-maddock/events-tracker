@@ -13,6 +13,7 @@
 	<meta name="csrf-token" content="{{ csrf_token() }}">
 	<title>{{ config('app.app_name')}} - Event + Club Guide - @yield('title')</title>
 	<link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/apple-icon-180x180.png">
   	<link rel="alternate" type="application/rss+xml" href="{{ url('rss') }}"
     	    title="RSS Feed {{ config('blog.title') }}">
 
