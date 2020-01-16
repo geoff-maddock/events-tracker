@@ -719,9 +719,9 @@ class UsersController extends Controller
            DTSTAMP:'.date(ICAL_FORMAT, strtotime($event->created_at))."
            SUMMARY:$event->name
            UID:$event->id
-           STATUS:".strtoupper('active').'
+           STATUS:".strtoupper('CONFIRMED').'
            LAST-MODIFIED:'.date(ICAL_FORMAT, strtotime($event->updated_at))."
-           LOCATION: $venue 
+           LOCATION: $venue
            END:VEVENT\n";
         }
 
