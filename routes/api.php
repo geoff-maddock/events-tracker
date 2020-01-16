@@ -23,7 +23,6 @@ Route::get('entities/{id}', function($id) {
     return Entity::find($id);
 });
 
-
 Route::get('series', function () {
     return Series::all();
 });
@@ -31,10 +30,3 @@ Route::get('series', function () {
 Route::get('series/{id}', function($id) {
     return Series::find($id);
 });
-
-Route::post('login', 'Auth\LoginController@login');
-
-Route::middleware('auth:api')
-    ->get('user', function (Request $request) {
-        return $request->user();
-    });
