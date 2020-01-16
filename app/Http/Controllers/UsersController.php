@@ -21,6 +21,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UsersController extends Controller
 {
+    const DEFAULT_SHOW_COUNT = 100;
+
     protected $prefix;
     protected $rpp;
     protected $page;
@@ -676,6 +678,66 @@ class UsersController extends Controller
     }
 
     /**
+     * Return the users events in iCal format.
+     *
+     * @param $id
+     *
+     * @return Response
+     */
+    public function ical($id, Request $request)
+    {
+        // check if there is a logged in user
+        if (!$this->user) {
+            flash()->error('Error', 'No user is logged in.');
+
+            return back();
+        }
+
+        if (!$user = User::find($id)) {
+            flash()->error('Error', 'No such user');
+
+            return back();
+        }
+        define('ICAL_FORMAT', 'Ymd\THis\Z');
+
+        // add the following response
+        // get the next x events they are attending
+        $events = $user->getAttendingFuture()->take(self::DEFAULT_SHOW_COUNT);
+
+        $icalObject = "BEGIN:VCALENDAR
+       VERSION:2.0
+       METHOD:PUBLISH
+       PRODID:-//Arcane City//Event Calendar//EN\n";
+
+        // loop over events
+        foreach ($events as $event) {
+            $venue = $event->venue ? $event->venue->name : '';
+            $icalObject .=
+                'BEGIN:VEVENT
+           DTSTART:'.date(ICAL_FORMAT, strtotime($event->start_at)).'
+           DTEND:'.date(ICAL_FORMAT, strtotime($event->end_at)).'
+           DTSTAMP:'.date(ICAL_FORMAT, strtotime($event->created_at))."
+           SUMMARY:$event->name
+           UID:$event->id
+           STATUS:".strtoupper('active').'
+           LAST-MODIFIED:'.date(ICAL_FORMAT, strtotime($event->updated_at))."
+           LOCATION: $venue 
+           END:VEVENT\n";
+        }
+
+        // close calendar
+        $icalObject .= 'END:VCALENDAR';
+
+        // Set the headers
+        header('Content-type: text/calendar; charset=utf-8');
+        header('Content-Disposition: attachment; filename="cal.ics"');
+
+        $icalObject = str_replace(' ', '', $icalObject);
+
+        echo $icalObject;
+    }
+
+    /**
      * @param $user
      *
      * @return \Illuminate\Http\RedirectResponse
@@ -748,7 +810,8 @@ class UsersController extends Controller
         $site = config('app.app_name');
         $url = config('app.url');
 
-        $show_count = 100;
+        $show_count = self::DEFAULT_SHOW_COUNT;
+
         $events = [];
         $interests = [];
 

@@ -103,6 +103,11 @@ Route::get('users/{id}/suspend', [
     'uses' => 'UsersController@suspend'
 ]);
 
+Route::get('users/{id}/ical', [
+    'as' => 'users.ical',
+    'uses' => 'UsersController@ical'
+]);
+
 Route::get('users/{id}/delete', [
     'as' => 'users.delete',
     'uses' => 'UsersController@delete'
