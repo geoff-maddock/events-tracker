@@ -1531,7 +1531,7 @@ class EventsController extends Controller
     }
 
     /**
-     * @return $this
+     * @return View
      */
     public function show(Event $event)
     {

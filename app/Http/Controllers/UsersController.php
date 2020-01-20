@@ -13,15 +13,21 @@ use App\User;
 use App\UserStatus;
 use App\Visibility;
 use Carbon\Carbon;
+use Eluceo\iCal\Component\Event;
+use Illuminate\Contracts\Logging\Log;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Log;
-use Mail;
+use Illuminate\Routing\Redirector;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Throwable;
 
 class UsersController extends Controller
 {
-    const DEFAULT_SHOW_COUNT = 100;
+    public const DEFAULT_SHOW_COUNT = 100;
 
     protected $prefix;
     protected $rpp;
@@ -62,22 +68,18 @@ class UsersController extends Controller
 
     /**
      * Set filters attribute.
-     *
-     * @return array
      */
-    public function setFilters(Request $request, array $input)
+    public function setFilters(Request $request, array $input): void
     {
-        return $this->setAttribute('filters', $input, $request);
+        $this->setAttribute('filters', $input, $request);
     }
 
     /**
      * Set tabs attribute.
-     *
-     * @return array
      */
-    public function setTabs(Request $request, array $input)
+    public function setTabs(Request $request, array $input): void
     {
-        return $this->setAttribute('tabs', $input, $request);
+        $this->setAttribute('tabs', $input, $request);
     }
 
     /**
@@ -85,10 +87,8 @@ class UsersController extends Controller
      *
      * @param string $attribute
      * @param mixed  $value
-     *
-     * @return void
      */
-    public function setAttribute($attribute, $value, Request $request)
+    public function setAttribute($attribute, $value, Request $request): void
     {
         $request->session()->put($this->prefix.$attribute, $value);
     }
@@ -142,7 +142,7 @@ class UsersController extends Controller
      *
      * @return Response | string
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function filter(Request $request)
     {
@@ -178,7 +178,7 @@ class UsersController extends Controller
     /**
      * Builds the criteria from the session.
      *
-     * @return $query
+     * @return Builder
      */
     public function buildCriteria(Request $request)
     {
@@ -221,9 +221,9 @@ class UsersController extends Controller
     /**
      * Reset the filtering of users.
      *
-     * @return Response
+     * @return Response | string
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function reset(Request $request)
     {
@@ -249,7 +249,7 @@ class UsersController extends Controller
      *
      * @param $request
      */
-    protected function updatePaging($request)
+    protected function updatePaging($request): void
     {
         // set sort by column
         if ($request->input('sort_by')) {
@@ -279,10 +279,8 @@ class UsersController extends Controller
 
     /**
      * Get session tabs.
-     *
-     * @return array
      */
-    public function getTabs(Request $request)
+    public function getTabs(Request $request): array
     {
         return $this->getAttribute('tabs', $this->getDefaultTabs(), $request);
     }
@@ -324,7 +322,7 @@ class UsersController extends Controller
     /**
      * Show a form to create a new user.
      *
-     * @return view
+     * @return View
      **/
     public function create()
     {
@@ -336,7 +334,7 @@ class UsersController extends Controller
     }
 
     /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View
+     * @return RedirectResponse|Response|View
      */
     public function show(User $user, Request $request)
     {
@@ -366,7 +364,7 @@ class UsersController extends Controller
         return view('users.show', compact('user', 'tabs'));
     }
 
-    public function store(UserRequest $request, User $user)
+    public function store(UserRequest $request, User $user): void
     {
         $input = $request->all();
 
@@ -383,10 +381,7 @@ class UsersController extends Controller
         flash('Success', 'Your user has been created!');
     }
 
-    /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function edit(User $user)
+    public function edit(User $user): View
     {
         $this->middleware('auth');
 
@@ -397,10 +392,7 @@ class UsersController extends Controller
         return view('users.edit', compact('user', 'visibilities', 'userStatuses', 'groups'));
     }
 
-    /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function update(User $user, ProfileRequest $request)
+    public function update(User $user, ProfileRequest $request): View
     {
         $user->fill($request->input())->save();
         $user->profile->fill($request->input())->save();
@@ -421,7 +413,7 @@ class UsersController extends Controller
     }
 
     /**
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @return RedirectResponse|Redirector
      *
      * @throws \Exception
      */
@@ -440,9 +432,9 @@ class UsersController extends Controller
      *
      * @param int $id
      *
-     * @return void
+     * @throws \Illuminate\Validation\ValidationException
      */
-    public function addPhoto($id, Request $request)
+    public function addPhoto($id, Request $request): void
     {
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif',
@@ -480,6 +472,8 @@ class UsersController extends Controller
      * @param int $id
      *
      * @return void
+     *
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function deletePhoto($id, Request $request)
     {
@@ -499,7 +493,7 @@ class UsersController extends Controller
      *
      * @param $id
      *
-     * @return Response
+     * @return Response | RedirectResponse
      */
     public function activate($id, Request $request)
     {
@@ -538,7 +532,7 @@ class UsersController extends Controller
      *
      * @param $id
      *
-     * @return Response
+     * @return Response | RedirectResponse
      */
     public function suspend($id, Request $request)
     {
@@ -574,7 +568,7 @@ class UsersController extends Controller
      *
      * @param $id
      *
-     * @return Response
+     * @return Response | RedirectResponse
      */
     public function reminder($id, Request $request)
     {
@@ -609,7 +603,7 @@ class UsersController extends Controller
      *
      * @param $id
      *
-     * @return Response
+     * @return Response | RedirectResponse
      */
     public function weekly($id, Request $request)
     {
@@ -644,7 +638,7 @@ class UsersController extends Controller
      *
      * @param $id
      *
-     * @return Response
+     * @return Response | RedirectResponse
      */
     public function delete($id, Request $request)
     {
@@ -682,10 +676,12 @@ class UsersController extends Controller
      *
      * @param $id
      *
-     * @return Response
+     * @return Response | RedirectResponse
      */
     public function ical($id, Request $request)
     {
+        app('debugbar')->disable();
+
         // check if there is a logged in user
         if (!$this->user) {
             flash()->error('Error', 'No user is logged in.');
@@ -700,47 +696,45 @@ class UsersController extends Controller
         }
         define('ICAL_FORMAT', 'Ymd\THis\Z');
 
+        // create a calendar object
+        $vCalendar = new \Eluceo\iCal\Component\Calendar($this->user->getFullNameAttribute().' Calendar');
+
         // add the following response
         // get the next x events they are attending
         $events = $user->getAttendingFuture()->take(self::DEFAULT_SHOW_COUNT);
 
-        $icalObject = "BEGIN:VCALENDAR
-       VERSION:2.0
-       METHOD:PUBLISH
-       PRODID:-//Arcane City//Event Calendar//EN\n";
-
         // loop over events
         foreach ($events as $event) {
             $venue = $event->venue ? $event->venue->name : '';
-            $icalObject .=
-                'BEGIN:VEVENT
-           DTSTART:'.date(ICAL_FORMAT, strtotime($event->start_at)).'
-           DTEND:'.date(ICAL_FORMAT, strtotime($event->end_at)).'
-           DTSTAMP:'.date(ICAL_FORMAT, strtotime($event->created_at))."
-           SUMMARY:$event->name
-           UID:$event->id
-           STATUS:".strtoupper('CONFIRMED').'
-           LAST-MODIFIED:'.date(ICAL_FORMAT, strtotime($event->updated_at))."
-           LOCATION: $venue
-           END:VEVENT\n";
-        }
 
-        // close calendar
-        $icalObject .= 'END:VCALENDAR';
+            $vEvent = new Event();
+            $vEvent
+                ->setDtStart($event->start_at)
+                ->setDtEnd($event->end_at)
+                ->setDtStamp($event->created_at)
+                ->setSummary($event->name)
+                ->setDescription($event->description)
+                ->setUniqueId($event->id)
+                ->setLocation($venue)
+                ->setModified($event->updated_at)
+                ->setStatus('CONFIRMED')
+                ->setUrl($event->primary_link)
+                ;
+
+            $vCalendar->addComponent($vEvent);
+        }
 
         // Set the headers
         header('Content-type: text/calendar; charset=utf-8');
         header('Content-Disposition: attachment; filename="cal.ics"');
 
-        $icalObject = str_replace(' ', '', $icalObject);
-
-        echo $icalObject;
+        echo $vCalendar->render();
     }
 
     /**
      * @param $user
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse | Response
      */
     protected function notifyUser($user)
     {
@@ -780,7 +774,7 @@ class UsersController extends Controller
     /**
      * @param $user
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     protected function notifyUserActivated($user)
     {
@@ -801,7 +795,7 @@ class UsersController extends Controller
     /**
      * @param $user
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     protected function notifyUserWeekly($user)
     {

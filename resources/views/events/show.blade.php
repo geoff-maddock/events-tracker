@@ -6,7 +6,7 @@
 
 <h4>Events
 	@include('events.crumbs', ['slug' => '#'.$event->id])
-</h2>
+</h4>
 
 <p id="show_actions">
 	@include('events.show.actions', ['event' => $event, 'user' => $user])
@@ -95,12 +95,12 @@
 			@else
 			<span>
 				<a href="{!! route('events.reviews.create', ['id' => $event->id]) !!}" title="Add a review"><span class='glyphicon glyphicon-heart-empty text-warning'></span> Add Review</a>
-
-				@endif
+            </span>
+            @endif
 		@else
 		<a href="{!! route('events.attend', ['id' => $event->id]) !!}" title="Click to mark attending"><span class='glyphicon glyphicon-star-empty text-info'></span>  No response</a>
 		@endif
-		@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )
+		@if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser') ) )
 			<a href="{!! route('events.tweet', ['id' => $event->id]) !!}" title="Click to tweet event"><span class='glyphicon glyphicon-music text-info'></span></a>
 		@endif
 	@endif

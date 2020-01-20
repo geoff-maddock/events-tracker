@@ -45,6 +45,11 @@
                         @endforeach
                     @endunless
                 </div>
+                <p>Actions:
+                    <a href="/users/{{ $user->id }}/ical" title="Export attending events to iCal">
+                        <span class='glyphicon glyphicon-calendar'></span>
+                    </a>
+                </p>
 
                 <h5>Added <b>{{ $user->created_at->format('l F jS Y') }}</b></h5>
                 <br>
