@@ -352,18 +352,18 @@ class EventsController extends Controller
      */
     public function grid(Request $request)
     {
-        // updates sort, rpp from request
+        // update filters from request
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+
+        // get all the filters from the session
+        $this->filters = $this->getFilters($request);
+
+        // get  sort, sort order, rpp from session, update from request
+        $this->getPaging($this->filters);
         $this->updatePaging($request);
 
-        $this->rpp = $this->gridRpp;
-
-        // updates the filters in the session
-        $this->updateFilters($request);
-
-        // get filters from session
-        $filters = $this->getFilters($request);
-
-        $this->hasFilter = count($filters);
+        // set flag if there are filters
+        $this->hasFilter = $this->hasFilter($this->filters);
 
         // base criteria
         $query = $this->buildCriteria($request); //,'start_at', 'desc' );
@@ -371,13 +371,16 @@ class EventsController extends Controller
         // get future events
         $events = $query->orderBy('created_at', 'desc')->paginate($this->rpp);
         $events->filter(function ($e) {
-            return (isset($e->visibility) && 'Public' === $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+            return (isset($e->visibility) && 'Public' === $e->visibility->name) || ($this->user && $e->created_by === $this->user->id);
         });
 
         return view('events.grid')
             ->with([
+                'rpp' => $this->rpp,
+                'sortBy' => $this->sortBy,
+                'sortOrder' => $this->sortOrder,
                 'hasFilter' => $this->hasFilter,
-                'filters' => $filters,
+                'filters' => $this->filters,
             ])
             ->with(compact('events'))
             ->render();
