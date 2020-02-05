@@ -73,7 +73,7 @@ class EntitiesController extends Controller
         $filters = $this->getFilters($request);
 
         // get  sort, sort order, rpp from session, update from request
-        $this->getPaging($this->filters);
+        $this->getPaging($filters);
         $this->updatePaging($request);
 
         // set flag if there are filters

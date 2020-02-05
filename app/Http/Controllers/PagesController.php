@@ -234,8 +234,8 @@ class PagesController extends Controller
             $offset = $request->input('offset');
         }
 
-        // get all the filters from the session
-        $this->filters = $this->getFilters($request);
+//        // get all the filters from the session
+//        $this->filters = $this->getFilters($request);
 
         // update filters based on the request input
         $this->setFilters($request, array_merge($this->getFilters($request), $request->input()));
@@ -247,7 +247,7 @@ class PagesController extends Controller
         $this->updatePaging($request);
 
         // flag that there are filters
-        $this->hasFilter = count($this->filters);
+        $this->hasFilter = $this->hasFilter($this->filters);
 
         // get the criteria given the request (could pass filters instead?)
         $query = $this->buildActivityCriteria($request);
@@ -423,20 +423,20 @@ class PagesController extends Controller
         // add the criteria from the session
         // check request for passed filter values
 
-        if (!empty($filters['filter_name'])) {
+        if (!empty($filters['name'])) {
             // getting name from the request
-            $name = $filters['filter_name'];
+            $name = $filters['name'];
             $query->where('object_name', 'like', '%'.$name.'%');
         }
 
-        if (!empty($filters['filter_object_table'])) {
+        if (!empty($filters['object_table'])) {
             // getting object table from the request
-            $type = $filters['filter_object_table'];
+            $type = $filters['object_table'];
             $query->where('object_table', 'like', '%'.$type.'%');
         }
 
-        if (!empty($filters['filter_action'])) {
-            $action = $filters['filter_action'];
+        if (!empty($filters['action'])) {
+            $action = $filters['action'];
 
             // add has clause
             $query->whereHas('action', function ($q) use ($action) {
@@ -444,8 +444,8 @@ class PagesController extends Controller
             });
         }
 
-        if (!empty($filters['filter_user'])) {
-            $user = $filters['filter_user'];
+        if (!empty($filters['user'])) {
+            $user = $filters['user'];
 
             // add has clause
             $query->whereHas('user', function ($q) use ($user) {
@@ -454,8 +454,8 @@ class PagesController extends Controller
         }
 
         // change this - should be seperate
-        if (!empty($filters['filter_rpp'])) {
-            $this->rpp = $filters['filter_rpp'];
+        if (!empty($filters['rpp'])) {
+            $this->rpp = $filters['rpp'];
         }
 
         return $query;

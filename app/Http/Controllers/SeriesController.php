@@ -240,14 +240,14 @@ class SeriesController extends Controller
         $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
 
         // get all the filters from the session
-        $this->filters = $this->getFilters($request);
+        $filters = $this->getFilters($request);
 
         // get  sort, sort order, rpp from session, update from request
-        $this->getPaging($this->filters);
+        $this->getPaging($filters);
         $this->updatePaging($request);
 
         // set flag if there are filters
-        $this->hasFilter = $this->hasFilter($this->filters);
+        $this->hasFilter = $this->hasFilter($filters);
 
         // base criteria
         $query = $this->buildCriteria($request);
@@ -288,10 +288,9 @@ class SeriesController extends Controller
             ->orderBy('name', 'ASC')
             ->paginate();
 
-
-  //      $series = $series->filter(function ($e) {
-  //          return ('Public' === $e->visibility->name) || ($this->user && $e->created_by === $this->user->id);
- //       });
+        //      $series = $series->filter(function ($e) {
+        //          return ('Public' === $e->visibility->name) || ($this->user && $e->created_by === $this->user->id);
+        //       });
 
         return view('series.index')
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])

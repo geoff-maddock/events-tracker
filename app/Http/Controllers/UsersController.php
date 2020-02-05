@@ -100,13 +100,18 @@ class UsersController extends Controller
      */
     public function index(Request $request)
     {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+        // update filters from request
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
 
-        // get filters from session
+        // get all the filters from the session
         $this->filters = $this->getFilters($request);
 
-        $this->hasFilter = count($this->filters);
+        // updates sort, rpp from request
+        $this->getPaging($this->filters);
+        $this->updatePaging($request);
+
+        // set flag if there are filters
+        $this->hasFilter = $this->hasFilter($this->filters);
 
         // initialize the query
         $query = $this->buildCriteria($request);

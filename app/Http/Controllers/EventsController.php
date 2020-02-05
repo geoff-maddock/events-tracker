@@ -2366,6 +2366,31 @@ class EventsController extends Controller
         return redirect()->route('events.show', ['id' => $event->id]);
     }
 
+    public function export(Request $request,
+                            RssFeed $feed
+    ) {
+        // update filters from request
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+
+        // get all the filters from the session
+        $filters = $this->getFilters($request);
+
+        // get  sort, sort order, rpp from session, update from request
+        $this->getPaging($filters);
+        $this->updatePaging($request);
+
+        // set flag if there are filters
+        $this->hasFilter = $this->hasFilter($filters);
+
+        // base criteria
+        $events = $this->buildCriteria($request)->take(config('event.rss_size'))->get();
+
+        $rss = $feed->getEventExportRSS($events);
+
+        return response($rss)
+            ->header('Content-type', 'application/rss+xml');
+    }
+
     public function rss(RssFeed $feed)
     {
         $rss = $feed->getRSS();

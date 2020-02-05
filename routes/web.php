@@ -201,7 +201,7 @@ Route::bind('events', function($id)
 {
     return App\Event::whereId($id)->firstOrFail();
 });
-
+Route::get('events/export', 'EventsController@export');
 Route::resource('events','EventsController');
 
 # FORUMS

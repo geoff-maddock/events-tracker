@@ -55,7 +55,7 @@
             <form action="{{ url()->action('PagesController@filter') }}" method="GET" class="form-inline">
                 <div class="form-group">
                     <?php $rpp_options =  [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000];?>
-                    <?php $sort_by_options = ['name' => 'Name', 'object_table' => 'Object', 'action_id' => 'Action', 'created_at' => 'Created']; ?>
+                    <?php $sort_by_options = ['id' => 'Id', 'object_table' => 'Object', 'action_id' => 'Action', 'created_at' => 'Created']; ?>
                     <?php $sort_order_options = ['asc' => 'asc', 'desc' => 'desc']; ?>
                     {!! Form::select('rpp', $rpp_options, ($rpp ?? 10), ['class' =>'form-control auto-submit']) !!}
                     {!! Form::select('sortBy', $sort_by_options, ($sortBy ?? 'created_at'), ['class' =>'form-control auto-submit']) !!}
