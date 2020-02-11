@@ -2383,12 +2383,9 @@ class EventsController extends Controller
         $this->hasFilter = $this->hasFilter($filters);
 
         // base criteria
-        $events = $this->buildCriteria($request)->take(config('event.rss_size'))->get();
+        $events = $this->buildCriteria($request)->take($this->rpp)->get();
 
-        $rss = $feed->getEventExportRSS($events);
-
-        return response($rss)
-            ->header('Content-type', 'application/rss+xml');
+        return view('events.feed', compact('events'));
     }
 
     public function rss(RssFeed $feed)

@@ -163,6 +163,11 @@ Route::get('events/type/{slug}', 'EventsController@indexTypes');
 Route::get('events/series/{slug}', 'EventsController@indexSeries');
 Route::get('events/feed', 'EventsController@feed');
 Route::get('events/feed/tag/{tag}', 'EventsController@feedTags');
+Route::get('events/export', [
+    'as' => 'events.export',
+    'uses' => 'EventsController@export'
+    ]
+);
 
 Route::get('events/{id}/importPhoto', [
     'as' => 'events.importPhoto',
@@ -201,7 +206,7 @@ Route::bind('events', function($id)
 {
     return App\Event::whereId($id)->firstOrFail();
 });
-Route::get('events/export', 'EventsController@export');
+
 Route::resource('events','EventsController');
 
 # FORUMS

@@ -12,6 +12,7 @@
 		<a href="{!! URL::route('events.week') !!}" class="btn btn-info mt-2 mr-2">Show week's events</a>
 		<a href="{!! URL::route('events.create') !!}" class="btn btn-primary mt-2 mr-2">Add an event</a>
 		<a href="{!! URL::route('series.create') !!}" class="btn btn-primary mt-2 mr-2">Add an event series</a>
+        <a href="{!! URL::route('events.export') !!}" class="btn btn-primary mt-2 mr-2" target="_blank">Export</a>
 	</div>
 
 	<div id="filters-container" class="row">
@@ -33,7 +34,7 @@
 					{!! Form::select('filter_venue', $venues, (isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL), ['data-theme' => 'bootstrap', 'data-width' => '100%','class' =>'form-control select2', 'data-placeholder' => 'Select a venue']) !!}
 				</div>
 
-				<div class="form-group col-sm-2">
+                <div class="form-group col-sm-2">
 					{!! Form::label('filter_tag', 'Filter By Tag') !!}
 					<?php $tags =  [''=>'&nbsp;'] + App\Tag::orderBy('name','ASC')->pluck('name', 'name')->all();?>
 					{!! Form::select('filter_tag', $tags, (isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL), ['data-theme' => 'bootstrap', 'data-width' => '100%', 'class' =>'form-control select2', 'data-placeholder' => 'Select a tag']) !!}
