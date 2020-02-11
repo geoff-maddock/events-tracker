@@ -47,14 +47,12 @@
 
     <P>
         @unless ($series->entities->isEmpty())
-            Related:
             @foreach ($series->entities as $entity)
                 <span class="label label-tag"><a href="/series/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a></span>
             @endforeach
         @endunless
 
         @unless ($series->tags->isEmpty())
-            Tags:
             @foreach ($series->tags as $tag)
                 <span class="label label-tag"><a href="/series/tag/{{ urlencode($tag->name) }}">{{ $tag->name }}</a></span>
             @endforeach
