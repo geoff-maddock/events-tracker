@@ -87,7 +87,7 @@
 				</div>
 
 				<div class="panel-body">
-					<div style="display: grid; grid-template-columns: repeat(8, 1fr);  grid-auto-rows: minmax(100px, auto);">
+					<div style="display: grid; grid-template-columns:  repeat(auto-fill, minmax(200px, 1fr));">
 					@foreach ($events as $event)
 						@include('events.cell', ['event' => $event])
 					@endforeach
