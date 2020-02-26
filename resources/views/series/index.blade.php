@@ -8,6 +8,7 @@
 		<a href="{!! URL::route('series.create') !!}" class="btn btn-primary">Add an event series</a>
 		<a href="{!! URL::route('series.index') !!}" class="btn btn-info">Show current series</a>
 		<a href="{!! URL::route('series.cancelled') !!}" class="btn btn-info">Show cancelled series</a>
+        <a href="{!! URL::route('series.export') !!}" class="btn btn-primary" target="_blank">Export</a>
 	</div>
 
     <div id="filters-container" class="row">

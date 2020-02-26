@@ -8,10 +8,11 @@
 
     <div id="action-menu" style="margin-bottom: 5px;">
         <a href="{!! URL::route('events.index') !!}" class="btn btn-info">Show event index</a>
-        <a href="{!! URL::route('calendar') !!}" class="btn btn-info mt-2 mr-2">Show calendar</a>
+        <a href="{!! URL::route('calendar') !!}" class="btn btn-info">Show calendar</a>
         <a href="{!! URL::route('events.week') !!}" class="btn btn-info">Show week's events</a>
         <a href="{!! URL::route('events.create') !!}" class="btn btn-primary">Add an event</a>
         <a href="{!! URL::route('series.create') !!}" class="btn btn-primary">Add an event series</a>
+        <a href="{!! URL::route('events.export') !!}" class="btn btn-primary" target="_blank">Export</a>
 	</div>
 
     <div id="filters-container" class="row">
@@ -61,10 +62,10 @@
         <div id="list-control" class="col-lg-3 visible-lg-block visible-md-block text-right">
             <form action="{{ url()->current() }}" method="GET" class="form-inline">
                 <div class="form-group">
-                    <?php $rpp_options =  [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000];?>
+                    <?php $rpp_options =  [5 => 5, 10 => 10, 24 => 24, 100 => 100, 1000 => 1000];?>
                     <?php $sort_by_options = ['name' => 'Name','start_at' => 'Start At', 'event_type_id' => 'Event Type', 'updated_at' => 'Updated At']; ?>
                     <?php $sort_order_options = ['asc' => 'asc', 'desc' => 'desc']; ?>
-                    {!! Form::select('rpp', $rpp_options, ($rpp ?? 10), ['class' =>'form-control auto-submit']) !!}
+                    {!! Form::select('rpp', $rpp_options, ($rpp ?? 24), ['class' =>'form-control auto-submit']) !!}
                     {!! Form::select('sortBy', $sort_by_options, ($sortBy ?? 'name'), ['class' =>'form-control auto-submit']) !!}
                     {!! Form::select('sortOrder', $sort_order_options, ($sortOrder ?? 'asc'), ['class' =>'form-control auto-submit']) !!}
                 </div>

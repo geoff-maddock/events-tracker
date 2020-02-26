@@ -13,6 +13,7 @@ use App\OccurrenceType;
 use App\OccurrenceWeek;
 use App\Photo;
 use App\Series;
+use App\Services\RssFeed;
 use App\Tag;
 use App\User;
 use App\Visibility;
@@ -501,6 +502,28 @@ class SeriesController extends Controller
         $userList = User::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
         return view('series.edit', compact('series', 'venues', 'eventTypes', 'visibilities', 'tags', 'entities', 'promoters', 'weeks', 'days', 'occurrenceTypes', 'userList'));
+    }
+
+    public function export(Request $request,
+                           RssFeed $feed
+    ) {
+        // update filters from request
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+
+        // get all the filters from the session
+        $filters = $this->getFilters($request);
+
+        // get  sort, sort order, rpp from session, update from request
+        $this->getPaging($filters);
+        $this->updatePaging($request);
+
+        // set flag if there are filters
+        $this->hasFilter = $this->hasFilter($filters);
+
+        // base criteria
+        $series = $this->buildCriteria($request)->take($this->rpp)->get();
+
+        return view('series.feed', compact('series'));
     }
 
     public function createOccurrence(Request $request)

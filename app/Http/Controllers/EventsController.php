@@ -250,6 +250,18 @@ class EventsController extends Controller
     }
 
     /**
+     * Update the page list parameters from the request.
+     *
+     * @param $filters
+     */
+    protected function getGridPaging($filters)
+    {
+        $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
+        $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
+        $this->rpp = $filters['rpp'] ?? $this->gridRpp;
+    }
+
+    /**
      * Get session filters.
      *
      * @param Request
@@ -358,7 +370,7 @@ class EventsController extends Controller
         // get all the filters from the session
         $this->filters = $this->getFilters($request);
 
-        // get  sort, sort order, rpp from session, update from request
+        // get sort, sort order, rpp from session, update from request
         $this->getPaging($this->filters);
         $this->updatePaging($request);
 

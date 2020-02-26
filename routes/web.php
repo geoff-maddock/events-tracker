@@ -408,7 +408,11 @@ Route::get('series/week', 'SeriesController@indexWeek');
 Route::get('series/cancelled', 'SeriesController@indexCancelled')->name('series.cancelled');
 Route::post('series/{id}/photos', 'SeriesController@addPhoto');
 Route::delete('series/{id}/photos/{photo_id}', 'SeriesController@deletePhoto');
-
+Route::get('series/export', [
+        'as' => 'series.export',
+        'uses' => 'SeriesController@export'
+    ]
+);
 Route::get('series/filter', array('as' => 'series.filter', 'uses' => 'SeriesController@filter'));
 Route::get('series/reset', array('as' => 'series.reset', 'uses' => 'SeriesController@reset'));
 
