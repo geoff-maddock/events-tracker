@@ -371,7 +371,7 @@ class EventsController extends Controller
         $this->filters = $this->getFilters($request);
 
         // get sort, sort order, rpp from session, update from request
-        $this->getPaging($this->filters);
+        $this->getGridPaging($this->filters);
         $this->updatePaging($request);
 
         // set flag if there are filters
@@ -388,7 +388,7 @@ class EventsController extends Controller
 
         return view('events.grid')
             ->with([
-                'rpp' => $this->rpp,
+                'rpp' => $this->gridRpp,
                 'sortBy' => $this->sortBy,
                 'sortOrder' => $this->sortOrder,
                 'hasFilter' => $this->hasFilter,
@@ -2239,7 +2239,7 @@ class EventsController extends Controller
      *
      * @param $id
      *
-     * @return Response
+     * @return Response | RedirectResponse
      */
     public function follow($id, Request $request)
     {
@@ -2275,7 +2275,7 @@ class EventsController extends Controller
      *
      * @param $id
      *
-     * @return Response
+     * @return Response | RedirectResponse
      */
     public function unfollow($id, Request $request)
     {
@@ -2302,7 +2302,7 @@ class EventsController extends Controller
     }
 
     /**
-     * @return $this
+     * @return string | View
      */
     public function createSeries(Request $request)
     {

@@ -118,3 +118,10 @@
     margin-right: 5px;
 }
 
+.image-md {
+    width: 150px;
+}
+
+.image-lg {
+    width: 200px;
+}
