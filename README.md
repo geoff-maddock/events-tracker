@@ -17,7 +17,7 @@ Run an instance to create your own community where events, event series, entitie
 
 ### Built On
 
-* Laravel 5.5+
+* Laravel 5.7+
 * Database agnostic, but using MySQL
 
 ### FUTURE
