@@ -21,7 +21,7 @@ class RssFeed
         }
 
         $rss = $this->buildRssData($events);
-        Cache::add('event-export-rss-feed', $rss, 120);
+        Cache::add('event-export-rss-feed', $rss, 7200);
 
         return $rss;
     }
@@ -38,7 +38,7 @@ class RssFeed
         $events = Event::future()->orderBy('start_at', 'desc')->take(config('event.rss_size'))->get();
 
         $rss = $this->buildRssData($events);
-        Cache::add('rss-feed', $rss, 120);
+        Cache::add('rss-feed', $rss, 7200);
 
         return $rss;
     }
@@ -55,7 +55,7 @@ class RssFeed
         $events = Event::getByTag(ucfirst($tag))->future()->orderBy('start_at', 'desc')->take(config('event.rss_size'))->get();
 
         $rss = $this->buildRssData($events);
-        Cache::add('rss-feed'.$tag, $rss, 120);
+        Cache::add('rss-feed'.$tag, $rss, 7200);
 
         return $rss;
     }
