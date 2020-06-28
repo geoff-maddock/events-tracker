@@ -12,7 +12,7 @@
     {!! link_to_route('series.show', $series->name, [$series->id], ['class' => 'item-title', 'alt' => $series->name, 'aria-label' => $series->name]) !!} {{ $series->short }}
 
     @if ($signedIn && ($series->ownedBy($user) || $user->hasGroup('super_admin')))
-        <a href="{!! route('series.edit', ['id' => $series->id],  ['alt' => 'Edit '.$series->name, 'aria-label' => 'Edit '.$series->name]) !!}"><span class='glyphicon glyphicon-pencil'></span></a>
+        <a href="{!! route('series.edit', ['series' => $series->id],  ['alt' => 'Edit '.$series->name, 'aria-label' => 'Edit '.$series->name]) !!}"><span class='glyphicon glyphicon-pencil'></span></a>
         <a href="{!! route('series.createOccurrence', ['id' => $series->id]) !!}" title="Create the next occurrence of {{ $series->name }}"><span class='glyphicon glyphicon-fire'></span></a>
     @endif
 
@@ -38,7 +38,8 @@
     @endif
 
     @if ($venue = $series->venue)
-        <br><a href="{!! route('entities.show', ['id' => $series->venue->slug]) !!}">{{ $series->venue->name }}</a> at {{ $series->venue->getPrimaryLocationAddress() }}
+        <br>
+        <a href="/entities/{{urlencode($series->venue->slug)}}">{{ $series->venue->name }}</a> at {{ $series->venue->getPrimaryLocationAddress() }}
     @endunless
 
     @if ($event = $series->nextEvent())

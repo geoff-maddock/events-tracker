@@ -15,9 +15,9 @@
 	@foreach ($forums as $forum)
 
 	<tr>
-	<td>{!! link_to_route('forums.show', $forum->name, [$forum->id], ['id' => 'forum-name', 'title' => 'Forum topic.', 'class' => 'forum-link']) !!} 
+	<td>{!! link_to_route('forums.show', $forum->name, [$forum->id], ['id' => 'forum-name', 'title' => 'Forum topic.', 'class' => 'forum-link']) !!}
 			@if ($signedIn && $forum->ownedBy($user))
-			<a href="{!! route('forums.edit', ['id' => $forum->id]) !!}" title="Edit this forum."><span class='glyphicon glyphicon-pencil'></span></a>
+			<a href="{!! route('forums.edit', ['forum' => $forum->id]) !!}" title="Edit this forum."><span class='glyphicon glyphicon-pencil'></span></a>
 			@endif
 
 
@@ -32,5 +32,5 @@
 </tbody>
 </table>
 @else
-	<ul class='forum-list'><li style='clear:both;'><i>No forums listed</i></li></ul> 
+	<ul class='forum-list'><li style='clear:both;'><i>No forums listed</i></li></ul>
 @endif

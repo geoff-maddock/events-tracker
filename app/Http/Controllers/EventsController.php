@@ -27,8 +27,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
-use SammyK;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class EventsController extends Controller
@@ -1351,7 +1351,7 @@ class EventsController extends Controller
      */
     protected function addFbPhoto($event)
     {
-        $fb = app(SammyK\LaravelFacebookSdk\LaravelFacebookSdk::class);
+        $fb = app(Nsivanoly\LaravelFacebookSdk\LaravelFacebookSdk::class);
 
         // some fields may have been deprecated - only need cover here
         //$fields = 'attending_count,category,cover,interested_count,type,name,noreply_count,maybe_count,owner,place,roles';
@@ -1567,7 +1567,7 @@ class EventsController extends Controller
         $input = $request->all();
 
         // transform the slug
-        $input['slug'] = str_slug($request->input('slug', '-'));
+        $input['slug'] = Str::slug($request->input('slug', '-'));
 
         // validation happening in EventRequest->rules
         $tagArray = $request->input('tag_list', []);
@@ -1887,7 +1887,7 @@ class EventsController extends Controller
      *
      * @return Response
      */
-    public function review($id, Request $request)
+    public function review($id)
     {
         // check if there is a logged in user
         if (!$this->user) {

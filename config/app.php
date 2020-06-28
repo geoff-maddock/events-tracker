@@ -175,7 +175,7 @@ return [
 		'Intervention\Image\ImageServiceProvider',
 
 		# for integration with full calendar
-		'MaddHatter\LaravelFullcalendar\ServiceProvider',
+		#'MaddHatter\LaravelFullcalendar\ServiceProvider',
 
       #  'Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class', // Laravel IDE helper
 
@@ -183,7 +183,7 @@ return [
         Laravel\Tinker\TinkerServiceProvider::class,
 
         #facebook SDK
-        SammyK\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
+       # SammyK\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
 
         NotificationChannels\Twitter\TwitterServiceProvider::class
 	],

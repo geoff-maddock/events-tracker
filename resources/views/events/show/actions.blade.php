@@ -1,5 +1,5 @@
 @if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )
-    <a href="{!! route('events.edit', ['id' => $event->id]) !!}" class="btn btn-primary">Edit Event</a>
+    <a href="{!! route('events.edit', ['event' => $event->id]) !!}" class="btn btn-primary">Edit Event</a>
 @endif
 
 @if (!$event->series_id && $user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )
