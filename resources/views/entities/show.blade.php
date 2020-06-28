@@ -11,7 +11,7 @@
 
 <P>
 @if ($user && Auth::user()->id === $entity->user->id)
-	<a href="{!! route('entities.edit', ['id' => $entity->slug]) !!}" class="btn btn-primary">Edit Entity</a>
+	<a href="{!! route('entities.edit', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Edit Entity</a>
 @endif
 	<a href="{!! URL::route('entities.index') !!}" class="btn btn-info">Return to list</a>
 </P>
@@ -84,7 +84,7 @@
 
 		@foreach ($entity->tags as $tag)
 				<span class="label label-tag"><a href="/entities/tag/{{ urlencode($tag->name) }}" class="label-link">{{ $tag->name }}</a>
-                        <a href="{!! route('tags.show', ['slug' => $tag->name]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a>
+                        <a href="{!! route('tags.show', ['tag' => $tag->name]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a>
                     </span>
 		@endforeach
 
@@ -104,7 +104,7 @@
 
 
 				@if ($signedIn && $entity->ownedBy($user))
-				<a href="{!! route('entities.locations.edit', ['entity' => $entity->slug, 'id' => $location->id]) !!}" title="Edit this location.">
+				<a href="{!! route('entities.locations.edit', ['entity' => $entity->slug, 'location' => $location->id]) !!}" title="Edit this location.">
 				<span class='glyphicon glyphicon-pencil'></span></a>
 				@endif
 
@@ -122,7 +122,7 @@
 	<P>
 	@if ($user && Auth::user()->id == $entity->user->id)
 		<span>
-			<a href="{!! route('entities.locations.create', ['id' => $entity->slug]) !!}" class="btn btn-primary">Add Location</a>
+			<a href="{!! route('entities.locations.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Location</a>
 		</span>
 	@endif
 	</P>
@@ -133,7 +133,7 @@
 		@foreach ($entity->contacts as $contact)
 		<span><B>{{ $contact->name }}</B>  {{ $contact->email or '' }} {{ $contact->phone or '' }}
 				@if ($signedIn && $entity->ownedBy($user))
-				<a href="{!! route('entities.contacts.edit', ['entity' => $entity->slug, 'id' => $contact->id]) !!}">
+				<a href="{!! route('entities.contacts.edit', ['entity' => $entity->slug, 'contact' => $contact->id]) !!}">
 				<span class='glyphicon glyphicon-pencil'></span></a>
 				@endif
 		</span><br>
@@ -152,7 +152,7 @@
 	<P>
 	@if ($user && Auth::user()->id === $entity->user->id)
 		<span>
-			<a href="{!! route('entities.contacts.create', ['id' => $entity->slug]) !!}" class="btn btn-primary">Add Contact</a>
+			<a href="{!! route('entities.contacts.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Contact</a>
 		</span>
 	@endif
 	</P>
@@ -163,7 +163,7 @@
                 @foreach ($entity->links as $link)
                 <span><B>{!! $link->tag !!}</B>
                                 @if ($signedIn && $entity->ownedBy($user))
-                                <a href="{!! route('entities.links.edit', ['entity' => $entity->slug, 'id' => $link->id]) !!}">
+                                <a href="{!! route('entities.links.edit', ['entity' => $entity->slug, 'link' => $link->id]) !!}">
                                 <span class='glyphicon glyphicon-pencil'></span></a>
                                 @endif
                 </span><br>
@@ -174,7 +174,7 @@
         <P>
         @if ($user && Auth::user()->id === $entity->user->id)
                 <span>
-                        <a href="{!! route('entities.links.create', ['id' => $entity->slug]) !!}" class="btn btn-primary">Add Link</a>
+                        <a href="{!! route('entities.links.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Link</a>
                 </span>
         @endif
         </P>
@@ -208,7 +208,7 @@
 	<P>
 	@if (Auth::user())
 		<span>
-			<a href="{!! route('entities.comments.create', ['id' => $entity->slug]) !!}" class="btn btn-primary">Add Comment</a>
+			<a href="{!! route('entities.comments.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Comment</a>
 		</span>
 	@endif
 	</P>

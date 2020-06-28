@@ -94,7 +94,7 @@
 					<span class='glyphicon glyphicon-heart text-warning' title="You rated {!! $review->rating !!}"></span> Rated {!! number_format($event->avgRating,2) !!} by {{ $event->countReviews }} users
 			@else
 			<span>
-				<a href="{!! route('events.reviews.create', ['id' => $event->id]) !!}" title="Add a review"><span class='glyphicon glyphicon-heart-empty text-warning'></span> Add Review</a>
+				<a href="{!! route('events.reviews.create', ['event' => $event->id]) !!}" title="Add a review"><span class='glyphicon glyphicon-heart-empty text-warning'></span> Add Review</a>
             </span>
             @endif
 		@else
@@ -124,7 +124,7 @@
 	Related Entities:
 		@foreach ($event->entities as $entity)
 					<span class="label label-tag"><a href="/events/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a>
-					<a href="{!! route('entities.show', ['id' => $entity->slug]) !!}" title="Show this entity."><span class='glyphicon glyphicon-link text-info'></span></a>
+					<a href="{!! route('entities.show', ['entity' => $entity->slug]) !!}" title="Show this entity."><span class='glyphicon glyphicon-link text-info'></span></a>
 				</span>
 		@endforeach
 	@endunless
@@ -134,7 +134,7 @@
 	<P>Tags:
 	@foreach ($event->tags as $tag)
 			<span class="label label-tag"><a href="/events/tag/{{ urlencode($tag->name) }}" class="label-link">{{ $tag->name }}</a>
-                        <a href="{!! route('tags.show', ['slug' => $tag->name]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a>
+                        <a href="{!! route('tags.show', ['tag' => $tag->name]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a>
 			</span>
 		@endforeach
 	@endunless

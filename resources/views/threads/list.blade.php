@@ -18,10 +18,10 @@
 	<tr>
 	<td>{!! link_to_route('threads.show', $thread->name, [$thread->id], ['id' => 'thread-name', 'title' => 'Thread topic.', 'class' => 'forum-link']) !!}
             @if ($event = $thread->event)
-                <a href="{!! route('events.show', ['id' => $event->id]) !!}" title="Show event."><span class='glyphicon glyphicon-calendar'></span></a>
+                <a href="{!! route('events.show', ['event' => $event->id]) !!}" title="Show event."><span class='glyphicon glyphicon-calendar'></span></a>
             @endif
 			@if ($signedIn && (($thread->ownedBy($user) && $thread->isRecent()) || $user->hasGroup('super_admin')))
-			<a href="{!! route('threads.edit', ['id' => $thread->id]) !!}" title="Edit this thread."><span class='glyphicon glyphicon-pencil'></span></a>
+			<a href="{!! route('threads.edit', ['thread' => $thread->id]) !!}" title="Edit this thread."><span class='glyphicon glyphicon-pencil'></span></a>
             {!! link_form_icon('glyphicon-trash text-warning', $thread, 'DELETE', 'Delete the thread', NULL, 'delete') !!}
 			@endif
 
@@ -31,7 +31,7 @@
             Series:
                 @foreach ($thread->series as $series)
                     <span class="label label-tag"><a href="/threads/series/{{ urlencode($series->slug) }}" class="label-link">{{ $series->name }}</a>
-                        <a href="{!! route('series.show', ['id' => $series->id]) !!}" title="Show this series."><span class='glyphicon glyphicon-link text-info'></span></a>
+                        <a href="{!! route('series.show', ['series' => $series->id]) !!}" title="Show this series."><span class='glyphicon glyphicon-link text-info'></span></a>
                     </span>
                 @endforeach
             @endunless
@@ -40,7 +40,7 @@
 			Related:
 				@foreach ($thread->entities as $entity)
 					<span class="label label-tag"><a href="/threads/relatedto/{{ urlencode($entity->slug) }}" class="label-link">{{ $entity->name }}</a>
-                        <a href="{!! route('entities.show', ['id' => $entity->slug]) !!}" title="Show this entity."><span class='glyphicon glyphicon-link text-info'></span></a>
+                        <a href="{!! route('entities.show', ['entity' => $entity->slug]) !!}" title="Show this entity."><span class='glyphicon glyphicon-link text-info'></span></a>
                     </span>
 				@endforeach
 			@endunless
@@ -49,7 +49,7 @@
 			Tags:
 				@foreach ($thread->tags as $tag)
 					<span class="label label-tag"><a href="/threads/tag/{{ urlencode($tag->name) }}" class="label-link">{{ $tag->name }}</a>
-                        <a href="{!! route('tags.show', ['slug' => $tag->name]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a>
+                        <a href="{!! route('tags.show', ['tag' => $tag->name]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a>
                     </span>
 				@endforeach
 		@endunless
@@ -64,7 +64,7 @@
     <td class="cell-stat hidden-xs hidden-sm">
       @if (isset($thread->user))
         @include('users.avatar', ['user' => $thread->user])
-      {!! link_to_route('users.show', $thread->user->name, [$thread->user->id], ['class' => 'forum-link']) !!} 
+      {!! link_to_route('users.show', $thread->user->name, [$thread->user->id], ['class' => 'forum-link']) !!}
       @else
       User deleted
       @endif
@@ -89,18 +89,18 @@ $('button.delete').on('click', function(e){
   var type = $(this).data('type');
   Swal.fire({
     title: "Are you sure?",
-    text: "You will not be able to recover this "+type+"!", 
-    type: "warning",   
-    showCancelButton: true,   
+    text: "You will not be able to recover this "+type+"!",
+    type: "warning",
+    showCancelButton: true,
     confirmButtonColor: "#DD6B55",
-    confirmButtonText: "Yes, delete it!", 
+    confirmButtonText: "Yes, delete it!",
     closeOnConfirm: true
-  }, 
+  },
    function(isConfirm){
     if (isConfirm) {
         form.submit();
     };
-   // 
+   //
   });
 })
 </script>

@@ -24,7 +24,7 @@
 
 	@if ($blog->name)
 	<label>Name: </label> <i>{{ $blog->name }} </i><br><br>
-	@endif 
+	@endif
 
 	@if ($blog->slug)
 	<label>Slug: </label> <i>{{ $blog->slug }} </i><br><br>
@@ -37,9 +37,9 @@
     @endif
 
     @unless ($blog->tags->isEmpty())
-		
+
 		<P><b>Tags:</b>
-		
+
 		@foreach ($blog->tags as $tag)
 		<span class="label label-tag"><a href="/tags/{{ $tag->id }}">{{ $tag->name }}</a></span>
 		@endforeach
@@ -53,7 +53,7 @@
 
 
 @stop
- 
+
 @section('scripts.footer')
 <script type="text/javascript">
 $('button.delete').on('click', function(e){
@@ -61,13 +61,13 @@ $('button.delete').on('click', function(e){
   var form = $(this).parents('form');
   Swal.fire({
     title: "Are you sure?",
-    text: "You will not be able to recover this blog!", 
-    type: "warning",   
-    showCancelButton: true,   
+    text: "You will not be able to recover this blog!",
+    type: "warning",
+    showCancelButton: true,
     confirmButtonColor: "#DD6B55",
-    confirmButtonText: "Yes, delete it!", 
+    confirmButtonText: "Yes, delete it!",
     closeOnConfirm: true
-  }, 
+  },
    function(isConfirm){
    	if (isConfirm) {
     	form.submit();

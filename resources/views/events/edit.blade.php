@@ -8,7 +8,7 @@
 
 <h4>Events. Edit
 	@include('events.crumbs', ['slug' => $event->slug ?: $event->id])</h4>
-  <a href="{!! route('events.show', ['id' => $event->id]) !!}" class="btn btn-primary">Show Event</a>
+  <a href="{!! route('events.show', ['event' => $event->id]) !!}" class="btn btn-primary">Show Event</a>
 
   @if (!empty($event->threads) && $user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser')) )
     <a href="{!! route('events.createThread', ['id' => $event->id]) !!}" title="Create an thread related to this event." class="btn btn-primary"><span class='glyphicon glyphicon-comment'></span> Create Thread</a>
