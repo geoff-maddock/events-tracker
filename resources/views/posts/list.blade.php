@@ -8,7 +8,7 @@
 		<td>
 		    @if (isset($post->user))
 		      @include('users.avatar', ['user' => $post->user])
-		    {!! link_to_route('users.show', $post->user->name, [$thread->user->id], ['class' => 'forum-link']) !!} 
+		    {!! link_to_route('users.show', $post->user->name, [$thread->user->id], ['class' => 'forum-link']) !!}
 		    @else
 		    User deleted
 		    @endif
@@ -29,7 +29,7 @@
 			<hr>
 			<div class="btn-group" role="group" aria-label="...">
 			@if ($signedIn && (($post->ownedBy($user) && $post->isRecent()) || $user->hasGroup('super_admin')))
-				<a href="{!! route('posts.edit', ['id' => $post->id]) !!}" class="btn btn-sm btn-default" title="Edit this post.">Edit <span class='glyphicon glyphicon-pencil text-primary'></span></a>
+				<a href="{!! route('posts.edit', ['post' => $post->id]) !!}" class="btn btn-sm btn-default" title="Edit this post.">Edit <span class='glyphicon glyphicon-pencil text-primary'></span></a>
 				{!! link_form_icon('glyphicon-trash text-warning', $post, 'DELETE', 'Delete the [post]','Delete','btn btn-sm btn-default') !!}
 			@endif
             @if ($signedIn)
@@ -56,7 +56,7 @@
 				@foreach ($post->tags as $tag)
 					<span class="label label-tag"><a href="/posts/tag/{{ urlencode($tag->name) }}">{{ $tag->name }}</a></span>
 				@endforeach
-			@endunless		
+			@endunless
 		</td>
 	</tr>
 	</tbody>
@@ -65,7 +65,7 @@
 @else
 	<tr>
 	<td colspan="7"><i>No posts listed</i></td>
-	</tr> 
+	</tr>
 @endif
 
 @section('scripts.footer')
@@ -76,18 +76,18 @@ $('button.delete').on('click', function(e){
   var type = $(this).data('type');
   Swal.fire({
     title: "Are you sure?",
-    text: "You will not be able to recover this "+type+"!", 
-    type: "warning",   
-    showCancelButton: true,   
+    text: "You will not be able to recover this "+type+"!",
+    type: "warning",
+    showCancelButton: true,
     confirmButtonColor: "#DD6B55",
-    confirmButtonText: "Yes, delete it!", 
+    confirmButtonText: "Yes, delete it!",
     closeOnConfirm: true
-  }, 
+  },
    function(isConfirm){
     if (isConfirm) {
         form.submit();
     };
-   // 
+   //
   });
 })
 </script>

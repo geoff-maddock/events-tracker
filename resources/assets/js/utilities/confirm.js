@@ -8,6 +8,8 @@ const Confirm = {
         $('button.delete').on('click', function(e){
             e.preventDefault();
             var form = $(this).parents('form');
+            console.log('generic confirm');
+            console.log('form '+form);
             Swal.fire({
                     title: "Are you sure?",
                     text: "You will not be able to recover this group!",

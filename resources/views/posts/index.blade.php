@@ -53,7 +53,7 @@
                     <span>
 
                 @if ($signedIn && (($post->ownedBy($user) && $post->isRecent()) || $user->hasGroup('super_admin')))
-                            <a href="{!! route('posts.edit', ['id' => $post->id]) !!}" title="Edit this post."><span class='glyphicon glyphicon-pencil text-primary'></span></a>
+                            <a href="{!! route('posts.edit', ['post' => $post->id]) !!}" title="Edit this post."><span class='glyphicon glyphicon-pencil text-primary'></span></a>
                             {!! link_form_icon('glyphicon-trash text-warning', $post, 'DELETE', 'Delete the [post]') !!}
 
                         @endif

@@ -11,7 +11,7 @@ class PostsTest extends TestCase
 {
     private $post;
 
-	public function setUp()
+	public function setUp():void
 	{
 		parent::setUp();
 

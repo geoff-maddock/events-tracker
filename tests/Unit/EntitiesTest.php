@@ -8,7 +8,7 @@ class EntitiesTest extends TestCase
 {
     protected $entity;
 
-    public function setUp()
+    public function setUp():void
     {
         parent::setUp();
 

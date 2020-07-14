@@ -178,7 +178,7 @@
 
 				<div class="panel-heading">
 					<h3 class="panel-title">Posts
-						<a href="#" ><span class='label label-tag pull-right' data-toggle="tooltip" data-placement="bottom"  title="# of posts that match this search term.">{{ count($thread->posts) }}</span></a>
+						<a href="#"><span class='label label-tag pull-right' data-toggle="tooltip" data-placement="bottom"  title="# of posts that match this search term.">{{ count($thread->posts) }}</span></a>
 					</h3>
 				</div>
 
@@ -251,9 +251,10 @@ $(document).ready(function(){
 <script type="text/javascript">
     $('button.delete').on('click', function(e){
         e.preventDefault();
+        console.log('show blade button.delete');
         const form = $(this).parents('form');
         Swal.fire({
-            title: "Are you sure?",
+            title: "Are you sure? show",
             text: "You will not be able to recover this!",
             type: "warning",
             showCancelButton: true,

@@ -21,6 +21,8 @@ var App = (function()
             var form = $(this).parents('form');
             var type = $(this).data('type');
             e.preventDefault();
+            console.log('set up delete confirm');
+            console.log('form: ' + form);
             Swal.fire({
                     title: "Are you sure?",
                     text: "You will not be able to recover this " + type + "!",
@@ -39,6 +41,8 @@ var App = (function()
                 if (result.value) {
                     // handle Confirm button click
                     // result.value will contain `true` or the input value
+                    console.log('set up delete confirm');
+                    console.log('form: ' + form);
                     form.submit();
                 } else {
                     // handle dismissals

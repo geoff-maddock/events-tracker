@@ -39,7 +39,7 @@ class PostsController extends Controller
      *
      * @return Response | View | string
      */
-    public function index(): Response
+    public function index()
     {
         // if the gate does not allow this user to show a forum redirect to home
         if (Gate::denies('show_forum')) {

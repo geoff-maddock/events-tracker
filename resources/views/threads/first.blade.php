@@ -1,7 +1,7 @@
 <tr>
     <td>{!! link_to_route('threads.show', $thread->name, [$thread->id], ['class' => 'forum-link']) !!}
         @if ($signedIn && (($thread->ownedBy($user) && $thread->isRecent()) || $user->hasGroup('super_admin')))
-            <a href="{!! route('threads.edit', ['id' => $thread->id]) !!}" title="Edit this thread." class="hover-dim"><span class='glyphicon glyphicon-pencil text-primary'></span></a>
+            <a href="{!! route('threads.edit', ['thread' => $thread->id]) !!}" title="Edit this thread." class="hover-dim"><span class='glyphicon glyphicon-pencil text-primary'></span></a>
             {!! link_form_icon('glyphicon-trash text-warning', $thread, 'DELETE', 'Delete the [thread]') !!}
             @if (!$thread->is_locked)
                 <a href="{!! route('threads.lock', ['id' => $thread->id]) !!}" title="Lock this thread." class="hover-dim"><span class='material-icons md-18 icon-correct text-primary'>lock</span></a>
@@ -25,7 +25,7 @@
 
         @if ($event = $thread->event)
             Event:
-            <span class="label label-tag"><a href="{!! route('events.show', ['id' => $event->id]) !!}">{{ $event->name }}</a></span>
+            <span class="label label-tag"><a href="{!! route('events.show', ['event' => $event->id]) !!}">{{ $event->name }}</a></span>
         @endif
 
         @unless ($thread->series->isEmpty())

@@ -11,7 +11,7 @@
 
 <P>
 @can('edit_menu')
-	<a href="{!! route('menus.edit', ['id' => $menu->id]) !!}" class="btn btn-primary">Edit Menu</a>
+	<a href="{!! route('menus.edit', ['menu' => $menu->id]) !!}" class="btn btn-primary">Edit Menu</a>
 @endcan
 	<a href="{!! URL::route('menus.index') !!}" class="btn btn-info">Return to list</a>
 </P>
@@ -24,11 +24,11 @@
 
 	@if ($menu->name)
 	<label>Name: </label> <i>{{ $menu->name }} </i><br><br>
-	@endif 
+	@endif
 
 	@if ($menu->slug)
 	<label>Slug: </label> <i>{{ $menu->slug }} </i><br><br>
-	@endif 
+	@endif
 
 
 	@can('edit_menu')
@@ -38,7 +38,7 @@
 
 
 @stop
- 
+
 @section('scripts.footer')
 <script type="text/javascript">
 $('button.delete').on('click', function(e){
@@ -46,13 +46,13 @@ $('button.delete').on('click', function(e){
   var form = $(this).parents('form');
   Swal.fire({
     title: "Are you sure?",
-    text: "You will not be able to recover this menu!", 
-    type: "warning",   
-    showCancelButton: true,   
+    text: "You will not be able to recover this menu!",
+    type: "warning",
+    showCancelButton: true,
     confirmButtonColor: "#DD6B55",
-    confirmButtonText: "Yes, delete it!", 
+    confirmButtonText: "Yes, delete it!",
     closeOnConfirm: true
-  }, 
+  },
    function(isConfirm){
    	if (isConfirm) {
     	form.submit();
