@@ -7,7 +7,7 @@
 </h2>
 <P>
 @if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser')  ) )
-	<a href="{!! route('series.edit', ['id' => $series->id]) !!}" class="btn btn-primary">Edit Series</a>
+	<a href="{!! route('series.edit', ['series' => $series->id]) !!}" class="btn btn-primary">Edit Series</a>
 	<a href="{!! route('series.createOccurrence', ['id' => $series->id]) !!}" class="btn btn-primary">Add Occurrence</a>
 @endif
 	<a href="{!! URL::route('series.index') !!}" class="btn btn-info">Return to list</a>
@@ -62,7 +62,7 @@
 	Related Entities:
 		@foreach ($series->entities as $entity)
 		<span class="label label-tag"><a href="/series/relatedto/{{ $entity->slug }}">{{ $entity->name }}</a>
-		<a href="{!! route('entities.show', ['id' => $entity->slug]) !!}" title="Show this entity."><span class='glyphicon glyphicon-link text-info'></span></a>
+		<a href="{!! route('entities.show', ['entity' => $entity->slug]) !!}" title="Show this entity."><span class='glyphicon glyphicon-link text-info'></span></a>
 		</span>
 		@endforeach
 	@endunless
@@ -72,7 +72,7 @@
 	<P>Tags:
 	@foreach ($series->tags as $tag)
 		<span class="label label-tag"><a href="/series/tag/{{ $tag->name }}">{{ $tag->name }}</a>
-		<a href="{!! route('tags.show', ['slug' => $tag->name]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a></span>
+		<a href="{!! route('tags.show', ['tag' => $tag->name]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a></span>
 		@endforeach
 	@endunless
 	</P>
@@ -135,13 +135,13 @@
 		@php
 			$thread = $threads->first()
 		@endphp
-			@if (isset($thread) && count($thread) > 0)
+			@if (isset($thread) && count($threads) > 0)
 			<div class="col-md-6">
 				<div class="panel panel-info">
 
 					<div class="panel-heading">
 						<h3 class="panel-title">Posts
-							<a href="#" ><span class='label label-tag pull-right' data-toggle="tooltip" data-placement="bottom"  title="# of Threads that match this search term.">{{ count($thread)}}</span></a>
+							<a href="#" ><span class='label label-tag pull-right' data-toggle="tooltip" data-placement="bottom"  title="# of Threads that match this search term.">{{ count($threads)}}</span></a>
 						</h3>
 					</div>
 

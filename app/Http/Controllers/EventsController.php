@@ -2193,6 +2193,8 @@ class EventsController extends Controller
      * @param int $id
      *
      * @return void
+     *
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function addPhoto($id, Request $request)
     {
@@ -2375,7 +2377,7 @@ class EventsController extends Controller
 
         $thread->save();
 
-        return redirect()->route('events.show', ['id' => $event->id]);
+        return redirect()->route('events.show', ['event' => $event->id]);
     }
 
     public function export(Request $request,

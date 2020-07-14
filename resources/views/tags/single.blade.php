@@ -8,12 +8,12 @@
 			@endif
 
             @if ($signedIn &&  Auth::user()->id == Config::get('app.superuser'))
-					<a href="{!! route('tags.edit', ['id' => $tag->id]) !!}" title="Click to edit"><span class='glyphicon glyphicon-pencil'></span></a>
+					<a href="{!! route('tags.edit', ['tag' => $tag->id]) !!}" title="Click to edit"><span class='glyphicon glyphicon-pencil'></span></a>
                 {!! link_form_icon('glyphicon-trash text-warning', $tag, 'DELETE', 'Delete the tag') !!}
             @endif
 		@endif
 
-	</h1> 
+	</h1>
 	<span class="label label-tag">{!! link_to_route('events.tag', 'Events', [$tag->name], ['class' => 'item-title']) !!} @if (is_array($tag->events)){{ count($tag->events) }}@endif</span>
 	<span class="label label-tag">{!! link_to_route('series.tag', 'Series', [$tag->name], ['class' => 'item-title']) !!}  @if (is_array($tag->series)){{ count($tag->series) }}@endif</span>
 	<span class="label label-tag">{!! link_to_route('entities.tag', 'Entities', [$tag->name], ['class' => 'item-title']) !!}  @if (is_array($tag->entities)){{ count($tag->entities) }}@endif</span>

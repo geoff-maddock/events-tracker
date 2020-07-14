@@ -20,19 +20,19 @@
 		<td>{!! $group->level !!}</td>
 		<td>
 			@can('edit_group')
-			<a href="{!! route('groups.edit', ['id' => $group->id]) !!}"><span class='glyphicon glyphicon-pencil'></span></a>
+			<a href="{!! route('groups.edit', ['group' => $group->id]) !!}"><span class='glyphicon glyphicon-pencil'></span></a>
       		{!! link_form_icon('glyphicon-trash text-warning', $group, 'DELETE', 'Delete the group') !!}
 			@endcan
 		</td>
 
-	</tr>		
+	</tr>
 	@endforeach
 @else
 	<tr>
 		<td colspan="5">
 			<i>No groups listed</i>
 		</td>
-	</tr> 
+	</tr>
 @endif
 </table>
 </div>
@@ -44,13 +44,13 @@ $('button.delete').on('click', function(e){
   var form = $(this).parents('form');
   Swal.fire({
     title: "Are you sure?",
-    text: "You will not be able to recover this group!", 
-    type: "warning",   
-    showCancelButton: true,   
+    text: "You will not be able to recover this group!",
+    type: "warning",
+    showCancelButton: true,
     confirmButtonColor: "#DD6B55",
-    confirmButtonText: "Yes, delete it!", 
+    confirmButtonText: "Yes, delete it!",
     closeOnConfirm: true
-  }, 
+  },
    function(isConfirm){
    	if (isConfirm) {
     	form.submit();

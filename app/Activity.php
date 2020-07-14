@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Support\Str;
 
 class Activity extends Eloquent
 {
@@ -82,18 +83,18 @@ class Activity extends Eloquent
     {
         if ('Tag' === $this->object_table) {
             if ($tag = Tag::find($this->object_id)) {
-                return '/'.str_plural($this->object_table).'/'.$tag->name;
+                return '/'.Str::plural($this->object_table).'/'.$tag->name;
             }
         }
 
         if ('Entity' === $this->object_table) {
             if ($entity = Entity::find($this->object_id)) {
-                return '/'.str_plural($this->object_table).'/'.$entity->slug;
+                return '/'.Str::plural($this->object_table).'/'.$entity->slug;
             }
         }
 
         if ($this->object_table) {
-            return '/'.str_plural($this->object_table).'/'.$this->object_id;
+            return '/'.Str::plural($this->object_table).'/'.$this->object_id;
         }
 
         return '/';

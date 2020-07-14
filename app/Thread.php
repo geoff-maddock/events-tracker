@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class Thread extends Eloquent
 {
@@ -383,7 +384,7 @@ class Thread extends Eloquent
         if (!empty($value)) {
             $this->attributes['slug'] = $value;
         } else {
-            $this->attributes['slug'] = str_slug($this->name);
+            $this->attributes['slug'] = Str::slug($this->name);
         }
     }
 
@@ -395,7 +396,7 @@ class Thread extends Eloquent
         // grab the name and slugify it
         if (!empty($value)) {
             $this->attributes['name'] = $value;
-            $this->attributes['slug'] = str_slug($value);
+            $this->attributes['slug'] = Str::slug($value);
         } else {
             // do nothing?
         }

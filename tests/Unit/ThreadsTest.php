@@ -10,7 +10,7 @@ class ThreadsTest extends TestCase
 {
     private $thread;
 
-	public function setUp()
+	public function setUp():void
 	{
 		parent::setUp();
 
@@ -75,9 +75,9 @@ class ThreadsTest extends TestCase
      /** @test */
     function a_thread_has_a_creator()
     {
-        // add that thread 
+        // add that thread
         $thread = factory('App\Thread')->make();
- 
+
         $this->assertInstanceOf('App\User', $thread->creator);
     }
 

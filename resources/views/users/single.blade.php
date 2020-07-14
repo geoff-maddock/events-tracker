@@ -12,7 +12,7 @@
 	{!! link_to_route('users.show', $user->name, [$user->id]) !!}
 
 	@if ($signedIn && (Auth::user()->id === $user->id || Auth::user()->id === Config::get('app.superuser') || Auth::user()->hasGroup('super_admin') ))
-	<a href="{!! route('users.edit', ['id' => $user->id]) !!}">
+	<a href="{!! route('users.edit', ['user' => $user->id]) !!}">
 	<span class='glyphicon glyphicon-pencil'></span></a>
     {!! link_form_icon('glyphicon-trash text-warning', $user, 'DELETE', 'Delete the user', NULL, 'delete') !!}
 
@@ -29,7 +29,7 @@
 				@endif
 			@endcan
 			@can('impersonate_user')
-				<a href="{!! route('user.impersonate', ['id' => $user->id]) !!}" title="Impersonate {{ $user->name }}"  class="confirm">
+				<a href="{!! route('user.impersonate', ['user' => $user->id]) !!}" title="Impersonate {{ $user->name }}"  class="confirm">
 					<span class='glyphicon glyphicon-user'></span>
 				</a>
 			@endif
