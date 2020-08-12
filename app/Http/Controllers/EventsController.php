@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Nsivanoly\LaravelFacebookSdk\LaravelFacebookSdk;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class EventsController extends Controller
@@ -48,8 +49,9 @@ class EventsController extends Controller
     protected $hasFilter;
     protected $event;
     protected $criteria;
+    protected $fb;
 
-    public function __construct(Event $event)
+    public function __construct(Event $event, LaravelFacebookSdk $fb)
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'indexAttending', 'calendarAttending']]);
         $this->event = $event;
@@ -68,6 +70,8 @@ class EventsController extends Controller
         $this->gridRpp = 24;
         $this->page = 1;
         $this->sort = ['name', 'desc'];
+
+        $this->fb = $fb;
 
         $this->defaultCriteria = null;
         $this->hasFilter = 0;
@@ -1351,7 +1355,7 @@ class EventsController extends Controller
      */
     protected function addFbPhoto($event)
     {
-        $fb = app(Nsivanoly\LaravelFacebookSdk\LaravelFacebookSdk::class);
+        //$fb = app(Nsivanoly\LaravelFacebookSdk\LaravelFacebookSdk::class);
 
         // some fields may have been deprecated - only need cover here
         //$fields = 'attending_count,category,cover,interested_count,type,name,noreply_count,maybe_count,owner,place,roles';
@@ -1369,8 +1373,8 @@ class EventsController extends Controller
         $event_id = $spl[4];
 
         try {
-            $token = $fb->getJavaScriptHelper()->getAccessToken();
-            $response = $fb->get($event_id.'?fields='.$fields, $token);
+            $token = $this->fb->getJavaScriptHelper()->getAccessToken();
+            $response = $this->fb->get($event_id.'?fields='.$fields, $token);
 
             if ($cover = $response->getGraphNode()->getField('cover')) {
                 $source = $cover->getField('source');
@@ -1421,7 +1425,6 @@ class EventsController extends Controller
             ->where('primary_link', 'like', '%facebook%')
             ->get();
 
-        $fb = app(SammyK\LaravelFacebookSdk\LaravelFacebookSdk::class);
         $fields = 'attending_count,category,cover,interested_count,name,noreply_count,maybe_count';
 
         foreach ($events as $event) {
@@ -1429,8 +1432,8 @@ class EventsController extends Controller
             $spl = explode('/', $str);
             $event_id = $spl[4];
 
-            $token = $fb->getJavaScriptHelper()->getAccessToken();
-            $response = $fb->get($event_id.'?fields='.$fields, $token);
+            $token = $this->fb->getJavaScriptHelper()->getAccessToken();
+            $response = $this->fb->get($event_id.'?fields='.$fields, $token);
 
             // get the cover from FB
             if ($cover = $response->getGraphNode()->getField('cover')) {
@@ -1478,13 +1481,12 @@ class EventsController extends Controller
             abort(404);
         }
 
-        $fb = app(SammyK\LaravelFacebookSdk\LaravelFacebookSdk::class);
         $fields = 'attending_count,category,cover,interested_count,type,name,noreply_count,maybe_count,owner,place,roles';
 
         try {
             // $response = $fb->get('/me?fields=id,name,email', 'user-access-token');
-            $token = $fb->getJavaScriptHelper()->getAccessToken();
-            $response = $fb->get('1750886384941695?fields='.$fields, $token);
+            $token = $this->fb->getJavaScriptHelper()->getAccessToken();
+            $response = $this->fb->get('1750886384941695?fields='.$fields, $token);
 
             $url = $response->cover->source;
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
