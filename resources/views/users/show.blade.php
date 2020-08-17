@@ -30,7 +30,7 @@
 
                         <b>Bio</b><br>
                         <p>
-                            {{ $user->profile->bio or 'No bio available'}}
+                            {{ $user->profile->bio ? $user->profile->bio : 'No bio available'}}
                         </p>
                     </div>
                 @endif

@@ -7,7 +7,7 @@
 	<h2>{{ $user->name }}</h2>
 	<p>
 
-		<a href="{!! route('users.show', ['id' => $user->id]) !!}" class="btn btn-primary">Show Profile</a>
+		<a href="{!! route('users.show', ['user' => $user->id]) !!}" class="btn btn-primary">Show Profile</a>
 		<a href="{!! URL::route('users.index') !!}" class="btn btn-info">Return to list</a>
 
 	</p>
