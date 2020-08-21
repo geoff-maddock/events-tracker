@@ -14,26 +14,31 @@ class ImpersonateUsersTest extends TestCase
     /** @test  */
     function non_admins_cannot_impersonate_users()
     {
+        // create a new user
         $user = factory('App\User')->create();
 
-        $this->withExceptionHandling()
+        // try to impersonate the user without signing in
+        $response = $this->withExceptionHandling()
             ->get('/impersonate/' . $user->id)
-            ->assertRedirect('/login');
+            ->assertStatus(403);
 
-        $this->actingAs($user);
 
-        $this->get('/impersonate/' . $user->id)->assertStatus(403);
     }
 
-//    /** @test */
-//    function admins_can_impersonate_users()
-//    {
-//        $admin = factory('App\User')->create(['type' => 'admin']);
-//        $user = factory('App\User')->create();
-//
-//        $this->actingAs($admin);
-//
-//        $this->get('/impersonate/' . $user->id);
-//        $this->assertEquals(auth()->user()->id, $user->id);
-//    }
+    /** @test */
+    function admins_can_impersonate_users()
+    {
+        // create a new user
+        $user = factory('App\User')->create();
+        
+        // create a new admin user
+        $admin = factory('App\User')->create();
+        $admin->assignGroup('admin');
+
+        $this->actingAs($admin);
+
+        $response = $this->get('/impersonate/' . $user->id);
+
+        $response->assertStatus(302);
+    }
 }

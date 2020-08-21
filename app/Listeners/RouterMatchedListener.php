@@ -34,7 +34,9 @@ class RouterMatchedListener
             $who = User::find($route->route->parameter('user'));
 
             // log impersonation
-            Activity::log($user, $user, 13, $user->name.' impersonated '.$who->name);
+            if ($user && $who) {
+                Activity::log($user, $user, 13, $user->name.' impersonated '.$who->name);
+            }
         }
     }
 }
