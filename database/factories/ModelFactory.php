@@ -1,5 +1,5 @@
 <?php
-use Faker\Generator as Faker;
+
 use Illuminate\Support\Str;
 /*
 |--------------------------------------------------------------------------
@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 | database. Just tell the factory how a default model should look.
 |
 */
-$factory->define(App\User::class, function (Faker $faker) {
+$factory->define(App\User::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->name,
         'email' => $faker->unique()->safeEmail,
@@ -21,7 +21,7 @@ $factory->define(App\User::class, function (Faker $faker) {
     ];
 });
 
-$factory->define(App\Profile::class, function (Faker $faker) {
+$factory->define(App\Profile::class, function (Faker\Generator $faker) {
     $user = factory(App\User::class)->create();
     return [
         'user_id' => $user->id,
@@ -40,6 +40,8 @@ $factory->define(App\Entity::class, function (Faker\Generator $faker) {
         'description' => $faker->paragraph,
         'entity_type_id' => random_int(1,5),
         'entity_status_id' => random_int(1,5),
+        'facebook_username' => $faker->name,
+        'twitter_username' => $faker->name,
         'created_by' => 1
     ];
 });

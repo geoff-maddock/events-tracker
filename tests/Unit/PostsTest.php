@@ -46,7 +46,7 @@ class PostsTest extends TestCase
     }
 
     /**
-	 * Test that a seletect post is visible
+	 * Test that a select post is visible
      *
      * @test void
      */

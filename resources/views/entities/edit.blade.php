@@ -6,7 +6,7 @@
 
 <h2>Entity . EDIT
 	@include('events.crumbs', ['slug' => $entity->slug ?: $entity->id])
-	  <br> 	<a href="{!! route('entities.show', ['id' => $entity->slug]) !!}" class="btn btn-primary">Show Entity</a> <a href="{!! URL::route('entities.index') !!}" class="btn btn-info">Return to list</a>
+	  <br> 	<a href="{!! route('entities.show', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Show Entity</a> <a href="{!! URL::route('entities.index') !!}" class="btn btn-info">Return to list</a>
 </h2>
 
 <div class="row">

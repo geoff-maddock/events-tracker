@@ -192,7 +192,7 @@ class PostsController extends Controller
         ++$post->views;
         $post->save();
 
-        $route = route('threads.show', ['id' => $post->thread_id]).'#post-'.$post->id;
+        $route = route('threads.show', ['thread' => $post->thread_id]).'#post-'.$post->id;
 
         return redirect($route);
     }

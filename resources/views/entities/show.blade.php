@@ -196,9 +196,9 @@
 			{!! $comment->message !!}<br>
 			{{ $comment->created_at->diffForHumans() }} <br>
 			@if ($signedIn && $comment->createdBy($user))
-			<a href="{!! route('entities.comments.edit', ['entity' => $entity->slug, 'id' => $comment->id]) !!}">
+			<a href="{!! route('entities.comments.edit', ['entity' => $entity->slug, 'comment' => $comment->id]) !!}">
 			<span class='glyphicon glyphicon-pencil'></span></a>
-			{!! Form::open(['route' => ['events.comments.destroy', 'entity' => $entity->slug, 'id' => $comment->id], 'method' => 'delete']) !!}
+			{!! Form::open(['route' => ['entities.comments.destroy', 'entity' => $entity->slug, 'comment' => $comment->id], 'method' => 'delete']) !!}
 			<button type="submit" class="btn btn-danger btn-mini">Delete</button>
 			{!! Form::close() !!}
 			@endif

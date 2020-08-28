@@ -11,17 +11,17 @@
 	@endif
 
 	@if ($signedIn && $entity->ownedBy($user))
-	<a href="{!! route('entities.edit', ['id' => $entity->slug]) !!}">
+	<a href="{!! route('entities.edit', ['slug' => $entity->slug]) !!}"> xx
 	<span class='glyphicon glyphicon-pencil'></span></a>
-	@endif 
-	
+	@endif
+
 	@if ($signedIn)
 		@if ($follow = $entity->followedBy($user))
 		<a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}" data-target="#entity-{{ $entity->id }}" class="ajax-action" title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
 		@else
 		<a href="{!! route('entities.follow', ['id' => $entity->id]) !!}" data-target="#entity-{{ $entity->id }}" class="ajax-action" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
 		@endif
-	@endif 
+	@endif
 
 
 	@if ($type = $entity->entityType)
@@ -29,7 +29,7 @@
 	@endif
 
 	@if ($entity->getPrimaryLocationAddress() )
-		{{ $entity->getPrimaryLocationAddress() }} - {{ $entity->getPrimaryLocation()->neighborhood }} 
+		{{ $entity->getPrimaryLocationAddress() }} - {{ $entity->getPrimaryLocation()->neighborhood }}
 	@endif
     <br>
 	@foreach ($entity->roles as $role)

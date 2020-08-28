@@ -17,7 +17,7 @@
 		@endif
 
 		@if ($signedIn && $entity->ownedBy($user))
-		<a href="{!! route('entities.edit', ['entity' => $entity->id]) !!}" title="Click to edit"><span class='glyphicon glyphicon-pencil'></span></a>
+		<a href="{!! route('entities.edit', ['entity' => $entity->slug]) !!}" title="Click to edit"><span class='glyphicon glyphicon-pencil'></span></a>
 		@endif
 
 		@if ($signedIn)

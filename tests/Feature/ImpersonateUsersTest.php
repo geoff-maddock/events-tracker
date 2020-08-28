@@ -30,7 +30,7 @@ class ImpersonateUsersTest extends TestCase
     {
         // create a new user
         $user = factory('App\User')->create();
-        
+
         // create a new admin user
         $admin = factory('App\User')->create();
         $admin->assignGroup('admin');

@@ -10,17 +10,6 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class CreateThreadsTest extends TestCase
 {
-    //use DatabaseMigrations;
-    /**
-     * A basic test example.
-     *
-     * @return void
-     */
-    public function testExample()
-    {
-        $this->assertTrue(true);
-    }
-
     /** @test  */
     function unauthorized_users_may_not_delete_threads()
     {
@@ -34,10 +23,7 @@ class CreateThreadsTest extends TestCase
 
         $result = $this->delete($thread->path());
 
-        //dump($result);
         $result->assertSee('login');
-
-
     }
 
     /** @test */
@@ -49,10 +35,10 @@ class CreateThreadsTest extends TestCase
 
         $thread = make('App\Thread');
 
-        $response = $this->post('/threads', $thread->toArray());
+        $response = $this->followingRedirects()->post('/threads', $thread->toArray());
 
-        $this->get($response->headers->get('Location'))
-            ->assertSee($thread->name)
-            ->assertSee($thread->body);
+        $response->assertStatus(200);
+        $response->assertSee($thread->name)->assertSee($thread->body);
+
     }
 }

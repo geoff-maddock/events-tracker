@@ -149,7 +149,7 @@ class CommentsController extends Controller {
 		$msg = '';
 
 		$comment->fill($request->input())->save();
- 
+
  		\Session::flash('flash_message', 'Your comment has been updated!');
 
 		return redirect()->route('entities.show', $entity->getRouteKey());
@@ -158,12 +158,12 @@ class CommentsController extends Controller {
     /**
      * Remove the specified resource from storage.
      *
-     * @param Event $event
+     * @param Entity $entity
      * @param  \App\Comment $comment
      * @return Response
      * @throws \Exception
      */
-	public function destroy( Event $event, Comment $comment )
+	public function destroy( Entity $entity, Comment $comment )
 	{
 		$comment->delete();
 
