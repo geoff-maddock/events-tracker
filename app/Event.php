@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 /**
  * @property int id
@@ -740,7 +741,7 @@ class Event extends Eloquent
         if (!$this->tags->isEmpty()) {
             $format .= ' Tag: ';
             foreach ($this->tags as $tag) {
-                $format .= ' #'.studly_case($tag->name);
+                $format .= ' #'.Str::studly($tag->name);
             }
         }
 

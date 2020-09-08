@@ -485,10 +485,13 @@ class EventsController extends Controller
      */
     public function hasFilter($filters): bool
     {
-        $arr = $filters;
-        unset($arr['rpp'], $arr['sortOrder'], $arr['sortBy'], $arr['page']);
+        if (!is_array($filters)) {
+            return false;
+        }
 
-        return count(array_filter($arr, function ($x) { return !empty($x); }));
+        unset($filters['rpp'], $filters['sortOrder'], $filters['sortBy'], $filters['page']);
+
+        return count(array_filter($filters, function ($x) { return !empty($x); }));
     }
 
     /**
@@ -1355,8 +1358,6 @@ class EventsController extends Controller
      */
     protected function addFbPhoto($event)
     {
-        //$fb = app(Nsivanoly\LaravelFacebookSdk\LaravelFacebookSdk::class);
-
         // some fields may have been deprecated - only need cover here
         //$fields = 'attending_count,category,cover,interested_count,type,name,noreply_count,maybe_count,owner,place,roles';
         $fields = 'cover';
@@ -1473,6 +1474,7 @@ class EventsController extends Controller
      * @return \Illuminate\Contracts\View\Factory|View
      *
      * @throws \Illuminate\Container\EntryNotFoundException
+     * @throws \Facebook\Exceptions\FacebookSDKException
      */
     public function postEvent(Event $event)
     {
@@ -1484,7 +1486,6 @@ class EventsController extends Controller
         $fields = 'attending_count,category,cover,interested_count,type,name,noreply_count,maybe_count,owner,place,roles';
 
         try {
-            // $response = $fb->get('/me?fields=id,name,email', 'user-access-token');
             $token = $this->fb->getJavaScriptHelper()->getAccessToken();
             $response = $this->fb->get('1750886384941695?fields='.$fields, $token);
 
@@ -1504,11 +1505,9 @@ class EventsController extends Controller
      */
     public function getToken()
     {
-        $fb = app(SammyK\LaravelFacebookSdk\LaravelFacebookSdk::class);
-
         // Obtain an access token.
         try {
-            $token = $fb->getAccessTokenFromRedirect();
+            $token = $this->fb->getAccessTokenFromRedirect();
         } catch (Facebook\Exceptions\FacebookSDKException $e) {
             dd($e->getMessage());
         }
@@ -1517,7 +1516,7 @@ class EventsController extends Controller
         // or if someone just hit this URL outside of the OAuth flow.
         if (!$token) {
             // Get the redirect helper
-            $helper = $fb->getRedirectLoginHelper();
+            $helper = $this->fb->getRedirectLoginHelper();
 
             if (!$helper->getError()) {
                 abort(403, 'Unauthorized action.');
@@ -1534,7 +1533,7 @@ class EventsController extends Controller
 
         if (!$token->isLongLived()) {
             // OAuth 2.0 client handler
-            $oauth_client = $fb->getOAuth2Client();
+            $oauth_client = $this->fb->getOAuth2Client();
 
             // Extend the access token.
             try {
@@ -1544,7 +1543,7 @@ class EventsController extends Controller
             }
         }
 
-        $fb->setDefaultAccessToken($token);
+        $this->fb->setDefaultAccessToken($token);
     }
 
     /**

@@ -86,10 +86,12 @@ class SeriesController extends Controller
      */
     public function hasFilter($filters): bool
     {
-        $arr = $filters;
-        unset($arr['rpp'], $arr['sortOrder'], $arr['sortBy'], $arr['page']);
+        if (!is_array($filters)) {
+            return false;
+        }
+        unset($filters['rpp'], $filters['sortOrder'], $filters['sortBy'], $filters['page']);
 
-        return count(array_filter($arr, function ($x) { return !empty($x); }));
+        return count(array_filter($filters, function ($x) { return !empty($x); }));
     }
 
     /**
