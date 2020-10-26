@@ -30,7 +30,7 @@
 		{{ $event->eventType->name }}
 
 		@if ($event->venue)
-			<br>{{ $event->venue->name or 'No venue specified' }}
+			<br>{{ $event->venue->name ?? 'No venue specified' }}
 			@if ($event->venue->getPrimaryLocationAddress() )
 				{{ $event->venue->getPrimaryLocationAddress() }}
 			@endif

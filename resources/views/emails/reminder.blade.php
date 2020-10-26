@@ -32,7 +32,7 @@ Here is a reminder about this event that you are attending.
 	@if ($event->door_price)
 	${{ number_format($event->door_price,0) }}
 	@endif
- 	
+
  	@if ($event->min_age)
 	{{ $event->min_age }}
 	@endif
@@ -54,15 +54,15 @@ Here is a reminder about this event that you are attending.
 
  	<br><br>
 
-	<p> 
+	<p>
 	@if ($event->description)
 	<event class="body">
 		{!! nl2br($event->description) !!}
-	</event> 
+	</event>
 	@endif
 
 	<br>
-	<i>Added by <a href="/users/{{ $event->user->id }}">{{ $event->user->name or '' }}</a></i>
+	<i>Added by <a href="/users/{{ $event->user->id }}">{{ $event->user->name ?? '' }}</a></i>
 
 	<P>
 	@unless ($event->entities->isEmpty())

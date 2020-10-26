@@ -31,7 +31,7 @@ You might be interested in this new event because you are following <b>{!! $obje
 	@if ($event->door_price)
 	${{ number_format($event->door_price,0) }}
 	@endif
- 	
+
  	@if ($event->min_age)
 	{{ $event->min_age }}
 	@endif
@@ -53,15 +53,15 @@ You might be interested in this new event because you are following <b>{!! $obje
 
  	<br><br>
 
-	<p> 
+	<p>
 	@if ($event->description)
 	<event class="body">
 		{!! nl2br($event->description) !!}
-	</event> 
+	</event>
 	@endif
 
 	<br>
-	<i>Added by <a href="{{ url('users/'.$event->user->id) }}">{{ $event->user->name or '' }}</a></i>
+	<i>Added by <a href="{{ url('users/'.$event->user->id) }}">{{ $event->user->name ?? '' }}</a></i>
 
 	<P>
 	@unless ($event->entities->isEmpty())

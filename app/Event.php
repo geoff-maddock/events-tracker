@@ -733,7 +733,7 @@ class Event extends Eloquent
                 if ('' !== $entity->twitter_username) {
                     $format .= ' @'.$entity->twitter_username;
                 } else {
-                    $format .= ' @'.studly_case($entity->slug);
+                    $format .= ' @'.Str::studly($entity->slug);
                 }
             }
         }

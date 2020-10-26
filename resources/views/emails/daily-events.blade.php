@@ -4,7 +4,7 @@ Good morning!
 	Here are the events you are attending today.
 
 	@foreach ($events as $event)
-	<div class='event-date'>
+	    <div class='event-date'>
 		<h2>{!! $event->start_at->format('l F jS Y') !!}</h2>
 
 		{!! $event->start_at->format('h:i A') !!} {!! $event->end_time ? 'until '.$event->end_time->format('h:i A') : '' !!}
@@ -64,7 +64,7 @@ Good morning!
 		@endif
 
 		<br>
-		<i>Added by <a href="{{ $url }}users/{{ $event->user->id }}">{{ $event->user->name or '' }}</a></i>
+		<i>Added by <a href="{{ $url }}users/{{ $event->user->id }}">{{ $event->user->name ?? '' }}</a></i>
 
 		<P>
 		@unless ($event->entities->isEmpty())
@@ -82,9 +82,6 @@ Good morning!
 			@endforeach
 		@endunless
 		</P>
-
-		</div>
-	</div>
 	@endforeach
 @endif
 
@@ -104,7 +101,7 @@ Good morning!
 			</description>
 		@endif
 
-		<p>	{{ $s->eventType->name or ''}} at {{ $s->venue->name or 'No venue specified' }}</p>
+		<p>	{{ $s->eventType->name ?? ''}} at {{ $s->venue->name ?? 'No venue specified' }}</p>
 
 		<P>
 			@unless ($s->entities->isEmpty())
@@ -123,8 +120,6 @@ Good morning!
 		@endunless
 			</P>
 
-	</div>
-	</div>
 	@endforeach
 @endif
 
@@ -147,7 +142,7 @@ Good morning!
 					{{ $event->eventType->name }}
 
 					@if ($event->venue)
-						<br>{{ $event->venue->name or 'No venue specified' }}
+						<br>{{ $event->venue->name ?? 'No venue specified' }}
 						@if ($event->venue->getPrimaryLocationAddress() )
 							{{ $event->venue->getPrimaryLocationAddress() }}
 						@endif
@@ -179,7 +174,7 @@ Good morning!
 					@endunless
 
 					@if ($event->primary_link)
-						<br>{{ $event->primary_link or ''}}
+						<br>{{ $event->primary_link ?? ''}}
 					@endif
 					<br>
 				</div>
