@@ -62,7 +62,7 @@
 		@endforeach
 		@endif
 			@if ($entity->hasRole('venue'))
-            <a href="events/filter?filter_venue={{ $entity->name }}" title="Show events at this venue.">...</a>
+                <a href="events/filter?filter_venue={{ $entity->name }}" title="Show all past events at this venue.">...</a>
 			@else
 				<a href="{!! route('events.relatedto', ['slug' => $entity->slug]) !!}" title="Show related event.">...</a>
 			@endif
