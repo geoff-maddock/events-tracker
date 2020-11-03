@@ -95,7 +95,7 @@
 		@foreach ($entity->locations as $location)
 		@if (isset($location->visibility) && ($location->visibility->name != 'Guarded' || ($location->visibility->name == 'Guarded' && $signedIn)))
 
-		<span><B>{{ isset($location->locationType) ? $location->locationType->name : '' }}</B>  {{ $location->address_one }} {{ $location->neighborhood or '' }}  {{ $location->city }} {{ $location->state }} {{ $location->country }}
+		<span><B>{{ isset($location->locationType) ? $location->locationType->name : '' }}</B>  {{ $location->address_one }} {{ $location->neighborhood ?? '' }}  {{ $location->city }} {{ $location->state }} {{ $location->country }}
 
 				@if (isset($location->map_url))
 				<a href="{!! $location->map_url !!}" target="_" title="Link to map.">
@@ -131,7 +131,7 @@
  		<P><b>Contacts:</b>
 		<P>
 		@foreach ($entity->contacts as $contact)
-		<span><B>{{ $contact->name }}</B>  {{ $contact->email or '' }} {{ $contact->phone or '' }}
+		<span><B>{{ $contact->name }}</B>  {{ $contact->email ?? '' }} {{ $contact->phone ?? '' }}
 				@if ($signedIn && $entity->ownedBy($user))
 				<a href="{!! route('entities.contacts.edit', ['entity' => $entity->slug, 'contact' => $contact->id]) !!}">
 				<span class='glyphicon glyphicon-pencil'></span></a>

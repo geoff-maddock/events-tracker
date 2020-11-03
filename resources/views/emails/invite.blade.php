@@ -17,7 +17,7 @@
 	@foreach ($events as $event)
 
 		@if ($month != $event->start_at->format('F'))
-            <?php $month = $event->start_at->format('F')?>
+            @php $month = $event->start_at->format('F') @endphp
 		@endif
 
 		{!! $event->start_at->format('l F jS Y') !!} <br>
@@ -63,7 +63,7 @@
 		@endunless
 
 		@if ($event->primary_link)
-			<br>{{ $event->primary_link or ''}}
+			<br>{{ $event->primary_link ?? ''}}
 		@endif
 		<br><br>
 	@endforeach

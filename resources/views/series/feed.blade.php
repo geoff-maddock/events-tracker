@@ -18,7 +18,7 @@
 		{{ $s->eventType->name }}
 
 		@if ($s->venue)
-		<br>{{ $s->venue->name or 'No venue specified' }}
+		<br>{{ $s->venue->name ?? 'No venue specified' }}
 			@if ($s->venue->getPrimaryLocationAddress() )
 				{{ $s->venue->getPrimaryLocationAddress() }}
 			@endif
@@ -51,7 +51,7 @@
 		@endunless
 
 		@if ($s->primary_link)
-		<br>{{ $s->primary_link or ''}}
+		<br>{{ $s->primary_link ?? ''}}
 		@endif
 		<br><br>
 	@endforeach

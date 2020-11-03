@@ -36,7 +36,7 @@ Here is a reminder from <a href="{{ $url }}">{{ $url }}</a> about these upcoming
 	@if ($event->door_price)
 	${{ number_format($event->door_price,0) }}
 	@endif
- 	
+
  	@if ($event->min_age)
 	{{ $event->min_age }}
 	@endif
@@ -57,15 +57,15 @@ Here is a reminder from <a href="{{ $url }}">{{ $url }}</a> about these upcoming
 
  	<br><br>
 
-	<p> 
+	<p>
 	@if ($event->description)
 	<event class="body">
 		{!! nl2br($event->description) !!}
-	</event> 
+	</event>
 	@endif
 
 	<br>
-	<i>Added by <a href="{{ $url }}/users/{{ $event->user->id }}">{{ $event->user->name or '' }}</a></i>
+	<i>Added by <a href="{{ $url }}/users/{{ $event->user->id }}">{{ $event->user->name ?? '' }}</a></i>
 
 	<P>
 	@unless ($event->entities->isEmpty())
@@ -107,7 +107,7 @@ Here is a reminder from <a href="{{ $url }}">{{ $url }}</a> about these upcoming
 					{{ $event->eventType->name }}
 
 					@if ($event->venue)
-						<br>{{ $event->venue->name or 'No venue specified' }}
+						<br>{{ $event->venue->name ?? 'No venue specified' }}
 						@if ($event->venue->getPrimaryLocationAddress() )
 							{{ $event->venue->getPrimaryLocationAddress() }}
 						@endif
@@ -140,7 +140,7 @@ Here is a reminder from <a href="{{ $url }}">{{ $url }}</a> about these upcoming
 					@endunless
 
 					@if ($event->primary_link)
-						<br>{{ $event->primary_link or ''}}
+						<br>{{ $event->primary_link ?? ''}}
 					@endif
 					<br>
 				</div>

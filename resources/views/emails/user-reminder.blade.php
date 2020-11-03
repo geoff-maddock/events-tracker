@@ -24,7 +24,7 @@
                {{ $event->eventType->name }}
 
                @if ($event->venue)
-                   <br>{{ $event->venue->name or 'No venue specified' }}
+                   <br>{{ $event->venue->name ?? 'No venue specified' }}
                    @if ($event->venue->getPrimaryLocationAddress() )
                        {{ $event->venue->getPrimaryLocationAddress() }}
                    @endif
@@ -57,7 +57,7 @@
                @endunless
 
                @if ($event->primary_link)
-                   <br>{{ $event->primary_link or ''}}
+                   <br>{{ $event->primary_link ?? ''}}
                @endif
                 <br>
            </div>

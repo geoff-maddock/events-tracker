@@ -3,14 +3,14 @@
 	<?php $month = '';?>
 	@foreach ($events as $event)
 
-		@if ($month != $event->start_at->format('F')) 
+		@if ($month != $event->start_at->format('F'))
 		<?php $month = $event->start_at->format('F')?>
 		@endif
 
 		{!! $event->start_at->format('l F jS Y') !!} <br>
 		{{ $event->name }}
 
-	
+
 		@if (!empty($event->series_id))
 		<br><a href="/series/{{$event->series_id }}">{!! $event->series->name !!}</a> series
 		@endif
@@ -18,7 +18,7 @@
 		{{ $event->eventType->name }}
 
 		@if ($event->venue)
-		<br>{{ $event->venue->name or 'No venue specified' }}
+		<br>{{ $event->venue->name ?? 'No venue specified' }}
 			@if ($event->venue->getPrimaryLocationAddress() )
 				{{ $event->venue->getPrimaryLocationAddress() }}
 			@endif
@@ -34,12 +34,12 @@
 		${{ number_format($event->door_price,0) }}
 		@endif
 
-		
+
 		@unless ($event->entities->isEmpty())
 		<br>
 		Related:
 			@foreach ($event->entities as $entity)
-				{{ $entity->name }}, 
+				{{ $entity->name }},
 			@endforeach
 		@endunless
 
@@ -49,9 +49,9 @@
 				{{ $tag->name }},
 			@endforeach
 		@endunless
-		
+
 		@if ($event->primary_link)
-		<br>{{ $event->primary_link or ''}}
+		<br>{{ $event->primary_link ?? ''}}
 		@endif
 		<br><br>
 	@endforeach
