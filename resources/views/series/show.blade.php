@@ -77,7 +77,7 @@
 	@endunless
 	</P>
 
-	<p>	<i>Added by {{ $series->user->name or '' }}</i></p>
+	<p>	<i>Added by {{ $series->user->name ?? '' }}</i></p>
 
 		<div class="row">
 			<div class="col-sm-12">

@@ -33,9 +33,9 @@
 	        <th class="cell-stat-2x hidden-xs hidden-sm">Last Post</th>
 	      </tr>
 	    </thead>
-	<tbody>	
+	<tbody>
 	<tr>
-	<td>{!! link_to_route('threads.show', $thread->name, [$thread->id], ['class' => 'forum-link']) !!} 
+	<td>{!! link_to_route('threads.show', $thread->name, [$thread->id], ['class' => 'forum-link']) !!}
 			@if ($signedIn && $thread->ownedBy($user))
 			<a href="{!! route('threads.edit', ['id' => $thread->id]) !!}" title="Edit this thread."><span class='glyphicon glyphicon-pencil'></span></a>
 			@endif
@@ -62,8 +62,8 @@
 		@endunless
 
 	</td>
-    <td>{{ $thread->thread_category or 'General'}}</td>
-    <td class="cell-stat hidden-xs hidden-sm">{{ $thread->user->name or 'User deleted'}}</td>
+    <td>{{ $thread->thread_category ?? 'General'}}</td>
+    <td class="cell-stat hidden-xs hidden-sm">{{ $thread->user->name ?? 'User deleted'}}</td>
     <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->postCount }}</td>
     <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->views }}</td>
     <td>{{ $thread->lastPostAt->diffForHumans() }}</td>

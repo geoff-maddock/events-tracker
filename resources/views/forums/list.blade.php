@@ -22,7 +22,7 @@
 
 
 	</td>
-    <td>{{ $forum->threadsCount or 0 }}
+    <td>{{ $forum->threadsCount ?? 0 }}
     </td>
     <td class="cell-stat hidden-xs hidden-sm">0</td>
     <td class="cell-stat text-center hidden-xs hidden-sm"></td>

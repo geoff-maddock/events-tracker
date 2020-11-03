@@ -57,7 +57,7 @@
         @endunless
 
     </td>
-    <td class="cell-stat hidden-xs hidden-sm">{{ $thread->thread_category or 'General'}}</td>
+    <td class="cell-stat hidden-xs hidden-sm">{{ $thread->thread_category ?? 'General'}}</td>
     <td class="cell-stat">
         @if (isset($thread->user))
             @include('users.avatar', ['user' => $thread->user])
