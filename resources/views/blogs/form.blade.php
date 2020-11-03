@@ -51,6 +51,14 @@
 </div>
 
 <div class="row">
+    <div class="form-group col-md-2 {{$errors->has('sort_order') ? 'has-error' : '' }}">
+        {!! Form::label('sort_order','Sort Order:') !!}
+        {!! Form::select('sort_order',[ 0 => 'Desc', 1 => 'Asc'], ($blog->sort_order ?? 0), ['class' =>'form-control']) !!}
+        {!! $errors->first('sort_order','<span class="help-block">:message</span>') !!}
+    </div>
+</div>
+
+<div class="row">
 	<div class="form-group col-md-2">
 		{!! Form::label('entity_list','Related Entities:') !!}
 		{!! Form::select('entity_list[]', $entities, null, ['id' => 'entity_list',

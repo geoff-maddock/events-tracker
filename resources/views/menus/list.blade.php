@@ -6,6 +6,8 @@
 		<th><a href="?sort_by=id&sort_direction={{ $sortDirection == 'desc' ? 'asc' : 'desc' }}">ID</a></th>
 		<th><a href="?sort_by=name&sort_direction={{ $sortDirection == 'desc' ? 'asc' : 'desc' }}">Name</a></th>
 		<th><a href="?sort_by=slug&sort_direction={{ $sortDirection == 'desc' ? 'asc' : 'desc' }}">Slug</a></th>
+        <th><a href="?sort_by=menu_parent_id&sort_direction={{ $sortDirection == 'desc' ? 'asc' : 'desc' }}">Parent</a></th>
+        <th><a href="?sort_by=visibility_id&sort_direction={{ $sortDirection == 'desc' ? 'asc' : 'desc' }}">Visibility</a></th>
 		<th style="width: 60px"></th>
 	</tr>
 	</thead>
@@ -16,6 +18,8 @@
 		<td>{!! $menu->id !!}</td>
 		<td>{!! link_to_route('menus.show', $menu->name, [$menu->id], ['class' => 'item-title']) !!}</td>
 		<td>{!! $menu->slug !!}</td>
+        <td>{!! $menu->menuParent ? $menu->menuParent->name : '' !!}</td>
+        <td>{!! $menu->visibility ? $menu->visibility->name : '' !!}</td>
 		<td>
 			@can('edit_menu')
 			<a href="{!! route('menus.edit', ['menu' => $menu->id]) !!}"><span class='glyphicon glyphicon-pencil'></span></a>

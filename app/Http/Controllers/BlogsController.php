@@ -2,38 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Menu;
-use Illuminate\Auth\AuthenticationException;
-use Illuminate\Http\Request;
-
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\BlogRequest;
-use Illuminate\Http\Response;
-use Symfony\Component\Finder\Exception\AccessDeniedException;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-
-use Carbon\Carbon;
-
-use Gate;
-use DB;
-use Log;
-use Mail;
+use App\Activity;
 use App\Blog;
-use App\Thread;
+use App\ContentType;
 use App\Entity;
-use App\Series;
+use App\Http\Requests\BlogRequest;
+use App\Like;
+use App\Menu;
 use App\Tag;
 use App\Visibility;
-use App\Activity;
-use App\Like;
-use App\ContentType;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\View\View;
 
 class BlogsController extends Controller
 {
-
     protected $blog;
     protected $rpp;
     protected $sortBy;
@@ -41,7 +27,7 @@ class BlogsController extends Controller
 
     public function __construct(Blog $blog)
     {
-        $this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
 
         $this->blog = $blog;
 
@@ -55,10 +41,8 @@ class BlogsController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(): View
     {
         // if the gate does not allow this user to show a blog redirect to home
 //        if (Gate::denies('show_blog')) {
@@ -68,9 +52,8 @@ class BlogsController extends Controller
 //        }
 
         $blogs = Blog::orderBy('created_at', 'desc')->paginate($this->rpp);
-        $blogs->filter(function($e)
-        {
-            return (($e->visibility && $e->visibility->name === 'Public') || ($this->user && $e->created_by === $this->user->id));
+        $blogs->filter(function ($e) {
+            return ($e->visibility && 'Public' === $e->visibility->name) || ($this->user && $e->created_by === $this->user->id);
         });
 
         return view('blogs.index')
@@ -85,34 +68,32 @@ class BlogsController extends Controller
      */
     public function create()
     {
-        $visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
-        $menus = [''=>''] + Menu::orderBy('name','ASC')->pluck('name','id')->all();
-        $tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
-        $entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
-        $contentTypes = [''=>''] + ContentType::orderBy('name','ASC')->pluck('name','id')->all();
+        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $menus = ['' => ''] + Menu::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $entities = Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $contentTypes = ['' => ''] + ContentType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('blogs.create', compact('visibilities','tags','entities', 'menus', 'contentTypes'));
+        return view('blogs.create', compact('visibilities', 'tags', 'entities', 'menus', 'contentTypes'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param BlogRequest $request
-     * @param Blog $blog
      * @return \Illuminate\Http\Response
+     *
      * @internal param Request $request
      */
     public function store(BlogRequest $request, Blog $blog)
     {
         // TODO change this to use the trust_blog permission to allow html
-        if (auth()->id() === config('app.superuser'))
-        {
+        if (auth()->id() === config('app.superuser')) {
             $allow_html = 1;
         } else {
             $allow_html = 0;
         }
 
-        $msg = "";
+        $msg = '';
 
         $input = $request->all();
 
@@ -131,6 +112,7 @@ class BlogsController extends Controller
 
     /**
      * @param Blog $blog
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function notifyFollowing($blog)
@@ -141,26 +123,23 @@ class BlogsController extends Controller
 
         // notify users following any of the tags
         $tags = $blog->tags()->get();
-        $users = array();
+        $users = [];
 
         // notify users following any tags related to the blog
 
-        foreach ($tags as $tag)
-        {
-            foreach ($tag->followers() as $user)
-            {
+        foreach ($tags as $tag) {
+            foreach ($tag->followers() as $user) {
                 // if the user hasn't already been notified, then email them
-                if (!array_key_exists($user->id, $users))
-                {
+                if (!array_key_exists($user->id, $users)) {
                     Mail::send('emails.following-thread', ['user' => $user, 'blog' => $blog, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $blog, $tag, $reply_email, $site, $url) {
                         $m->from($reply_email, $site);
 
-                        $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: ' . $blog->created_at->format('D F jS').' ' . $blog->name);
+                        $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$blog->created_at->format('D F jS').' '.$blog->name);
                     });
                     $users[$user->id] = $tag->name;
-                };
-            };
-        };
+                }
+            }
+        }
 
         return back();
     }
@@ -168,8 +147,8 @@ class BlogsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Blog $blog
      * @return \Illuminate\Http\Response
+     *
      * @internal param int $id
      */
     public function show(Blog $blog)
@@ -184,32 +163,31 @@ class BlogsController extends Controller
         return view('blogs.show', compact('blog'));
     }
 
-
     /**
      * Show the form for editing the specified resource.
      *
-     * @param Blog $blog
      * @return \Illuminate\Http\Response
      */
     public function edit(Blog $blog)
     {
         $this->middleware('auth');
 
-        $visibilities = [''=>''] + Visibility::pluck('name', 'id')->all();
-        $tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
-        $entities = Entity::orderBy('name','ASC')->pluck('name','id')->all();
-        $menus = [''=>''] + Menu::orderBy('name','ASC')->pluck('name','id')->all();
-        $contentTypes = [''=>''] + ContentType::orderBy('name','ASC')->pluck('name','id')->all();
+        $visibilities = ['' => ''] + Visibility::pluck('name', 'id')->all();
+        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $entities = Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $menus = ['' => ''] + Menu::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $contentTypes = ['' => ''] + ContentType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('blogs.edit', compact('blog', 'visibilities', 'tags','entities', 'menus', 'contentTypes'));
+        return view('blogs.edit', compact('blog', 'visibilities', 'tags', 'entities', 'menus', 'contentTypes'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param Blog $blog
      * @param BlogRequest|Request $request
+     *
      * @return \Illuminate\Http\Response
+     *
      * @internal param int $id
      */
     public function update(Blog $blog, BlogRequest $request)
@@ -218,21 +196,17 @@ class BlogsController extends Controller
 
         $blog->fill($request->input())->save();
 
-        if (!$blog->ownedBy($this->user))
-        {
-            $this->unauthorized($request); 
-        };
+        if (!$blog->ownedBy($this->user)) {
+            $this->unauthorized($request);
+        }
 
-        $tagArray = $request->input('tag_list',[]);
-        $syncArray = array();
+        $tagArray = $request->input('tag_list', []);
+        $syncArray = [];
 
         // check the elements in the tag list, and if any don't match, add the tag
-        foreach ($tagArray as $key => $tag)
-        {
-
-            if (!DB::table('tags')->where('id', $tag)->get())
-            {
-                $newTag = new Tag;
+        foreach ($tagArray as $key => $tag) {
+            if (!DB::table('tags')->where('id', $tag)->get()) {
+                $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->tag_type_id = 1;
                 $newTag->save();
@@ -242,36 +216,36 @@ class BlogsController extends Controller
                 $msg .= ' Added tag '.$tag.'.';
             } else {
                 $syncArray[$key] = $tag;
-            };
+            }
         }
 
         $blog->tags()->sync($syncArray);
-        $blog->entities()->sync($request->input('entity_list',[]));
+        $blog->entities()->sync($request->input('entity_list', []));
 
         // add to activity log
         Activity::log($blog, $this->user, 2);
 
         flash('Success', 'Your blog has been updated');
 
-       return redirect()->route('blogs.index');
+        return redirect()->route('blogs.index');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param Blog $blog
      * @return \Illuminate\Http\Response
+     *
      * @throws \Exception
+     *
      * @internal param int $id
      */
     public function destroy(Blog $blog)
     {
-
-        if ($this->user->cannot('destroy', $blog))
-        {
+        if ($this->user->cannot('destroy', $blog)) {
             flash('Error', 'Your are not authorized to delete the blog.');
+
             return redirect()->route('blogs.index');
-        };
+        }
 
         // add to activity log
         Activity::log($blog, $this->user, 3);
@@ -281,43 +255,42 @@ class BlogsController extends Controller
         flash()->success('Success', 'Your blog has been deleted!');
 
         return redirect()->route('blogs.index');
-
     }
 
     /**
-     * Mark user as liking the blog
+     * Mark user as liking the blog.
      *
      * @return Response
      */
     public function like($id, Request $request)
     {
         // check if there is a logged in user
-        if (!$this->user)
-        {
-            flash()->error('Error',  'No user is logged in.');
-            return back();
-        };
+        if (!$this->user) {
+            flash()->error('Error', 'No user is logged in.');
 
-        if (!$blog = Blog::find($id))
-        {
-            flash()->error('Error',  'No such blog');
             return back();
-        };
+        }
+
+        if (!$blog = Blog::find($id)) {
+            flash()->error('Error', 'No such blog');
+
+            return back();
+        }
 
         // add the like response
-        $like = new Like;
+        $like = new Like();
         $like->object_id = $id;
         $like->user_id = $this->user->id;
         $like->object_type = 'blog';
         $like->save();
 
         // update the likes
-        $blog->likes++;
+        ++$blog->likes;
         $blog->save();
 
         Log::info('User '.$id.' is liking '.$blog->name);
 
-        flash()->success('Success',  'You are now liking the selected blog.');
+        flash()->success('Success', 'You are now liking the selected blog.');
 
         return back();
     }
@@ -326,36 +299,34 @@ class BlogsController extends Controller
      * Mark user as unliking the blog.
      *
      * @param $id
-     * @param Request $request
+     *
      * @return Response
      */
     public function unlike($id, Request $request)
     {
-
         // check if there is a logged in user
-        if (!$this->user)
-        {
-            flash()->error('Error',  'No user is logged in.');
-            return back();
-        };
+        if (!$this->user) {
+            flash()->error('Error', 'No user is logged in.');
 
-        if (!$blog = Blog::find($id))
-        {
-            flash()->error('Error',  'No such blog');
             return back();
-        };
+        }
+
+        if (!$blog = Blog::find($id)) {
+            flash()->error('Error', 'No such blog');
+
+            return back();
+        }
 
         // update the likes
-        $blog->likes--;
+        --$blog->likes;
         $blog->save();
 
         // delete the like
-        $response = Like::where('object_id','=', $id)->where('user_id','=',$this->user->id)->where('object_type','=','blog')->first();
+        $response = Like::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'blog')->first();
         $response->delete();
 
-        flash()->success('Success',  'You are no longer liking the blog.');
+        flash()->success('Success', 'You are no longer liking the blog.');
 
         return back();
     }
-
 }

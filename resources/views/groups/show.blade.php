@@ -11,7 +11,7 @@
 
 <P>
 @can('edit_group')
-	<a href="{!! route('groups.edit', ['id' => $group->id]) !!}" class="btn btn-primary">Edit Group</a>
+	<a href="{!! route('groups.edit', ['group' => $group->id]) !!}" class="btn btn-primary">Edit Group</a>
 @endcan
 	<a href="{!! URL::route('groups.index') !!}" class="btn btn-info">Return to list</a>
 </P>
@@ -24,16 +24,16 @@
 
 	@if ($group->name)
 	<label>Name: </label> <i>{{ $group->name }} </i><br><br>
-	@endif 
+	@endif
 
 	@if ($group->level)
 	<label>Level: </label> <i>{{ $group->level }} </i><br><br>
-	@endif 
+	@endif
 
 	@unless ($group->permissions->isEmpty())
-		
+
 		<P><b>Permissions:</b>
-		
+
 		@foreach ($group->permissions as $permission)
 		<span class="label label-tag"><a href="/permissions/{{ $permission->id }}">{{ $permission->name }}</a></span>
 		@endforeach
@@ -41,9 +41,9 @@
 	@endunless
 
 	@unless ($group->users->isEmpty())
-		
+
 		<P><b>Users:</b>
-		
+
 		@foreach ($group->users as $user)
 		<span class="label label-tag"><a href="/users/{{ $user->id }}">{{ $user->name }}</a></span>
 		@endforeach
@@ -57,7 +57,7 @@
 
 
 @stop
- 
+
 @section('scripts.footer')
 <script type="text/javascript">
 $('button.delete').on('click', function(e){
@@ -65,13 +65,13 @@ $('button.delete').on('click', function(e){
   var form = $(this).parents('form');
   Swal.fire({
     title: "Are you sure?",
-    text: "You will not be able to recover this group!", 
-    type: "warning",   
-    showCancelButton: true,   
+    text: "You will not be able to recover this group!",
+    type: "warning",
+    showCancelButton: true,
     confirmButtonColor: "#DD6B55",
-    confirmButtonText: "Yes, delete it!", 
+    confirmButtonText: "Yes, delete it!",
     closeOnConfirm: true
-  }, 
+  },
    function(isConfirm){
    	if (isConfirm) {
     	form.submit();

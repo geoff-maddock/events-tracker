@@ -76,10 +76,7 @@ class Event extends Eloquent
 
     protected $dates = ['soundcheck_at', 'door_at', 'start_at', 'end_at', 'cancelled_at'];
 
-    /**
-     * @param $query
-     */
-    public function scopeFilter($query, QueryFilter $filters): Builder
+    public function scopeFilter(Builder $query, QueryFilter $filters): Builder
     {
         return $filters->apply($query);
     }

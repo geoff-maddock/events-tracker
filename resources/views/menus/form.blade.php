@@ -28,7 +28,7 @@
 <div class="row">
 	<div class="form-group col-md-2 {{$errors->has('visibility_id') ? 'has-error' : '' }}">
 		{!! Form::label('visibility_id','Visibility:') !!}
-		{!! Form::select('visibility_id', $visibilities, (isset($thread->visibility_id) ? $thread->visibility_id : 3), ['class' =>'form-control']) !!}
+		{!! Form::select('visibility_id', $visibilities, (isset($thread->visibility_id) ? $thread->visibility_id : NULL), ['class' =>'form-control']) !!}
 		{!! $errors->first('visibility_id','<span class="help-block">:message</span>') !!}
 	</div>
 </div>

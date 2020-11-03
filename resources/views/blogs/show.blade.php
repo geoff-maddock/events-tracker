@@ -11,7 +11,7 @@
 
 <P>
 @can('edit_blog')
-	<a href="{!! route('blogs.edit', ['id' => $blog->id]) !!}" class="btn btn-primary">Edit Blog</a>
+	<a href="{!! route('blogs.edit', ['blog' => $blog->id]) !!}" class="btn btn-primary">Edit Blog</a>
 @endcan
 	<a href="{!! URL::route('blogs.index') !!}" class="btn btn-info">Return to list</a>
 </P>
@@ -32,7 +32,7 @@
 
     @if ($blog->body)
             <p>
-        {{ $blog->body }}
+            {!! $blog->body !!}
             </p>
     @endif
 
@@ -45,6 +45,16 @@
 		@endforeach
 
 	@endunless
+
+    @unless ($blog->entities->isEmpty())
+
+        <P><b>Entities:</b>
+
+            @foreach ($blog->entities as $entity)
+                <span class="label label-tag"><a href="/entities/{{ $entity->slug }}">{{ $entity->name }}</a></span>
+        @endforeach
+
+    @endunless
 
 	@can('edit_blog')
 		{!! link_form_icon('glyphicon-trash text-warning', $blog, 'DELETE', 'Delete the [blog]') !!}

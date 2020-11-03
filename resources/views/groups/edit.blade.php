@@ -6,7 +6,7 @@
 
 
 	<h2>Group . EDIT : {{ $group->name }}</h2>
-	<br> 	<a href="{!! route('groups.show', ['id' => $group->id]) !!}" class="btn btn-primary">Show Group</a> <a href="{!! URL::route('groups.index') !!}" class="btn btn-info">Return to list</a>
+	<br> 	<a href="{!! route('groups.show', ['group' => $group->id]) !!}" class="btn btn-primary">Show Group</a> <a href="{!! URL::route('groups.index') !!}" class="btn btn-info">Return to list</a>
 
 
 	{!! Form::model($group, ['route' => ['groups.update', $group->id], 'method' => 'PATCH']) !!}

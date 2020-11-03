@@ -11,7 +11,7 @@
 
 <P>
 @can('edit_permission')
-	<a href="{!! route('permissions.edit', ['id' => $permission->id]) !!}" class="btn btn-primary">Edit Permission</a>
+	<a href="{!! route('permissions.edit', ['permission' => $permission->id]) !!}" class="btn btn-primary">Edit Permission</a>
 @endcan
 	<a href="{!! URL::route('permissions.index') !!}" class="btn btn-info">Return to list</a>
 </P>
@@ -24,16 +24,16 @@
 
 	@if ($permission->name)
 	<label>Name: </label> <i>{{ $permission->name }} </i><br><br>
-	@endif 
+	@endif
 
 	@if ($permission->level)
 	<label>Level: </label> <i>{{ $permission->level }} </i><br><br>
-	@endif 
+	@endif
 
 	@unless ($permission->groups->isEmpty())
-		
+
 		<P><b>Groups:</b>
-		
+
 		@foreach ($permission->groups as $group)
 		<span class="label label-tag"><a href="/groups/{{ $group->id }}">{{ $group->name }}</a></span>
 		@endforeach
@@ -47,7 +47,7 @@
 
 
 @stop
- 
+
 @section('scripts.footer')
 <script type="text/javascript">
 $('button.delete').on('click', function(e){
@@ -55,13 +55,13 @@ $('button.delete').on('click', function(e){
   var form = $(this).parents('form');
   Swal.fire({
     title: "Are you sure?",
-    text: "You will not be able to recover this permission!", 
-    type: "warning",   
-    showCancelButton: true,   
+    text: "You will not be able to recover this permission!",
+    type: "warning",
+    showCancelButton: true,
     confirmButtonColor: "#DD6B55",
-    confirmButtonText: "Yes, delete it!", 
+    confirmButtonText: "Yes, delete it!",
     closeOnConfirm: true
-  }, 
+  },
    function(isConfirm){
    	if (isConfirm) {
     	form.submit();

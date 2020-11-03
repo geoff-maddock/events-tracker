@@ -1,286 +1,269 @@
-<?php namespace App;
+<?php
+
+namespace App;
 
 use App\Filters\QueryFilter;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Support\Facades\Auth;
 
-class Blog extends Eloquent {
+class Blog extends Eloquent
+{
+    public static function boot()
+    {
+        parent::boot();
 
+        static::creating(function ($blog) {
+            //$blog->created_by = Auth::user() ? Auth::user()->id : 1;
+            $blog->updated_by = Auth::user() ? Auth::user()->id : 1;
+        });
 
-	public static function boot()
-	{
-		parent::boot();
+        static::updating(function ($blog) {
+            $blog->updated_by = Auth::user() ? Auth::user()->id : 1;
+        });
+    }
 
-		static::creating(function($blog)
-		{
-			//$blog->created_by = Auth::user() ? Auth::user()->id : 1;
-			$blog->updated_by = Auth::user() ? Auth::user()->id : 1;	
-		});
-
-		static::updating(function($blog)
-		{
-			$blog->updated_by = Auth::user() ? Auth::user()->id : 1;			
-		});
-	}
-
-	/**
-	 * @var Array
-	 *
-	 **/
-
-	protected $fillable = [
-	'name',
-	'slug',
-	'description',
-	'visibility_id',
-    'content_type_id',
-	'body',
-	'menu_id',
-	];
-
-	protected $guarded = [];
-	protected $dates = ['created_at','updated_at'];
-
-	public function __toString()
-	{
-		return (string) $this->body;
-	}
-
-	// building filter
-	public function scopeFilter($query, QueryFilter $filters)
-	{
-		return $filters->apply($query);
-	}
-
-
-	public function path()
-	{
-		return '/blog/'. $this->id;
-	}
-
-
-	public function scopePast($query)
-	{
-		$query->where('created_at','<', Carbon::today()->startOfDay())
-						->orderBy('start_at', 'desc');
-	}
-
-
-	/**
-	 * Returns visible blogs
-	 *
-	 */
-	public function scopeVisible($query, $user)
-	{
-
-		$public = Visibility::where('name','=','Public')->first();
-		
- 		$query->where('visibility_id','=', $public ? $public->id : NULL )->orWhere('created_by','=',($user ? $user->id : NULL));
-
-	}
-
-
-	/**
-	 * An blog is owned by a user
-	 *
-	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
-	 */
-	public function user()
-	{
-		return $this->belongsTo('App\User','created_by');
-	}
-
+    protected $attributes = [
+        'sort_order' => 0,
+    ];
 
     /**
-     * The likes that belong to the blog
+     * @var array
+     *
+     **/
+    protected $fillable = [
+        'name',
+        'slug',
+        'description',
+        'visibility_id',
+        'content_type_id',
+        'body',
+        'menu_id',
+        'sort_order',
+    ];
+
+    protected $guarded = [];
+    protected $dates = ['created_at', 'updated_at'];
+
+    public function __toString()
+    {
+        return (string) $this->body;
+    }
+
+    // building filter
+    public function scopeFilter($query, QueryFilter $filters)
+    {
+        return $filters->apply($query);
+    }
+
+    public function path()
+    {
+        return '/blog/'.$this->id;
+    }
+
+    public function scopePast($query)
+    {
+        $query->where('created_at', '<', Carbon::today()->startOfDay())
+                        ->orderBy('start_at', 'desc');
+    }
+
+    /**
+     * Returns visible blogs.
+     */
+    public function scopeVisible($query, $user)
+    {
+        $public = Visibility::where('name', '=', 'Public')->first();
+
+        $query->where('visibility_id', '=', $public ? $public->id : null)->orWhere('created_by', '=', ($user ? $user->id : null));
+    }
+
+    /**
+     * An blog is owned by a user.
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo('App\User', 'created_by');
+    }
+
+    /**
+     * The likes that belong to the blog.
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function likes()
     {
-        return $this->morphMany('App\Like','object', 'object_type', 'object_id');
+        return $this->morphMany('App\Like', 'object', 'object_type', 'object_id');
     }
 
-	/**
-	 * An blog is owned by a menu
-	 *
-	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
-	 */
-	public function menu()
-	{
-		return $this->belongsTo('App\Menu','menu_id');
-	}
+    /**
+     * An blog is owned by a menu.
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function menu()
+    {
+        return $this->belongsTo('App\Menu', 'menu_id');
+    }
 
-	/**
-	 * An blog is created by one user
-	 *
-	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
-	 */
-	public function creator()
-	{
-		return $this->belongsTo('App\User','created_by');
-	}
+    /**
+     * An blog is created by one user.
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function creator()
+    {
+        return $this->belongsTo('App\User', 'created_by');
+    }
 
-	/**
-	 * An blog is created by one user
-	 *
-	 * @ param User $user
-	 * 
-	 * @ return boolean
-	 */
-	public function ownedBy(User $user)
-	{
-		return $this->created_by == $user->id;
-	}
-
+    /**
+     * An blog is created by one user.
+     *
+     * @ param User $user
+     *
+     * @ return boolean
+     */
+    public function ownedBy(User $user)
+    {
+        return $this->created_by == $user->id;
+    }
 
 //    /**
 //     * Get all of the blogs photos
 //     */
 //    public function photos()
 //    {
-//		return $this->belongsToMany('App\Photo')->withTimestamps();
+    //		return $this->belongsToMany('App\Photo')->withTimestamps();
 //    }
 
-	/**
-	 * An blog has one visibility
-	 *
-	 */
-	public function visibility()
-	{
-		return $this->hasOne('App\Visibility','id','visibility_id');
-	}
+    /**
+     * An blog has one visibility.
+     */
+    public function visibility()
+    {
+        return $this->hasOne('App\Visibility', 'id', 'visibility_id');
+    }
 
-	/**
-	 * The tags that belong to the blog
-	 *
-	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-	 */
-	public function tags()
-	{
-		return $this->belongsToMany('App\Tag')->withTimestamps();
-	}
+    /**
+     * The tags that belong to the blog.
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function tags()
+    {
+        return $this->belongsToMany('App\Tag')->withTimestamps();
+    }
 
+    /**
+     * The entities that belong to the blog.
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function entities()
+    {
+        return $this->belongsToMany('App\Entity')->withTimestamps();
+    }
 
-	/**
-	 * The entities that belong to the blog
-	 *
-	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-	 */
-	public function entities()
-	{
-		return $this->belongsToMany('App\Entity')->withTimestamps();
-	}
+    // TODO relate blogs to events
+    //	/**
+    //	 * The events that belong to the blog
+    //	 *
+    //	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    //	 */
+    //	public function events()
+    //	{
+    //		return $this->belongsToMany('App\Event')->withTimestamps();
+    //	}
 
-	// TODO relate blogs to events
-//	/**
-//	 * The events that belong to the blog
-//	 *
-//	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-//	 */
-//	public function events()
-//	{
-//		return $this->belongsToMany('App\Event')->withTimestamps();
-//	}
+    /**
+     * Get a list of tag ids associated with the blog.
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function getTagListAttribute()
+    {
+        return $this->tags->pluck('id')->all();
+    }
 
+    /**
+     * Get a list of entity ids associated with the blog.
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function getEntityListAttribute()
+    {
+        return $this->entities->pluck('id')->all();
+    }
 
-	/**
-	 * Get a list of tag ids associated with the blog
-	 *
-	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-	 */
-	public function getTagListAttribute()
-	{
-		return $this->tags->pluck('id')->all();
-	}
+    /**
+     * Return a collection of blogs with the passed tag.
+     *
+     * @return Collection $blogs
+     *
+     **/
+    public static function getByTag($tag)
+    {
+        // get a list of blogs that have the passed tag
+        $blogs = self::whereHas('tags', function ($q) use ($tag) {
+            $q->where('name', '=', ucfirst($tag));
+        });
 
-	/**
-	 * Get a list of entity ids associated with the blog
-	 *
-	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-	 */
-	public function getEntityListAttribute()
-	{
-		return $this->entities->pluck('id')->all();
-	}
+        return $blogs;
+    }
 
+    /**
+     * Return a collection of blogs with the passed entity.
+     *
+     * @return Collection $blogs
+     *
+     **/
+    public static function getByEntity($slug)
+    {
+        // get a list of blogs that have the passed entity
+        $blogs = self::whereHas('entities', function ($q) use ($slug) {
+            $q->where('slug', '=', $slug);
+        });
 
-	/**
-	 * Return a collection of blogs with the passed tag
-	 * 
-	 * @return Collection $blogs
-	 * 
-	 **/
-	public static function getByTag($tag)
-	{
-		// get a list of blogs that have the passed tag
-		$blogs = self::whereHas('tags', function($q) use ($tag)
-		{
-			$q->where('name','=', ucfirst($tag));
-		});
+        return $blogs;
+    }
 
-		return $blogs;
-	}
+    public function addPhoto(Photo $photo)
+    {
+        return $this->photos()->attach($photo->id);
+    }
 
+    /**
+     * Return the primary photo for this blog.
+     *
+     * @return Photo $photo
+     *
+     **/
+    public function getPrimaryPhoto()
+    {
+        // gets the first photo related to this blog
+        $primary = $this->photos()->where('photos.is_primary', '=', '1')->first();
 
-	/**
-	 * Return a collection of blogs with the passed entity
-	 * 
-	 * @return Collection $blogs
-	 * 
-	 **/
-	public static function getByEntity($slug)
-	{
-		// get a list of blogs that have the passed entity
-		$blogs = self::whereHas('entities', function($q) use ($slug)
-		{
-			$q->where('slug','=', $slug);
-		});
+        return $primary;
+    }
 
-		return $blogs;
-	}
+    /**
+     * Checks if a blog was recent - thus edittable or deletable.
+     *
+     * @ return boolean
+     */
+    public function isRecent()
+    {
+        $recent_hours = 24;
 
+        // recency cut off date
+        $recent_date = Carbon::parse('now')->subHours($recent_hours);
 
-	public function addPhoto(Photo $photo)
-	{
-		return $this->photos()->attach($photo->id);;
-	}
+        $created_date = Carbon::parse($this->created_at);
 
-
-	/**
-	 * Return the primary photo for this blog
-	 * 
-	 * @return Photo $photo
-	 * 
-	 **/
-	public function getPrimaryPhoto()
-	{
-		// gets the first photo related to this blog
-		$primary = $this->photos()->where('photos.is_primary','=','1')->first();
-
-		return $primary;
-	}
-
-	/**
-	 * Checks if a blog was recent - thus edittable or deletable
-	 *
-	 * 
-	 * @ return boolean
-	 */
-	public function isRecent()
-	{
-		$recent_hours = 24;
-
-		// recency cut off date
-		$recent_date = Carbon::parse('now')->subHours($recent_hours);
-
-		$created_date = Carbon::parse($this->created_at);
-
-		return ($created_date > $recent_date) ? true : false;
-	}
-
+        return ($created_date > $recent_date) ? true : false;
+    }
 
     /**
      * Determine if the blog was just published a moment ago.
@@ -300,20 +283,20 @@ class Blog extends Eloquent {
     public function mentionedUsers()
     {
         preg_match_all('/@([\w\-]+)/', $this->body, $matches);
+
         return $matches[1];
     }
 
-
     /**
-     * Checks if the blog is liked by the user
+     * Checks if the blog is liked by the user.
      *
      * @return Collection $likes
      *
      **/
     public function likedBy($user)
     {
-        $response = Like::where('object_type','=', 'blog')
-            ->where('object_id','=',$this->id)
+        $response = Like::where('object_type', '=', 'blog')
+            ->where('object_id', '=', $this->id)
             ->where('user_id', '=', $user->id)
             ->first();
         // return any like instances
@@ -321,9 +304,8 @@ class Blog extends Eloquent {
         return $response;
     }
 
-
     /**
-     * Returns the users that like the blog
+     * Returns the users that like the blog.
      *
      * @return Collection $likes
      *
@@ -339,22 +321,20 @@ class Blog extends Eloquent {
     }
 
     /**
-     * Returns html events
-     *
+     * Returns html events.
      */
     public function scopeHtml($query, $user)
     {
-        $htmlType = ContentType::where('name','=','HTML')->first();
+        $htmlType = ContentType::where('name', '=', 'HTML')->first();
 
-        $query->where('content_type_id','=', $htmlType ? $htmlType->id : NULL );
+        $query->where('content_type_id', '=', $htmlType ? $htmlType->id : null);
     }
 
     /**
-     * An event has one contentType
-     *
+     * An event has one contentType.
      */
     public function contentType()
     {
-        return $this->hasOne('App\ContentType','id','content_type_id');
+        return $this->hasOne('App\ContentType', 'id', 'content_type_id');
     }
 }

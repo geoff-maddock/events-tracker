@@ -5,9 +5,9 @@
 @section('content')
 
 
-<h1>Menu
+<h4>Menu
 	@include('menus.crumbs', ['slug' => $menu->label])
-</h1>
+</h4>
 
 <P>
 @can('edit_menu')
