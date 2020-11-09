@@ -184,7 +184,8 @@ return [
 
         #facebook SDK
        # SammyK\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
-        Nsivanoly\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
+#        Nsivanoly\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
+        Scottybo\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
 
         NotificationChannels\Twitter\TwitterServiceProvider::class
 	],
