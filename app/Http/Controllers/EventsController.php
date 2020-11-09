@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
-use Nsivanoly\LaravelFacebookSdk\LaravelFacebookSdk;
+use Scottybo\LaravelFacebookSdk\LaravelFacebookSdk;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class EventsController extends Controller
