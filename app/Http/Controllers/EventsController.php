@@ -1381,9 +1381,10 @@ class EventsController extends Controller
                 $source = $cover->getField('source');
 
                 $content = file_get_contents($source);
-                $path = file_put_contents('photos/temp.jpg', $content);
+                $filename = 'temp.jpg';
+                $path = file_put_contents('photos/'.$filename, $content);
 
-                $file = new UploadedFile('photos/temp.jpg', 'temp.jpg', null, null, UPLOAD_ERR_OK, true);
+                $file = new UploadedFile('photos/'.$filename, $filename, null, null, UPLOAD_ERR_OK, true);
 
                 // make the photo object from the file in the request
                 $photo = $this->makePhoto($file);
@@ -2354,17 +2355,14 @@ class EventsController extends Controller
         return view('events.createSeries', compact('series', 'venues', 'occurrenceTypes', 'days', 'weeks', 'eventTypes', 'visibilities', 'tags', 'entities', 'promoters'))->with(['event' => $event]);
     }
 
-    /**
-     * @return $this
-     */
-    public function createThread(Request $request)
+    public function createThread(Request $request): RedirectResponse
     {
         // create a thread from a single event
 
         $event = Event::find($request->id);
 
         // initialize the form object with the values from the template
-        $thread = new \App\Thread([
+        $thread = new Thread([
             'forum_id' => 1,
             'name' => $event->name,
             'slug' => $event->slug,
@@ -2416,7 +2414,7 @@ class EventsController extends Controller
      *
      * @return mixed
      */
-    public function rssTags(RssFeed $feed, $tag)
+    public function rssTags(RssFeed $feed, $tag): Response
     {
         $rss = $feed->getTagRSS(ucfirst($tag));
 
@@ -2426,10 +2424,8 @@ class EventsController extends Controller
 
     /**
      * Returns true if the user has any filters outside of the default.
-     *
-     * @return bool
      */
-    protected function getIsFiltered(Request $request)
+    protected function getIsFiltered(Request $request): bool
     {
         if (($filters = $this->getFilters($request)) == $this->getDefaultFilters()) {
             return false;

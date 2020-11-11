@@ -16,6 +16,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -506,7 +507,7 @@ class EntitiesController extends Controller
 
         $input = $request->all();
 
-        $input['slug'] = str_slug($request->input('slug', '-'));
+        $input['slug'] = Str::slug($request->input('slug', '-'));
 
         $tagArray = $request->input('tag_list', []);
         $aliasArray = $request->input('alias_list', []);
@@ -614,7 +615,7 @@ class EntitiesController extends Controller
 
         $input = $request->all();
 
-        $input['slug'] = str_slug($request->input('slug', '-'));
+        $input['slug'] = Str::slug($request->input('slug', '-'));
 
         $entity->fill($input)->save();
 

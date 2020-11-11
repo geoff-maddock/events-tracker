@@ -1,14 +1,15 @@
-<?php namespace App;
+<?php
 
-use Image;
-use Carbon\Carbon;
+namespace App;
+
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Support\Facades\File;
+use Intervention\Image\Facades\Image;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-//use App\Http\Controllers\UploadedFile;
 
-class Photo extends Eloquent {
-
-
+class Photo extends Eloquent
+{
     /**
      * The storage format of the model's date columns.
      *
@@ -16,114 +17,114 @@ class Photo extends Eloquent {
      */
     //protected $dateFormat = 'Y-m-d\\TH:i';
 
-	/**
-	 * @var Array
-	 *
-	 **/
-	protected $fillable = [
-	'name', 'path', 'thumbnail', 'caption'
-	];
+    /**
+     * @var array
+     *
+     **/
+    protected $fillable = [
+    'name', 'path', 'thumbnail', 'caption',
+    ];
 
- 
-	protected $dates = ['created_at','updated_at'];
+    protected $dates = ['created_at', 'updated_at'];
 
+    protected $baseDir = 'photos';
 
-	protected $baseDir = 'photos';
-	
-	/**
-	 * Get the entity that the photo belogs to
-	 *
-	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-	 */
-	public function entities()
-	{
-		return $this->belongsToMany('App\Entity')->withTimestamps();
-	}
+    /**
+     * Get the entity that the photo belogs to.
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function entities()
+    {
+        return $this->belongsToMany('App\Entity')->withTimestamps();
+    }
 
-	/**
-	 * Get the event that the photo belongs to
-	 *
-	 */
-	public function events()
-	{
-		return $this->belongsToMany('App\Event')->withTimestamps();
-	}
+    /**
+     * Get the event that the photo belongs to.
+     */
+    public function events()
+    {
+        return $this->belongsToMany('App\Event')->withTimestamps();
+    }
 
-	/**
-	 * Get the user that the photo belongs to
-	 *
-	 */
-	public function users()
-	{
-		return $this->belongsToMany('App\User')->withTimestamps();
-	}
+    /**
+     * Get the user that the photo belongs to.
+     */
+    public function users()
+    {
+        return $this->belongsToMany('App\User')->withTimestamps();
+    }
 
-	/**
-	 * Get the event series that the photo belongs to
-	 *
-	 */
-	public function series()
-	{
-		return $this->belongsToMany('App\Series')->withTimestamps();
-	}
+    /**
+     * Get the event series that the photo belongs to.
+     */
+    public function series()
+    {
+        return $this->belongsToMany('App\Series')->withTimestamps();
+    }
 
-	public static function fromForm(UploadedFile $file)
-	{
-		$name = time() . $file->getClientOriginalName(); //12131241filename
+    public static function fromForm(UploadedFile $file)
+    {
+        $name = time().$file->getClientOriginalName(); //12131241filename
 
-		$photo = new static;
-		$photo->name = $name;
-		$photo->path = $photo->baseDir.'/'. $name ;
-		$photo->thumbnail = $photo->baseDir.'/'. $name;
-		$photo->caption = $file->getClientOriginalName();
+        $photo = new static();
+        $photo->name = $name;
+        $photo->path = $photo->baseDir.'/'.$name;
+        $photo->thumbnail = $photo->baseDir.'/'.$name;
+        $photo->caption = $file->getClientOriginalName();
 
-		$file->move($photo->baseDir, $name);
+        $file->move($photo->baseDir, $name);
 
-		$photo->save();
-		
-		return $photo;
-	}
+        $photo->save();
 
+        return $photo;
+    }
 
-	public static function named($name)
-	{
-		return (new static)->saveAs($name);
-	}
+    public static function named($name)
+    {
+        return (new static())->saveAs($name);
+    }
 
-	protected function saveAs($name)
-	{
-		$this->name = sprintf("%s-%s", time(), $name);
-		$this->path = sprintf("%s/%s", $this->baseDir, $this->name);
-		$this->thumbnail = sprintf("%s/tn-%s", $this->baseDir, $this->name);
-		$this->caption = $name;
-		return $this;
-	}
+    protected function saveAs($name)
+    {
+        $this->name = sprintf('%s-%s', time(), $name);
+        $this->path = sprintf('%s/%s', $this->baseDir, $this->name);
+        $this->thumbnail = sprintf('%s/tn-%s', $this->baseDir, $this->name);
+        $this->caption = $name;
 
-	public function move(UploadedFile $file)
-	{
-		$file->move($this->baseDir, $this->name);
+        return $this;
+    }
 
-		$this->makeThumbnail();
+    public function move(UploadedFile $file)
+    {
+        try {
+            ///$file->move(public_path().'/'.$this->baseDir, $this->name);
+            rename(public_path().'/'.$this->baseDir.'/temp.jpg', public_path().'/'.$this->baseDir.'/'.$this->name);
+        } catch (FileException $fileException) {
+            // do nothing
+        }
 
-		return $this;
-	}
+        $this->makeThumbnail();
 
-	protected function makeThumbnail()
-	{
-		Image::make($this->path)
-			->fit(200)
-			->save($this->thumbnail);
+        return $this;
+    }
 
-		return $this;
-	}
+    protected function makeThumbnail()
+    {
+        Image::make($this->path)
+            ->fit(200)
+            ->save($this->thumbnail);
 
-	public function delete()
-	{
-		\File::delete([
-				$this->path,
-				$this->thumbnail
-			]);
+        return $this;
+    }
 
-		parent::delete();
-	}
+    public function delete()
+    {
+        File::delete([
+                $this->path,
+                $this->thumbnail,
+            ]);
+
+        parent::delete();
+    }
 }
