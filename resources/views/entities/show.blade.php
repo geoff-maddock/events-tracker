@@ -22,7 +22,7 @@
 
 		@if ($photo = $entity->getPrimaryPhoto())
 		<div>
-			<img src="/{{ $entity->getPrimaryPhoto()->path  }}" class="listing">
+			<img src="{{ $photo->getStoragePath()  }}" class="listing">
 		</div>
 		@endif
 
@@ -248,7 +248,7 @@
 		@foreach ($set as $photo)
 			<div class="col-md-2">
 
-			<a href="/{{ $photo->path }}" data-lightbox="{{ $photo->path }}" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="/{{ $photo->thumbnail }}" alt="{{ $entity->name}}"  style="max-width: 100%;"></a>
+			<a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->path }}" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $entity->name}}"  style="max-width: 100%;"></a>
 			@if ($user && (Auth::user()->id == $entity->user->id || $user->id == Config::get('app.superuser')))
 				{!! link_form_icon('glyphicon-trash text-warning', $photo, 'DELETE', 'Delete the photo') !!}
 				@if ($photo->is_primary)
