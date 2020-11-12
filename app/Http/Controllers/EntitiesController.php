@@ -22,18 +22,18 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EntitiesController extends Controller
 {
-    protected $prefix;
-    protected $defaultRpp;
-    protected $defaultSortBy;
-    protected $defaultSortOrder;
-    protected $rpp;
-    protected $page;
-    protected $sort;
-    protected $sortBy;
-    protected $sortOrder;
+    protected string $prefix;
+    protected int $defaultRpp;
+    protected string $defaultSortBy;
+    protected string $defaultSortOrder;
+    protected int $rpp;
+    protected int $page;
+    protected array $sort;
+    protected string $sortBy;
+    protected string $sortOrder;
     protected $defaultCriteria;
-    protected $filters;
-    protected $hasFilter;
+    protected array $filters;
+    protected bool $hasFilter;
 
     public function __construct(Entity $entity)
     {
@@ -701,17 +701,19 @@ class EntitiesController extends Controller
 
     /**
      * Add a photo to an entity.
-     *
-     * @param int $id
      */
-    public function addPhoto($id, Request $request)
+    public function addPhoto(int $id, Request $request)
     {
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif',
         ]);
 
+        $fileName = time().'_'.$request->file->getClientOriginalName();
+        $filePath = $request->file('file')->storeAs('photos', $fileName, 'public');
+
         // attach to entity
         if ($entity = Entity::find($id)) {
+
             $photo = $this->makePhoto($request->file('file'));
 
             // count existing photos, and if zero, make this primary
@@ -723,13 +725,18 @@ class EntitiesController extends Controller
 
             // attach to entity
             $entity->addPhoto($photo);
+
         }
     }
 
     protected function makePhoto(UploadedFile $file)
     {
+        // here's where the error is occurring
+//        return Photo::named($file->getClientOriginalName())
+//            ->move($file);
         return Photo::named($file->getClientOriginalName())
-            ->move($file);
+            ->makeThumbnail();
+
     }
 
     /**

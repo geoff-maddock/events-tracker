@@ -1380,6 +1380,7 @@ class EventsController extends Controller
             if ($cover = $response->getGraphNode()->getField('cover')) {
                 $source = $cover->getField('source');
 
+                // get the contents
                 $content = file_get_contents($source);
                 $filename = 'temp.jpg';
                 $path = file_put_contents('photos/'.$filename, $content);

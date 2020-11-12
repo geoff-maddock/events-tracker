@@ -17,6 +17,10 @@ class Entity extends Eloquent
     ];
     protected $dates = ['updated_at'];
 
+    protected $attributes = [
+        'description' => '',
+    ];
+
     public static function boot()
     {
         parent::boot();
@@ -26,6 +30,7 @@ class Entity extends Eloquent
                 $entity->created_by = Auth::user()->id;
                 $entity->updated_by = Auth::user()->id;
             }
+            $entity->short = '';
         });
 
         static::updating(function ($entity) {
@@ -99,7 +104,7 @@ class Entity extends Eloquent
     public static function getByAlias($alias): Collection
     {
         // get a list of entities that have the passed alias
-        $entities = self::whereHas('aliases', function ($q) use ($alias) {
+        $entities = self::whereHas('aliases', static function ($q) use ($alias) {
             $q->where('name', '=', ucfirst($alias));
         })->orderBy('name', 'ASC');
 
@@ -155,8 +160,6 @@ class Entity extends Eloquent
 
     /**
      * Applies the builder filters.
-     *
-     * @param $builder
      */
     public function scopeFilter(Builder $builder, QueryFilter $filters): Builder
     {

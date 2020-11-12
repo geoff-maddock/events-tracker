@@ -7,7 +7,7 @@
 	<li id="entity-{{ $entity->id }}" class="@if ($entity->entityStatus && $entity->entityStatus->name === "Inactive") mute-card @else card @endif" style="clear: both;">
 		@if ($primary = $entity->getPrimaryPhoto())
 		<div class="card-thumb" style="float: left; padding: 5px;">
-				<img src="/{!! str_replace(' ','%20',$entity->getPrimaryPhoto()->thumbnail) !!}" alt="{{ $entity->name}}"  style="max-width: 100px; ">
+				<img src="{{ $primary->getStorageThumbnail() }}" alt="{{ $entity->name}}"  style="max-width: 100px;">
 		</div>
 		@endif
 
@@ -54,7 +54,7 @@
                 <b>Next Event</b>
 				@if ($primary = $event->getPrimaryPhoto())
 					<div class="week-text" style="float: left; padding: 5px;">
-						<a href="/{{ $event->getPrimaryPhoto()->path }}" data-lightbox="{{ $event->getPrimaryPhoto()->path }}"><img src="/{{ $event->getPrimaryPhoto()->thumbnail }}" alt="{{ $event->name}}" ></a>
+						<a href="{{ $primary->getStoragePath() }}" data-lightbox="{{ $primary->getStoragePath() }}"><img src="{{ $event->getStorageThumbnail() }}" alt="{{ $event->name}}" ></a>
 					</div>
 				@endif
 			<b>{{ $event->start_at->format('m.d.y')  }}</b> {!! link_to_route('events.show', $event->name, [$event->id], ['class' =>'butt']) !!}

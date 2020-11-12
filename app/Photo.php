@@ -87,7 +87,7 @@ class Photo extends Eloquent
 
     protected function saveAs($name)
     {
-        $this->name = sprintf('%s-%s', time(), $name);
+        $this->name = sprintf('%s_%s', time(), $name);
         $this->path = sprintf('%s/%s', $this->baseDir, $this->name);
         $this->thumbnail = sprintf('%s/tn-%s', $this->baseDir, $this->name);
         $this->caption = $name;
@@ -98,7 +98,6 @@ class Photo extends Eloquent
     public function move(UploadedFile $file)
     {
         try {
-            ///$file->move(public_path().'/'.$this->baseDir, $this->name);
             rename(public_path().'/'.$this->baseDir.'/temp.jpg', public_path().'/'.$this->baseDir.'/'.$this->name);
         } catch (FileException $fileException) {
             // do nothing
@@ -109,11 +108,11 @@ class Photo extends Eloquent
         return $this;
     }
 
-    protected function makeThumbnail()
+    public function makeThumbnail()
     {
-        Image::make($this->path)
+        Image::make('storage/'.$this->path)
             ->fit(200)
-            ->save($this->thumbnail);
+            ->save('storage/'.$this->thumbnail);
 
         return $this;
     }
@@ -126,5 +125,15 @@ class Photo extends Eloquent
             ]);
 
         parent::delete();
+    }
+
+    public function getStoragePath(): string
+    {
+        return '/storage/'.$this->path;
+    }
+
+    public function getStorageThumbnail(): string
+    {
+        return '/storage/'.$this->thumbnail;
     }
 }

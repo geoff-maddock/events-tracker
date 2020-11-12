@@ -6,6 +6,8 @@
 /planning
 /public/hot
 /public/photos
+/public/photos-backup
+/public/storage
 /public/js/app.js
 /public/css/app.css
 /public/css/dark.css
