@@ -1,7 +1,7 @@
 <li id="event-{{ $event->id }}" class="event-card" style="clear: both;">
 		@if ($primary = $event->getPrimaryPhoto())
 		<div style="float: left; padding: 5px;">
-			<a href="/{{ $primary->path }}" data-lightbox="{{ $primary->path }}" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="/{{ $primary->thumbnail }}" alt="{{ $event->name}}"  ></a>
+			<a href="{{ $primary->getStoragePath() }}" data-lightbox="{{ $primary->getStoragePath() }}" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="{{ $primary->getStorageThumbnail() }}" alt="{{ $event->name}}"  ></a>
 		</div>
 		@endif
 
