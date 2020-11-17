@@ -717,7 +717,7 @@ class EntitiesController extends Controller
             $photo = $this->makePhoto($request->file('file'));
 
             // count existing photos, and if zero, make this primary
-            if ($entity->photos && 0 == count($entity->photos)) {
+            if ($entity->photos && 0 === count($entity->photos)) {
                 $photo->is_primary = 1;
             }
 
@@ -729,11 +729,8 @@ class EntitiesController extends Controller
         }
     }
 
-    protected function makePhoto(UploadedFile $file)
+    protected function makePhoto(UploadedFile $file): Photo
     {
-        // here's where the error is occurring
-//        return Photo::named($file->getClientOriginalName())
-//            ->move($file);
         return Photo::named($file->getClientOriginalName())
             ->makeThumbnail();
 
@@ -788,14 +785,11 @@ class EntitiesController extends Controller
 
     /**
      * Mark user as unfollowing the entity.
-     *
-     * @param $id
-     *
      * @return Response | array
      *
      * @throws \Throwable
      */
-    public function unfollow($id, Request $request)
+    public function unfollow(int $id, Request $request): Response
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -833,10 +827,8 @@ class EntitiesController extends Controller
 
     /**
      * Get the default sort array.
-     *
-     * @return array
      */
-    protected function getDefaultSort()
+    protected function getDefaultSort(): array
     {
         return ['id', 'desc'];
     }

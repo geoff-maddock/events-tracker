@@ -33,7 +33,7 @@
             <div class="row">
                 @foreach ($set as $photo)
                     <div class="col-md-2">
-                        <a href="/{{ $photo->path }}" data-lightbox="{{ $photo->path }}"><img src="/{{ $photo->thumbnail }}" alt="{{ $series->name}}"  style="max-width: 100%;"></a>
+                        <a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->getStoragePath() }}"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $series->name}}"  style="max-width: 100%;"></a>
                         @if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser') ) )
                             @if ($signedIn || $user->id == Config::get('app.superuser'))
                                 {!! link_form_icon('glyphicon-trash text-warning', $photo, 'DELETE', 'Delete the photo') !!}

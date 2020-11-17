@@ -643,48 +643,43 @@ class SeriesController extends Controller
 
     /**
      * Add a photo to a series.
-     *
-     * @param int $id
-     *
-     * @return void
      */
-    public function addPhoto($id, Request $request)
+    public function addPhoto(int $id, Request $request)
     {
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif',
         ]);
 
+        $fileName = time().'_'.$request->file->getClientOriginalName();
+        $filePath = $request->file('file')->storeAs('photos', $fileName, 'public');
+
         // attach to series
-        $series = Series::find($id);
+        if ($series = Series::find($id)) {
+            // make the photo object from the file in the request
+            $photo = $this->makePhoto($request->file('file'));
 
-        // make the photo object from the file in the request
-        $photo = $this->makePhoto($request->file('file'));
+            // count existing photos, and if zero, make this primary
+            if ($series->photos && 0 === count($series->photos)) {
+                $photo->is_primary = 1;
+            }
 
-        // count existing photos, and if zero, make this primary
-        if (0 == count($series->photos)) {
-            $photo->is_primary = 1;
+            $photo->save();
+
+            // attach to series
+            $series->addPhoto($photo);
         }
-
-        $photo->save();
-
-        // attach to series
-        $series->addPhoto($photo);
     }
 
     protected function makePhoto(UploadedFile $file)
     {
         return Photo::named($file->getClientOriginalName())
-            ->move($file);
+            ->makeThumbnail();
     }
 
     /**
      * Delete a photo.
-     *
-     * @param int $id
-     *
-     * @return void
      */
-    public function deletePhoto($id, Request $request)
+    public function deletePhoto(int $id, Request $request)
     {
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif',
@@ -692,7 +687,7 @@ class SeriesController extends Controller
 
         // detach from event
         $series = Series::find($id);
-        $series->removePhoto($photo);
+        $series->removePhoto($request->file('file'));
 
         $photo = $this->deletePhoto($request->file('file'));
         $photo->save();

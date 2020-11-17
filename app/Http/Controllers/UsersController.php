@@ -29,17 +29,17 @@ class UsersController extends Controller
 {
     public const DEFAULT_SHOW_COUNT = 100;
 
-    protected $prefix;
-    protected $rpp;
-    protected $page;
-    protected $defaultRpp;
-    protected $defaultSortBy;
-    protected $defaultSortOrder;
-    protected $sort;
-    protected $sortBy;
-    protected $sortOrder;
+    protected string $prefix;
+    protected int $rpp;
+    protected int $page;
+    protected int $defaultRpp;
+    protected string $defaultSortBy;
+    protected string $defaultSortOrder;
+    protected array $sort;
+    protected string $sortBy;
+    protected string $sortOrder;
     protected $defaultCriteria;
-    protected $hasFilter;
+    protected bool $hasFilter;
     protected $filters;
     protected $tabs;
 
@@ -254,7 +254,7 @@ class UsersController extends Controller
      *
      * @param $request
      */
-    protected function updatePaging($request): void
+    protected function updatePaging(Request $request): void
     {
         // set sort by column
         if ($request->input('sort_by')) {
@@ -293,12 +293,9 @@ class UsersController extends Controller
     /**
      * Get user session attribute.
      *
-     * @param string $attribute
-     * @param mixed  $default
-     *
      * @return mixed
      */
-    public function getAttribute($attribute, $default = null, Request $request)
+    public function getAttribute(string $attribute, $default = null, Request $request)
     {
         return $request->session()
             ->get($this->prefix.$attribute, $default);
@@ -439,27 +436,32 @@ class UsersController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function addPhoto($id, Request $request): void
+    public function addPhoto(int $id, Request $request): void
     {
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif',
         ]);
 
+        $fileName = time().'_'.$request->file->getClientOriginalName();
+        $filePath = $request->file('file')->storeAs('photos', $fileName, 'public');
+
         // attach to user
-        $user = User::find($id);
+        if ($user = User::find($id)) {
+            // make the photo based on the stored file
+            $photo = $this->makePhoto($request->file('file'));
 
-        // make the photo based on the stored file
-        $photo = $this->makePhoto($request->file('file'));
+            // count existing photos, and if zero, make this primary
+            if ($user->photos && 0 === count($user->photos)) {
+                $photo->is_primary = 1;
+            }
 
-        // count existing photos, and if zero, make this primary
-        if (0 == count($user->photos)) {
-            $photo->is_primary = 1;
+            $photo->save();
+
+            // attach to user
+            $user->addPhoto($photo);
         }
 
-        $photo->save();
 
-        // attach to user
-        $user->addPhoto($photo);
     }
 
     /**
@@ -468,19 +470,15 @@ class UsersController extends Controller
     protected function makePhoto(UploadedFile $file)
     {
         return Photo::named($file->getClientOriginalName())
-            ->move($file);
+            ->makeThumbnail();
     }
 
     /**
      * Delete a photo.
      *
-     * @param int $id
-     *
-     * @return void
-     *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function deletePhoto($id, Request $request)
+    public function deletePhoto(int $id, Request $request)
     {
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif',
@@ -495,12 +493,9 @@ class UsersController extends Controller
 
     /**
      * Mark user as activated.
-     *
-     * @param $id
-     *
      * @return Response | RedirectResponse
      */
-    public function activate($id, Request $request)
+    public function activate(int $id, Request $request)
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -534,12 +529,10 @@ class UsersController extends Controller
 
     /**
      * Mark user as suspended.
-     *
-     * @param $id
-     *
+
      * @return Response | RedirectResponse
      */
-    public function suspend($id, Request $request)
+    public function suspend(int $id, Request $request)
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -570,12 +563,9 @@ class UsersController extends Controller
 
     /**
      * Send a site update reminder to the user.
-     *
-     * @param $id
-     *
      * @return Response | RedirectResponse
      */
-    public function reminder($id, Request $request)
+    public function reminder(int $id, Request $request)
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -610,7 +600,7 @@ class UsersController extends Controller
      *
      * @return Response | RedirectResponse
      */
-    public function weekly($id, Request $request)
+    public function weekly(int $id, Request $request)
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -640,12 +630,9 @@ class UsersController extends Controller
 
     /**
      * Mark user as deleted.
-     *
-     * @param $id
-     *
      * @return Response | RedirectResponse
      */
-    public function delete($id, Request $request)
+    public function delete(int $id, Request $request)
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -678,12 +665,9 @@ class UsersController extends Controller
 
     /**
      * Return the users events in iCal format.
-     *
-     * @param $id
-     *
      * @return Response | RedirectResponse
      */
-    public function ical($id, Request $request)
+    public function ical(int $id, Request $request)
     {
         app('debugbar')->disable();
 
@@ -737,11 +721,9 @@ class UsersController extends Controller
     }
 
     /**
-     * @param $user
-     *
      * @return RedirectResponse | Response
      */
-    protected function notifyUser($user)
+    protected function notifyUser(User $user)
     {
         $admin_email = config('app.admin');
         $site = config('app.app_name');
@@ -781,7 +763,7 @@ class UsersController extends Controller
      *
      * @return RedirectResponse
      */
-    protected function notifyUserActivated($user)
+    protected function notifyUserActivated(User $user)
     {
         $admin_email = config('app.admin');
         $site = config('app.app_name');
@@ -798,11 +780,9 @@ class UsersController extends Controller
     }
 
     /**
-     * @param $user
-     *
      * @return RedirectResponse
      */
-    protected function notifyUserWeekly($user)
+    protected function notifyUserWeekly(User $user)
     {
         $admin_email = config('app.admin');
         $reply_email = config('app.admin');

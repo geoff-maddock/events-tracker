@@ -41,9 +41,9 @@
     <div class="row">
     @foreach ($set as $photo)
       <div class="col-md-2">
-      <a href="/{{ $photo->path }}" data-lightbox="{{ $photo->path }}"><img src="/{{ $photo->thumbnail }}" alt="{{ $event->name}}"  style="max-width: 100%;"></a>
-      @if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )
-      @if ($signedIn || $user->id == Config::get('app.superuser'))
+      <a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->getStoragePath() }}"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $event->name}}"  style="max-width: 100%;"></a>
+      @if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser')))
+      @if ($signedIn || $user->id === Config::get('app.superuser'))
         {!! link_form_icon('glyphicon-trash text-warning', $photo, 'DELETE', 'Delete the photo') !!}
         @if ($photo->is_primary)
         {!! link_form_icon('glyphicon-star text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
