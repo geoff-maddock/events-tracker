@@ -6,6 +6,7 @@ use App\Activity;
 use App\Entity;
 use App\Event;
 use App\EventResponse;
+use App\EventReview;
 use App\Events\EventCreated;
 use App\Events\EventUpdated;
 use App\EventType;
@@ -140,8 +141,6 @@ class EventsController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @param Request
      *
      * @return View|string
      *
@@ -1409,10 +1408,10 @@ class EventsController extends Controller
         return true;
     }
 
-    protected function makePhoto(UploadedFile $file)
+    protected function makePhoto(UploadedFile $file): Photo
     {
         return Photo::named($file->getClientOriginalName())
-            ->move($file);
+            ->makeThumbnail();
     }
 
     /**
@@ -1842,11 +1841,9 @@ class EventsController extends Controller
      *
      * @param $id
      *
-     * @return Response
-     *
      * @throws \Throwable
      */
-    public function unattend($id, Request $request)
+    public function unattend(int $id, Request $request): Response
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -1887,10 +1884,8 @@ class EventsController extends Controller
      * Record a user's review of the event.
      *
      * @param $id
-     *
-     * @return Response
      */
-    public function review($id)
+    public function review(int $id, Request $request): Response
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -2193,33 +2188,32 @@ class EventsController extends Controller
     /**
      * Add a photo to an event.
      *
-     * @param int $id
-     *
-     * @return void
-     *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function addPhoto($id, Request $request)
+    public function addPhoto(int $id, Request $request)
     {
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif',
         ]);
 
+        $fileName = time().'_'.$request->file->getClientOriginalName();
+        $filePath = $request->file('file')->storeAs('photos', $fileName, 'public');
+
         // get the event
-        $event = Event::find($id);
+        if ($event = Event::find($id)) {
+            // make the photo object from the file in the request
+            $photo = $this->makePhoto($request->file('file'));
 
-        // make the photo object from the file in the request
-        $photo = $this->makePhoto($request->file('file'));
+            // count existing photos, and if zero, make this primary
+            if ($event->photos && 0 === count($event->photos)) {
+                $photo->is_primary = 1;
+            }
 
-        // count existing photos, and if zero, make this primary
-        if (0 === count($event->photos)) {
-            $photo->is_primary = 1;
+            $photo->save();
+
+            // attach to event
+            $event->addPhoto($photo);
         }
-
-        $photo->save();
-
-        // attach to event
-        $event->addPhoto($photo);
     }
 
     /**

@@ -68,8 +68,8 @@
                     <div class="row">
                         @foreach ($set as $photo)
                             <div class="col-md-2">
-                                <a href="/{{ $photo->path }}" data-lightbox="{{ $photo->path }}"><img
-                                            src="/{{ $photo->thumbnail }}" alt="{{ $user->name}}"
+                                <a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->getStoragePath() }}"><img
+                                            src="{{ $photo->getStorageThumbnail() }}" alt="{{ $user->name}}"
                                             style="max-width: 100%;"></a>
                                 @if ($signedIn || $user->id == Config::get('app.superuser'))
                                     {!! link_form_icon('glyphicon-trash text-warning', $photo, 'DELETE', 'Delete the photo') !!}

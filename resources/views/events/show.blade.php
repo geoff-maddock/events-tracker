@@ -29,9 +29,9 @@
 
 	<h2>{{ $event->name }}</h2>
 
-		@if ($event->getPrimaryPhoto())
+		@if ($photo = $event->getPrimaryPhoto())
 		<div>
-			<img src="/{{ $event->getPrimaryPhoto()->path }}" class="listing">
+			<img src="{{ $photo->getStoragePath() }}" class="listing">
 		</div>
 		@endif
 
@@ -155,7 +155,7 @@
 			<div class="row">
 			@foreach ($set as $photo)
 				<div class="col-md-2" style="padding-bottom: 10px;">
-				<a href="/{{ $photo->path }}" data-lightbox="{{ $photo->path }}" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="/{{ $photo->thumbnail }}" alt="{{ $event->name}}"  style="max-width: 100%;"></a>
+				<a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->getStoragePath() }}" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $event->name}}"  style="max-width: 100%;"></a>
 				@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )
 					@if ($signedIn || $user->id == Config::get('app.superuser'))
 						{!! link_form_icon('glyphicon-trash text-warning', $photo, 'DELETE', 'Delete the photo') !!}
