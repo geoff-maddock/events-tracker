@@ -54,7 +54,7 @@
                 <b>Next Event</b>
 				@if ($primary = $event->getPrimaryPhoto())
 					<div class="week-text" style="float: left; padding: 5px;">
-						<a href="{{ $primary->getStoragePath() }}" data-lightbox="{{ $primary->getStoragePath() }}"><img src="{{ $event->getStorageThumbnail() }}" alt="{{ $event->name}}" ></a>
+						<a href="{{ $primary->getStoragePath() }}" data-lightbox="{{ $primary->getStoragePath() }}"><img src="{{ $primary->getStorageThumbnail() }}" alt="{{ $event->name}}" ></a>
 					</div>
 				@endif
 			<b>{{ $event->start_at->format('m.d.y')  }}</b> {!! link_to_route('events.show', $event->name, [$event->id], ['class' =>'butt']) !!}
