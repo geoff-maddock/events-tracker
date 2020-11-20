@@ -23,6 +23,7 @@ use App\Thread;
 use App\User;
 use App\Visibility;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -32,25 +33,26 @@ use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Scottybo\LaravelFacebookSdk\LaravelFacebookSdk;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Facebook\Exceptions\FacebookSDKException;
 
 class EventsController extends Controller
 {
-    protected $prefix;
-    protected $rpp;
-    protected $defaultRpp;
-    protected $defaultSortBy;
-    protected $defaultSortOrder;
-    protected $gridRpp;
-    protected $page;
-    protected $sort;
-    protected $sortBy;
-    protected $sortOrder;
+    protected string $prefix;
+    protected int $rpp;
+    protected int $defaultRpp;
+    protected string $defaultSortBy;
+    protected string $defaultSortOrder;
+    protected int $gridRpp;
+    protected int $page;
+    protected array $sort;
+    protected string $sortBy;
+    protected string $sortOrder;
     protected $defaultCriteria;
-    protected $filters;
-    protected $hasFilter;
-    protected $event;
+    protected array $filters;
+    protected bool $hasFilter;
+    protected Event $event;
     protected $criteria;
-    protected $fb;
+    protected LaravelFacebookSdk $fb;
 
     public function __construct(Event $event, LaravelFacebookSdk $fb)
     {
@@ -108,7 +110,7 @@ class EventsController extends Controller
      *
      * @return mixed
      */
-    public function getAttribute($attribute, Request $request, $default = null)
+    public function getAttribute(string $attribute, Request $request, $default = null)
     {
         return $request->session()
             ->get($this->prefix.$attribute, $default);
@@ -122,19 +124,14 @@ class EventsController extends Controller
      *
      * @return mixed
      */
-    public function setAttribute($attribute, $value, Request $request)
+    public function setAttribute(string $attribute, $value, Request $request)
     {
         $request->session()->put($this->prefix.$attribute, $value);
 
         return true;
     }
 
-    /**
-     * Get the default sort array.
-     *
-     * @return array
-     */
-    public function getDefaultSort()
+    public function getDefaultSort(): array
     {
         return ['id', 'desc'];
     }
@@ -146,7 +143,7 @@ class EventsController extends Controller
      *
      * @throws \Throwable
      */
-    public function index(Request $request)
+    public function index(Request $request): string
     {
         // update filters from request
         $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
@@ -222,10 +219,8 @@ class EventsController extends Controller
 
     /**
      * Update the page list parameters from the request.
-     *
-     * @param $request
      */
-    protected function updatePaging($request)
+    protected function updatePaging(Request $request)
     {
         if (!empty($request->input('sort_by'))) {
             $this->sortBy = $request->input('sort_by');
@@ -252,57 +247,32 @@ class EventsController extends Controller
         $this->rpp = $filters['rpp'] ?? $this->rpp;
     }
 
-    /**
-     * Update the page list parameters from the request.
-     *
-     * @param $filters
-     */
-    protected function getGridPaging($filters)
+
+    protected function getGridPaging(array $filters): void
     {
         $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
         $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
         $this->rpp = $filters['rpp'] ?? $this->gridRpp;
     }
 
-    /**
-     * Get session filters.
-     *
-     * @param Request
-     *
-     * @return array
-     */
-    public function getFilters(Request $request)
+
+    public function getFilters(Request $request): array
     {
         return $this->getAttribute('filters', $request, $this->getDefaultFilters());
     }
 
-    /**
-     * Set filters attribute.
-     *
-     * @return array
-     */
     public function setFilters(Request $request, array $input)
     {
         // only set if the key starts with filter
         return $this->setAttribute('filters', $input, $request);
     }
 
-    /**
-     * Get the default filters array.
-     *
-     * @return array
-     */
-    public function getDefaultFilters()
+    public function getDefaultFilters(): array
     {
         return [];
     }
 
-    /**
-     * Builds the criteria from the session.
-     *
-     * @return \Illuminate\Database\Eloquent\Builder $query
-     */
-    public function buildCriteria(Request $request)
+    public function buildCriteria(Request $request): Builder
     {
         // get all the filters from the session
         $filters = $this->getFilters($request);
@@ -365,7 +335,7 @@ class EventsController extends Controller
      *
      * @throws \Throwable
      */
-    public function grid(Request $request)
+    public function grid(Request $request): string
     {
         // update filters from request
         $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
@@ -1351,11 +1321,11 @@ class EventsController extends Controller
     }
 
     /**
-     * @param $event
+     * @param Event $event
      *
      * @return bool|\Illuminate\Http\RedirectResponse
      */
-    protected function addFbPhoto($event)
+    protected function addFbPhoto(Event $event)
     {
         // some fields may have been deprecated - only need cover here
         //$fields = 'attending_count,category,cover,interested_count,type,name,noreply_count,maybe_count,owner,place,roles';
@@ -1378,28 +1348,27 @@ class EventsController extends Controller
 
             if ($cover = $response->getGraphNode()->getField('cover')) {
                 $source = $cover->getField('source');
-
-                // get the contents
                 $content = file_get_contents($source);
-                $filename = 'temp.jpg';
-                $path = file_put_contents('photos/'.$filename, $content);
 
-                $file = new UploadedFile('photos/'.$filename, $filename, null, null, UPLOAD_ERR_OK, true);
+                $fileName = time().'_temp.jpg';
+                file_put_contents('/var/www/dev-events/storage/app/public/photos/'.$fileName, $content);
+                $file = new UploadedFile('/var/www/dev-events/storage/app/public/photos/'.$fileName, 'temp.jpg', null, null, UPLOAD_ERR_OK);
 
                 // make the photo object from the file in the request
-                $photo = $this->makePhoto($file);
+                if ($photo = $this->makePhoto($file)) {
+                    // count existing photos, and if zero, make this primary
+                    if (0 === count($event->photos)) {
+                        $photo->is_primary = 1;
+                    }
 
-                // count existing photos, and if zero, make this primary
-                if (0 == count($event->photos)) {
-                    $photo->is_primary = 1;
+                    $photo->save();
+
+                    // attach to event
+                    $event->addPhoto($photo);
                 }
 
-                $photo->save();
-
-                // attach to event
-                $event->addPhoto($photo);
             }
-        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+        } catch (FacebookSDKException $e) {
             flash()->error('Error', 'You could not import the image.  Error: '.$e->getMessage());
 
             return false;
@@ -1410,8 +1379,9 @@ class EventsController extends Controller
 
     protected function makePhoto(UploadedFile $file): Photo
     {
-        return Photo::named($file->getClientOriginalName())
-            ->makeThumbnail();
+        $photo = Photo::named($file->getClientOriginalName());
+
+        return $photo->makeThumbnail();
     }
 
     /**
@@ -1438,20 +1408,18 @@ class EventsController extends Controller
             $response = $this->fb->get($event_id.'?fields='.$fields, $token);
 
             // get the cover from FB
-            if ($cover = $response->getGraphNode()->getField('cover')) {
-                // if a cover was returned, get the source
-                if ($source = $cover->getField('source')) {
-                    $content = file_get_contents($source);
-                    file_put_contents('photos/temp.jpg', $content);
+            if (($cover = $response->getGraphNode()->getField('cover')) && ($source = $cover->getField('source'))) {
+                $content = file_get_contents($source);
 
-                    $file = new UploadedFile('photos/temp.jpg', 'temp.jpg', null, null, UPLOAD_ERR_OK, true);
+                $fileName = time().'_temp.jpg';
+                file_put_contents('/var/www/dev-events/storage/app/public/photos/'.$fileName, $content);
+                $file = new UploadedFile('/var/www/dev-events/storage/app/public/photos/'.$fileName, 'temp.jpg', null, null, UPLOAD_ERR_OK);
 
-                    // make the photo object from the file in the request
-                    /** @var Photo $photo */
-                    $photo = $this->makePhoto($file);
-
+                // make the photo object from the file in the request
+                /** @var Photo $photo */
+                if ($photo = $this->makePhoto($file)) {
                     // count existing photos, and if zero, make this primary
-                    if (0 == count($event->photos)) {
+                    if (0 === count($event->photos)) {
                         $photo->is_primary = 1;
                     }
 
