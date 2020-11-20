@@ -1351,8 +1351,8 @@ class EventsController extends Controller
                 $content = file_get_contents($source);
 
                 $fileName = time().'_temp.jpg';
-                file_put_contents('/var/www/dev-events/storage/app/public/photos/'.$fileName, $content);
-                $file = new UploadedFile('/var/www/dev-events/storage/app/public/photos/'.$fileName, 'temp.jpg', null, null, UPLOAD_ERR_OK);
+                file_put_contents(storage_path().'/app/public/photos/'.$fileName, $content);
+                $file = new UploadedFile(storage_path().'/app/public/photos/'.$fileName, 'temp.jpg', null, null, UPLOAD_ERR_OK);
 
                 // make the photo object from the file in the request
                 if ($photo = $this->makePhoto($file)) {
@@ -1412,8 +1412,8 @@ class EventsController extends Controller
                 $content = file_get_contents($source);
 
                 $fileName = time().'_temp.jpg';
-                file_put_contents('/var/www/dev-events/storage/app/public/photos/'.$fileName, $content);
-                $file = new UploadedFile('/var/www/dev-events/storage/app/public/photos/'.$fileName, 'temp.jpg', null, null, UPLOAD_ERR_OK);
+                file_put_contents(storage_path().'/app/public/photos/'.$fileName, $content);
+                $file = new UploadedFile(storage_path().'/app/public/photos/'.$fileName, 'temp.jpg', null, null, UPLOAD_ERR_OK);
 
                 // make the photo object from the file in the request
                 /** @var Photo $photo */
