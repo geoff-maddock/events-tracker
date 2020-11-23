@@ -19,10 +19,9 @@ class LinksController extends Controller {
 		'url' => ['required', 'min:3'],
 	];
 
-	public function __construct(Entity $entity)
+	public function __construct()
 	{
 		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
-		$this->entity = $entity;
 
 		parent::__construct();
 	}

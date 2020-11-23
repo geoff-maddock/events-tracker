@@ -30,23 +30,29 @@ class AuthServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot(GateContract $gate)
+    public function boot()
     {
-        $this->registerPolicies($gate);
+        $this->registerPolicies();
 
         // super admins can do anything
-        $gate->before(function ($user, $ability) {
-            if ($user->hasGroup('super_admin')) {
+        // $gate->before(function ($user, $ability) {
+        //     if ($user->hasGroup('super_admin')) {
+        //         return true;
+        //     }
+        // });
+
+        Gate::before(function ($user) {
+            if ($user->hasGroup('admin')) {
                 return true;
             }
         });
 
         // adds a gate for each permission name - checks whether the user has a group that matches one of the permission groups
         foreach ($this->getPermissions() as $permission) {
-            $gate->define($permission->name, function ($user) use ($permission) {
+            Gate::define($permission->name, function ($user) use ($permission) {
                 return $user->hasGroup($permission->groups);
             });
-        }
+        };
 
         Gate::before(function ($user) {
             if ($user->hasGroup('admin')) {

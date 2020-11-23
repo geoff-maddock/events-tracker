@@ -2,23 +2,17 @@
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Location extends Eloquent {
 
-
-    /**
-     * The storage format of the model's date columns.
-     *
-     * @var string
-     */
-    //protected $dateFormat = 'Y-m-d\\TH:i';
 
 	/**
 	 * @var Array
 	 *
 	 **/
 	protected $fillable = [
-	'name', 'slug', 'attn', 'address_one', 'address_two', 'neighborhood', 'city', 'state', 'postcode', 'country', 'latitude', 'longitude', 'location_type_id', 'visibility_id', 'entity_id', 'capacity','map_url'
+		'name', 'slug', 'attn', 'address_one', 'address_two', 'neighborhood', 'city', 'state', 'postcode', 'country', 'latitude', 'longitude', 'location_type_id', 'visibility_id', 'entity_id', 'capacity','map_url'
 	];
 
  
@@ -26,13 +20,12 @@ class Location extends Eloquent {
 
 	
 	/**
-	 * Get the entities that belong to the tag
+	 * Get the entity related to the location
 	 *
-	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
 	 */
-	public function entities()
+	public function entity(): HasOne
 	{
-		return $this->belongsToOne('App\Entity')->withTimestamps();
+		return $this->hasOne('App\Entity','id','entity_id');
 	}
 
 	/**

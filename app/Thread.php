@@ -4,18 +4,19 @@ namespace App;
 
 use App\Filters\QueryFilter;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Class Thread.
- *
+ * @property 
  * @mixin Eloquent
  */
-class Thread extends Model
+class Thread extends Eloquent
 {
     public static function boot()
     {
@@ -49,7 +50,6 @@ class Thread extends Model
         'locked_by',
     ];
 
-    //protected $guarded = [];
 
     protected $dates = ['created_at', 'updated_at'];
 
@@ -261,7 +261,7 @@ class Thread extends Model
     /**
      * An thread has one type.
      */
-    public function threadCategory()
+    public function threadCategory(): HasOne
     {
         return $this->hasOne('App\ThreadCategory', 'id', 'thread_category_id');
     }
@@ -269,7 +269,7 @@ class Thread extends Model
     /**
      * Get all of the threads photos.
      */
-    public function photos()
+    public function photos(): BelongsToMany
     {
         return $this->belongsToMany('App\Photo')->withTimestamps();
     }
@@ -282,10 +282,19 @@ class Thread extends Model
         return $this->hasOne('App\Visibility', 'id', 'visibility_id');
     }
 
+    
+    /**
+     * A thread has one or no locked by uses
+     */
+    public function locker(): HasOne
+    {
+        return $this->hasOne('App\User', 'id', 'locked_by');
+    }
+
     /**
      * A thread has one series.
      */
-    public function series()
+    public function series(): BelongsToMany
     {
         return $this->belongsToMany('App\Series')->withTimestamps();
     }
@@ -295,7 +304,7 @@ class Thread extends Model
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function tags()
+    public function tags(): BelongsToMany
     {
         return $this->belongsToMany('App\Tag')->withTimestamps();
     }
@@ -305,7 +314,7 @@ class Thread extends Model
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function entities()
+    public function entities(): BelongsToMany
     {
         return $this->belongsToMany('App\Entity')->withTimestamps();
     }
@@ -337,7 +346,7 @@ class Thread extends Model
     {
         $posts = $this->posts()->get();
 
-        return (null == $this->locked_by) ? 0 : 1;
+        return (null == $this->locker) ? 0 : 1;
     }
 
     /**

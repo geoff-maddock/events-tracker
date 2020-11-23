@@ -6,6 +6,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Series extends Eloquent
 {
@@ -431,7 +433,7 @@ class Series extends Eloquent
     /**
      * An series has one occurrence type.
      */
-    public function occurrenceType()
+    public function occurrenceType(): HasOne
     {
         return $this->hasOne(OccurrenceType::class, 'id', 'occurrence_type_id');
     }
@@ -439,7 +441,7 @@ class Series extends Eloquent
     /**
      * An series has one occurrence week.
      */
-    public function occurrenceWeek()
+    public function occurrenceWeek(): HasOne
     {
         return $this->hasOne(OccurrenceWeek::class, 'id', 'occurrence_week_id');
     }
@@ -447,7 +449,7 @@ class Series extends Eloquent
     /**
      * An series has one occurrence day.
      */
-    public function occurrenceDay()
+    public function occurrenceDay(): HasOne
     {
         return $this->hasOne(OccurrenceDay::class, 'id', 'occurrence_day_id');
     }
@@ -483,7 +485,7 @@ class Series extends Eloquent
     {
         $event = null;
 
-        if (null !== $this->cancelledAt) {
+        if (null !== $this->cancelled_at) {
             $event = Event::where('series_id', '=', $this->id)->where('start_at', '>=', Carbon::now())
                         ->orderBy('start_at', 'asc')->first();
         }
@@ -622,7 +624,7 @@ class Series extends Eloquent
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function tags()
+    public function tags(): BelongsToMany
     {
         return $this->belongsToMany('App\Tag')->withTimestamps();
     }
@@ -632,7 +634,7 @@ class Series extends Eloquent
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function entities()
+    public function entities(): BelongsToMany
     {
         return $this->belongsToMany('App\Entity')->withTimestamps();
     }

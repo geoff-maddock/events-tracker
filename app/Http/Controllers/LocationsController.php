@@ -22,10 +22,9 @@ class LocationsController extends Controller {
         'location_type_id' => ['required'],
 	];
 
-	public function __construct(Entity $entity)
+	public function __construct()
 	{
 		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
-		$this->entity = $entity;
 
 		parent::__construct();
 	}

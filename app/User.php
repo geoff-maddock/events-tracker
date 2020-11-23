@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\MustVerifyEmail;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
+use App\Profile;
 
 /**
  * @property mixed id
@@ -83,7 +85,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * A user can have one profile().
      */
-    public function profile()
+    public function profile(): HasOne
     {
         return $this->hasOne('App\Profile');
     }
@@ -91,7 +93,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * A user has a status.
      */
-    public function status()
+    public function status(): HasOne
     {
         return $this->hasOne('App\UserStatus', 'id', 'user_status_id');
     }

@@ -271,12 +271,10 @@ class ThreadsController extends Controller
 
     /**
      * Set filters attribute.
-     *
-     * @return array
      */
     public function setFilters(Request $request, array $input)
     {
-        return $this->setAttribute('filters', $input, $request);
+        $this->setAttribute('filters', $input, $request);
     }
 
     /**
@@ -509,7 +507,7 @@ class ThreadsController extends Controller
             foreach ($tag->followers() as $user) {
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $thread, $tag, $reply_email, $site, $url) {
+                    Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $thread, $tag, $reply_email, $site) {
                         $m->from($reply_email, $site);
 
                         $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$thread->created_at->format('D F jS').' '.$thread->name);
@@ -526,7 +524,7 @@ class ThreadsController extends Controller
             foreach ($s->followers() as $user) {
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $s, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $thread, $s, $reply_email, $site, $url) {
+                    Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $s, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $thread, $s, $reply_email, $site) {
                         $m->from($reply_email, $site);
 
                         $m->to($user->email, $user->name)->subject($site.': '.$s->name.' :: '.$thread->created_at->format('D F jS').' '.$thread->name);

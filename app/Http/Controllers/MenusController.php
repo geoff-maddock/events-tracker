@@ -82,7 +82,7 @@ class MenusController extends Controller
             $menus = Menu::where('name', $name)->get();
         }
 
-        return view('menus.index', compact('menus', 'tag', 'name'));
+        return view('menus.index', compact('menus'));
     }
 
     /**

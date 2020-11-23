@@ -1,0 +1,8 @@
+parameters:
+  reportUnmatchedIgnoredErrors: false
+  level: 1
+  paths:
+      - app
+
+includes:
+  - phpstan-baseline.neon

@@ -8,7 +8,7 @@
 		<td>
 		    @if (isset($post->user))
 		      @include('users.avatar', ['user' => $post->user])
-		    {!! link_to_route('users.show', $post->user->name, [$thread->user->id], ['class' => 'forum-link']) !!}
+		      {!! link_to_route('users.show', $post->user->name, [$post->user->id], ['class' => 'forum-link']) !!}
 		    @else
 		    User deleted
 		    @endif

@@ -26,3 +26,4 @@ Homestead.json
 php-latest
 workspace.code-workspace
 .vscode
+phpstan.neon

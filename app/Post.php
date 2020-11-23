@@ -7,6 +7,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Post extends Eloquent
 {
@@ -29,12 +31,12 @@ class Post extends Eloquent
      *
      **/
     protected $fillable = [
-    'name',
-    'slug',
-    'description',
-    'visibility_id',
-    'body',
-    'thread_id',
+        'name',
+        'slug',
+        'description',
+        'visibility_id',
+        'body',
+        'thread_id',
         'created_by',
     ];
 
@@ -88,7 +90,7 @@ class Post extends Eloquent
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function likes()
+    public function likes(): BelongsToMany
     {
         return $this->morphMany('App\Like', 'object', 'object_type', 'object_id');
     }
@@ -146,7 +148,7 @@ class Post extends Eloquent
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function tags()
+    public function tags(): BelongsToMany
     {
         return $this->belongsToMany('App\Tag')->withTimestamps();
     }
@@ -156,7 +158,7 @@ class Post extends Eloquent
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function entities()
+    public function entities(): BelongsToMany
     {
         return $this->belongsToMany('App\Entity')->withTimestamps();
     }
@@ -166,7 +168,7 @@ class Post extends Eloquent
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function events()
+    public function events(): BelongsToMany
     {
         return $this->belongsToMany('App\Event')->withTimestamps();
     }

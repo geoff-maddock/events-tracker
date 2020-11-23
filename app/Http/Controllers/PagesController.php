@@ -34,7 +34,7 @@ class PagesController extends Controller
     protected $hasFilter;
     protected $dayOffset;
 
-    public function __construct(Event $event)
+    public function __construct()
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'activity', 'tools']]);
 
@@ -385,13 +385,11 @@ class PagesController extends Controller
 
     /**
      * Set filters attribute.
-     *
-     * @return array
      */
-    protected function setFilters(Request $request, array $input)
+    protected function setFilters(Request $request, array $input): void
     {
         // example: $input = array('filter_tag' => 'role', 'filter_name' => 'xano');
-        return $this->setAttribute('filters', $input, $request);
+        $this->setAttribute('filters', $input, $request);
     }
 
     /**
