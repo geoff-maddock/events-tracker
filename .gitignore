@@ -24,3 +24,5 @@ composer.lock
 Homestead.yaml
 Homestead.json
 php-latest
+workspace.code-workspace
+.vscode
