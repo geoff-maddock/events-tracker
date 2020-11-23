@@ -14,31 +14,34 @@ use App\Thread;
 use App\ThreadCategory;
 use App\Visibility;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class ThreadsController extends Controller
 {
     // define a list of variables
-    protected $prefix;
-    protected $rpp;
-    protected $page;
-    protected $defaultRpp;
-    protected $defaultSortBy;
-    protected $defaultSortOrder;
-    protected $sort;
-    protected $sortBy;
-    protected $sortOrder;
-    protected $defaultCriteria;
-    protected $hasFilter;
-    protected $filters;
-    protected $criteria;
+    protected string $prefix;
+    protected int $rpp;
+    protected int $page;
+    protected int $defaultRpp;
+    protected string $defaultSortBy;
+    protected string $defaultSortOrder;
+    protected array $sort;
+    protected string $sortBy;
+    protected string $sortOrder;
+    protected array $defaultCriteria;
+    protected bool $hasFilter;
+    protected array $filters;
+    protected array $criteria;
+    protected ?Thread $thread;
 
     public function __construct(Thread $thread)
     {
@@ -58,7 +61,7 @@ class ThreadsController extends Controller
         $this->sort = ['name', 'desc'];
         $this->sortBy = 'created_at';
         $this->sortOrder = 'desc';
-        $this->defaultCriteria = null;
+        $this->defaultCriteria = [];
         $this->hasFilter = 1;
 
         parent::__construct();
@@ -78,115 +81,18 @@ class ThreadsController extends Controller
     }
 
     /**
-     * Criteria provides a way to define criteria to be applied to a tab on the index page.
-     *
-     * @return array
-     */
-    public function getCriteria()
-    {
-        return $this->criteria;
-    }
-
-    /**
-     * Get the current page for this module.
-     *
-     * @return int
-     */
-    public function getPage()
-    {
-        return $this->getAttribute('page', 1);
-    }
-
-    /**
-     * Set page attribute.
-     *
-     * @param int $input
-     *
-     * @return int
-     */
-    public function setPage($input)
-    {
-        return $this->setAttribute('page', $input);
-    }
-
-    /**
      * Set user session attribute.
      *
      * @param mixed $value
      *
      * @return mixed
      */
-    public function setAttribute(string $attribute, $value, Request $request)
+    public function setAttribute(string $attribute, $value, Request $request): void
     {
-        return $request->session()
+        $request->session()
             ->put($this->prefix.$attribute, $value);
     }
 
-    /**
-     * Get the current results per page.
-     *
-     * @return int
-     */
-    public function getRpp(Request $request)
-    {
-        return $this->getAttribute('rpp', $this->rpp);
-    }
-
-    /**
-     * Set results per page attribute.
-     *
-     * @param int $input
-     *
-     * @return int
-     */
-    public function setRpp($input)
-    {
-        return $this->setAttribute('rpp', 5);
-    }
-
-    /**
-     * Get the sort order and column.
-     *
-     * @return array
-     */
-    public function getSort(Request $request)
-    {
-        return $this->getAttribute('sort', $this->getDefaultSort());
-    }
-
-    /**
-     * Set sort order attribute.
-     *
-     * @return array
-     */
-    public function setSort(array $input)
-    {
-        return $this->setAttribute('sort', $input);
-    }
-
-    /**
-     * Get the default sort array.
-     *
-     * @return array
-     */
-    public function getDefaultSort()
-    {
-        return ['id', 'desc'];
-    }
-
-    /**
-     * Set criteria.
-     *
-     * @param array $input
-     *
-     * @return string
-     */
-    public function setCriteria($input)
-    {
-        $this->criteria = $input;
-
-        return $this->criteria;
-    }
 
     /**
      * Display a listing of the resource.
@@ -252,15 +158,18 @@ class ThreadsController extends Controller
     {
         $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
         $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
-        $this->rpp = $filters['rpp'] ?? $this->rpp;
+        if (isset($filters['rpp']) && is_numeric($filters['rpp'])) {
+            $this->rpp = $filters['rpp'];
+        } else {
+            $this->rpp = $this->defaultRpp;
+        }
     }
 
     /**
      * Update the page list parameters from the request.
      *
-     * @param $request
      */
-    protected function updatePaging($request)
+    protected function updatePaging(Request $request): void
     {
         // set sort by column
         if ($request->input('sort_by')) {
@@ -272,8 +181,7 @@ class ThreadsController extends Controller
             $this->sortOrder = $request->input('sort_direction');
         }
 
-        // set results per page
-        if ($request->input('rpp')) {
+        if (!empty($request->input('rpp')) && is_numeric($request->input('rpp'))) {
             $this->rpp = $request->input('rpp');
         }
     }
@@ -281,9 +189,9 @@ class ThreadsController extends Controller
     /**
      * Builds the criteria from the session.
      *
-     * @return $this $query
+     * @return Builder
      */
-    public function buildCriteria(Request $request)
+    public function buildCriteria(Request $request): Builder
     {
         // get all the filters from the session and put into an array
         $filters = $this->getFilters($request);
@@ -504,12 +412,8 @@ class ThreadsController extends Controller
 
     /**
      * Display a listing of threads by entity.
-     *
-     * @param $slug
-     *
-     * @return Response
      */
-    public function indexRelatedTo(Request $request, $slug)
+    public function indexRelatedTo(Request $request, string $slug): View
     {
         // updates sort, rpp from request
         $this->updatePaging($request);
@@ -525,12 +429,7 @@ class ThreadsController extends Controller
                     ->with(compact('threads'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function create(): View
     {
         $threadCategories = ['' => ''] + ThreadCategory::orderBy('name', 'ASC')->pluck('name', 'id')->all();
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
@@ -547,10 +446,8 @@ class ThreadsController extends Controller
      * Store a newly created resource in storage.
      *
      * @param ThreadRequest|Request $request
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function store(ThreadRequest $request, Thread $thread)
+    public function store(ThreadRequest $request, Thread $thread): RedirectResponse
     {
         $msg = '';
 
@@ -597,12 +494,7 @@ class ThreadsController extends Controller
         return redirect()->route('threads.show', compact('thread'));
     }
 
-    /**
-     * @param $thread
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    protected function notifyFollowing($thread)
+    protected function notifyFollowing(Thread $thread): RedirectResponse
     {
         $reply_email = config('app.noreplyemail');
         $site = config('app.app_name');
@@ -649,12 +541,8 @@ class ThreadsController extends Controller
 
     /**
      * Create a conversation slug.
-     *
-     * @param string $title
-     *
-     * @return string
      */
-    public function makeSlugFromTitle($title)
+    public function makeSlugFromTitle(string $title): string
     {
         $slug = Str::slug($title);
 
@@ -663,14 +551,7 @@ class ThreadsController extends Controller
         return $count ? "{$slug}-{$count}" : $slug;
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @return \Illuminate\Http\Response
-     *
-     * @internal param int $id
-     */
-    public function show(Thread $thread)
+    public function show(Thread $thread): View
     {
         // if the gate does not allow this user to show a forum redirect to home
 
@@ -681,14 +562,7 @@ class ThreadsController extends Controller
         return view('threads.show', compact('thread'));
     }
 
-    /**
-     * Lock the specified resource.
-     *
-     * @param int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function lock($id)
+    public function lock(int $id): RedirectResponse
     {
         if (!$thread = Thread::find($id)) {
             flash()->error('Error', 'No such thread');
@@ -707,16 +581,7 @@ class ThreadsController extends Controller
         return back();
     }
 
-    /**
-     * Unlock the specified resource.
-     *
-     * @param $id
-     *
-     * @return \Illuminate\Http\Response
-     *
-     * @internal param Thread $thread
-     */
-    public function unlock($id)
+    public function unlock(int $id): RedirectResponse
     {
         if (!$thread = Thread::find($id)) {
             flash()->error('Error', 'No such thread');
@@ -735,14 +600,7 @@ class ThreadsController extends Controller
         return back();
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @return \Illuminate\Http\Response
-     *
-     * @internal param int $id
-     */
-    public function edit(Thread $thread)
+    public function edit(Thread $thread): View
     {
         $this->middleware('auth');
 
@@ -757,16 +615,7 @@ class ThreadsController extends Controller
         return view('threads.edit', compact('thread', 'threadCategories', 'visibilities', 'tags', 'entities', 'series', 'events'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param ThreadRequest|Request $request
-     *
-     * @return \Illuminate\Http\Response
-     *
-     * @internal param int $id
-     */
-    public function update(Thread $thread, ThreadRequest $request)
+    public function update(Thread $thread, ThreadRequest $request): RedirectResponse
     {
         $msg = '';
 
@@ -815,7 +664,7 @@ class ThreadsController extends Controller
             return response(['message' => 'No way.'], 403);
         }
 
-        \Session::flash('flash_message', 'Not authorized');
+        Session::flash('flash_message', 'Not authorized');
 
         return redirect('/');
     }
@@ -853,14 +702,8 @@ class ThreadsController extends Controller
         return redirect('threads');
     }
 
-    /**
-     * Mark user as following the thread.
-     *
-     * @param $id
-     *
-     * @return Response
-     */
-    public function follow($id, Request $request)
+
+    public function follow(int $id, Request $request): RedirectResponse
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -889,14 +732,7 @@ class ThreadsController extends Controller
         return back();
     }
 
-    /**
-     * Mark user as unfollowing the thread.
-     *
-     * @param $id
-     *
-     * @return Response
-     */
-    public function unfollow($id, Request $request)
+    public function unfollow(int $id, Request $request): RedirectResponse
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -920,14 +756,8 @@ class ThreadsController extends Controller
         return back();
     }
 
-    /**
-     * Mark user as liking the thread.
-     *
-     * @param $id
-     *
-     * @return Response
-     */
-    public function like($id, Request $request)
+
+    public function like(int $id, Request $request): RedirectResponse
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -963,11 +793,11 @@ class ThreadsController extends Controller
     /**
      * Mark user as unliking the thread.
      *
-     * @param $id
+     * @param int $id
      *
-     * @return Response
+     * @throws \Exception
      */
-    public function unlike($id, Request $request)
+    public function unlike(int $id): RedirectResponse
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -1000,9 +830,9 @@ class ThreadsController extends Controller
      *
      * @return bool
      */
-    protected function getIsFiltered(Request $request)
+    protected function getIsFiltered(Request $request): bool
     {
-        if (($filters = $this->getFilters($request)) == $this->getDefaultFilters()) {
+        if (($filters = $this->getFilters($request)) === $this->getDefaultFilters()) {
             return false;
         }
 
@@ -1014,9 +844,9 @@ class ThreadsController extends Controller
      *
      * @return array
      */
-    public function getFilters(Request $request)
+    public function getFilters(Request $request): array
     {
-        return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
+        return $this->getAttribute($request,'filters', $this->getDefaultFilters());
     }
 
     /**
@@ -1027,7 +857,7 @@ class ThreadsController extends Controller
      *
      * @return mixed
      */
-    public function getAttribute($attribute, $default = null, Request $request)
+    public function getAttribute(Request $request, string $attribute, $default = null)
     {
         return $request->session()
             ->get($this->prefix.$attribute, $default);
@@ -1038,7 +868,7 @@ class ThreadsController extends Controller
      *
      * @return array
      */
-    public function getDefaultFilters()
+    public function getDefaultFilters(): array
     {
         return [];
     }

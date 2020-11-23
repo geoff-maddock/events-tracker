@@ -13,7 +13,9 @@ use App\User;
 use App\UserStatus;
 use App\Visibility;
 use Carbon\Carbon;
+use Eluceo\iCal\Component\Calendar;
 use Eluceo\iCal\Component\Event;
+use Exception;
 use Illuminate\Contracts\Logging\Log;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -21,6 +23,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Throwable;
@@ -225,12 +228,9 @@ class UsersController extends Controller
 
     /**
      * Reset the filtering of users.
-     *
-     * @return Response | string
-     *
      * @throws Throwable
      */
-    public function reset(Request $request)
+    public function reset(Request $request): string
     {
         // set the filters to empty
         $this->setFilters($request, $this->getDefaultFilters());
@@ -267,7 +267,7 @@ class UsersController extends Controller
         }
 
         // set results per page
-        if ($request->input('rpp')) {
+        if (!empty($request->input('rpp')) && is_numeric($request->input('rpp'))) {
             $this->rpp = $request->input('rpp');
         }
     }
@@ -277,9 +277,9 @@ class UsersController extends Controller
      *
      * @return array
      */
-    public function getFilters(Request $request)
+    public function getFilters(Request $request): array
     {
-        return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
+        return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
     }
 
     /**
@@ -287,7 +287,7 @@ class UsersController extends Controller
      */
     public function getTabs(Request $request): array
     {
-        return $this->getAttribute('tabs', $this->getDefaultTabs(), $request);
+        return $this->getAttribute($request, 'tabs', $this->getDefaultTabs());
     }
 
     /**
@@ -295,7 +295,7 @@ class UsersController extends Controller
      *
      * @return mixed
      */
-    public function getAttribute(string $attribute, $default = null, Request $request)
+    public function getAttribute(Request $request, string $attribute, $default = null)
     {
         return $request->session()
             ->get($this->prefix.$attribute, $default);
@@ -306,7 +306,7 @@ class UsersController extends Controller
      *
      * @return array
      */
-    public function getDefaultFilters()
+    public function getDefaultFilters(): array
     {
         return [];
     }
@@ -316,7 +316,7 @@ class UsersController extends Controller
      *
      * @return array
      */
-    public function getDefaultTabs()
+    public function getDefaultTabs(): array
     {
         return [0 => 'created', 1 => 'tags'];
     }
@@ -417,7 +417,7 @@ class UsersController extends Controller
     /**
      * @return RedirectResponse|Redirector
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function destroy(User $user)
     {
@@ -434,7 +434,7 @@ class UsersController extends Controller
      *
      * @param int $id
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function addPhoto(int $id, Request $request): void
     {
@@ -476,7 +476,7 @@ class UsersController extends Controller
     /**
      * Delete a photo.
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function deletePhoto(int $id, Request $request)
     {
@@ -686,7 +686,7 @@ class UsersController extends Controller
         define('ICAL_FORMAT', 'Ymd\THis\Z');
 
         // create a calendar object
-        $vCalendar = new \Eluceo\iCal\Component\Calendar($this->user->getFullNameAttribute().' Calendar');
+        $vCalendar = new Calendar($this->user->getFullNameAttribute().' Calendar');
 
         // add the following response
         // get the next x events they are attending
@@ -841,6 +841,10 @@ class UsersController extends Controller
     {
         $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
         $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
-        $this->rpp = $filters['rpp'] ?? $this->rpp;
+        if (isset($filters['rpp']) && is_numeric($filters['rpp'])) {
+            $this->rpp = $filters['rpp'];
+        } else {
+            $this->rpp = $this->defaultRpp;
+        }
     }
 }

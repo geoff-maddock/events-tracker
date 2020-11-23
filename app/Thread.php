@@ -4,12 +4,18 @@ namespace App;
 
 use App\Filters\QueryFilter;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
-class Thread extends Eloquent
+/**
+ * Class Thread.
+ *
+ * @mixin Eloquent
+ */
+class Thread extends Model
 {
     public static function boot()
     {
@@ -24,13 +30,6 @@ class Thread extends Eloquent
             $thread->updated_by = Auth::user() ? Auth::user()->id : 1;
         });
     }
-
-    /**
-     * The storage format of the model's date columns.
-     *
-     * @var string
-     */
-    //protected $dateFormat = 'Y-m-d\\TH:i';
 
     /**
      * @var array

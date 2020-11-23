@@ -76,7 +76,11 @@ class SeriesController extends Controller
     {
         $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
         $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
-        $this->rpp = $filters['rpp'] ?? $this->rpp;
+        if (isset($filters['rpp']) && is_numeric($filters['rpp'])) {
+            $this->rpp = $filters['rpp'];
+        } else {
+            $this->rpp = $this->defaultRpp;
+        }
     }
 
     /**
@@ -156,8 +160,7 @@ class SeriesController extends Controller
             $this->sortOrder = $request->input('sort_direction');
         }
 
-        // set results per page
-        if ($request->input('rpp')) {
+        if (!empty($request->input('rpp')) && is_numeric($request->input('rpp'))) {
             $this->rpp = $request->input('rpp');
         }
     }

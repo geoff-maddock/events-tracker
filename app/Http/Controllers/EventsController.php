@@ -10,6 +10,7 @@ use App\EventReview;
 use App\Events\EventCreated;
 use App\Events\EventUpdated;
 use App\EventType;
+use App\Follow;
 use App\Http\Requests\EventRequest;
 use App\Notifications\EventPublished;
 use App\OccurrenceDay;
@@ -34,12 +35,14 @@ use Illuminate\View\View;
 use Scottybo\LaravelFacebookSdk\LaravelFacebookSdk;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Facebook\Exceptions\FacebookSDKException;
+use Illuminate\Support\Facades\Session;
 
 class EventsController extends Controller
 {
     protected string $prefix;
     protected int $rpp;
     protected int $defaultRpp;
+    protected int $defaultGridRpp;
     protected string $defaultSortBy;
     protected string $defaultSortOrder;
     protected int $gridRpp;
@@ -47,11 +50,9 @@ class EventsController extends Controller
     protected array $sort;
     protected string $sortBy;
     protected string $sortOrder;
-    protected $defaultCriteria;
     protected array $filters;
     protected bool $hasFilter;
     protected Event $event;
-    protected $criteria;
     protected LaravelFacebookSdk $fb;
 
     public function __construct(Event $event, LaravelFacebookSdk $fb)
@@ -64,6 +65,7 @@ class EventsController extends Controller
 
         // default list variables
         $this->defaultRpp = 10;
+        $this->defaultGridRpp = 24;
         $this->defaultSortBy = 'name';
         $this->defaultSortOrder = 'asc';
 
@@ -76,7 +78,6 @@ class EventsController extends Controller
 
         $this->fb = $fb;
 
-        $this->defaultCriteria = null;
         $this->hasFilter = 0;
         parent::__construct();
     }
@@ -84,7 +85,7 @@ class EventsController extends Controller
     /**
      * Gets the reporting options from the request and saves to session.
      */
-    public function getReportingOptions(Request $request)
+    public function getReportingOptions(Request $request): void
     {
         foreach (['page', 'rpp', 'sort', 'criteria'] as $option) {
             if (!$request->has($option)) {
@@ -110,7 +111,7 @@ class EventsController extends Controller
      *
      * @return mixed
      */
-    public function getAttribute(string $attribute, Request $request, $default = null)
+    public function getAttribute(Request $request, string $attribute,  $default = null)
     {
         return $request->session()
             ->get($this->prefix.$attribute, $default);
@@ -230,7 +231,7 @@ class EventsController extends Controller
             $this->sortOrder = $request->input('sort_order');
         }
 
-        if (!empty($request->input('rpp'))) {
+        if (!empty($request->input('rpp')) && is_numeric($request->input('rpp'))) {
             $this->rpp = $request->input('rpp');
         }
     }
@@ -240,11 +241,15 @@ class EventsController extends Controller
      *
      * @param $filters
      */
-    protected function getPaging($filters)
+    protected function getPaging(array $filters): void
     {
         $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
         $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
-        $this->rpp = $filters['rpp'] ?? $this->rpp;
+        if (isset($filters['rpp']) && is_numeric($filters['rpp'])) {
+            $this->rpp = $filters['rpp'];
+        } else {
+            $this->rpp = $this->defaultRpp;
+        }
     }
 
 
@@ -252,13 +257,17 @@ class EventsController extends Controller
     {
         $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
         $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
-        $this->rpp = $filters['rpp'] ?? $this->gridRpp;
+        if (isset($filters['rpp']) && is_numeric($filters['rpp'])) {
+            $this->gridRpp = $filters['rpp'];
+        } else {
+            $this->gridRpp = $this->defaultGridRpp;
+        }
     }
 
 
     public function getFilters(Request $request): array
     {
-        return $this->getAttribute('filters', $request, $this->getDefaultFilters());
+        return $this->getAttribute($request,'filters', $this->getDefaultFilters());
     }
 
     public function setFilters(Request $request, array $input)
@@ -1478,7 +1487,7 @@ class EventsController extends Controller
         try {
             $token = $this->fb->getAccessTokenFromRedirect();
         } catch (Facebook\Exceptions\FacebookSDKException $e) {
-            dd($e->getMessage());
+            Log::error(sprintf('FB SDK exception: %s',$e->getMessage()));
         }
 
         // Access token will be null if the user denied the request
@@ -1492,12 +1501,12 @@ class EventsController extends Controller
             }
 
             // User denied the request
-            dd(
-                $helper->getError(),
-                $helper->getErrorCode(),
-                $helper->getErrorReason(),
-                $helper->getErrorDescription()
-            );
+//            dd(
+//                $helper->getError(),
+//                $helper->getErrorCode(),
+//                $helper->getErrorReason(),
+//                $helper->getErrorDescription()
+//            );
         }
 
         if (!$token->isLongLived()) {
@@ -1508,7 +1517,7 @@ class EventsController extends Controller
             try {
                 $token = $oauth_client->getLongLivedAccessToken($token);
             } catch (Facebook\Exceptions\FacebookSDKException $e) {
-                dd($e->getMessage());
+                Log::error(sprintf('FB SDK exception: %s',$e->getMessage()));
             }
         }
 
@@ -1594,9 +1603,9 @@ class EventsController extends Controller
     /**
      * @param $event
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    protected function notifyFollowing($event)
+    protected function notifyFollowing($event): RedirectResponse
     {
         $reply_email = config('app.noreplyemail');
         $site = config('app.app_name');
@@ -1642,7 +1651,7 @@ class EventsController extends Controller
         return back();
     }
 
-    public function edit(Event $event)
+    public function edit(Event $event): View
     {
         $this->middleware('auth');
 
@@ -1651,7 +1660,7 @@ class EventsController extends Controller
         return view('events.edit', compact('event'));
     }
 
-    public function update(Event $event, EventRequest $request)
+    public function update(Event $event, EventRequest $request): RedirectResponse
     {
         $msg = '';
 
@@ -1696,7 +1705,7 @@ class EventsController extends Controller
         return redirect()->route('events.show', compact('event'));
     }
 
-    protected function unauthorized(EventRequest $request)
+    protected function unauthorized(EventRequest $request): RedirectResponse
     {
         if ($request->ajax()) {
             return response(['message' => 'No way.'], 403);
@@ -2184,31 +2193,8 @@ class EventsController extends Controller
         }
     }
 
-    /**
-     * Delete a photo.
-     *
-     * @param int $id
-     *
-     * @return void
-     */
-    public function deletePhoto($id, Request $request)
-    {
-        $this->validate($request, [
-            'file' => 'required|mimes:jpg,jpeg,png,gif',
-        ]);
 
-        $photo = $this->deletePhoto($request->file('file'));
-        $photo->save();
-    }
-
-    /**
-     * Mark user as following the event.
-     *
-     * @param $id
-     *
-     * @return Response | RedirectResponse
-     */
-    public function follow($id, Request $request)
+    public function follow(int $id): RedirectResponse
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -2237,14 +2223,7 @@ class EventsController extends Controller
         return back();
     }
 
-    /**
-     * Mark user as unfollowing the event.
-     *
-     * @param $id
-     *
-     * @return Response | RedirectResponse
-     */
-    public function unfollow($id, Request $request)
+    public function unfollow(int $id): RedirectResponse
     {
         // check if there is a logged in user
         if (!$this->user) {

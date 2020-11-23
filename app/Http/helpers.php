@@ -1,13 +1,15 @@
 <?php
 
-    function delete_form($routeParams, $label = 'Delete')
-    {
-        $form = Form::open(['method' => 'DELETE', 'route' => $routeParams, 'id' => 'deleteForm']);
+function delete_form($routeParams, $label = 'Delete')
+{
+    $form = Form::open(['method' => 'DELETE', 'route' => $routeParams, 'id' => 'deleteForm']);
 
-        $form .= Form::submit($label, ['class' => 'btn btn-danger delete']);
+    $form .= Form::submit($label, ['class' => 'btn btn-danger delete']);
 
-        return $form .= Form::close();
-    }
+    $form .= Form::close();
+
+    return $form;
+}
 
     function flash($title = null, $message = null)
     {

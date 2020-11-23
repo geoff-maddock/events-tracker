@@ -34,8 +34,7 @@
 		"laravel/dusk": "^6.0",
 		"filp/whoops": "~2.0",
 		"barryvdh/laravel-debugbar":  "^3.5",
-		"barryvdh/laravel-ide-helper": "^2.8",
-		"phpstan/phpstan": "^0.12.56"
+		"barryvdh/laravel-ide-helper": "^2.8"
 	},
 	"autoload": {
 		"classmap": [
@@ -45,7 +44,7 @@
 			"App\\": "app/"
 		},
 		"files": ["app/Http/helpers.php",
-					"app/Http/flash.php"
+					"app/Http/Flash.php"
 					]
 	},
 	"autoload-dev": {

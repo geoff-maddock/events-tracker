@@ -15,7 +15,7 @@ class Form
 
     protected $rules = [];
 
-    public function __construct (Request $request = null)
+    public function __construct(Request $request = null)
     {
         $this->request = $request ?: request();
     }
@@ -24,7 +24,7 @@ class Form
     {
         try {
             $this->validate($this->request, $this->rules);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->errors = $e->validator->errors();
         }
 
@@ -33,25 +33,24 @@ class Form
 
     public function fields()
     {
-
     }
 
-    public function __get($property)
-    {
-        return $this->request->input($property);
-    }
+//    public function __get($property)
+//    {
+//        return $this->request->input($property);
+//    }
 
+//
+//    abstract public function persist();
 
-    abstract public function persist();
-
-    public function save()
-    {
-        if ($this->isValid()) {
-            $this->persist();
-
-            return true;
-        }
-
-        return false;
-    }
+//    public function save()
+//    {
+//        if ($this->isValid()) {
+//            $this->persist();
+//
+//            return true;
+//        }
+//
+//        return false;
+//    }
 }

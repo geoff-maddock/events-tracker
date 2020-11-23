@@ -13,6 +13,8 @@ use App\Photo;
 use App\Role;
 use App\Tag;
 use App\User;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -101,13 +103,17 @@ class EntitiesController extends Controller
     {
         $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
         $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
-        $this->rpp = $filters['rpp'] ?? $this->rpp;
+        if (isset($filters['rpp']) && is_numeric($filters['rpp'])) {
+            $this->rpp = $filters['rpp'];
+        } else {
+            $this->rpp = $this->defaultRpp;
+        }
     }
 
     /**
      * Update the page list parameters from the request.
      */
-    protected function updatePaging($request)
+    protected function updatePaging(Request $request)
     {
         // set sort by column
         if ($request->input('sort_by')) {
@@ -120,7 +126,7 @@ class EntitiesController extends Controller
         }
 
         // set results per page
-        if ($request->input('rpp')) {
+        if ($request->input('rpp') && is_numeric($request->input('rpp'))) {
             $this->rpp = $request->input('rpp');
         }
     }
@@ -132,7 +138,7 @@ class EntitiesController extends Controller
      */
     protected function getFilters(Request $request)
     {
-        return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
+        return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
     }
 
     /**
@@ -143,18 +149,13 @@ class EntitiesController extends Controller
      *
      * @return mixed
      */
-    protected function getAttribute($attribute, $default = null, Request $request)
+    protected function getAttribute(Request $request, $attribute, $default = null)
     {
         return $request->session()
             ->get($this->prefix.$attribute, $default);
     }
 
-    /**
-     * Get the default filters array.
-     *
-     * @return mixed
-     */
-    protected function getDefaultFilters()
+    protected function getDefaultFilters(): array
     {
         return [];
     }
@@ -162,9 +163,9 @@ class EntitiesController extends Controller
     /**
      * Gets the base criteria.
      *
-     * @return $query
+     * @return Builder
      */
-    public function getBaseCriteria(Request $request)
+    public function getBaseCriteria(Request $request): Builder
     {
         return $this->entity->active()
             ->orderBy('entity_type_id', 'ASC')
@@ -176,7 +177,7 @@ class EntitiesController extends Controller
      *
      * @return $query
      */
-    public function buildCriteria(Request $request)
+    public function buildCriteria(Request $request): Builder
     {
         // get all the filters from the session
         $filters = $this->getFilters($request);
@@ -343,12 +344,12 @@ class EntitiesController extends Controller
 
     /**
      * Set filters attribute.
-     *
-     * @return array
+     * @param Request $request
+     * @param array $input
      */
-    protected function setFilters(Request $request, array $input)
+    protected function setFilters(Request $request, array $input): void
     {
-        return $this->setAttribute('filters', $input, $request);
+        $this->setAttribute('filters', $input, $request);
     }
 
     /**
@@ -356,10 +357,9 @@ class EntitiesController extends Controller
      *
      * @param string $attribute
      * @param mixed  $value
-     *
-     * @return mixed
+
      */
-    protected function setAttribute($attribute, $value, Request $request)
+    protected function setAttribute(string $attribute, $value, Request $request): void
     {
         $request->session()->put($this->prefix.$attribute, $value);
     }
@@ -371,7 +371,7 @@ class EntitiesController extends Controller
      *
      * @throws \Throwable
      */
-    public function reset(Request $request)
+    public function reset(Request $request): Response
     {
         // set the filters to empty
         $this->setFilters($request, $this->getDefaultFilters());
@@ -399,7 +399,7 @@ class EntitiesController extends Controller
      *
      * @throws \Throwable
      */
-    public function indexTags(Request $request, $role)
+    public function indexTags(Request $request, string $role)
     {
         $this->rpp = 1000;
 
@@ -434,7 +434,7 @@ class EntitiesController extends Controller
      *
      * @throws \Throwable
      */
-    public function indexAliases(Request $request, $role)
+    public function indexAliases(Request $request, string $role)
     {
         // updates sort, rpp from request
         $this->updatePaging($request);
@@ -466,7 +466,7 @@ class EntitiesController extends Controller
      *
      * @throws \Throwable
      */
-    public function indexSlug($slug)
+    public function indexSlug(string $slug): Response
     {
         $hasFilter = 1;
 
@@ -498,10 +498,8 @@ class EntitiesController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @return Response
      */
-    public function store(EntityRequest $request, Entity $entity)
+    public function store(EntityRequest $request, Entity $entity): Response
     {
         $msg = '';
 
@@ -602,14 +600,8 @@ class EntitiesController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param EntityRequest|Request $request
-     *
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
-     *
-     * @internal param int $id
      */
-    public function update(Entity $entity, EntityRequest $request)
+    public function update(Entity $entity, EntityRequest $request): RedirectResponse
     {
         $msg = '';
 
@@ -682,14 +674,9 @@ class EntitiesController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @return Response
-     *
-     * @internal param int $id
-     *
      * @throws \Exception
      */
-    public function destroy(Entity $entity)
+    public function destroy(Entity $entity): RedirectResponse
     {
         // add to activity log
         Activity::log($entity, $this->user, 3);
@@ -702,7 +689,7 @@ class EntitiesController extends Controller
     /**
      * Add a photo to an entity.
      */
-    public function addPhoto(int $id, Request $request)
+    public function addPhoto(int $id, Request $request): void
     {
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif',
@@ -743,7 +730,7 @@ class EntitiesController extends Controller
      *
      * @throws \Throwable
      */
-    public function follow($id, Request $request)
+    public function follow(int $id, Request $request)
     {
         // check if there is a logged in user
         if (!$this->user) {
