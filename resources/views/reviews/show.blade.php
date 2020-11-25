@@ -2,9 +2,6 @@
  
 @section('content')
     <h2>
-        {!! link_to_route('entities.show', $entity, [$entity->id]) !!} -
-        {{ $location->name }}
+     @include('reviews.single', ['review' => $review])
     </h2>
- 
-    {{ $location->city }}
-@endsection
+ @endsection

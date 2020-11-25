@@ -16,8 +16,7 @@ use Carbon\Carbon;
 use Eluceo\iCal\Component\Calendar;
 use Eluceo\iCal\Component\Event;
 use Exception;
-use Illuminate\Contracts\Logging\Log;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -27,6 +26,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Throwable;
+use Illuminate\Support\Facades\Log;
 
 class UsersController extends Controller
 {
@@ -160,7 +160,7 @@ class UsersController extends Controller
         // get all the filters from the session
         $this->filters = $this->getFilters($request);
 
-        // get  sort, sort order, rpp from session, update from request
+        // get sort, sort order, rpp from session, update from request
         $this->getPaging($this->filters);
         $this->updatePaging($request);
 
@@ -188,7 +188,7 @@ class UsersController extends Controller
      *
      * @return Builder
      */
-    public function buildCriteria(Request $request)
+    public function buildCriteria(Request $request): Builder
     {
         // get all the filters from the session
         $filters = $this->getFilters($request);
@@ -326,7 +326,7 @@ class UsersController extends Controller
      *
      * @return View
      **/
-    public function create()
+    public function create(): View
     {
         $visibilities = ['' => ''] + Visibility::pluck('name', 'id');
         $userStatuses = ['' => ''] + UserStatus::orderBy('name', 'ASC')->pluck('name', 'id')->all();
@@ -338,7 +338,7 @@ class UsersController extends Controller
     /**
      * @return RedirectResponse|Response|View
      */
-    public function show(User $user, Request $request)
+    public function show(User $user, Request $request): View
     {
         //$this->setTabs($request, $this->getDefaultTabs());
 
@@ -473,23 +473,6 @@ class UsersController extends Controller
             ->makeThumbnail();
     }
 
-    /**
-     * Delete a photo.
-     *
-     * @throws ValidationException
-     */
-    public function deletePhoto(int $id, Request $request)
-    {
-        $this->validate($request, [
-            'file' => 'required|mimes:jpg,jpeg,png,gif',
-        ]);
-
-        // detach from user
-        $user = User::find($id);
-
-        $photo = $this->deletePhoto($request->file('file'));
-        $photo->save();
-    }
 
     /**
      * Mark user as activated.

@@ -12,7 +12,6 @@ use Carbon\Carbon;
 use DB;
 
 
-
 class EventReviewsController extends Controller {
 
 

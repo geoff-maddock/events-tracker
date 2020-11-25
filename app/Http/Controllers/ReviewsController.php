@@ -1,50 +1,43 @@
 <?php namespace App\Http\Controllers;
 
-
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventRequest;
-use App\OccurrenceDay;
-use App\OccurrenceType;
-use App\OccurrenceWeek;
 use App\ReviewType;
 use App\Thread;
 use App\Traits\Followable;
 use Illuminate\View\View;
-use PhpParser\Node\Expr\Array_;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-
-use SammyK;
-
-use DB;
-use Log;
-use Mail;
+use Scottybo\LaravelFacebookSdk\LaravelFacebookSdk;
+use Facebook\Exceptions\FacebookSDKException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use App\EventReview;
 use App\Event;
 use App\Entity;
-use App\EventType;
 use App\Tag;
-use App\Visibility;
-use App\Photo;
-use App\EventResponse;
-use App\User;
 use App\Activity;
-use App\Services\RssFeed;
-
+use App\Visibility;
 
 class ReviewsController extends Controller
 {
-    protected $prefix;
-    protected $rpp;
-    protected $page;
-    protected $sort;
-    protected $sortBy;
-    protected $sortOrder;
-    protected $defaultCriteria;
-    protected $hasFilter;
+    protected string $prefix;
+
+    protected int $page;
+    protected int $defaultRpp;
+    protected string $defaultSortBy;
+    protected string $defaultSortOrder;
+    protected int $rpp;
+    protected array $sort;
+    protected string $sortBy;
+    protected string $sortOrder;
+    protected array $defaultCriteria;
+    protected bool $hasFilter;
+    protected Event $event;
+    protected array $filters;
 
     public function __construct(Event $event)
     {
@@ -55,13 +48,15 @@ class ReviewsController extends Controller
         $this->prefix = 'app.reviews.';
 
         // default list variables
-        $this->rpp = 8;
-        $this->gridRpp = 24;
+        $this->rpp = 10;
         $this->page = 1;
         $this->sort = array('name', 'desc');
         $this->sortBy = 'name';
         $this->sortOrder = 'asc';
-        $this->defaultCriteria = NULL;
+        $this->defaultCriteria = [];
+        $this->defaultRpp = 10;
+        $this->defaultSortBy = 'name';
+        $this->defaultSortOrder = 'asc';
         $this->hasFilter = 0;
         parent::__construct();
     }
@@ -184,22 +179,6 @@ class ReviewsController extends Controller
     }
 
     /**
-     * Reset filter action.
-     *
-     * @param Request $request
-     */
-    public function executeReset(Request $request)
-    {
-        if ($request->input('criteria')) {
-            $this->setCriteria($request->input('criteria'));
-        }
-        $this->setFilters($this->getDefaultFilters(), NULL);
-        $request->session()->put('defaultFilter', 0);
-        $this->setPage(1);
-        $this->executeFilterRedirect();
-    }
-
-    /**
      * Returns true if the user has any filters outside of the default
      *
      * @return Boolean
@@ -252,7 +231,7 @@ class ReviewsController extends Controller
      * @param Request $request
      * @return Mixed
      */
-    public function getAttribute($attribute, $default = null, Request $request)
+    public function getAttribute(Request $request, $attribute, $default = null)
     {
         return $request->session()
             ->get($this->prefix . $attribute, $default);
@@ -265,27 +244,18 @@ class ReviewsController extends Controller
      */
     public function getFilters(Request $request)
     {
-        return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
+        return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
     }
 
-    /**
-     * Criteria provides a way to define criteria to be applied to a tab on the index page.
-     *
-     * @return array
-     */
-    public function getCriteria()
-    {
-        return $this->criteria;
-    }
 
     /**
      * Get the current page for this module
      *
      * @return integner
      */
-    public function getPage()
+    public function getPage(Request $request)
     {
-        return $this->getAttribute('page', 1);
+        return $this->getAttribute($request, 'page', 1);
     }
 
     /**
@@ -296,7 +266,7 @@ class ReviewsController extends Controller
      */
     public function getRpp(Request $request)
     {
-        return $this->getAttribute('rpp', $this->rpp, $request);
+        return $this->getAttribute($request, 'rpp', $this->rpp);
     }
 
     /**
@@ -306,7 +276,7 @@ class ReviewsController extends Controller
      */
     public function getSort(Request $request)
     {
-        return $this->getAttribute('sort', $this->getDefaultSort(), $request);
+        return $this->getAttribute($request, 'sort', $this->getDefaultSort());
     }
 
 
@@ -339,7 +309,7 @@ class ReviewsController extends Controller
      * @param Request $request
      * @return Mixed
      */
-    public function setAttribute($attribute, $value, Request $request)
+    public function setAttribute(Request $request, $attribute, $value)
     {
         return $request->session()->put($this->prefix . $attribute, $value);
     }
@@ -352,20 +322,9 @@ class ReviewsController extends Controller
      */
     public function setFilters(Request $request, array $input)
     {
-        return $this->setAttribute('filters', $input, $request);
+        return $this->setAttribute($request, 'filters', $input);
     }
 
-    /**
-     * Set criteria.
-     *
-     * @param array $input
-     * @return string
-     */
-    public function setCriteria($input)
-    {
-        $this->criteria = $input;
-        return $this->criteria;
-    }
 
     /**
      * Set page attribute
@@ -373,9 +332,9 @@ class ReviewsController extends Controller
      * @param integer $input
      * @return integer
      */
-    public function setPage($input)
+    public function setPage(Request $request, $input)
     {
-        return $this->setAttribute('page', $input);
+        return $this->setAttribute($request, 'page', $input);
     }
 
     /**
@@ -384,9 +343,9 @@ class ReviewsController extends Controller
      * @param integer $input
      * @return integer
      */
-    public function setRpp($input)
+    public function setRpp(Request $request, $input)
     {
-        return $this->setAttribute('rpp', 5);
+        return $this->setAttribute($request, 'rpp', 5);
     }
 
     /**
@@ -395,9 +354,9 @@ class ReviewsController extends Controller
      * @param array $input
      * @return array
      */
-    public function setSort(array $input)
+    public function setSort(Request $request, array $input)
     {
-        return $this->setAttribute('sort', $input);
+        return $this->setAttribute($request, 'sort', $input);
     }
 
     /**
@@ -418,15 +377,18 @@ class ReviewsController extends Controller
         $filters = $this->getFilters($request);
 
         // base criteria
-        $query = $this->buildCriteria($request);//,'start_at', 'desc' );
-
+        $query = $this->buildCriteria($request);
 
         // get reviews
         $reviews = $query->paginate($this->rpp);
 
-
         return view('reviews.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter,  'filters' => $filters,
+            ->with([
+                'rpp' => $this->rpp, 
+                'sortBy' => $this->sortBy, 
+                'sortOrder' => $this->sortOrder, 
+                'hasFilter' => $this->hasFilter,  
+                'filters' => $filters,
                 'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
                 'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL,
                 'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL,
@@ -447,21 +409,27 @@ class ReviewsController extends Controller
      * @internal param $Request
      * @throws \Throwable
      */
-    public function filter(Request $request, EventFilters $filters)
+    public function filter(Request $request)
     {
-        $hasFilter = 1;
+
+        // update filters from request
+        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
 
         // get all the filters from the session
-        $filters = $this->getFilters($request);
+        $this->filters = $this->getFilters($request);
 
-        // updates sort, rpp from request
+        // get  sort, sort order, rpp from session, update from request
+        $this->getPaging($this->filters);
         $this->updatePaging($request);
 
+        // set flag if there are filters
+        $this->hasFilter = $this->hasFilter($this->filters);
+
         // base criteria
-        $query = $this->review->orderBy($this->sortBy, $this->sortOrder);
+        //$query = $this->review->orderBy($this->sortBy, $this->sortOrder);
 
-
-        // add the criteria from the session
+        // base criteria
+        $query = $this->buildCriteria($request);
 
         // check request for passed filter values
 
@@ -471,7 +439,7 @@ class ReviewsController extends Controller
             $query->where('name', 'like', '%' . $name . '%');
 
             // add to filters array
-            $filters['filter_name'] = $name;
+            $this->filters['filter_name'] = $name;
         }
 
         if (!empty($request->input('filter_venue'))) {
@@ -483,7 +451,7 @@ class ReviewsController extends Controller
 
 
             // add to filters array
-            $filters['filter_venue'] = $venue;
+            $this->filters['filter_venue'] = $venue;
         };
 
         if (!empty($request->input('filter_tag'))) {
@@ -493,7 +461,7 @@ class ReviewsController extends Controller
             });
 
             // add to filters array
-            $filters['filter_tag'] = $tag;
+            $this->filters['filter_tag'] = $tag;
         }
 
         if (!empty($request->input('filter_related'))) {
@@ -503,34 +471,67 @@ class ReviewsController extends Controller
             });
 
             // add to filters array
-            $filters['filter_related'] = $related;
+            $this->filters['filter_related'] = $related;
         }
 
         // change this - should be seperate
         if (!empty($request->input('filter_rpp'))) {
             $this->rpp = $request->input('filter_rpp');
-            $filters['filter_rpp'] = $this->rpp;
+            $this->filters['filter_rpp'] = $this->rpp;
         }
 
         // save filters to session
-        $this->setFilters($request, $filters);
+        $this->setFilters($request, $this->filters);
 
         // get future events
         $reviews = $query->paginate($this->rpp);
 
 
         return view('reviews.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter,  'filters' => $filters,
-                'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
-                'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL,
-                'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL,
-                'filter_related' => isset($filters['filter_related']) ? $filters['filter_related'] : NULL,
-                'filter_rpp' => isset($filters['filter_rpp']) ? $filters['filter_rpp'] : NULL
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter,  'filters' => $this->filters,
+                'filter_name' => isset($this->filters['filter_name']) ? $this->filters['filter_name'] : NULL,  // there should be a better way to do this...
+                'filter_venue' => isset($this->filters['filter_venue']) ? $this->filters['filter_venue'] : NULL,
+                'filter_tag' => isset($this->filters['filter_tag']) ? $this->filters['filter_tag'] : NULL,
+                'filter_related' => isset($$this->filters['filter_related']) ? $this->filters['filter_related'] : NULL,
+                'filter_rpp' => isset($this->filters['filter_rpp']) ? $this->filters['filter_rpp'] : NULL
             ])
             ->with(compact('reviews'))
             ->render();
     }
 
+
+
+    /**
+     * Update the page list parameters from the request.
+     *
+     * @param $filters
+     */
+    protected function getPaging(array $filters): void
+    {
+        $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
+        $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
+        if (isset($filters['rpp']) && is_numeric($filters['rpp'])) {
+            $this->rpp = $filters['rpp'];
+        } else {
+            $this->rpp = $this->defaultRpp;
+        }
+    }
+
+     /**
+     * Checks if there is a valid filter.
+     *
+     * @param $filters
+     */
+    public function hasFilter($filters): bool
+    {
+        if (!is_array($filters)) {
+            return false;
+        }
+
+        unset($filters['rpp'], $filters['sortOrder'], $filters['sortBy'], $filters['page']);
+
+        return count(array_filter($filters, function ($x) { return !empty($x); }));
+    }
 
     /**
      * Display a listing of the resource.
@@ -598,13 +599,13 @@ class ReviewsController extends Controller
     public function reset(Request $request)
     {
         // doesn't have filter, but temp
-        $hasFilter = 1;
+        $this->hasFilter = 0;
 
         // set the filters to empty
         $this->setFilters($request, $this->getDefaultFilters());
 
         // base criteria
-        $query = $this->review->get();
+        $query = $this->buildCriteria($request);
 
         // updates sort, rpp from request
         $this->updatePaging($request);
@@ -619,9 +620,8 @@ class ReviewsController extends Controller
         };
 
         return view('reviews.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
             ->with(compact('reviews'))
-
             ->render();
 
     }
@@ -647,64 +647,12 @@ class ReviewsController extends Controller
 
 		$reviewTypes = [''=>''] + ReviewType::orderBy('name','ASC')->pluck('name', 'id')->all();
 
+        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
 		$events = Event::orderBy('name','ASC')->pluck('name','id')->all();
 
 		return view('reviews.create', compact('reviewTypes','visibilities','tags','events'));
 	}
-
-
-
-
-
-    /**
-     * Makes a call to the FB API if there is a link present and downloads the event cover photo
-
-     */
-    public function getToken()
-    {
-        $fb = app(SammyK\LaravelFacebookSdk\LaravelFacebookSdk::class);
-
-        // Obtain an access token.
-        try {
-            $token = $fb->getAccessTokenFromRedirect();
-        } catch (Facebook\Exceptions\FacebookSDKException $e) {
-            dd($e->getMessage());
-        }
-
-        // Access token will be null if the user denied the request
-        // or if someone just hit this URL outside of the OAuth flow.
-        if (! $token) {
-            // Get the redirect helper
-            $helper = $fb->getRedirectLoginHelper();
-
-            if (! $helper->getError()) {
-                abort(403, 'Unauthorized action.');
-            }
-
-            // User denied the request
-            dd(
-                $helper->getError(),
-                $helper->getErrorCode(),
-                $helper->getErrorReason(),
-                $helper->getErrorDescription()
-            );
-        }
-
-        if (! $token->isLongLived()) {
-            // OAuth 2.0 client handler
-            $oauth_client = $fb->getOAuth2Client();
-
-            // Extend the access token.
-            try {
-                $token = $oauth_client->getLongLivedAccessToken($token);
-            } catch (Facebook\Exceptions\FacebookSDKException $e) {
-                dd($e->getMessage());
-            }
-        }
-
-        $fb->setDefaultAccessToken($token);
-    }
 
 
     public function show(Event $event)
@@ -788,7 +736,7 @@ class ReviewsController extends Controller
 				// if the user hasn't already been notified, then email them
 				if (!array_key_exists($user->id, $users))
 				{
-					Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $event, $tag, $reply_email, $site, $url) {
+					Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $event, $tag, $reply_email, $site) {
                         $m->from($reply_email, $site);
 
 						$m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
@@ -810,7 +758,7 @@ class ReviewsController extends Controller
 				// if the user hasn't already been notified, then email them
 				if (!array_key_exists($user->id, $users))
 				{
-                    Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $entity, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $event, $entity, $reply_email, $site, $url) {
+                    Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $entity, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $event, $entity, $reply_email, $site) {
                         $m->from($reply_email, $site);
 
 						$m->to($user->email, $user->name)->subject($site.': '.$entity->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);

@@ -7,13 +7,11 @@ use App\Http\Requests\EventRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-
-use DB;
-use Log;
-use Mail;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use App\Event;
 use App\Entity;
 use App\EventType;
@@ -31,6 +29,23 @@ use App\Follow;
 
 class TagsController extends Controller {
 
+    protected Tag $tag;
+    protected string $prefix;
+    protected int $rpp;
+    protected int $defaultRpp;
+    protected int $defaultGridRpp;
+    protected string $defaultSortBy;
+    protected string $defaultSortOrder;
+    protected int $gridRpp;
+    protected int $page;
+    protected array $sort;
+    protected string $sortBy;
+    protected string $sortOrder;
+    protected array $filters;
+    protected bool $hasFilter;
+    protected Event $event;
+    protected array $criteria;
+    protected array $defaultCriteria;
 
 	public function __construct(Tag $tag)
 	{
@@ -419,7 +434,7 @@ class TagsController extends Controller {
      * @param Request $request
      * @return Mixed
      */
-    public function getAttribute($attribute, $default = null, Request $request)
+    public function getAttribute(Request $request, $attribute, $default = null)
     {
         return $request->session()
             ->get($this->prefix . $attribute, $default);
@@ -432,7 +447,7 @@ class TagsController extends Controller {
      */
     public function getFilters(Request $request)
     {
-        return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
+        return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
     }
 
     /**
@@ -450,9 +465,9 @@ class TagsController extends Controller {
      *
      * @return integner
      */
-    public function getPage()
+    public function getPage(Request $request)
     {
-        return $this->getAttribute('page', 1);
+        return $this->getAttribute($request, 'page', 1);
     }
 
     /**
@@ -463,7 +478,7 @@ class TagsController extends Controller {
      */
     public function getRpp(Request $request)
     {
-        return $this->getAttribute('rpp', $this->rpp);
+        return $this->getAttribute($request, 'rpp', $this->rpp);
     }
 
     /**
@@ -473,7 +488,7 @@ class TagsController extends Controller {
      */
     public function getSort(Request $request)
     {
-        return $this->getAttribute('sort', $this->getDefaultSort());
+        return $this->getAttribute($request, 'sort', $this->getDefaultSort());
     }
 
 
@@ -507,7 +522,7 @@ class TagsController extends Controller {
      * @param Request $request
      * @return Mixed
      */
-    public function setAttribute($attribute, $value, Request $request)
+    public function setAttribute(Request $request, $attribute, $value )
     {
         return $request->session()
             ->put($this->prefix . $attribute, $value);
@@ -521,7 +536,7 @@ class TagsController extends Controller {
      */
     public function setFilters(Request $request, array $input)
     {
-        return $this->setAttribute('filters', $input, $request);
+        return $this->setAttribute($request, 'filters', $input);
     }
 
     /**
@@ -542,9 +557,9 @@ class TagsController extends Controller {
      * @param integer $input
      * @return integer
      */
-    public function setPage($input)
+    public function setPage(Request $request, int $input)
     {
-        return $this->setAttribute('page', $input);
+        return $this->setAttribute($request, 'page', $input);
     }
 
     /**
@@ -553,9 +568,9 @@ class TagsController extends Controller {
      * @param integer $input
      * @return integer
      */
-    public function setRpp($input)
+    public function setRpp(Request $request, int $input)
     {
-        return $this->setAttribute('rpp', 5);
+        return $this->setAttribute($request, 'rpp', 5);
     }
 
     /**
@@ -564,9 +579,9 @@ class TagsController extends Controller {
      * @param array $input
      * @return array
      */
-    public function setSort(array $input)
+    public function setSort(Request $request, array $input)
     {
-        return $this->setAttribute('sort', $input);
+        return $this->setAttribute($request, 'sort', $input);
     }
 
     /**
@@ -619,10 +634,10 @@ class TagsController extends Controller {
             // if the user hasn't already been notified, then email them
             if (!array_key_exists($user->id, $users))
             {
-                Mail::send('emails.following-thread', ['user' => $user, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $tag, $reply_email, $site, $url) {
+                Mail::send('emails.following-thread', ['user' => $user, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $tag, $reply_email, $site) {
                     $m->from($reply_email, $site);
 
-                    $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$thread->created_at->format('D F jS').' '.$thread->name);
+                    $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$tag->created_at->format('D F jS'));
                 });
                 $users[$user->id] = $tag->name;
             };

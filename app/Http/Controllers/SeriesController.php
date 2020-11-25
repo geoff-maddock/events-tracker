@@ -28,19 +28,21 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class SeriesController extends Controller
 {
-    protected $prefix;
-    protected $defaultRpp;
-    protected $defaultSortBy;
-    protected $defaultSortOrder;
-    protected $childRpp;
-    protected $rpp;
-    protected $page;
-    protected $sort;
-    protected $sortBy;
-    protected $sortOrder;
-    protected $defaultCriteria;
-    protected $hasFilter;
-    protected $filters;
+    protected string $prefix;
+    protected int $defaultRpp;
+    protected string $defaultSortBy;
+    protected string $defaultSortOrder;
+    protected int $childRpp;
+    protected int $rpp;
+    protected int $page;
+    protected array $sort;
+    protected string $sortBy;
+    protected string $sortOrder;
+    protected array $defaultCriteria;
+    protected bool $hasFilter;
+    protected array $filters;
+    protected Series $series;
+
 
     public function __construct(Series $series)
     {
@@ -61,8 +63,9 @@ class SeriesController extends Controller
         $this->defaultRpp = 5;
         $this->defaultSortBy = 'name';
         $this->defaultSortOrder = 'asc';
+        $this->filters = [];
 
-        $this->defaultCriteria = null;
+        $this->defaultCriteria = [];
         $this->hasFilter = 0;
         parent::__construct();
     }
@@ -186,7 +189,7 @@ class SeriesController extends Controller
      */
     public function setFilters(Request $request, array $input)
     {
-        return $this->setAttribute('filters', $input, $request);
+        return $this->setAttribute($request, 'filters', $input);
     }
 
     /**
@@ -197,7 +200,7 @@ class SeriesController extends Controller
      *
      * @return mixed
      */
-    public function setAttribute($attribute, $value, Request $request)
+    public function setAttribute(Request $request, $attribute, $value )
     {
         $request->session()->put($this->prefix.$attribute, $value);
     }
@@ -329,7 +332,7 @@ class SeriesController extends Controller
         $series = Series::future()->get();
 
         return view('series.indexWeek')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
             ->with(compact('series'))
             ->render();
     }
@@ -680,23 +683,6 @@ class SeriesController extends Controller
     }
 
     /**
-     * Delete a photo.
-     */
-    public function deletePhoto(int $id, Request $request)
-    {
-        $this->validate($request, [
-            'file' => 'required|mimes:jpg,jpeg,png,gif',
-        ]);
-
-        // detach from event
-        $series = Series::find($id);
-        $series->removePhoto($request->file('file'));
-
-        $photo = $this->deletePhoto($request->file('file'));
-        $photo->save();
-    }
-
-    /**
      * Mark user as following the series.
      *
      * @param $id
@@ -797,9 +783,9 @@ class SeriesController extends Controller
      *
      * @return int
      */
-    public function setPage($input)
+    public function setPage(Request $request, $input)
     {
-        return $this->setAttribute('page', $input);
+        return $this->setAttribute($request, 'page', $input);
     }
 
     /**
@@ -809,9 +795,9 @@ class SeriesController extends Controller
      *
      * @return int
      */
-    public function setRpp($input)
+    public function setRpp(Request $request, $input)
     {
-        return $this->setAttribute('rpp', 5);
+        return $this->setAttribute($request, 'rpp', 5);
     }
 
     /**
@@ -819,9 +805,9 @@ class SeriesController extends Controller
      *
      * @return array
      */
-    public function setSort(array $input)
+    public function setSort(Request $request, array $input)
     {
-        return $this->setAttribute('sort', $input);
+        return $this->setAttribute($request, 'sort', $input);
     }
 
     /**

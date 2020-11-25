@@ -1501,12 +1501,7 @@ class EventsController extends Controller
             }
 
             // User denied the request
-//            dd(
-//                $helper->getError(),
-//                $helper->getErrorCode(),
-//                $helper->getErrorReason(),
-//                $helper->getErrorDescription()
-//            );
+            Log::error(sprintf('FB SDK Error: %s %s %s %s', $helper->getError(), $helper->getErrorCode(), $helper->getErrorReason(), $helper->getErrorDescription()));
         }
 
         if (!$token->isLongLived()) {
@@ -1820,7 +1815,7 @@ class EventsController extends Controller
      *
      * @throws \Throwable
      */
-    public function unattend(int $id, Request $request): Response
+    public function unattend(int $id, Request $request): RedirectResponse
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -1862,7 +1857,7 @@ class EventsController extends Controller
      *
      * @param $id
      */
-    public function review(int $id, Request $request): Response
+    public function review(int $id, Request $request): RedirectResponse
     {
         // check if there is a logged in user
         if (!$this->user) {

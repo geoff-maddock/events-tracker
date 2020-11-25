@@ -4,7 +4,10 @@ use Image;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
-
+/**
+ * @property int $object_id
+ * @property string $object_type
+ */
 class Like extends Eloquent {
 
     /**
@@ -19,7 +22,7 @@ class Like extends Eloquent {
 	 *
 	 **/
 	protected $fillable = [
-	'object_id','user_id','object_type'
+		'object_id','user_id','object_type'
 	];
 
  
@@ -42,7 +45,7 @@ class Like extends Eloquent {
 	public function getObject()
 	{
 		// how can i derive this class from a string?
-		if (!$object = call_user_func("App\\".ucfirst($this->getObjectType())."::find", $this->getObjectId())) // Tag::find($id)) 
+		if (!$object = call_user_func("App\\".ucfirst($this->object_type)."::find", $this->object_id)) // Tag::find($id)) 
 		{
 			return $object;
 		};

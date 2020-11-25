@@ -11,6 +11,7 @@ use App\Series;
 use App\Tag;
 use App\Thread;
 use App\Visibility;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -127,7 +128,7 @@ class PostsController extends Controller
         foreach ($thread->followers() as $user) {
             // if the user hasn't already been notified, then email them
             if (!array_key_exists($user->id, $users)) {
-                Mail::send('emails.following-thread-post', ['user' => $user, 'post' => $post, 'thread' => $thread, 'object' => $thread, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $post, $thread, $reply_email, $site, $url) {
+                Mail::send('emails.following-thread-post', ['user' => $user, 'post' => $post, 'thread' => $thread, 'object' => $thread, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $post, $thread, $reply_email, $site) {
                     $m->from($reply_email, $site);
 
                     $m->to($user->email, $user->name)->subject($site.': New post by '.$post->user->name.' in thread '.$thread->name);
@@ -142,7 +143,7 @@ class PostsController extends Controller
             foreach ($tag->followers() as $user) {
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $thread, $tag, $reply_email, $site, $url) {
+                    Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $thread, $tag, $reply_email, $site) {
                         $m->from($reply_email, $site);
 
                         $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$thread->created_at->format('D F jS').' '.$thread->name);
@@ -159,7 +160,7 @@ class PostsController extends Controller
             foreach ($series->followers() as $user) {
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $series, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $thread, $series, $reply_email, $site, $url) {
+                    Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $series, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $thread, $series, $reply_email, $site) {
                         $m->from($reply_email, $site);
 
                         $m->to($user->email, $user->name)->subject($site.': '.$series->name.' :: '.$thread->created_at->format('D F jS').' '.$thread->name);
@@ -363,5 +364,16 @@ class PostsController extends Controller
         flash()->success('Success', 'You are no longer liking the post.');
 
         return back();
+    }
+
+    protected function unauthorized(PostRequest $request): RedirectResponse
+    {
+        if ($request->ajax()) {
+            return response(['message' => 'No way.'], 403);
+        }
+
+        \Session::flash('flash_message', 'Not authorized');
+
+        return redirect('/');
     }
 }

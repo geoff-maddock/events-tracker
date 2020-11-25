@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 //use App\Http\Controllers\UploadedFile;
 
 class EventReview extends Eloquent {
@@ -68,4 +69,15 @@ class EventReview extends Eloquent {
 	}
 
 	
+	public function scopeFuture(Builder $query): Builder
+    {
+        return $query->where('start_at', '>=', Carbon::today()->startOfDay())
+            ->orderBy('start_at', 'asc');
+    }
+
+    public function scopePast(Builder $query): Builder
+    {
+        return $query->where('start_at', '<', Carbon::today()->startOfDay())
+            ->orderBy('start_at', 'desc');
+    }
 }
