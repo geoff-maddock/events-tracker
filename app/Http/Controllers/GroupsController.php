@@ -8,8 +8,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
-use DB;
-use Log;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Group;
 use App\Permission;
 use App\User;
@@ -17,15 +17,28 @@ use App\User;
 
 class GroupsController extends Controller {
 
-	public function __construct(Group $group)
+    protected string $prefix;
+    protected int $rpp;
+    protected int $defaultRpp;
+    protected int $defaultGridRpp;
+    protected string $defaultSortBy;
+    protected string $defaultSortOrder;
+    protected int $gridRpp;
+    protected int $page;
+    protected array $sort;
+    protected string $sortBy;
+    protected string $sortOrder;
+    protected array $filters;
+    protected bool $hasFilter;
+
+	public function __construct()
 	{
 		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
-		$this->group = $group;
 
 		// default list variables
 		$this->rpp = 15;
 		$this->sortBy = 'created_at';
-		$this->sortDirection = 'desc';
+		$this->sortOrder = 'desc';
 
 		parent::__construct();
 	}
@@ -40,10 +53,10 @@ class GroupsController extends Controller {
  		// updates sort, rpp from request
  		$this->updatePaging($request);
 
-        $groups = Group::orderBy($this->sortBy, $this->sortDirection)->paginate($this->rpp);
+        $groups = Group::orderBy($this->sortBy, $this->sortOrder)->paginate($this->rpp);
 
         return view('groups.index')
-        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
         	->with(compact('groups'));
 	}
 
@@ -58,9 +71,9 @@ class GroupsController extends Controller {
  			$this->sortBy = $request->input('sort_by');
  		};
 
-		// set sort direction
- 		if ($request->input('sort_direction')) {
- 			$this->sortDirection = $request->input('sort_direction');
+		// set sort order
+ 		if ($request->input('sort_order')) {
+ 			$this->sortOrder = $request->input('sort_order');
  		};
 
  		// set results per page
@@ -75,10 +88,9 @@ class GroupsController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function indexUsers($user)
+	public function indexUsers(Request $request, User $user)
 	{
- 
-  		// updates sort, rpp from request
+   		// updates sort, rpp from request
  		$this->updatePaging($request);
 
 		$groups = Group::getByUser(ucfirst($user))
@@ -86,7 +98,7 @@ class GroupsController extends Controller {
 					->get();
 
 		return view('groups.index')
-        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
 			->with(compact('groups', 'user'));
 	}
 
@@ -110,15 +122,14 @@ class GroupsController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function filter(Request $request, GroupFilters $filters)
+	public function filter(Request $request)
 	{
-		//$groups = array();
-		$groups = $this->group->active();
+		$groups = Group::all();
+		$permission = null;
 
  		// check request for passed filter values
  		if ($request->input('filter_permission'))
  		{
- 			 	//		dd('filter role');
  			$permission = $request->input('filter_permission');
 			$groups = Group::getByPermission(ucfirst($permission))
 						->orderBy('name', 'ASC')
@@ -131,10 +142,6 @@ class GroupsController extends Controller {
  			$name = $request->input('filter_name');
 			$groups = Group::where('name', $name)->get();
  		}
-
- 		// revisit filtering here
-		// $groups->filter($filters);
-		// $groups->get();
 
 		return view('groups.index', compact('groups', 'permission'));
 	}

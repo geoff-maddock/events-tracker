@@ -8,26 +8,27 @@ use App\Series;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 
 class ActivityController extends Controller
 {
-    protected $prefix;
-    protected $defaultRpp;
-    protected $defaultSortBy;
-    protected $defaultSortOrder;
-    protected $childRpp;
-    protected $rpp;
-    protected $page;
-    protected $sort;
-    protected $sortBy;
-    protected $sortOrder;
-    protected $defaultCriteria;
-    protected $hasFilter;
-    protected $filters;
-    protected $entityType;
+    protected string $prefix;
+    protected int $defaultRpp;
+    protected string $defaultSortBy;
+    protected string $defaultSortOrder;
+    protected int $childRpp;
+    protected int $rpp;
+    protected int $page;
+    protected array $sort;
+    protected string $sortBy;
+    protected string $sortOrder;
+    protected array $defaultCriteria;
+    protected bool $hasFilter;
+    protected array $filters;
+    protected string $entityType;
 
-    public function __construct(Series $series)
+    public function __construct()
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
 
@@ -98,6 +99,19 @@ class ActivityController extends Controller
     }
 
     /**
+     * Checks if there is a valid filter.
+     *
+     * @param $filters
+     */
+    public function hasFilter($filters): bool
+    {
+        $arr = $filters;
+        unset($arr['rpp'], $arr['sortOrder'], $arr['sortBy'], $arr['page']);
+
+        return count(array_filter($arr, function ($x) { return !empty($x); }));
+    }
+
+    /**
      * Update the page list parameters from the request.
      *
      * @param $filters
@@ -147,7 +161,7 @@ class ActivityController extends Controller
      */
     public function setFilters(Request $request, array $input)
     {
-        return $this->setAttribute('filters', $input, $request);
+        return $this->setAttribute($request, 'filters', $input);
     }
 
     /**
@@ -158,7 +172,7 @@ class ActivityController extends Controller
      *
      * @return mixed
      */
-    public function setAttribute($attribute, $value, Request $request)
+    public function setAttribute(Request $request, $attribute, $value)
     {
         return $request->session()
             ->put($this->prefix.$attribute, $value);
@@ -185,15 +199,12 @@ class ActivityController extends Controller
         // updates sort, rpp from request
         $this->updatePaging($request);
 
-        // get future events
-        $series = $query->paginate($this->rpp);
-        $series->filter(function ($e) {
-            return ('Public' === $e->visibility->name) || ($this->user && $e->created_by === $this->user->id);
-        });
+        // get activities
+        $activities = $query->paginate($this->rpp);
 
         return view('activity.index')
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
-            ->with(compact('series'))
+            ->with(compact('activities'))
             ->render();
     }
 
@@ -237,7 +248,7 @@ class ActivityController extends Controller
             return response(['message' => 'No way.'], 403);
         }
 
-        \Session::flash('flash_message', 'Not authorized');
+        Session::flash('flash_message', 'Not authorized');
 
         return redirect('/');
     }
@@ -254,9 +265,9 @@ class ActivityController extends Controller
      *
      * @return int
      */
-    public function getPage()
+    public function getPage(Request $request)
     {
-        return $this->getAttribute('page', 1);
+        return $this->getAttribute($request, 'page', 1);
     }
 
     /**
@@ -266,7 +277,7 @@ class ActivityController extends Controller
      */
     public function getRpp(Request $request)
     {
-        return $this->getAttribute('rpp', $this->rpp);
+        return $this->getAttribute($request, 'rpp', $this->rpp);
     }
 
     /**
@@ -276,7 +287,7 @@ class ActivityController extends Controller
      */
     public function getSort(Request $request)
     {
-        return $this->getAttribute('sort', $this->getDefaultSort());
+        return $this->getAttribute($request, 'sort', $this->getDefaultSort());
     }
 
     /**
@@ -296,9 +307,9 @@ class ActivityController extends Controller
      *
      * @return int
      */
-    public function setPage($input)
+    public function setPage(Request $request, $input)
     {
-        return $this->setAttribute('page', $input);
+        return $this->setAttribute($request, 'page', $input);
     }
 
     /**
@@ -308,9 +319,9 @@ class ActivityController extends Controller
      *
      * @return int
      */
-    public function setRpp($input)
+    public function setRpp(Request $request, $input)
     {
-        return $this->setAttribute('rpp', 5);
+        return $this->setAttribute($request, 'rpp', 5);
     }
 
     /**
@@ -318,9 +329,9 @@ class ActivityController extends Controller
      *
      * @return array
      */
-    public function setSort(array $input)
+    public function setSort(Request $request, array $input)
     {
-        return $this->setAttribute('sort', $input);
+        return $this->setAttribute($request, 'sort', $input);
     }
 
     /**
@@ -360,7 +371,7 @@ class ActivityController extends Controller
      */
     public function getFilters(Request $request): array
     {
-        return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
+        return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
     }
 
     /**
@@ -371,7 +382,7 @@ class ActivityController extends Controller
      *
      * @return mixed
      */
-    public function getAttribute($attribute, $default = null, Request $request)
+    public function getAttribute(Request $request, $attribute, $default = null)
     {
         return $request->session()
             ->get($this->prefix.$attribute, $default);

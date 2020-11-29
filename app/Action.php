@@ -20,7 +20,7 @@ class Action extends Eloquent {
 	 *
 	 **/
 	protected $fillable = [
-	'name', 'object_table', 'child_object_table'
+		'name', 'object_table', 'child_object_table'
 	];
 
 

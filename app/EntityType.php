@@ -10,7 +10,7 @@ class EntityType extends Eloquent {
 	 *
 	 **/
 	protected $fillable = [
-	'name'
+		'name', 'slug', 'short'
 	];
 
 

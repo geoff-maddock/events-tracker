@@ -10,6 +10,8 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int id
@@ -326,7 +328,7 @@ class Event extends Eloquent
     /**
      * An event has one venue.
      */
-    public function venue()
+    public function venue(): HasOne
     {
         return $this->hasOne('App\Entity', 'id', 'venue_id');
     }
@@ -334,7 +336,7 @@ class Event extends Eloquent
     /**
      * An event has one type.
      */
-    public function eventType()
+    public function eventType(): HasOne
     {
         return $this->hasOne('App\EventType', 'id', 'event_type_id');
     }
@@ -342,7 +344,7 @@ class Event extends Eloquent
     /**
      * An event has one status.
      */
-    public function eventStatus()
+    public function eventStatus(): HasOne
     {
         return $this->hasOne('App\EventStatus', 'id', 'event_status_id');
     }
@@ -368,7 +370,7 @@ class Event extends Eloquent
     /**
      * An event has one visibility.
      */
-    public function visibility()
+    public function visibility(): HasOne
     {
         return $this->hasOne('App\Visibility', 'id', 'visibility_id');
     }
@@ -376,7 +378,7 @@ class Event extends Eloquent
     /**
      * An event has one series.
      */
-    public function series()
+    public function series(): HasOne
     {
         return $this->hasOne('App\Series', 'id', 'series_id');
     }
@@ -384,9 +386,9 @@ class Event extends Eloquent
     /**
      * The tags that belong to the event.
      *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function tags()
+    public function tags(): BelongsToMany
     {
         return $this->belongsToMany('App\Tag')->withTimestamps();
     }
@@ -394,7 +396,7 @@ class Event extends Eloquent
     /**
      * The entities that belong to the event.
      *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function entities()
     {
@@ -680,7 +682,7 @@ class Event extends Eloquent
     {
         // grab the title and slugify it
         if ('' === $value) {
-            $this->attributes['slug'] = str_slug($this->name);
+            $this->attributes['slug'] = Str::slug($this->name);
         } else {
             $this->attributes['slug'] = $value;
         }

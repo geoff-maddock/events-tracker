@@ -90,9 +90,17 @@ class AuthController extends Controller {
 	{
 		Activity::log($user, $user, 4); 
 
-		return redirect()->intended( $this->redirectPath() );   
+		return redirect()->intended($this->redirectPath());   
 	}
 
+	public function redirectPath()
+	{
+		if (method_exists($this, 'redirectTo')) {
+			return $this->redirectTo();
+		}
+	
+		return property_exists($this, 'redirectTo') ? $this->redirectTo : '/home';
+	}
 
     /**
      * Log the user out of the application.

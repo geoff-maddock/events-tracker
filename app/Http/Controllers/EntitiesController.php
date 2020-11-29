@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
+use View;
 
 class EntitiesController extends Controller
 {
@@ -37,10 +38,9 @@ class EntitiesController extends Controller
     protected array $filters;
     protected bool $hasFilter;
 
-    public function __construct(Entity $entity)
+    public function __construct()
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
-        $this->entity = $entity;
 
         // prefix for session storage
         $this->prefix = 'app.entities.';
@@ -167,7 +167,7 @@ class EntitiesController extends Controller
      */
     public function getBaseCriteria(Request $request): Builder
     {
-        return $this->entity->active()
+        return Entity::active()
             ->orderBy('entity_type_id', 'ASC')
             ->orderBy($this->sortBy, $this->sortOrder);
     }
@@ -466,7 +466,7 @@ class EntitiesController extends Controller
      *
      * @throws \Throwable
      */
-    public function indexSlug(string $slug): Response
+    public function indexSlug(string $slug)
     {
         $hasFilter = 1;
 
@@ -776,7 +776,7 @@ class EntitiesController extends Controller
      *
      * @throws \Throwable
      */
-    public function unfollow(int $id, Request $request): Response
+    public function unfollow(int $id, Request $request)
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -818,5 +818,16 @@ class EntitiesController extends Controller
     protected function getDefaultSort(): array
     {
         return ['id', 'desc'];
+    }
+
+    protected function unauthorized(EntityRequest $request)
+    {
+        if ($request->ajax()) {
+            return response(['message' => 'No way.'], 403);
+        }
+
+        \Session::flash('flash_message', 'Not authorized');
+
+        return redirect('/');
     }
 }

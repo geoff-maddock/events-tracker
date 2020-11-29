@@ -33,8 +33,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Scottybo\LaravelFacebookSdk\LaravelFacebookSdk;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Facebook\Exceptions\FacebookSDKException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Illuminate\Support\Facades\Session;
 
 class EventsController extends Controller
@@ -850,10 +850,9 @@ class EventsController extends Controller
         foreach ($users as $user) {
             $events = $user->getAttendingFuture()->take(100);
 
-            Mail::send('emails.daily-events', ['user' => $user, 'events' => $events], function ($m) use ($user, $events) {
-                $m->from('admin@events.cutupsmethod.com', 'Event Repo');
-
-                $m->to($user->email, $user->name)->subject('Event Repo: Daily Events Reminder');
+            Mail::send('emails.daily-events', ['user' => $user, 'events' => $events], function ($email) use ($user) {
+                $email->from('admin@events.cutupsmethod.com', 'Event Repo');
+                $email->to($user->email, $user->name)->subject('Event Repo: Daily Events Reminder');
             });
         }
 
@@ -1446,37 +1445,6 @@ class EventsController extends Controller
         return back();
     }
 
-    /**
-     * Makes a call to the FB API and posts the link to the specified event to the wall.
-     *
-     * @return \Illuminate\Contracts\View\Factory|View
-     *
-     * @throws \Illuminate\Container\EntryNotFoundException
-     * @throws \Facebook\Exceptions\FacebookSDKException
-     */
-    public function postEvent(Event $event)
-    {
-        // Looks like this actually just writes hello on an event wall, but was used for testing
-        if (empty((array) $event)) {
-            abort(404);
-        }
-
-        $fields = 'attending_count,category,cover,interested_count,type,name,noreply_count,maybe_count,owner,place,roles';
-
-        try {
-            $token = $this->fb->getJavaScriptHelper()->getAccessToken();
-            $response = $this->fb->get('1750886384941695?fields='.$fields, $token);
-
-            $url = $response->cover->source;
-        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
-            Log::info(sprintf('Error: %s', $e->getMessage()));
-        }
-
-        $userNode = $response->getGraphUser();
-        printf('Hello, %s!', $userNode->getName());
-
-        return view('events.show', compact('event'));
-    }
 
     /**
      * Makes a call to the FB API if there is a link present and downloads the event cover photo.
@@ -1486,8 +1454,9 @@ class EventsController extends Controller
         // Obtain an access token.
         try {
             $token = $this->fb->getAccessTokenFromRedirect();
-        } catch (Facebook\Exceptions\FacebookSDKException $e) {
+        } catch (FacebookSDKException $e) {
             Log::error(sprintf('FB SDK exception: %s',$e->getMessage()));
+            return;
         }
 
         // Access token will be null if the user denied the request
@@ -1511,7 +1480,7 @@ class EventsController extends Controller
             // Extend the access token.
             try {
                 $token = $oauth_client->getLongLivedAccessToken($token);
-            } catch (Facebook\Exceptions\FacebookSDKException $e) {
+            } catch (FacebookSDKException $e) {
                 Log::error(sprintf('FB SDK exception: %s',$e->getMessage()));
             }
         }
@@ -1615,10 +1584,9 @@ class EventsController extends Controller
             foreach ($tag->followers() as $user) {
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $event, $tag, $reply_email, $site, $url) {
-                        $m->from($reply_email, $site);
-
-                        $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
+                    Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site], function ($email) use ($user, $event, $tag, $reply_email, $site) {
+                        $email->from($reply_email, $site);
+                        $email->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
                     });
                     $users[$user->id] = $tag->name;
                 }
@@ -1633,7 +1601,7 @@ class EventsController extends Controller
             foreach ($entity->followers() as $user) {
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $entity, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $event, $entity, $reply_email, $site, $url) {
+                    Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $entity, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $event, $entity, $reply_email, $site) {
                         $m->from($reply_email, $site);
 
                         $m->to($user->email, $user->name)->subject($site.': '.$entity->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
@@ -1696,7 +1664,6 @@ class EventsController extends Controller
 
         flash()->success('Success', 'Your event has been updated');
 
-        //return redirect('events');
         return redirect()->route('events.show', compact('event'));
     }
 
@@ -1706,7 +1673,7 @@ class EventsController extends Controller
             return response(['message' => 'No way.'], 403);
         }
 
-        \Session::flash('flash_message', 'Not authorized');
+        Session::flash('flash_message', 'Not authorized');
 
         return redirect('/');
     }

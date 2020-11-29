@@ -24,4 +24,20 @@ class Permission extends Model
 	{
 		return $this->groups->pluck('id')->all();
 	}
+
+	/**
+     * Return a collection of permissions related to the group.
+     *
+     * @return Collection $permissions
+     *
+     **/
+    public static function getByGroup($group)
+    {
+        // get a list of blogs that have the passed tag
+        $permissions = self::whereHas('group', function ($q) use ($group) {
+            $q->where('name', '=', ucfirst($group));
+        });
+
+        return $permissions;
+    }
 }

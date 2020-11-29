@@ -11,25 +11,24 @@ use App\Like;
 use App\Menu;
 use App\Tag;
 use App\Visibility;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
 class BlogsController extends Controller
 {
-    protected $blog;
-    protected $rpp;
-    protected $sortBy;
-    protected $sortDirection;
+    protected int $rpp;
+    protected string $sortBy;
+    protected string $sortDirection;
 
-    public function __construct(Blog $blog)
+    public function __construct()
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
-
-        $this->blog = $blog;
 
         // default list variables
         $this->rpp = 15;
@@ -131,7 +130,7 @@ class BlogsController extends Controller
             foreach ($tag->followers() as $user) {
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::send('emails.following-thread', ['user' => $user, 'blog' => $blog, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $blog, $tag, $reply_email, $site, $url) {
+                    Mail::send('emails.following-thread', ['user' => $user, 'blog' => $blog, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $blog, $tag, $reply_email, $site) {
                         $m->from($reply_email, $site);
 
                         $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$blog->created_at->format('D F jS').' '.$blog->name);
@@ -144,6 +143,7 @@ class BlogsController extends Controller
         return back();
     }
 
+    
     /**
      * Display the specified resource.
      *
@@ -329,4 +329,16 @@ class BlogsController extends Controller
 
         return back();
     }
+
+    protected function unauthorized(Request $request): RedirectResponse
+    {
+        if ($request->ajax()) {
+            return response(['message' => 'No way.'], 403);
+        }
+
+        Session::flash('flash_message', 'Not authorized');
+
+        return redirect('/');
+    }
+
 }

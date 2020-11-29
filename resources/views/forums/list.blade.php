@@ -6,7 +6,7 @@
           Name
         </th>
         <th class="cell-stat hidden-xs hidden-sm">Threads</th>
-        <th class="cell-stat text-center hidden-xs hidden-sm">Views</th>
+        <th class="cell-stat hidden-xs hidden-sm">Views</th>
         <th class="cell-stat-2x hidden-xs hidden-sm">Last Post</th>
       </tr>
     </thead>
