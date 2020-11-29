@@ -3,8 +3,14 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
+/**
+ * @property int $object_id
+ * @property string $object_table
+ * @property datetime $created_at
+ */
 class Activity extends Eloquent
 {
     /**
@@ -19,7 +25,7 @@ class Activity extends Eloquent
      *
      **/
     protected $fillable = [
-//     'object_table', 'object_name', 'object_id',
+        'object_table', 'object_name', 'object_id',
     ];
 
     protected $dates = ['created_at', 'updated_at'];
@@ -37,7 +43,7 @@ class Activity extends Eloquent
     /**
      * Get the entities that belong to the activity.
      *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function entities()
     {
@@ -47,7 +53,7 @@ class Activity extends Eloquent
     /**
      * An activity is owned by a user.
      *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user()
     {
@@ -57,9 +63,9 @@ class Activity extends Eloquent
     /**
      * An activity has one action.
      *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function action()
+    public function action(): BelongsTo
     {
         return $this->belongsTo('App\Action', 'action_id');
     }
@@ -69,7 +75,7 @@ class Activity extends Eloquent
      */
     public function getStyleAttribute()
     {
-        if (3 == $this->action_id) {
+        if (NULL !== $this->action && $this->action->name === 'Delete') {
             return 'list-group-item-warning';
         }
 

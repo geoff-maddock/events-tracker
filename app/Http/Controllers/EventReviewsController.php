@@ -20,10 +20,9 @@ class EventReviewsController extends Controller {
 
     ];
 
-    public function __construct(Event $event)
+    public function __construct()
     {
         $this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
-        $this->event = $event;
 
         parent::__construct();
     }

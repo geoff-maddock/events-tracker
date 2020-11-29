@@ -19,7 +19,7 @@ use Illuminate\Notifications\Notifiable;
 use App\Profile;
 
 /**
- * @property mixed id
+ * @property mixed $id
  */
 class User extends Model implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract, MustVerifyEmailContract
 {
@@ -448,6 +448,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function hasVerifiedEmail()
     {
         // TODO: Implement hasVerifiedEmail() method.
+        return false;
     }
 
     /**
@@ -458,6 +459,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function markEmailAsVerified()
     {
         // TODO: Implement markEmailAsVerified() method.
+        return false;
     }
 
     /**

@@ -55,4 +55,40 @@ class Group extends Model
 	{
 		return $this->permissions->pluck('id')->all();
 	}
+
+	
+    /**
+     * Return a collection of groups with the passed user
+     *
+     * @param $slug
+     *
+     * @return Collection $groups
+     */
+    public static function getByUser(string $name)
+    {
+        // get a list of groups that have the passed user
+        $groups = self::whereHas('user', function ($q) use ($name) {
+            $q->where('name', '=', $name);
+        });
+
+        return $groups;
+	}
+	
+	    /**
+     * Return a collection of groups with the passed permission
+     *
+     * @param $slug
+     *
+     * @return Collection $groups
+     */
+    public static function getByPermission(string $name)
+    {
+        // get a list of groups that have the passed permission
+        $groups = self::whereHas('permission', function ($q) use ($name) {
+            $q->where('name', '=', $name);
+        });
+
+        return $groups;
+	}
+	
 }

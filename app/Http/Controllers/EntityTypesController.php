@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers;
 
+use App\Activity;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EntityTypeRequest;
@@ -8,25 +9,71 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 use App\EntityType;
+use App\Http\Requests\EntityRequest;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 
 class EntityTypesController extends Controller {
 
-	public function __construct(EntityType $entityType)
+	protected int $rpp;
+    protected int $page;
+    protected array $sort;
+    protected string $sortBy;
+    protected string $sortOrder;
+    protected array $defaultCriteria;
+    protected bool $hasFilter;
+	protected string $prefix;
+	
+	public function __construct()
 	{
 		$this->middleware('auth', ['except' => array('index', 'show')]);
-		$this->entityType = $entityType;
+
+			// prefix for session storage
+			$this->prefix = 'app.entity-types.';
+
+			// default list variables
+			$this->rpp = 10;
+			$this->page = 1;
+			$this->sort = array('name', 'desc');
+			$this->sortBy = 'created_at';
+			$this->sortOrder = 'desc';
+			$this->defaultCriteria = [];
+			$this->hasFilter = 1;
+			parent::__construct();
 	}
 	/**
 	 * Display a listing of the resource.
 	 *
 	 * @return Response
 	 */
-	public function index()
+	public function index(Request $request)
 	{
-		$entities = $this->entity->orderBy('created_at', 'ASC')->get();
+        // base criteria
+        $query = $this->buildCriteria($request);
 
-		return view('entities.index', compact('entities'));
+        // get the threads
+        $entityTypes = $query->paginate($this->rpp);
+
+		return view('entityTypes.index')
+		->with(['entityTypes' => $entityTypes, 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
+		->withCompact('entityTypes');
 	}
+
+    /**
+     * Builds the criteria from the session.
+     *
+     * @return $query
+     */
+    public function buildCriteria(Request $request): Builder
+    {
+
+        // base criteria
+        $query = EntityType::orderBy($this->sortBy, $this->sortOrder);
+
+
+        return $query;
+    }
 
 	/**
 	 * Show the form for creating a new resource.
@@ -35,7 +82,7 @@ class EntityTypesController extends Controller {
 	 */
 	public function create()
 	{
-		return view('entities.create');
+		return view('entityTypes.create');
 	}
 
 	/**
@@ -43,13 +90,13 @@ class EntityTypesController extends Controller {
 	 *
 	 * @return Response
 	 */
-	 public function store(EntityRequest $request, Entity $entity)
+	 public function store(Request $request, EntityType $entityType)
  	{
  		$input = $request->all();
 
- 		$entity->create($input);
+ 		$entityType->create($input);
 
- 		return redirect()->route('entities.index');
+ 		return redirect()->route('entity-types.index');
  	}
 
 	/**
@@ -58,9 +105,9 @@ class EntityTypesController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function show(Entity $entity)
+	public function show(EntityType $entityType)
 	{
-		return view('entities.show', compact('entity'));
+		return view('entityTypes.show', compact('entityType'));
 	}
 
 	/**
@@ -69,13 +116,11 @@ class EntityTypesController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function edit(Entity $entity)
+	public function edit(EntityType $entityType)
 	{
 		$this->middleware('auth');
 
-		$entityTypes = App/EntityType::pluck('name', 'id');
-
-		return view('entities.edit', compact('entity','entityTypes'));
+		return view('entityTypes.edit', compact('entityType'));
 	}
 
 	/**
@@ -84,11 +129,11 @@ class EntityTypesController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update(Entity $entity, Request $request)
+	public function update(EntityType $entityType, Request $request)
 	{
-		$entity->fill($request->input())->save();
+		$entityType->fill($request->input())->save();
 
-		return redirect('entities');
+		return redirect('entity-types');
 	}
 
 	/**
@@ -97,11 +142,22 @@ class EntityTypesController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy(Entity $entity)
+	public function destroy(EntityType $entityType)
 	{
-		$entity->delete();
+		$name = $entityType->name;
 
-		return redirect('entities');
+		try {
+			$entityType->delete();
+		} catch (Exception $e) {
+			Log::error(sprintf('Could not delete the entity type %s', $name));
+		};
+
+        // add to activity log
+        Activity::log($entityType, $this->user, 3);
+
+        flash()->success('Success', sprintf('Your entity type %s has been deleted!', $name));
+
+		return redirect('entity-types');
 	}
 
 }

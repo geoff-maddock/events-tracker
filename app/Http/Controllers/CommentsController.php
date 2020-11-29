@@ -6,13 +6,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Entity;
 use App\Event;
 use App\Comment;
 
 class CommentsController extends Controller {
 
+	protected Entity $entity;
 
 	protected $rules = [
 		'message' => ['required', 'min:3'],
@@ -45,6 +46,9 @@ class CommentsController extends Controller {
 	 */
 	public function create(Entity $entity, Event $event)
 	{
+		$object = null;
+		$type = null;
+
 		if (isset($entity->id))
 		{
 			$object = $entity;
@@ -70,6 +74,7 @@ class CommentsController extends Controller {
 	public function store(Request $request, Entity $entity, Event $event)
 	{
 		$msg = '';
+		$type = null;
 
 		// get the request
 		$input = $request->all();
@@ -114,12 +119,15 @@ class CommentsController extends Controller {
      * Show the form for editing the specified resource.
      *
      * @param String $id
-     * @param  \App\Comment $comment
+     * @param  Comment $comment
      * @return Response
      */
 	public function edit($id, Comment $comment)
 	{
-	    $object = $comment->commentable;
+		$object = $comment->commentable;
+		$entity = null;
+		$event = null;
+		$type = null;
 
 		if (get_class($object) == 'App\Entity')
 		{

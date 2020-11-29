@@ -32,7 +32,7 @@ class GenericController extends Controller
     protected $defaultCriteria;
     protected $hasFilter;
 
-    public function __construct (Entity $entity)
+    public function __construct ()
     {
         $this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
 
@@ -57,6 +57,14 @@ class GenericController extends Controller
         return view('index', compact('objects'));
     }
 
+
+    /**
+     * Get the base criteria.
+     */
+    protected function baseCriteria()
+    {
+        return Entity::query();
+    }
 
     //abstract protected function baseCriteria();
 
@@ -89,24 +97,15 @@ class GenericController extends Controller
             ->move($file);
     }
 
-    /**
-     * Criteria provides a way to define criteria to be applied to a tab on the index page.
-     *
-     * @return array
-     */
-    public function getCriteria ()
-    {
-        return $this->criteria;
-    }
 
     /**
      * Get the current page for this module
      *
      * @return integner
      */
-    public function getPage ()
+    public function getPage(Request $request)
     {
-        return $this->getAttribute('page', 1);
+        return $this->getAttribute($request, 'page', 1);
     }
 
     /**
@@ -115,9 +114,9 @@ class GenericController extends Controller
      * @param integer $input
      * @return integer
      */
-    public function setPage ($input)
+    public function setPage(Request $request, $input)
     {
-        return $this->setAttribute('page', $input);
+        return $this->setAttribute($request, 'page', $input);
     }
 
     /**
@@ -128,7 +127,7 @@ class GenericController extends Controller
      */
     public function getRpp (Request $request)
     {
-        return $this->getAttribute('rpp', $this->rpp);
+        return $this->getAttribute($request, 'rpp', $this->rpp);
     }
 
     /**
@@ -137,9 +136,9 @@ class GenericController extends Controller
      * @param integer $input
      * @return integer
      */
-    public function setRpp ($input)
+    public function setRpp(Request $request, $input)
     {
-        return $this->setAttribute('rpp', 5);
+        return $this->setAttribute($request, 'rpp', 5);
     }
 
     /**
@@ -149,7 +148,7 @@ class GenericController extends Controller
      */
     public function getSort (Request $request)
     {
-        return $this->getAttribute('sort', $this->getDefaultSort());
+        return $this->getAttribute($request, 'sort', $this->getDefaultSort());
     }
 
     /**
@@ -158,9 +157,9 @@ class GenericController extends Controller
      * @param array $input
      * @return array
      */
-    public function setSort (array $input)
+    public function setSort (Request $request, array $input)
     {
-        return $this->setAttribute('sort', $input);
+        return $this->setAttribute($request, 'sort', $input);
     }
 
     /**
@@ -181,7 +180,7 @@ class GenericController extends Controller
      */
     public function setFilters (Request $request, array $input)
     {
-        return $this->setAttribute('filters', $input, $request);
+        return $this->setAttribute($request, 'filters', $input);
     }
 
     /**
@@ -192,22 +191,11 @@ class GenericController extends Controller
      * @param Request $request
      * @return Mixed
      */
-    public function setAttribute ($attribute, $value, Request $request)
+    public function setAttribute (Request $request, string $attribute, $value)
     {
         return $request->session()->put($this->prefix . $attribute, $value);
     }
 
-    /**
-     * Set criteria.
-     *
-     * @param array $input
-     * @return string
-     */
-    public function setCriteria ($input)
-    {
-        $this->criteria = $input;
-        return $this->criteria;
-    }
 
     /**
      * Update the page list parameters from the request
@@ -251,7 +239,7 @@ class GenericController extends Controller
      */
     public function getFilters (Request $request)
     {
-        return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
+        return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
     }
 
     /**
@@ -262,7 +250,7 @@ class GenericController extends Controller
      * @param Request $request
      * @return Mixed
      */
-    public function getAttribute ($attribute, $default = null, Request $request)
+    public function getAttribute (Request $request, string $attribute, $default = null)
     {
         return $request->session()
             ->get($this->prefix . $attribute, $default);
@@ -276,52 +264,6 @@ class GenericController extends Controller
     public function getDefaultFilters ()
     {
         return array();
-    }
-
-    /**
-     * Filter the list of entities
-     *
-     * @return Response
-     * @throws \Throwable
-     */
-    public function filter (Request $request)
-    {
-        // get all the filters from the session
-        $this->filters = $this->getFilters($request);
-
-        // update filters based on the request input
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->input()));
-
-        // get the merged filters
-        $this->filters = $this->getFilters($request);
-
-        // updates sort, rpp from request
-        $this->updatePaging($request);
-
-        // flag that there are filters
-        $this->hasFilter = count($this->filters);
-
-        // get the criteria given the request (could pass filters instead?)
-        $query = $this->buildCriteria($request);
-
-        // apply the filters to the query
-        // get the entities and paginate
-        $entities = $query->paginate($this->rpp);
-
-        // get index route
-        // $indexRoute = $this->getIndexRoute();
-        // get the entity name
-        // $entityName = $this->getEntityName();
-        return view($indexRoute)
-            ->with(['rpp' => $this->rpp,
-                'sortBy' => $this->sortBy,
-                'sortOrder' => $this->sortOrder,
-                'filters' => $this->filters,
-                'hasFilter' => $this->hasFilter,
-            ])
-            ->with(compact($this->entityName, 'role', 'tag', 'alias', 'name'))
-            ->render();
-
     }
 
 }

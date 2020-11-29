@@ -1,10 +1,11 @@
 <?php namespace App;
 
-use Image;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model as Eloquent;
-//use App\Http\Controllers\UploadedFile;
 
+/**
+ * @property int object_id
+ * @property mixed object_type
+ */
 class Follow extends Eloquent {
 
     /**
@@ -19,7 +20,9 @@ class Follow extends Eloquent {
 	 *
 	 **/
 	protected $fillable = [
-	'object_id','user_id','object_type'
+		'object_id',
+		'user_id',
+		'object_type'
 	];
 
  
@@ -42,7 +45,7 @@ class Follow extends Eloquent {
 	public function getObject()
 	{
 		// how can i derive this class from a string?
-		if (!$object = call_user_func("App\\".ucfirst($this->getObjectType())."::find", $this->getObjectId())) // Tag::find($id))
+		if (!$object = call_user_func("App\\".ucfirst($this->object_type)."::find", $this->object_id)) 
 		{
 			return $object;
 		};

@@ -2,25 +2,23 @@
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\PhotoRequest;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Photo;
 use App\Entity;
-use App\PhotoType;
 use App\EntityType;
 use App\Visibility;
 use App\Tag;
 
 class PhotosController extends Controller {
 
-	public function __construct(Photo $photo)
+	public function __construct()
 	{
 		$this->middleware('auth', ['except' => array('index', 'show')]);
-		$this->photo = $photo;
 	}
 	/**
  	 * Display a listing of the resource.
@@ -45,7 +43,7 @@ class PhotosController extends Controller {
 		$tags = Tag::pluck('name','id');
 		$entities = Entity::pluck('name','id');
 
-		return view('photos.create', compact('venues','photoTypes','visibilities','tags','entities'));
+		return view('photos.create', compact('tags','entities'));
 	}
 
 	public function show(Photo $photo)
@@ -54,7 +52,7 @@ class PhotosController extends Controller {
 	}
 
 
-	public function store(PhotoRequest $request, Photo $photo)
+	public function store(Request $request, Photo $photo)
 	{
 		$input = $request->all();
 
@@ -63,7 +61,7 @@ class PhotosController extends Controller {
 		$photo->tags()->attach($request->input('tag_list',[]));
 		$photo->entities()->attach($request->input('entity_list'));
 
-		\Session::flash('flash_message', 'Your photo has been created!');
+		Session::flash('flash_message', 'Your photo has been created!');
 
 		return redirect()->route('photos.index');
 	}
@@ -74,15 +72,14 @@ class PhotosController extends Controller {
 
 		$type = EntityType::where('name', 'Venue')->first();
 		$venues = [''=>''] + DB::table('entities')->where('entity_type_id', $type->id)->orderBy('name', 'ASC')->pluck('name','id');
-		$photoTypes = [''=>''] + PhotoType::pluck('name', 'id');
 		$visibilities = [''=>''] + Visibility::pluck('name', 'id');
 		$tags = Tag::orderBy('name','ASC')->pluck('name','id');
 		$entities = Entity::orderBy('name','ASC')->pluck('name','id');
 
-		return view('photos.edit', compact('photo', 'venues', 'photoTypes', 'visibilities','tags','entities'));
+		return view('photos.edit', compact('photo', 'venues', 'visibilities','tags','entities'));
 	}
 
-	public function update(Photo $photo, PhotoRequest $request)
+	public function update(Photo $photo, Request $request)
 	{
 		$photo->fill($request->input())->save();
 

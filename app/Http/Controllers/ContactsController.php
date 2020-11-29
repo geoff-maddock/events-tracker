@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Entity;
 use App\Contact;
 use App\Visibility;
@@ -20,10 +20,9 @@ class ContactsController extends Controller
         'visibility_id' => ['required']
     ];
 
-    public function __construct (Entity $entity)
+    public function __construct ()
     {
         $this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
-        $this->entity = $entity;
 
         parent::__construct();
     }
@@ -31,26 +30,26 @@ class ContactsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param  \App\Entity $entity
      * @return Response
      */
-    public function index (Entity $entity)
+    public function index()
     {
-        return view('contacts.index', compact('entity'));
+        $contacts = Contact::all();
+
+        return view('contacts.index', compact('contacts'));
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @param  \App\Entity $entity
      * @return Response
      */
-    public function create (Entity $entity)
+    public function create (Contact $contact)
     {
 
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('contacts.create', compact('entity', 'visibilities'));
+        return view('contacts.create', compact('contact', 'visibilities'));
     }
 
     /**

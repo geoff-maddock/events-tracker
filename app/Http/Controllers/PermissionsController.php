@@ -8,23 +8,37 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
-use DB;
-use Log;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Permission;
 use App\Group;
 
 
 class PermissionsController extends Controller {
 
-	public function __construct(Permission $permission)
+    protected string $prefix;
+    protected int $rpp;
+    protected int $defaultRpp;
+    protected int $defaultGridRpp;
+    protected string $defaultSortBy;
+    protected string $defaultSortOrder;
+    protected int $gridRpp;
+    protected int $page;
+    protected array $sort;
+    protected string $sortBy;
+    protected string $sortOrder;
+    protected array $filters;
+    protected bool $hasFilter;
+
+
+	public function __construct()
 	{
 		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
-		$this->permission = $permission;
 
 		// default list variables
 		$this->rpp = 15;
 		$this->sortBy = 'created_at';
-		$this->sortDirection = 'desc';
+		$this->sortOrder = 'desc';
 
 		parent::__construct();
 	}
@@ -39,10 +53,10 @@ class PermissionsController extends Controller {
  		// updates sort, rpp from request
  		$this->updatePaging($request);
 
-        $permissions = Permission::orderBy($this->sortBy, $this->sortDirection)->paginate($this->rpp);
+        $permissions = Permission::orderBy($this->sortBy, $this->sortOrder)->paginate($this->rpp);
 
         return view('permissions.index')
-        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
         	->with(compact('permissions'));
 	}
 
@@ -52,20 +66,17 @@ class PermissionsController extends Controller {
 	 */
 	protected function updatePaging($request)
 	{
- 		// set sort by column
- 		if ($request->input('sort_by')) {
- 			$this->sortBy = $request->input('sort_by');
- 		};
+        if (!empty($request->input('sort_by'))) {
+            $this->sortBy = $request->input('sort_by');
+        }
 
-		// set sort direction
- 		if ($request->input('sort_direction')) {
- 			$this->sortDirection = $request->input('sort_direction');
- 		};
+        if (!empty($request->input('sort_order'))) {
+            $this->sortOrder = $request->input('sort_order');
+        }
 
- 		// set results per page
- 		if ($request->input('rpp')) {
- 			$this->rpp = $request->input('rpp');
- 		};
+        if (!empty($request->input('rpp')) && is_numeric($request->input('rpp'))) {
+            $this->rpp = $request->input('rpp');
+        }
 	}
 
 	/**
@@ -83,21 +94,21 @@ class PermissionsController extends Controller {
 					->get();
 
 		return view('permissions.index')
-        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
+        	->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
 			->with(compact('permissions', 'group'));
 	}
 
 	/**
 	 * Filter the list of permissions
 	 *
+	 * 
 	 * @return Response
 	 */
-	public function filter(Request $request, PermissionFilters $filters)
+	public function filter(Request $request)
 	{
-		// refactor this to filter by an array of $filter params that contain all the passed filters
-		
-		//$permissions = array();
-		$permissions = $this->permission->active();
+		$name = null;
+
+		$permissions = Permission::all();
 
  		// check request for passed filter values
  		if ($request->input('filter_group'))
@@ -114,7 +125,7 @@ class PermissionsController extends Controller {
 			$permissions = Permission::where('name', $name)->get();
  		}
 
-		return view('permissions.index', compact('permissions', 'role', 'tag','name'));
+		return view('permissions.index', compact('permissions', 'name'));
 	}
 
 	/**
@@ -127,7 +138,7 @@ class PermissionsController extends Controller {
  		$permissions = Permission::orderBy('name', 'ASC')
 					->get();
 
-		return view('permissions.index', compact('permissions', 'group'));
+		return view('permissions.index', compact('permissions'));
 	}
 
 

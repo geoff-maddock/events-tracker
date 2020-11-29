@@ -6,6 +6,9 @@ use App\Filters\QueryFilter;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 
 class Blog extends Eloquent
@@ -130,18 +133,18 @@ class Blog extends Eloquent
         return $this->created_by == $user->id;
     }
 
-//    /**
-//     * Get all of the blogs photos
-//     */
-//    public function photos()
-//    {
-    //		return $this->belongsToMany('App\Photo')->withTimestamps();
-//    }
+   /**
+    * Get all of the blogs photos
+    */
+   public function photos(): BelongsToMany
+   {
+    		return $this->belongsToMany('App\Photo')->withTimestamps();
+   }
 
     /**
      * An blog has one visibility.
      */
-    public function visibility()
+    public function visibility(): HasOne
     {
         return $this->hasOne('App\Visibility', 'id', 'visibility_id');
     }
@@ -151,7 +154,7 @@ class Blog extends Eloquent
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function tags()
+    public function tags(): BelongsToMany
     {
         return $this->belongsToMany('App\Tag')->withTimestamps();
     }
@@ -161,7 +164,7 @@ class Blog extends Eloquent
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function entities()
+    public function entities(): BelongsToMany
     {
         return $this->belongsToMany('App\Entity')->withTimestamps();
     }

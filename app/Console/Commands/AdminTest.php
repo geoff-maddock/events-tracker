@@ -34,7 +34,7 @@ class AdminTest extends Command
         $url = config('app.url');
 
         // send an email containing that list
-        Mail::send('emails.admin-test', ['admin_email' => $admin_email, 'site' => $site, 'reply_email' => $reply_email, 'url' => $url], static function ($m) use ($admin_email, $site, $reply_email, $url) {
+        Mail::send('emails.admin-test', ['admin_email' => $admin_email, 'site' => $site, 'reply_email' => $reply_email, 'url' => $url], static function ($m) use ($admin_email, $site, $reply_email) {
             $m->from($reply_email, $site);
 
             $dt = Carbon::now();

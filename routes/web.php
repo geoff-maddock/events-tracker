@@ -310,6 +310,17 @@ Route::bind('permissions', function($id)
 Route::resource('permissions','PermissionsController');
 
 
+# EntityTypes
+Route::get('entity-types/all', 'EntityTypesController@indexAll');
+
+Route::bind('entity-types', function($id)
+{
+    return App\EntityType::whereId($id)->firstOrFail();
+});
+
+Route::resource('entity-types','EntityTypesController');
+Route::delete('entity-types/{id}', 'EntityTypesController@destroy');
+
 # GROUPS
 Route::get('groups/all', 'GroupsController@indexAll');
 

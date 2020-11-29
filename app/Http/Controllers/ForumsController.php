@@ -1,7 +1,6 @@
 <?php namespace App\Http\Controllers;
 
-use Gate;
-use App\Http\Requests;
+use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ForumRequest;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -10,34 +9,32 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
-use DB;
-use Log;
-use Mail;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use App\Forum;
 use App\Thread;
-use App\Event;
-use App\Entity;
-use App\Series;
-use App\Tag;
 use App\Visibility;
 use App\Activity;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Session;
 
 class ForumsController extends Controller
 {
 
     // define a list of variables
-    protected $rpp;
-    protected $page;
-    protected $sort;
-    protected $sortBy;
-    protected $sortOrder;
-    protected $defaultCriteria;
-    protected $hasFilter;
+    protected int $rpp;
+    protected int $page;
+    protected array $sort;
+    protected string $sortBy;
+    protected string $sortOrder;
+    protected array $defaultCriteria;
+    protected bool $hasFilter;
+    protected string $prefix;
 
-    public function __construct(Forum $forum)
+    public function __construct()
     {
         $this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
-        $this->forum = $forum;
 
         // prefix for session storage
         $this->prefix = 'app.forums.';
@@ -48,7 +45,7 @@ class ForumsController extends Controller
         $this->sort = array('name', 'desc');
         $this->sortBy = 'created_at';
         $this->sortOrder = 'desc';
-        $this->defaultCriteria = NULL;
+        $this->defaultCriteria = [];
         $this->hasFilter = 1;
         parent::__construct();
     }
@@ -255,6 +252,17 @@ class ForumsController extends Controller
         flash('Success', 'Your forum has been updated');
 
         return redirect('forums');
+    }
+
+    protected function unauthorized(ForumRequest $request): RedirectResponse
+    {
+        if ($request->ajax()) {
+            return response(['message' => 'No way.'], 403);
+        }
+
+        Session::flash('flash_message', 'Not authorized');
+
+        return redirect('/');
     }
 
     /**

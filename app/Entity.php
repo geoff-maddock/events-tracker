@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
@@ -261,7 +262,7 @@ class Entity extends Eloquent
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function entityStatus()
+    public function entityStatus(): BelongsTo
     {
         return $this->belongsTo('App\EntityStatus');
     }
@@ -271,7 +272,7 @@ class Entity extends Eloquent
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function tags()
+    public function tags(): BelongsToMany
     {
         return $this->belongsToMany('App\Tag')->withTimestamps();
     }
@@ -281,7 +282,7 @@ class Entity extends Eloquent
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function aliases()
+    public function aliases(): BelongsToMany 
     {
         return $this->belongsToMany('App\Alias')->withTimestamps();
     }
@@ -547,7 +548,7 @@ class Entity extends Eloquent
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function roles()
+    public function roles(): BelongsToMany
     {
         return $this->belongsToMany('App\Role')->withTimestamps();
     }
