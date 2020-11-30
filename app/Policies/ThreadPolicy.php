@@ -17,7 +17,6 @@ class ThreadPolicy
         if ($user->id === 1) {
             return true;
         }
-
     }
 
     /**

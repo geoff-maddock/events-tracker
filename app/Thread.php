@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Class Thread.
- * @property 
+ * @property
  * @mixin Eloquent
  */
 class Thread extends Eloquent
@@ -50,7 +50,6 @@ class Thread extends Eloquent
         'locked_by',
     ];
 
-
     protected $dates = ['created_at', 'updated_at'];
 
     // building filter
@@ -61,7 +60,7 @@ class Thread extends Eloquent
 
     public function path()
     {
-        return '/threads/'.$this->id;
+        return '/threads/' . $this->id;
     }
 
     public function scopePast($query)
@@ -282,7 +281,6 @@ class Thread extends Eloquent
         return $this->hasOne('App\Visibility', 'id', 'visibility_id');
     }
 
-    
     /**
      * A thread has one or no locked by uses
      */

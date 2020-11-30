@@ -33,17 +33,29 @@ class UsersController extends Controller
     public const DEFAULT_SHOW_COUNT = 100;
 
     protected string $prefix;
+
     protected int $rpp;
+
     protected int $page;
+
     protected int $defaultRpp;
+
     protected string $defaultSortBy;
+
     protected string $defaultSortOrder;
+
     protected array $sort;
+
     protected string $sortBy;
+
     protected string $sortOrder;
+
     protected $defaultCriteria;
+
     protected bool $hasFilter;
+
     protected $filters;
+
     protected $tabs;
 
     public function __construct(User $user)
@@ -93,7 +105,7 @@ class UsersController extends Controller
      */
     public function setAttribute($attribute, $value, Request $request): void
     {
-        $request->session()->put($this->prefix.$attribute, $value);
+        $request->session()->put($this->prefix . $attribute, $value);
     }
 
     /**
@@ -201,13 +213,13 @@ class UsersController extends Controller
         if (!empty($filters['filter_email'])) {
             // getting name from the request
             $name = $filters['filter_email'];
-            $query->where('email', 'like', '%'.$name.'%');
+            $query->where('email', 'like', '%' . $name . '%');
         }
 
         if (!empty($filters['filter_name'])) {
             // getting name from the request
             $name = $filters['filter_name'];
-            $query->where('name', 'like', '%'.$name.'%');
+            $query->where('name', 'like', '%' . $name . '%');
         }
 
         if (!empty($filters['filter_status'])) {
@@ -298,7 +310,7 @@ class UsersController extends Controller
     public function getAttribute(Request $request, string $attribute, $default = null)
     {
         return $request->session()
-            ->get($this->prefix.$attribute, $default);
+            ->get($this->prefix . $attribute, $default);
     }
 
     /**
@@ -360,7 +372,7 @@ class UsersController extends Controller
 
             $profile->save();
 
-            return redirect('users/'.$user->id);
+            return redirect('users/' . $user->id);
         }
 
         return view('users.show', compact('user', 'tabs'));
@@ -442,7 +454,7 @@ class UsersController extends Controller
             'file' => 'required|mimes:jpg,jpeg,png,gif',
         ]);
 
-        $fileName = time().'_'.$request->file->getClientOriginalName();
+        $fileName = time() . '_' . $request->file->getClientOriginalName();
         $filePath = $request->file('file')->storeAs('photos', $fileName, 'public');
 
         // attach to user
@@ -460,8 +472,6 @@ class UsersController extends Controller
             // attach to user
             $user->addPhoto($photo);
         }
-
-
     }
 
     /**
@@ -472,7 +482,6 @@ class UsersController extends Controller
         return Photo::named($file->getClientOriginalName())
             ->makeThumbnail();
     }
-
 
     /**
      * Mark user as activated.
@@ -497,12 +506,12 @@ class UsersController extends Controller
         $user->user_status_id = 2;
         $user->save();
 
-        Log::info('User '.$user->name.' is activated.');
+        Log::info('User ' . $user->name . ' is activated.');
 
         // add to activity log
         Activity::log($user, $this->user, 10);
 
-        flash()->success('Success', 'User '.$user->name.' is now activated.');
+        flash()->success('Success', 'User ' . $user->name . ' is now activated.');
 
         // email the user
         $this->notifyUserActivated($user);
@@ -537,9 +546,9 @@ class UsersController extends Controller
         // add to activity log
         Activity::log($user, $this->user, 11);
 
-        Log::info('User '.$user->name.' is suspended.');
+        Log::info('User ' . $user->name . ' is suspended.');
 
-        flash()->success('Success', 'User '.$user->name.' is now suspended.');
+        flash()->success('Success', 'User ' . $user->name . ' is now suspended.');
 
         return back();
     }
@@ -569,9 +578,9 @@ class UsersController extends Controller
         // add to activity log
         Activity::log($user, $this->user, 12);
 
-        Log::info('User '.$user->name.' was sent a reminder');
+        Log::info('User ' . $user->name . ' was sent a reminder');
 
-        flash()->success('Success', 'A reminder email was sent to  '.$user->name.' at '.$user->email);
+        flash()->success('Success', 'A reminder email was sent to  ' . $user->name . ' at ' . $user->email);
 
         return back();
     }
@@ -604,9 +613,9 @@ class UsersController extends Controller
         // add to activity log
         Activity::log($user, $this->user, 12);
 
-        Log::info('User '.$user->name.' was sent a reminder');
+        Log::info('User ' . $user->name . ' was sent a reminder');
 
-        flash()->success('Success', 'A reminder email was sent to  '.$user->name.' at '.$user->email);
+        flash()->success('Success', 'A reminder email was sent to  ' . $user->name . ' at ' . $user->email);
 
         return back();
     }
@@ -634,9 +643,9 @@ class UsersController extends Controller
         $user->user_status_id = 5;
         $user->save();
 
-        Log::info('User '.$user->name.' is deleted.');
+        Log::info('User ' . $user->name . ' is deleted.');
 
-        flash()->success('Success', 'User '.$user->name.' is now deleted.');
+        flash()->success('Success', 'User ' . $user->name . ' is now deleted.');
 
         // add to activity log
         Activity::log($user, $this->user, 3);
@@ -669,7 +678,7 @@ class UsersController extends Controller
         define('ICAL_FORMAT', 'Ymd\THis\Z');
 
         // create a calendar object
-        $vCalendar = new Calendar($this->user->getFullNameAttribute().' Calendar');
+        $vCalendar = new Calendar($this->user->getFullNameAttribute() . ' Calendar');
 
         // add the following response
         // get the next x events they are attending
@@ -690,8 +699,7 @@ class UsersController extends Controller
                 ->setLocation($venue)
                 ->setModified($event->updated_at)
                 ->setStatus('CONFIRMED')
-                ->setUrl($event->primary_link)
-                ;
+                ->setUrl($event->primary_link);
 
             $vCalendar->addComponent($vEvent);
         }
@@ -731,11 +739,11 @@ class UsersController extends Controller
             }
         }
 
-        Mail::send('emails.user-reminder', ['user' => $user, 'admin_email' => $admin_email, 'site' => $site, 'url' => $url, 'events' => $events], function ($m) use ($user,  $admin_email, $site) {
+        Mail::send('emails.user-reminder', ['user' => $user, 'admin_email' => $admin_email, 'site' => $site, 'url' => $url, 'events' => $events], function ($m) use ($user, $admin_email, $site) {
             $m->from($admin_email, $site);
             $m->to($user->email, $user->name)
                 ->bcc($admin_email)
-                ->subject($site.': Site updates for '.$user->name.' :: '.Carbon::now()->format('D F jS'));
+                ->subject($site . ': Site updates for ' . $user->name . ' :: ' . Carbon::now()->format('D F jS'));
         });
 
         return back();
@@ -752,11 +760,11 @@ class UsersController extends Controller
         $site = config('app.app_name');
         $url = config('app.url');
 
-        Mail::send('emails.user-activated', ['user' => $user, 'admin_email' => $admin_email, 'site' => $site, 'url' => $url], function ($m) use ($user,  $admin_email, $site) {
+        Mail::send('emails.user-activated', ['user' => $user, 'admin_email' => $admin_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $admin_email, $site) {
             $m->from($admin_email, $site);
             $m->to($user->email, $user->name)
                 ->bcc($admin_email)
-                ->subject($site.': Account activated for '.$user->name.' :: '.Carbon::now()->format('D F jS'));
+                ->subject($site . ': Account activated for ' . $user->name . ' :: ' . Carbon::now()->format('D F jS'));
         });
 
         return back();
@@ -800,7 +808,8 @@ class UsersController extends Controller
         // if there are more than 0 events
         if ((null !== $events && $events->count() > 0) || (null !== $interests && count($interests) > 0)) {
             // send an email containing that list
-            Mail::send('emails.weekly-events',
+            Mail::send(
+                'emails.weekly-events',
                 ['user' => $user, 'interests' => $interests, 'events' => $events, 'url' => $url, 'site' => $site],
                 function ($m) use ($user, $admin_email, $reply_email, $site) {
                     $m->from($reply_email, $site);
@@ -808,8 +817,9 @@ class UsersController extends Controller
                     $dt = Carbon::now();
                     $m->to($user->email, $user->name)
                         ->bcc($admin_email)
-                        ->subject($site.': Weekly Reminder - '.$dt->format('l F jS Y'));
-                });
+                        ->subject($site . ': Weekly Reminder - ' . $dt->format('l F jS Y'));
+                }
+            );
         }
 
         return back();

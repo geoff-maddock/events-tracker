@@ -1,10 +1,12 @@
-<?php namespace App;
+<?php
+
+namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
-class UserStatus extends Eloquent {
-
+class UserStatus extends Eloquent
+{
     /**
      * @var Array
      *
@@ -20,7 +22,6 @@ class UserStatus extends Eloquent {
      */
     protected $dates = [];
 
-
     /**
      * A status can have many users
      *
@@ -30,6 +31,4 @@ class UserStatus extends Eloquent {
     {
         return $this->hasMany('App\User');
     }
-
-
 }

@@ -1,22 +1,24 @@
-<?php namespace App;
+<?php
+
+namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Comment extends Model {
+class Comment extends Model
+{
+    /**
+       * The database table used by the model.
+       *
+       * @var string
+       */
+    protected $table = 'comments';
 
-/**
-   * The database table used by the model.
-   *
-   * @var string
-   */
-  protected $table = 'comments';
-  /**
-   * The attributes that are mass assignable.
-   *
-   * @var array
-   */
-  protected $fillable = ['message', 'commentable_id','commentable_type'];
-
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = ['message', 'commentable_id', 'commentable_type'];
 
     /**
      * Get all of the owning commentable models.
@@ -34,14 +36,14 @@ class Comment extends Model {
         return $this->belongsTo('App\User', 'created_by');
     }
 
-  /**
-   * Returns entities created by the user
-   *
-   * @ param User $user
-   * 
-   */
-  public function scopeCreatedBy($query, User $user)
-  {
-    return $query->where('created_by', '=', $user ? $user->id : NULL);
-  }
+    /**
+     * Returns entities created by the user
+     *
+     * @ param User $user
+     *
+     */
+    public function scopeCreatedBy($query, User $user)
+    {
+        return $query->where('created_by', '=', $user ? $user->id : null);
+    }
 }

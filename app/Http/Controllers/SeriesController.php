@@ -29,20 +29,32 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class SeriesController extends Controller
 {
     protected string $prefix;
-    protected int $defaultRpp;
-    protected string $defaultSortBy;
-    protected string $defaultSortOrder;
-    protected int $childRpp;
-    protected int $rpp;
-    protected int $page;
-    protected array $sort;
-    protected string $sortBy;
-    protected string $sortOrder;
-    protected array $defaultCriteria;
-    protected bool $hasFilter;
-    protected array $filters;
-    protected Series $series;
 
+    protected int $defaultRpp;
+
+    protected string $defaultSortBy;
+
+    protected string $defaultSortOrder;
+
+    protected int $childRpp;
+
+    protected int $rpp;
+
+    protected int $page;
+
+    protected array $sort;
+
+    protected string $sortBy;
+
+    protected string $sortOrder;
+
+    protected array $defaultCriteria;
+
+    protected bool $hasFilter;
+
+    protected array $filters;
+
+    protected Series $series;
 
     public function __construct(Series $series)
     {
@@ -200,9 +212,9 @@ class SeriesController extends Controller
      *
      * @return mixed
      */
-    public function setAttribute(Request $request, $attribute, $value )
+    public function setAttribute(Request $request, $attribute, $value)
     {
-        $request->session()->put($this->prefix.$attribute, $value);
+        $request->session()->put($this->prefix . $attribute, $value);
     }
 
     /**
@@ -458,7 +470,7 @@ class SeriesController extends Controller
                 Activity::log($newTag, $this->user, 1);
                 $syncArray[] = $newTag->id;
 
-                $msg .= ' Added tag '.$tag.'.';
+                $msg .= ' Added tag ' . $tag . '.';
             } else {
                 $syncArray[$key] = $tag;
             }
@@ -512,8 +524,9 @@ class SeriesController extends Controller
         return view('series.edit', compact('series', 'venues', 'eventTypes', 'visibilities', 'tags', 'entities', 'promoters', 'weeks', 'days', 'occurrenceTypes', 'userList'));
     }
 
-    public function export(Request $request,
-                           RssFeed $feed
+    public function export(
+        Request $request,
+        RssFeed $feed
     ) {
         // update filters from request
         $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
@@ -608,7 +621,7 @@ class SeriesController extends Controller
 
                 $syncArray[strtolower($tag)] = $newTag->id;
 
-                $msg .= ' Added tag '.$tag.'.';
+                $msg .= ' Added tag ' . $tag . '.';
             } else {
                 $syncArray[$key] = $tag;
             }
@@ -656,7 +669,7 @@ class SeriesController extends Controller
             'file' => 'required|mimes:jpg,jpeg,png,gif',
         ]);
 
-        $fileName = time().'_'.$request->file->getClientOriginalName();
+        $fileName = time() . '_' . $request->file->getClientOriginalName();
         $filePath = $request->file('file')->storeAs('photos', $fileName, 'public');
 
         // attach to series
@@ -713,20 +726,20 @@ class SeriesController extends Controller
         $follow->object_type = 'series';
         $follow->save();
 
-        Log::info('User '.$id.' is following '.$series->name);
+        Log::info('User ' . $id . ' is following ' . $series->name);
 
         // add to activity log
         Activity::log($series, $this->user, 6);
 
         if ($request->ajax()) {
             return [
-                'Message' => 'You are now following the series - '.$series->name,
+                'Message' => 'You are now following the series - ' . $series->name,
                 'Success' => view('series.single')
                     ->with(compact('series'))
                     ->render(),
             ];
         }
-        flash()->success('Success', 'You are now following the series - '.$series->name);
+        flash()->success('Success', 'You are now following the series - ' . $series->name);
 
         return back();
     }
@@ -764,14 +777,14 @@ class SeriesController extends Controller
 
         if ($request->ajax()) {
             return [
-                'Message' => 'You are no longer following the series - '.$series->name,
+                'Message' => 'You are no longer following the series - ' . $series->name,
                 'Success' => view('series.single')
                     ->with(compact('series'))
                     ->render(),
             ];
         }
 
-        flash()->success('Success', 'You are no longer following the series - '.$series->name);
+        flash()->success('Success', 'You are no longer following the series - ' . $series->name);
 
         return back();
     }
@@ -829,34 +842,40 @@ class SeriesController extends Controller
         if (!empty($filters['filter_name'])) {
             // getting name from the request
             $name = $filters['filter_name'];
-            $query->where('name', 'like', '%'.$name.'%');
+            $query->where('name', 'like', '%' . $name . '%');
         }
 
         if (!empty($filters['filter_occurrence_type'])) {
             $type = $filters['filter_occurrence_type'];
             // add has clause
-            $query->whereHas('occurrenceType',
+            $query->whereHas(
+                'occurrenceType',
                 function ($q) use ($type) {
                     $q->where('name', '=', ucfirst($type));
-                });
+                }
+            );
         }
 
         if (!empty($filters['filter_occurrence_week'])) {
             $week = $filters['filter_occurrence_week'];
             // add has clause
-            $query->whereHas('occurrenceWeek',
+            $query->whereHas(
+                'occurrenceWeek',
                 function ($q) use ($week) {
                     $q->where('name', '=', ucfirst($week));
-                });
+                }
+            );
         }
 
         if (!empty($filters['filter_occurrence_day'])) {
             $day = $filters['filter_occurrence_day'];
             // add has clause
-            $query->whereHas('occurrenceDay',
+            $query->whereHas(
+                'occurrenceDay',
                 function ($q) use ($day) {
                     $q->where('name', '=', ucfirst($day));
-                });
+                }
+            );
         }
 
         if (!empty($filters['filter_tag'])) {
@@ -895,7 +914,7 @@ class SeriesController extends Controller
     public function getAttribute($attribute, $default = null, Request $request)
     {
         return $request->session()
-            ->get($this->prefix.$attribute, $default);
+            ->get($this->prefix . $attribute, $default);
     }
 
     /**

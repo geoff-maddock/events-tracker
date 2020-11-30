@@ -12,7 +12,7 @@ class Tag extends Eloquent
      *
      **/
     protected $fillable = [
-    'name', 'tag_type_id',
+        'name', 'tag_type_id',
     ];
 
     public function getRouteKeyName()

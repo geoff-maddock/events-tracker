@@ -13,8 +13,11 @@ use Illuminate\View\View;
 class MenusController extends Controller
 {
     protected $menu;
+
     protected $rpp;
+
     protected $sortBy;
+
     protected $sortDirection;
 
     public function __construct(Menu $menu)

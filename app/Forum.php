@@ -29,17 +29,17 @@ class Forum extends Eloquent
      *
      **/
     protected $fillable = [
-    'name', 'slug', 'short',
-    'description',
-    'visibility_id',
-    'event_status_id',
-    'event_type_id',
-    'is_benefit', 'promoter_id', 'venue_id',
-    'presale_price', 'door_price',
-    'ticket_link', 'primary_link',
-    'series_id',
-    'soundcheck_at', 'door_at', 'start_at', 'end_at',
-    'min_age',
+        'name', 'slug', 'short',
+        'description',
+        'visibility_id',
+        'event_status_id',
+        'event_type_id',
+        'is_benefit', 'promoter_id', 'venue_id',
+        'presale_price', 'door_price',
+        'ticket_link', 'primary_link',
+        'series_id',
+        'soundcheck_at', 'door_at', 'start_at', 'end_at',
+        'min_age',
     ];
 
     protected $dates = ['created_at', 'updated_at'];

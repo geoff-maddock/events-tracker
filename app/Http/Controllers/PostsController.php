@@ -23,6 +23,7 @@ use Symfony\Component\HttpFoundation\Response;
 class PostsController extends Controller
 {
     protected $post;
+
     protected $rpp;
 
     public function __construct(Post $post)
@@ -94,7 +95,7 @@ class PostsController extends Controller
             'created_by' => auth()->id(),
             'visibility_id' => 1,
             'allow_html' => $allow_html,
-            ]);
+        ]);
 
         $post = Post::where('thread_id', '=', $thread->id)->orderBy('id', 'DESC')->first();
 
@@ -131,7 +132,7 @@ class PostsController extends Controller
                 Mail::send('emails.following-thread-post', ['user' => $user, 'post' => $post, 'thread' => $thread, 'object' => $thread, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $post, $thread, $reply_email, $site) {
                     $m->from($reply_email, $site);
 
-                    $m->to($user->email, $user->name)->subject($site.': New post by '.$post->user->name.' in thread '.$thread->name);
+                    $m->to($user->email, $user->name)->subject($site . ': New post by ' . $post->user->name . ' in thread ' . $thread->name);
                 });
                 $users[$user->id] = $thread->name;
             }
@@ -146,7 +147,7 @@ class PostsController extends Controller
                     Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $thread, $tag, $reply_email, $site) {
                         $m->from($reply_email, $site);
 
-                        $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$thread->created_at->format('D F jS').' '.$thread->name);
+                        $m->to($user->email, $user->name)->subject($site . ': ' . $tag->name . ' :: ' . $thread->created_at->format('D F jS') . ' ' . $thread->name);
                     });
                     $users[$user->id] = $tag->name;
                 }
@@ -163,7 +164,7 @@ class PostsController extends Controller
                     Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $series, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $thread, $series, $reply_email, $site) {
                         $m->from($reply_email, $site);
 
-                        $m->to($user->email, $user->name)->subject($site.': '.$series->name.' :: '.$thread->created_at->format('D F jS').' '.$thread->name);
+                        $m->to($user->email, $user->name)->subject($site . ': ' . $series->name . ' :: ' . $thread->created_at->format('D F jS') . ' ' . $thread->name);
                     });
                     $users[$user->id] = $series->name;
                 }
@@ -193,7 +194,7 @@ class PostsController extends Controller
         ++$post->views;
         $post->save();
 
-        $route = route('threads.show', ['thread' => $post->thread_id]).'#post-'.$post->id;
+        $route = route('threads.show', ['thread' => $post->thread_id]) . '#post-' . $post->id;
 
         return redirect($route);
     }
@@ -246,7 +247,7 @@ class PostsController extends Controller
 
                 $syncArray[] = $newTag->id;
 
-                $msg .= ' Added tag '.$tag.'.';
+                $msg .= ' Added tag ' . $tag . '.';
             } else {
                 $syncArray[$key] = $tag;
             }
@@ -324,7 +325,7 @@ class PostsController extends Controller
         ++$post->likes;
         $post->save();
 
-        Log::info('User '.$id.' is liking '.$post->name);
+        Log::info('User ' . $id . ' is liking ' . $post->name);
 
         flash()->success('Success', 'You are now liking the selected post.');
 

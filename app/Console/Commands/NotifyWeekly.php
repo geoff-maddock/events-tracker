@@ -47,24 +47,24 @@ class NotifyWeekly extends Command
                 // if there are more than 0 events
                 if ($events->count() > 0) {
                     // send an email containing that list
-                    Mail::send('emails.daily-events', ['user' => $user, 'events' => $events, 'admin_email' => $admin_email, 'url' => $url], function ($m) use ($user,  $admin_email, $reply_email, $site) {
+                    Mail::send('emails.daily-events', ['user' => $user, 'events' => $events, 'admin_email' => $admin_email, 'url' => $url], function ($m) use ($user, $admin_email, $reply_email, $site) {
                         $m->from($reply_email, $site);
 
                         $dt = Carbon::now();
                         $m->to($user->email, $user->name)
                                                     ->bcc($admin_email)
-                                                    ->subject($site.': Daily Reminder - '.$dt->format('l F jS Y'));
+                                                    ->subject($site . ': Daily Reminder - ' . $dt->format('l F jS Y'));
                     });
 
                     // log that the weekly email was sent
-                    Log::info('Daily events email was sent to '.$user->name.' at '.$user->email.'.');
+                    Log::info('Daily events email was sent to ' . $user->name . ' at ' . $user->email . '.');
                 } else {
                     // log that no email was sent
-                    Log::info('No daily events email was sent to '.$user->name.' at '.$user->email.'.');
+                    Log::info('No daily events email was sent to ' . $user->name . ' at ' . $user->email . '.');
                 }
             } else {
                 // log that no email was sent
-                Log::info('No daily events email was sent to '.$user->name.' at '.$user->email.'.');
+                Log::info('No daily events email was sent to ' . $user->name . ' at ' . $user->email . '.');
             }
         }
     }

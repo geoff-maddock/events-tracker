@@ -41,6 +41,7 @@ class Post extends Eloquent
     ];
 
     protected $guarded = [];
+
     protected $dates = ['created_at', 'updated_at'];
 
     public function __toString()
@@ -56,7 +57,7 @@ class Post extends Eloquent
 
     public function path()
     {
-        return '/post/'.$this->id;
+        return '/post/' . $this->id;
     }
 
     public function scopePast($query)

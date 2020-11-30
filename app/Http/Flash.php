@@ -12,7 +12,7 @@ class Flash
             'title' => $title,
             'message' => $message,
             'level' => 'info',
-            ]);
+        ]);
     }
 
     public function create($title, $message, $level)
@@ -21,7 +21,7 @@ class Flash
             'title' => $title,
             'message' => $message,
             'level' => $level,
-            ]);
+        ]);
     }
 
     public function error($title, $message)
@@ -30,15 +30,15 @@ class Flash
             'title' => $title,
             'message' => $message,
             'level' => 'error',
-            ]);
+        ]);
     }
 
     public function success($title, $message)
     {
         Session::flash('flash_message', [
-        'title' => $title,
-        'message' => $message,
-        'level' => 'success',
+            'title' => $title,
+            'message' => $message,
+            'level' => 'success',
         ]);
     }
 }

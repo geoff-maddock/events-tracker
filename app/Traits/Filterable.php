@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Traits;
 
 trait Filterable
@@ -10,28 +11,23 @@ trait Filterable
      */
     public function getReportingOptions(Request $request)
     {
-        foreach (array('page', 'rpp', 'sort', 'criteria') as $option)
-        {
-            if (!$request->has($option))
-            {
+        foreach (['page', 'rpp', 'sort', 'criteria'] as $option) {
+            if (!$request->has($option)) {
                 continue;
             }
-            switch ($option)
-            {
+            switch ($option) {
                 case 'sort':
-                    $value = array
-                    (
+                    $value = [
                         $request->input($option),
                         $request->input('sort_order', 'asc'),
-                    );
+                    ];
                     break;
                 default:
                     $value = $request->input($option);
                     break;
             }
-            call_user_func
-            (
-                array($this, sprintf('set%s', ucwords($option))),
+            call_user_func(
+                [$this, sprintf('set%s', ucwords($option))],
                 $value
             );
         }
@@ -48,7 +44,7 @@ trait Filterable
     public function getAttribute($attribute, $default = null, Request $request)
     {
         return $request->session()
-            ->get($this->prefix.$attribute, $default);
+            ->get($this->prefix . $attribute, $default);
     }
 
     /**
@@ -91,6 +87,7 @@ trait Filterable
     {
         return $this->getAttribute('rpp', $this->rpp);
     }
+
     /**
      * Get the sort order and column
      *
@@ -108,9 +105,8 @@ trait Filterable
      */
     public function getDefaultSort()
     {
-        return array('id', 'desc');
+        return ['id', 'desc'];
     }
-
 
     /**
      * Get the default filters array
@@ -119,7 +115,7 @@ trait Filterable
      */
     public function getDefaultFilters()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -133,7 +129,7 @@ trait Filterable
     public function setAttribute($attribute, $value, Request $request)
     {
         return $request->session()
-            ->set($this->prefix.$attribute, $value);
+            ->set($this->prefix . $attribute, $value);
     }
 
     /**
@@ -146,6 +142,7 @@ trait Filterable
     {
         return $this->setAttribute('filters', $input, $request);
     }
+
     /**
      * Set criteria.
      *
@@ -155,8 +152,10 @@ trait Filterable
     public function setCriteria($input)
     {
         $this->criteria = $input;
+
         return $this->criteria;
     }
+
     /**
      * Set page attribute
      *
@@ -167,6 +166,7 @@ trait Filterable
     {
         return $this->setAttribute('page', $input);
     }
+
     /**
      * Set results per page attribute
      *
@@ -177,6 +177,7 @@ trait Filterable
     {
         return $this->setAttribute('rpp', 5);
     }
+
     /**
      * Set sort order attribute
      *

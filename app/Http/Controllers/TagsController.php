@@ -1,4 +1,6 @@
-<?php namespace App\Http\Controllers;
+<?php
+
+namespace App\Http\Controllers;
 
 use App\Activity;
 use App\Http\Requests;
@@ -26,31 +28,46 @@ use App\ResponseType;
 use App\User;
 use App\Follow;
 
-
-class TagsController extends Controller {
-
+class TagsController extends Controller
+{
     protected Tag $tag;
+
     protected string $prefix;
+
     protected int $rpp;
+
     protected int $defaultRpp;
+
     protected int $defaultGridRpp;
+
     protected string $defaultSortBy;
+
     protected string $defaultSortOrder;
+
     protected int $gridRpp;
+
     protected int $page;
+
     protected array $sort;
+
     protected string $sortBy;
+
     protected string $sortOrder;
+
     protected array $filters;
+
     protected bool $hasFilter;
+
     protected Event $event;
+
     protected array $criteria;
+
     protected array $defaultCriteria;
 
-	public function __construct(Tag $tag)
-	{
-		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
-		$this->tag = $tag;
+    public function __construct(Tag $tag)
+    {
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
+        $this->tag = $tag;
 
         // prefix for session storage
         $this->prefix = 'app.threads.';
@@ -58,14 +75,14 @@ class TagsController extends Controller {
         // default list variables
         $this->rpp = 25;
         $this->page = 1;
-        $this->sort = array('name', 'desc');
+        $this->sort = ['name', 'desc'];
         $this->sortBy = 'created_at';
         $this->sortOrder = 'desc';
-        $this->defaultCriteria = NULL;
+        $this->defaultCriteria = null;
         $this->hasFilter = 0;
 
-		parent::__construct();
-	}
+        parent::__construct();
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -82,60 +99,56 @@ class TagsController extends Controller {
         return redirect('tags');
     }
 
-	/**
- 	 * Display a listing of the resource.
- 	 *
- 	 * @return Response
- 	 */
-	public function index()
-	{
-        $tag = NULL;
+    /**
+     * Display a listing of the resource.
+     *
+     * @return Response
+     */
+    public function index()
+    {
+        $tag = null;
 
- 		// get all series linked to the tag
-		$series = Series::where(function($query)
-					{
-						$query->visible($this->user);
-					})
-					->orderBy('start_at', 'ASC')
-					->orderBy('name', 'ASC')
-                    ->with('tags','entities','occurrenceType')
-					->paginate();
+        // get all series linked to the tag
+        $series = Series::where(function ($query) {
+            $query->visible($this->user);
+        })
+                    ->orderBy('start_at', 'ASC')
+                    ->orderBy('name', 'ASC')
+                    ->with('tags', 'entities', 'occurrenceType')
+                    ->paginate();
 
- 		// get all the events linked to the tag
-		$events = Event::orderBy('start_at', 'DESC')
-					->orderBy('name', 'ASC')
-                    ->with('visibility', 'tags','entities','venue','eventType','threads')
-					->simplePaginate($this->rpp);
+        // get all the events linked to the tag
+        $events = Event::orderBy('start_at', 'DESC')
+                    ->orderBy('name', 'ASC')
+                    ->with('visibility', 'tags', 'entities', 'venue', 'eventType', 'threads')
+                    ->simplePaginate($this->rpp);
 
-		$events->filter(function($e)
-		{
-			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-		});
+        $events->filter(function ($e) {
+            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
 
-		// get all entities linked to the tag
-		$entities = Entity::where(function($query)
-					{
-						$query->active()
-						->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
-					})
-					->orderBy('entity_type_id', 'ASC')
-					->orderBy('name', 'ASC')
-                     ->with('tags','locations','roles')
-					->simplePaginate($this->rpp);
+        // get all entities linked to the tag
+        $entities = Entity::where(function ($query) {
+            $query->active()
+                        ->orWhere('created_by', '=', ($this->user ? $this->user->id : null));
+        })
+                    ->orderBy('entity_type_id', 'ASC')
+                    ->orderBy('name', 'ASC')
+                     ->with('tags', 'locations', 'roles')
+                    ->simplePaginate($this->rpp);
 
+        // get a list of all tags
+        $tags = Tag::orderBy('name', 'ASC')->get();
 
-		// get a list of all tags
-		$tags = Tag::orderBy('name', 'ASC')->get();
+        $userTags = null;
 
-		$userTags = NULL;
-		
-		// get a list of all the user's followed tags
+        // get a list of all the user's followed tags
         if (isset($this->user)) {
             $userTags = $this->user->getTagsFollowing();
         };
 
-		return view('tags.index', compact('series','entities','events', 'tag', 'tags','userTags'));
-	}
+        return view('tags.index', compact('series', 'entities', 'events', 'tag', 'tags', 'userTags'));
+    }
 
     /**
      * Show the application dataAjax.
@@ -144,66 +157,61 @@ class TagsController extends Controller {
      */
     public function dataAjax(Request $request)
     {
-    	$data = [];
+        $data = [];
 
-        if($request->has('q')){
+        if ($request->has('q')) {
             $search = $request->q;
-            $data = DB::table("tags")
-            		->select("id","name")
-            		->where('name','LIKE',"%$search%")
-            		->get();
+            $data = DB::table('tags')
+                    ->select('id', 'name')
+                    ->where('name', 'LIKE', "%$search%")
+                    ->get();
         }
 
         return response()->json($data);
     }
 
-	/**
-	 * Display a listing of events by tag
-	 *
-	 * @return Response
-	 */
-	public function indexTags($tag)
-	{
- 		$tag = urldecode($tag);
+    /**
+     * Display a listing of events by tag
+     *
+     * @return Response
+     */
+    public function indexTags($tag)
+    {
+        $tag = urldecode($tag);
 
- 		// get all series linked to the tag
-		$series = Series::getByTag(ucfirst($tag))
-					->where(function($query)
-					{
-						$query->visible($this->user);
-					})
-					->orderBy('start_at', 'ASC')
-					->orderBy('name', 'ASC')
-					->paginate();
+        // get all series linked to the tag
+        $series = Series::getByTag(ucfirst($tag))
+                    ->where(function ($query) {
+                        $query->visible($this->user);
+                    })
+                    ->orderBy('start_at', 'ASC')
+                    ->orderBy('name', 'ASC')
+                    ->paginate();
 
- 		// get all the events linked to the tag
-		$events = Event::getByTag(ucfirst($tag))
-					->orderBy('start_at', 'DESC')
-					->orderBy('name', 'ASC')
-					->simplePaginate($this->rpp);
+        // get all the events linked to the tag
+        $events = Event::getByTag(ucfirst($tag))
+                    ->orderBy('start_at', 'DESC')
+                    ->orderBy('name', 'ASC')
+                    ->simplePaginate($this->rpp);
 
-		$events->filter(function($e)
-		{
-			return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-		});
+        $events->filter(function ($e) {
+            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+        });
 
-		// get all entities linked to the tag
-		$entities = Entity::getByTag(ucfirst($tag))
-					->where(function($query)
-					{
-						$query->active()
-						->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
-					})
-					->orderBy('entity_type_id', 'ASC')
-					->orderBy('name', 'ASC')
-					->simplePaginate($this->rpp);
+        // get all entities linked to the tag
+        $entities = Entity::getByTag(ucfirst($tag))
+                    ->where(function ($query) {
+                        $query->active()
+                        ->orWhere('created_by', '=', ($this->user ? $this->user->id : null));
+                    })
+                    ->orderBy('entity_type_id', 'ASC')
+                    ->orderBy('name', 'ASC')
+                    ->simplePaginate($this->rpp);
 
+        $tags = Tag::orderBy('name', 'ASC')->get();
 
-		$tags = Tag::orderBy('name', 'ASC')->get();
-
-		return view('tags.index', compact('series','entities','events', 'tag', 'tags'));
-	}
-
+        return view('tags.index', compact('series', 'entities', 'events', 'tag', 'tags'));
+    }
 
     /**
      * Display a listing of events by tag
@@ -216,8 +224,7 @@ class TagsController extends Controller {
 
         // get all series linked to the tag
         $series = Series::getByTag(ucfirst($tag))
-            ->where(function($query)
-            {
+            ->where(function ($query) {
                 $query->visible($this->user);
             })
             ->orderBy('start_at', 'ASC')
@@ -230,26 +237,23 @@ class TagsController extends Controller {
             ->orderBy('name', 'ASC')
             ->simplePaginate($this->rpp);
 
-        $events->filter(function($e)
-        {
+        $events->filter(function ($e) {
             return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
 
         // get all entities linked to the tag
         $entities = Entity::getByTag(ucfirst($tag))
-            ->where(function($query)
-            {
+            ->where(function ($query) {
                 $query->active()
-                    ->orWhere('created_by','=',($this->user ? $this->user->id : NULL));
+                    ->orWhere('created_by', '=', ($this->user ? $this->user->id : null));
             })
             ->orderBy('entity_type_id', 'ASC')
             ->orderBy('name', 'ASC')
             ->simplePaginate($this->rpp);
 
-
         $tags = Tag::orderBy('name', 'ASC')->get();
 
-        return view('tags.index', compact('series','entities','events', 'tag', 'tags'));
+        return view('tags.index', compact('series', 'entities', 'events', 'tag', 'tags'));
     }
 
     /**
@@ -267,15 +271,14 @@ class TagsController extends Controller {
     }
 
     /**
-	 * Show a form to create a new tag.
-	 *
-	 * @return view
-	 **/
-
-	public function create()
-	{
-		return view('tags.create');
-	}
+     * Show a form to create a new tag.
+     *
+     * @return view
+     **/
+    public function create()
+    {
+        return view('tags.create');
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -293,22 +296,19 @@ class TagsController extends Controller {
         $input = $request->all();
 
         // check if the tag already exists
-        if (!Tag::where('name','=', $input['name'])->first()) {
-
+        if (!Tag::where('name', '=', $input['name'])->first()) {
             $tag = $tag->create($input);
 
-            flash()->success('Success',  sprintf('You added a new tag %s.', $tag->name));
+            flash()->success('Success', sprintf('You added a new tag %s.', $tag->name));
 
             // add to activity log
             Activity::log($tag, $this->user, 1);
-
         } else {
-            flash()->error('Error',  sprintf('The tag %s already exists.', $input['name']));
+            flash()->error('Error', sprintf('The tag %s already exists.', $input['name']));
         }
 
         return back();
     }
-
 
     /**
      * Mark user as following the tag
@@ -318,34 +318,34 @@ class TagsController extends Controller {
      * @return Response
      * @throws \Throwable
      */
-	public function follow($id, Request $request)
-	{
-		$type = 'tag';
+    public function follow($id, Request $request)
+    {
+        $type = 'tag';
 
-		// check if there is a logged in user
-		if (!$this->user)
-		{
-			flash()->error('Error',  'No user is logged in.');
-			return back();
-		};
+        // check if there is a logged in user
+        if (!$this->user) {
+            flash()->error('Error', 'No user is logged in.');
 
-		// how can i derive this class from a string?
-		if (!$object = call_user_func("App\\".ucfirst($type)."::find", $id)) // Tag::find($id)) 
-		{
-			flash()->error('Error',  'No such '.$type);
-			return back();
-		};
+            return back();
+        };
 
-		$tag = $object;
+        // how can i derive this class from a string?
+        if (!$object = call_user_func('App\\' . ucfirst($type) . '::find', $id)) { // Tag::find($id))
+            flash()->error('Error', 'No such ' . $type);
 
-		// add the following response
-		$follow = new Follow;
-		$follow->object_id = $id;
-		$follow->user_id = $this->user->id;
-		$follow->object_type = $type; // 
-		$follow->save();
+            return back();
+        };
 
-     	Log::info('User '.$id.' is following '.$object->name);
+        $tag = $object;
+
+        // add the following response
+        $follow = new Follow;
+        $follow->object_id = $id;
+        $follow->user_id = $this->user->id;
+        $follow->object_type = $type;
+        $follow->save();
+
+        Log::info('User ' . $id . ' is following ' . $object->name);
 
         // add to activity log
         Activity::log($tag, $this->user, 6);
@@ -360,11 +360,10 @@ class TagsController extends Controller {
             ];
         };
 
-		flash()->success('Success',  'You are now following the '.$type.' - '.$object->name);
+        flash()->success('Success', 'You are now following the ' . $type . ' - ' . $object->name);
 
-		return back();
-
-	}
+        return back();
+    }
 
     /**
      * Mark user as unfollowing the tag.
@@ -374,29 +373,29 @@ class TagsController extends Controller {
      * @return Response
      * @throws \Throwable
      */
-	public function unfollow($id, Request $request)
-	{
-		$type = 'tag';
+    public function unfollow($id, Request $request)
+    {
+        $type = 'tag';
 
-		// check if there is a logged in user
-		if (!$this->user)
-		{
-			flash()->error('Error',  'No user is logged in.');
-			return back();
-		};
+        // check if there is a logged in user
+        if (!$this->user) {
+            flash()->error('Error', 'No user is logged in.');
 
-		if (!$tag = Tag::find($id))
-		{
-			flash()->error('Error',  'No such '.$type);
-			return back();
-		};
+            return back();
+        };
 
-		// add to activity log
+        if (!$tag = Tag::find($id)) {
+            flash()->error('Error', 'No such ' . $type);
+
+            return back();
+        };
+
+        // add to activity log
         Activity::log($tag, $this->user, 7);
 
-		// delete the follow
-		$response = Follow::where('object_id','=', $id)->where('user_id','=',$this->user->id)->where('object_type','=',$type)->first();
-		$response->delete();
+        // delete the follow
+        $response = Follow::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', $type)->first();
+        $response->delete();
 
         // handle the request if ajax
         if ($request->ajax()) {
@@ -408,10 +407,10 @@ class TagsController extends Controller {
             ];
         };
 
-		flash()->success('Success',  'You are no longer following the ' . $type . ' ' . $tag->name);
+        flash()->success('Success', 'You are no longer following the ' . $type . ' ' . $tag->name);
 
-		return back();
-	}
+        return back();
+    }
 
     /**
      * Returns true if the user has any filters outside of the default
@@ -423,6 +422,7 @@ class TagsController extends Controller {
         if (($filters = $this->getFilters($request)) == $this->getDefaultFilters()) {
             return false;
         }
+
         return (bool)count($filters);
     }
 
@@ -491,7 +491,6 @@ class TagsController extends Controller {
         return $this->getAttribute($request, 'sort', $this->getDefaultSort());
     }
 
-
     /**
      * Get the default sort array
      *
@@ -499,9 +498,8 @@ class TagsController extends Controller {
      */
     public function getDefaultSort()
     {
-        return array('id', 'desc');
+        return ['id', 'desc'];
     }
-
 
     /**
      * Get the default filters array
@@ -510,9 +508,8 @@ class TagsController extends Controller {
      */
     public function getDefaultFilters()
     {
-        return array();
+        return [];
     }
-
 
     /**
      * Set user session attribute
@@ -522,7 +519,7 @@ class TagsController extends Controller {
      * @param Request $request
      * @return Mixed
      */
-    public function setAttribute(Request $request, $attribute, $value )
+    public function setAttribute(Request $request, $attribute, $value)
     {
         return $request->session()
             ->put($this->prefix . $attribute, $value);
@@ -548,6 +545,7 @@ class TagsController extends Controller {
     public function setCriteria($input)
     {
         $this->criteria = $input;
+
         return $this->criteria;
     }
 
@@ -590,7 +588,7 @@ class TagsController extends Controller {
      * @param Request $request
      * @return \Illuminate\Database\Eloquent\Builder $query
      */
-    public function buildCriteria (Request $request)
+    public function buildCriteria(Request $request)
     {
         // get all the filters from the session
         $filters = $this->getFilters($request);
@@ -606,7 +604,6 @@ class TagsController extends Controller {
             $query->where('name', 'like', '%' . $name . '%');
             $filters['filter_name'] = $name;
         }
-
 
         // change this - should be separate
         if (!empty($filters['filter_rpp'])) {
@@ -627,17 +624,15 @@ class TagsController extends Controller {
         $url = config('app.url');
 
         // notify users following any of the tags
-        $users = array();
+        $users = [];
 
-        foreach ($tag->followers() as $user)
-        {
+        foreach ($tag->followers() as $user) {
             // if the user hasn't already been notified, then email them
-            if (!array_key_exists($user->id, $users))
-            {
+            if (!array_key_exists($user->id, $users)) {
                 Mail::send('emails.following-thread', ['user' => $user, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $tag, $reply_email, $site) {
                     $m->from($reply_email, $site);
 
-                    $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$tag->created_at->format('D F jS'));
+                    $m->to($user->email, $user->name)->subject($site . ': ' . $tag->name . ' :: ' . $tag->created_at->format('D F jS'));
                 });
                 $users[$user->id] = $tag->name;
             };

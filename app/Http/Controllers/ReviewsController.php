@@ -1,4 +1,6 @@
-<?php namespace App\Http\Controllers;
+<?php
+
+namespace App\Http\Controllers;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -27,21 +29,32 @@ class ReviewsController extends Controller
     protected string $prefix;
 
     protected int $page;
+
     protected int $defaultRpp;
+
     protected string $defaultSortBy;
+
     protected string $defaultSortOrder;
+
     protected int $rpp;
+
     protected array $sort;
+
     protected string $sortBy;
+
     protected string $sortOrder;
+
     protected array $defaultCriteria;
+
     protected bool $hasFilter;
+
     protected Event $event;
+
     protected array $filters;
 
     public function __construct(Event $event)
     {
-        $this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
         $this->event = $event;
 
         // prefix for session storage
@@ -50,7 +63,7 @@ class ReviewsController extends Controller
         // default list variables
         $this->rpp = 10;
         $this->page = 1;
-        $this->sort = array('name', 'desc');
+        $this->sort = ['name', 'desc'];
         $this->sortBy = 'name';
         $this->sortOrder = 'asc';
         $this->defaultCriteria = [];
@@ -67,7 +80,7 @@ class ReviewsController extends Controller
      */
     protected function updatePaging($request)
     {
-        $filters = array();
+        $filters = [];
         if (!empty($request->input('filter_sort_by'))) {
             $this->sortBy = $request->input('filter_sort_by');
             $filters['filter_sort_by'] = $this->sortBy;
@@ -93,7 +106,7 @@ class ReviewsController extends Controller
      */
     protected function updateFilters($request)
     {
-        $filters = array();
+        $filters = [];
 
         if (!empty($request->input('filter_name'))) {
             $filters['filter_name'] = $request->input('filter_name');
@@ -188,9 +201,9 @@ class ReviewsController extends Controller
         if (($filters = $this->getFilters($request)) == $this->getDefaultFilters()) {
             return false;
         }
+
         return (bool)count($filters);
     }
-
 
     /**
      * Gets the reporting options from the request and saves to session
@@ -199,25 +212,23 @@ class ReviewsController extends Controller
      */
     public function getReportingOptions(Request $request)
     {
-        foreach (array('page', 'rpp', 'sort', 'criteria') as $option) {
+        foreach (['page', 'rpp', 'sort', 'criteria'] as $option) {
             if (!$request->has($option)) {
                 continue;
             }
             switch ($option) {
                 case 'sort':
-                    $value = array
-                    (
+                    $value = [
                         $request->input($option),
                         $request->input('sort_order', 'asc'),
-                    );
+                    ];
                     break;
                 default:
                     $value = $request->input($option);
                     break;
             }
-            call_user_func
-            (
-                array($this, sprintf('set%s', ucwords($option))),
+            call_user_func(
+                [$this, sprintf('set%s', ucwords($option))],
                 $value
             );
         }
@@ -246,7 +257,6 @@ class ReviewsController extends Controller
     {
         return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
     }
-
 
     /**
      * Get the current page for this module
@@ -279,7 +289,6 @@ class ReviewsController extends Controller
         return $this->getAttribute($request, 'sort', $this->getDefaultSort());
     }
 
-
     /**
      * Get the default sort array
      *
@@ -287,9 +296,8 @@ class ReviewsController extends Controller
      */
     public function getDefaultSort()
     {
-        return array('id', 'desc');
+        return ['id', 'desc'];
     }
-
 
     /**
      * Get the default filters array
@@ -298,7 +306,7 @@ class ReviewsController extends Controller
      */
     public function getDefaultFilters()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -324,7 +332,6 @@ class ReviewsController extends Controller
     {
         return $this->setAttribute($request, 'filters', $input);
     }
-
 
     /**
      * Set page attribute
@@ -384,22 +391,20 @@ class ReviewsController extends Controller
 
         return view('reviews.index')
             ->with([
-                'rpp' => $this->rpp, 
-                'sortBy' => $this->sortBy, 
-                'sortOrder' => $this->sortOrder, 
-                'hasFilter' => $this->hasFilter,  
+                'rpp' => $this->rpp,
+                'sortBy' => $this->sortBy,
+                'sortOrder' => $this->sortOrder,
+                'hasFilter' => $this->hasFilter,
                 'filters' => $filters,
-                'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
-                'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL,
-                'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL,
-                'filter_related' => isset($filters['filter_related']) ? $filters['filter_related'] : NULL,
-                'filter_rpp' => isset($filters['filter_rpp']) ? $filters['filter_rpp'] : NULL
+                'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : null,  // there should be a better way to do this...
+                'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : null,
+                'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : null,
+                'filter_related' => isset($filters['filter_related']) ? $filters['filter_related'] : null,
+                'filter_rpp' => isset($filters['filter_rpp']) ? $filters['filter_rpp'] : null
             ])
             ->with(compact('reviews'))
             ->render();
     }
-
-
 
     /**
      * Filter the list of events
@@ -411,7 +416,6 @@ class ReviewsController extends Controller
      */
     public function filter(Request $request)
     {
-
         // update filters from request
         $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
 
@@ -449,7 +453,6 @@ class ReviewsController extends Controller
                 $q->where('name', '=', $venue);
             });
 
-
             // add to filters array
             $this->filters['filter_venue'] = $venue;
         };
@@ -486,20 +489,17 @@ class ReviewsController extends Controller
         // get future events
         $reviews = $query->paginate($this->rpp);
 
-
         return view('reviews.index')
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter,  'filters' => $this->filters,
-                'filter_name' => isset($this->filters['filter_name']) ? $this->filters['filter_name'] : NULL,  // there should be a better way to do this...
-                'filter_venue' => isset($this->filters['filter_venue']) ? $this->filters['filter_venue'] : NULL,
-                'filter_tag' => isset($this->filters['filter_tag']) ? $this->filters['filter_tag'] : NULL,
-                'filter_related' => isset($$this->filters['filter_related']) ? $this->filters['filter_related'] : NULL,
-                'filter_rpp' => isset($this->filters['filter_rpp']) ? $this->filters['filter_rpp'] : NULL
+                'filter_name' => isset($this->filters['filter_name']) ? $this->filters['filter_name'] : null,  // there should be a better way to do this...
+                'filter_venue' => isset($this->filters['filter_venue']) ? $this->filters['filter_venue'] : null,
+                'filter_tag' => isset($this->filters['filter_tag']) ? $this->filters['filter_tag'] : null,
+                'filter_related' => isset($$this->filters['filter_related']) ? $this->filters['filter_related'] : null,
+                'filter_rpp' => isset($this->filters['filter_rpp']) ? $this->filters['filter_rpp'] : null
             ])
             ->with(compact('reviews'))
             ->render();
     }
-
-
 
     /**
      * Update the page list parameters from the request.
@@ -517,11 +517,11 @@ class ReviewsController extends Controller
         }
     }
 
-     /**
-     * Checks if there is a valid filter.
-     *
-     * @param $filters
-     */
+    /**
+    * Checks if there is a valid filter.
+    *
+    * @param $filters
+    */
     public function hasFilter($filters): bool
     {
         if (!is_array($filters)) {
@@ -561,8 +561,6 @@ class ReviewsController extends Controller
             ->with(compact('past_events'));
     }
 
-
-
     /**
      * Display a listing of the resource.
      *
@@ -587,9 +585,6 @@ class ReviewsController extends Controller
             ->with(compact('past_events'));
     }
 
-
-
-
     /**
      * Reset the filtering of reviews
      *
@@ -613,9 +608,7 @@ class ReviewsController extends Controller
         // get future events
         $reviews = $query->paginate($this->rpp);
 
-
-        if ($redirect = $request->input('redirect'))
-        {
+        if ($redirect = $request->input('redirect')) {
             return redirect()->route($redirect);
         };
 
@@ -623,233 +616,206 @@ class ReviewsController extends Controller
             ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
             ->with(compact('reviews'))
             ->render();
-
     }
 
+    /**
+     * Show a form to create a new Article.
+     *
+     * @return view
+     **/
+    public function create()
+    {
+        // get a list of venues
+        $venues = ['' => ''] + Entity::getVenues()->pluck('name', 'id')->all();
 
+        // get a list of promoters
+        $promoters = ['' => ''] + Entity::whereHas('roles', function ($q) {
+            $q->where('name', '=', 'Promoter');
+        })->orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-	/**
-	 * Show a form to create a new Article.
-	 *
-	 * @return view
-	 **/
-
-	public function create()
-	{
-		// get a list of venues
-		$venues = [''=>''] + Entity::getVenues()->pluck('name','id')->all();
-
-		// get a list of promoters
-		$promoters = [''=>''] + Entity::whereHas('roles', function($q)
-		{
-			$q->where('name','=','Promoter');
-		})->orderBy('name','ASC')->pluck('name','id')->all();
-
-		$reviewTypes = [''=>''] + ReviewType::orderBy('name','ASC')->pluck('name', 'id')->all();
+        $reviewTypes = ['' => ''] + ReviewType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-		$tags = Tag::orderBy('name','ASC')->pluck('name','id')->all();
-		$events = Event::orderBy('name','ASC')->pluck('name','id')->all();
+        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $events = Event::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-		return view('reviews.create', compact('reviewTypes','visibilities','tags','events'));
-	}
-
+        return view('reviews.create', compact('reviewTypes', 'visibilities', 'tags', 'events'));
+    }
 
     public function show(Event $event)
-	{
-        if (empty((array) $event))
-        {
+    {
+        if (empty((array) $event)) {
             abort(404);
         };
 
-        $thread = Thread::where('event_id','=',$event->id)->get();
+        $thread = Thread::where('event_id', '=', $event->id)->get();
 
-        return view('reviews.show', compact('event'))->with(['thread' => $thread ? $thread->first() : NULL]);
-	}
+        return view('reviews.show', compact('event'))->with(['thread' => $thread ? $thread->first() : null]);
+    }
 
+    public function store(EventRequest $request, Event $event)
+    {
+        $msg = '';
 
-	public function store(EventRequest $request, Event $event)
-	{
-		$msg = '';
+        // get the request
+        $input = $request->all();
 
-		// get the request
-		$input = $request->all();
+        // validate - hmm, isn't this doing it elsewhere?
 
-		// validate - hmm, isn't this doing it elsewhere?
+        $tagArray = $request->input('tag_list', []);
+        $syncArray = [];
 
-		$tagArray = $request->input('tag_list',[]);
-		$syncArray = array();
+        // check the elements in the tag list, and if any don't match, add the tag
+        foreach ($tagArray as $key => $tag) {
+            if (!Tag::find($tag)) {
+                $newTag = new Tag;
+                $newTag->name = ucwords(strtolower($tag));
+                $newTag->tag_type_id = 1;
+                $newTag->save();
 
-		// check the elements in the tag list, and if any don't match, add the tag
-		foreach ($tagArray as $key => $tag)
-		{
-            if (!Tag::find($tag))
-			{
-				$newTag = new Tag;
-				$newTag->name = ucwords(strtolower($tag));
-				$newTag->tag_type_id = 1;
-				$newTag->save();
+                $syncArray[] = $newTag->id;
 
-				$syncArray[] = $newTag->id;
+                $msg .= ' Added tag ' . $tag . '.';
+            } else {
+                $syncArray[$key] = $tag;
+            };
+        }
 
-				$msg .= ' Added tag '.$tag.'.';
-			} else {
-				$syncArray[$key] = $tag;
-			};
-		}
+        $event = $event->create($input);
 
-		$event = $event->create($input);
+        $event->tags()->attach($syncArray);
+        $event->entities()->attach($request->input('entity_list'));
 
-		$event->tags()->attach($syncArray);
-		$event->entities()->attach($request->input('entity_list'));
+        // here, make a call to notify all users who are following any of the sync'd tags
+        $this->notifyFollowing($event);
 
-		// here, make a call to notify all users who are following any of the sync'd tags
-		$this->notifyFollowing($event);
+        // add to activity log
+        Activity::log($event, $this->user, 1);
 
-		// add to activity log
-		Activity::log($event, $this->user, 1);
+        flash()->success('Success', 'Your event has been created');
 
-		flash()->success('Success', 'Your event has been created');
-
-		return redirect()->route('reviews.index');
-	}
+        return redirect()->route('reviews.index');
+    }
 
     /**
      * @param $event
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function notifyFollowing($event)
-	{
+    {
         $reply_email = config('app.noreplyemail');
         $site = config('app.app_name');
         $url = config('app.url');
 
-		// notify users following any of the tags
-		$tags = $event->tags()->get();
-		$users = array();
+        // notify users following any of the tags
+        $tags = $event->tags()->get();
+        $users = [];
 
-		// improve this so it will only sent one email to each user per event, and include a list of all tags they were following that led to the notification
-		foreach ($tags as $tag)
-		{
-			foreach ($tag->followers() as $user)
-			{
-				// if the user hasn't already been notified, then email them
-				if (!array_key_exists($user->id, $users))
-				{
-					Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $event, $tag, $reply_email, $site) {
+        // improve this so it will only sent one email to each user per event, and include a list of all tags they were following that led to the notification
+        foreach ($tags as $tag) {
+            foreach ($tag->followers() as $user) {
+                // if the user hasn't already been notified, then email them
+                if (!array_key_exists($user->id, $users)) {
+                    Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $event, $tag, $reply_email, $site) {
                         $m->from($reply_email, $site);
 
-						$m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
-					});
-					$users[$user->id] = $tag->name;
-				};
-			};
-		};
+                        $m->to($user->email, $user->name)->subject($site . ': ' . $tag->name . ' :: ' . $event->start_at->format('D F jS') . ' ' . $event->name);
+                    });
+                    $users[$user->id] = $tag->name;
+                };
+            };
+        };
 
-		// notify users following any of the entities
-		$entities = $event->entities()->get();
+        // notify users following any of the entities
+        $entities = $event->entities()->get();
 
-		// improve this so it will only sent one email to each user per event, and include a list of entities they were following that led to the notification
-		foreach ($entities as $entity)
-		{
-			foreach ($entity->followers() as $user)
-			{
-
-				// if the user hasn't already been notified, then email them
-				if (!array_key_exists($user->id, $users))
-				{
+        // improve this so it will only sent one email to each user per event, and include a list of entities they were following that led to the notification
+        foreach ($entities as $entity) {
+            foreach ($entity->followers() as $user) {
+                // if the user hasn't already been notified, then email them
+                if (!array_key_exists($user->id, $users)) {
                     Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $entity, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $event, $entity, $reply_email, $site) {
                         $m->from($reply_email, $site);
 
-						$m->to($user->email, $user->name)->subject($site.': '.$entity->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
-					});
-					$users[$user->id] = $entity->name;
-				};
-			};
-		};
+                        $m->to($user->email, $user->name)->subject($site . ': ' . $entity->name . ' :: ' . $event->start_at->format('D F jS') . ' ' . $event->name);
+                    });
+                    $users[$user->id] = $entity->name;
+                };
+            };
+        };
 
-		return back();
-	}
+        return back();
+    }
 
-	protected function unauthorized(EventRequest $request)
-	{
-		if($request->ajax())
-		{
-			return response(['message' => 'No way.'], 403);
-		}
+    protected function unauthorized(EventRequest $request)
+    {
+        if ($request->ajax()) {
+            return response(['message' => 'No way.'], 403);
+        }
 
-		\Session::flash('flash_message', 'Not authorized');
+        \Session::flash('flash_message', 'Not authorized');
 
-		return redirect('/');
-	}
+        return redirect('/');
+    }
 
-	public function edit(Event $event)
-	{
-		$this->middleware('auth');
+    public function edit(Event $event)
+    {
+        $this->middleware('auth');
 
         // moved necessary lists into AppServiceProvider
 
-		return view('reviews.edit', compact('event'));
-	}
+        return view('reviews.edit', compact('event'));
+    }
 
+    public function update(Event $event, EventRequest $request)
+    {
+        $msg = '';
 
-	public function update(Event $event, EventRequest $request)
-	{
-		$msg = '';
+        $event->fill($request->input())->save();
 
-		$event->fill($request->input())->save();
+        if (!$event->ownedBy($this->user)) {
+            $this->unauthorized($request);
+        };
 
-		if (!$event->ownedBy($this->user))
-		{
-			$this->unauthorized($request); 
-		};
+        $tagArray = $request->input('tag_list', []);
+        $syncArray = [];
 
-		$tagArray = $request->input('tag_list',[]);
-		$syncArray = array();
+        // check the elements in the tag list, and if any don't match, add the tag
+        foreach ($tagArray as $key => $tag) {
+            if (!Tag::find($tag)) {
+                $newTag = new Tag;
+                $newTag->name = ucwords(strtolower($tag));
+                $newTag->tag_type_id = 1;
+                $newTag->save();
 
-		// check the elements in the tag list, and if any don't match, add the tag
-		foreach ($tagArray as $key => $tag)
-		{
-			if (!Tag::find($tag))
-			{
-				$newTag = new Tag;
-				$newTag->name = ucwords(strtolower($tag));
-				$newTag->tag_type_id = 1;
-				$newTag->save();
+                $syncArray[strtolower($tag)] = $newTag->id;
 
-				$syncArray[strtolower($tag)] = $newTag->id;
+                $msg .= ' Added tag ' . $tag . '.';
+            } else {
+                $syncArray[$key] = $tag;
+            };
+        }
 
-				$msg .= ' Added tag '.$tag.'.';
-			} else {
+        $event->tags()->sync($syncArray);
+        $event->entities()->sync($request->input('entity_list', []));
 
-				$syncArray[$key] = $tag;
-			};
-		}
+        // add to activity log
+        Activity::log($event, $this->user, 2);
 
-		$event->tags()->sync($syncArray);
-		$event->entities()->sync($request->input('entity_list',[]));
+        flash()->success('Success', 'Your event has been updated');
 
-		// add to activity log
-		Activity::log($event, $this->user, 2);
+        return redirect('events');
+    }
 
-		flash()->success('Success', 'Your event has been updated');
+    public function destroy(Event $event)
+    {
+        // add to activity log
+        Activity::log($event, $this->user, 3);
 
-		return redirect('events');
-	}
+        $event->delete();
 
-	public function destroy(Event $event)
-	{
-		// add to activity log
-		Activity::log($event, $this->user, 3);
+        flash()->success('Success', 'Your event has been deleted!');
 
-		$event->delete();
-
-		flash()->success('Success', 'Your event has been deleted!');
-
-		return redirect('events');
-	}
-
-
-
-
+        return redirect('events');
+    }
 }

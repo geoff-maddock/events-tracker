@@ -1,11 +1,11 @@
-<?php namespace App\Http\Controllers;
+<?php
+
+namespace App\Http\Controllers;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-
 use Illuminate\Support\Facades\DB;
 use App\Entity;
 use App\Contact;
@@ -13,16 +13,14 @@ use App\Visibility;
 
 class ContactsController extends Controller
 {
-
-
     protected $rules = [
         'name' => ['required', 'min:3'],
         'visibility_id' => ['required']
     ];
 
-    public function __construct ()
+    public function __construct()
     {
-        $this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
 
         parent::__construct();
     }
@@ -44,9 +42,8 @@ class ContactsController extends Controller
      *
      * @return Response
      */
-    public function create (Contact $contact)
+    public function create(Contact $contact)
     {
-
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
         return view('contacts.create', compact('contact', 'visibilities'));
@@ -59,7 +56,7 @@ class ContactsController extends Controller
      * @param  \App\Entity $entity
      * @return Response
      */
-    public function store (Request $request, Entity $entity)
+    public function store(Request $request, Entity $entity)
     {
         $msg = '';
 
@@ -85,7 +82,7 @@ class ContactsController extends Controller
      * @param  \App\Contact $contact
      * @return Response
      */
-    public function show (Entity $entity, Contact $contact)
+    public function show(Entity $entity, Contact $contact)
     {
         return view('contacts.show', compact('entity', 'contact'));
     }
@@ -97,9 +94,8 @@ class ContactsController extends Controller
      * @param  \App\Contact $contact
      * @return Response
      */
-    public function edit (Entity $entity, Contact $contact)
+    public function edit(Entity $entity, Contact $contact)
     {
-
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
         return view('contacts.edit', compact('entity', 'contact', 'visibilities'));
@@ -113,7 +109,7 @@ class ContactsController extends Controller
      * @param  \App\Contact $contact
      * @return Response
      */
-    public function update (Request $request, Entity $entity, Contact $contact)
+    public function update(Request $request, Entity $entity, Contact $contact)
     {
         $msg = '';
 
@@ -132,14 +128,12 @@ class ContactsController extends Controller
      * @return Response
      * @throws \Exception
      */
-    public function destroy (Entity $entity, Contact $contact)
+    public function destroy(Entity $entity, Contact $contact)
     {
         $contact->delete();
 
         flash()->success('Success', 'Your contacts has been deleted!');
 
         return redirect()->route('entities.show', $entity->slug);
-
     }
-
 }

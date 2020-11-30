@@ -20,7 +20,6 @@ class UserBanned
      */
     public function __construct()
     {
-        //
     }
 
     /**

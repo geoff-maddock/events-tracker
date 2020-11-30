@@ -1,13 +1,12 @@
-<?php namespace App\Http\Controllers;
+<?php
 
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EntityRequest;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-
 use DB;
 use Log;
 use App\Entity;
@@ -23,18 +22,26 @@ use App\Follow;
 class GenericController extends Controller
 {
     protected $prefix;
+
     protected $rpp;
+
     protected $page;
+
     protected $sort;
+
     protected $sortBy;
+
     protected $sortOrder;
+
     protected $sortDirection;
+
     protected $defaultCriteria;
+
     protected $hasFilter;
 
-    public function __construct ()
+    public function __construct()
     {
-        $this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
 
         // default list variables
         $this->rpp = 5;
@@ -49,14 +56,13 @@ class GenericController extends Controller
      *
      * @return Response
      */
-    public function reset ()
+    public function reset()
     {
         $query = $this->baseCriteria();
         $objects = $query->get();
 
         return view('index', compact('objects'));
     }
-
 
     /**
      * Get the base criteria.
@@ -75,9 +81,8 @@ class GenericController extends Controller
      * @param Request $request
      * @return void
      */
-    public function addPhoto ($id, Request $request)
+    public function addPhoto($id, Request $request)
     {
-
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif'
         ]);
@@ -91,12 +96,11 @@ class GenericController extends Controller
         $entity->addPhoto($photo);
     }
 
-    protected function makePhoto (UploadedFile $file)
+    protected function makePhoto(UploadedFile $file)
     {
         return Photo::named($file->getClientOriginalName())
             ->move($file);
     }
-
 
     /**
      * Get the current page for this module
@@ -125,7 +129,7 @@ class GenericController extends Controller
      * @param Request $request
      * @return integer
      */
-    public function getRpp (Request $request)
+    public function getRpp(Request $request)
     {
         return $this->getAttribute($request, 'rpp', $this->rpp);
     }
@@ -146,7 +150,7 @@ class GenericController extends Controller
      *
      * @return array
      */
-    public function getSort (Request $request)
+    public function getSort(Request $request)
     {
         return $this->getAttribute($request, 'sort', $this->getDefaultSort());
     }
@@ -157,7 +161,7 @@ class GenericController extends Controller
      * @param array $input
      * @return array
      */
-    public function setSort (Request $request, array $input)
+    public function setSort(Request $request, array $input)
     {
         return $this->setAttribute($request, 'sort', $input);
     }
@@ -167,9 +171,9 @@ class GenericController extends Controller
      *
      * @return array
      */
-    public function getDefaultSort ()
+    public function getDefaultSort()
     {
-        return array('id', 'desc');
+        return ['id', 'desc'];
     }
 
     /**
@@ -178,7 +182,7 @@ class GenericController extends Controller
      * @param array $input
      * @return array
      */
-    public function setFilters (Request $request, array $input)
+    public function setFilters(Request $request, array $input)
     {
         return $this->setAttribute($request, 'filters', $input);
     }
@@ -191,17 +195,16 @@ class GenericController extends Controller
      * @param Request $request
      * @return Mixed
      */
-    public function setAttribute (Request $request, string $attribute, $value)
+    public function setAttribute(Request $request, string $attribute, $value)
     {
         return $request->session()->put($this->prefix . $attribute, $value);
     }
-
 
     /**
      * Update the page list parameters from the request
      *
      */
-    protected function updatePaging ($request)
+    protected function updatePaging($request)
     {
         // set sort by column
         if ($request->input('sort_by')) {
@@ -224,11 +227,12 @@ class GenericController extends Controller
      *
      * @return Boolean
      */
-    protected function getIsFiltered (Request $request)
+    protected function getIsFiltered(Request $request)
     {
         if (($filters = $this->getFilters($request)) == $this->getDefaultFilters()) {
             return false;
         }
+
         return (bool)count($filters);
     }
 
@@ -237,7 +241,7 @@ class GenericController extends Controller
      *
      * @return Array
      */
-    public function getFilters (Request $request)
+    public function getFilters(Request $request)
     {
         return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
     }
@@ -250,7 +254,7 @@ class GenericController extends Controller
      * @param Request $request
      * @return Mixed
      */
-    public function getAttribute (Request $request, string $attribute, $default = null)
+    public function getAttribute(Request $request, string $attribute, $default = null)
     {
         return $request->session()
             ->get($this->prefix . $attribute, $default);
@@ -261,9 +265,8 @@ class GenericController extends Controller
      *
      * @return array
      */
-    public function getDefaultFilters ()
+    public function getDefaultFilters()
     {
-        return array();
+        return [];
     }
-
 }

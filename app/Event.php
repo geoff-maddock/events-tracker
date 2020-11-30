@@ -14,11 +14,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
- * @property int id
- * @property mixed created_by
- * @property mixed start_at
- * @property Collection entities
- * @property Collection tags
+ * @property int $id
+ * @property mixed $created_by
+ * @property mixed $start_at
+ * @property Collection $entities
+ * @property Collection $tags
  */
 class Event extends Eloquent
 {
@@ -265,8 +265,8 @@ class Event extends Eloquent
         $cdate_yesterday = Carbon::parse($date)->subDay(1);
         $cdate_tomorrow = Carbon::parse($date)->addDay(1);
 
-        $query->where('start_at', '>', $cdate_yesterday->toDateString().' 23:59:59')
-            ->where('start_at', '<', $cdate_tomorrow->toDateString().' 00:00:00')
+        $query->where('start_at', '>', $cdate_yesterday->toDateString() . ' 23:59:59')
+            ->where('start_at', '<', $cdate_tomorrow->toDateString() . ' 00:00:00')
             ->where(function ($query) {
                 return $query->where('visibility_id', '=', 3)
                     ->orWhere('created_by', '=', Auth::user() ? Auth::user()->id : null);
@@ -705,13 +705,13 @@ class Event extends Eloquent
 
     public function getBriefFormat()
     {
-        $format = $this->start_at->format('l F jS Y').' | '.$this->name;
+        $format = $this->start_at->format('l F jS Y') . ' | ' . $this->name;
 
         if (!empty($this->series_id)) {
-            $format .= ' '.$this->series->name.' series';
+            $format .= ' ' . $this->series->name . ' series';
         }
 
-        $format .= ' '.$this->eventType->name;
+        $format .= ' ' . $this->eventType->name;
 
         if ($this->venue) {
             $format .= ' at ';
@@ -719,20 +719,20 @@ class Event extends Eloquent
         }
 
         if ($this->start_at) {
-            $format .= ' at '.$this->start_at->format('gA');
+            $format .= ' at ' . $this->start_at->format('gA');
         }
 
         if ($this->door_price) {
-            $format .= ' $'.number_format($this->door_price, 0);
+            $format .= ' $' . number_format($this->door_price, 0);
         }
 
         if (!$this->entities->isEmpty()) {
             $format .= ' Related: ';
             foreach ($this->entities as $entity) {
                 if ('' !== $entity->twitter_username) {
-                    $format .= ' @'.$entity->twitter_username;
+                    $format .= ' @' . $entity->twitter_username;
                 } else {
-                    $format .= ' @'.Str::studly($entity->slug);
+                    $format .= ' @' . Str::studly($entity->slug);
                 }
             }
         }
@@ -740,15 +740,15 @@ class Event extends Eloquent
         if (!$this->tags->isEmpty()) {
             $format .= ' Tag: ';
             foreach ($this->tags as $tag) {
-                $format .= ' #'.Str::studly($tag->name);
+                $format .= ' #' . Str::studly($tag->name);
             }
         }
 
         if ($this->primary_link) {
-            $format .= ' '.$this->primary_link ?? '';
+            $format .= ' ' . $this->primary_link ?? '';
         }
 
-        $format .= ' https://arcane.city/events/'.$this->id;
+        $format .= ' https://arcane.city/events/' . $this->id;
 
         return substr($format, 0, 280);
     }

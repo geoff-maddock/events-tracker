@@ -26,16 +26,27 @@ use View;
 class EntitiesController extends Controller
 {
     protected string $prefix;
+
     protected int $defaultRpp;
+
     protected string $defaultSortBy;
+
     protected string $defaultSortOrder;
+
     protected int $rpp;
+
     protected int $page;
+
     protected array $sort;
+
     protected string $sortBy;
+
     protected string $sortOrder;
+
     protected $defaultCriteria;
+
     protected array $filters;
+
     protected bool $hasFilter;
 
     public function __construct()
@@ -152,7 +163,7 @@ class EntitiesController extends Controller
     protected function getAttribute(Request $request, $attribute, $default = null)
     {
         return $request->session()
-            ->get($this->prefix.$attribute, $default);
+            ->get($this->prefix . $attribute, $default);
     }
 
     protected function getDefaultFilters(): array
@@ -193,7 +204,7 @@ class EntitiesController extends Controller
         if (!empty($filters['filter_name'])) {
             // getting name from the request
             $name = $filters['filter_name'];
-            $query->where('name', 'like', '%'.$name.'%');
+            $query->where('name', 'like', '%' . $name . '%');
         }
 
         if (!empty($filters['filter_tag'])) {
@@ -332,11 +343,11 @@ class EntitiesController extends Controller
 
         return view('entities.index')
             ->with([
-                    'rpp' => $this->rpp,
-                    'sortBy' => $this->sortBy,
-                    'sortOrder' => $this->sortOrder,
-                    'filters' => $this->filters,
-                    'hasFilter' => $this->hasFilter,
+                'rpp' => $this->rpp,
+                'sortBy' => $this->sortBy,
+                'sortOrder' => $this->sortOrder,
+                'filters' => $this->filters,
+                'hasFilter' => $this->hasFilter,
             ])
             ->with(compact('entities'))
             ->render();
@@ -361,7 +372,7 @@ class EntitiesController extends Controller
      */
     protected function setAttribute(string $attribute, $value, Request $request): void
     {
-        $request->session()->put($this->prefix.$attribute, $value);
+        $request->session()->put($this->prefix . $attribute, $value);
     }
 
     /**
@@ -525,7 +536,7 @@ class EntitiesController extends Controller
 
                 $syncArray[] = $newTag->id;
 
-                $msg .= ' Added tag '.$tag.'.';
+                $msg .= ' Added tag ' . $tag . '.';
             } else {
                 $syncArray[$key] = $tag;
             }
@@ -540,7 +551,7 @@ class EntitiesController extends Controller
 
                 $aliasSyncArray[] = $newAlias->id;
 
-                $msg .= ' Added alias '.$alias.'.';
+                $msg .= ' Added alias ' . $alias . '.';
             } else {
                 $aliasSyncArray[$key] = $alias;
             }
@@ -637,7 +648,7 @@ class EntitiesController extends Controller
 
                 $syncArray[strtolower($tag)] = $newTag->id;
 
-                $msg .= ' Added tag '.$tag.'.';
+                $msg .= ' Added tag ' . $tag . '.';
             } else {
                 $syncArray[$key] = $tag;
             }
@@ -652,7 +663,7 @@ class EntitiesController extends Controller
 
                 $aliasSyncArray[strtolower($alias)] = $newAlias->id;
 
-                $msg .= ' Added alias '.$alias.'.';
+                $msg .= ' Added alias ' . $alias . '.';
             } else {
                 $aliasSyncArray[$key] = $alias;
             }
@@ -695,12 +706,11 @@ class EntitiesController extends Controller
             'file' => 'required|mimes:jpg,jpeg,png,gif',
         ]);
 
-        $fileName = time().'_'.$request->file->getClientOriginalName();
+        $fileName = time() . '_' . $request->file->getClientOriginalName();
         $filePath = $request->file('file')->storeAs('photos', $fileName, 'public');
 
         // attach to entity
         if ($entity = Entity::find($id)) {
-
             $photo = $this->makePhoto($request->file('file'));
 
             // count existing photos, and if zero, make this primary
@@ -712,7 +722,6 @@ class EntitiesController extends Controller
 
             // attach to entity
             $entity->addPhoto($photo);
-
         }
     }
 
@@ -720,7 +729,6 @@ class EntitiesController extends Controller
     {
         return Photo::named($file->getClientOriginalName())
             ->makeThumbnail();
-
     }
 
     /**
@@ -752,20 +760,20 @@ class EntitiesController extends Controller
         $follow->object_type = 'entity'; // 1 = Attending, 2 = Interested, 3 = Uninterested, 4 = Cannot Attend
         $follow->save();
 
-        Log::info('User '.$id.' is following '.$entity->name);
+        Log::info('User ' . $id . ' is following ' . $entity->name);
         // add to activity log
         Activity::log($entity, $this->user, 6);
 
         // handle the request if ajax
         if ($request->ajax()) {
             return [
-                'Message' => 'You are now following the entity - '.$entity->name,
+                'Message' => 'You are now following the entity - ' . $entity->name,
                 'Success' => view('entities.single')
                     ->with(compact('entity'))
                     ->render(),
             ];
         }
-        flash()->success('Success', 'You are now following the entity - '.$entity->name);
+        flash()->success('Success', 'You are now following the entity - ' . $entity->name);
 
         return back();
     }
@@ -801,13 +809,13 @@ class EntitiesController extends Controller
         // handle the request if ajax
         if ($request->ajax()) {
             return [
-                'Message' => 'You are no longer following the entity - '.$entity->name,
+                'Message' => 'You are no longer following the entity - ' . $entity->name,
                 'Success' => view('entities.single')
                     ->with(compact('entity'))
                     ->render(),
             ];
         }
-        flash()->success('Success', 'You are no longer following the entity - '.$entity->name);
+        flash()->success('Success', 'You are no longer following the entity - ' . $entity->name);
 
         return back();
     }

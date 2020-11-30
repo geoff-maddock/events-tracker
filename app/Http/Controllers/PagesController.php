@@ -20,18 +20,29 @@ use Illuminate\View\View;
 class PagesController extends Controller
 {
     protected $prefix;
+
     protected $defaultRpp;
+
     protected $defaultSortBy;
+
     protected $defaultSortOrder;
 
     protected $rpp;
+
     protected $page;
+
     protected $sort;
+
     protected $sortBy;
+
     protected $sortOrder;
+
     protected $defaultCriteria;
+
     protected $filters;
+
     protected $hasFilter;
+
     protected $dayOffset;
 
     public function __construct()
@@ -132,7 +143,7 @@ class PagesController extends Controller
                     ->orWhereHas('series', function ($q) use ($slug) {
                         $q->where('name', '=', ucfirst($slug));
                     })
-                    ->orWhere('name', 'like', '%'.$slug.'%')
+                    ->orWhere('name', 'like', '%' . $slug . '%')
                     ->where(function ($query) {
                         $query->visible($this->user);
                     })
@@ -144,7 +155,7 @@ class PagesController extends Controller
                     ->orWhereHas('tags', function ($q) use ($slug) {
                         $q->where('name', '=', ucfirst($slug));
                     })
-                    ->orWhere('name', 'like', '%'.$slug.'%')
+                    ->orWhere('name', 'like', '%' . $slug . '%')
                     ->where(function ($query) {
                         $query->visible($this->user);
                     })
@@ -152,7 +163,7 @@ class PagesController extends Controller
                     ->orderBy('name', 'ASC')
                     ->paginate($this->rpp);
 
-        $entities = Entity::where('name', 'like', '%'.$slug.'%')
+        $entities = Entity::where('name', 'like', '%' . $slug . '%')
                 ->orWhereHas('tags', function ($q) use ($slug) {
                     $q->where('name', '=', ucfirst($slug));
                 })
@@ -163,15 +174,15 @@ class PagesController extends Controller
                 ->orderBy('name', 'ASC')
                 ->paginate($this->rpp);
 
-        $tags = Tag::where('name', 'like', '%'.$slug.'%')
+        $tags = Tag::where('name', 'like', '%' . $slug . '%')
                 ->orderBy('name', 'ASC')
                 ->simplePaginate($this->rpp);
 
-        $users = User::where('name', 'like', '%'.$slug.'%')
+        $users = User::where('name', 'like', '%' . $slug . '%')
                 ->orderBy('name', 'ASC')
                 ->simplePaginate($this->rpp);
 
-        $threads = Thread::where('name', 'like', '%'.$slug.'%')
+        $threads = Thread::where('name', 'like', '%' . $slug . '%')
             ->orWhereHas('tags', function ($q) use ($slug) {
                 $q->where('name', '=', ucfirst($slug));
             })
@@ -370,7 +381,7 @@ class PagesController extends Controller
     protected function getAttribute($attribute, $default = null, Request $request)
     {
         return $request->session()
-            ->get($this->prefix.$attribute, $default);
+            ->get($this->prefix . $attribute, $default);
     }
 
     /**
@@ -402,7 +413,7 @@ class PagesController extends Controller
      */
     protected function setAttribute($attribute, $value, Request $request)
     {
-        $request->session()->put($this->prefix.$attribute, $value);
+        $request->session()->put($this->prefix . $attribute, $value);
     }
 
     /**
@@ -424,13 +435,13 @@ class PagesController extends Controller
         if (!empty($filters['name'])) {
             // getting name from the request
             $name = $filters['name'];
-            $query->where('object_name', 'like', '%'.$name.'%');
+            $query->where('object_name', 'like', '%' . $name . '%');
         }
 
         if (!empty($filters['object_table'])) {
             // getting object table from the request
             $type = $filters['object_table'];
-            $query->where('object_table', 'like', '%'.$type.'%');
+            $query->where('object_table', 'like', '%' . $type . '%');
         }
 
         if (!empty($filters['action'])) {
@@ -485,9 +496,9 @@ class PagesController extends Controller
         $email = $request->input('email');
 
         // check that a user with that email does not already exist.
-        $users = User::where('email', 'like', '%'.$email.'%')->orderBy('name', 'ASC')->count();
+        $users = User::where('email', 'like', '%' . $email . '%')->orderBy('name', 'ASC')->count();
         if ($users > 0) {
-            flash()->success('Error', 'No email sent - a user with the address - '.$email.' - already exists on the site.'.count($users));
+            flash()->success('Error', 'No email sent - a user with the address - ' . $email . ' - already exists on the site.' . count($users));
 
             return back();
         }
@@ -498,9 +509,9 @@ class PagesController extends Controller
         // add to activity log - email address was invited
         // Activity::log($user, $this->user, 12);
 
-        Log::info('Email '.$email.' was invited to join the site');
+        Log::info('Email ' . $email . ' was invited to join the site');
 
-        flash()->success('Success', 'An email was sent to '.$email.' inviting them to join the site');
+        flash()->success('Success', 'An email was sent to ' . $email . ' inviting them to join the site');
 
         return back();
     }
@@ -524,7 +535,8 @@ class PagesController extends Controller
         $events = Event::future()->simplePaginate(10);
 
         // send an email inviting the user to join
-        Mail::send('emails.invite',
+        Mail::send(
+            'emails.invite',
             ['email' => $email,  'events' => $events, 'url' => $url, 'site' => $site],
             function ($m) use ($email, $admin_email, $reply_email, $site) {
                 $m->from($reply_email, $site);
@@ -532,8 +544,9 @@ class PagesController extends Controller
                 $dt = Carbon::now();
                 $m->to($email, $email)
                     ->bcc($admin_email)
-                    ->subject($site.': Event Tracker Invite - '.$dt->format('l F jS Y'));
-            });
+                    ->subject($site . ': Event Tracker Invite - ' . $dt->format('l F jS Y'));
+            }
+        );
 
         return back();
     }

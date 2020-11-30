@@ -14,18 +14,31 @@ use Illuminate\Support\Facades\View;
 class ActivityController extends Controller
 {
     protected string $prefix;
+
     protected int $defaultRpp;
+
     protected string $defaultSortBy;
+
     protected string $defaultSortOrder;
+
     protected int $childRpp;
+
     protected int $rpp;
+
     protected int $page;
+
     protected array $sort;
+
     protected string $sortBy;
+
     protected string $sortOrder;
+
     protected array $defaultCriteria;
+
     protected bool $hasFilter;
+
     protected array $filters;
+
     protected string $entityType;
 
     public function __construct()
@@ -175,7 +188,7 @@ class ActivityController extends Controller
     public function setAttribute(Request $request, $attribute, $value)
     {
         return $request->session()
-            ->put($this->prefix.$attribute, $value);
+            ->put($this->prefix . $attribute, $value);
     }
 
     /**
@@ -350,12 +363,12 @@ class ActivityController extends Controller
         if (!empty($filters['filter_name'])) {
             // getting name from the request
             $name = $filters['filter_name'];
-            $query->where('name', 'like', '%'.$name.'%');
+            $query->where('name', 'like', '%' . $name . '%');
         }
 
         if (!empty($filters['filter_object_table'])) {
             $object_table = $filters['filter_object_table'];
-            $query->where('object_table', 'like', '%'.$object_table.'%');
+            $query->where('object_table', 'like', '%' . $object_table . '%');
         }
 
         // change this - should be separate
@@ -385,7 +398,7 @@ class ActivityController extends Controller
     public function getAttribute(Request $request, $attribute, $default = null)
     {
         return $request->session()
-            ->get($this->prefix.$attribute, $default);
+            ->get($this->prefix . $attribute, $default);
     }
 
     /**

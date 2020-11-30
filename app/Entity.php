@@ -16,6 +16,7 @@ class Entity extends Eloquent
     protected $fillable = [
         'name', 'slug', 'short', 'description', 'entity_type_id', 'entity_status_id', 'entity_address_id', 'facebook_username', 'twitter_username', 'created_by',
     ];
+
     protected $dates = ['updated_at'];
 
     protected $attributes = [
@@ -282,7 +283,7 @@ class Entity extends Eloquent
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function aliases(): BelongsToMany 
+    public function aliases(): BelongsToMany
     {
         return $this->belongsToMany('App\Alias')->withTimestamps();
     }
@@ -463,7 +464,7 @@ class Entity extends Eloquent
         $primary = $this->locations()->first();
 
         if ($primary && ('Guarded' != $primary->visibility->name || ('Guarded' == $primary->visibility->name) && $signedIn)) {
-            $address .= $primary->address_one.' ';
+            $address .= $primary->address_one . ' ';
             $address .= $primary->city;
         }
 

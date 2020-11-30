@@ -47,6 +47,7 @@ class Blog extends Eloquent
     ];
 
     protected $guarded = [];
+
     protected $dates = ['created_at', 'updated_at'];
 
     public function __toString()
@@ -62,7 +63,7 @@ class Blog extends Eloquent
 
     public function path()
     {
-        return '/blog/'.$this->id;
+        return '/blog/' . $this->id;
     }
 
     public function scopePast($query)
@@ -133,13 +134,13 @@ class Blog extends Eloquent
         return $this->created_by == $user->id;
     }
 
-   /**
-    * Get all of the blogs photos
-    */
-   public function photos(): BelongsToMany
-   {
-    		return $this->belongsToMany('App\Photo')->withTimestamps();
-   }
+    /**
+     * Get all of the blogs photos
+     */
+    public function photos(): BelongsToMany
+    {
+        return $this->belongsToMany('App\Photo')->withTimestamps();
+    }
 
     /**
      * An blog has one visibility.

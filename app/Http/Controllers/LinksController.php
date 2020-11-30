@@ -1,125 +1,122 @@
-<?php namespace App\Http\Controllers;
+<?php
+
+namespace App\Http\Controllers;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-
 use DB;
 use App\Entity;
 use App\Link;
 use App\Visibility;
 
-class LinksController extends Controller {
+class LinksController extends Controller
+{
+    protected $rules = [
+        'text' => ['required', 'min:3'],
+        'url' => ['required', 'min:3'],
+    ];
 
+    public function __construct()
+    {
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
 
-	protected $rules = [
-		'text' => ['required', 'min:3'],
-		'url' => ['required', 'min:3'],
-	];
+        parent::__construct();
+    }
 
-	public function __construct()
-	{
-		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
+    /**
+     * Display a listing of the resource.
+     *
+     * @param  \App\Entity 		$entity
+     * @return Response
+     */
+    public function index(Entity $entity)
+    {
+        return view('links.index', compact('entity'));
+    }
 
-		parent::__construct();
-	}
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @param  \App\Entity 		$entity
+     * @return Response
+     */
+    public function create(Entity $entity)
+    {
+        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-	/**
-	 * Display a listing of the resource.
-	 *
-	 * @param  \App\Entity 		$entity
-	 * @return Response
-	 */
-	public function index(Entity $entity)
-	{
-		return view('links.index', compact('entity'));
-	}
+        return view('links.create', compact('entity', 'visibilities'));
+    }
 
-	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @param  \App\Entity 		$entity
-	 * @return Response
-	 */
-	public function create(Entity $entity)
-	{
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  Request 			$request
+     * @param  \App\Entity 		$entity
+     * @return Response
+     */
+    public function store(Request $request, Entity $entity)
+    {
+        $msg = '';
 
-		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
+        // get the request
+        $input = $request->all();
+        $input['entity_id'] = $entity->id;
 
-		return view('links.create', compact('entity','visibilities'));
-	}
+        $this->validate($request, $this->rules);
 
-	/**
-	 * Store a newly created resource in storage.
-	 *
-	 * @param  Request 			$request
-	 * @param  \App\Entity 		$entity
-	 * @return Response
-	 */
-	public function store(Request $request, Entity $entity)
-	{
-		$msg = '';
+        $link = Link::create($input);
 
-		// get the request
-		$input = $request->all();
-		$input['entity_id'] = $entity->id;
+        $entity->links()->attach($link->id);
 
-		$this->validate($request, $this->rules);
+        flash()->success('Success', 'Your link has been created');
 
-		$link = Link::create($input);
+        return redirect()->route('entities.show', $entity->slug);
+    }
 
-		$entity->links()->attach($link->id);
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Entity 		$entity
+     * @param  \App\Link     	$link
+     * @return Response
+     */
+    public function show(Entity $entity, Link $link)
+    {
+        return view('links.show', compact('entity', 'link'));
+    }
 
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Entity 		$entity
+     * @param  \App\Link  	        $link
+     * @return Response
+     */
+    public function edit(Entity $entity, Link $link)
+    {
+        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-		flash()->success('Success', 'Your link has been created');
+        return view('links.edit', compact('entity', 'link', 'visibilities'));
+    }
 
-		return redirect()->route('entities.show', $entity->slug);
-	}
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  Request 		$request
+     * @param  \App\Entity 		$entity
+     * @param  \App\Link     	$link
+     * @return Response
+     */
+    public function update(Request $request, Entity $entity, Link $link)
+    {
+        $link->fill($request->input())->save();
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  \App\Entity 		$entity
-	 * @param  \App\Link     	$link
-	 * @return Response
-	 */
-	public function show(Entity $entity, Link $link)
-	{
-		return view('links.show', compact('entity', 'link'));
-	}
+        flash()->success('Success', 'Your link has been updated!');
 
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  \App\Entity 		$entity
-	 * @param  \App\Link  	        $link
-	 * @return Response
-	 */
-	public function edit(Entity $entity, Link $link)
-	{
-		$visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
-
-		return view('links.edit', compact('entity', 'link', 'visibilities' ));
-	}
-
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  Request 		$request
-	 * @param  \App\Entity 		$entity
-	 * @param  \App\Link     	$link
-	 * @return Response
-	 */
-	public function update(Request $request, Entity $entity, Link $link)
-	{
-		$link->fill($request->input())->save();
- 
-		flash()->success('Success', 'Your link has been updated!');
-
-		return redirect()->route('entities.show', $entity->slug);
-	}
+        return redirect()->route('entities.show', $entity->slug);
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -129,14 +126,12 @@ class LinksController extends Controller {
      * @return Response
      * @throws \Exception
      */
-	public function destroy(Entity $entity, Link $link)
-	{
-		$link->delete();
+    public function destroy(Entity $entity, Link $link)
+    {
+        $link->delete();
 
         flash()->success('Success', 'Your link has been deleted!');
 
-		return redirect()->route('entities.show', $entity->slug);
-
-	}
-
+        return redirect()->route('entities.show', $entity->slug);
+    }
 }
