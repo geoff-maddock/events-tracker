@@ -29,18 +29,31 @@ class ThreadsController extends Controller
 {
     // define a list of variables
     protected string $prefix;
+
     protected int $rpp;
+
     protected int $page;
+
     protected int $defaultRpp;
+
     protected string $defaultSortBy;
+
     protected string $defaultSortOrder;
+
     protected array $sort;
+
     protected string $sortBy;
+
     protected string $sortOrder;
+
     protected array $defaultCriteria;
+
     protected bool $hasFilter;
+
     protected array $filters;
+
     protected array $criteria;
+
     protected ?Thread $thread;
 
     public function __construct(Thread $thread)
@@ -90,9 +103,8 @@ class ThreadsController extends Controller
     public function setAttribute(string $attribute, $value, Request $request): void
     {
         $request->session()
-            ->put($this->prefix.$attribute, $value);
+            ->put($this->prefix . $attribute, $value);
     }
-
 
     /**
      * Display a listing of the resource.
@@ -205,7 +217,7 @@ class ThreadsController extends Controller
         if (!empty($filters['filter_name'])) {
             // getting name from the request
             $name = $filters['filter_name'];
-            $query->where('name', 'like', '%'.$name.'%');
+            $query->where('name', 'like', '%' . $name . '%');
         }
 
         if (!empty($filters['filter_user'])) {
@@ -467,11 +479,11 @@ class ThreadsController extends Controller
 
                 $syncArray[strtolower($tag)] = $newTag->id;
 
-                $msg .= ' Added tag '.$tag.'.';
+                $msg .= ' Added tag ' . $tag . '.';
             } else {
                 $syncArray[$key] = $tag;
 
-                $msg .= ' Linked tag '.$tag.'.';
+                $msg .= ' Linked tag ' . $tag . '.';
             }
         }
 
@@ -487,7 +499,7 @@ class ThreadsController extends Controller
         // add to activity log
         Activity::log($thread, $this->user, 1);
 
-        flash()->success('Success', 'Your thread has been created. '.$msg);
+        flash()->success('Success', 'Your thread has been created. ' . $msg);
 
         return redirect()->route('threads.show', compact('thread'));
     }
@@ -510,7 +522,7 @@ class ThreadsController extends Controller
                     Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $thread, $tag, $reply_email, $site) {
                         $m->from($reply_email, $site);
 
-                        $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$thread->created_at->format('D F jS').' '.$thread->name);
+                        $m->to($user->email, $user->name)->subject($site . ': ' . $tag->name . ' :: ' . $thread->created_at->format('D F jS') . ' ' . $thread->name);
                     });
                     $users[$user->id] = $tag->name;
                 }
@@ -527,7 +539,7 @@ class ThreadsController extends Controller
                     Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $s, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $thread, $s, $reply_email, $site) {
                         $m->from($reply_email, $site);
 
-                        $m->to($user->email, $user->name)->subject($site.': '.$s->name.' :: '.$thread->created_at->format('D F jS').' '.$thread->name);
+                        $m->to($user->email, $user->name)->subject($site . ': ' . $s->name . ' :: ' . $thread->created_at->format('D F jS') . ' ' . $thread->name);
                     });
                     $users[$user->id] = $s->name;
                 }
@@ -638,7 +650,7 @@ class ThreadsController extends Controller
 
                 $syncArray[strtolower($tag)] = $newTag->id;
 
-                $msg .= ' Added tag '.$tag.'.';
+                $msg .= ' Added tag ' . $tag . '.';
             } else {
                 $syncArray[$key] = $tag;
             }
@@ -676,8 +688,10 @@ class ThreadsController extends Controller
      *
      * @internal param int $id
      */
-    public function destroy(Thread $thread,
-                            Request $request)
+    public function destroy(
+        Thread $thread,
+        Request $request
+    )
     {
         $this->authorize('update', $thread);
 
@@ -699,7 +713,6 @@ class ThreadsController extends Controller
 
         return redirect('threads');
     }
-
 
     public function follow(int $id, Request $request): RedirectResponse
     {
@@ -723,9 +736,9 @@ class ThreadsController extends Controller
         $follow->object_type = 'thread'; // 1 = Attending, 2 = Interested, 3 = Uninterested, 4 = Cannot Attend
         $follow->save();
 
-        Log::info('User '.$id.' is following '.$thread->name);
+        Log::info('User ' . $id . ' is following ' . $thread->name);
 
-        flash()->success('Success', 'You are now following the thread - '.$thread->name);
+        flash()->success('Success', 'You are now following the thread - ' . $thread->name);
 
         return back();
     }
@@ -754,7 +767,6 @@ class ThreadsController extends Controller
         return back();
     }
 
-
     public function like(int $id, Request $request): RedirectResponse
     {
         // check if there is a logged in user
@@ -781,9 +793,9 @@ class ThreadsController extends Controller
         ++$thread->likes;
         $thread->save();
 
-        Log::info('User '.$id.' is liking '.$thread->name);
+        Log::info('User ' . $id . ' is liking ' . $thread->name);
 
-        flash()->success('Success', 'You are now liking the thread - '.$thread->name);
+        flash()->success('Success', 'You are now liking the thread - ' . $thread->name);
 
         return back();
     }
@@ -844,7 +856,7 @@ class ThreadsController extends Controller
      */
     public function getFilters(Request $request): array
     {
-        return $this->getAttribute($request,'filters', $this->getDefaultFilters());
+        return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
     }
 
     /**
@@ -858,7 +870,7 @@ class ThreadsController extends Controller
     public function getAttribute(Request $request, string $attribute, $default = null)
     {
         return $request->session()
-            ->get($this->prefix.$attribute, $default);
+            ->get($this->prefix . $attribute, $default);
     }
 
     /**

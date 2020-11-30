@@ -22,7 +22,7 @@ class Photo extends Eloquent
      *
      **/
     protected $fillable = [
-    'name', 'path', 'thumbnail', 'caption',
+        'name', 'path', 'thumbnail', 'caption',
     ];
 
     protected $dates = ['created_at', 'updated_at'];
@@ -65,12 +65,12 @@ class Photo extends Eloquent
 
     public static function fromForm(UploadedFile $file)
     {
-        $name = time().$file->getClientOriginalName(); //12131241filename
+        $name = time() . $file->getClientOriginalName(); //12131241filename
 
         $photo = new static();
         $photo->name = $name;
-        $photo->path = $photo->baseDir.'/'.$name;
-        $photo->thumbnail = $photo->baseDir.'/'.$name;
+        $photo->path = $photo->baseDir . '/' . $name;
+        $photo->thumbnail = $photo->baseDir . '/' . $name;
         $photo->caption = $file->getClientOriginalName();
 
         $file->move($photo->baseDir, $name);
@@ -98,7 +98,7 @@ class Photo extends Eloquent
     public function move(UploadedFile $file)
     {
         try {
-            rename(public_path().'/'.$this->baseDir.'/temp.jpg', public_path().'/'.$this->baseDir.'/'.$this->name);
+            rename(public_path() . '/' . $this->baseDir . '/temp.jpg', public_path() . '/' . $this->baseDir . '/' . $this->name);
         } catch (FileException $fileException) {
             // do nothing
         }
@@ -110,9 +110,9 @@ class Photo extends Eloquent
 
     public function makeThumbnail()
     {
-        Image::make('storage/'.$this->path)
+        Image::make('storage/' . $this->path)
             ->fit(200)
-            ->save('storage/'.$this->thumbnail);
+            ->save('storage/' . $this->thumbnail);
 
         return $this;
     }
@@ -120,25 +120,25 @@ class Photo extends Eloquent
     public function delete()
     {
         File::delete([
-                $this->path,
-                $this->thumbnail,
-            ]);
+            $this->path,
+            $this->thumbnail,
+        ]);
 
         parent::delete();
     }
 
     public function getTwitterPath(): string
     {
-        return 'storage/'.$this->path;
+        return 'storage/' . $this->path;
     }
 
     public function getStoragePath(): string
     {
-        return '/storage/'.$this->path;
+        return '/storage/' . $this->path;
     }
 
     public function getStorageThumbnail(): string
     {
-        return '/storage/'.$this->thumbnail;
+        return '/storage/' . $this->thumbnail;
     }
 }

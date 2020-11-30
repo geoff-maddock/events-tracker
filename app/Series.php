@@ -94,8 +94,8 @@ class Series extends Eloquent
         $cdate_yesterday = Carbon::parse($date)->subDay(1);
         $cdate_tomorrow = Carbon::parse($date)->addDay(1);
 
-        $query->where('start_at', '>', $cdate_yesterday->toDateString().' 23:59:59')
-                    ->where('start_at', '<', $cdate_tomorrow->toDateString().' 00:00:00');
+        $query->where('start_at', '>', $cdate_yesterday->toDateString() . ' 23:59:59')
+                    ->where('start_at', '<', $cdate_tomorrow->toDateString() . ' 00:00:00');
     }
 
     /**
@@ -462,12 +462,12 @@ class Series extends Eloquent
         $repeat = '';
 
         $week = $this->occurrenceWeek ? $this->occurrenceWeek->name : '';
-        $day = $this->occurrenceDay ? $this->occurrenceDay->name.'s' : '';
+        $day = $this->occurrenceDay ? $this->occurrenceDay->name . 's' : '';
 
         switch ($this->occurrenceType->name) {
             case 'Monthly':
             case 'Bimonthly':
-                $repeat = $week.' '.$day;
+                $repeat = $week . ' ' . $day;
                 break;
             case 'Weekly':
             case 'Biweekly':

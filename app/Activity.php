@@ -75,7 +75,7 @@ class Activity extends Eloquent
      */
     public function getStyleAttribute()
     {
-        if (NULL !== $this->action && $this->action->name === 'Delete') {
+        if (null !== $this->action && $this->action->name === 'Delete') {
             return 'list-group-item-warning';
         }
 
@@ -89,18 +89,18 @@ class Activity extends Eloquent
     {
         if ('Tag' === $this->object_table) {
             if ($tag = Tag::find($this->object_id)) {
-                return '/'.Str::plural($this->object_table).'/'.$tag->name;
+                return '/' . Str::plural($this->object_table) . '/' . $tag->name;
             }
         }
 
         if ('Entity' === $this->object_table) {
             if ($entity = Entity::find($this->object_id)) {
-                return '/'.Str::plural($this->object_table).'/'.$entity->slug;
+                return '/' . Str::plural($this->object_table) . '/' . $entity->slug;
             }
         }
 
         if ($this->object_table) {
-            return '/'.Str::plural($this->object_table).'/'.$this->object_id;
+            return '/' . Str::plural($this->object_table) . '/' . $this->object_id;
         }
 
         return '/';
@@ -153,7 +153,7 @@ class Activity extends Eloquent
             $activity->message = sprintf($message);
         } else {
             // otherwise build message
-            $m = $act->name.' '.strtolower($table).' '.$object->name;
+            $m = $act->name . ' ' . strtolower($table) . ' ' . $object->name;
             $activity->message = $m;
         }
         $activity->save();

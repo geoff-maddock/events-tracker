@@ -1,119 +1,115 @@
-<?php namespace App\Http\Controllers;
+<?php
+
+namespace App\Http\Controllers;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-
 use Illuminate\Support\Facades\DB;
 use App\Entity;
 use App\Event;
 use App\Comment;
 
-class CommentsController extends Controller {
+class CommentsController extends Controller
+{
+    protected Entity $entity;
 
-	protected Entity $entity;
+    protected $rules = [
+        'message' => ['required', 'min:3'],
+    ];
 
-	protected $rules = [
-		'message' => ['required', 'min:3'],
-	];
+    public function __construct(Entity $entity)
+    {
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
+        $this->entity = $entity;
 
-	public function __construct(Entity $entity)
-	{
-		$this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
-		$this->entity = $entity;
+        parent::__construct();
+    }
 
-		parent::__construct();
-	}
+    /**
+     * Display a listing of the resource.
+     *
+     * @param  \App\Entity 		$entity
+     * @return Response
+     */
+    public function index(Entity $entity)
+    {
+        return view('comments.index', compact('entity'));
+    }
 
-	/**
-	 * Display a listing of the resource.
-	 *
-	 * @param  \App\Entity 		$entity
-	 * @return Response
-	 */
-	public function index(Entity $entity)
-	{
-		return view('comments.index', compact('entity'));
-	}
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @param  \App\Entity 		$entity
+     * @return Response
+     */
+    public function create(Entity $entity, Event $event)
+    {
+        $object = null;
+        $type = null;
 
-	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @param  \App\Entity 		$entity
-	 * @return Response
-	 */
-	public function create(Entity $entity, Event $event)
-	{
-		$object = null;
-		$type = null;
+        if (isset($entity->id)) {
+            $object = $entity;
+            $type = 'entities';
+        };
 
-		if (isset($entity->id))
-		{
-			$object = $entity;
-			$type = 'entities';
-		};
+        if (isset($event->id)) {
+            $object = $event;
+            $type = 'events';
+        }
 
-		if (isset($event->id))
-		{
-			$object = $event;
-			$type = 'events';
-		}
+        return view('comments.create', compact('object', 'type'));
+    }
 
-		return view('comments.create', compact('object', 'type'));
-	}
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  Request 			$request
+     * @param  \App\Entity 		$entity
+     * @return Response
+     */
+    public function store(Request $request, Entity $entity, Event $event)
+    {
+        $msg = '';
+        $type = null;
 
-	/**
-	 * Store a newly created resource in storage.
-	 *
-	 * @param  Request 			$request
-	 * @param  \App\Entity 		$entity
-	 * @return Response
-	 */
-	public function store(Request $request, Entity $entity, Event $event)
-	{
-		$msg = '';
-		$type = null;
+        // get the request
+        $input = $request->all();
 
-		// get the request
-		$input = $request->all();
+        if (isset($entity->id)) {
+            $input['commentable_type'] = 'entity';
+            $input['commentable_id'] = $entity->id;
+            $type = 'entities';
+        };
 
-		if (isset($entity->id))
-		{
-			$input['commentable_type'] = 'entity';
-			$input['commentable_id'] = $entity->id;
-			$type = "entities";
-		};
+        if (isset($event->id)) {
+            $input['commentable_type'] = 'event';
+            $input['commentable_id'] = $event->id;
+            $type = 'events';
+        };
 
-		if (isset($event->id))
-		{
-			$input['commentable_type'] = 'event';
-			$input['commentable_id'] = $event->id;
-			$type = "events";
-		};
+        $this->validate($request, $this->rules);
 
-		$this->validate($request, $this->rules);
+        $comment = Comment::create($input);
+        $comment->save();
 
-		$comment = Comment::create($input);
-		$comment->save();
+        flash()->success('Success', 'Your comment has been created');
 
-		flash()->success('Success', 'Your comment has been created');
+        return redirect()->route($type . '.show', $comment->commentable->getRouteKey());
+    }
 
-		return redirect()->route($type.'.show', $comment->commentable->getRouteKey());
-	}
-
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  \App\Entity 		$entity
-	 * @param  \App\Comment  	$comment
-	 * @return Response
-	 */
-	public function show(Entity $entity, Comment $comment)
-	{
-		return view('comments.show', compact('entity', 'comment'));
-	}
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Entity 		$entity
+     * @param  \App\Comment  	$comment
+     * @return Response
+     */
+    public function show(Entity $entity, Comment $comment)
+    {
+        return view('comments.show', compact('entity', 'comment'));
+    }
 
     /**
      * Show the form for editing the specified resource.
@@ -122,46 +118,44 @@ class CommentsController extends Controller {
      * @param  Comment $comment
      * @return Response
      */
-	public function edit($id, Comment $comment)
-	{
-		$object = $comment->commentable;
-		$entity = null;
-		$event = null;
-		$type = null;
+    public function edit($id, Comment $comment)
+    {
+        $object = $comment->commentable;
+        $entity = null;
+        $event = null;
+        $type = null;
 
-		if (get_class($object) == 'App\Entity')
-		{
-			$entity = $object;
-			$type = 'entities';
-		};
+        if (get_class($object) == 'App\Entity') {
+            $entity = $object;
+            $type = 'entities';
+        };
 
-		if (get_class($object) == 'App\Event')
-		{
-			$event = $object;
-			$type = 'events';
-		}
+        if (get_class($object) == 'App\Event') {
+            $event = $object;
+            $type = 'events';
+        }
 
-		return view('comments.edit', compact('entity', 'object', 'event', 'comment', 'type'));
-	}
+        return view('comments.edit', compact('entity', 'object', 'event', 'comment', 'type'));
+    }
 
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  Request 			$request
-	 * @param  \App\Entity 		$entity
-	 * @param  \App\Comment  	$comment
-	 * @return Response
-	 */
-	public function update(Request $request, Entity $entity, Comment $comment)
-	{
-		$msg = '';
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  Request 			$request
+     * @param  \App\Entity 		$entity
+     * @param  \App\Comment  	$comment
+     * @return Response
+     */
+    public function update(Request $request, Entity $entity, Comment $comment)
+    {
+        $msg = '';
 
-		$comment->fill($request->input())->save();
+        $comment->fill($request->input())->save();
 
- 		\Session::flash('flash_message', 'Your comment has been updated!');
+        \Session::flash('flash_message', 'Your comment has been updated!');
 
-		return redirect()->route('entities.show', $entity->getRouteKey());
-	}
+        return redirect()->route('entities.show', $entity->getRouteKey());
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -171,17 +165,14 @@ class CommentsController extends Controller {
      * @return Response
      * @throws \Exception
      */
-	public function destroy( Entity $entity, Comment $comment )
-	{
-		$comment->delete();
+    public function destroy(Entity $entity, Comment $comment)
+    {
+        $comment->delete();
 
-		\Session::flash('flash_message', 'Your comment has been deleted!');
+        \Session::flash('flash_message', 'Your comment has been deleted!');
 
-		flash()->success('Success', 'Your comment deleted');
+        flash()->success('Success', 'Your comment deleted');
 
-
-		return back();
-
-	}
-
+        return back();
+    }
 }

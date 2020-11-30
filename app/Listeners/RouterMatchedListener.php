@@ -35,7 +35,7 @@ class RouterMatchedListener
 
             // log impersonation
             if ($user && $who) {
-                Activity::log($user, $user, 13, $user->name.' impersonated '.$who->name);
+                Activity::log($user, $user, 13, $user->name . ' impersonated ' . $who->name);
             }
         }
     }

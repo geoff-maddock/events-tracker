@@ -14,7 +14,5 @@ class EventPolicy
      */
     public function __construct()
     {
-        //
     }
-
 }

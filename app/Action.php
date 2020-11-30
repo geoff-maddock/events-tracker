@@ -1,13 +1,14 @@
-<?php namespace App;
+<?php
+
+namespace App;
 
 use Carbon\Carbon;
 use App\User;
 use App\Activity;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
-class Action extends Eloquent {
-
-
+class Action extends Eloquent
+{
     /**
      * The storage format of the model's date columns.
      *
@@ -15,28 +16,23 @@ class Action extends Eloquent {
      */
     protected $dateFormat = 'Y-m-d\\TH:i';
 
-	/**
-	 * @var Array
-	 *
-	 **/
-	protected $fillable = [
-		'name', 'object_table', 'child_object_table'
-	];
+    /**
+     * @var Array
+     *
+     **/
+    protected $fillable = [
+        'name', 'object_table', 'child_object_table'
+    ];
 
+    protected $dates = ['created_at', 'updated_at'];
 
-	protected $dates = ['created_at','updated_at'];
-
-	
-
-	/**
-	 * Get the activity that belongs to the action
-	 *
-	 * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-	 */
-	public function activity()
-	{
-		return $this->belongsToMany('App\Activity')->withTimestamps();
-	}
-
-	
+    /**
+     * Get the activity that belongs to the action
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function activity()
+    {
+        return $this->belongsToMany('App\Activity')->withTimestamps();
+    }
 }

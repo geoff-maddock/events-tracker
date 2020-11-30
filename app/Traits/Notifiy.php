@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Traits;
 
 trait Notify
@@ -7,7 +8,7 @@ trait Notify
      * @param $event
      * @return \Illuminate\Http\RedirectResponse
      */
-    protected function notifyFollowing ($event)
+    protected function notifyFollowing($event)
     {
         $reply_email = config('app.noreplyemail');
         $site = config('app.app_name');
@@ -15,7 +16,7 @@ trait Notify
 
         // notify users following any of the tags
         $tags = $event->tags()->get();
-        $users = array();
+        $users = [];
 
         // improve this so it will only sent one email to each user per event, and include a list of all tags they were following that led to the notification
         foreach ($tags as $tag) {
@@ -38,7 +39,6 @@ trait Notify
         // improve this so it will only sent one email to each user per event, and include a list of entities they were following that led to the notification
         foreach ($entities as $entity) {
             foreach ($entity->followers() as $user) {
-
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
                     Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $entity, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $event, $entity, $reply_email, $site, $url) {

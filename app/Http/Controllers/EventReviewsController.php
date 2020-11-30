@@ -1,28 +1,25 @@
-<?php namespace App\Http\Controllers;
+<?php
+
+namespace App\Http\Controllers;
 
 use App\Event;
 use App\EventReview;
 use App\ReviewType;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-
 use DB;
 
-
-class EventReviewsController extends Controller {
-
-
+class EventReviewsController extends Controller
+{
     protected $rules = [
         'review' => ['required', 'min:3'],
-
     ];
 
     public function __construct()
     {
-        $this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
 
         parent::__construct();
     }
@@ -46,7 +43,7 @@ class EventReviewsController extends Controller {
      */
     public function create(Event $event)
     {
-        $reviewTypes = [''=>''] + ReviewType::orderBy('name','ASC')->pluck('name', 'id')->all();
+        $reviewTypes = ['' => ''] + ReviewType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
         return view('reviews.create', compact('event', 'reviewTypes'));
     }
@@ -97,7 +94,7 @@ class EventReviewsController extends Controller {
      */
     public function edit(Event $event, EventReview $eventReview)
     {
-        $reviewTypes = [''=>''] + ReviewType::orderBy('name','ASC')->pluck('name', 'id')->all();
+        $reviewTypes = ['' => ''] + ReviewType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
         return view('reviews.edit', compact('event', 'eventReview', 'reviewTypes'));
     }
@@ -136,7 +133,5 @@ class EventReviewsController extends Controller {
         \Session::flash('flash_message', 'Your review has been deleted!');
 
         return redirect()->route('entities.show', $event->id);
-
     }
-
 }

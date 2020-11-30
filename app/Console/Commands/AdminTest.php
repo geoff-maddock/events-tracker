@@ -38,12 +38,12 @@ class AdminTest extends Command
             $m->from($reply_email, $site);
 
             $dt = Carbon::now();
-            $m->to($admin_email, $site.' Admin User')
+            $m->to($admin_email, $site . ' Admin User')
                 ->bcc($admin_email)
-                ->subject($site.': Admin Tester - '.$dt->format('l F jS Y'));
+                ->subject($site . ': Admin Tester - ' . $dt->format('l F jS Y'));
         });
 
         // log that the weekly email was sent
-        Log::info('Admin test email was sent to '.$admin_email);
+        Log::info('Admin test email was sent to ' . $admin_email);
     }
 }

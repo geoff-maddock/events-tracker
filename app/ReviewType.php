@@ -1,10 +1,12 @@
-<?php namespace App;
+<?php
+
+namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
-class ReviewType extends Eloquent {
-
+class ReviewType extends Eloquent
+{
     /**
      * @var Array
      *
@@ -20,7 +22,6 @@ class ReviewType extends Eloquent {
      */
     protected $dates = [];
 
-
     /**
      * A review type can belong to many event reviews
      *
@@ -30,6 +31,4 @@ class ReviewType extends Eloquent {
     {
         return $this->belongsTo('App\EventReview');
     }
-
-
 }

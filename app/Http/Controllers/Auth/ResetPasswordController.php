@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -17,12 +18,14 @@ class ResetPasswordController extends Controller
     |
     */
     use ResetsPasswords;
+
     /**
      * Where to redirect users after resetting their password.
      *
      * @var string
      */
     protected $redirectTo = '/home';
+
     /**
      * Create a new controller instance.
      *

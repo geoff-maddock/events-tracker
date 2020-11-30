@@ -67,7 +67,8 @@ class Kernel extends ConsoleKernel
                 // if there are more than 0 events
                 if ((null !== $events && $events->count() > 0) || (null !== $interests && count($interests) > 0)) {
                     // send an email containing that list
-                    Mail::send('emails.weekly-events',
+                    Mail::send(
+                        'emails.weekly-events',
                         ['user' => $user, 'interests' => $interests, 'events' => $events, 'url' => $url, 'site' => $site],
                         function ($m) use ($user, $admin_email, $reply_email, $site) {
                             $m->from($reply_email, $site);
@@ -75,14 +76,15 @@ class Kernel extends ConsoleKernel
                             $dt = Carbon::now();
                             $m->to($user->email, $user->name)
                             ->bcc($admin_email)
-                            ->subject($site.': Weekly Reminder - '.$dt->format('l F jS Y'));
-                        });
+                            ->subject($site . ': Weekly Reminder - ' . $dt->format('l F jS Y'));
+                        }
+                    );
 
                     // log that the weekly email was sent
-                    Log::info('Weekly events email was sent to '.$user->name.' at '.$user->email.'.');
+                    Log::info('Weekly events email was sent to ' . $user->name . ' at ' . $user->email . '.');
                 } else {
                     // log that no email was sent
-                    Log::info('No weekly events email was sent to '.$user->name.' at '.$user->email.'.');
+                    Log::info('No weekly events email was sent to ' . $user->name . ' at ' . $user->email . '.');
                 }
             }
         })->weekly()->mondays()->timezone('America/New_York')->at('5:00');
@@ -101,7 +103,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
         require base_path('routes/console.php');
     }
 }

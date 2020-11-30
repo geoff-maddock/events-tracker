@@ -1,13 +1,15 @@
 <?php
+
 namespace App\Http\Controllers\Auth;
+
 use App\Activity;
 use App\User;
 use App\Profile;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+
 class RegisterController extends Controller
 {
     /*
@@ -21,6 +23,7 @@ class RegisterController extends Controller
     |
     */
     use RegistersUsers;
+
     /**
      * Where to redirect users after registration.
      *
@@ -37,6 +40,7 @@ class RegisterController extends Controller
     {
         $this->middleware('guest');
     }
+
     /**
      * Get a validator for an incoming registration request.
      *
@@ -52,6 +56,7 @@ class RegisterController extends Controller
             'password' => 'required|min:6|confirmed',
         ]);
     }
+
     /**
      * Create a new user instance after a valid registration.
      *
@@ -93,10 +98,10 @@ class RegisterController extends Controller
         $site = config('app.app_name');
         $url = config('app.url');
 
-        Mail::send('emails.register', ['user' => $user, 'admin_email' => $admin_email, 'site' => $site, 'url' => $url], function ($m) use ($user,  $admin_email, $site) {
+        Mail::send('emails.register', ['user' => $user, 'admin_email' => $admin_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $admin_email, $site) {
             $m->from($admin_email, $site);
 
-            $m->to($admin_email, $user->name)->subject($site . ': New User Registered: ' . $user->name . ' :: ' . $user->created_at->format('D F jS') );
+            $m->to($admin_email, $user->name)->subject($site . ': New User Registered: ' . $user->name . ' :: ' . $user->created_at->format('D F jS'));
         });
 
         return back();

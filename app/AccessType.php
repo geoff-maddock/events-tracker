@@ -1,10 +1,38 @@
 <?php
 
-namespace App\Models;
+namespace App;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model as Eloquent;
 
-class AccessType extends Model
+/**
+ * Access types available for a group
+ */
+class AccessType extends Eloquent
 {
-    // test
+    /**
+     * The storage format of the model's date columns.
+     *
+     * @var string
+     */
+    protected $dateFormat = 'Y-m-d\\TH:i';
+
+    /**
+     * @var Array
+     *
+     **/
+    protected $fillable = [
+        'name', 'object_table', 'child_object_table'
+    ];
+
+    protected $dates = ['created_at', 'updated_at'];
+
+    /**
+     * Get the activity that belongs to the action
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function activity()
+    {
+        return $this->belongsToMany('App\Activity')->withTimestamps();
+    }
 }

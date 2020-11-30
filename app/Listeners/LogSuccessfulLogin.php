@@ -17,7 +17,6 @@ class LogSuccessfulLogin
      */
     public function __construct()
     {
-        //
     }
 
     /**

@@ -1,14 +1,14 @@
-<?php namespace App\Http\Controllers;
+<?php
+
+namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ForumRequest;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -21,20 +21,26 @@ use Illuminate\Support\Facades\Session;
 
 class ForumsController extends Controller
 {
-
     // define a list of variables
     protected int $rpp;
+
     protected int $page;
+
     protected array $sort;
+
     protected string $sortBy;
+
     protected string $sortOrder;
+
     protected array $defaultCriteria;
+
     protected bool $hasFilter;
+
     protected string $prefix;
 
     public function __construct()
     {
-        $this->middleware('auth', ['only' => array('create', 'edit', 'store', 'update')]);
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
 
         // prefix for session storage
         $this->prefix = 'app.forums.';
@@ -42,14 +48,13 @@ class ForumsController extends Controller
         // default list variables
         $this->rpp = 10;
         $this->page = 1;
-        $this->sort = array('name', 'desc');
+        $this->sort = ['name', 'desc'];
         $this->sortBy = 'created_at';
         $this->sortOrder = 'desc';
         $this->defaultCriteria = [];
         $this->hasFilter = 1;
         parent::__construct();
     }
-
 
     /**
      * Display a listing of the resource.
@@ -58,17 +63,15 @@ class ForumsController extends Controller
      */
     public function index()
     {
-         // if the gate does not allow this user to show a forum redirect to home
+        // if the gate does not allow this user to show a forum redirect to home
         if (Gate::denies('show_forum')) {
             flash()->error('Unauthorized', 'Your cannot view the forum');
 
             return redirect()->back();
         }
 
-
         $forums = Forum::orderBy('created_at', 'desc')->paginate($this->rpp);
-        $forums->filter(function($e)
-        {
+        $forums->filter(function ($e) {
             return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
 
@@ -82,8 +85,7 @@ class ForumsController extends Controller
      */
     public function create()
     {
-        $visibilities = [''=>''] + Visibility::orderBy('name','ASC')->pluck('name', 'id')->all();
-
+        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
         return view('forums.create', compact('visibilities'));
     }
@@ -143,7 +145,7 @@ class ForumsController extends Controller
      */
     public function show(Forum $forum, Request $request)
     {
-         // if the gate does not allow this user to show a forum redirect to home
+        // if the gate does not allow this user to show a forum redirect to home
         if (Gate::denies('show_forum')) {
             flash()->error('Unauthorized', 'Your cannot view the forum');
 
@@ -158,10 +160,8 @@ class ForumsController extends Controller
 
         $this->hasFilter = count($filters);
 
-
         $threads = Thread::where('forum_id', $forum->id)->orderBy('created_at', 'desc')->paginate(1000000);
-        $threads->filter(function($e)
-        {
+        $threads->filter(function ($e) {
             return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
 
@@ -169,13 +169,13 @@ class ForumsController extends Controller
         $slug = $forum->description;
 
         return view('threads.index')
-            ->with(compact('threads','slug'))
+            ->with(compact('threads', 'slug'))
         ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder,
-        'hasFilter' => $this->hasFilter,
-        'filters' => $filters,
-        'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,  // there should be a better way to do this...
-        'filter_user' => isset($filters['filter_user']) ? $filters['filter_user'] : NULL,
-        'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL
+            'hasFilter' => $this->hasFilter,
+            'filters' => $filters,
+            'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : null,  // there should be a better way to do this...
+            'filter_user' => isset($filters['filter_user']) ? $filters['filter_user'] : null,
+            'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : null
         ]);
     }
 
@@ -210,7 +210,7 @@ class ForumsController extends Controller
      */
     public function getDefaultFilters()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -223,7 +223,7 @@ class ForumsController extends Controller
     {
         $this->middleware('auth');
 
-        $visibilities = [''=>''] + Visibility::pluck('name', 'id')->all();
+        $visibilities = ['' => ''] + Visibility::pluck('name', 'id')->all();
 
         return view('forums.edit', compact('forum', 'visibilities'));
     }
@@ -241,12 +241,11 @@ class ForumsController extends Controller
 
         $forum->fill($request->input())->save();
 
-        if (!$forum->ownedBy($this->user))
-        {
-            $this->unauthorized($request); 
+        if (!$forum->ownedBy($this->user)) {
+            $this->unauthorized($request);
         };
 
-              // add to activity log
+        // add to activity log
         Activity::log($forum, $this->user, 2);
 
         flash('Success', 'Your forum has been updated');

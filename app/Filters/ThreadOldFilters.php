@@ -2,10 +2,8 @@
 
 namespace App\Filters;
 
-
 class ThreadOldFilters extends Filters
 {
-
     protected $filters = ['by'];
 
     protected function by($username)

@@ -4,13 +4,13 @@ namespace App\Http\Forms;
 
 use App\User;
 
-class UserPostForm extends Form{
-
+class UserPostForm extends Form
+{
     protected $rules = [
         'username' => 'required'
     ];
 
-    public function persist ()
+    public function persist()
     {
         $user = new \App\User();
 

@@ -23,7 +23,9 @@ use Illuminate\View\View;
 class BlogsController extends Controller
 {
     protected int $rpp;
+
     protected string $sortBy;
+
     protected string $sortDirection;
 
     public function __construct()
@@ -133,7 +135,7 @@ class BlogsController extends Controller
                     Mail::send('emails.following-thread', ['user' => $user, 'blog' => $blog, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $blog, $tag, $reply_email, $site) {
                         $m->from($reply_email, $site);
 
-                        $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$blog->created_at->format('D F jS').' '.$blog->name);
+                        $m->to($user->email, $user->name)->subject($site . ': ' . $tag->name . ' :: ' . $blog->created_at->format('D F jS') . ' ' . $blog->name);
                     });
                     $users[$user->id] = $tag->name;
                 }
@@ -143,7 +145,6 @@ class BlogsController extends Controller
         return back();
     }
 
-    
     /**
      * Display the specified resource.
      *
@@ -213,7 +214,7 @@ class BlogsController extends Controller
 
                 $syncArray[] = $newTag->id;
 
-                $msg .= ' Added tag '.$tag.'.';
+                $msg .= ' Added tag ' . $tag . '.';
             } else {
                 $syncArray[$key] = $tag;
             }
@@ -288,7 +289,7 @@ class BlogsController extends Controller
         ++$blog->likes;
         $blog->save();
 
-        Log::info('User '.$id.' is liking '.$blog->name);
+        Log::info('User ' . $id . ' is liking ' . $blog->name);
 
         flash()->success('Success', 'You are now liking the selected blog.');
 
@@ -340,5 +341,4 @@ class BlogsController extends Controller
 
         return redirect('/');
     }
-
 }

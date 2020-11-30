@@ -9,6 +9,7 @@ abstract class Filters
     protected $filters = [];
 
     protected $request;
+
     protected $builder;
 
     /**

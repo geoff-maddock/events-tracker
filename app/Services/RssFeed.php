@@ -48,14 +48,14 @@ class RssFeed
      */
     public function getTagRSS($tag)
     {
-        if (Cache::has('rss-feed-'.$tag)) {
-            return Cache::get('rss-feed'.$tag);
+        if (Cache::has('rss-feed-' . $tag)) {
+            return Cache::get('rss-feed' . $tag);
         }
 
         $events = Event::getByTag(ucfirst($tag))->future()->orderBy('start_at', 'desc')->take(config('event.rss_size'))->get();
 
         $rss = $this->buildRssData($events);
-        Cache::add('rss-feed'.$tag, $rss, 7200);
+        Cache::add('rss-feed' . $tag, $rss, 7200);
 
         return $rss;
     }
@@ -75,7 +75,7 @@ class RssFeed
       ->description(config('event.description'))
       ->url(url('/'))
       ->language('en')
-      ->copyright('Copyright (c) '.config('event.author'))
+      ->copyright('Copyright (c) ' . config('event.author'))
       ->lastBuildDate($now->timestamp)
       ->appendTo($feed);
 
@@ -83,8 +83,8 @@ class RssFeed
             $item = new Item();
             $item
         ->title($event->name)
-        ->description($event->start_at->format('l F jS Y').'<br>'.$event->description)
-        ->contentEncoded('<div>'.$event->start_at->format('l F jS Y').'<br>'.$event->description.'</div>')
+        ->description($event->start_at->format('l F jS Y') . '<br>' . $event->description)
+        ->contentEncoded('<div>' . $event->start_at->format('l F jS Y') . '<br>' . $event->description . '</div>')
         ->url(route('events.show', $event->id))
         ->pubDate($event->created_at->timestamp)
         ->guid($event->id, true)
@@ -96,17 +96,17 @@ class RssFeed
 
         // Replace a couple items to make the feed more compliant
         $feed = str_replace(
-      '<rss version="2.0">',
-      '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">',
-      $feed
-    );
+            '<rss version="2.0">',
+            '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">',
+            $feed
+        );
 
         $feed = str_replace(
-      '<channel>',
-      '<channel>'."\n".'    <atom:link href="'.url('/rss').
+            '<channel>',
+            '<channel>' . "\n" . '    <atom:link href="' . url('/rss') .
       '" rel="self" type="application/rss+xml" />',
-      $feed
-    );
+            $feed
+        );
 
         return $feed;
     }

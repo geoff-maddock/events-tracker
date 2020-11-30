@@ -209,7 +209,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function getFullNameAttribute()
     {
         if ($profile = $this->profile) {
-            $full = $profile->first_name.' '.$profile->last_name;
+            $full = $profile->first_name . ' ' . $profile->last_name;
 
             return strlen($full) > 1 ? $full : $this->name; //$profile->first_name.' '.$profile->last_name;
         }
@@ -330,7 +330,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * Events that were created by the user.
      *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function createdEvents()
     {

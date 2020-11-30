@@ -27,10 +27,10 @@ function delete_form($routeParams, $label = 'Delete')
         $csrf = csrf_token();
 
         if (is_object($path)) {
-            $action = '/'.$path->getTable(); // photos
+            $action = '/' . $path->getTable(); // photos
 
             if (in_array($type, ['PUT', 'PATCH', 'DELETE'])) {
-                $action .= '/'.$path->getKey(); // photos/1
+                $action .= '/' . $path->getKey(); // photos/1
             }
         } else {
             $action = $path;
@@ -53,10 +53,10 @@ EOT;
         if (is_object($path)) {
             $object = get_class_name(get_class($path));
 
-            $action = '/'.$path->getTable(); // photos
+            $action = '/' . $path->getTable(); // photos
 
             if (in_array($type, ['PUT', 'PATCH', 'DELETE'])) {
-                $action .= '/'.$path->getKey(); // photos/1
+                $action .= '/' . $path->getKey(); // photos/1
             }
         } else {
             $action = $path;

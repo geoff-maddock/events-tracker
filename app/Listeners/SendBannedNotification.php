@@ -15,7 +15,6 @@ class SendBannedNotification
      */
     public function __construct()
     {
-        //
     }
 
     /**
@@ -26,6 +25,5 @@ class SendBannedNotification
      */
     public function handle(UserBanned $event)
     {
-        //
     }
 }

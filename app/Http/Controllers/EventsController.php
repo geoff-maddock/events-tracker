@@ -40,19 +40,33 @@ use Illuminate\Support\Facades\Session;
 class EventsController extends Controller
 {
     protected string $prefix;
+
     protected int $rpp;
+
     protected int $defaultRpp;
+
     protected int $defaultGridRpp;
+
     protected string $defaultSortBy;
+
     protected string $defaultSortOrder;
+
     protected int $gridRpp;
+
     protected int $page;
+
     protected array $sort;
+
     protected string $sortBy;
+
     protected string $sortOrder;
+
     protected array $filters;
+
     protected bool $hasFilter;
+
     protected Event $event;
+
     protected LaravelFacebookSdk $fb;
 
     public function __construct(Event $event, LaravelFacebookSdk $fb)
@@ -111,10 +125,10 @@ class EventsController extends Controller
      *
      * @return mixed
      */
-    public function getAttribute(Request $request, string $attribute,  $default = null)
+    public function getAttribute(Request $request, string $attribute, $default = null)
     {
         return $request->session()
-            ->get($this->prefix.$attribute, $default);
+            ->get($this->prefix . $attribute, $default);
     }
 
     /**
@@ -127,7 +141,7 @@ class EventsController extends Controller
      */
     public function setAttribute(string $attribute, $value, Request $request)
     {
-        $request->session()->put($this->prefix.$attribute, $value);
+        $request->session()->put($this->prefix . $attribute, $value);
 
         return true;
     }
@@ -252,7 +266,6 @@ class EventsController extends Controller
         }
     }
 
-
     protected function getGridPaging(array $filters): void
     {
         $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
@@ -264,10 +277,9 @@ class EventsController extends Controller
         }
     }
 
-
     public function getFilters(Request $request): array
     {
-        return $this->getAttribute($request,'filters', $this->getDefaultFilters());
+        return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
     }
 
     public function setFilters(Request $request, array $input)
@@ -294,7 +306,7 @@ class EventsController extends Controller
         if (!empty($filters['filter_name'])) {
             // getting name from the request
             $name = $filters['filter_name'];
-            $query->where('name', 'like', '%'.$name.'%');
+            $query->where('name', 'like', '%' . $name . '%');
             $filters['filter_name'] = $name;
         }
 
@@ -500,8 +512,8 @@ class EventsController extends Controller
 
         // add the criteria from the session - move this?
         if (!empty($this->filters['filter_name'])) {
-            $query_future->where('name', 'like', '%'.$this->filters['filter_name'].'%');
-            $query_past->where('name', 'like', '%'.$this->filters['filter_name'].'%');
+            $query_future->where('name', 'like', '%' . $this->filters['filter_name'] . '%');
+            $query_past->where('name', 'like', '%' . $this->filters['filter_name'] . '%');
         }
 
         if (!empty($this->filters['filter_venue'])) {
@@ -804,11 +816,11 @@ class EventsController extends Controller
             $mail->send('emails.reminder', ['user' => $user, 'event' => $event], static function ($m) use ($user, $event) {
                 $m->from('admin@events.cutupsmethod.com', 'Event Repo');
 
-                $m->to($user->email, $user->name)->subject('Event Repo: '.$event->start_at->format('D F jS').' '.$event->name.' REMINDER');
+                $m->to($user->email, $user->name)->subject('Event Repo: ' . $event->start_at->format('D F jS') . ' ' . $event->name . ' REMINDER');
             });
         }
 
-        flash()->success('Success', 'You sent an email reminder to '.count($event->eventResponses).' user about '.$event->name);
+        flash()->success('Success', 'You sent an email reminder to ' . count($event->eventResponses) . ' user about ' . $event->name);
 
         return back();
     }
@@ -856,7 +868,7 @@ class EventsController extends Controller
             });
         }
 
-        flash()->success('Success', 'You sent an email reminder to '.count($users).' users about events they are attending');
+        flash()->success('Success', 'You sent an email reminder to ' . count($users) . ' users about events they are attending');
 
         return back();
     }
@@ -892,7 +904,7 @@ class EventsController extends Controller
                 ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
                 $event->id, //optional event ID
                 [
-                    'url' => 'events/'.$event->id,
+                    'url' => 'events/' . $event->id,
                     //'color' => '#fc0'
                 ]
             );
@@ -918,7 +930,7 @@ class EventsController extends Controller
                     ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
                     $s->id, //optional event ID
                     [
-                        'url' => 'series/'.$s->id,
+                        'url' => 'series/' . $s->id,
                         'color' => '#99bcdb',
                     ]
                 );
@@ -966,7 +978,7 @@ class EventsController extends Controller
                 ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
                 $event->id, //optional event ID
                 [
-                    'url' => 'events/'.$event->id,
+                    'url' => 'events/' . $event->id,
                     //'color' => '#fc0'
                 ]
             );
@@ -992,7 +1004,7 @@ class EventsController extends Controller
                     ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
                     $s->id, //optional event ID
                     [
-                        'url' => 'series/'.$s->id,
+                        'url' => 'series/' . $s->id,
                         'color' => '#99bcdb',
                     ]
                 );
@@ -1061,7 +1073,7 @@ class EventsController extends Controller
                 ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
                 $event->id, //optional event ID
                 [
-                    'url' => '/events/'.$event->id,
+                    'url' => '/events/' . $event->id,
                     //'color' => '#fc0'
                 ]
             );
@@ -1077,7 +1089,7 @@ class EventsController extends Controller
                     ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
                     $s->id, //optional event ID
                     [
-                        'url' => '/series/'.$s->id,
+                        'url' => '/series/' . $s->id,
                         'color' => '#99bcdb',
                     ]
                 );
@@ -1198,7 +1210,7 @@ class EventsController extends Controller
             return (('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
         });
 
-        $tag = 'Min Age '.$age;
+        $tag = 'Min Age ' . $age;
 
         return $this->renderCalendar($events, $series, $tag);
     }
@@ -1233,7 +1245,7 @@ class EventsController extends Controller
                 ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
                 $event->id, //optional event ID
                 [
-                    'url' => 'events/'.$event->id,
+                    'url' => 'events/' . $event->id,
                     //'color' => '#fc0'
                 ]
             );
@@ -1259,7 +1271,7 @@ class EventsController extends Controller
                     ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
                     $s->id, //optional event ID
                     [
-                        'url' => 'series/'.$s->id,
+                        'url' => 'series/' . $s->id,
                         'color' => '#99bcdb',
                     ]
                 );
@@ -1352,15 +1364,15 @@ class EventsController extends Controller
 
         try {
             $token = $this->fb->getJavaScriptHelper()->getAccessToken();
-            $response = $this->fb->get($event_id.'?fields='.$fields, $token);
+            $response = $this->fb->get($event_id . '?fields=' . $fields, $token);
 
             if ($cover = $response->getGraphNode()->getField('cover')) {
                 $source = $cover->getField('source');
                 $content = file_get_contents($source);
 
-                $fileName = time().'_temp.jpg';
-                file_put_contents(storage_path().'/app/public/photos/'.$fileName, $content);
-                $file = new UploadedFile(storage_path().'/app/public/photos/'.$fileName, 'temp.jpg', null, null, UPLOAD_ERR_OK);
+                $fileName = time() . '_temp.jpg';
+                file_put_contents(storage_path() . '/app/public/photos/' . $fileName, $content);
+                $file = new UploadedFile(storage_path() . '/app/public/photos/' . $fileName, 'temp.jpg', null, null, UPLOAD_ERR_OK);
 
                 // make the photo object from the file in the request
                 if ($photo = $this->makePhoto($file)) {
@@ -1374,10 +1386,9 @@ class EventsController extends Controller
                     // attach to event
                     $event->addPhoto($photo);
                 }
-
             }
         } catch (FacebookSDKException $e) {
-            flash()->error('Error', 'You could not import the image.  Error: '.$e->getMessage());
+            flash()->error('Error', 'You could not import the image.  Error: ' . $e->getMessage());
 
             return false;
         }
@@ -1413,15 +1424,15 @@ class EventsController extends Controller
             $event_id = $spl[4];
 
             $token = $this->fb->getJavaScriptHelper()->getAccessToken();
-            $response = $this->fb->get($event_id.'?fields='.$fields, $token);
+            $response = $this->fb->get($event_id . '?fields=' . $fields, $token);
 
             // get the cover from FB
             if (($cover = $response->getGraphNode()->getField('cover')) && ($source = $cover->getField('source'))) {
                 $content = file_get_contents($source);
 
-                $fileName = time().'_temp.jpg';
-                file_put_contents(storage_path().'/app/public/photos/'.$fileName, $content);
-                $file = new UploadedFile(storage_path().'/app/public/photos/'.$fileName, 'temp.jpg', null, null, UPLOAD_ERR_OK);
+                $fileName = time() . '_temp.jpg';
+                file_put_contents(storage_path() . '/app/public/photos/' . $fileName, $content);
+                $file = new UploadedFile(storage_path() . '/app/public/photos/' . $fileName, 'temp.jpg', null, null, UPLOAD_ERR_OK);
 
                 // make the photo object from the file in the request
                 /** @var Photo $photo */
@@ -1445,7 +1456,6 @@ class EventsController extends Controller
         return back();
     }
 
-
     /**
      * Makes a call to the FB API if there is a link present and downloads the event cover photo.
      */
@@ -1455,7 +1465,8 @@ class EventsController extends Controller
         try {
             $token = $this->fb->getAccessTokenFromRedirect();
         } catch (FacebookSDKException $e) {
-            Log::error(sprintf('FB SDK exception: %s',$e->getMessage()));
+            Log::error(sprintf('FB SDK exception: %s', $e->getMessage()));
+
             return;
         }
 
@@ -1481,7 +1492,7 @@ class EventsController extends Controller
             try {
                 $token = $oauth_client->getLongLivedAccessToken($token);
             } catch (FacebookSDKException $e) {
-                Log::error(sprintf('FB SDK exception: %s',$e->getMessage()));
+                Log::error(sprintf('FB SDK exception: %s', $e->getMessage()));
             }
         }
 
@@ -1529,7 +1540,7 @@ class EventsController extends Controller
 
                 $syncArray[] = $newTag->id;
 
-                $msg .= ' Added tag '.$tag.'.';
+                $msg .= ' Added tag ' . $tag . '.';
             } else {
                 $syncArray[$key] = $tag;
             }
@@ -1586,7 +1597,7 @@ class EventsController extends Controller
                 if (!array_key_exists($user->id, $users)) {
                     Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site], function ($email) use ($user, $event, $tag, $reply_email, $site) {
                         $email->from($reply_email, $site);
-                        $email->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
+                        $email->to($user->email, $user->name)->subject($site . ': ' . $tag->name . ' :: ' . $event->start_at->format('D F jS') . ' ' . $event->name);
                     });
                     $users[$user->id] = $tag->name;
                 }
@@ -1604,7 +1615,7 @@ class EventsController extends Controller
                     Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $entity, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $event, $entity, $reply_email, $site) {
                         $m->from($reply_email, $site);
 
-                        $m->to($user->email, $user->name)->subject($site.': '.$entity->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
+                        $m->to($user->email, $user->name)->subject($site . ': ' . $entity->name . ' :: ' . $event->start_at->format('D F jS') . ' ' . $event->name);
                     });
                     $users[$user->id] = $entity->name;
                 }
@@ -1649,7 +1660,7 @@ class EventsController extends Controller
 
                 $syncArray[strtolower($tag)] = $newTag->id;
 
-                $msg .= ' Added tag '.$tag.'.';
+                $msg .= ' Added tag ' . $tag . '.';
             } else {
                 $syncArray[$key] = $tag;
             }
@@ -1717,9 +1728,9 @@ class EventsController extends Controller
         // add a twitter notification
         $event->notify(new EventPublished());
 
-        Log::info('User '.$id.' tweeted '.$event->name);
+        Log::info('User ' . $id . ' tweeted ' . $event->name);
 
-        flash()->success('Success', 'You tweeted the event - '.$event->name);
+        flash()->success('Success', 'You tweeted the event - ' . $event->name);
 
         return back();
     }
@@ -1758,19 +1769,19 @@ class EventsController extends Controller
         // add to activity log
         Activity::log($event, $this->user, 6);
 
-        Log::info('User '.$id.' is attending '.$event->name);
+        Log::info('User ' . $id . ' is attending ' . $event->name);
 
         // handle the request if ajax
         if ($request->ajax()) {
             return [
-                'Message' => 'You are now attending the event - '.$event->name,
+                'Message' => 'You are now attending the event - ' . $event->name,
                 'Success' => view('events.single')
                     ->with(compact('event'))
                     ->with('month', '')
                     ->render(),
             ];
         }
-        flash()->success('Success', 'You are now attending the event - '.$event->name);
+        flash()->success('Success', 'You are now attending the event - ' . $event->name);
 
         return back();
     }
@@ -1807,14 +1818,14 @@ class EventsController extends Controller
         // handle the request if ajax
         if ($request->ajax()) {
             return [
-                'Message' => 'You are no longer attending the event - '.$event->name,
+                'Message' => 'You are no longer attending the event - ' . $event->name,
                 'Success' => view('events.single')
                     ->with(compact('event'))
                     ->with('month', '')
                     ->render(),
             ];
         }
-        flash()->success('Success', 'You are no longer attending the event - '.$event->name);
+        flash()->success('Success', 'You are no longer attending the event - ' . $event->name);
 
         return back();
     }
@@ -1852,7 +1863,7 @@ class EventsController extends Controller
         $review->created_by = $this->user->id;
         $review->save();
 
-        flash()->success('Success', 'You reviewed the event - '.$event->name);
+        flash()->success('Success', 'You reviewed the event - ' . $event->name);
 
         return back();
     }
@@ -2135,7 +2146,7 @@ class EventsController extends Controller
             'file' => 'required|mimes:jpg,jpeg,png,gif',
         ]);
 
-        $fileName = time().'_'.$request->file->getClientOriginalName();
+        $fileName = time() . '_' . $request->file->getClientOriginalName();
         $filePath = $request->file('file')->storeAs('photos', $fileName, 'public');
 
         // get the event
@@ -2154,7 +2165,6 @@ class EventsController extends Controller
             $event->addPhoto($photo);
         }
     }
-
 
     public function follow(int $id): RedirectResponse
     {
@@ -2178,9 +2188,9 @@ class EventsController extends Controller
         $follow->object_type = 'event';
         $follow->save();
 
-        Log::info('User '.$id.' is following '.$event->name);
+        Log::info('User ' . $id . ' is following ' . $event->name);
 
-        flash()->success('Success', 'You are now following the event - '.$event->name);
+        flash()->success('Success', 'You are now following the event - ' . $event->name);
 
         return back();
     }
@@ -2283,8 +2293,9 @@ class EventsController extends Controller
         return redirect()->route('events.show', ['event' => $event->id]);
     }
 
-    public function export(Request $request,
-                            RssFeed $feed
+    public function export(
+        Request $request,
+        RssFeed $feed
     ) {
         // update filters from request
         $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
