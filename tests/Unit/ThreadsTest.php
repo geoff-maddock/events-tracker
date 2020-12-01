@@ -1,79 +1,81 @@
 <?php
-namespace Tests;
+
+namespace Tests\Unit;
+
 use App\User;
 use App\Thread;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Tests\TestCase;
 
 class ThreadsTest extends TestCase
 {
     private $thread;
 
-	public function setUp():void
-	{
-		parent::setUp();
+    public function setUp():void
+    {
+        parent::setUp();
 
-		$this->thread = factory('App\Thread')->create();
-	}
+        $this->thread = factory('App\Thread')->create();
+    }
 
     /** @test */
-    function a_thread_has_a_path()
+    public function a_thread_has_a_path()
     {
         $thread = create('App\Thread');
         $this->assertEquals(
-            "/threads/{$thread->id}", $thread->path()
+            "/threads/{$thread->id}",
+            $thread->path()
         );
     }
 
     /**
-	 * Test that threads are visible
+     * Test that threads are visible
      *
      * @test void
      */
-    function threads_browsable()
+    public function threads_browsable()
     {
         $response = $this->get('/threads')
         ->assertSee('Thread');
     }
 
-
     /** @test */
-    function a_user_can_read_a_single_thread()
+    public function a_user_can_read_a_single_thread()
     {
         $this->signIn();
 
         $user = \App\User::find(1);
         $temp = $this->thread->id;
 
-    	// when we visit a thread page
-    	$this->actingAs($user)
+        // when we visit a thread page
+        $this->actingAs($user)
             ->get('/threads/' . $temp)
-    		->assertSee('Thread');
+            ->assertSee('Thread');
     }
 
-
     /** @test */
-    function a_user_can_read_posts_that_are_associated_with_a_thread()
+    public function a_user_can_read_posts_that_are_associated_with_a_thread()
     {
         //$this->signIn();
 
         //$user = factory('App\User')->create();
         $user = \App\User::find(1);
-    	// add that thread includes replies
-    	$post = factory('App\Post')
-    		->create(['thread_id' => $this->thread->id]);
+        // add that thread includes replies
+        $post = factory('App\Post')
+            ->create(['thread_id' => $this->thread->id]);
 
         $response = $this->actingAs($user)
             ->withSession(['foo' => 'bar'])
             ->get('/threads/' . $this->thread->id);
 
-    	// when we visit a thread page, see that post body
+        // when we visit a thread page, see that post body
         $response->assertSee($post->body);
     }
 
-     /** @test */
-    function a_thread_has_a_creator()
+    /** @test */
+    public function a_thread_has_a_creator()
     {
         // add that thread
         $thread = factory('App\Thread')->make();
@@ -81,22 +83,21 @@ class ThreadsTest extends TestCase
         $this->assertInstanceOf('App\User', $thread->creator);
     }
 
-     /** @test */
-    function a_thread_can_add_a_reply()
+    /** @test */
+    public function a_thread_can_add_a_reply()
     {
         // add a post to the thread
         $posts = $this->thread->addPost([
             'body' => 'Foobar',
             'name' => 'Generic Reply',
             'created_by' => 1
-            ]);
+        ]);
 
         $this->assertInstanceOf('App\Post', $this->thread->posts->first());
     }
 
-
     /** @test */
-    function an_authenticated_user_can_create_new_forum_threads()
+    public function an_authenticated_user_can_create_new_forum_threads()
     {
         $this->signIn();
 
@@ -106,10 +107,7 @@ class ThreadsTest extends TestCase
 
         $this->get($response->headers->get('Location'))
             ->assertSee($thread->name);
-
     }
-
-
 
     public function publishThread($overrides = [])
     {
@@ -123,7 +121,7 @@ class ThreadsTest extends TestCase
     }
 
     /** @test */
-    function a_user_can_filter_threads_according_to_a_tag()
+    public function a_user_can_filter_threads_according_to_a_tag()
     {
         $category = create('App\ThreadCategory');
         $threadInCategory = create('App\Thread', ['thread_category_id' => $category->id]);
@@ -135,7 +133,7 @@ class ThreadsTest extends TestCase
     }
 
     /** @test */
-    function a_user_can_filter_threads_by_any_username()
+    public function a_user_can_filter_threads_by_any_username()
     {
         $this->signIn(create('App\User', ['name' => 'JohnDoe']));
 
@@ -148,6 +146,4 @@ class ThreadsTest extends TestCase
             ->assertSee($threadByJohn->name)
             ->assertDontSee($threadNotByJohn->name);
     }
-
-
 }

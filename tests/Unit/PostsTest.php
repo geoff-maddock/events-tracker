@@ -1,25 +1,27 @@
 <?php
-namespace Tests;
+
+namespace Tests\Unit;
 
 use App\Post;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Tests\TestCase;
 
 class PostsTest extends TestCase
 {
     private $post;
 
-	public function setUp():void
-	{
-		parent::setUp();
+    public function setUp():void
+    {
+        parent::setUp();
 
-		$this->post = factory('App\Post')->create();
-	}
+        $this->post = factory('App\Post')->create();
+    }
 
     /** @test */
-    function it_has_an_owner()
+    public function it_has_an_owner()
     {
         $post = factory('App\Post')->create();
 
@@ -27,7 +29,7 @@ class PostsTest extends TestCase
     }
 
     /** @test */
-    function it_knows_if_it_was_just_published()
+    public function it_knows_if_it_was_just_published()
     {
         $post = create('App\Post');
         $this->assertTrue($post->wasJustPublished());
@@ -35,9 +37,8 @@ class PostsTest extends TestCase
         $this->assertFalse($post->wasJustPublished());
     }
 
-
     /** @test */
-    function it_can_detect_all_mentioned_users_in_the_body()
+    public function it_can_detect_all_mentioned_users_in_the_body()
     {
         $post = new Post([
             'body' => '@JaneDoe wants to talk to @JohnDoe'
@@ -46,7 +47,7 @@ class PostsTest extends TestCase
     }
 
     /**
-	 * Test that a select post is visible
+     * Test that a select post is visible
      *
      * @test void
      */
@@ -57,9 +58,7 @@ class PostsTest extends TestCase
         $post = \App\Post::first();
         // when we visit a thread page
         $response = $this->followingRedirects()->actingAs($user)
-            ->get('/posts/'. $post->id)
+            ->get('/posts/' . $post->id)
             ->assertSee($post->body);
     }
-
-
 }

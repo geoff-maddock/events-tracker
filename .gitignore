@@ -16,8 +16,10 @@
 /vendor
 .env.local.php
 .env.php
+.env.testing
 .env
 .htaccess
+.phpunit.result.cache
 /.vagrant
 composer.phar
 composer.lock

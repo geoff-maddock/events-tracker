@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature;
 
 use App\Activity;
@@ -7,11 +8,14 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CreateThreadsTest extends TestCase
 {
+    use RefreshDatabase;
+
     /** @test  */
-    function unauthorized_users_may_not_delete_threads()
+    public function unauthorized_users_may_not_delete_threads()
     {
         $this->withExceptionHandling();
 
@@ -27,7 +31,7 @@ class CreateThreadsTest extends TestCase
     }
 
     /** @test */
-    function an_authenticated_user_can_create_new_forum_threads()
+    public function an_authenticated_user_can_create_new_forum_threads()
     {
         $this->withExceptionHandling();
 
@@ -39,6 +43,5 @@ class CreateThreadsTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee($thread->name)->assertSee($thread->body);
-
     }
 }

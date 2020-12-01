@@ -1,30 +1,34 @@
-<?php // database/seeds/VisibilityTableSeeder.php
+<?php
+
+// database/seeds/VisibilityTableSeeder.php
 
 use Illuminate\Database\Seeder;
 use App\Visibility;
 
-class VisibilityTableSeeder extends Seeder {
-
+class VisibilityTableSeeder extends Seeder
+{
     public function run()
     {
         DB::table('visibilities')->delete();
-    
-        Visibility::create(array(
+
+        Visibility::create([
             'name' => 'Proposal',
+        ]);
 
-        ));
-    
-        Visibility::create(array(
+        Visibility::create([
             'name' => 'Private',
+        ]);
 
-        ));
-
-        Visibility::create(array(
+        Visibility::create([
             'name' => 'Public',
+        ]);
 
-        ));
-    
+        Visibility::create([
+            'name' => 'Guarded',
+        ]);
 
-    }    
-
+        Visibility::create([
+            'name' => 'Cancelled',
+        ]);
+    }
 }

@@ -1,5 +1,8 @@
 <?php
-namespace Tests;
+
+namespace Tests\Unit;
+
+use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -25,9 +28,8 @@ class EntitiesTest extends TestCase
         $this->get('/entities')->assertSee('Entities');
     }
 
-
     /** @test */
-    function a_user_can_view_a_single_entity()
+    public function a_user_can_view_a_single_entity()
     {
         // create an entity
         $entity = factory('App\Entity')->create();
@@ -40,7 +42,7 @@ class EntitiesTest extends TestCase
     }
 
     /** @test */
-    function a_user_can_edit_an_entity_they_own()
+    public function a_user_can_edit_an_entity_they_own()
     {
         // create a user
         $user = factory('App\User')->create();
@@ -51,14 +53,13 @@ class EntitiesTest extends TestCase
 
         // try to edit the entity as the user who created
         $this->actingAs($user)
-            ->get('/entities/' . $entity->slug .'/edit')
+            ->get('/entities/' . $entity->slug . '/edit')
             ->assertStatus(200)
             ->assertSee($entity->name);
     }
 
-
     /** @test */
-    function an_entity_has_a_creator()
+    public function an_entity_has_a_creator()
     {
         // add that thread
         $entity = factory('App\Entity')->make();
@@ -66,10 +67,8 @@ class EntitiesTest extends TestCase
         $this->assertInstanceOf('App\User', $entity->user);
     }
 
-
-
     /** @test */
-    function an_entity_can_add_a_photo()
+    public function an_entity_can_add_a_photo()
     {
         // add a photo
         $photo = \App\Photo::all()->first();
@@ -79,7 +78,6 @@ class EntitiesTest extends TestCase
 
         $this->assertInstanceOf('App\Photo', $one);
     }
-
 
 //    /** @test */
 //    function an_authenticated_user_can_create_new_entities()
@@ -94,8 +92,6 @@ class EntitiesTest extends TestCase
 //            ->assertSee($entity->name);
 //
 //    }
-
-
 
 //    /** @test */
 //    function a_user_can_filter_entities_according_to_a_tag()
@@ -123,6 +119,4 @@ class EntitiesTest extends TestCase
 //            ->assertSee($threadByJohn->name)
 //            ->assertDontSee($threadNotByJohn->name);
 //    }
-
-
 }
