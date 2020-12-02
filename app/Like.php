@@ -16,7 +16,7 @@ class Like extends Eloquent
     /**
      * The storage format of the model's date columns.
      */
-    protected string $dateFormat = 'Y-m-d\\TH:i';
+    // protected string $dateFormat = 'Y-m-d\\TH:i';
 
     /**
      * @var Array
