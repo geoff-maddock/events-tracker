@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Feature;
 
 use App\Thread;
 use Tests\TestCase;
@@ -15,17 +15,19 @@ class ActivityTest extends TestCase
     {
         $this->signIn();
 
+        // use the factory class to create a new thread and post
         $thread = make('App\Thread');
-
         $this->post('/threads', $thread->toArray());
 
+        // find the specific saved thread
         $savedThread = Thread::orderBy('created_at', 'desc')->first();
 
+        // check that there was an activity created related to the thread
         $this->assertDatabaseHas('activities', [
             'object_table' => 'Thread',
             'user_id' => auth()->id(),
             'object_id' => $savedThread->id,
             'action_id' => 1,
-            ]);
+        ]);
     }
 }
