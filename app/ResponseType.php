@@ -12,7 +12,7 @@ class ResponseType extends Eloquent
      *
      **/
     protected $fillable = [
-        'name'
+        'name', 'description'
     ];
 
     /**

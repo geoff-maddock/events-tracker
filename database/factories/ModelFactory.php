@@ -79,19 +79,6 @@ $factory->define(App\Forum::class, function (Faker\Generator $faker) {
     ];
 });
 
-// $factory->define(App\Thread::class, function (Faker\Generator $faker) {
-// 	$user = factory(App\User::class)->create();
-// 	return [
-// 		'forum_id' => 1,
-//         'created_by' => $user->id,
-// 		'name' => $faker->sentence,
-// 		'slug' => $faker->sentence,
-// 		'body' => $faker->paragraph,
-// 		'description' => $faker->paragraph,
-// 		'visibility_id' => 3
-// 	];
-// });
-
 $factory->define(App\ThreadCategory::class, function (Faker\Generator $faker) {
     return [
         'forum_id' => 1,
