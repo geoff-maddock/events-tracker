@@ -457,7 +457,7 @@ class ThreadsController extends Controller
      *
      * @param ThreadRequest|Request $request
      */
-    public function store(ThreadRequest $request, Thread $thread): RedirectResponse
+    public function store(ThreadRequest $request): RedirectResponse
     {
         $msg = '';
 
@@ -487,7 +487,7 @@ class ThreadsController extends Controller
             }
         }
 
-        $thread = $thread->create($input);
+        $thread = Thread::create($input);
 
         $thread->tags()->attach($syncArray);
         $thread->entities()->attach($request->input('entity_list'));
@@ -691,8 +691,7 @@ class ThreadsController extends Controller
     public function destroy(
         Thread $thread,
         Request $request
-    )
-    {
+    ) {
         $this->authorize('update', $thread);
 
         // if not created by the user or super_admin

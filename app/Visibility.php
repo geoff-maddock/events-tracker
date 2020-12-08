@@ -7,6 +7,16 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 
 class Visibility extends Eloquent
 {
+    const VISIBILITY_PROPOSAL = 1;
+
+    const VISIBILITY_PRIVATE = 2;
+
+    const VISIBILITY_PUBLIC = 3;
+
+    const VISIBILITY_GUARDED = 4;
+
+    const VISIBILITY_CANCELLED = 5;
+
     /**
      * @var Array
      *
