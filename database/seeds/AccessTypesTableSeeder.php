@@ -28,5 +28,35 @@ class AccessTypesTableSeeder extends Seeder
             'created_at' => Carbon::now(),
             'updated_at' => null
         ]);
+
+        DB::table('access_types')->insert([
+            'id' => 3,
+            'name' => 'Member',
+            'label' => 'Member',
+            'description' => 'member',
+            'level' => 5,
+            'created_at' => Carbon::now(),
+            'updated_at' => null
+        ]);
+
+        DB::table('access_types')->insert([
+            'id' => 4,
+            'name' => 'Follower',
+            'label' => 'Follower',
+            'description' => 'follower',
+            'level' => 2,
+            'created_at' => Carbon::now(),
+            'updated_at' => null
+        ]);
+
+        DB::table('access_types')->insert([
+            'id' => 5,
+            'name' => 'Blocked',
+            'label' => 'Blocked',
+            'description' => 'blocked',
+            'level' => 0,
+            'created_at' => Carbon::now(),
+            'updated_at' => null
+        ]);
     }
 }
