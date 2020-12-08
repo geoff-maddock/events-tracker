@@ -1,5 +1,6 @@
 <?php
-namespace Tests\Unit;
+
+namespace Tests\Feature;
 
 use App\User;
 use App\Events;
@@ -10,9 +11,8 @@ use Laravel\Dusk\Chrome;
 use Laravel\Dusk\Browser;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
-class EventsTest extends TestCase {
-
-
+class EventsTest extends TestCase
+{
     /**
      * Test that events are browsable
      *
@@ -23,17 +23,17 @@ class EventsTest extends TestCase {
         $this->get('/events')->assertSee('Events');
     }
 
-	/**
-	 * A basic functional test example.
-	 *
-	 * @return void
-	 */
-	public function testBasicExample()
-	{
-		$response = $this->call('GET', '/');
+    /**
+     * A basic functional test example.
+     *
+     * @return void
+     */
+    public function testBasicExample()
+    {
+        $response = $this->call('GET', '/');
 
-		$this->assertEquals(200, $response->getStatusCode());
-	}
+        $this->assertEquals(200, $response->getStatusCode());
+    }
 
     /**
      * A basic functional test example.

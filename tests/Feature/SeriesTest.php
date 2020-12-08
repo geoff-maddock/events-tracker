@@ -20,7 +20,7 @@ class SeriesTest extends TestCase
         $user = factory('App\User')->create();
 
         $response = $this->actingAs($user)
-            ->withSession(array())
+            ->withSession([])
             ->get('/series/create');
 
         $response->assertStatus(200);

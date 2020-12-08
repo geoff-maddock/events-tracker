@@ -2,14 +2,13 @@
 
 namespace Tests\Feature;
 
-
 use App\Entity;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class LikesTest extends TestCase
 {
-   // use DatabaseMigrations;
+    // use DatabaseMigrations;
 
     /** @test */
     public function a_guest_cannot_like_anything()
@@ -19,7 +18,6 @@ class LikesTest extends TestCase
             ->assertRedirect('/');
     }
 
-
     /** @test */
     public function an_authenticated_user_can_like_a_post()
     {
@@ -27,7 +25,7 @@ class LikesTest extends TestCase
 
         $post = create('App\Post');
 
-        $this->get('/posts/'. $post->id .'/like');
+        $this->get('/posts/' . $post->id . '/like');
 
         $this->assertCount(1, $post->likes);
     }
@@ -39,7 +37,7 @@ class LikesTest extends TestCase
 
         $thread = create('App\Thread');
 
-        $this->get('/threads/'. $thread->id .'/like');
+        $this->get('/threads/' . $thread->id . '/like');
 
         $this->assertCount(1, $thread->likes);
     }
