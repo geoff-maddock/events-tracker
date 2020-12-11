@@ -1,6 +1,7 @@
 <?php
 
 use App\User;
+use App\UserStatus;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 
@@ -14,18 +15,18 @@ class UserSeed extends Seeder
     public function run()
     {
         DB::table('roles')->delete();
-    
+
         // add a default admin user
-        User::create(array(
+        User::create([
             'name' => 'Default Admin',
             'email' => 'admin@yourdomain.com',
-            'password' => 'addencodedpassword',
-            'remember_token' => '',
+            'password' => Hash::make('encodedpassword'),
+            'remember_token' => Str::random(10),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
             'email_verified_at' => Carbon::now(),
-            'user_status_id' => 2 // may need to change this into entity?
-        ));
+            'user_status_id' => UserStatus::ACTIVE
+        ]);
 
         // To Do: Add default groups or permissions for admin
     }

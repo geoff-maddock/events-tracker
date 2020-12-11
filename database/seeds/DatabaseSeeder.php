@@ -14,10 +14,6 @@ class DatabaseSeeder extends Seeder
     {
         Model::unguard();
 
-        //$this->call('CommentTableSeeder');
-        //$this->command->info('Comment table seeded.');
-        // $this->call('UserTableSeeder');
-
         // use this class to initialize all necessary BARE database seeds
         $this->call('EntityTypeTableSeeder');
         $this->command->info('Entity type table seeded.');
@@ -57,5 +53,21 @@ class DatabaseSeeder extends Seeder
 
         $this->call('EntityTableSeeder');
         $this->command->info('Entity table seeded.');
+        $this->call(ContentTypesTableSeeder::class);
+        $this->call(EventStatusesTableSeeder::class);
+        $this->call(EventTypesTableSeeder::class);
+        $this->call(PermissionsTableSeeder::class);
+        $this->call(GroupsTableSeeder::class);
+        $this->call(GroupPermissionTableSeeder::class);
+        $this->call(LocationTypesTableSeeder::class);
+        $this->call(OccurrenceDaysTableSeeder::class);
+        $this->call(OccurrenceTypesTableSeeder::class);
+        $this->call(OccurrenceWeeksTableSeeder::class);
+        $this->call(ResponseTypesTableSeeder::class);
+        $this->call(ReviewTypesTableSeeder::class);
+        $this->call(RolesTableSeeder::class);
+        $this->call(TagTypesTableSeeder::class);
+        $this->call(UserStatusesTableSeeder::class);
+        $this->call(VisibilitiesTableSeeder::class);
     }
 }

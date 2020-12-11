@@ -7,6 +7,16 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 
 class UserStatus extends Eloquent
 {
+    const PENDING = 1;
+
+    const ACTIVE = 2;
+
+    const SUSPENDED = 3;
+
+    const BANNED = 4;
+
+    const DELETED = 5;
+
     /**
      * @var Array
      *
