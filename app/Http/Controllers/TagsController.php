@@ -27,6 +27,7 @@ use App\EventResponse;
 use App\ResponseType;
 use App\User;
 use App\Follow;
+use App\TagType;
 
 class TagsController extends Controller
 {
@@ -78,7 +79,7 @@ class TagsController extends Controller
         $this->sort = ['name', 'desc'];
         $this->sortBy = 'created_at';
         $this->sortOrder = 'desc';
-        $this->defaultCriteria = null;
+        $this->defaultCriteria = [];
         $this->hasFilter = 0;
 
         parent::__construct();
@@ -267,7 +268,9 @@ class TagsController extends Controller
     {
         $this->middleware('auth');
 
-        return view('tags.edit', compact('tag'));
+        $tagTypes = TagType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+
+        return view('tags.edit', compact('tag', 'tagTypes'));
     }
 
     /**

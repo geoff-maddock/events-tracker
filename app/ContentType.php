@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 
 class ContentType extends Eloquent
 {
+    const PLAIN_TEXT = 1;
+
+    const HTML = 2;
+
     /**
      * @var Array
      *
