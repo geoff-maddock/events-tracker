@@ -1,10 +1,11 @@
 <?php
 
-use App\ContentType;
+use App\Models\Blog;
+use App\Models\ContentType;
 use Carbon\Carbon;
 use Faker\Generator as Faker;
 
-$factory->define(App\Blog::class, function (Faker $faker) {
+$factory->define(Blog::class, function (Faker $faker) {
     return [
         'name' => $faker->name,
         'slug' => $faker->name,
