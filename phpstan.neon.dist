@@ -4,5 +4,11 @@ parameters:
   paths:
       - app
 
+  ignoreErrors:
+      - '#Unsafe usage of new static#'
+
+  checkMissingIterableValueType: false
+
 includes:
+  - ./vendor/nunomaduro/larastan/extension.neon
   - phpstan-baseline.neon

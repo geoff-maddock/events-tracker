@@ -27,7 +27,7 @@ jobs:
     - name: Install NPM Dependencies
       run: npm install
 
-    # - name: Generate Key
+    # - name: Generate Key - Look at adding this after fixing migrations
     #   run: php artisan key:generate
 
     - name: Run php stan static analysis
