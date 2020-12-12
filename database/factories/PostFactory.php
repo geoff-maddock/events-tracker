@@ -1,13 +1,15 @@
 <?php
 
+use App\Models\Post;
+use App\Models\Thread;
 use App\Models\Visibility;
 use App\Models\User;
 use Faker\Generator as Faker;
 
-$factory->define(App\Post::class, function (Faker $faker) {
+$factory->define(Post::class, function (Faker $faker) {
     return [
         'thread_id' => function () {
-            return factory('App\Model\Thread')->create()->id;
+            return factory(Thread::class)->create()->id;
         },
         'created_by' => function () {
             return User::all()->last()->id;

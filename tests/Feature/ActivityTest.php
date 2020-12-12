@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Thread;
+use App\Models\Thread;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
@@ -16,7 +16,7 @@ class ActivityTest extends TestCase
         $this->signIn();
 
         // use the factory class to create a new thread and post
-        $thread = make('App\Thread');
+        $thread = make(Thread::class);
         $this->post('/threads', $thread->toArray());
 
         // find the specific saved thread

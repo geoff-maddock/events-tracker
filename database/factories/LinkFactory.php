@@ -1,10 +1,11 @@
 <?php
 
-use App\ContentType;
+use App\Models\ContentType;
+use App\Models\Link;
 use Carbon\Carbon;
 use Faker\Generator as Faker;
 
-$factory->define(App\Link::class, function (Faker $faker) {
+$factory->define(Link::class, function (Faker $faker) {
     return [
         'url' => $faker->url,
         'text' => $faker->url,
