@@ -1,9 +1,10 @@
 <?php
 
+use App\Models\ReviewType;
 use Carbon\Carbon;
 use Faker\Generator as Faker;
 
-$factory->define(App\ReviewType::class, function (Faker $faker) {
+$factory->define(ReviewType::class, function (Faker $faker) {
     return [
         'name' => $faker->word,
         'created_at' => Carbon::now(),

@@ -1,10 +1,11 @@
 <?php
 
+use App\Models\Photo;
 use App\Models\User;
 use Carbon\Carbon;
 use Faker\Generator as Faker;
 
-$factory->define(App\Photo::class, function (Faker $faker) {
+$factory->define(Photo::class, function (Faker $faker) {
     return [
         'name' => $faker->word,
         'thumbnail' => $faker->file,

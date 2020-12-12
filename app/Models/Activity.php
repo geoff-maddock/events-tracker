@@ -135,9 +135,9 @@ class Activity extends Eloquent
             $a = $action;
         }
 
-        // convert class into table
+        // convert entity class into table
         $split = explode('\\', $class);
-        $table = $split[1] ? $split[1] : $class;
+        $table = isset($split[2]) ? $split[2] : $class;
 
         // log the activity here
         $activity = new Activity();

@@ -215,7 +215,7 @@ class Entity extends Eloquent
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo('App\Mode\User', 'created_by');
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     /**
@@ -225,7 +225,7 @@ class Entity extends Eloquent
      */
     public function contacts()
     {
-        return $this->belongsToMany('App\Model\Contact');
+        return $this->belongsToMany(Contact::class);
     }
 
     /**
@@ -235,7 +235,7 @@ class Entity extends Eloquent
      */
     public function series()
     {
-        return $this->belongsToMany('App\Model\Series');
+        return $this->belongsToMany(Series::class);
     }
 
     /**
@@ -245,7 +245,7 @@ class Entity extends Eloquent
      */
     public function links()
     {
-        return $this->belongsToMany('App\Model\Link');
+        return $this->belongsToMany(Link::class);
     }
 
     /**
@@ -295,7 +295,7 @@ class Entity extends Eloquent
      */
     public function follows()
     {
-        return $this->morphMany('App\Model\Follow', 'object', 'object_type', 'object_id');
+        return $this->morphMany(Follow::class, 'object', 'object_type', 'object_id');
     }
 
     /**
@@ -305,7 +305,7 @@ class Entity extends Eloquent
      */
     public function likes()
     {
-        return $this->morphMany('App\Model\Like', 'object', 'object_type', 'object_id');
+        return $this->morphMany(Like::class, 'object', 'object_type', 'object_id');
     }
 
     /**

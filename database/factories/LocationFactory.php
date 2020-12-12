@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Entity;
+use App\Models\Location;
 use App\Models\LocationType;
 use App\Models\Visibility;
 use App\Models\User;

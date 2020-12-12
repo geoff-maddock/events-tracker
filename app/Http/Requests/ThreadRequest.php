@@ -26,6 +26,7 @@ class ThreadRequest extends Request
     {
         return [
             'name' => 'required|min:3',
+            'body' => 'required|min:3',
             'visibility_id' => 'required',
             'forum_id' => 'required|exists:forums,id',
         ];
