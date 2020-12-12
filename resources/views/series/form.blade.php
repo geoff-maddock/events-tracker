@@ -4,19 +4,19 @@
 {!! $errors->first('name','<span class="help-block">:message</span>') !!}
 </div>
 
-<div class="form-group">
+<div class="form-group {{$errors->has('slug') ? 'has-error' : '' }}">
 {!! Form::label('slug','Slug') !!}
 {!! Form::text('slug', null, ['placeholder' => 'Unique name for this series (will validate)', 'class' =>'form-control']) !!}
 {!! $errors->first('slug','<span class="help-block">:message</span>') !!}
 </div>
 
-<div class="form-group">
+<div class="form-group {{$errors->has('short') ? 'has-error' : '' }}">
 {!! Form::label('short','Short Description') !!}
 {!! Form::text('short', null, ['class' =>'form-control']) !!}
 {!! $errors->first('short','<span class="help-block">:message</span>') !!}
 </div>
 
-<div class="form-group">
+<div class="form-group {{$errors->has('description') ? 'has-error' : '' }}">
 {!! Form::label('description','Description') !!}
 {!! Form::textarea('description', null, ['class' =>'form-control']) !!}
 {!! $errors->first('description','<span class="help-block">:message</span>') !!}
@@ -46,21 +46,21 @@
 	{!! $errors->first('occurrence_type_id','<span class="help-block">:message</span>') !!}
 	</div>
 
-	<div class="form-group col-md-2">
+	<div class="form-group col-md-2 {{$errors->has('occurrence_week_id') ? 'has-error' : '' }}">
 	{!! Form::label('occurrence_week_id','Occurrence Week') !!}
 	{!! Form::select('occurrence_week_id', $weeks, (isset($series->occurrence_week_id) ? $series->occurrence_week : NULL), ['class' =>'form-control']) !!}
 	{!! $errors->first('occurrence_week_id','<span class="help-block">:message</span>') !!}
 	</div>
 
-	<div class="form-group col-md-2">
+	<div class="form-group col-md-2  {{$errors->has('occurrence_day_id') ? 'has-error' : '' }}">
 	{!! Form::label('occurrence_day_id','Occurrence Day') !!}
 	{!! Form::select('occurrence_day_id', $days, (isset($series->occurrence_day_id) ? $series->occurrence_day : NULL), ['class' =>'form-control']) !!}
 	{!! $errors->first('occurrence_day_id','<span class="help-block">:message</span>') !!}
 	</div>
 
-	<div class="form-group col-md-2">
+	<div class="form-group col-md-2  {{$errors->has('hold_date') ? 'has-error' : '' }}">
 	{!! Form::label('hold_date','Hold date') !!}
-	{!! Form::checkbox('hold_date', (isset($series->hold_date) ? $series->hold_date : NULL), ['class' =>'form-control']) !!}
+	{!! Form::checkbox('hold_date', (isset($series->hold_date) ? $series->hold_date : NULL)) !!}
 	{!! $errors->first('hold_date','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -73,13 +73,13 @@
 	{!! $errors->first('event_type_id','<span class="help-block">:message</span>') !!}
 	</div>
 
-	<div class="form-group col-md-2">
+	<div class="form-group col-md-2  {{$errors->has('venue_id') ? 'has-error' : '' }}">
 	{!! Form::label('venue_id','Venue') !!}
 	{!! Form::select('venue_id', $venues, (isset($series->venue_id) ? $series->venue_id : NULL), ['class' =>'form-control  select2']) !!}
 	{!! $errors->first('venue_id','<span class="help-block">:message</span>') !!}
 	</div>
 
-	<div class="form-group col-md-2">
+	<div class="form-group col-md-2  {{$errors->has('promoter_id') ? 'has-error' : '' }}">
 	{!! Form::label('promoter_id','Promoter') !!}
 	{!! Form::select('promoter_id', $promoters, (isset($series->promoter_id) ? $series->promoter_id : NULL), ['class' =>'form-control  select2']) !!}
 	{!! $errors->first('promoter_id','<span class="help-block">:message</span>') !!}

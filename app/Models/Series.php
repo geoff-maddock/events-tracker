@@ -12,6 +12,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Series extends Eloquent
 {
+    protected $attributes = [
+        'hold_date' => false
+    ];
+
     public static function boot()
     {
         parent::boot();

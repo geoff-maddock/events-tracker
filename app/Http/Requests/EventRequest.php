@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use Illuminate\Validation\Rule;
 use App\Http\Requests\Request;
-use App\Models\Event;
 
 class EventRequest extends Request
 {

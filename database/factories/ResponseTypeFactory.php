@@ -1,9 +1,10 @@
 <?php
 
+use App\Models\ResponseType;
 use Carbon\Carbon;
 use Faker\Generator as Faker;
 
-$factory->define(App\ResponseType::class, function (Faker $faker) {
+$factory->define(ResponseType::class, function (Faker $faker) {
     return [
         'name' => $faker->word,
         'description' => $faker->sentence,
