@@ -20,6 +20,9 @@ jobs:
     - name: Validate composer.json and composer.lock
       run: composer validate
 
+    - name: PHP Artisan Config Cache
+      run: php artisan config:cache
+
     - name: Cache Composer packages
       id: composer-cache
       uses: actions/cache@v2
