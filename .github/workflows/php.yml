@@ -27,8 +27,8 @@ jobs:
     - name: Install NPM Dependencies
       run: npm install
 
-    - name: Generate Key
-      run: php artisan key:generate
+    # - name: Generate Key
+    #   run: php artisan key:generate
 
     - name: Run php stan static analysis
       run: composer run-script phpstan
