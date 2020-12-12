@@ -26,6 +26,7 @@ class ForumRequest extends Request
     {
         return [
             'name' => 'required|min:3',
+            'slug' => 'required|min:3',
             'visibility_id' => 'required',
         ];
     }
