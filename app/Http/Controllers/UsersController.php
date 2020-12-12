@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Activity;
-use App\Group;
+use App\Models\Activity;
+use App\Models\Group;
 use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\UserRequest;
-use App\Photo;
-use App\Profile;
-use App\Tag;
-use App\User;
-use App\UserStatus;
-use App\Visibility;
+use App\Models\Photo;
+use App\Models\Profile;
+use App\Models\Tag;
+use App\Models\User;
+use App\Models\UserStatus;
+use App\Models\Visibility;
 use Carbon\Carbon;
 use Eluceo\iCal\Component\Calendar;
 use Eluceo\iCal\Component\Event;

@@ -11,8 +11,8 @@ class UsersTest extends TestCase
     /** @test */
     public function a_user_can_fetch_their_most_recent_post()
     {
-        $user = create('App\User');
-        $post = create('App\Post', ['created_by' => $user->id]);
+        $user = create(User::class);
+        $post = create(Post::class, ['created_by' => $user->id]);
 
         $post->created_by = $user->id;
         $this->assertEquals($post->id, $user->lastPost->id);

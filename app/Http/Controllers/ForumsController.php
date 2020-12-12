@@ -12,10 +12,10 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use App\Forum;
-use App\Thread;
-use App\Visibility;
-use App\Activity;
+use App\Models\Forum;
+use App\Models\Thread;
+use App\Models\Visibility;
+use App\Models\Activity;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Session;
 

@@ -1,8 +1,8 @@
 <?php // database/seeds/EventTypeTableSeeder.php
 
 use Illuminate\Database\Seeder;
-use App\Tag;
-use App\TagType;
+use App\Models\Tag;
+use App\Models\TagType;
 
 class TagTableSeeder extends Seeder {
 

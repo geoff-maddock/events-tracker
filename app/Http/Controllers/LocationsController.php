@@ -7,10 +7,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use DB;
-use App\Entity;
-use App\LocationType;
-use App\Location;
-use App\Visibility;
+use App\Models\Entity;
+use App\Models\LocationType;
+use App\Models\Location;
+use App\Models\Visibility;
 
 class LocationsController extends Controller
 {
@@ -31,7 +31,7 @@ class LocationsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param  \App\Entity 		$entity
+     * @param  Entity 		$entity
      * @return Response
      */
     public function index(Entity $entity)
@@ -42,7 +42,7 @@ class LocationsController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @param  \App\Entity 		$entity
+     * @param  Entity 		$entity
      * @return Response
      */
     public function create(Entity $entity)
@@ -57,7 +57,7 @@ class LocationsController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  Request 			$request
-     * @param  \App\Entity 		$entity
+     * @param  Entity 		$entity
      * @return Response
      */
     public function store(Request $request, Entity $entity)
@@ -80,8 +80,8 @@ class LocationsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Entity 		$entity
-     * @param  \App\Location  	$location
+     * @param  Entity 		$entity
+     * @param  Location  	$location
      * @return Response
      */
     public function show(Entity $entity, Location $location)
@@ -92,8 +92,8 @@ class LocationsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Entity 		$entity
-     * @param  \App\Location  	$location
+     * @param  Entity 		$entity
+     * @param  Location  	$location
      * @return Response
      */
     public function edit(Entity $entity, Location $location)
@@ -108,8 +108,8 @@ class LocationsController extends Controller
      * Update the specified resource in storage.
      *
      * @param  Request 			$request
-     * @param  \App\Entity 		$entity
-     * @param  \App\Location  	$location
+     * @param  Entity 		$entity
+     * @param  Location  	$location
      * @return Response
      */
     public function update(Request $request, Entity $entity, Location $location)
@@ -126,8 +126,8 @@ class LocationsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Entity $entity
-     * @param  \App\Location $location
+     * @param  Entity $entity
+     * @param  Location $location
      * @return Response
      * @throws \Exception
      */

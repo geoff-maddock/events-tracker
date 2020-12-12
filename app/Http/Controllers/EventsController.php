@@ -2,27 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Activity;
-use App\Entity;
-use App\Event;
-use App\EventResponse;
-use App\EventReview;
+use App\Models\Activity;
+use App\Models\Entity;
+use App\Models\Event;
+use App\Models\EventResponse;
+use App\Models\EventReview;
 use App\Events\EventCreated;
 use App\Events\EventUpdated;
-use App\EventType;
-use App\Follow;
+use App\Models\EventType;
+use App\Models\Follow;
 use App\Http\Requests\EventRequest;
 use App\Notifications\EventPublished;
-use App\OccurrenceDay;
-use App\OccurrenceType;
-use App\OccurrenceWeek;
-use App\Photo;
-use App\Series;
+use App\Models\OccurrenceDay;
+use App\Models\OccurrenceType;
+use App\Models\OccurrenceWeek;
+use App\Models\Photo;
+use App\Models\Series;
 use App\Services\RssFeed;
-use App\Tag;
-use App\Thread;
-use App\User;
-use App\Visibility;
+use App\Models\Tag;
+use App\Models\Thread;
+use App\Models\User;
+use App\Models\Visibility;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -2248,7 +2248,7 @@ class EventsController extends Controller
         $weeks = ['' => ''] + OccurrenceWeek::pluck('name', 'id')->all();
 
         // initialize the form object with the values from the template
-        $series = new \App\Series(['name' => $event->name,
+        $series = new Series(['name' => $event->name,
             'slug' => $event->slug,
             'short' => $event->short,
             'venue_id' => $event->venue_id,

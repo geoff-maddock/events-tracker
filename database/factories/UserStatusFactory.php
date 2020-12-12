@@ -1,9 +1,10 @@
 <?php
 
+use App\Models\UserStatus;
 use Carbon\Carbon;
 use Faker\Generator as Faker;
 
-$factory->define(App\UserStatus::class, function (Faker $faker) {
+$factory->define(UserStatus::class, function (Faker $faker) {
     return [
         'name' => $faker->word,
         'can_login' => $faker->boolean,

@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Activity;
-use App\Alias;
-use App\Entity;
-use App\EntityStatus;
-use App\EntityType;
-use App\Follow;
+use App\Models\Activity;
+use App\Models\Alias;
+use App\Models\Entity;
+use App\Models\EntityStatus;
+use App\Models\EntityType;
+use App\Models\Follow;
 use App\Http\Requests\EntityRequest;
-use App\Photo;
-use App\Role;
-use App\Tag;
-use App\User;
+use App\Models\Photo;
+use App\Models\Role;
+use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

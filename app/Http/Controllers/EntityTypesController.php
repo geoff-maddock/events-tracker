@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Activity;
+use App\Models\Activity;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EntityTypeRequest;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\EntityType;
+use App\Models\EntityType;
 use App\Http\Requests\EntityRequest;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;

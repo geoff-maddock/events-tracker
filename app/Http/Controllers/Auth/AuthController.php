@@ -4,14 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Auth\Guard;
-//use Illuminate\Contracts\Validation\Validator;
-//use \Validator;
-//use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
-
 use Illuminate\Http\Request;
-use App\User;
-use App\Profile;
-use App\Activity;
+use App\Models\User;
+use App\Models\Profile;
+use App\Models\Activity;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 

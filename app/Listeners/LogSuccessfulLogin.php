@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Activity;
+use App\Models\Activity;
 use App\Events\UserBanned;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;

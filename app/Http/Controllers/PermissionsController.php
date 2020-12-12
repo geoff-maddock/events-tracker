@@ -10,8 +10,8 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Permission;
-use App\Group;
+use App\Models\Permission;
+use App\Models\Group;
 
 class PermissionsController extends Controller
 {

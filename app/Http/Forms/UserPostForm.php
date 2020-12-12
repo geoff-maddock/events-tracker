@@ -2,7 +2,7 @@
 
 namespace App\Http\Forms;
 
-use App\User;
+use App\Models\User;
 
 class UserPostForm extends Form
 {
@@ -12,7 +12,7 @@ class UserPostForm extends Form
 
     public function persist()
     {
-        $user = new \App\User();
+        $user = new User();
 
         var_dump('save to db');
     }

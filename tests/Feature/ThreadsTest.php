@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\User;
-use App\Thread;
+use App\Models\Post;
+use App\Models\User;
+use App\Models\Thread;
+use App\Models\ThreadCategory;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -17,13 +19,13 @@ class ThreadsTest extends TestCase
     {
         parent::setUp();
 
-        $this->thread = factory('App\Thread')->create();
+        $this->thread = factory(Thread::class)->create();
     }
 
     /** @test */
     public function a_thread_has_a_path()
     {
-        $thread = create('App\Thread');
+        $thread = create(Thread::class);
         $this->assertEquals(
             "/threads/{$thread->id}",
             $thread->path()
@@ -46,7 +48,7 @@ class ThreadsTest extends TestCase
     {
         $this->signIn();
 
-        $user = \App\User::find(1);
+        $user = User::find(1);
         $temp = $this->thread->id;
 
         // when we visit a thread page
@@ -60,10 +62,10 @@ class ThreadsTest extends TestCase
     {
         //$this->signIn();
 
-        //$user = factory('App\User')->create();
-        $user = \App\User::find(1);
+        //$user = factory('App\Models\User')->create();
+        $user = User::find(1);
         // add that thread includes replies
-        $post = factory('App\Post')
+        $post = factory(Post::class)
             ->create(['thread_id' => $this->thread->id]);
 
         $response = $this->actingAs($user)
@@ -78,9 +80,9 @@ class ThreadsTest extends TestCase
     public function a_thread_has_a_creator()
     {
         // add that thread
-        $thread = factory('App\Thread')->make();
+        $thread = factory(Thread::class)->make();
 
-        $this->assertInstanceOf('App\User', $thread->creator);
+        $this->assertInstanceOf(User::class, $thread->creator);
     }
 
     /** @test */
@@ -93,7 +95,7 @@ class ThreadsTest extends TestCase
             'created_by' => 1
         ]);
 
-        $this->assertInstanceOf('App\Post', $this->thread->posts->first());
+        $this->assertInstanceOf(Post::class, $this->thread->posts->first());
     }
 
     /** @test */
@@ -101,7 +103,7 @@ class ThreadsTest extends TestCase
     {
         $this->signIn();
 
-        $thread = factory('App\Thread')->make();
+        $thread = factory(Thread::class)->make();
 
         $response = $this->post('/threads', $thread->toArray());
 
@@ -113,7 +115,7 @@ class ThreadsTest extends TestCase
     {
         $this->withExceptionHandling()->signIn();
 
-        $thread = factory('App\Thread', $overrides)->make();
+        $thread = factory(Thread::class, $overrides)->make();
 
         $this->post('/threads', $thread->toArray());
 
@@ -123,9 +125,9 @@ class ThreadsTest extends TestCase
     /** @test */
     public function a_user_can_filter_threads_according_to_a_tag()
     {
-        $category = create('App\ThreadCategory');
-        $threadInCategory = create('App\Thread', ['thread_category_id' => $category->id]);
-        $threadNotInCategory = create('App\Thread');
+        $category = create(ThreadCategory::class);
+        $threadInCategory = create(Thread::class, ['thread_category_id' => $category->id]);
+        $threadNotInCategory = create(Thread::class);
 
         $this->get('/threads/category/' . $category->name)
             ->assertSee($threadInCategory->name)
@@ -135,10 +137,10 @@ class ThreadsTest extends TestCase
     /** @test */
     public function a_user_can_filter_threads_by_any_username()
     {
-        $this->signIn(create('App\User', ['name' => 'JohnDoe']));
+        $this->signIn(create(User::class, ['name' => 'JohnDoe']));
 
-        $threadByJohn = create('App\Thread', ['created_by' => auth()->id()]);
-        $threadNotByJohn = create('App\Thread', ['created_by' => 1]);
+        $threadByJohn = create(Thread::class, ['created_by' => auth()->id()]);
+        $threadNotByJohn = create(Thread::class, ['created_by' => 1]);
         $threadNotByJohn->created_by = 1;
         $threadNotByJohn->save();
 

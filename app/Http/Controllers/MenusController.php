@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Filters\MenuFilters;
 use App\Http\Requests\MenuRequest;
-use App\Menu;
-use App\Visibility;
+use App\Models\Menu;
+use App\Models\Visibility;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;

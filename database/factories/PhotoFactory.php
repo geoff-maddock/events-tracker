@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Carbon\Carbon;
 use Faker\Generator as Faker;
 
@@ -15,10 +16,10 @@ $factory->define(App\Photo::class, function (Faker $faker) {
         'created_at' => Carbon::now(),
         'updated_at' => Carbon::now(),
         'created_by' => function () {
-            return App\User::all()->random()->id;
+            return User::all()->random()->id;
         },
         'updated_by' => function () {
-            return App\User::all()->random()->id;
+            return User::all()->random()->id;
         }
     ];
 });

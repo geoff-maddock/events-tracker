@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Activity;
-use App\Entity;
-use App\Event;
-use App\Series;
-use App\Tag;
-use App\Thread;
-use App\User;
+use App\Models\Activity;
+use App\Models\Entity;
+use App\Models\Event;
+use App\Models\Series;
+use App\Models\Tag;
+use App\Models\Thread;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

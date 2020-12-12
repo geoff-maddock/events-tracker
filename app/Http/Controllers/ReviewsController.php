@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventRequest;
-use App\ReviewType;
-use App\Thread;
+use App\Models\ReviewType;
+use App\Models\Thread;
 use App\Traits\Followable;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -17,12 +17,12 @@ use Facebook\Exceptions\FacebookSDKException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use App\EventReview;
-use App\Event;
-use App\Entity;
-use App\Tag;
-use App\Activity;
-use App\Visibility;
+use App\Models\EventReview;
+use App\Models\Event;
+use App\Models\Entity;
+use App\Models\Tag;
+use App\Models\Activity;
+use App\Models\Visibility;
 
 class ReviewsController extends Controller
 {

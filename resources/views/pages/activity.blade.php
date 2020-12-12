@@ -28,13 +28,13 @@
 
 				<div class="form-group col-sm-2">
 					{!! Form::label('filter_action','Filter By Action') !!}
-                    <?php $actions = [''=>'&nbsp;'] + App\Action::orderBy('name', 'ASC')->pluck('name', 'name')->all();?>
+                    <?php $actions = [''=>'&nbsp;'] + App\Models\Action::orderBy('name', 'ASC')->pluck('name', 'name')->all();?>
 					{!! Form::select('filter_action', $actions, (isset($filters['filter_action']) ? $filters['filter_action'] : NULL), ['data-width' => '100%', 'class' =>'form-control  auto-submit', 'data-placeholder' => 'Select an action']) !!}
 				</div>
 
 				<div class="form-group col-sm-2">
 					{!! Form::label('filter_user_id','Filter By User') !!}
-                    <?php $users = [''=>'&nbsp;'] + App\User::orderBy('name', 'ASC')->pluck('name', 'name')->all();?>
+                    <?php $users = [''=>'&nbsp;'] + App\Models\User::orderBy('name', 'ASC')->pluck('name', 'name')->all();?>
 					{!! Form::select('filter_user', $users, (isset($filters['filter_user']) ? $filters['filter_user'] : NULL), ['data-width' => '100%', 'class' =>'form-control select2  auto-submit', 'data-placeholder' => 'Select a user']) !!}
 				</div>
 

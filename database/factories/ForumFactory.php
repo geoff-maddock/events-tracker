@@ -2,8 +2,8 @@
 
 use Faker\Generator as Faker;
 
-$factory->define(App\Forum::class, function (Faker $faker) {
-    $user = factory(App\User::class)->create();
+$factory->define(Forum::class, function (Faker $faker) {
+    $user = factory(User::class)->create();
 
     return [
         'name' => $faker->sentence,

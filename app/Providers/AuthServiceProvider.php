@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
-use App\Permission;
+use App\Models\Permission;
 use App\Policies\PostPolicy;
 use App\Policies\ThreadPolicy;
-use App\Post;
-use App\Thread;
+use App\Models\Post;
+use App\Models\Thread;
 use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;

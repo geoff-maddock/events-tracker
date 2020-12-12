@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\Group;
-use App\Permission;
-use App\User;
+use App\Models\Group;
+use App\Models\Permission;
+use App\Models\User;
 
 class GroupsTableSeeder extends Seeder
 {

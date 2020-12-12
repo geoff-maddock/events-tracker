@@ -17,7 +17,7 @@ class SeriesTest extends TestCase
      */
     public function testCreateWithUser()
     {
-        $user = factory('App\User')->create();
+        $user = factory(User::class)->create();
 
         $response = $this->actingAs($user)
             ->withSession([])
@@ -45,7 +45,7 @@ class SeriesTest extends TestCase
      */
     public function testShowSeries()
     {
-        $user = factory('App\User')->create();
+        $user = factory(User::class)->create();
         $response = $this->get('/series/create');
 
         $response->assertStatus(302);

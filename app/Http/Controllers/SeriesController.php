@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Activity;
-use App\Entity;
-use App\Event;
-use App\EventType;
-use App\Follow;
+use App\Models\Activity;
+use App\Models\Entity;
+use App\Models\Event;
+use App\Models\EventType;
+use App\Models\Follow;
 use App\Http\Requests\SeriesRequest;
-use App\OccurrenceDay;
-use App\OccurrenceType;
-use App\OccurrenceWeek;
-use App\Photo;
-use App\Series;
+use App\Models\OccurrenceDay;
+use App\Models\OccurrenceType;
+use App\Models\OccurrenceWeek;
+use App\Models\Photo;
+use App\Models\Series;
 use App\Services\RssFeed;
-use App\Tag;
-use App\User;
-use App\Visibility;
+use App\Models\Tag;
+use App\Models\User;
+use App\Models\Visibility;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -574,7 +574,7 @@ class SeriesController extends Controller
         $endDate = $nextDate->copy()->addHours($series->length);
 
         // initialize the form object with the values from the template
-        $event = new \App\Event(['name' => $series->name,
+        $event = new Event(['name' => $series->name,
             'slug' => $series->slug,
             'short' => $series->short,
             'venue_id' => $series->venue_id,

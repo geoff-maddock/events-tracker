@@ -2,32 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Activity;
-use App\Http\Requests;
+use App\Models\Activity;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\EventRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use App\Event;
-use App\Entity;
-use App\EventType;
-use App\Series;
-use App\EntityType;
-use App\Role;
-use App\Tag;
-use App\Visibility;
-use App\Photo;
-use App\EventResponse;
-use App\ResponseType;
-use App\User;
-use App\Follow;
-use App\TagType;
+use App\Models\Event;
+use App\Models\Entity;
+use App\Models\Series;
+use App\Models\Tag;
+use App\Models\Follow;
+use App\Models\TagType;
 
 class TagsController extends Controller
 {
@@ -280,7 +268,9 @@ class TagsController extends Controller
      **/
     public function create()
     {
-        return view('tags.create');
+        $tagTypes = TagType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+
+        return view('tags.create', compact('tagTypes'));
     }
 
     /**

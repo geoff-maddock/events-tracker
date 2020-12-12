@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Entity;
+use App\Models\Photo;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -15,7 +17,7 @@ class EntitiesTest extends TestCase
     {
         parent::setUp();
 
-        $this->entity = factory('App\Entity')->create();
+        $this->entity = factory(Entity::class)->create();
     }
 
     /**
@@ -32,7 +34,7 @@ class EntitiesTest extends TestCase
     public function a_user_can_view_a_single_entity()
     {
         // create an entity
-        $entity = factory('App\Entity')->create();
+        $entity = factory(Entity::class)->create();
 
         // when we visit an entity page
         $this->get('/entities/' . $entity->slug)
@@ -45,10 +47,10 @@ class EntitiesTest extends TestCase
     public function a_user_can_edit_an_entity_they_own()
     {
         // create a user
-        $user = factory('App\User')->create();
+        $user = factory(User::class)->create();
 
         // add an entity created by that user
-        $entity = factory('App\Entity')
+        $entity = factory(Entity::class)
             ->create(['created_by' => $user->id]);
 
         // try to edit the entity as the user who created
@@ -62,9 +64,9 @@ class EntitiesTest extends TestCase
     public function an_entity_has_a_creator()
     {
         // add that thread
-        $entity = factory('App\Entity')->make();
+        $entity = factory(Entity::class)->make();
 
-        $this->assertInstanceOf('App\User', $entity->user);
+        $this->assertInstanceOf(User::class, $entity->user);
     }
 
     /** @test */
@@ -76,7 +78,7 @@ class EntitiesTest extends TestCase
 
         $one = $this->entity->photos->first();
 
-        $this->assertInstanceOf('App\Photo', $one);
+        $this->assertInstanceOf(Photo::class, $one);
     }
 
 //    /** @test */
@@ -84,7 +86,7 @@ class EntitiesTest extends TestCase
 //    {
 //        $this->signIn();
 //
-//        $entity = factory('App\Entity')->make();
+//        $entity = factory('App\Models\Entity')->make();
 //
 //        $response = $this->post('/entities', $entity->toArray());
 //
@@ -96,7 +98,7 @@ class EntitiesTest extends TestCase
 //    /** @test */
 //    function a_user_can_filter_entities_according_to_a_tag()
 //    {
-//        $tag = create('App\Tag');
+//        $tag = create('App\Models\Tag');
 //        $entityWithTag = create('App\Thread', ['thread_category_id' => $category->id]);
 //        $threadNotInCategory = create('App\Thread');
 //
@@ -108,7 +110,7 @@ class EntitiesTest extends TestCase
 //    /** @test */
 //    function a_user_can_filter_threads_by_any_username()
 //    {
-//        $this->signIn(create('App\User', ['name' => 'JohnDoe']));
+//        $this->signIn(create(User::class, ['name' => 'JohnDoe']));
 //
 //        $threadByJohn = create('App\Thread', ['created_by' => auth()->id()]);
 //        $threadNotByJohn = create('App\Thread', ['created_by' => 1]);

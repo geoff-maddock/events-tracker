@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\User;
-use App\Events;
+use App\Models\User;
+use App\Models\Events;
 use Carbon\Carbon;
 use Laravel\Dusk\Dusk;
 use Tests\TestCase;

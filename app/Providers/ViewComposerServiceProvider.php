@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
-use App\Event;
+use App\Models\Event;
+use App\Models\Menu;
+use App\Models\Role;
 use Illuminate\Support\ServiceProvider;
 
 class ViewComposerServiceProvider extends ServiceProvider
@@ -32,9 +34,9 @@ class ViewComposerServiceProvider extends ServiceProvider
     private function composeNavigation()
     {
         view()->composer('partials.nav', function ($view) {
-            $view->with('latest', \App\Event::latest()->first());
-            $view->with('roles', \App\Role::orderBy('name', 'ASC')->get());
-            $view->with('menus', \App\Menu::orderBy('name', 'ASC')->visible(auth()->user())->get());
+            $view->with('latest', Event::latest()->first());
+            $view->with('roles', Role::orderBy('name', 'ASC')->get());
+            $view->with('menus', Menu::orderBy('name', 'ASC')->visible(auth()->user())->get());
         });
     }
 }

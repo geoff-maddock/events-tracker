@@ -7,9 +7,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Entity;
-use App\Contact;
-use App\Visibility;
+use App\Models\Entity;
+use App\Models\Contact;
+use App\Models\Visibility;
 
 class ContactsController extends Controller
 {
@@ -53,7 +53,7 @@ class ContactsController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  Request $request
-     * @param  \App\Entity $entity
+     * @param  Entity $entity
      * @return Response
      */
     public function store(Request $request, Entity $entity)
@@ -78,8 +78,8 @@ class ContactsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Entity $entity
-     * @param  \App\Contact $contact
+     * @param  Entity $entity
+     * @param  Contact $contact
      * @return Response
      */
     public function show(Entity $entity, Contact $contact)
@@ -90,8 +90,8 @@ class ContactsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Entity $entity
-     * @param  \App\Contact $contact
+     * @param  Entity $entity
+     * @param  Contact $contact
      * @return Response
      */
     public function edit(Entity $entity, Contact $contact)
@@ -105,8 +105,8 @@ class ContactsController extends Controller
      * Update the specified resource in storage.
      *
      * @param  Request $request
-     * @param  \App\Entity $entity
-     * @param  \App\Contact $contact
+     * @param  Entity $entity
+     * @param  Contact $contact
      * @return Response
      */
     public function update(Request $request, Entity $entity, Contact $contact)
@@ -123,8 +123,8 @@ class ContactsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Entity $entity
-     * @param  \App\Contact $contact
+     * @param  Entity $entity
+     * @param  Contact $contact
      * @return Response
      * @throws \Exception
      */
