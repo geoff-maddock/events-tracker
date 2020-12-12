@@ -14,6 +14,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
     - name: Validate composer.json and composer.lock
       run: composer validate
 
@@ -29,6 +32,12 @@ jobs:
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --prefer-dist --no-progress --no-suggest
+
+    - name: Install NPM Dependencies
+      run: npm install
+
+    - name: Generate Key
+      run: php artisan key:generate
 
     - name: Run php stan static analysis
       run: composer run-script phpstan
