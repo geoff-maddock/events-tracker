@@ -8,11 +8,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Photo;
-use App\Entity;
-use App\EntityType;
-use App\Visibility;
-use App\Tag;
+use App\Models\Photo;
+use App\Models\Entity;
+use App\Models\EntityType;
+use App\Models\Visibility;
+use App\Models\Tag;
 
 class PhotosController extends Controller
 {

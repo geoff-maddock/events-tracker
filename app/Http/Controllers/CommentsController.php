@@ -7,9 +7,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Entity;
-use App\Event;
-use App\Comment;
+use App\Models\Entity;
+use App\Models\Event;
+use App\Models\Comment;
 
 class CommentsController extends Controller
 {
@@ -30,7 +30,7 @@ class CommentsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param  \App\Entity 		$entity
+     * @param  Entity 		$entity
      * @return Response
      */
     public function index(Entity $entity)
@@ -41,7 +41,7 @@ class CommentsController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @param  \App\Entity 		$entity
+     * @param  Entity 		$entity
      * @return Response
      */
     public function create(Entity $entity, Event $event)
@@ -66,7 +66,7 @@ class CommentsController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  Request 			$request
-     * @param  \App\Entity 		$entity
+     * @param  Entity 		$entity
      * @return Response
      */
     public function store(Request $request, Entity $entity, Event $event)
@@ -102,8 +102,8 @@ class CommentsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Entity 		$entity
-     * @param  \App\Comment  	$comment
+     * @param  Entity 		$entity
+     * @param  Comment  	$comment
      * @return Response
      */
     public function show(Entity $entity, Comment $comment)
@@ -125,12 +125,12 @@ class CommentsController extends Controller
         $event = null;
         $type = null;
 
-        if (get_class($object) == 'App\Entity') {
+        if (get_class($object) == Entity::class) {
             $entity = $object;
             $type = 'entities';
         };
 
-        if (get_class($object) == 'App\Event') {
+        if (get_class($object) == Event::class) {
             $event = $object;
             $type = 'events';
         }
@@ -142,8 +142,8 @@ class CommentsController extends Controller
      * Update the specified resource in storage.
      *
      * @param  Request 			$request
-     * @param  \App\Entity 		$entity
-     * @param  \App\Comment  	$comment
+     * @param  Entity 		$entity
+     * @param  Comment  	$comment
      * @return Response
      */
     public function update(Request $request, Entity $entity, Comment $comment)
@@ -161,7 +161,7 @@ class CommentsController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Entity $entity
-     * @param  \App\Comment $comment
+     * @param  Comment $comment
      * @return Response
      * @throws \Exception
      */

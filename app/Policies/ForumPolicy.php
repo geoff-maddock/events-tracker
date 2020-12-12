@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Forum;
-use App\User;
+use App\Models\Forum;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ForumPolicy

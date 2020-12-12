@@ -4,7 +4,7 @@ namespace App\Console;
 
 use App\Console\Commands\AdminTest;
 use App\Console\Commands\Notify;
-use App\User;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;

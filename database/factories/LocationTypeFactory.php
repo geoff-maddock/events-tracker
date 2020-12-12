@@ -1,9 +1,10 @@
 <?php
 
+use App\Models\LocationType;
 use Carbon\Carbon;
 use Faker\Generator as Faker;
 
-$factory->define(App\LocationType::class, function (Faker $faker) {
+$factory->define(LocationType::class, function (Faker $faker) {
     return [
         'name' => $faker->word,
         'created_at' => Carbon::now(),

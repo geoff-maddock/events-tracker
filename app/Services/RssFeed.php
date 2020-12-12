@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Event;
+use App\Models\Event;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Suin\RSSWriter\Channel;

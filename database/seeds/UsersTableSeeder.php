@@ -1,7 +1,7 @@
 <?php
 
-use App\User;
-use App\UserStatus;
+use App\Models\User;
+use App\Models\UserStatus;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 

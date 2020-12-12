@@ -2,7 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Post;
+use App\Models\Post;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -17,21 +18,21 @@ class PostsTest extends TestCase
     {
         parent::setUp();
 
-        $this->post = factory('App\Post')->create();
+        $this->post = factory(Post::class)->create();
     }
 
     /** @test */
     public function it_has_an_owner()
     {
-        $post = factory('App\Post')->create();
+        $post = factory(Post::class)->create();
 
-        $this->assertInstanceOf('App\User', $post->user);
+        $this->assertInstanceOf(User::class, $post->user);
     }
 
     /** @test */
     public function it_knows_if_it_was_just_published()
     {
-        $post = create('App\Post');
+        $post = create(Post::class);
         $this->assertTrue($post->wasJustPublished());
         $post->created_at = Carbon::now()->subMonth();
         $this->assertFalse($post->wasJustPublished());
@@ -53,9 +54,9 @@ class PostsTest extends TestCase
      */
     public function posts_browsable()
     {
-        $user = \App\User::find(1);
+        $user = User::find(1);
 
-        $post = \App\Post::first();
+        $post = Post::first();
         // when we visit a thread page
         $response = $this->followingRedirects()->actingAs($user)
             ->get('/posts/' . $post->id)

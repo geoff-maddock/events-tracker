@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use DB;
 use Log;
 use Mail;
-use App\User;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 

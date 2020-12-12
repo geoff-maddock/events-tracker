@@ -2,8 +2,8 @@
 
 namespace App\Listeners;
 
-use App\Activity;
-use App\User;
+use App\Models\Activity;
+use App\Models\User;
 use Illuminate\Routing\Events\RouteMatched;
 use Illuminate\Support\Facades\Auth;
 

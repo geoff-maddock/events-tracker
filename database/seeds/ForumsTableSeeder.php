@@ -1,6 +1,6 @@
 <?php
 
-use App\Visibility;
+use App\Models\Visibility;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 

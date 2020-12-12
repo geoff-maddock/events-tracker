@@ -16,7 +16,22 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Events\EventCreated;
 use App\Events\EventUpdated;
-use App\Event;
+use App\Models\Blog;
+use App\Models\Comment;
+use App\Models\Contact;
+use App\Models\Entity;
+use App\Models\EntityType;
+use App\Models\Event;
+use App\Models\Forum;
+use App\Models\Group;
+use App\Models\Link;
+use App\Models\Location;
+use App\Models\Menu;
+use App\Models\Permission;
+use App\Models\Post;
+use App\Models\Series;
+use App\Models\Thread;
+use App\Models\User;
 
 Auth::routes(['verify' => true]);
 
@@ -55,28 +70,28 @@ Route::get('calendar/attending', 'EventsController@calendarAttending')->name('ca
 Route::get('calendar/type/{tag}', 'EventsController@calendarEventTypes')->name('calendar.type');
 Route::get('calendar/min_age/{age}', 'EventsController@calendarMinAge')->name('calendar.minAge');
 
-Route::get('search','PagesController@search');
+Route::get('search', 'PagesController@search');
 
-Route::get('activity','PagesController@activity')->name('pages.activity');
+Route::get('activity', 'PagesController@activity')->name('pages.activity');
 
-Route::get('activity/filter', array('as' => 'activity.filter', 'uses' => 'PagesController@filter'));
-Route::get('activity/reset', array('as' => 'activity.reset', 'uses' => 'PagesController@reset'));
+Route::get('activity/filter', ['as' => 'activity.filter', 'uses' => 'PagesController@filter']);
+Route::get('activity/reset', ['as' => 'activity.reset', 'uses' => 'PagesController@reset']);
 
-Route::get('tools','PagesController@tools')->name('pages.tools');
-Route::post('invite','PagesController@invite')->name('pages.invite');
+Route::get('tools', 'PagesController@tools')->name('pages.tools');
+Route::post('invite', 'PagesController@invite')->name('pages.invite');
 
 Route::get('events/importPhotos', [
     'as' => 'events.importPhotos',
     'uses' => 'EventsController@importPhotos'
 ]);
 
-Route::bind('users', function($id)
-{
-    return App\User::whereId($id)->firstOrFail();
+Route::bind('users', function ($id) {
+    return App\Models\User::whereId($id)->firstOrFail();
 });
 
-Route::get('impersonate/{user}', function (App\User $user) {
+Route::get('impersonate/{user}', function (User $user) {
     Auth::login($user);
+
     return redirect('/');
 })->middleware('can:admin')->name('user.impersonate');
 
@@ -113,19 +128,19 @@ Route::get('users/{id}/delete', [
     'uses' => 'UsersController@delete'
 ]);
 
-Route::get('users/filter', array('as' => 'users.filter', 'uses' => 'UsersController@filter'));
-Route::get('users/reset', array('as' => 'users.reset', 'uses' => 'UsersController@reset'));
+Route::get('users/filter', ['as' => 'users.filter', 'uses' => 'UsersController@filter']);
+Route::get('users/reset', ['as' => 'users.reset', 'uses' => 'UsersController@reset']);
 
-Route::resource('users','UsersController');
+Route::resource('users', 'UsersController');
 
 Route::get('profile/{id}', 'UsersController@show')->name('users.profile');
-# PHOTOS
+// PHOTOS
 
 Route::delete('photos/{id}', 'PhotosController@destroy');
 Route::post('photos/{id}/setPrimary', 'PhotosController@setPrimary');
 Route::post('photos/{id}/unsetPrimary', 'PhotosController@unsetPrimary');
 
-# EVENTS
+// EVENTS
 Route::get('events/createSeries', [
     'as' => 'events.createSeries',
     'uses' => 'EventsController@createSeries'
@@ -134,8 +149,9 @@ Route::get('events/createThread', [
     'as' => 'events.createThread',
     'uses' => 'EventsController@createThread'
 ]);
-Route::get('events/dispatch', function() {
+Route::get('events/dispatch', function () {
     EventUpdated::dispatch();
+
     return 'test';
 });
 Route::get('update', function () {
@@ -153,8 +169,8 @@ Route::get('events/daily', 'EventsController@daily');
 Route::get('events/day/{day}', 'EventsController@day')->name('events.day');
 Route::get('events/attending', 'EventsController@indexAttending')->name('events.attending');
 
-Route::get('events/filter', array('as' => 'events.filter', 'uses' => 'EventsController@filter'));
-Route::get('events/reset', array('as' => 'events.reset', 'uses' => 'EventsController@reset'));
+Route::get('events/filter', ['as' => 'events.filter', 'uses' => 'EventsController@filter']);
+Route::get('events/reset', ['as' => 'events.reset', 'uses' => 'EventsController@reset']);
 
 Route::get('events/tag/{tag}', 'EventsController@indexTags')->name('events.tag');
 Route::get('events/venue/{slug}', 'EventsController@indexVenues')->name('events.venue');
@@ -163,9 +179,11 @@ Route::get('events/type/{slug}', 'EventsController@indexTypes');
 Route::get('events/series/{slug}', 'EventsController@indexSeries');
 Route::get('events/feed', 'EventsController@feed');
 Route::get('events/feed/tag/{tag}', 'EventsController@feedTags');
-Route::get('events/export', [
-    'as' => 'events.export',
-    'uses' => 'EventsController@export'
+Route::get(
+    'events/export',
+    [
+        'as' => 'events.export',
+        'uses' => 'EventsController@export'
     ]
 );
 
@@ -202,27 +220,24 @@ Route::get('events/{id}/unattend', [
 Route::post('events/{id}/photos', 'EventsController@addPhoto');
 Route::delete('events/{id}/photos/{photo_id}', 'EventsController@deletePhoto');
 
-Route::bind('events', function($id)
-{
-    return App\Event::whereId($id)->firstOrFail();
+Route::bind('events', function ($id) {
+    return Event::whereId($id)->firstOrFail();
 });
 
-Route::resource('events','EventsController');
+Route::resource('events', 'EventsController');
 
-# FORUMS
-Route::bind('forums', function($id)
-{
-    return App\Forum::whereId($id)->firstOrFail();
+// FORUMS
+Route::bind('forums', function ($id) {
+    return Forum::whereId($id)->firstOrFail();
 });
 
 Route::get('forums/all', 'ForumsController@indexAll');
 
-Route::resource('forums','ForumsController');
+Route::resource('forums', 'ForumsController');
 
-# THREADS
-Route::bind('threads', function($id)
-{
-    return App\Thread::whereId($id)->firstOrFail();
+// THREADS
+Route::bind('threads', function ($id) {
+    return Thread::whereId($id)->firstOrFail();
 });
 
 Route::get('threads/all', 'ThreadsController@indexAll');
@@ -230,12 +245,12 @@ Route::get('threads/category/{slug}', 'ThreadsController@indexCategories');
 Route::get('threads/tag/{tag}', 'ThreadsController@indexTags')->name('threads.tag');
 Route::get('threads/series/{tag}', 'ThreadsController@indexSeries');
 Route::get('threads/relatedto/{slug}', 'ThreadsController@indexRelatedTo');
-Route::post('threads/{thread}/posts','PostsController@store');
+Route::post('threads/{thread}/posts', 'PostsController@store');
 Route::get('threads/{id}/lock', 'ThreadsController@lock')->name('threads.lock');
 Route::get('threads/{id}/unlock', 'ThreadsController@unlock')->name('threads.unlock');
 
-Route::get('threads/filter', array('as' => 'threads.filter', 'uses' => 'ThreadsController@filter'));
-Route::get('threads/reset', array('as' => 'threads.reset', 'uses' => 'ThreadsController@reset'));
+Route::get('threads/filter', ['as' => 'threads.filter', 'uses' => 'ThreadsController@filter']);
+Route::get('threads/reset', ['as' => 'threads.reset', 'uses' => 'ThreadsController@reset']);
 
 Route::get('threads/{id}/like', [
     'as' => 'threads.like',
@@ -252,20 +267,18 @@ Route::get('threads/{id}/follow', [
     'uses' => 'ThreadsController@follow'
 ]);
 
-
 Route::get('threads/{id}/unfollow', [
     'as' => 'threads.unfollow',
     'uses' => 'ThreadsController@unfollow'
 ]);
 
-Route::resource('threads','ThreadsController');
+Route::resource('threads', 'ThreadsController');
 
-# POSTS
+// POSTS
 Route::get('posts/all', 'PostsController@indexAll');
 
-Route::bind('posts', function($id)
-{
-    return App\Post::whereId($id)->firstOrFail();
+Route::bind('posts', function ($id) {
+    return Post::whereId($id)->firstOrFail();
 });
 
 Route::get('posts/{id}/like', [
@@ -277,70 +290,63 @@ Route::get('posts/{id}/unlike', [
     'as' => 'posts.unlike',
     'uses' => 'PostsController@unlike'
 ]);
-Route::resource('posts','PostsController');
+Route::resource('posts', 'PostsController');
 
-# BLOGS
+// BLOGS
 Route::get('blogs/all', 'BlogsController@indexAll');
 
-Route::bind('blogs', function($id)
-{
-    return App\Blog::whereId($id)->firstOrFail();
+Route::bind('blogs', function ($id) {
+    return Blog::whereId($id)->firstOrFail();
 });
 
-Route::resource('blogs','BlogsController');
+Route::resource('blogs', 'BlogsController');
 
-# MENUS
+// MENUS
 Route::get('menus/all', 'MenusController@indexAll');
 
-Route::bind('menus', function($id)
-{
-    return App\Menu::whereId($id)->firstOrFail();
+Route::bind('menus', function ($id) {
+    return Menu::whereId($id)->firstOrFail();
 });
-Route::resource('menus','MenusController');
+Route::resource('menus', 'MenusController');
 Route::get('menus/{id}/content', 'MenusController@content');
 
-# PERMISSIONS
+// PERMISSIONS
 Route::get('permissions/all', 'PermissionsController@indexAll');
 
-Route::bind('permissions', function($id)
-{
-    return App\Permission::whereId($id)->firstOrFail();
+Route::bind('permissions', function ($id) {
+    return Permission::whereId($id)->firstOrFail();
 });
 
-Route::resource('permissions','PermissionsController');
+Route::resource('permissions', 'PermissionsController');
 
-
-# EntityTypes
+// EntityTypes
 Route::get('entity-types/all', 'EntityTypesController@indexAll');
 
-Route::bind('entity-types', function($id)
-{
-    return App\EntityType::whereId($id)->firstOrFail();
+Route::bind('entity-types', function ($id) {
+    return EntityType::whereId($id)->firstOrFail();
 });
 
-Route::resource('entity-types','EntityTypesController');
+Route::resource('entity-types', 'EntityTypesController');
 Route::delete('entity-types/{id}', 'EntityTypesController@destroy');
 
-# GROUPS
+// GROUPS
 Route::get('groups/all', 'GroupsController@indexAll');
 
-Route::bind('groups', function($id)
-{
-    return App\Group::whereId($id)->firstOrFail();
+Route::bind('groups', function ($id) {
+    return Group::whereId($id)->firstOrFail();
 });
 
-Route::resource('groups','GroupsController');
+Route::resource('groups', 'GroupsController');
 
-
-# ENTITIES
+// ENTITIES
 Route::post('entities/{id}/photos', 'EntitiesController@addPhoto');
 
 Route::get('entities/type/{type}', 'EntitiesController@indexTypes');
 
 Route::get('entities/role/{role}', 'EntitiesController@indexRoles')->name('entities.role');
 
-Route::get('entities/filter', array('as' => 'entities.filter', 'uses' => 'EntitiesController@filter'));
-Route::get('entities/reset', array('as' => 'entities.reset', 'uses' => 'EntitiesController@reset'));
+Route::get('entities/filter', ['as' => 'entities.filter', 'uses' => 'EntitiesController@filter']);
+Route::get('entities/reset', ['as' => 'entities.reset', 'uses' => 'EntitiesController@reset']);
 
 Route::get('entities/tag/{tag}', 'EntitiesController@indexTags')->name('entities.tag');
 Route::get('entities/alias/{alias}', 'EntitiesController@indexAliases')->name('entities.alias');
@@ -361,56 +367,49 @@ Route::get('entities/{id}/unfollow', [
     'uses' => 'EntitiesController@unfollow'
 ]);
 
-Route::bind('entities', function($id)
-{
-    return App\Entity::whereId($id)->firstOrFail();
+Route::bind('entities', function ($id) {
+    return Entity::whereId($id)->firstOrFail();
 });
 
-Route::resource('entities','EntitiesController');
+Route::resource('entities', 'EntitiesController');
 
-Route::bind('locations', function($id)
-{
-    return App\Location::whereId($id)->firstOrFail();
+Route::bind('locations', function ($id) {
+    return Location::whereId($id)->firstOrFail();
 });
 
-Route::resource('entities.locations','LocationsController');
+Route::resource('entities.locations', 'LocationsController');
 
-Route::bind('contacts', function($id)
-{
-    return App\Contact::whereId($id)->firstOrFail();
+Route::bind('contacts', function ($id) {
+    return Contact::whereId($id)->firstOrFail();
 });
 
-Route::resource('entities.contacts','ContactsController');
+Route::resource('entities.contacts', 'ContactsController');
 
-Route::bind('links', function($id)
-{
-    return App\Link::whereId($id)->firstOrFail();
+Route::bind('links', function ($id) {
+    return Link::whereId($id)->firstOrFail();
 });
 
-Route::resource('entities.links','LinksController');
+Route::resource('entities.links', 'LinksController');
 
-Route::bind('comments', function($id)
-{
-    return App\Comment::whereId($id)->firstOrFail();
+Route::bind('comments', function ($id) {
+    return Comment::whereId($id)->firstOrFail();
 });
 
-Route::resource('entities.comments','CommentsController');
-Route::resource('events.comments','CommentsController');
+Route::resource('entities.comments', 'CommentsController');
+Route::resource('events.comments', 'CommentsController');
 
-Route::resource('events.reviews','EventReviewsController');
+Route::resource('events.reviews', 'EventReviewsController');
 
-# REVIEWS
-Route::resource('reviews','ReviewsController');
-Route::get('reviews/filter', array('as' => 'reviews.filter', 'uses' => 'ReviewsController@filter'));
-Route::get('reviews/reset', array('as' => 'reviews.reset', 'uses' => 'ReviewsController@reset'));
+// REVIEWS
+Route::resource('reviews', 'ReviewsController');
+Route::get('reviews/filter', ['as' => 'reviews.filter', 'uses' => 'ReviewsController@filter']);
+Route::get('reviews/reset', ['as' => 'reviews.reset', 'uses' => 'ReviewsController@reset']);
 
-
-# SERIES
+// SERIES
 Route::get('series/createOccurrence', [
     'as' => 'series.createOccurrence',
     'uses' => 'SeriesController@createOccurrence'
 ]);
-
 
 Route::get('series/type/{type}', 'SeriesController@indexTypes');
 Route::get('series/tag/{tag}', 'SeriesController@indexTags')->name('series.tag');
@@ -419,13 +418,15 @@ Route::get('series/week', 'SeriesController@indexWeek');
 Route::get('series/cancelled', 'SeriesController@indexCancelled')->name('series.cancelled');
 Route::post('series/{id}/photos', 'SeriesController@addPhoto');
 Route::delete('series/{id}/photos/{photo_id}', 'SeriesController@deletePhoto');
-Route::get('series/export', [
+Route::get(
+    'series/export',
+    [
         'as' => 'series.export',
         'uses' => 'SeriesController@export'
     ]
 );
-Route::get('series/filter', array('as' => 'series.filter', 'uses' => 'SeriesController@filter'));
-Route::get('series/reset', array('as' => 'series.reset', 'uses' => 'SeriesController@reset'));
+Route::get('series/filter', ['as' => 'series.filter', 'uses' => 'SeriesController@filter']);
+Route::get('series/reset', ['as' => 'series.reset', 'uses' => 'SeriesController@reset']);
 
 Route::get('series/{id}/follow', [
     'as' => 'series.follow',
@@ -437,13 +438,11 @@ Route::get('series/{id}/unfollow', [
     'uses' => 'SeriesController@unfollow'
 ]);
 
-Route::bind('series', function($id)
-{
-    return App\Series::whereId($id)->firstOrFail();
+Route::bind('series', function ($id) {
+    return Series::whereId($id)->firstOrFail();
 });
 
-
-Route::resource('series','SeriesController');
+Route::resource('series', 'SeriesController');
 
 Route::get('tags/create', 'TagsController@create')->name('tags.create');
 Route::get('tags/{tag}', 'TagsController@indexTags')->name('tags.show');
@@ -459,7 +458,7 @@ Route::get('tags/{id}/unfollow', [
     'uses' => 'TagsController@unfollow'
 ]);
 
-Route::resource('tags','TagsController');
+Route::resource('tags', 'TagsController');
 
 // Add the route for rss
 Route::get('rss', 'EventsController@rss');

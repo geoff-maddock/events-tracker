@@ -10,9 +10,9 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Group;
-use App\Permission;
-use App\User;
+use App\Models\Group;
+use App\Models\Permission;
+use App\Models\User;
 
 class GroupsController extends Controller
 {

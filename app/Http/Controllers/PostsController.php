@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Activity;
-use App\Entity;
+use App\Models\Activity;
+use App\Models\Entity;
 use App\Http\Requests\PostRequest;
-use App\Like;
-use App\Post;
-use App\Series;
-use App\Tag;
-use App\Thread;
-use App\Visibility;
+use App\Models\Like;
+use App\Models\Post;
+use App\Models\Series;
+use App\Models\Tag;
+use App\Models\Thread;
+use App\Models\Visibility;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

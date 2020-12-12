@@ -1,19 +1,21 @@
 <?php
 
-use App\EntityType;
+use App\Models\Entity;
+use App\Models\EntityStatus;
+use App\Models\EntityType;
 use Faker\Generator as Faker;
 
-$factory->define(App\Entity::class, function (Faker $faker) {
+$factory->define(Entity::class, function (Faker $faker) {
     return [
         'name' => $faker->name,
         'slug' => $faker->name,
         'short' => $faker->paragraph,
         'description' => $faker->paragraph,
         'entity_type_id' => function () {
-            return App\EntityType::all()->random()->id;
+            return EntityType::all()->random()->id;
         },
         'entity_status_id' => function () {
-            return App\EntityStatus::all()->random()->id;
+            return EntityStatus::all()->random()->id;
         },
         'facebook_username' => $faker->name,
         'twitter_username' => $faker->name,
@@ -21,10 +23,10 @@ $factory->define(App\Entity::class, function (Faker $faker) {
     ];
 });
 
-$factory->state(App\Entity::class, 'venue', [
+$factory->state(Entity::class, 'venue', [
     'entity_type_id' => EntityType::SPACE
 ]);
 
-$factory->state(App\Entity::class, 'promoter', [
+$factory->state(Entity::class, 'promoter', [
     'entity_type_id' => EntityType::INDIVIDUAL
 ]);

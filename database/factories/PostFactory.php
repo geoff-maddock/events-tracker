@@ -1,14 +1,16 @@
 <?php
 
+use App\Models\Visibility;
+use App\Models\User;
 use Faker\Generator as Faker;
 
 $factory->define(App\Post::class, function (Faker $faker) {
     return [
         'thread_id' => function () {
-            return factory('App\Thread')->create()->id;
+            return factory('App\Model\Thread')->create()->id;
         },
         'created_by' => function () {
-            return App\User::all()->last()->id;
+            return User::all()->last()->id;
         },
         'name' => $faker->sentence,
         'slug' => $faker->sentence,
@@ -19,7 +21,7 @@ $factory->define(App\Post::class, function (Faker $faker) {
         'is_active' => $faker->boolean,
         'allow_html' => $faker->boolean,
         'visibility_id' => function () {
-            return App\Visibility::all()->last()->id;
+            return Visibility::all()->last()->id;
         },
     ];
 });

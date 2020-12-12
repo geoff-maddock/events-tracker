@@ -2,15 +2,15 @@
 
 namespace App\Providers;
 
-use App\Entity;
-use App\Event;
-use App\EventType;
-use App\Post;
-use App\Series;
-use App\Tag;
-use App\Thread;
-use App\User;
-use App\Visibility;
+use App\Models\Entity;
+use App\Models\Event;
+use App\Models\EventType;
+use App\Models\Post;
+use App\Models\Series;
+use App\Models\Tag;
+use App\Models\Thread;
+use App\Models\User;
+use App\Models\Visibility;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;

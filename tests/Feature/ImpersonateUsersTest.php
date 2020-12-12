@@ -7,7 +7,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use App\User;
+use App\Model\User;
 
 class ImpersonateUsersTest extends TestCase
 {
@@ -15,7 +15,7 @@ class ImpersonateUsersTest extends TestCase
     function non_admins_cannot_impersonate_users()
     {
         // create a new user
-        $user = factory('App\User')->create();
+        $user = factory(User::class)->create();
 
         // try to impersonate the user without signing in
         $response = $this->withExceptionHandling()
@@ -29,10 +29,10 @@ class ImpersonateUsersTest extends TestCase
     function admins_can_impersonate_users()
     {
         // create a new user
-        $user = factory('App\User')->create();
+        $user = factory(User::class)->create();
 
         // create a new admin user
-        $admin = factory('App\User')->create();
+        $admin = factory(User::class)->create();
         $admin->assignGroup('admin');
 
         $this->actingAs($admin);

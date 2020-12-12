@@ -27,7 +27,7 @@
 
             <div class="form-group col-sm-2">
                 {!! Form::label('filter_status','Status') !!}
-                <?php $venues = [''=>''] + App\UserStatus::orderBy('name','ASC')->pluck('name','name')->all();?>
+                <?php $venues = [''=>''] + App\Models\UserStatus::orderBy('name','ASC')->pluck('name','name')->all();?>
                 {!! Form::select('filter_status', $venues, $filters['filter_status'] ?? NULL, ['data-theme' => 'bootstrap', 'data-width' => '100%','class' =>'form-control select2', 'data-placeholder' => 'Select a status']) !!}
             </div>
 

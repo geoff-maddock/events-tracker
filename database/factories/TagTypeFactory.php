@@ -1,9 +1,10 @@
 <?php
 
+use App\Models\TagType;
 use Carbon\Carbon;
 use Faker\Generator as Faker;
 
-$factory->define(App\TagType::class, function (Faker $faker) {
+$factory->define(TagType::class, function (Faker $faker) {
     return [
         'name' => $faker->word,
         'created_at' => Carbon::now(),

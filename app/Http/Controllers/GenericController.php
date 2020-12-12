@@ -9,15 +9,15 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use DB;
 use Log;
-use App\Entity;
-use App\EntityFilters;
-use App\EntityType;
-use App\EntityStatus;
-use App\Tag;
-use App\Alias;
-use App\Role;
-use App\Photo;
-use App\Follow;
+use App\Models\Entity;
+use App\Models\EntityFilters;
+use App\Models\EntityType;
+use App\Models\EntityStatus;
+use App\Models\Tag;
+use App\Models\Alias;
+use App\Models\Role;
+use App\Models\Photo;
+use App\Models\Follow;
 
 class GenericController extends Controller
 {

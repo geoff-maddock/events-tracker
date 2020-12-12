@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Activity;
-use App\Blog;
-use App\ContentType;
-use App\Entity;
+use App\Models\Activity;
+use App\Models\Blog;
+use App\Models\ContentType;
+use App\Models\Entity;
 use App\Http\Requests\BlogRequest;
-use App\Like;
-use App\Menu;
-use App\Tag;
-use App\Visibility;
+use App\Models\Like;
+use App\Models\Menu;
+use App\Models\Tag;
+use App\Models\Visibility;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;

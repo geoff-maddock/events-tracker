@@ -3,10 +3,10 @@
 // database/seeds/EntityTableSeeder.php
 
 use Illuminate\Database\Seeder;
-use App\Entity;
-use App\EntityStatus;
-use App\EntityType;
-use App\Role;
+use App\Models\Entity;
+use App\Models\EntityStatus;
+use App\Models\EntityType;
+use App\Models\Role;
 
 class EntityTableSeeder extends Seeder
 {

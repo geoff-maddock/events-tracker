@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Entity;
+use App\Models\Entity;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
@@ -24,7 +24,7 @@ class FollowsTest extends TestCase
     {
         $this->signIn();
 
-        $entity = create('App\Entity');
+        $entity = create(Entity::class);
 
         $this->post('/entities/' . $entity->id . '/follow');
 

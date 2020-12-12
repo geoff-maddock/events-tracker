@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Activity;
-use App\Entity;
-use App\Event;
-use App\Follow;
+use App\Models\Activity;
+use App\Models\Entity;
+use App\Models\Event;
+use App\Models\Follow;
 use App\Http\Requests\ThreadRequest;
-use App\Like;
-use App\Series;
-use App\Tag;
-use App\Thread;
-use App\ThreadCategory;
-use App\Visibility;
+use App\Models\Like;
+use App\Models\Series;
+use App\Models\Tag;
+use App\Models\Thread;
+use App\Models\ThreadCategory;
+use App\Models\Visibility;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
