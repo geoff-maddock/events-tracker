@@ -5,6 +5,7 @@ use Faker\Generator as Faker;
 $factory->define(App\Thread::class, function (Faker $faker) {
     $user = factory(App\User::class)->create();
     $forum = factory(App\Forum::class)->create();
+    $threadCategory = factory(App\ThreadCategory::class, 3)->create();
 
     return [
         'forum_id' => function () {
