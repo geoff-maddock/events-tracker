@@ -47,7 +47,7 @@
 			@endforeach
 			@endif
 		<br>
-		<ul class="list" style="">
+		<ul class="list">
 		@if ($events = $entity->futureEvents()->take(1))
 		@foreach ($events as $event)
             <li>

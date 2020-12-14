@@ -2,7 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\Entity;
+use App\Models\Post;
+use App\Models\Thread;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
@@ -23,11 +24,14 @@ class LikesTest extends TestCase
     {
         $this->signIn();
 
-        $post = create('App\Post');
+        $post = create(Post::class);
+        $likes = $post->likes;
 
         $this->get('/posts/' . $post->id . '/like');
 
-        $this->assertCount(1, $post->likes);
+        $post->refresh();
+
+        $this->assertEquals($likes + 1, $post->likes);
     }
 
     /** @test */
@@ -35,10 +39,13 @@ class LikesTest extends TestCase
     {
         $this->signIn();
 
-        $thread = create('App\Thread');
+        $thread = create(Thread::class);
+        $likes = $thread->likes;
 
         $this->get('/threads/' . $thread->id . '/like');
 
-        $this->assertCount(1, $thread->likes);
+        $thread->refresh();
+
+        $this->assertEquals($likes + 1, $thread->likes);
     }
 }

@@ -16,7 +16,7 @@ abstract class Controller extends BaseController
     use DispatchesJobs;
     use ValidatesRequests;
 
-    protected User $user;
+    protected ?User $user;
 
     public function __construct()
     {
