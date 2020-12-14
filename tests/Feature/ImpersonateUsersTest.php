@@ -1,8 +1,6 @@
 <?php
 namespace Tests\Feature;
 
-use App\Models\Activity;
-use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;

@@ -291,6 +291,7 @@ Route::get('posts/{id}/unlike', [
     'uses' => 'PostsController@unlike'
 ]);
 Route::resource('posts', 'PostsController');
+Route::get('posts/tag/{tag}', 'PostsController@indexTags')->name('posts.tag');
 
 // BLOGS
 Route::get('blogs/all', 'BlogsController@indexAll');

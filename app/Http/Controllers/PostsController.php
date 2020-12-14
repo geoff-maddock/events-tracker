@@ -22,16 +22,56 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PostsController extends Controller
 {
-    protected $post;
+    protected Post $post;
 
-    protected $rpp;
+    protected string $prefix;
+
+    protected int $rpp;
+
+    protected int $page;
+
+    protected int $defaultRpp;
+
+    protected string $defaultSortBy;
+
+    protected string $defaultSortOrder;
+
+    protected array $sort;
+
+    protected string $sortBy;
+
+    protected string $sortOrder;
+
+    protected array $defaultCriteria;
+
+    protected bool $hasFilter;
+
+    protected array $filters;
+
+    protected array $criteria;
+
 
     public function __construct(Post $post)
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
 
-        $this->post = $post;
-        $this->rpp = 20;
+        // prefix for session storage
+        $this->prefix = 'app.posts.';
+
+        // default list variables - move to function that set from session or default
+        $this->defaultRpp = 10;
+        $this->defaultSortBy = 'created_at';
+        $this->defaultSortOrder = 'desc';
+
+        $this->rpp = 10;
+        $this->page = 1;
+        $this->sort = ['created_at', 'desc'];
+        $this->sortBy = 'created_at';
+        $this->sortOrder = 'desc';
+        $this->defaultCriteria = [];
+        $this->hasFilter = 1;
+
+        $post = $post;
 
         parent::__construct();
     }
@@ -59,6 +99,52 @@ class PostsController extends Controller
     }
 
     /**
+     * Update the page list parameters from the request.
+     *
+     */
+    protected function updatePaging(Request $request): void
+    {
+        // set sort by column
+        if ($request->input('sort_by')) {
+            $this->sortBy = $request->input('sort_by');
+        }
+
+        // set sort direction
+        if ($request->input('sort_direction')) {
+            $this->sortOrder = $request->input('sort_direction');
+        }
+
+        if (!empty($request->input('rpp')) && is_numeric($request->input('rpp'))) {
+            $this->rpp = $request->input('rpp');
+        }
+    }
+
+    /**
+     * Display a listing of posts by tag.
+     *
+     * @param $tag
+     *
+     * @return View
+     */
+    public function indexTags(Request $request, $tag)
+    {
+        $hasFilter = true;
+
+        // updates sort, rpp from request
+        $this->updatePaging($request);
+
+        $tag = urldecode($tag);
+
+        $posts = Post::getByTag(ucfirst($tag))
+                    ->orderBy('created_at', 'ASC')
+                    ->paginate($this->rpp);
+
+        return view('posts.index')
+                    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'tag' => $tag, 'hasFilter' => $hasFilter])
+                    ->with(compact('posts'));
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return Response | View | string
@@ -81,8 +167,10 @@ class PostsController extends Controller
      *
      * @internal param Request $request
      */
-    public function store(Thread $thread)
+    public function store(Request $request, Thread $thread)
     {
+        $msg = '';
+
         // TODO change this to use the trust_post permission to allow html
         if (auth()->id() === config('app.superuser')) {
             $allow_html = 1;
@@ -90,6 +178,25 @@ class PostsController extends Controller
             $allow_html = 0;
         }
 
+        $tagArray = $request->input('tag_list', []);
+        $syncArray = [];
+
+        // check the elements in the tag list, and if any don't match, add the tag
+        foreach ($tagArray as $key => $tag) {
+            if (!DB::table('tags')->where('id', $tag)->get()) {
+                $newTag = new Tag();
+                $newTag->name = ucwords(strtolower($tag));
+                $newTag->tag_type_id = 1;
+                $newTag->save();
+
+                $syncArray[] = $newTag->id;
+
+                $msg .= ' Added tag ' . $tag . '.';
+            } else {
+                $syncArray[$key] = $tag;
+            }
+        }
+    
         $thread->addPost([
             'body' => request('body'),
             'created_by' => auth()->id(),
@@ -98,6 +205,8 @@ class PostsController extends Controller
         ]);
 
         $post = Post::where('thread_id', '=', $thread->id)->orderBy('id', 'DESC')->first();
+
+        $post->tags()->sync($syncArray);
 
         // here, notify anybody following the thread
         $this->notifyFollowing($post);

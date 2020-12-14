@@ -563,13 +563,15 @@ class ThreadsController extends Controller
 
     public function show(Thread $thread): View
     {
-        // if the gate does not allow this user to show a forum redirect to home
+        // TODO if the gate does not allow this user to show a forum redirect to home
+
+        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
         // call a log for this and prevent it from going out of control
         ++$thread->views;
         $thread->save();
 
-        return view('threads.show', compact('thread'));
+        return view('threads.show', compact('thread', 'tags'));
     }
 
     public function lock(int $id): RedirectResponse

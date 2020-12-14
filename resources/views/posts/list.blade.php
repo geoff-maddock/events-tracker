@@ -21,12 +21,33 @@
 	<tr>
 		<td colspan='7' class="post-body">
 			<!-- TO DO: change this to storing the trust in the user at post save -->
+			<p>
 			@if (isset($post->user) && $post->user->can('trust_post'))
 				{!! $post->body !!}
 			@else
 				{{ $post->body }}
 			@endcan
-			<hr>
+			</p>
+			<p>
+			@unless ($post->entities->isEmpty())
+			Related:
+				@foreach ($post->entities as $entity)
+					<span class="label label-tag"><a href="/posts/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a>
+                            <a href="{!! route('entities.show', ['entity' => $entity->slug]) !!}" title="Show this entity."><span class='glyphicon glyphicon-link text-info'></span></a>
+                </span>
+				@endforeach
+			@endunless
+
+			@unless ($post->tags->isEmpty())
+			Tags:
+				@foreach ($post->tags as $tag)
+					<span class="label label-tag"><a href="/posts/tag/{{ urlencode($tag->name) }}">{{ $tag->name }}</a>
+                            <a href="{!! route('tags.show', ['tag' => $tag->name]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a>
+                	</span>
+				@endforeach
+			@endunless
+			</p>
+
 			<div class="btn-group" role="group" aria-label="...">
 			@if ($signedIn && (($post->ownedBy($user) && $post->isRecent()) || $user->hasGroup('super_admin')))
 				<a href="{!! route('posts.edit', ['post' => $post->id]) !!}" class="btn btn-sm btn-default" title="Edit this post.">Edit <span class='glyphicon glyphicon-pencil text-primary'></span></a>
@@ -42,21 +63,6 @@
 
             </div>
 
-		<br>
-
-			@unless ($post->entities->isEmpty())
-			Related:
-				@foreach ($post->entities as $entity)
-					<span class="label label-tag"><a href="/posts/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a></span>
-				@endforeach
-			@endunless
-
-			@unless ($post->tags->isEmpty())
-			Tags:
-				@foreach ($post->tags as $tag)
-					<span class="label label-tag"><a href="/posts/tag/{{ urlencode($tag->name) }}">{{ $tag->name }}</a></span>
-				@endforeach
-			@endunless
 		</td>
 	</tr>
 	</tbody>

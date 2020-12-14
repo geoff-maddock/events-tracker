@@ -52,6 +52,17 @@
                 <div class="form-group">
                     <textarea name="body" id="body" class="form-control" placeholder="Have something to say?" rows="5"></textarea>
                 </div>
+                <div class="row">
+                    <div class="form-group col-md-12">
+                    {!! Form::label('tag_list','Tags:') !!}
+                    {!! Form::select('tag_list[]', $tags, null, ['id' => 'tag_list', 'class' =>'form-control select2',
+                    'data-placeholder' => 'Choose a tag',
+                    'data-tags' =>'true',
+                    'multiple']) !!}
+                    {!! $errors->first('tags','<span class="help-block">:message</span>') !!}
+                    </div>
+                </div>
+
                 <button type="submit" class="btn btn-primary">Post</button>
                 </form>
 
