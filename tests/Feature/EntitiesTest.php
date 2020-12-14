@@ -2,9 +2,10 @@
 
 namespace Tests\Feature;
 
+use Tests\TestCase;
 use App\Models\Entity;
 use App\Models\Photo;
-use Tests\TestCase;
+use App\Models\User;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -73,7 +74,7 @@ class EntitiesTest extends TestCase
     public function an_entity_can_add_a_photo()
     {
         // add a photo
-        $photo = \App\Photo::all()->first();
+        $photo = Photo::all()->first();
         $this->entity->addPhoto($photo);
 
         $one = $this->entity->photos->first();
@@ -81,19 +82,19 @@ class EntitiesTest extends TestCase
         $this->assertInstanceOf(Photo::class, $one);
     }
 
-//    /** @test */
-//    function an_authenticated_user_can_create_new_entities()
-//    {
-//        $this->signIn();
-//
-//        $entity = factory('App\Models\Entity')->make();
-//
-//        $response = $this->post('/entities', $entity->toArray());
-//
-//        $this->get($response->headers->get('Location'))
-//            ->assertSee($entity->name);
-//
-//    }
+   /** @test */
+   public function an_authenticated_user_can_create_new_entities()
+   {
+       $this->signIn();
+
+       $entity = factory('App\Models\Entity')->make();
+
+       $response = $this->post('/entities', $entity->toArray());
+
+       $this->get($response->headers->get('Location'))
+           ->assertSee($entity->name);
+
+   }
 
 //    /** @test */
 //    function a_user_can_filter_entities_according_to_a_tag()

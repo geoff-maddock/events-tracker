@@ -261,7 +261,7 @@ class PostsController extends Controller
 
         flash('Success', 'Your post has been updated');
 
-        return redirect()->route('threads.show', ['id' => $post->thread_id]);
+        return redirect()->route('threads.show', ['thread' => $post->thread_id]);
     }
 
     /**

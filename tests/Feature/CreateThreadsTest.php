@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Activity;
-use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
+use App\Models\Thread;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -22,7 +22,7 @@ class CreateThreadsTest extends TestCase
 
         $this->signIn();
 
-        $thread = create('App\Thread');
+        $thread = create(Thread::class);
 
         Auth::logout();
 
@@ -38,7 +38,7 @@ class CreateThreadsTest extends TestCase
 
         $this->signIn();
 
-        $thread = make('App\Thread');
+        $thread = make(Thread::class);
 
         $response = $this->followingRedirects()->post('/threads', $thread->toArray());
 

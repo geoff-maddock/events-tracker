@@ -1,13 +1,13 @@
 <?php
 namespace Tests\Feature;
 
-use App\Activity;
+use App\Models\Activity;
 use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use App\Model\User;
+use App\Models\User;
 
 class ImpersonateUsersTest extends TestCase
 {

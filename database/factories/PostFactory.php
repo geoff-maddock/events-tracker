@@ -18,8 +18,8 @@ $factory->define(Post::class, function (Faker $faker) {
         'slug' => $faker->sentence,
         'description' => $faker->paragraph,
         'body' => $faker->paragraph,
-        'likes' => $faker->random_int(0, 10),
-        'views' => $faker->random_int(0, 10),
+        'likes' => $faker->numberBetween(0, 10),
+        'views' => $faker->numberBetween(0, 10),
         'is_active' => $faker->boolean,
         'allow_html' => $faker->boolean,
         'visibility_id' => function () {
