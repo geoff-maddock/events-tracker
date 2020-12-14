@@ -390,7 +390,7 @@ class PostsController extends Controller
         if ($this->user->cannot('destroy', $post)) {
             flash('Error', 'Your are not authorized to delete the post.');
 
-            return redirect()->route('threads.show', ['id' => $id]);
+            return redirect()->route('threads.show', ['thread' => $id]);
         }
 
         // add to activity log
@@ -400,7 +400,7 @@ class PostsController extends Controller
 
         flash()->success('Success', 'Your post has been deleted!');
 
-        return redirect()->route('threads.show', ['id' => $id]);
+        return redirect()->route('threads.show', ['thread' => $id]);
     }
 
     /**
