@@ -54,7 +54,6 @@ class Thread extends Eloquent
 
     protected $dates = ['created_at', 'updated_at'];
 
-    // building filter
     public function scopeFilter($query, QueryFilter $filters)
     {
         return $filters->apply($query);

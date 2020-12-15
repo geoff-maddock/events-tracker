@@ -1,7 +1,9 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Feature;
 
+use App\Models\Post;
+use App\Models\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;

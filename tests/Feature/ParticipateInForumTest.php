@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Post;
+use App\Models\Thread;
+use App\Models\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;

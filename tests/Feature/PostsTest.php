@@ -54,12 +54,14 @@ class PostsTest extends TestCase
      */
     public function posts_browsable()
     {
-        $user = User::find(1);
+        $this->signIn();
 
+        $user = User::find(1);
         $post = Post::first();
-        // when we visit a thread page
+
+        // when we visit a thread page, we'll see the first 100 characters of the post (at minimum)
         $response = $this->followingRedirects()->actingAs($user)
             ->get('/posts/' . $post->id)
-            ->assertSee($post->body);
+            ->assertSee(substr($post->body, 0, 100));
     }
 }
