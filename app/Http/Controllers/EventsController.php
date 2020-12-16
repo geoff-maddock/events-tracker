@@ -1568,7 +1568,7 @@ class EventsController extends Controller
         }
 
         // add a twitter notification if the user is admin
-        if ($this->user->hasGroup('super_admin')) {
+        if ($this->user->hasGroup('super_admin') && config('app.twitter_consumer_key') !== '999') {
             $event->notify(new EventPublished());
         }
 

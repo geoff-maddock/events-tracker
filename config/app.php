@@ -1,131 +1,130 @@
 <?php
 
 return [
+    'env' => env('APP_ENV', 'production'),
 
-	'env' => env('APP_ENV', 'production'),
+    /*
+    |--------------------------------------------------------------------------
+    | Application Debug Mode
+    |--------------------------------------------------------------------------
+    |
+    | When your application is in debug mode, detailed error messages with
+    | stack traces will be shown on every error that occurs within your
+    | application. If disabled, a simple generic error page is shown.
+    |
+    */
 
-	/*
-	|--------------------------------------------------------------------------
-	| Application Debug Mode
-	|--------------------------------------------------------------------------
-	|
-	| When your application is in debug mode, detailed error messages with
-	| stack traces will be shown on every error that occurs within your
-	| application. If disabled, a simple generic error page is shown.
-	|
-	*/
+    'debug' => env('APP_DEBUG', true),
 
-	'debug' => env('APP_DEBUG', true),
+    /*
+    |--------------------------------------------------------------------------
+    | Application URL
+    |--------------------------------------------------------------------------
+    |
+    | This URL is used by the console to properly generate URLs when using
+    | the Artisan command line tool. You should set this to the root of
+    | your application so that it is used when running Artisan tasks.
+    |
+    */
 
-	/*
-	|--------------------------------------------------------------------------
-	| Application URL
-	|--------------------------------------------------------------------------
-	|
-	| This URL is used by the console to properly generate URLs when using
-	| the Artisan command line tool. You should set this to the root of
-	| your application so that it is used when running Artisan tasks.
-	|
-	*/
+    'url' => env('APP_URL', 'http://localhost/'),
 
-	'url' => env('APP_URL', 'http://localhost/'),
+    /*
+    |--------------------------------------------------------------------------
+    | Application Timezone
+    |--------------------------------------------------------------------------
+    |
+    | Here you may specify the default timezone for your application, which
+    | will be used by the PHP date and date-time functions. We have gone
+    | ahead and set this to a sensible default for you out of the box.
+    |
+    */
 
-	/*
-	|--------------------------------------------------------------------------
-	| Application Timezone
-	|--------------------------------------------------------------------------
-	|
-	| Here you may specify the default timezone for your application, which
-	| will be used by the PHP date and date-time functions. We have gone
-	| ahead and set this to a sensible default for you out of the box.
-	|
-	*/
+    'timezone' => 'EST',
 
-	'timezone' => 'EST',
+    /*
+    |--------------------------------------------------------------------------
+    | Application Locale Configuration
+    |--------------------------------------------------------------------------
+    |
+    | The application locale determines the default locale that will be used
+    | by the translation service provider. You are free to set this value
+    | to any of the locales which will be supported by the application.
+    |
+    */
 
-	/*
-	|--------------------------------------------------------------------------
-	| Application Locale Configuration
-	|--------------------------------------------------------------------------
-	|
-	| The application locale determines the default locale that will be used
-	| by the translation service provider. You are free to set this value
-	| to any of the locales which will be supported by the application.
-	|
-	*/
+    'locale' => 'en',
 
-	'locale' => 'en',
+    /*
+    |--------------------------------------------------------------------------
+    | Application Fallback Locale
+    |--------------------------------------------------------------------------
+    |
+    | The fallback locale determines the locale to use when the current one
+    | is not available. You may change the value to correspond to any of
+    | the language folders that are provided through your application.
+    |
+    */
 
-	/*
-	|--------------------------------------------------------------------------
-	| Application Fallback Locale
-	|--------------------------------------------------------------------------
-	|
-	| The fallback locale determines the locale to use when the current one
-	| is not available. You may change the value to correspond to any of
-	| the language folders that are provided through your application.
-	|
-	*/
+    'fallback_locale' => 'en',
 
-	'fallback_locale' => 'en',
+    /*
+    |--------------------------------------------------------------------------
+    | Encryption Key
+    |--------------------------------------------------------------------------
+    |
+    | This key is used by the Illuminate encrypter service and should be set
+    | to a random, 32 character string, otherwise these encrypted strings
+    | will not be safe. Please do this before deploying an application!
+    |
+    */
 
-	/*
-	|--------------------------------------------------------------------------
-	| Encryption Key
-	|--------------------------------------------------------------------------
-	|
-	| This key is used by the Illuminate encrypter service and should be set
-	| to a random, 32 character string, otherwise these encrypted strings
-	| will not be safe. Please do this before deploying an application!
-	|
-	*/
+    'key' => env('APP_KEY', 'SomeRandomString'),
+    'cipher' => 'AES-256-CBC',
 
-	'key' => env('APP_KEY', 'SomeRandomString'),
-	'cipher' => "AES-256-CBC",
+    /*
+    |------------------
+    | Feedback Email
+    |------------------
+    |
+    | This is the email that will be used for sending application feedback
+    |
+    */
+    'feedback' => env('APP_FEEDBACK_EMAIL', 'admin@localhost'),
+    'admin' => env('APP_ADMIN_EMAIL', 'admin@localhost'),
+    'noreplyemail' => env('APP_NOREPLY_EMAIL', 'noreply@localhost'),
+    'superuser' => env('APP_SUPERUSER'),
 
-	/*
-	|------------------
-	| Feedback Email
-	|------------------
-	|
-	| This is the email that will be used for sending application feedback
-	|
-	*/
-	'feedback' => env('APP_FEEDBACK_EMAIL', 'admin@localhost'),
-	'admin' => env('APP_ADMIN_EMAIL', 'admin@localhost'),
-	'noreplyemail' => env('APP_NOREPLY_EMAIL', 'noreply@localhost'),
-	'superuser' => env('APP_SUPERUSER'),
+    /*
+    |--------------------------------------------------------------------------
+    | Custom
+    |--------------------------------------------------------------------------
+    |
+    | Here is where to add unique custom configs for this app
+    |
+    */
 
-	/*
-	|--------------------------------------------------------------------------
-	| Custom
-	|--------------------------------------------------------------------------
-	|
-	| Here is where to add unique custom configs for this app
-	|
-	*/
-
-	'fb_app_id' => env('APP_FB_APP_ID'),
-	'app_name' => env('APP_NAME', 'Event Repo'),
+    'fb_app_id' => env('APP_FB_APP_ID'),
+    'app_name' => env('APP_NAME', 'Event Repo'),
     'name' => env('APP_NAME', 'Event Repo'),
     'default_theme' => 'dark-theme',
+    'twitter_consumer_key' => env('TWITTER_CONSUMER_KEY'),
 
-	/*
-	|--------------------------------------------------------------------------
-	| Autoloaded Service Providers
-	|--------------------------------------------------------------------------
-	|
-	| The service providers listed here will be automatically loaded on the
-	| request to your application. Feel free to add your own services to
-	| this array to grant expanded functionality to your applications.
-	|
-	*/
+    /*
+    |--------------------------------------------------------------------------
+    | Autoloaded Service Providers
+    |--------------------------------------------------------------------------
+    |
+    | The service providers listed here will be automatically loaded on the
+    | request to your application. Feel free to add your own services to
+    | this array to grant expanded functionality to your applications.
+    |
+    */
 
-	'providers' => [
-
-		/*
-		 * Laravel Framework Service Providers...
-		 */
+    'providers' => [
+        /*
+         * Laravel Framework Service Providers...
+         */
         Illuminate\Auth\AuthServiceProvider::class,
         Illuminate\Broadcasting\BroadcastServiceProvider::class,
         Illuminate\Bus\BusServiceProvider::class,
@@ -149,60 +148,58 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
 
-		# lavelcollective forms
-		Collective\Html\HtmlServiceProvider::class,
+        // lavelcollective forms
+        Collective\Html\HtmlServiceProvider::class,
 
-		// HTML5 forms
-		//'Braunson\LaravelHTML5Forms\LaravelHTML5FormsServiceProvider',
+        // HTML5 forms
+        //'Braunson\LaravelHTML5Forms\LaravelHTML5FormsServiceProvider',
 
-		/*
-		 * Application Service Providers...
-		 */
+        /*
+         * Application Service Providers...
+         */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         App\Providers\BroadcastServiceProvider::class,
-    # replacement for the bus service provider
+        // replacement for the bus service provider
         \AltThree\Bus\BusServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         \App\Providers\ViewComposerServiceProvider::class,
 
+        // for social logins - fb, google, github
+        'Laravel\Socialite\SocialiteServiceProvider',
 
-		# for social logins - fb, google, github
-		'Laravel\Socialite\SocialiteServiceProvider',
+        // for image processing, thumbnails
+        'Intervention\Image\ImageServiceProvider',
 
-		# for image processing, thumbnails
-		'Intervention\Image\ImageServiceProvider',
+        // for integration with full calendar
+        //'MaddHatter\LaravelFullcalendar\ServiceProvider',
 
-		# for integration with full calendar
-		#'MaddHatter\LaravelFullcalendar\ServiceProvider',
+        //  'Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class', // Laravel IDE helper
 
-      #  'Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class', // Laravel IDE helper
-
-        # laravel tinker provider
+        // laravel tinker provider
         Laravel\Tinker\TinkerServiceProvider::class,
 
-        #facebook SDK
-       # SammyK\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
-#        Nsivanoly\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
+        //facebook SDK
+        // SammyK\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
+        //        Nsivanoly\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
         Scottybo\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
 
         NotificationChannels\Twitter\TwitterServiceProvider::class
-	],
+    ],
 
-	/*
-	|--------------------------------------------------------------------------
-	| Class Aliases
-	|--------------------------------------------------------------------------
-	|
-	| This array of class aliases will be registered when this application
-	| is started. However, feel free to register as many as you wish as
-	| the aliases are "lazy" loaded so they don't hinder performance.
-	|
-	*/
+    /*
+    |--------------------------------------------------------------------------
+    | Class Aliases
+    |--------------------------------------------------------------------------
+    |
+    | This array of class aliases will be registered when this application
+    | is started. However, feel free to register as many as you wish as
+    | the aliases are "lazy" loaded so they don't hinder performance.
+    |
+    */
 
-	'aliases' => [
-
+    'aliases' => [
         'App' => Illuminate\Support\Facades\App::class,
         'Arr' => Illuminate\Support\Arr::class,
         'Artisan' => Illuminate\Support\Facades\Artisan::class,
@@ -239,10 +236,9 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
-		'Image'     => \Intervention\Image\Facades\Image::class,
-		'Calendar'  => \MaddHatter\LaravelFullcalendar\Facades\Calendar::class,
+        'Image' => \Intervention\Image\Facades\Image::class,
+        'Calendar' => \MaddHatter\LaravelFullcalendar\Facades\Calendar::class,
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class
-	],
-
+    ],
 ];

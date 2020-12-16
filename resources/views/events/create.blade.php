@@ -6,15 +6,15 @@
 <script src="{{ asset('/js/facebook-sdk.js') }}"></script>
 <script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
 
-	<h4>Add a New Event</h4>
+<h4>Add a New Event</h4>
 
-	{!! Form::open(['route' => 'events.store']) !!}
+{!! Form::open(['route' => 'events.store']) !!}
 
-		@include('events.form')
+@include('events.form')
 
-	{!! Form::close() !!}
+{!! Form::close() !!}
 
-	{!! link_to_route('events.index', 'Return to list') !!}
+{!! link_to_route('events.index', 'Return to list') !!}
 @stop
 @section('scripts.footer')
 <script src="{{ asset('/js/facebook-event.js') }}"></script>
