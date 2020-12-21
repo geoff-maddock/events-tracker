@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Factories;
+
 use App\Models\EventType;
 use App\Models\OccurrenceDay;
 use App\Models\OccurrenceType;

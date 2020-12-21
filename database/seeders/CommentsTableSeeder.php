@@ -1,6 +1,6 @@
 <?php
 
-// database/seeds/CommentTableSeeder.php
+namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Comment;

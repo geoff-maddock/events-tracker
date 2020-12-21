@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Factories;
+
 use App\Models\ThreadCategory;
 use Faker\Generator as Faker;
 

@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Factories;
+
 use App\Models\UserStatus;
 use Carbon\Carbon;
 use Faker\Generator as Faker;

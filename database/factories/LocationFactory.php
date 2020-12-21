@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Factories;
+
 use App\Models\Entity;
 use App\Models\Location;
 use App\Models\LocationType;
