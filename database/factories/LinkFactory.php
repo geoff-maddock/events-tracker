@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Factories;
+
 use App\Models\ContentType;
 use App\Models\Link;
 use Carbon\Carbon;

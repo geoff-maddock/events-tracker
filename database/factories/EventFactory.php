@@ -1,7 +1,8 @@
 <?php
 
-use App\Models\Event;
+namespace Database\Factories;
 
+use App\Models\Event;
 use App\Models\Entity;
 use App\Models\User;
 use Carbon\Carbon;

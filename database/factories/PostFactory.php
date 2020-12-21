@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Factories;
+
 use App\Models\Post;
 use App\Models\Thread;
 use App\Models\Visibility;

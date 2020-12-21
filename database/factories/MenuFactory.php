@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Factories;
+
 use App\Models\Menu;
 use App\Models\Visibility;
 use Carbon\Carbon;

@@ -26,7 +26,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Paginator::useBootstrapThree();
+        // Paginator::useBootstrapThree();
+        Paginator::useBootstrap();
 
         Relation::morphMap([
             'entity' => Entity::class,

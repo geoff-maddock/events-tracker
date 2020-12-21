@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Factories;
+
 use App\Models\Tag;
 use App\Models\TagType;
 use Carbon\Carbon;

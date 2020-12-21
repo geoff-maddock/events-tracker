@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Factories;
+
 use App\Models\EventType;
 use Carbon\Carbon;
 use Faker\Generator as Faker;

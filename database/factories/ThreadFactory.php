@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Factories;
+
 use App\Models\Forum;
 use App\Models\Thread;
 use App\Models\ThreadCategory;

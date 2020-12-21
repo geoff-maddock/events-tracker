@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Factories;
+
 use App\Models\Photo;
 use App\Models\User;
 use Carbon\Carbon;
