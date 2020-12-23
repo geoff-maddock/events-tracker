@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use App\Models\Photo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
 class Profile extends Eloquent
 {
+    use HasFactory;
+
     public static function boot()
     {
         parent::boot();

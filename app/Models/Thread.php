@@ -6,6 +6,7 @@ use App\Filters\QueryFilter;
 use App\Models\Photo;
 use App\Models\Post;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +21,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class Thread extends Eloquent
 {
+    use HasFactory;
+
     public static function boot()
     {
         parent::boot();

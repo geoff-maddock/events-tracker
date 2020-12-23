@@ -16,7 +16,7 @@ class ActivityTest extends TestCase
         $this->signIn();
 
         // use the factory class to create a new thread and post
-        $thread = make(Thread::class);
+        $thread = Thread::factory()->make();
         $this->post('/threads', $thread->toArray());
 
         // find the specific saved thread

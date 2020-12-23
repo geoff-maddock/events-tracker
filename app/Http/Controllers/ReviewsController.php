@@ -12,7 +12,6 @@ use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Scottybo\LaravelFacebookSdk\LaravelFacebookSdk;
 use Facebook\Exceptions\FacebookSDKException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

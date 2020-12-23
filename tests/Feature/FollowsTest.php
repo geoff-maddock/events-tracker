@@ -24,7 +24,7 @@ class FollowsTest extends TestCase
     {
         $this->signIn();
 
-        $entity = create(Entity::class);
+        $entity = Entity::factory()->create();
 
         $this->post('/entities/' . $entity->id . '/follow');
 

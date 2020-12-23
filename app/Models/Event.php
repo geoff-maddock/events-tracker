@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Filters\QueryFilter;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
@@ -23,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Event extends Eloquent
 {
     use Notifiable;
+    use HasFactory;
 
     public static function boot()
     {

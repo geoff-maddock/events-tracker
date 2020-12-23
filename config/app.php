@@ -167,22 +167,22 @@ return [
         \App\Providers\ViewComposerServiceProvider::class,
 
         // for social logins - fb, google, github
-        'Laravel\Socialite\SocialiteServiceProvider',
+        Laravel\Socialite\SocialiteServiceProvider::class,
 
         // for image processing, thumbnails
-        'Intervention\Image\ImageServiceProvider',
+        Intervention\Image\ImageServiceProvider::class,
 
         // for integration with full calendar
         //'MaddHatter\LaravelFullcalendar\ServiceProvider',
 
-        //  'Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class', // Laravel IDE helper
+        //'Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class', // Laravel IDE helper
 
         // laravel tinker provider
         Laravel\Tinker\TinkerServiceProvider::class,
 
-        //facebook SDK
+        // Facebook SDK
         // SammyK\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
-        //        Nsivanoly\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
+        // Nsivanoly\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
         // Scottybo\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
 
         NotificationChannels\Twitter\TwitterServiceProvider::class

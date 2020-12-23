@@ -8,9 +8,12 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Forum extends Eloquent
 {
+    use HasFactory;
+
     public static function boot()
     {
         parent::boot();
@@ -74,7 +77,6 @@ class Forum extends Eloquent
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    
     /**
      * An thread is created by one user.
      *
@@ -86,7 +88,6 @@ class Forum extends Eloquent
     {
         return $this->created_by == $user->id;
     }
-
 
     /**
      * An event has one visibility.

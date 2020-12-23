@@ -3,11 +3,27 @@
 namespace Database\Factories;
 
 use App\Models\ThreadCategory;
-use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(ThreadCategory::class, function (Faker $faker) {
-    return [
-        'forum_id' => 1,
-        'name' => $faker->word
-    ];
-});
+class ThreadCategoryFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = ThreadCategory::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'forum_id' => 1,
+            'name' => $this->faker->word
+        ];
+    }
+}

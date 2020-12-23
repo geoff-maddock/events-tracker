@@ -3,18 +3,32 @@
 namespace Database\Factories;
 
 use App\Models\Group;
-use App\Models\User;
 use Carbon\Carbon;
-use Faker\Generator as Faker;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Group::class, function (Faker $faker) {
-    return [
-        'name' => $faker->name,
-        'label' => $faker->name,
-        'level' => $faker->randomElement([0, 1, 2, 10, 100, 999]),
-        'description' => $faker->sentence,
-        'created_at' => Carbon::now(),
-        'updated_at' => Carbon::now()
-    ];
-});
+class GroupFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Group::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'name' => $this->faker->name,
+            'label' => $this->faker->name,
+            'level' => $this->faker->randomElement([0, 1, 2, 10, 100, 999]),
+            'description' => $this->faker->sentence,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now()
+        ];
+    }
+}

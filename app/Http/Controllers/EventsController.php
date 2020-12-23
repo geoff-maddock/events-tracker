@@ -32,7 +32,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
-use Scottybo\LaravelFacebookSdk\LaravelFacebookSdk;
 use Facebook\Exceptions\FacebookSDKException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Illuminate\Support\Facades\Session;
@@ -67,9 +66,9 @@ class EventsController extends Controller
 
     protected Event $event;
 
-    protected LaravelFacebookSdk $fb;
+    protected $fb;
 
-    public function __construct(Event $event, LaravelFacebookSdk $fb)
+    public function __construct(Event $event)
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'indexAttending', 'calendarAttending']]);
         $this->event = $event;
@@ -90,7 +89,8 @@ class EventsController extends Controller
         $this->page = 1;
         $this->sort = ['name', 'desc'];
 
-        $this->fb = $fb;
+        $this->fb = null;
+        ;
 
         $this->hasFilter = 0;
         parent::__construct();
