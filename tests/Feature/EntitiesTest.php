@@ -12,13 +12,13 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class EntitiesTest extends TestCase
 {
-    protected $entity;
+    private $entity;
 
     public function setUp():void
     {
         parent::setUp();
 
-        $this->entity = factory(Entity::class)->create();
+        $this->entity = Entity::factory()->create();
     }
 
     /**
@@ -35,7 +35,7 @@ class EntitiesTest extends TestCase
     public function a_user_can_view_a_single_entity()
     {
         // create an entity
-        $entity = factory(Entity::class)->create();
+        $entity = Entity::factory()->create();
 
         // when we visit an entity page
         $this->get('/entities/' . $entity->slug)
@@ -48,10 +48,10 @@ class EntitiesTest extends TestCase
     public function a_user_can_edit_an_entity_they_own()
     {
         // create a user
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
 
         // add an entity created by that user
-        $entity = factory(Entity::class)
+        $entity = Entity::factory()
             ->create(['created_by' => $user->id]);
 
         // try to edit the entity as the user who created
@@ -65,7 +65,7 @@ class EntitiesTest extends TestCase
     public function an_entity_has_a_creator()
     {
         // add that thread
-        $entity = factory(Entity::class)->make();
+        $entity = Entity::factory()->make();
 
         $this->assertInstanceOf(User::class, $entity->user);
     }
@@ -82,19 +82,18 @@ class EntitiesTest extends TestCase
         $this->assertInstanceOf(Photo::class, $one);
     }
 
-   /** @test */
-   public function an_authenticated_user_can_create_new_entities()
-   {
-       $this->signIn();
+    /** @test */
+    public function an_authenticated_user_can_create_new_entities()
+    {
+        $this->signIn();
 
-       $entity = factory('App\Models\Entity')->make();
+        $entity = Entity::factory()->make();
 
-       $response = $this->post('/entities', $entity->toArray());
+        $response = $this->post('/entities', $entity->toArray());
 
-       $this->get($response->headers->get('Location'))
+        $this->get($response->headers->get('Location'))
            ->assertSee($entity->name);
-
-   }
+    }
 
 //    /** @test */
 //    function a_user_can_filter_entities_according_to_a_tag()

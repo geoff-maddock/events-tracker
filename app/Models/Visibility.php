@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
 class Visibility extends Eloquent
 {
+    use HasFactory;
+
     const VISIBILITY_PROPOSAL = 1;
 
     const VISIBILITY_PRIVATE = 2;

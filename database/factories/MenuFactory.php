@@ -5,20 +5,36 @@ namespace Database\Factories;
 use App\Models\Menu;
 use App\Models\Visibility;
 use Carbon\Carbon;
-use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(App\Menu::class, function (Faker $faker) {
-    return [
-        'name' => $faker->word,
-        'slug' => $faker->slug,
-        'body' => $faker->sentence,
-        'menu_parent_id' => function () {
-            return Menu::all()->random()->id;
-        },
-        'created_at' => Carbon::now(),
-        'updated_at' => Carbon::now(),
-        'visibility_id' => function () {
-            return Visibility::all()->random()->id;
-        },
-    ];
-});
+class MenuFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Menu::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'name' => $this->faker->word,
+            'slug' => $this->faker->slug,
+            'body' => $this->faker->sentence,
+            'menu_parent_id' => function () {
+                return Menu::all()->random()->id;
+            },
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+            'visibility_id' => function () {
+                return Visibility::all()->random()->id;
+            },
+        ];
+    }
+}

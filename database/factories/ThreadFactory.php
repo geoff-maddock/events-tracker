@@ -7,43 +7,59 @@ use App\Models\Thread;
 use App\Models\ThreadCategory;
 use App\Models\Visibility;
 use App\Models\User;
-use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Thread::class, function (Faker $faker) {
-    $user = factory(User::class)->create();
-    $forum = factory(Forum::class)->create();
-    $threadCategory = factory(ThreadCategory::class, 3)->create();
+class ThreadFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Thread::class;
 
-    return [
-        'forum_id' => function () {
-            return Forum::all()->random()->id;
-        },
-        'thread_category_id' => function () {
-            return ThreadCategory::all()->random()->id;
-        },
-        'name' => $faker->sentence,
-        'slug' => $faker->sentence,
-        'description' => $faker->paragraph,
-        'body' => $faker->paragraph,
-        'allow_html' => $faker->boolean,
-        'visibility_id' => function () {
-            return Visibility::all()->random()->id;
-        },
-        'recipient_id' => null,
-        'sort_order' => $faker->boolean,
-        'is_edittable' => $faker->boolean,
-        'likes' => random_int(0, 20),
-        'views' => random_int(0, 100),
-        'is_active' => $faker->boolean,
-        'created_by' => function () {
-            return User::all()->random()->id;
-        },
-        'updated_by' => function () {
-            return User::all()->random()->id;
-        },
-        'created_at' => $faker->dateTimeBetween($startDate = '-1 years', $endDate = 'now', $timezone = null),
-        'updated_at' => $faker->dateTimeBetween($startDate = '-1 months', $endDate = 'now', $timezone = null),
-        'locked_by' => null,
-        'locked_at' => null
-    ];
-});
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        $user = User::factory()->create();
+        $forum = Forum::factory()->create();
+        $threadCategory = ThreadCategory::factory()->count(3)->create();
+
+        return [
+            'forum_id' => function () {
+                return Forum::all()->random()->id;
+            },
+            'thread_category_id' => function () {
+                return ThreadCategory::all()->random()->id;
+            },
+            'name' => $this->faker->sentence,
+            'slug' => $this->faker->sentence,
+            'description' => $this->faker->paragraph,
+            'body' => $this->faker->paragraph,
+            'allow_html' => $this->faker->boolean,
+            'visibility_id' => function () {
+                return Visibility::all()->random()->id;
+            },
+            'recipient_id' => null,
+            'sort_order' => $this->faker->boolean,
+            'is_edittable' => $this->faker->boolean,
+            'likes' => random_int(0, 20),
+            'views' => random_int(0, 100),
+            'is_active' => $this->faker->boolean,
+            'created_by' => function () {
+                return User::all()->random()->id;
+            },
+            'updated_by' => function () {
+                return User::all()->random()->id;
+            },
+            'created_at' => $this->faker->dateTimeBetween($startDate = '-1 years', $endDate = 'now', $timezone = null),
+            'updated_at' => $this->faker->dateTimeBetween($startDate = '-1 months', $endDate = 'now', $timezone = null),
+            'locked_by' => null,
+            'locked_at' => null
+        ];
+    }
+}

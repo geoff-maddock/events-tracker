@@ -24,7 +24,7 @@ class LikesTest extends TestCase
     {
         $this->signIn();
 
-        $post = create(Post::class);
+        $post = Post::factory()->create();
         $likes = $post->likes;
 
         $this->get('/posts/' . $post->id . '/like');
@@ -39,7 +39,7 @@ class LikesTest extends TestCase
     {
         $this->signIn();
 
-        $thread = create(Thread::class);
+        $thread = Thread::factory()->create();
         $likes = $thread->likes;
 
         $this->get('/threads/' . $thread->id . '/like');

@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Series;
 use App\Models\User;
+use App\Models\Entity;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
@@ -18,7 +20,7 @@ class SeriesTest extends TestCase
      */
     public function testCreateWithUser()
     {
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
 
         $response = $this->actingAs($user)
             ->withSession([])
@@ -46,7 +48,7 @@ class SeriesTest extends TestCase
      */
     public function testShowSeries()
     {
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
         $response = $this->get('/series/create');
 
         $response->assertStatus(302);

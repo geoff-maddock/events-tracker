@@ -10,7 +10,7 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-class ParticipateInForum extends TestCase
+class ParticipateInForumTest extends TestCase
 {
     /**
      * A basic test example.
@@ -26,13 +26,13 @@ class ParticipateInForum extends TestCase
     public function an_authenticated_user_may_participate_in_forum_threads()
     {
         // given we have an authenticated user
-        $this->be($user = factory(User::class)->create());
+        $this->be($user = User::factory()->create());
 
         // an an existing thread
-        $thread = factory(Thread::class)->create();
+        $thread = Thread::factory()->create();
 
         // when the user adds a post to the thread
-        $post = factory(Post::class)->make();
+        $post = Post::factory()->make();
         $this->post('/threads/' . $thread->id . '/posts', $post->toArray());
 
         // then their reply should be visible on the page

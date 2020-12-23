@@ -12,8 +12,8 @@ class ProfilesTest extends TestCase
     /** @test */
     public function a_user_has_a_profile()
     {
-        $user = factory(User::class)->create();
-        $profile = factory(Profile::class)->create([
+        $user = User::factory()->create();
+        $profile = Profile::factory()->create([
             'user_id' => $user
         ]);
 

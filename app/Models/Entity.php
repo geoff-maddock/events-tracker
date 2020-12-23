@@ -4,7 +4,9 @@ namespace App\Models;
 
 use App\Filters\QueryFilter;
 use Carbon\Carbon;
+use Database\Factories\EntityFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -13,6 +15,8 @@ use Illuminate\Support\Facades\Auth;
 
 class Entity extends Eloquent
 {
+    use HasFactory;
+
     protected $fillable = [
         'name', 'slug', 'short', 'description', 'entity_type_id', 'entity_status_id', 'entity_address_id', 'facebook_username', 'twitter_username', 'created_by',
     ];

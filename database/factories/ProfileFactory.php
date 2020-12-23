@@ -4,19 +4,35 @@ namespace Database\Factories;
 
 use App\Models\Profile;
 use App\Models\User;
-use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Profile::class, function (Faker $faker) {
-    $user = factory(User::class)->create();
+class ProfileFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Profile::class;
 
-    return [
-        'user_id' => function () {
-            return User::all()->random()->id;
-        },
-        'first_name' => $faker->name,
-        'last_name' => $faker->name,
-        'default_theme' => 'light-theme',
-        'bio' => $faker->paragraph,
-        'location' => $faker->optional->city
-    ];
-});
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        $user = User::factory()->create();
+
+        return [
+            'user_id' => function () {
+                return User::all()->random()->id;
+            },
+            'first_name' => $this->faker->name,
+            'last_name' => $this->faker->name,
+            'default_theme' => 'light-theme',
+            'bio' => $this->faker->paragraph,
+            'location' => $this->faker->optional->city
+        ];
+    }
+}

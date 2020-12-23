@@ -19,13 +19,13 @@ class ThreadsTest extends TestCase
     {
         parent::setUp();
 
-        $this->thread = factory(Thread::class)->create();
+        $this->thread = Thread::factory()->create();
     }
 
     /** @test */
     public function a_thread_has_a_path()
     {
-        $thread = create(Thread::class);
+        $thread = Thread::factory()->create();
         $this->assertEquals(
             "/threads/{$thread->id}",
             $thread->path()
@@ -65,7 +65,7 @@ class ThreadsTest extends TestCase
         //$user = factory('App\Models\User')->create();
         $user = User::find(1);
         // add that thread includes replies
-        $post = factory(Post::class)
+        $post = Post::factory()
             ->create(['thread_id' => $this->thread->id]);
 
         $response = $this->actingAs($user)
@@ -80,7 +80,7 @@ class ThreadsTest extends TestCase
     public function a_thread_has_a_creator()
     {
         // add that thread
-        $thread = factory(Thread::class)->make();
+        $thread = Thread::factory()->make();
 
         $this->assertInstanceOf(User::class, $thread->creator);
     }
@@ -103,7 +103,7 @@ class ThreadsTest extends TestCase
     {
         $this->signIn();
 
-        $thread = factory(Thread::class)->make();
+        $thread = Thread::factory()->make();
 
         $response = $this->post('/threads', $thread->toArray());
 
@@ -115,7 +115,7 @@ class ThreadsTest extends TestCase
     {
         $this->withExceptionHandling()->signIn();
 
-        $thread = factory(Thread::class, $overrides)->make();
+        $thread = Thread::factory()->make($overrides);
 
         $this->post('/threads', $thread->toArray());
 
@@ -127,9 +127,9 @@ class ThreadsTest extends TestCase
     {
         $this->signIn();
 
-        $category = create(ThreadCategory::class);
-        $threadInCategory = create(Thread::class, ['thread_category_id' => $category->id]);
-        $threadNotInCategory = create(Thread::class, ['thread_category_id' => null]);
+        $category = ThreadCategory::factory()->create();
+        $threadInCategory = Thread::factory()->create(['thread_category_id' => $category->id]);
+        $threadNotInCategory = Thread::factory()->create(['thread_category_id' => null]);
 
         $this->get('/threads/category/' . $category->name)
             ->assertSee($threadInCategory->name)
@@ -139,10 +139,10 @@ class ThreadsTest extends TestCase
     /** @test */
     public function a_user_can_filter_threads_by_any_username()
     {
-        $this->signIn(create(User::class, ['name' => 'JohnDoe']));
+        $this->signIn(User::factory()->create(['name' => 'JohnDoe']));
 
-        $threadByJohn = create(Thread::class, ['created_by' => auth()->id()]);
-        $threadNotByJohn = create(Thread::class, ['created_by' => 1]);
+        $threadByJohn = Thread::factory()->create(['created_by' => auth()->id()]);
+        $threadNotByJohn = Thread::factory()->create(['created_by' => 1]);
         $threadNotByJohn->created_by = 1;
         $threadNotByJohn->save();
 

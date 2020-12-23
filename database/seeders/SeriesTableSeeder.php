@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Series;
 use Illuminate\Database\Seeder;
 
 class SeriesTableSeeder extends Seeder
@@ -16,6 +17,6 @@ class SeriesTableSeeder extends Seeder
         \DB::table('series')->delete();
 
         // create 10 random series
-        factory(App\Series::class, 10)->create();
+        Series::factory()->count(10)->create();
     }
 }

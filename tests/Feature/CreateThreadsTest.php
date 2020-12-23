@@ -22,7 +22,7 @@ class CreateThreadsTest extends TestCase
 
         $this->signIn();
 
-        $thread = create(Thread::class);
+        $thread = Thread::factory()->create();
 
         Auth::logout();
 
@@ -38,7 +38,7 @@ class CreateThreadsTest extends TestCase
 
         $this->signIn();
 
-        $thread = make(Thread::class);
+        $thread = Thread::factory()->make();
 
         $response = $this->followingRedirects()->post('/threads', $thread->toArray());
 

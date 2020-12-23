@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
@@ -10,6 +11,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class Photo extends Eloquent
 {
+    use HasFactory;
+
     /**
      * The storage format of the model's date columns.
      *

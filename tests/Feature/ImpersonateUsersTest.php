@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature;
 
 use Tests\TestCase;
@@ -10,27 +11,25 @@ use App\Models\User;
 class ImpersonateUsersTest extends TestCase
 {
     /** @test  */
-    function non_admins_cannot_impersonate_users()
+    public function non_admins_cannot_impersonate_users()
     {
         // create a new user
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
 
         // try to impersonate the user without signing in
         $response = $this->withExceptionHandling()
             ->get('/impersonate/' . $user->id)
             ->assertStatus(403);
-
-
     }
 
     /** @test */
-    function admins_can_impersonate_users()
+    public function admins_can_impersonate_users()
     {
         // create a new user
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
 
         // create a new admin user
-        $admin = factory(User::class)->create();
+        $admin = User::factory()->create();
         $admin->assignGroup('admin');
 
         $this->actingAs($admin);

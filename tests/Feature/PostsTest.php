@@ -2,13 +2,13 @@
 
 namespace Tests\Feature;
 
+use Tests\TestCase;
 use App\Models\Post;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Tests\TestCase;
 
 class PostsTest extends TestCase
 {
@@ -18,13 +18,13 @@ class PostsTest extends TestCase
     {
         parent::setUp();
 
-        $this->post = factory(Post::class)->create();
+        $this->post = Post::factory()->create();
     }
 
     /** @test */
     public function it_has_an_owner()
     {
-        $post = factory(Post::class)->create();
+        $post = Post::factory()->create();
 
         $this->assertInstanceOf(User::class, $post->user);
     }
@@ -32,7 +32,7 @@ class PostsTest extends TestCase
     /** @test */
     public function it_knows_if_it_was_just_published()
     {
-        $post = create(Post::class);
+        $post = Post::factory()->create();
         $this->assertTrue($post->wasJustPublished());
         $post->created_at = Carbon::now()->subMonth();
         $this->assertFalse($post->wasJustPublished());
