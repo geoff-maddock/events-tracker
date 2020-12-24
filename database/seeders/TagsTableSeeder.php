@@ -6,11 +6,11 @@ use Illuminate\Database\Seeder;
 use App\Models\Tag;
 use App\Models\TagType;
 
-class TagTableSeeder extends Seeder
+class TagsTableSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('tags')->delete();
+        \DB::table('tags')->delete();
 
         $type = TagType::where('name', 'Genre')->first();
 

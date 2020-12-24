@@ -7,12 +7,13 @@ use App\Models\Entity;
 use App\Models\EntityStatus;
 use App\Models\EntityType;
 use App\Models\Role;
+use DB;
 
 class EntityTableSeeder extends Seeder
 {
     public function run()
     {
-        // PITTSBURGH data version
+        // EXTRA data version for Pittsburgh
 
         DB::table('entities')->delete();
 
@@ -27,7 +28,7 @@ class EntityTableSeeder extends Seeder
         $dj = Role::where('name', '=', 'Dj')->first();
         $producer = Role::where('name', '=', 'Producer')->first();
 
-        // venue section
+        // VENUE section
 
         $e = Entity::create([
             'name' => 'Brillobox',
@@ -250,7 +251,7 @@ class EntityTableSeeder extends Seeder
 
         $e->roles()->attach($tag->id);
 
-        // dj
+        // DJs
 
         $e = Entity::create([
             'name' => 'Cutups',
@@ -279,6 +280,8 @@ class EntityTableSeeder extends Seeder
 
         $e->roles()->attach($dj->id);
         $e->roles()->attach($promoter->id);
+
+        // PROMOTERS
 
         $e = Entity::create([
             'name' => 'Stackin Paper',
