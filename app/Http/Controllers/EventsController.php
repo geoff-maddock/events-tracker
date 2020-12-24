@@ -24,6 +24,7 @@ use App\Models\Thread;
 use App\Models\User;
 use App\Models\Visibility;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -1387,7 +1388,7 @@ class EventsController extends Controller
                     $event->addPhoto($photo);
                 }
             }
-        } catch (FacebookSDKException $e) {
+        } catch (Exception $e) {
             flash()->error('Error', 'You could not import the image.  Error: ' . $e->getMessage());
 
             return false;
@@ -1464,7 +1465,7 @@ class EventsController extends Controller
         // Obtain an access token.
         try {
             $token = $this->fb->getAccessTokenFromRedirect();
-        } catch (FacebookSDKException $e) {
+        } catch (Exception $e) {
             Log::error(sprintf('FB SDK exception: %s', $e->getMessage()));
 
             return;
@@ -1491,7 +1492,7 @@ class EventsController extends Controller
             // Extend the access token.
             try {
                 $token = $oauth_client->getLongLivedAccessToken($token);
-            } catch (FacebookSDKException $e) {
+            } catch (Exception $e) {
                 Log::error(sprintf('FB SDK exception: %s', $e->getMessage()));
             }
         }
