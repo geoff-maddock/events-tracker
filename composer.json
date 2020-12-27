@@ -75,7 +75,9 @@
 			"./vendor/bin/phpstan analyse"
 		],
 		"tests": [
-			"./vendor/bin/phpunit"
+			"php artisan migrate --verbose",
+			"php artisan db:seed",
+			"./vendor/bin/phpunit tests"
 		]
 	},
 	"config": {
