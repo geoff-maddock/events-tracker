@@ -9,9 +9,16 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class EntitiesTest extends TestCase
 {
+    // refresh database and run migrations before test
+    use RefreshDatabase;
+
+    // reseed the database
+    protected $seed = true;
+
     private $entity;
 
     public function setUp():void
@@ -73,8 +80,8 @@ class EntitiesTest extends TestCase
     /** @test */
     public function an_entity_can_add_a_photo()
     {
-        // add a photo
-        $photo = Photo::all()->first();
+        // create a photo
+        $photo = Photo::factory()->create();
         $this->entity->addPhoto($photo);
 
         $one = $this->entity->photos->first();

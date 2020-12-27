@@ -10,9 +10,16 @@ use Tests\TestCase;
 use Laravel\Dusk\Chrome;
 use Laravel\Dusk\Browser;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class EventsTest extends TestCase
 {
+    // refresh database and run migrations before test
+    use RefreshDatabase;
+
+    // reseed the database
+    protected $seed = true;
+
     /**
      * Test that events are browsable
      *

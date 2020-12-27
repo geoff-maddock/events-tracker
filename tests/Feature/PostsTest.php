@@ -9,9 +9,16 @@ use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PostsTest extends TestCase
 {
+    // refresh database and run migrations before test
+    use RefreshDatabase;
+
+    // reseed the database
+    protected $seed = true;
+
     private $post;
 
     public function setUp():void

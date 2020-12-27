@@ -6,10 +6,15 @@ use App\Models\Post;
 use App\Models\Thread;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class LikesTest extends TestCase
 {
-    // use DatabaseMigrations;
+    // refresh database and run migrations before test
+    use RefreshDatabase;
+
+    // reseed the database
+    protected $seed = true;
 
     /** @test */
     public function a_guest_cannot_like_anything()

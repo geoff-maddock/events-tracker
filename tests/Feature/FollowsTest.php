@@ -5,10 +5,15 @@ namespace Tests\Feature;
 use App\Models\Entity;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class FollowsTest extends TestCase
 {
-    // use DatabaseMigrations;
+    // refresh database and run migrations before test
+    use RefreshDatabase;
+
+    // reseed the database
+    protected $seed = true;
 
     /** @test */
     public function a_guest_cannot_follow_anything()

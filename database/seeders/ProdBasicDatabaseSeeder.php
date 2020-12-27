@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 
-class PittsburghDatabaseSeeder extends Seeder
+class ProdBasicDatabaseSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -16,7 +16,7 @@ class PittsburghDatabaseSeeder extends Seeder
     {
         Model::unguard();
 
-        // use this class to initialize data for a Pittsburgh events tracker
+        // use this class to initialize Basic data for prod
 
         // BARE requirements
         $this->call(EntityTypesTableSeeder::class);
@@ -81,10 +81,5 @@ class PittsburghDatabaseSeeder extends Seeder
 
         $this->call(UserStatusesTableSeeder::class);
         $this->command->info('User statuses table seeded.');
-
-        // EXTRA data - this includes Pittsburgh specific data - more to another seeder
-
-        $this->call(EntitiesTableSeeder::class);
-        $this->command->info('Entity table seeded.');
     }
 }

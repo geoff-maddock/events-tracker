@@ -5,10 +5,15 @@ namespace Tests\Feature;
 use App\Models\Thread;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ActivityTest extends TestCase
 {
-    //use DatabaseMigrations;
+    // refresh database and run migrations before test
+    use RefreshDatabase;
+
+    // reseed the database
+    protected $seed = true;
 
     /** @test */
     public function it_records_activity_when_a_thread_is_created()

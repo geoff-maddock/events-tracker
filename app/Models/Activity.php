@@ -156,6 +156,7 @@ class Activity extends Eloquent
             $m = $act->name . ' ' . strtolower($table) . ' ' . $object->name;
             $activity->message = $m;
         }
+
         $activity->save();
     }
 }
