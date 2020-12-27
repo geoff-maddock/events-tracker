@@ -46,8 +46,9 @@ class GroupsTableSeeder extends Seeder
         $adminGroup->assignPermission('show_activity');
         $adminGroup->assignPermission('show_admin');
 
-        // find admin user and assign admin group
+        // find admin user and assign admin groups
         $user = User::where('email', 'admin@yourdomain.com')->first();
         $user->assignGroup('admin');
+        $user->assignGroup('super_admin');
     }
 }

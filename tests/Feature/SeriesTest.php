@@ -13,6 +13,12 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class SeriesTest extends TestCase
 {
+    // refresh database and run migrations before test
+    use RefreshDatabase;
+
+    // reseed the database
+    protected $seed = true;
+
     /**
      * Test trying to create a series with a user
      *

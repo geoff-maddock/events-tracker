@@ -11,65 +11,73 @@ function delete_form($routeParams, $label = 'Delete')
     return $form;
 }
 
-    function flash($title = null, $message = null)
-    {
-        $flash = app('App\Http\Flash');
+function getTableFromModelClass($class)
+{
+    // convert entity class into table
+    $split = explode('\\', $class);
 
-        if (0 == func_num_args()) {
-            return $flash;
-        }
+    return isset($split[2]) ? $split[2] : $class;
+}
 
-        return $flash->message($title, $message);
+function flash($title = null, $message = null)
+{
+    $flash = app('App\Http\Flash');
+
+    if (0 == func_num_args()) {
+        return $flash;
     }
 
-    function link_form($body, $path, $type)
-    {
-        $csrf = csrf_token();
+    return $flash->message($title, $message);
+}
 
-        if (is_object($path)) {
-            $action = '/' . $path->getTable(); // photos
+function link_form($body, $path, $type)
+{
+    $csrf = csrf_token();
 
-            if (in_array($type, ['PUT', 'PATCH', 'DELETE'])) {
-                $action .= '/' . $path->getKey(); // photos/1
-            }
-        } else {
-            $action = $path;
+    if (is_object($path)) {
+        $action = '/' . $path->getTable(); // photos
+
+        if (in_array($type, ['PUT', 'PATCH', 'DELETE'])) {
+            $action .= '/' . $path->getKey(); // photos/1
         }
+    } else {
+        $action = $path;
+    }
 
-        return <<< EOT
-		<form method="POST" action="{$action}">
-			<input type='hidden' name='_method' value='{$type}'>
-			<input type="hidden" name="_token" value="{$csrf}">
-			<button class="btn btn-danger" type="submit">{$body}</button>
-		</form>
+    return <<< EOT
+    <form method="POST" action="{$action}">
+        <input type='hidden' name='_method' value='{$type}'>
+        <input type="hidden" name="_token" value="{$csrf}">
+        <button class="btn btn-danger" type="submit">{$body}</button>
+    </form>
 EOT;
-    }
+}
 
-    function link_form_icon($icon, $path, $type, $title = '', $label = '', $class = '', $confirm = 'confirm')
-    {
-        $csrf = csrf_token();
-        $object = 'object';
+function link_form_icon($icon, $path, $type, $title = '', $label = '', $class = '', $confirm = 'confirm')
+{
+    $csrf = csrf_token();
+    $object = 'object';
 
-        if (is_object($path)) {
-            $object = get_class_name(get_class($path));
+    if (is_object($path)) {
+        $object = get_class_name(get_class($path));
 
-            $action = '/' . $path->getTable(); // photos
+        $action = '/' . $path->getTable(); // photos
 
-            if (in_array($type, ['PUT', 'PATCH', 'DELETE'])) {
-                $action .= '/' . $path->getKey(); // photos/1
-            }
-        } else {
-            $action = $path;
+        if (in_array($type, ['PUT', 'PATCH', 'DELETE'])) {
+            $action .= '/' . $path->getKey(); // photos/1
         }
-
-        return <<< EOT
-		<form method="POST" action="{$action}" style="display: inline;">
-			<input type='hidden' name='_method' value='{$type}'>
-			<input type="hidden" name="_token" value="{$csrf}">
-			<button type="submit" class="{$confirm} no-button {$class}" data-type="{$object}">{$label} <span class="glyphicon {$icon}" title="{$title}"></span></button>
-		</form>
-EOT;
+    } else {
+        $action = $path;
     }
+
+    return <<< EOT
+    <form method="POST" action="{$action}" style="display: inline;">
+        <input type='hidden' name='_method' value='{$type}'>
+        <input type="hidden" name="_token" value="{$csrf}">
+        <button type="submit" class="{$confirm} no-button {$class}" data-type="{$object}">{$label} <span class="glyphicon {$icon}" title="{$title}"></span></button>
+    </form>
+EOT;
+}
 
 function get_class_name($classname)
 {

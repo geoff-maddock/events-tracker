@@ -12,8 +12,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CreateThreadsTest extends TestCase
 {
-    // uncomment this to refresh database and run migrations before test
-    // use RefreshDatabase;
+    // refresh database and run migrations before test
+    use RefreshDatabase;
+
+    // reseed the database
+    protected $seed = true;
 
     /** @test  */
     public function unauthorized_users_may_not_delete_threads()

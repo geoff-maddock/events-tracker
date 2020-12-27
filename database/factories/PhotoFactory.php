@@ -23,10 +23,12 @@ class PhotoFactory extends Factory
      */
     public function definition()
     {
+        $path = public_path() . '/' . Photo::STORAGEDIR . '/' . Photo::BASEDIR;
+
         return [
             'name' => $this->faker->word,
-            'thumbnail' => $this->faker->file,
-            'path' => $this->faker->file,
+            'thumbnail' => $this->faker->file('/tmp', $path),
+            'path' => $this->faker->file('/tmp', $path),
             'caption' => $this->faker->sentence,
             'is_public' => $this->faker->boolean,
             'is_primary' => $this->faker->boolean,
