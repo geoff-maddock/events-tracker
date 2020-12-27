@@ -10,6 +10,7 @@ use App\Models\Thread;
 use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Schema;
 
 //use Illuminate\Support\Facades\Gate;
 
@@ -34,7 +35,6 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-
         Gate::before(function ($user) {
             if ($user->hasGroup('admin')) {
                 return true;
@@ -42,6 +42,7 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         // adds a gate for each permission name - checks whether the user has a group that matches one of the permission groups
+        // disabling because this is causing an issue with php artisan when the database isn't initialized
         foreach ($this->getPermissions() as $permission) {
             Gate::define($permission->name, function ($user) use ($permission) {
                 return $user->hasGroup($permission->groups);
@@ -57,6 +58,13 @@ class AuthServiceProvider extends ServiceProvider
 
     protected function getPermissions()
     {
+        // doing this check to make sure the table exists
+        // since it's in a provider, it might be called by php artisan before the db is migrated
+
+        if (!Schema::hasTable('permissions')) {
+            return [];
+        }
+
         return Permission::with('groups')->get();
     }
 }

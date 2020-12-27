@@ -15,6 +15,7 @@ jobs:
         image: mysql:8.0
         env:
           ## Accessing to Github secrets, where you can store your configuration
+          MYSQL_ALLOW_EMPTY_PASSWORD: false
           MYSQL_ROOT_PASSWORD: db-password
           MYSQL_DATABASE: event-repo-db-name
         ## map the "external" 33306 port with the "internal" 3306
@@ -28,7 +29,18 @@ jobs:
           --health-retries=3
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 7.4
+        extensions: intl #optional
+        ini-values: "post_max_size=256M" #optional
+
+    - name: Check PHP Version
+      run: php
 
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
@@ -37,26 +49,32 @@ jobs:
       run: composer validate
 
     - name: Install dependencies
-      #run: composer install --prefer-dist --no-progress --no-suggest
-      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+      run: composer install --quiet --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
 
     - name: Install NPM Dependencies
       run: npm install
 
-    - name: Generate Key - Look at adding this after fixing migrations
+    - name: Clear Config
+      run: php artisan config:clear
+
+    - name: Generate Key
       run: php artisan key:generate
+
+    - name: Create asset storage path
+      run: mkdir -p ${{ github.workspace }}/public/storage/photos
+
+    - name: Create symlink
+      run: php artisan storage:link
 
     - name: Run php stan static analysis
       run: composer run-script phpstan
 
-    # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
-    # Docs: https://getcomposer.org/doc/articles/scripts.md
-
     - name: Run test suite
       env:
         DB_CONNECTION: mysql
+        DB_HOST: 127.0.0.1
         DB_DATABASE: event-repo-db-name
         DB_PORT: 33306
         DB_USER: root
         DB_PASSWORD: db-password      
-      run: composer run-script test
+      run: composer run-script tests
