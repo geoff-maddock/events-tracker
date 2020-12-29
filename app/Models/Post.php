@@ -12,6 +12,68 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
+/**
+ * App\Models\Post
+ *
+ * @property int $id
+ * @property int $thread_id
+ * @property string|null $name
+ * @property string|null $slug
+ * @property string|null $description
+ * @property string $body
+ * @property int $allow_html
+ * @property int|null $content_type_id
+ * @property int|null $visibility_id
+ * @property int|null $recipient_id
+ * @property int|null $reply_to
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Like[] $likes
+ * @property int $views
+ * @property int $is_active
+ * @property int|null $created_by
+ * @property int|null $updated_by
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * @property-read \App\Models\User|null $creator
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Entity[] $entities
+ * @property-read int|null $entities_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Event[] $events
+ * @property-read int|null $events_count
+ * @property-read mixed $entity_list
+ * @property-read mixed $tag_list
+ * @property-read int|null $likes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Photo[] $photos
+ * @property-read int|null $photos_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
+ * @property-read int|null $tags_count
+ * @property-read \App\Models\Thread $thread
+ * @property-read \App\Models\User|null $user
+ * @property-read Visibility|null $visibility
+ * @method static \Illuminate\Database\Eloquent\Builder|Post filter(\App\Filters\QueryFilter $filters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Post newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Post newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Post past()
+ * @method static \Illuminate\Database\Eloquent\Builder|Post query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Post visible($user)
+ * @method static \Illuminate\Database\Eloquent\Builder|Post whereAllowHtml($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Post whereBody($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Post whereContentTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Post whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Post whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Post whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Post whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Post whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Post whereLikes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Post whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Post whereRecipientId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Post whereReplyTo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Post whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Post whereThreadId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Post whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Post whereUpdatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Post whereViews($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Post whereVisibilityId($value)
+ * @mixin \Eloquent
+ */
 class Post extends Eloquent
 {
     use HasFactory;

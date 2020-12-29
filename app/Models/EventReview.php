@@ -8,6 +8,39 @@ use Illuminate\Database\Eloquent\Builder;
 
 //use App\Http\Controllers\UploadedFile;
 
+/**
+ * App\Models\EventReview
+ *
+ * @property int $event_id
+ * @property int $user_id
+ * @property int $review_type_id
+ * @property int $attended
+ * @property int|null $confirmed
+ * @property int $expectation
+ * @property int $rating
+ * @property string $review
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Event $event
+ * @property-read \App\Models\ReviewType $reviewType
+ * @property-read \App\Models\User|null $user
+ * @method static Builder|EventReview future()
+ * @method static Builder|EventReview newModelQuery()
+ * @method static Builder|EventReview newQuery()
+ * @method static Builder|EventReview past()
+ * @method static Builder|EventReview query()
+ * @method static Builder|EventReview whereAttended($value)
+ * @method static Builder|EventReview whereConfirmed($value)
+ * @method static Builder|EventReview whereCreatedAt($value)
+ * @method static Builder|EventReview whereEventId($value)
+ * @method static Builder|EventReview whereExpectation($value)
+ * @method static Builder|EventReview whereRating($value)
+ * @method static Builder|EventReview whereReview($value)
+ * @method static Builder|EventReview whereReviewTypeId($value)
+ * @method static Builder|EventReview whereUpdatedAt($value)
+ * @method static Builder|EventReview whereUserId($value)
+ * @mixin \Eloquent
+ */
 class EventReview extends Eloquent
 {
     /**

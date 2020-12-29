@@ -11,6 +11,105 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * App\Models\Series
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $slug
+ * @property string|null $short
+ * @property string|null $description
+ * @property int|null $visibility_id
+ * @property int|null $event_type_id
+ * @property int|null $occurrence_type_id
+ * @property int|null $occurrence_week_id
+ * @property int|null $occurrence_day_id
+ * @property int $hold_date
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * @property int $is_benefit
+ * @property int|null $promoter_id
+ * @property int|null $venue_id
+ * @property int $attending
+ * @property int $like
+ * @property string|null $presale_price
+ * @property string|null $door_price
+ * @property string|null $primary_link
+ * @property string|null $ticket_link
+ * @property \Illuminate\Support\Carbon|null $founded_at
+ * @property \Illuminate\Support\Carbon|null $cancelled_at
+ * @property \Illuminate\Support\Carbon|null $soundcheck_at
+ * @property \Illuminate\Support\Carbon|null $door_at
+ * @property \Illuminate\Support\Carbon|null $start_at
+ * @property \Illuminate\Support\Carbon|null $end_at
+ * @property int|null $length
+ * @property int|null $min_age
+ * @property int|null $created_by
+ * @property int|null $updated_by
+ * @property-read User|null $creator
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Entity[] $entities
+ * @property-read int|null $entities_count
+ * @property-read \App\Models\EventType|null $eventType
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Event[] $events
+ * @property-read int|null $events_count
+ * @property-read mixed $end_time
+ * @property-read mixed $entity_list
+ * @property-read string $occurrence_repeat
+ * @property-read mixed $tag_list
+ * @property-read \App\Models\OccurrenceDay|null $occurrenceDay
+ * @property-read \App\Models\OccurrenceType|null $occurrenceType
+ * @property-read \App\Models\OccurrenceWeek|null $occurrenceWeek
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Photo[] $photos
+ * @property-read int|null $photos_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
+ * @property-read int|null $tags_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Thread[] $threads
+ * @property-read int|null $threads_count
+ * @property-read User|null $user
+ * @property-read \App\Models\Entity|null $venue
+ * @property-read \App\Models\Visibility|null $visibility
+ * @method static \Illuminate\Database\Eloquent\Builder|Series active()
+ * @method static \Illuminate\Database\Eloquent\Builder|Series future()
+ * @method static \Illuminate\Database\Eloquent\Builder|Series newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Series newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Series past()
+ * @method static \Illuminate\Database\Eloquent\Builder|Series query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Series starting($date)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series visible($user)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereAttending($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereCancelledAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereDoorAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereDoorPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereEndAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereEventTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereFoundedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereHoldDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereIsBenefit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereLength($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereLike($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereMinAge($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereOccurrenceDayId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereOccurrenceTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereOccurrenceWeekId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series wherePresalePrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series wherePrimaryLink($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series wherePromoterId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereShort($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereSoundcheckAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereStartAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereTicketLink($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereUpdatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereVenueId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Series whereVisibilityId($value)
+ * @mixin \Eloquent
+ */
 class Series extends Eloquent
 {
     use HasFactory;

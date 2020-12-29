@@ -16,7 +16,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Class Thread.
- * @property
+ * @property string $name
+ * @property int $created_by
+ * @property datetime $created_at
+ * @property datetime $updated_at
  * @mixin Eloquent
  */
 class Thread extends Eloquent

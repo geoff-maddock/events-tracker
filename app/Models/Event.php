@@ -15,11 +15,105 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
+ * App\Models\Event
+ *
  * @property int $id
  * @property mixed $created_by
  * @property mixed $start_at
  * @property Collection $entities
  * @property Collection $tags
+ * @property string $name
+ * @property string $slug
+ * @property string|null $short
+ * @property string|null $description
+ * @property int|null $visibility_id
+ * @property int|null $event_status_id
+ * @property int|null $event_type_id
+ * @property int $is_benefit
+ * @property int|null $promoter_id
+ * @property int|null $venue_id
+ * @property int $attending
+ * @property int $like
+ * @property string|null $presale_price
+ * @property string|null $door_price
+ * @property \Illuminate\Support\Carbon|null $soundcheck_at
+ * @property \Illuminate\Support\Carbon|null $door_at
+ * @property \Illuminate\Support\Carbon|null $end_at
+ * @property int|null $min_age
+ * @property int|null $series_id
+ * @property string|null $primary_link
+ * @property string|null $ticket_link
+ * @property int|null $updated_by
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * @property \Illuminate\Support\Carbon|null $cancelled_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $comments
+ * @property-read int|null $comments_count
+ * @property-read \App\Models\User $creator
+ * @property-read int|null $entities_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EventResponse[] $eventResponses
+ * @property-read int|null $event_responses_count
+ * @property-read \App\Models\EventStatus|null $eventStatus
+ * @property-read \App\Models\EventType|null $eventType
+ * @property-read mixed $attending_count
+ * @property-read float $avg_rating
+ * @property-read int $count_attended
+ * @property-read int $count_reviews
+ * @property-read mixed $end_time
+ * @property-read mixed $entity_list
+ * @property-read mixed $length_in_hours
+ * @property-read mixed $tag_list
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Like[] $likes
+ * @property-read int|null $likes_count
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read int|null $notifications_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Photo[] $photos
+ * @property-read int|null $photos_count
+ * @property-read \App\Models\Series|null $series
+ * @property-read int|null $tags_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Thread[] $threads
+ * @property-read int|null $threads_count
+ * @property-read \App\Models\User $user
+ * @property-read \App\Models\Entity|null $venue
+ * @property-read \App\Models\Visibility|null $visibility
+ * @method static Builder|Event filter(\App\Filters\QueryFilter $filters)
+ * @method static Builder|Event future()
+ * @method static Builder|Event newModelQuery()
+ * @method static Builder|Event newQuery()
+ * @method static Builder|Event past()
+ * @method static Builder|Event query()
+ * @method static Builder|Event starting($date)
+ * @method static Builder|Event today()
+ * @method static Builder|Event visible($user)
+ * @method static Builder|Event whereAttending($value)
+ * @method static Builder|Event whereCancelledAt($value)
+ * @method static Builder|Event whereCreatedAt($value)
+ * @method static Builder|Event whereCreatedBy($value)
+ * @method static Builder|Event whereDescription($value)
+ * @method static Builder|Event whereDoorAt($value)
+ * @method static Builder|Event whereDoorPrice($value)
+ * @method static Builder|Event whereEndAt($value)
+ * @method static Builder|Event whereEventStatusId($value)
+ * @method static Builder|Event whereEventTypeId($value)
+ * @method static Builder|Event whereId($value)
+ * @method static Builder|Event whereIsBenefit($value)
+ * @method static Builder|Event whereLike($value)
+ * @method static Builder|Event whereMinAge($value)
+ * @method static Builder|Event whereName($value)
+ * @method static Builder|Event wherePresalePrice($value)
+ * @method static Builder|Event wherePrimaryLink($value)
+ * @method static Builder|Event wherePromoterId($value)
+ * @method static Builder|Event whereSeriesId($value)
+ * @method static Builder|Event whereShort($value)
+ * @method static Builder|Event whereSlug($value)
+ * @method static Builder|Event whereSoundcheckAt($value)
+ * @method static Builder|Event whereStartAt($value)
+ * @method static Builder|Event whereTicketLink($value)
+ * @method static Builder|Event whereUpdatedAt($value)
+ * @method static Builder|Event whereUpdatedBy($value)
+ * @method static Builder|Event whereVenueId($value)
+ * @method static Builder|Event whereVisibilityId($value)
+ * @mixin \Eloquent
  */
 class Event extends Eloquent
 {

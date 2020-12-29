@@ -9,6 +9,46 @@ use Intervention\Image\Facades\Image;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
+/**
+ * App\Models\Photo
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $thumbnail
+ * @property string $path
+ * @property string $caption
+ * @property int $is_public
+ * @property int $is_primary
+ * @property int $is_approved
+ * @property int $created_by
+ * @property int|null $updated_by
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Entity[] $entities
+ * @property-read int|null $entities_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Event[] $events
+ * @property-read int|null $events_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Series[] $series
+ * @property-read int|null $series_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
+ * @property-read int|null $users_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Photo newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Photo newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Photo query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Photo whereCaption($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Photo whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Photo whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Photo whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Photo whereIsApproved($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Photo whereIsPrimary($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Photo whereIsPublic($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Photo whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Photo wherePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Photo whereThumbnail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Photo whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Photo whereUpdatedBy($value)
+ * @mixin \Eloquent
+ */
 class Photo extends Eloquent
 {
     use HasFactory;

@@ -5,6 +5,24 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
+/**
+ * App\Models\EntityStatus
+ *
+ * @property int $id
+ * @property string $name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Entity[] $entities
+ * @property-read int|null $entities_count
+ * @method static \Illuminate\Database\Eloquent\Builder|EntityStatus newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|EntityStatus newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|EntityStatus query()
+ * @method static \Illuminate\Database\Eloquent\Builder|EntityStatus whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EntityStatus whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EntityStatus whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EntityStatus whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class EntityStatus extends Eloquent
 {
     /**

@@ -10,6 +10,44 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * App\Models\Forum
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $slug
+ * @property string|null $description
+ * @property int|null $visibility_id
+ * @property int $sort_order
+ * @property int $is_active
+ * @property int $created_by
+ * @property int|null $updated_by
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * @property-read User $creator
+ * @property-read int|null $threads_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Thread[] $threads
+ * @property-read \App\Models\Thread|null $threadsCount
+ * @property-read User $user
+ * @property-read \App\Models\Visibility|null $visibility
+ * @method static \Illuminate\Database\Eloquent\Builder|Forum filter(\App\Filters\QueryFilter $filters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Forum newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Forum newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Forum query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Forum visible($user)
+ * @method static \Illuminate\Database\Eloquent\Builder|Forum whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Forum whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Forum whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Forum whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Forum whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Forum whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Forum whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Forum whereSortOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Forum whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Forum whereUpdatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Forum whereVisibilityId($value)
+ * @mixin \Eloquent
+ */
 class Forum extends Eloquent
 {
     use HasFactory;

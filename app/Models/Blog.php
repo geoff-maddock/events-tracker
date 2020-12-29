@@ -11,6 +11,63 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * App\Models\Blog
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $slug
+ * @property string $body
+ * @property int|null $menu_id
+ * @property int|null $content_type_id
+ * @property int|null $visibility_id
+ * @property int $sort_order
+ * @property int $is_active
+ * @property int $is_admin
+ * @property int $allow_html
+ * @property int $created_by
+ * @property int|null $updated_by
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\ContentType|null $contentType
+ * @property-read \App\Models\User $creator
+ * @property-read Collection|\App\Models\Entity[] $entities
+ * @property-read int|null $entities_count
+ * @property-read mixed $entity_list
+ * @property-read mixed $tag_list
+ * @property-read Collection|\App\Models\Like[] $likes
+ * @property-read int|null $likes_count
+ * @property-read \App\Models\Menu|null $menu
+ * @property-read Collection|\App\Models\Photo[] $photos
+ * @property-read int|null $photos_count
+ * @property-read Collection|\App\Models\Tag[] $tags
+ * @property-read int|null $tags_count
+ * @property-read \App\Models\User $user
+ * @property-read \App\Models\Visibility|null $visibility
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog filter(\App\Filters\QueryFilter $filters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog html($user)
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog past()
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog visible($user)
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog whereAllowHtml($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog whereBody($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog whereContentTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog whereIsAdmin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog whereMenuId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog whereSortOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog whereUpdatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Blog whereVisibilityId($value)
+ * @mixin \Eloquent
+ */
 class Blog extends Eloquent
 {
     use HasFactory;
