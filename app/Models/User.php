@@ -21,6 +21,7 @@ use Illuminate\Notifications\Notifiable;
 
 /**
  * @property mixed $id
+ * @property string $name
  */
 class User extends Model implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract, MustVerifyEmailContract
 {

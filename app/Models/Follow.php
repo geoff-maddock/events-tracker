@@ -5,8 +5,29 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
+ * App\Models\Follow
+ *
  * @property int object_id
  * @property mixed object_type
+ * @property int $id
+ * @property int $user_id
+ * @property string|null $object_type
+ * @property int|null $object_id
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * @property-read Eloquent|\Eloquent $object
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
+ * @property-read int|null $users_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Follow newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Follow newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Follow query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Follow whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Follow whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Follow whereObjectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Follow whereObjectType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Follow whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Follow whereUserId($value)
+ * @mixin \Eloquent
  */
 class Follow extends Eloquent
 {

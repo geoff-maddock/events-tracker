@@ -34,7 +34,7 @@
 		"laravel/dusk": "^6.0",
 		"filp/whoops": "~2.0",
 		"barryvdh/laravel-ide-helper": "^2.8",
-		"nunomaduro/larastan": "^0.6.9"
+		"nunomaduro/larastan": "^0.6.11"
 	},
 	"autoload": {
 		"psr-4": {
