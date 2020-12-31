@@ -7,9 +7,49 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
 /**
+ * App\Models\Activity
+ *
  * @property int $object_id
  * @property string $object_table
  * @property datetime $created_at
+ * @property int $id
+ * @property int|null $user_id
+ * @property string|null $object_name
+ * @property string|null $child_object_table
+ * @property string|null $child_object_name
+ * @property int|null $child_object_id
+ * @property string|null $message
+ * @property string|null $changes
+ * @property int|null $action_id
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $ip_address
+ * @property-read \App\Models\Action|null $action
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Entity[] $entities
+ * @property-read int|null $entities_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Event[] $events
+ * @property-read int|null $events_count
+ * @property-read mixed $age
+ * @property-read mixed $style
+ * @property-read mixed $user_name
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder|Activity newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Activity newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Activity query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Activity whereActionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Activity whereChanges($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Activity whereChildObjectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Activity whereChildObjectName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Activity whereChildObjectTable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Activity whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Activity whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Activity whereIpAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Activity whereMessage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Activity whereObjectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Activity whereObjectName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Activity whereObjectTable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Activity whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Activity whereUserId($value)
+ * @mixin \Eloquent
  */
 class Activity extends Eloquent
 {
