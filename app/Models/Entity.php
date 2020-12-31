@@ -13,6 +13,77 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * App\Models\Entity
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $slug
+ * @property string $short
+ * @property string $description
+ * @property int|null $entity_type_id
+ * @property int|null $entity_status_id
+ * @property int $created_by
+ * @property int|null $updated_by
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * @property string|null $facebook_username
+ * @property string|null $twitter_username
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Alias[] $aliases
+ * @property-read int|null $aliases_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $comments
+ * @property-read int|null $comments_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Contact[] $contacts
+ * @property-read int|null $contacts_count
+ * @property-read \App\Models\EntityStatus|null $entityStatus
+ * @property-read \App\Models\EntityType|null $entityType
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Event[] $events
+ * @property-read int|null $events_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Follow[] $follows
+ * @property-read int|null $follows_count
+ * @property-read mixed $alias_list
+ * @property-read mixed $role_list
+ * @property-read mixed $tag_list
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Like[] $likes
+ * @property-read int|null $likes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Link[] $links
+ * @property-read int|null $links_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Location[] $locations
+ * @property-read int|null $locations_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Photo[] $photos
+ * @property-read int|null $photos_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Role[] $roles
+ * @property-read int|null $roles_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Series[] $series
+ * @property-read int|null $series_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
+ * @property-read int|null $tags_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Thread[] $threads
+ * @property-read int|null $threads_count
+ * @property-read \App\Models\User $user
+ * @method static Builder|Entity active()
+ * @method static Builder|Entity filter(\App\Filters\QueryFilter $filters)
+ * @method static Builder|Entity newModelQuery()
+ * @method static Builder|Entity newQuery()
+ * @method static Builder|Entity ofType($type)
+ * @method static Builder|Entity ownedBy(\App\Models\User $user)
+ * @method static Builder|Entity promoter(string $type)
+ * @method static Builder|Entity query()
+ * @method static Builder|Entity whereCreatedAt($value)
+ * @method static Builder|Entity whereCreatedBy($value)
+ * @method static Builder|Entity whereDescription($value)
+ * @method static Builder|Entity whereEntityStatusId($value)
+ * @method static Builder|Entity whereEntityTypeId($value)
+ * @method static Builder|Entity whereFacebookUsername($value)
+ * @method static Builder|Entity whereId($value)
+ * @method static Builder|Entity whereName($value)
+ * @method static Builder|Entity whereShort($value)
+ * @method static Builder|Entity whereSlug($value)
+ * @method static Builder|Entity whereTwitterUsername($value)
+ * @method static Builder|Entity whereUpdatedAt($value)
+ * @method static Builder|Entity whereUpdatedBy($value)
+ * @mixin \Eloquent
+ */
 class Entity extends Eloquent
 {
     use HasFactory;

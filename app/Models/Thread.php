@@ -16,11 +16,83 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Class Thread.
+ *
  * @property string $name
  * @property int $created_by
  * @property datetime $created_at
  * @property datetime $updated_at
  * @mixin Eloquent
+ * @property int $id
+ * @property int $forum_id
+ * @property int|null $thread_category_id
+ * @property string $slug
+ * @property string|null $description
+ * @property string $body
+ * @property int $allow_html
+ * @property int|null $visibility_id
+ * @property int|null $recipient_id
+ * @property int $sort_order
+ * @property int $is_edittable
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Like[] $likes
+ * @property int $views
+ * @property int $is_active
+ * @property int|null $updated_by
+ * @property string|null $locked_at
+ * @property int|null $locked_by
+ * @property int|null $event_id
+ * @property-read \App\Models\User|null $creator
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Entity[] $entities
+ * @property-read int|null $entities_count
+ * @property-read \App\Models\Event|null $event
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Follow[] $follows
+ * @property-read int|null $follows_count
+ * @property-read \App\Models\Forum $forum
+ * @property-read mixed $entity_list
+ * @property-read mixed $is_locked
+ * @property-read mixed $last_post_at
+ * @property-read mixed $post_count
+ * @property-read mixed $tag_list
+ * @property-read int|null $likes_count
+ * @property-read \App\Models\User|null $locker
+ * @property-read \Illuminate\Database\Eloquent\Collection|Photo[] $photos
+ * @property-read int|null $photos_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|Post[] $posts
+ * @property-read int|null $posts_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Series[] $series
+ * @property-read int|null $series_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
+ * @property-read int|null $tags_count
+ * @property-read \App\Models\ThreadCategory|null $threadCategory
+ * @property-read \App\Models\User|null $user
+ * @property-read \App\Models\Visibility|null $visibility
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread filter(\App\Filters\QueryFilter $filters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread past()
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread visible($user)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereAllowHtml($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereBody($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereEventId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereForumId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereIsEdittable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereLikes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereLockedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereLockedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereRecipientId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereSortOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereThreadCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereUpdatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereViews($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Thread whereVisibilityId($value)
  */
 class Thread extends Eloquent
 {
