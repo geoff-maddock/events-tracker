@@ -276,10 +276,8 @@ class Post extends Eloquent
     /**
      * Return a collection of posts with the passed entity.
      *
-     * @return Collection $posts
-     *
      **/
-    public static function getByEntity($slug)
+    public static function getByEntity($slug): Builder
     {
         // get a list of posts that have the passed entity
         return self::whereHas('entities', function ($q) use ($slug) {
@@ -346,10 +344,8 @@ class Post extends Eloquent
     /**
      * Checks if the post is liked by the user.
      *
-     * @return Collection $likes
-     *
      **/
-    public function likedBy($user)
+    public function likedBy($user): ?Like
     {
         return Like::where('object_type', '=', 'post')
             ->where('object_id', '=', $this->id)

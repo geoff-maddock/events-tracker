@@ -34,8 +34,8 @@ class EventFactory extends Factory
             'event_status_id' => random_int(1, 3),
             'event_type_id' => random_int(1, 5),
             'is_benefit' => $this->faker->boolean(),
-            'promoter_id' => Entity::factory()->promoter()->make(),
-            'venue_id' => Entity::factory()->venue()->make(),
+            'promoter_id' => Entity::factory()->promoter()->create(),
+            'venue_id' => Entity::factory()->venue()->create(),
             'attending' => random_int(0, 100),
             'like' => random_int(0, 10),
             'presale_price' => random_int(0, 50),
@@ -45,14 +45,16 @@ class EventFactory extends Factory
             'start_at' => now(),
             'end_at' => Carbon::now()->addHour(),
             'min_age' => $this->faker->randomElement([null, 18, 21]),
-            'series_id' => null,
             'primary_link' => $this->faker->url,
             'ticket_link' => $this->faker->url,
-            'created_by' => User::factory()->create(),
-            'updated_by' => User::factory()->create(),
+            'created_by' => function () {
+                return User::factory()->create();
+            },
             'created_at' => now(),
             'updated_at' => now(),
-            'cancelled_at' => null
+            'updated_by' => function () {
+                return User::factory()->create();
+            },
         ];
     }
 }

@@ -38,6 +38,7 @@ use Illuminate\View\View;
 use Facebook\Exceptions\FacebookSDKException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Collection;
 
 class EventsController extends Controller
 {
@@ -1043,13 +1044,13 @@ class EventsController extends Controller
     /**
      * Displays the calendar based on passed events and tag.
      *
-     * @param array $events
+     * @param Collection $events
      * @param array | null $series
      * @param null         $tag
      *
      * @return view
      */
-    public function renderCalendar(array $events, $series = null, $tag = null)
+    public function renderCalendar(Collection $events, $series = null, $tag = null)
     {
         $eventList = [];
 

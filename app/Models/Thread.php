@@ -217,18 +217,13 @@ class Thread extends Eloquent
     /**
      * Checks if the thread is followed by the user.
      *
-     * @return Collection
-     *
      **/
-    public function followedBy($user)
+    public function followedBy($user): ?Follow
     {
-        $response = Follow::where('object_type', '=', 'thread')
+        return Follow::where('object_type', '=', 'thread')
             ->where('object_id', '=', $this->id)
             ->where('user_id', '=', $user->id)
             ->first();
-        // return any follow instances
-
-        return $response;
     }
 
     /**
@@ -260,18 +255,13 @@ class Thread extends Eloquent
     /**
      * Checks if the thread is liked by the user.
      *
-     * @return Collection $likes
-     *
      **/
-    public function likedBy($user)
+    public function likedBy($user): ?Like
     {
-        $response = Like::where('object_type', '=', 'thread')
+        return Like::where('object_type', '=', 'thread')
             ->where('object_id', '=', $this->id)
             ->where('user_id', '=', $user->id)
             ->first();
-        // return any like instances
-
-        return $response;
     }
 
     /**

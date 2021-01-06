@@ -628,15 +628,12 @@ class Event extends Eloquent
     /**
      * Returns the review from the passed use if there is one.
      *
-     * @param User $user
-     *
-     * @return Collection $eventReview
-     *
      **/
-    public function getEventReview($user)
+    public function getEventReview(User $user): ?EventReview
     {
         return EventReview::where('event_id', '=', $this->id)
-            ->where('user_id', '=', $user->id)->first();
+            ->where('user_id', '=', $user->id)
+            ->first();
     }
 
     /**
@@ -679,19 +676,17 @@ class Event extends Eloquent
     /**
      * Return a collection of events that begin on the passed date.
      */
-    public static function getByStartAt(?DateTime $date): Collection
+    public static function getByStartAt(?DateTime $date): Builder
     {
         // get a list of events that start on the passed date
         $cdate_yesterday = Carbon::parse($date)->subDay();
         $cdate_tomorrow = Carbon::parse($date)->addDay();
 
-        $events = self::where('start_at', '>', $cdate_yesterday->toDateString())
+        return self::where('start_at', '>', $cdate_yesterday->toDateString())
             ->where('start_at', '<', $cdate_tomorrow->toDateString())
             ->with('visibility')
             ->orderBy('start_at', 'ASC')
             ->orderBy('name', 'ASC');
-
-        return $events;
     }
 
     public function addPhoto(Photo $photo)

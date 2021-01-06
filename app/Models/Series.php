@@ -390,17 +390,13 @@ class Series extends Eloquent
     /**
      * Return a collection of series with the passed venue.
      *
-     * @return Collection $series
-     *
      **/
-    public static function getByVenue($slug)
+    public static function getByVenue($slug): Builder
     {
         // get a list of series that have the passed tag
-        $series = self::whereHas('venue', function ($q) use ($slug) {
+        return self::whereHas('venue', function ($q) use ($slug) {
             $q->where('slug', '=', $slug);
         });
-
-        return $series;
     }
 
     /**
