@@ -2,14 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PermissionRequest;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Response;
 use App\Models\Permission;
 use App\Models\Group;
 
@@ -186,7 +182,7 @@ class PermissionsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  Permission $permission
      * @return Response
      */
     public function show(Permission $permission)
@@ -212,7 +208,7 @@ class PermissionsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  int  $id
+     * @param  Permission $permission
      * @return Response
      */
     public function update(Permission $permission, Request $request)

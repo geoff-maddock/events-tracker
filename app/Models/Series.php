@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Models\User;
 use Carbon\Carbon;
+use DateTime;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Collection;
@@ -198,8 +200,8 @@ class Series extends Eloquent
     public function scopeStarting($query, $date)
     {
         $cdate = Carbon::parse($date);
-        $cdate_yesterday = Carbon::parse($date)->subDay(1);
-        $cdate_tomorrow = Carbon::parse($date)->addDay(1);
+        $cdate_yesterday = Carbon::parse($date)->subDay();
+        $cdate_tomorrow = Carbon::parse($date)->addDay();
 
         $query->where('start_at', '>', $cdate_yesterday->toDateString() . ' 23:59:59')
                     ->where('start_at', '<', $cdate_tomorrow->toDateString() . ' 00:00:00');
@@ -217,10 +219,8 @@ class Series extends Eloquent
 
     /**
      * Set the occurrence week attribute.
-     *
-     * @param $value
      */
-    public function setOccurrenceWeekIdAttribute($value): void
+    public function setOccurrenceWeekIdAttribute(?int $value): void
     {
         if (!empty($value)) {
             $this->attributes['occurrence_week_id'] = $value;
@@ -231,10 +231,8 @@ class Series extends Eloquent
 
     /**
      * Set the occurrence day attribute.
-     *
-     * @param $value
      */
-    public function setOccurrenceDayIdAttribute($value): void
+    public function setOccurrenceDayIdAttribute(?int $value): void
     {
         if (!empty($value)) {
             $this->attributes['occurrence_day_id'] = $value;
@@ -245,10 +243,8 @@ class Series extends Eloquent
 
     /**
      * Set the promoter attribute.
-     *
-     * @param $value
      */
-    public function setPromoterIdAttribute($value): void
+    public function setPromoterIdAttribute(?int $value): void
     {
         if (!empty($value)) {
             $this->attributes['promoter_id'] = $value;
@@ -259,10 +255,8 @@ class Series extends Eloquent
 
     /**
      * Set the venue attribute.
-     *
-     * @param $value
      */
-    public function setVenueIdAttribute($value): void
+    public function setVenueIdAttribute(?int $value): void
     {
         if (!empty($value)) {
             $this->attributes['venue_id'] = $value;
@@ -273,10 +267,8 @@ class Series extends Eloquent
 
     /**
      * Set the length attribute.
-     *
-     * @param $value
      */
-    public function setLengthAttribute($value): void
+    public function setLengthAttribute(?int $value): void
     {
         if (!empty($value)) {
             $this->attributes['length'] = $value;
@@ -287,10 +279,8 @@ class Series extends Eloquent
 
     /**
      * Set the founded_at attribute.
-     *
-     * @param $date
      */
-    public function setFoundedAtAttribute($date)
+    public function setFoundedAtAttribute(?string $date)
     {
         if (!empty($date)) {
             $this->attributes['founded_at'] = Carbon::parse($date);
@@ -301,10 +291,8 @@ class Series extends Eloquent
 
     /**
      * Set the cancelled_at attribute.
-     *
-     * @param $date
      */
-    public function setCancelledAtAttribute($date)
+    public function setCancelledAtAttribute(?string $date)
     {
         if (!empty($date)) {
             $this->attributes['cancelled_at'] = Carbon::parse($date);
@@ -315,10 +303,8 @@ class Series extends Eloquent
 
     /**
      * Set the soundcheck_at attribute.
-     *
-     * @param $date
      */
-    public function setSoundcheckAtAttribute($date)
+    public function setSoundcheckAtAttribute(?string $date)
     {
         if (!empty($date)) {
             $this->attributes['soundcheck_at'] = Carbon::parse($date);
@@ -329,10 +315,8 @@ class Series extends Eloquent
 
     /**
      * Set the start_at attribute.
-     *
-     * @param $date
      */
-    public function setStartAtAttribute($date)
+    public function setStartAtAttribute(?string $date)
     {
         if (!empty($date)) {
             $this->attributes['start_at'] = Carbon::parse($date);
@@ -343,10 +327,8 @@ class Series extends Eloquent
 
     /**
      * Set the end_at attribute.
-     *
-     * @param $date
      */
-    public function setEndAtAttribute($date)
+    public function setEndAtAttribute(?string $date)
     {
         if (!empty($date)) {
             $this->attributes['end_at'] = Carbon::parse($date);
@@ -357,10 +339,8 @@ class Series extends Eloquent
 
     /**
      * Set the door_at attribute.
-     *
-     * @param $date
      */
-    public function setDoorAtAttribute($date)
+    public function setDoorAtAttribute(?string $date)
     {
         if (!empty($date)) {
             $this->attributes['door_at'] = Carbon::parse($date);
@@ -371,10 +351,8 @@ class Series extends Eloquent
 
     /**
      * Get the end time of the event.
-     *
-     * @ return
      */
-    public function getEndTimeAttribute()
+    public function getEndTimeAttribute(): ?DateTime
     {
         if (isset($this->end_at)) {
             return $this->end_at;
@@ -386,26 +364,20 @@ class Series extends Eloquent
     /**
      * Return a collection of series with the passed tag.
      *
-     * @return Collection $series
-     *
      **/
-    public static function getByTag($tag)
+    public static function getByTag($tag): Builder
     {
         // get a list of series that have the passed tag
-        $series = self::whereHas('tags', function ($q) use ($tag) {
+        return self::whereHas('tags', function ($q) use ($tag) {
             $q->where('name', '=', ucfirst($tag));
         });
-
-        return $series;
     }
 
     /**
      * Return a collection of series with the passed event type.
      *
-     * @return Collection $series
-     *
      **/
-    public static function getByType($slug)
+    public static function getByType($slug): Builder
     {
         // get a list of series that have the passed tag
         $series = self::whereHas('eventType', function ($q) use ($slug) {
@@ -434,10 +406,10 @@ class Series extends Eloquent
     /**
      * Return a collection of series with the passed entity.
      *
-     * @return Collection $events
+     * @return Builder
      *
      **/
-    public static function getByEntity($slug)
+    public static function getByEntity(string $slug)
     {
         // get a list of events that have the passed entity
         $series = self::whereHas('entities', function ($q) use ($slug) {
@@ -602,12 +574,9 @@ class Series extends Eloquent
 
     /**
      * Get all series that would fall on the passed date.
-     *
-     * @param $date
-     *
      * @return mixed
      */
-    public static function byNextDate($date)
+    public static function byNextDate(?string $date)
     {
         $list = [];
 
@@ -679,30 +648,30 @@ class Series extends Eloquent
     /**
      * Returns the date of the next occurrence of this template.
      */
-    public function cycleForward($date)
+    public function cycleForward(?DateTime $date)
     {
-        //$days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
+        $carbonDate = Carbon::parse($date);
 
         switch ($this->occurrenceType->name) {
             case 'Yearly':
-                $next = $date->addYear();
+                $next = $carbonDate->addYear();
                 break;
             case 'Monthly':
             case 'Bimonthly':
-                $next = $date->addMonth();
+                $next = $carbonDate->addMonth();
                 if ($date) {
-                    $next = $date->nthOfMonth($this->occurrence_week_id, ($this->occurrence_day_id - 1));
+                    $next = $carbonDate->nthOfMonth($this->occurrence_week_id, ($this->occurrence_day_id - 1));
                 } else {
-                    $next = $date->addMonth()->startOfMonth();
+                    $next = $carbonDate->addMonth()->startOfMonth();
                 }
 
                 break;
             case 'Weekly':
             case 'Biweekly':
-                $next = $date->addWeek();
+                $next = $carbonDate->addWeek();
                 break;
             default:
-                $next = $date->addDay();
+                $next = $carbonDate->addDay();
         }
 
         return $next;
@@ -715,7 +684,7 @@ class Series extends Eloquent
      */
     public function lastEvent()
     {
-        return $this->events->past()->first();
+        return $this->events()->past()->first();
     }
 
     /**

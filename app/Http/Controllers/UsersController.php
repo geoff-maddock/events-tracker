@@ -147,9 +147,9 @@ class UsersController extends Controller
     /**
      * Checks if there is a valid filter.
      *
-     * @param $filters
+     * @param array $filters
      */
-    public function hasFilter($filters): bool
+    public function hasFilter(array $filters): bool
     {
         $arr = $filters;
         unset($arr['rpp'], $arr['sortOrder'], $arr['sortBy'], $arr['page']);
@@ -263,8 +263,6 @@ class UsersController extends Controller
 
     /**
      * Update the page list parameters from the request.
-     *
-     * @param $request
      */
     protected function updatePaging(Request $request): void
     {
@@ -340,15 +338,15 @@ class UsersController extends Controller
      **/
     public function create(): View
     {
-        $visibilities = ['' => ''] + Visibility::pluck('name', 'id');
-        $userStatuses = ['' => ''] + UserStatus::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $visibilities = array_merge(['' => ''], Visibility::pluck('name', 'id'));
+        $userStatuses = array_merge(['' => ''], UserStatus::orderBy('name', 'ASC')->pluck('name', 'id')->all());
         $tags = Tag::pluck('name', 'id');
 
         return view('users.create');
     }
 
     /**
-     * @return RedirectResponse|Response|View
+     * @return View
      */
     public function show(User $user, Request $request): View
     {
@@ -389,8 +387,6 @@ class UsersController extends Controller
         $profile = new Profile();
         $profile->user_id = $user->id;
         $profile->save();
-
-        $user->tags()->attach($request->input('tag_list'));
 
         flash('Success', 'Your user has been created!');
     }
@@ -587,10 +583,6 @@ class UsersController extends Controller
 
     /**
      * Send a weekly site update reminder to the user.
-     *
-     * @param $id
-     *
-     * @return Response | RedirectResponse
      */
     public function weekly(int $id, Request $request)
     {
@@ -708,7 +700,7 @@ class UsersController extends Controller
         header('Content-type: text/calendar; charset=utf-8');
         header('Content-Disposition: attachment; filename="cal.ics"');
 
-        echo $vCalendar->render();
+        return $vCalendar->render();
     }
 
     /**
@@ -749,12 +741,7 @@ class UsersController extends Controller
         return back();
     }
 
-    /**
-     * @param $user
-     *
-     * @return RedirectResponse
-     */
-    protected function notifyUserActivated(User $user)
+    protected function notifyUserActivated(User $user): RedirectResponse
     {
         $admin_email = config('app.admin');
         $site = config('app.app_name');
@@ -770,10 +757,7 @@ class UsersController extends Controller
         return back();
     }
 
-    /**
-     * @return RedirectResponse
-     */
-    protected function notifyUserWeekly(User $user)
+    protected function notifyUserWeekly(User $user): RedirectResponse
     {
         $admin_email = config('app.admin');
         $reply_email = config('app.admin');
@@ -828,10 +812,10 @@ class UsersController extends Controller
     /**
      * Update the page list parameters from the request.
      *
-     * @param $filters
      */
-    protected function getPaging($filters): void
+    protected function getPaging(array $filters): void
     {
+        // TODO revisit this getter
         $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
         $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
         if (isset($filters['rpp']) && is_numeric($filters['rpp'])) {

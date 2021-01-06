@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
+/**
+ * @property int $id
+ * @property string $name
+ */
 class OccurrenceWeek extends Eloquent
 {
     /**

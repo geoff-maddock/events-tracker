@@ -17,9 +17,11 @@ use App\Models\OccurrenceDay;
 use App\Models\OccurrenceType;
 use App\Models\OccurrenceWeek;
 use App\Models\Photo;
+use App\Models\ResponseType;
 use App\Models\Series;
 use App\Services\RssFeed;
 use App\Models\Tag;
+use App\Models\TagType;
 use App\Models\Thread;
 use App\Models\User;
 use App\Models\Visibility;
@@ -154,8 +156,7 @@ class EventsController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @return View|string
+     **------------
      *
      * @throws \Throwable
      */
@@ -253,8 +254,6 @@ class EventsController extends Controller
 
     /**
      * Update the page list parameters from the request.
-     *
-     * @param $filters
      */
     protected function getPaging(array $filters): void
     {
@@ -294,7 +293,7 @@ class EventsController extends Controller
         return [];
     }
 
-    public function buildCriteria(Request $request): Builder
+    public function buildCriteria(Request $request)
     {
         // get all the filters from the session
         $filters = $this->getFilters($request);
@@ -353,8 +352,6 @@ class EventsController extends Controller
     /**
      * Display a grid listing of the resource.
      *
-     * @return View | string
-     *
      * @throws \Throwable
      */
     public function grid(Request $request): string
@@ -395,10 +392,8 @@ class EventsController extends Controller
 
     /**
      * Update the filters parameters from the request.
-     *
-     * @param $request
      */
-    protected function updateFilters($request)
+    protected function updateFilters(Request $request)
     {
         $filters = [];
 
@@ -472,9 +467,8 @@ class EventsController extends Controller
     /**
      * Checks if there is a valid filter.
      *
-     * @param $filters
      */
-    public function hasFilter($filters): bool
+    public function hasFilter(array $filters): bool
     {
         if (!is_array($filters)) {
             return false;
@@ -798,11 +792,9 @@ class EventsController extends Controller
     /**
      * Send a reminder to all users who are attending this event.
      *
-     * @param $id
-     *
      * @return Response | RedirectResponse
      */
-    public function remind($id, Mail $mail)
+    public function remind(int $id, Mail $mail)
     {
         if (!$event = Event::find($id)) {
             flash()->error('Error', 'No such event');
@@ -829,13 +821,11 @@ class EventsController extends Controller
     /**
      * Get the events for one passed day.
      *
-     * @param $day
-     *
      * @return Response | string
      *
      * @throws \Throwable
      */
-    public function day(Request $request, $day)
+    public function day(Request $request, string $day)
     {
         if (!$day) {
             flash()->error('Error', 'No such day');
@@ -877,11 +867,10 @@ class EventsController extends Controller
     /**
      * Display a listing of events related to entity.
      *
-     * @param $slug
      *
      * @return Response
      */
-    public function calendarRelatedTo(Request $request, $slug)
+    public function calendarRelatedTo(Request $request, string $slug)
     {
         $slug = urldecode($slug);
 
@@ -952,11 +941,9 @@ class EventsController extends Controller
     /**
      * Display a listing of events by tag.
      *
-     * @param $tag
-     *
      * @return Response
      */
-    public function calendarTags($tag)
+    public function calendarTags(string $tag)
     {
         $tag = urldecode($tag);
 
@@ -1056,13 +1043,13 @@ class EventsController extends Controller
     /**
      * Displays the calendar based on passed events and tag.
      *
-     * @param $events
+     * @param array $events
      * @param array | null $series
      * @param null         $tag
      *
      * @return view
      */
-    public function renderCalendar($events, $series = null, $tag = null)
+    public function renderCalendar(array $events, $series = null, $tag = null)
     {
         $eventList = [];
 
@@ -1181,11 +1168,9 @@ class EventsController extends Controller
     /**
      * Display a calendar view of all ages.
      *
-     * @param $age
-     *
      * @return view
      */
-    public function calendarMinAge($age)
+    public function calendarMinAge(int $age)
     {
         $age = urldecode($age);
 
@@ -1219,11 +1204,9 @@ class EventsController extends Controller
     /**
      * Display a listing of events by event type.
      *
-     * @param $type
-     *
      * @return Response
      */
-    public function calendarEventTypes($type)
+    public function calendarEventTypes(string $type)
     {
         $tag = urldecode($type);
 
@@ -1533,7 +1516,7 @@ class EventsController extends Controller
             if (!Tag::find($tag)) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tag_type_id = 1;
+                $newTag->tagType()->associate(TagType::find(1));
                 $newTag->save();
 
                 // log adding of new tag
@@ -1577,11 +1560,9 @@ class EventsController extends Controller
     }
 
     /**
-     * @param $event
-     *
      * @return RedirectResponse
      */
-    protected function notifyFollowing($event): RedirectResponse
+    protected function notifyFollowing(Event $event): RedirectResponse
     {
         $reply_email = config('app.noreplyemail');
         $site = config('app.app_name');
@@ -1653,7 +1634,7 @@ class EventsController extends Controller
             if (!Tag::find($tag)) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tag_type_id = 1;
+                $newTag->tagType()->associate(TagType::find(1));
                 $newTag->save();
 
                 // log adding of new tag
@@ -1703,15 +1684,13 @@ class EventsController extends Controller
     }
 
     /**
-     * Tweet this event.
-     *
-     * @param $id
+     * Tweet this event
      *
      * @return Response
      *
      * @throws \Throwable
      */
-    public function tweet($id)
+    public function tweet(int $id)
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -1739,13 +1718,11 @@ class EventsController extends Controller
     /**
      * Mark user as attending the event.
      *
-     * @param $id
-     *
-     * @return Response | string | array
+     * @return Response
      *
      * @throws \Throwable
      */
-    public function attend($id, Request $request)
+    public function attend(int $id, Request $request)
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -1762,9 +1739,9 @@ class EventsController extends Controller
 
         // add the attending response
         $response = new EventResponse();
-        $response->event_id = $id;
-        $response->user_id = $this->user->id;
-        $response->response_type_id = 1; // 1 = Attending, 2 = Interested, 3 = Uninterested, 4 = Cannot Attend
+        $response->event()->associate($id);
+        $response->user()->associate($this->user);
+        $response->responseType()->associate(ResponseType::find(1)); // 1 = Attending, 2 = Interested, 3 = Uninterested, 4 = Cannot Attend
         $response->save();
 
         // add to activity log
@@ -1789,8 +1766,6 @@ class EventsController extends Controller
 
     /**
      * Mark user as unattending the event.
-     *
-     * @param $id
      *
      * @throws \Throwable
      */
@@ -1833,8 +1808,6 @@ class EventsController extends Controller
 
     /**
      * Record a user's review of the event.
-     *
-     * @param $id
      */
     public function review(int $id, Request $request): RedirectResponse
     {
@@ -1858,10 +1831,9 @@ class EventsController extends Controller
         $review->review_type_id = 1; // 1 = Informational, 2 = Positive, 3 = Neutral, 4 = Negative
         $review->attended = $request->input('attended', 0);
         $review->confirmed = $request->input('confirmed', 0);
-        $review->expecation = $request->input('expectation', null);
+        $review->expectation = $request->input('expectation', null);
         $review->rating = $request->input('rating', null);
         $review->review = $request->input('review', null);
-        $review->created_by = $this->user->id;
         $review->save();
 
         flash()->success('Success', 'You reviewed the event - ' . $event->name);
@@ -1872,11 +1844,9 @@ class EventsController extends Controller
     /**
      * Display a listing of events by tag.
      *
-     * @param $tag
-     *
      * @return Response
      */
-    public function indexTags(Request $request, $tag)
+    public function indexTags(Request $request, string $tag)
     {
         $tag = urldecode($tag);
 
@@ -1888,7 +1858,8 @@ class EventsController extends Controller
 
         $this->hasFilter = count($filters);
 
-        $future_events = Event::getByTag(ucfirst($tag))->future()
+        $future_events = Event::getByTag(ucfirst($tag))
+            ->future()
             ->orderBy('start_at', 'ASC')
             ->orderBy('name', 'ASC')
             ->paginate($this->rpp);
@@ -1916,11 +1887,9 @@ class EventsController extends Controller
     /**
      * Display a listing of events related to entity.
      *
-     * @param $slug
-     *
      * @return View
      */
-    public function indexRelatedTo(Request $request, $slug)
+    public function indexRelatedTo(Request $request, string $slug)
     {
         $slug = urldecode($slug);
 
@@ -1959,12 +1928,9 @@ class EventsController extends Controller
 
     /**
      * Display a listing of events that start on the specified day.
-     *
-     * @param $date
-     *
      * @return View
      */
-    public function indexStarting(Request $request, $date)
+    public function indexStarting(Request $request, string $date)
     {
         // updates sort, rpp from request
         $this->updatePaging($request);
@@ -1975,8 +1941,8 @@ class EventsController extends Controller
         $this->hasFilter = count($filters);
 
         $cdate = Carbon::parse($date);
-        $cdate_yesterday = Carbon::parse($date)->subDay(1);
-        $cdate_tomorrow = Carbon::parse($date)->addDay(1);
+        $cdate_yesterday = Carbon::parse($date)->subDay();
+        $cdate_tomorrow = Carbon::parse($date)->addDay();
 
         $future_events = Event::where('start_at', '>', $cdate_yesterday->toDateString())
             ->where('start_at', '<', $cdate_tomorrow->toDateString())
@@ -1996,11 +1962,9 @@ class EventsController extends Controller
     /**
      * Display a listing of events by venue.
      *
-     * @param $slug
-     *
      * @return View
      */
-    public function indexVenues(Request $request, $slug)
+    public function indexVenues(Request $request, string $slug)
     {
         // updates sort, rpp from request
         $this->updatePaging($request);
@@ -2038,11 +2002,9 @@ class EventsController extends Controller
     /**
      * Display a listing of events by type.
      *
-     * @param $slug
-     *
      * @return View
      */
-    public function indexTypes(Request $request, $slug)
+    public function indexTypes(Request $request, string $slug)
     {
         // updates sort, rpp from request
         $this->updatePaging($request);
@@ -2080,11 +2042,9 @@ class EventsController extends Controller
     /**
      * Display a listing of events by series.
      *
-     * @param $slug
-     *
      * @return View
      */
-    public function indexSeries(Request $request, $slug)
+    public function indexSeries(Request $request, string $slug)
     {
         // updates sort, rpp from request
         $this->updatePaging($request);
@@ -2230,7 +2190,7 @@ class EventsController extends Controller
         $event = Event::find($request->id);
 
         // get a list of venues
-        $venues = ['' => ''] + Entity::getVenues()->pluck('name', 'id')->all();
+        $venues = array_merge(['' => ''], Entity::getVenues()->pluck('name', 'id')->all());
 
         // get a list of promoters
         $promoters = ['' => ''] + Entity::whereHas('roles', function ($q) {
@@ -2325,12 +2285,7 @@ class EventsController extends Controller
             ->header('Content-type', 'application/rss+xml');
     }
 
-    /**
-     * @param $tag
-     *
-     * @return mixed
-     */
-    public function rssTags(RssFeed $feed, $tag): Response
+    public function rssTags(RssFeed $feed, string $tag): Response
     {
         $rss = $feed->getTagRSS(ucfirst($tag));
 

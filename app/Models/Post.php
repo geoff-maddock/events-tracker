@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Filters\QueryFilter;
 use App\Models\Visibility;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Collection;
@@ -263,10 +264,8 @@ class Post extends Eloquent
     /**
      * Return a collection of posts with the passed tag.
      *
-     * @return Collection $posts
-     *
      **/
-    public static function getByTag($tag)
+    public static function getByTag($tag): Builder
     {
         // get a list of posts that have the passed tag
         return self::whereHas('tags', function ($q) use ($tag) {

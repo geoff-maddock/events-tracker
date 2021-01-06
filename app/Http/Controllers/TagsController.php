@@ -16,6 +16,7 @@ use App\Models\Series;
 use App\Models\Tag;
 use App\Models\Follow;
 use App\Models\TagType;
+use Illuminate\View\View;
 
 class TagsController extends Controller
 {
@@ -263,10 +264,8 @@ class TagsController extends Controller
 
     /**
      * Show a form to create a new tag.
-     *
-     * @return view
      **/
-    public function create()
+    public function create(): View
     {
         $tagTypes = TagType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
@@ -306,12 +305,12 @@ class TagsController extends Controller
     /**
      * Mark user as following the tag
      *
-     * @param $id
+     * @param int $id
      * @param Request $request
      * @return Response
      * @throws \Throwable
      */
-    public function follow($id, Request $request)
+    public function follow(int $id, Request $request)
     {
         $type = 'tag';
 
@@ -361,12 +360,12 @@ class TagsController extends Controller
     /**
      * Mark user as unfollowing the tag.
      *
-     * @param $id
+     * @param int $id
      * @param Request $request
      * @return Response
      * @throws \Throwable
      */
-    public function unfollow($id, Request $request)
+    public function unfollow(int $id, Request $request)
     {
         $type = 'tag';
 
@@ -456,9 +455,9 @@ class TagsController extends Controller
     /**
      * Get the current page for this module
      *
-     * @return integner
+     * @return integer
      */
-    public function getPage(Request $request)
+    public function getPage(Request $request): ?int
     {
         return $this->getAttribute($request, 'page', 1);
     }
@@ -510,12 +509,10 @@ class TagsController extends Controller
      * @param String $attribute
      * @param Mixed $value
      * @param Request $request
-     * @return Mixed
      */
-    public function setAttribute(Request $request, $attribute, $value)
+    public function setAttribute(Request $request, string $attribute, $value)
     {
-        return $request->session()
-            ->put($this->prefix . $attribute, $value);
+        $request->session()->put($this->prefix . $attribute, $value);
     }
 
     /**

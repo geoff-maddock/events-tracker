@@ -55,7 +55,7 @@ class ThreadPolicy
      */
     public function update(User $user, Thread $thread)
     {
-        return $thread->user_id == $user->id;
+        return $thread->user->id == $user->id;
     }
 
     /**
@@ -77,7 +77,7 @@ class ThreadPolicy
     /**
      * Determine whether the user can view the thread.
      *
-     * @param  \App\Thread  $thread
+     * @param  Thread $thread
      * @return mixed
      */
     public function all(Thread $thread)

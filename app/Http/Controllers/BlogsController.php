@@ -10,6 +10,7 @@ use App\Http\Requests\BlogRequest;
 use App\Models\Like;
 use App\Models\Menu;
 use App\Models\Tag;
+use App\Models\TagType;
 use App\Models\Visibility;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -184,14 +185,8 @@ class BlogsController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param BlogRequest|Request $request
-     *
-     * @return \Illuminate\Http\Response
-     *
-     * @internal param int $id
      */
-    public function update(Blog $blog, BlogRequest $request)
+    public function update(Blog $blog, BlogRequest $request): RedirectResponse
     {
         $msg = '';
 
@@ -209,7 +204,7 @@ class BlogsController extends Controller
             if (!DB::table('tags')->where('id', $tag)->get()) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tag_type_id = 1;
+                $newTag->tagType()->associate(TagType::find(1));
                 $newTag->save();
 
                 $syncArray[] = $newTag->id;
@@ -281,7 +276,7 @@ class BlogsController extends Controller
         // add the like response
         $like = new Like();
         $like->object_id = $id;
-        $like->user_id = $this->user->id;
+        $like->user()->associate($this->user);
         $like->object_type = 'blog';
         $like->save();
 
@@ -298,12 +293,8 @@ class BlogsController extends Controller
 
     /**
      * Mark user as unliking the blog.
-     *
-     * @param $id
-     *
-     * @return Response
      */
-    public function unlike($id, Request $request)
+    public function unlike(int $id, Request $request): RedirectResponse
     {
         // check if there is a logged in user
         if (!$this->user) {

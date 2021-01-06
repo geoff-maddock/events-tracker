@@ -12,6 +12,7 @@ use App\Http\Requests\EntityRequest;
 use App\Models\Photo;
 use App\Models\Role;
 use App\Models\Tag;
+use App\Models\TagType;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -21,7 +22,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
-use View;
+use Illuminate\Contracts\View\View;
 
 class EntitiesController extends Controller
 {
@@ -107,10 +108,8 @@ class EntitiesController extends Controller
 
     /**
      * Update the page list parameters from the request.
-     *
-     * @param $filters
      */
-    protected function getPaging($filters): void
+    protected function getPaging(array $filters): void
     {
         $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
         $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
@@ -185,8 +184,6 @@ class EntitiesController extends Controller
 
     /**
      * Builds the criteria from the session.
-     *
-     * @return $query
      */
     public function buildCriteria(Request $request): Builder
     {
@@ -301,10 +298,8 @@ class EntitiesController extends Controller
 
     /**
      * Checks if there is a valid filter.
-     *
-     * @param $filters
      */
-    public function hasFilter($filters): bool
+    public function hasFilter(array $filters): bool
     {
         $arr = $filters;
         unset($arr['rpp'], $arr['sortOrder'], $arr['sortBy'], $arr['page']);
@@ -528,7 +523,7 @@ class EntitiesController extends Controller
             if (!DB::table('tags')->where('id', $tag)->get()) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tag_type_id = 1;
+                $newTag->tagType()->associate(TagType::find(1));
                 $newTag->save();
 
                 // log adding of new tag
@@ -574,12 +569,8 @@ class EntitiesController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @return Response | string
-     *
-     * @internal param int $id
      */
-    public function show(Entity $entity)
+    public function show(Entity $entity): View
     {
         $threads = $entity->threads()->paginate($this->rpp);
 
@@ -588,12 +579,8 @@ class EntitiesController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @return Response | string
-     *
-     * @internal param int $id
      */
-    public function edit(Entity $entity)
+    public function edit(Entity $entity): View
     {
         $this->middleware('auth');
 
@@ -640,7 +627,7 @@ class EntitiesController extends Controller
             if (!Tag::find($tag)) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tag_type_id = 1;
+                $newTag->tagType()->associate(TagType::find(1));
                 $newTag->save();
 
                 // log adding of new tag

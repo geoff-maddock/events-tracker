@@ -6,6 +6,9 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
+/**
+ * @property string $name
+ */
 class UserStatus extends Eloquent
 {
     use HasFactory;

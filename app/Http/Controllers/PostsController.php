@@ -9,6 +9,7 @@ use App\Models\Like;
 use App\Models\Post;
 use App\Models\Series;
 use App\Models\Tag;
+use App\Models\TagType;
 use App\Models\Thread;
 use App\Models\Visibility;
 use Illuminate\Http\RedirectResponse;
@@ -49,7 +50,6 @@ class PostsController extends Controller
     protected array $filters;
 
     protected array $criteria;
-
 
     public function __construct(Post $post)
     {
@@ -121,12 +121,9 @@ class PostsController extends Controller
 
     /**
      * Display a listing of posts by tag.
-     *
-     * @param $tag
-     *
      * @return View
      */
-    public function indexTags(Request $request, $tag)
+    public function indexTags(Request $request, string $tag)
     {
         $hasFilter = true;
 
@@ -186,7 +183,7 @@ class PostsController extends Controller
             if (!DB::table('tags')->where('id', $tag)->get()) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tag_type_id = 1;
+                $newTag->tagType()->associate(TagType::find(1));
                 $newTag->save();
 
                 $syncArray[] = $newTag->id;
@@ -196,7 +193,7 @@ class PostsController extends Controller
                 $syncArray[$key] = $tag;
             }
         }
-    
+
         $thread->addPost([
             'body' => request('body'),
             'created_by' => auth()->id(),
@@ -327,10 +324,6 @@ class PostsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param PostRequest|Request $request
-     *
-     * @return \Illuminate\Http\Response
-     *
      * @internal param int $id
      */
     public function update(Post $post, PostRequest $request)
@@ -351,7 +344,7 @@ class PostsController extends Controller
             if (!DB::table('tags')->where('id', $tag)->get()) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tag_type_id = 1;
+                $newTag->tagType()->associate(TagType::find(1));
                 $newTag->save();
 
                 $syncArray[] = $newTag->id;
@@ -426,7 +419,7 @@ class PostsController extends Controller
         // add the like response
         $like = new Like();
         $like->object_id = $id;
-        $like->user_id = $this->user->id;
+        $like->user()->associate($this->user);
         $like->object_type = 'post';
         $like->save();
 
@@ -444,11 +437,9 @@ class PostsController extends Controller
     /**
      * Mark user as unliking the post.
      *
-     * @param $id
-     *
      * @return Response
      */
-    public function unlike($id, Request $request)
+    public function unlike(int $id, Request $request)
     {
         // check if there is a logged in user
         if (!$this->user) {

@@ -5,9 +5,11 @@ namespace App\Models;
 use Image;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-//use App\Http\Controllers\UploadedFile;
-
+/**
+ * @property int $user_id
+ */
 class EventResponse extends Eloquent
 {
     /**
@@ -30,20 +32,19 @@ class EventResponse extends Eloquent
     /**
      * Get the event that the response belongs to
      *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function events()
+    public function event(): BelongsTo
     {
-        return $this->belongsToMany('App\Models\Event')->withTimestamps();
+        return $this->belongsTo(Event::class, 'event_id');
     }
 
     /**
      * Get the user that the response belongs to
      *
      */
-    public function users()
+    public function user(): BelongsTo
     {
-        return $this->belongsToMany('App\Models\User')->withTimestamps();
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**

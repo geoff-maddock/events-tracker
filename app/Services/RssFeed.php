@@ -52,7 +52,11 @@ class RssFeed
             return Cache::get('rss-feed' . $tag);
         }
 
-        $events = Event::getByTag(ucfirst($tag))->future()->orderBy('start_at', 'desc')->take(config('event.rss_size'))->get();
+        $events = Event::getByTag(ucfirst($tag))
+        ->future()
+        ->orderBy('start_at', 'desc')
+        ->take(config('event.rss_size'))
+        ->get();
 
         $rss = $this->buildRssData($events);
         Cache::add('rss-feed' . $tag, $rss, 7200);

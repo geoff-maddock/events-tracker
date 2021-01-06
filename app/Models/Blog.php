@@ -281,9 +281,9 @@ class Blog extends Eloquent
         return $blogs;
     }
 
-    public function addPhoto(Photo $photo)
+    public function addPhoto(Photo $photo): void
     {
-        return $this->photos()->attach($photo->id);
+        $this->photos()->attach($photo->id);
     }
 
     /**

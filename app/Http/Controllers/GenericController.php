@@ -53,8 +53,6 @@ class GenericController extends Controller
 
     /**
      * Reset the filtering of entities
-     *
-     * @return Response
      */
     public function reset()
     {
@@ -105,7 +103,7 @@ class GenericController extends Controller
     /**
      * Get the current page for this module
      *
-     * @return integner
+     * @return integer
      */
     public function getPage(Request $request)
     {
@@ -190,14 +188,13 @@ class GenericController extends Controller
     /**
      * Set user session attribute
      *
-     * @param String $attribute
-     * @param Mixed $value
      * @param Request $request
-     * @return Mixed
+     * @param string $attribute
+     * @param Mixed $value
      */
     public function setAttribute(Request $request, string $attribute, $value)
     {
-        return $request->session()->put($this->prefix . $attribute, $value);
+        $request->session()->put($this->prefix . $attribute, $value);
     }
 
     /**

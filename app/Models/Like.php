@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
  * Contains users and objects they like
  * @property int $object_id
  * @property string $object_type
+ * @property User $user
  */
 class Like extends Eloquent
 {
@@ -22,12 +23,13 @@ class Like extends Eloquent
     protected $dates = ['created_at', 'updated_at'];
 
     /**
-     * Get the user that the response belongs to
+     * The user who likes the object
      *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function users()
+    public function user()
     {
-        return $this->belongsToMany(User::class)->withTimestamps();
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**

@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
+use DateTime;
 
 /**
  * App\Models\Activity
@@ -151,7 +153,7 @@ class Activity extends Eloquent
      */
     public function getAgeAttribute()
     {
-        return $this->created_at->diffForHumans();
+        return Carbon::parse($this->created_at)->diffForHumans();
     }
 
     /**

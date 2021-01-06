@@ -3,13 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Activity;
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\EntityTypeRequest;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
+use Illuminate\Http\Response;
 use App\Models\EntityType;
-use App\Http\Requests\EntityRequest;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
@@ -64,14 +61,11 @@ class EntityTypesController extends Controller
         $entityTypes = $query->paginate($this->rpp);
 
         return view('entityTypes.index')
-        ->with(['entityTypes' => $entityTypes, 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
-        ->withCompact('entityTypes');
+        ->with(['entityTypes' => $entityTypes, 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder]);
     }
 
     /**
      * Builds the criteria from the session.
-     *
-     * @return $query
      */
     public function buildCriteria(Request $request): Builder
     {
@@ -108,7 +102,6 @@ class EntityTypesController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
      * @return Response
      */
     public function show(EntityType $entityType)
@@ -119,7 +112,6 @@ class EntityTypesController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
      * @return Response
      */
     public function edit(EntityType $entityType)
@@ -132,7 +124,6 @@ class EntityTypesController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  int  $id
      * @return Response
      */
     public function update(EntityType $entityType, Request $request)
@@ -145,7 +136,6 @@ class EntityTypesController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
      * @return Response
      */
     public function destroy(EntityType $entityType)

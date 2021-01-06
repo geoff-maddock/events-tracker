@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
-use DB;
+use Illuminate\Http\Response;
 use App\Models\Entity;
 use App\Models\LocationType;
 use App\Models\Location;

@@ -164,7 +164,7 @@ class Photo extends Eloquent
             $this->thumbnail,
         ]);
 
-        parent::delete();
+        return parent::delete();
     }
 
     public function getTwitterPath(): string

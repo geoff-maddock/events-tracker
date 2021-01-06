@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use App\Models\Entity;
 use App\Models\Event;
 use App\Models\Comment;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Redirect;
 
 class CommentsController extends Controller
 {
@@ -29,11 +30,8 @@ class CommentsController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @param  Entity 		$entity
-     * @return Response
      */
-    public function index(Entity $entity)
+    public function index(Entity $entity): View
     {
         return view('comments.index', compact('entity'));
     }
@@ -41,10 +39,8 @@ class CommentsController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @param  Entity 		$entity
-     * @return Response
      */
-    public function create(Entity $entity, Event $event)
+    public function create(Entity $entity, Event $event): View
     {
         $object = null;
         $type = null;
@@ -64,12 +60,8 @@ class CommentsController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  Request 			$request
-     * @param  Entity 		$entity
-     * @return Response
      */
-    public function store(Request $request, Entity $entity, Event $event)
+    public function store(Request $request, Entity $entity, Event $event): RedirectResponse
     {
         $msg = '';
         $type = null;
@@ -100,25 +92,17 @@ class CommentsController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  Entity 		$entity
-     * @param  Comment  	$comment
-     * @return Response
+     * Display the specified comment
      */
-    public function show(Entity $entity, Comment $comment)
+    public function show(Entity $entity, Comment $comment): View
     {
         return view('comments.show', compact('entity', 'comment'));
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param String $id
-     * @param  Comment $comment
-     * @return Response
+     * Show the form for editing the specified comment
      */
-    public function edit($id, Comment $comment)
+    public function edit(Comment $comment): View
     {
         $object = $comment->commentable;
         $entity = null;
@@ -140,13 +124,8 @@ class CommentsController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  Request 			$request
-     * @param  Entity 		$entity
-     * @param  Comment  	$comment
-     * @return Response
      */
-    public function update(Request $request, Entity $entity, Comment $comment)
+    public function update(Request $request, Entity $entity, Comment $comment): RedirectResponse
     {
         $msg = '';
 
@@ -159,13 +138,9 @@ class CommentsController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param Entity $entity
-     * @param  Comment $comment
-     * @return Response
      * @throws \Exception
      */
-    public function destroy(Entity $entity, Comment $comment)
+    public function destroy(Entity $entity, Comment $comment): RedirectResponse
     {
         $comment->delete();
 

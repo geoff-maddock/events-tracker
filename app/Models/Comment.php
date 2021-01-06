@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property Model $commentable
+ */
 class Comment extends Model
 {
     /**

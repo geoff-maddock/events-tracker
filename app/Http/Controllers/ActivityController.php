@@ -6,6 +6,7 @@ use App\Models\Activity;
 use App\Http\Requests\SeriesRequest;
 use App\Models\Series;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Session;
@@ -113,10 +114,8 @@ class ActivityController extends Controller
 
     /**
      * Checks if there is a valid filter.
-     *
-     * @param $filters
      */
-    public function hasFilter($filters): bool
+    public function hasFilter(array $filters): bool
     {
         $arr = $filters;
         unset($arr['rpp'], $arr['sortOrder'], $arr['sortBy'], $arr['page']);
@@ -126,10 +125,8 @@ class ActivityController extends Controller
 
     /**
      * Update the page list parameters from the request.
-     *
-     * @param $filters
      */
-    protected function getPaging($filters): void
+    protected function getPaging(array $filters): void
     {
         $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
         $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
@@ -138,10 +135,8 @@ class ActivityController extends Controller
 
     /**
      * Update the page list parameters from the request.
-     *
-     * @param $request
      */
-    protected function updatePaging($request)
+    protected function updatePaging(Request $request): void
     {
         // set sort by column
         if ($request->input('sort_by')) {
@@ -182,13 +177,10 @@ class ActivityController extends Controller
      *
      * @param string $attribute
      * @param mixed  $value
-     *
-     * @return mixed
      */
-    public function setAttribute(Request $request, $attribute, $value)
+    public function setAttribute(Request $request, string $attribute, $value)
     {
-        return $request->session()
-            ->put($this->prefix . $attribute, $value);
+        $request->session()->put($this->prefix . $attribute, $value);
     }
 
     /**
@@ -349,10 +341,8 @@ class ActivityController extends Controller
 
     /**
      * Builds the criteria from the session.
-     *
-     * @return $query
      */
-    public function buildCriteria(Request $request)
+    public function buildCriteria(Request $request): Builder
     {
         // get all the filters from the session
         $filters = $this->getFilters($request);
