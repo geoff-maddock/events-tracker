@@ -5,11 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\EventReview;
 use App\Models\ReviewType;
-use App\Http\Requests;
+use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
-use DB;
 
 class EventReviewsController extends Controller
 {

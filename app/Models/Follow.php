@@ -7,10 +7,9 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 /**
  * App\Models\Follow
  *
- * @property int object_id
- * @property mixed object_type
  * @property int $id
  * @property int $user_id
+ * @property User $user
  * @property string|null $object_type
  * @property int|null $object_id
  * @property \Illuminate\Support\Carbon $created_at
@@ -51,12 +50,12 @@ class Follow extends Eloquent
     protected $dates = ['created_at', 'updated_at'];
 
     /**
-     * Get the user that the response belongs to
+     * Get the user who follows the object
      *
      */
-    public function users()
+    public function user()
     {
-        return $this->belongsToMany(User::class)->withTimestamps();
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**

@@ -5,7 +5,16 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Support\Collection;
+use DateTime;
 
+/**
+ * @property int $id
+ * @property int|null $user_id
+ * @property string $name
+ * @property TagType $tagType
+ * @property DateTime $created_at
+ */
 class Tag extends Eloquent
 {
     use HasFactory;
@@ -76,7 +85,7 @@ class Tag extends Eloquent
     /**
      * Checks if the tag is followed by the user.
      *
-     * @return Collection $follows
+     * @return Follow $follows
      *
      **/
     public function followedBy($user)
@@ -85,7 +94,6 @@ class Tag extends Eloquent
         ->where('object_id', '=', $this->id)
         ->where('user_id', '=', $user->id)
         ->first();
-        // return any follow instances
 
         return $response;
     }

@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class Group extends Model
 {
@@ -61,29 +63,19 @@ class Group extends Model
 
     /**
      * Return a collection of groups with the passed user
-     *
-     * @param $slug
-     *
-     * @return Collection $groups
      */
-    public static function getByUser(string $name)
+    public static function getByUser(string $name): Builder
     {
         // get a list of groups that have the passed user
-        $groups = self::whereHas('user', function ($q) use ($name) {
+        return self::whereHas('user', function ($q) use ($name) {
             $q->where('name', '=', $name);
         });
-
-        return $groups;
     }
 
     /**
      * Return a collection of groups with the passed permission
-     *
-     * @param $slug
-     *
-     * @return Collection $groups
      */
-    public static function getByPermission(string $name)
+    public static function getByPermission(string $name): Builder
     {
         // get a list of groups that have the passed permission
         $groups = self::whereHas('permission', function ($q) use ($name) {

@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Filters\QueryFilter;
 use Carbon\Carbon;
-use Database\Factories\EntityFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
@@ -173,12 +172,8 @@ class Entity extends Eloquent
     /**
      * Return a collection of entities with the passed alias.
      *
-     * @pra
-     *
-     * @return Collection $entities
-     *
      **/
-    public static function getByAlias($alias): Collection
+    public static function getByAlias(string $alias): Builder
     {
         // get a list of entities that have the passed alias
         $entities = self::whereHas('aliases', static function ($q) use ($alias) {
@@ -196,7 +191,7 @@ class Entity extends Eloquent
      * @return Entity $entity
      *
      **/
-    public static function getBySlug($slug)
+    public static function getBySlug(string $slug)
     {
         // get a single entity by slug
         $entity = self::where('slug', $slug);
@@ -212,7 +207,7 @@ class Entity extends Eloquent
      * @return Collection $entities
      *
      **/
-    public static function getByType($type)
+    public static function getByType(string $type)
     {
         // get a list of entities that have the passed role
         $entities = self::whereHas('entity_type', function ($q) use ($type) {
@@ -246,7 +241,7 @@ class Entity extends Eloquent
     /**
      * Returns entities by type.
      */
-    public function scopeOfType($query, $type)
+    public function scopeOfType(Builder $query, string $type): Builder
     {
         $type = EntityType::where('name', '=', $type)->first();
 
@@ -256,7 +251,7 @@ class Entity extends Eloquent
     /**
      * Returns active entities.
      */
-    public function scopeActive($query)
+    public function scopeActive($query): Builder
     {
         $status = EntityStatus::where('name', '=', 'Active')->first();
 
@@ -296,7 +291,7 @@ class Entity extends Eloquent
     /**
      * The contacts that belong to the entity.
      *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function contacts()
     {
@@ -306,7 +301,7 @@ class Entity extends Eloquent
     /**
      * The contacts that belong to the entity.
      *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function series()
     {
@@ -316,7 +311,7 @@ class Entity extends Eloquent
     /**
      * The links that belong to the entity.
      *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function links()
     {
@@ -326,7 +321,7 @@ class Entity extends Eloquent
     /**
      * An entity has one entity type.
      *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function entityType()
     {
@@ -336,7 +331,7 @@ class Entity extends Eloquent
     /**
      * An entity has one status.
      *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function entityStatus(): BelongsTo
     {
@@ -346,7 +341,7 @@ class Entity extends Eloquent
     /**
      * The tags that belong to the entity.
      *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function tags(): BelongsToMany
     {

@@ -258,6 +258,14 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     }
 
     /**
+     * A user can own many objects.
+     */
+    public function owns($object)
+    {
+        return ($object->created_by == $this->id);
+    }
+
+    /**
      * An profile is owned by a user.
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -469,7 +477,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * Return the feed of user activity.
      *
-     * @param $user
+     * @param User $user
      * @param int $take
      *
      * @return array

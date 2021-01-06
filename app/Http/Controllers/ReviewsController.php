@@ -21,7 +21,9 @@ use App\Models\Event;
 use App\Models\Entity;
 use App\Models\Tag;
 use App\Models\Activity;
+use App\Models\TagType;
 use App\Models\Visibility;
+use Illuminate\Database\Eloquent\Builder;
 
 class ReviewsController extends Controller
 {
@@ -129,10 +131,8 @@ class ReviewsController extends Controller
 
     /**
      * Builds the criteria from the session
-     *
-     * @return $query
      */
-    public function buildCriteria(Request $request)
+    public function buildCriteria(Request $request): Builder
     {
         $hasFilter = 1;
 
@@ -260,7 +260,7 @@ class ReviewsController extends Controller
     /**
      * Get the current page for this module
      *
-     * @return integner
+     * @return integer
      */
     public function getPage(Request $request)
     {
@@ -311,14 +311,13 @@ class ReviewsController extends Controller
     /**
      * Set user session attribute
      *
-     * @param String $attribute
-     * @param Mixed $value
      * @param Request $request
-     * @return Mixed
+     * @param string $attribute
+     * @param Mixed $value
      */
-    public function setAttribute(Request $request, $attribute, $value)
+    public function setAttribute(Request $request, string $attribute, $value)
     {
-        return $request->session()->put($this->prefix . $attribute, $value);
+        $request->session()->put($this->prefix . $attribute, $value);
     }
 
     /**
@@ -503,12 +502,12 @@ class ReviewsController extends Controller
     /**
      * Update the page list parameters from the request.
      *
-     * @param $filters
      */
     protected function getPaging(array $filters): void
     {
         $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
         $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
+
         if (isset($filters['rpp']) && is_numeric($filters['rpp'])) {
             $this->rpp = $filters['rpp'];
         } else {
@@ -519,9 +518,9 @@ class ReviewsController extends Controller
     /**
     * Checks if there is a valid filter.
     *
-    * @param $filters
+    * @param array $filters
     */
-    public function hasFilter($filters): bool
+    public function hasFilter(array $filters): bool
     {
         if (!is_array($filters)) {
             return false;
@@ -562,8 +561,6 @@ class ReviewsController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @return Response
      */
     public function indexPast(Request $request)
     {
@@ -587,7 +584,6 @@ class ReviewsController extends Controller
     /**
      * Reset the filtering of reviews
      *
-     * @return Response
      * @throws \Throwable
      */
     public function reset(Request $request)
@@ -669,7 +665,7 @@ class ReviewsController extends Controller
             if (!Tag::find($tag)) {
                 $newTag = new Tag;
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tag_type_id = 1;
+                $newTag->tagType()->associate(TagType::find(1));
                 $newTag->save();
 
                 $syncArray[] = $newTag->id;
@@ -697,10 +693,10 @@ class ReviewsController extends Controller
     }
 
     /**
-     * @param $event
+     * @param Event $event
      * @return \Illuminate\Http\RedirectResponse
      */
-    protected function notifyFollowing($event)
+    protected function notifyFollowing(Event $event)
     {
         $reply_email = config('app.noreplyemail');
         $site = config('app.app_name');
@@ -784,7 +780,7 @@ class ReviewsController extends Controller
             if (!Tag::find($tag)) {
                 $newTag = new Tag;
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tag_type_id = 1;
+                $newTag->tagType()->associate(TagType::find(1));
                 $newTag->save();
 
                 $syncArray[strtolower($tag)] = $newTag->id;

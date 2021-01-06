@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
+/**
+ * @property string $name
+ */
 class EntityType extends Eloquent
 {
     const SPACE = 1;

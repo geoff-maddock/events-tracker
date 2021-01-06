@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\RedirectResponse;
 
 class RegisterController extends Controller
 {
@@ -89,10 +90,9 @@ class RegisterController extends Controller
     }
 
     /**
-     * @param $user
-     * @return \Illuminate\Http\RedirectResponse
+     * Notify the admin user that a new user was registered
      */
-    protected function notifyAdmin($user)
+    protected function notifyAdmin(User $user): RedirectResponse
     {
         $admin_email = config('app.admin');
         $site = config('app.app_name');

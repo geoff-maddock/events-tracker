@@ -15,8 +15,10 @@ use App\Models\Photo;
 use App\Models\Series;
 use App\Services\RssFeed;
 use App\Models\Tag;
+use App\Models\TagType;
 use App\Models\User;
 use App\Models\Visibility;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -85,9 +87,9 @@ class SeriesController extends Controller
     /**
      * Update the page list parameters from the request.
      *
-     * @param $filters
+     * @param array $filters
      */
-    protected function getPaging($filters): void
+    protected function getPaging(array $filters): void
     {
         $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
         $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
@@ -101,9 +103,9 @@ class SeriesController extends Controller
     /**
      * Checks if there is a valid filter.
      *
-     * @param $filters
+     * @param array $filters
      */
-    public function hasFilter($filters): bool
+    public function hasFilter(array $filters): bool
     {
         if (!is_array($filters)) {
             return false;
@@ -161,9 +163,9 @@ class SeriesController extends Controller
     /**
      * Update the page list parameters from the request.
      *
-     * @param $request
+     * @param Request $request
      */
-    protected function updatePaging($request)
+    protected function updatePaging(Request $request)
     {
         // set sort by column
         if ($request->input('sort_by')) {
@@ -352,13 +354,13 @@ class SeriesController extends Controller
     /**
      * Display a listing of series related to entity.
      *
-     * @param $slug
+     * @param string $slug
      *
      * @return Response | View | string
      *
      * @throws \Throwable
      */
-    public function indexRelatedTo($slug)
+    public function indexRelatedTo(string $slug)
     {
         $hasFilter = 1;
         $slug = urldecode($slug);
@@ -380,13 +382,11 @@ class SeriesController extends Controller
     /**
      * Display a listing of events by tag.
      *
-     * @param $tag
-     *
      * @return Response | View | string
      *
      * @throws \Throwable
      */
-    public function indexTags(Request $request, $tag)
+    public function indexTags(Request $request, string $tag)
     {
         // updates sort, rpp from request
         $this->updatePaging($request);
@@ -463,7 +463,7 @@ class SeriesController extends Controller
             if (!DB::table('tags')->where('id', $tag)->get()) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tag_type_id = 1;
+                $newTag->tagType()->associate(TagType::find(1));
                 $newTag->save();
 
                 // log adding of new tag
@@ -614,7 +614,7 @@ class SeriesController extends Controller
             if (!Tag::find($tag)) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tag_type_id = 1;
+                $newTag->tagType()->associate(TagType::find(1));
                 $newTag->save();
                 // log adding of new tag
                 Activity::log($newTag, $this->user, 1);
@@ -697,14 +697,11 @@ class SeriesController extends Controller
 
     /**
      * Mark user as following the series.
-     *
-     * @param $id
-     *
      * @return Response | RedirectResponse | array
      *
      * @throws \Throwable
      */
-    public function follow($id, Request $request)
+    public function follow(int $id, Request $request)
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -747,13 +744,11 @@ class SeriesController extends Controller
     /**
      * Mark user as unfollowing the series.
      *
-     * @param $id
-     *
      * @return Response | RedirectResponse | array
      *
      * @throws \Throwable
      */
-    public function unfollow($id, Request $request)
+    public function unfollow(int $id, Request $request)
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -825,10 +820,8 @@ class SeriesController extends Controller
 
     /**
      * Builds the criteria from the session.
-     *
-     * @return $query
      */
-    public function buildCriteria(Request $request)
+    public function buildCriteria(Request $request): Builder
     {
         // get all the filters from the session
         $filters = $this->getFilters($request);

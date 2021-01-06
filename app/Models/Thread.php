@@ -5,23 +5,25 @@ namespace App\Models;
 use App\Filters\QueryFilter;
 use App\Models\Photo;
 use App\Models\Post;
+use App\Models\Tag;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
+use DateTime;
 
 /**
- * Class Thread.
+ * App\Models\Thread
  *
  * @property string $name
  * @property int $created_by
  * @property datetime $created_at
  * @property datetime $updated_at
- * @mixin Eloquent
  * @property int $id
  * @property int $forum_id
  * @property int|null $thread_category_id
@@ -40,6 +42,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string|null $locked_at
  * @property int|null $locked_by
  * @property int|null $event_id
+ * @property \Illuminate\Database\Eloquent\Collection $tags;
+ * @property-read \Illuminate\Database\Eloquent\Collection|Tag[] $tags
  * @property-read \App\Models\User|null $creator
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Entity[] $entities
  * @property-read int|null $entities_count
@@ -60,7 +64,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property-read int|null $posts_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Series[] $series
  * @property-read int|null $series_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
  * @property-read int|null $tags_count
  * @property-read \App\Models\ThreadCategory|null $threadCategory
  * @property-read \App\Models\User|null $user
@@ -214,7 +217,7 @@ class Thread extends Eloquent
     /**
      * Checks if the thread is followed by the user.
      *
-     * @return Collection $follows
+     * @return Collection
      *
      **/
     public function followedBy($user)
@@ -378,8 +381,6 @@ class Thread extends Eloquent
 
     /**
      * The tags that belong to the thread.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function tags(): BelongsToMany
     {
@@ -449,9 +450,9 @@ class Thread extends Eloquent
     /**
      * Set the event attribute.
      *
-     * @param $value
+     * @param ?int $value
      */
-    public function setEventIdAttribute($value): void
+    public function setEventIdAttribute(?int $value): void
     {
         if (!empty($value)) {
             $this->attributes['event_id'] = $value;
@@ -476,7 +477,7 @@ class Thread extends Eloquent
     /**
      * Set the name and some other side effects.
      */
-    public function setNameAttribute($value)
+    public function setNameAttribute(string $value)
     {
         // grab the name and slugify it
         if (!empty($value)) {
@@ -502,7 +503,7 @@ class Thread extends Eloquent
     /**
      * Return a collection of threads with the passed tag.
      *
-     * @return Collection $threads
+     * @return Builder
      *
      **/
     public static function getByTag($tag)
@@ -516,7 +517,7 @@ class Thread extends Eloquent
     /**
      * Return a collection of threads with the passed series.
      *
-     * @return Collection $threads
+     * @return Builder
      *
      **/
     public static function getBySeries($tag)
@@ -530,7 +531,7 @@ class Thread extends Eloquent
     /**
      * Return a collection of threads with the passed thread category.
      *
-     * @return Collection $threads
+     * @return Builder
      *
      **/
     public static function getByCategory($slug)
@@ -544,7 +545,7 @@ class Thread extends Eloquent
     /**
      * Return a collection of threads with the passed entity.
      *
-     * @return Collection $threads
+     * @return Builder
      *
      **/
     public static function getByEntity($slug)
@@ -557,7 +558,7 @@ class Thread extends Eloquent
 
     public function addPhoto(Photo $photo)
     {
-        return $this->photos()->attach($photo->id);
+        $this->photos()->attach($photo->id);
     }
 
     /**

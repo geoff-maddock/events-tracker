@@ -10,6 +10,7 @@ use App\Http\Requests\ThreadRequest;
 use App\Models\Like;
 use App\Models\Series;
 use App\Models\Tag;
+use App\Models\TagType;
 use App\Models\Thread;
 use App\Models\ThreadCategory;
 use App\Models\Visibility;
@@ -24,6 +25,7 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use DateTime;
 
 class ThreadsController extends Controller
 {
@@ -56,10 +58,9 @@ class ThreadsController extends Controller
 
     protected ?Thread $thread;
 
-    public function __construct(Thread $thread)
+    public function __construct()
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
-        $this->thread = $thread;
 
         // prefix for session storage
         $this->prefix = 'app.threads.';
@@ -83,9 +84,9 @@ class ThreadsController extends Controller
     /**
      * Checks if there is a valid filter.
      *
-     * @param $filters
+     * @param array $filters
      */
-    public function hasFilter($filters): bool
+    public function hasFilter(array $filters): bool
     {
         $arr = $filters;
         unset($arr['rpp'], $arr['sortOrder'], $arr['sortBy'], $arr['page']);
@@ -97,8 +98,6 @@ class ThreadsController extends Controller
      * Set user session attribute.
      *
      * @param mixed $value
-     *
-     * @return mixed
      */
     public function setAttribute(string $attribute, $value, Request $request): void
     {
@@ -164,9 +163,9 @@ class ThreadsController extends Controller
     /**
      * Update the page list parameters from the request.
      *
-     * @param $filters
+     * @param array $filters
      */
-    protected function getPaging($filters): void
+    protected function getPaging(array $filters): void
     {
         $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
         $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
@@ -348,12 +347,8 @@ class ThreadsController extends Controller
 
     /**
      * Display a listing of threads by category.
-     *
-     * @param $slug
-     *
-     * @return View
      */
-    public function indexCategories(Request $request, $slug)
+    public function indexCategories(Request $request, ?string $slug): View
     {
         $hasFilter = 1;
 
@@ -361,10 +356,11 @@ class ThreadsController extends Controller
         $this->updatePaging($request);
 
         $threads = Thread::getByCategory(strtolower($slug))
-                    ->where(function ($query) {
-                        $query->visible($this->user);
-                    })
-                    ->orderBy($this->sortBy, 'ASC')
+        ->orderBy($this->sortBy, 'ASC')
+        ->where(function ($query) {
+            $query->visible($this->user);
+        })
+
                     ->paginate($this->rpp);
 
         return view('threads.index')
@@ -374,12 +370,8 @@ class ThreadsController extends Controller
 
     /**
      * Display a listing of threads by tag.
-     *
-     * @param $tag
-     *
-     * @return View
      */
-    public function indexTags(Request $request, $tag)
+    public function indexTags(Request $request, ?string $tag): View
     {
         $hasFilter = 1;
 
@@ -399,12 +391,8 @@ class ThreadsController extends Controller
 
     /**
      * Display a listing of threads by series.
-     *
-     * @param $tag
-     *
-     * @return Response
      */
-    public function indexSeries(Request $request, $tag)
+    public function indexSeries(Request $request, ?string $tag): View
     {
         // updates sort, rpp from request
         $this->updatePaging($request);
@@ -454,8 +442,6 @@ class ThreadsController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param ThreadRequest|Request $request
      */
     public function store(ThreadRequest $request): RedirectResponse
     {
@@ -472,7 +458,7 @@ class ThreadsController extends Controller
             if (!Tag::find($tag)) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tag_type_id = 1;
+                $newTag->tagType()->associate(TagType::find(1));
                 $newTag->save();
                 // log adding of new tag
                 Activity::log($newTag, $this->user, 1);
@@ -640,12 +626,14 @@ class ThreadsController extends Controller
         $tagArray = $request->input('tag_list', []);
         $syncArray = [];
 
+        $tagType = TagType::find(1);
+
         // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
             if (!Tag::find($tag)) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tag_type_id = 1;
+                $newTag->tagType()->associate($tagType);
                 $newTag->save();
                 // log adding of new tag
                 Activity::log($newTag, $this->user, 1);
@@ -733,7 +721,7 @@ class ThreadsController extends Controller
         // add the following response
         $follow = new Follow();
         $follow->object_id = $id;
-        $follow->user_id = $this->user->id;
+        $follow->user()->associate($this->user);
         $follow->object_type = 'thread'; // 1 = Attending, 2 = Interested, 3 = Uninterested, 4 = Cannot Attend
         $follow->save();
 
@@ -786,7 +774,7 @@ class ThreadsController extends Controller
         // add the following response
         $like = new Like();
         $like->object_id = $id;
-        $like->user_id = $this->user->id;
+        $like->user()->associate($this->user);
         $like->object_type = 'thread';
         $like->save();
 

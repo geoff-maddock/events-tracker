@@ -12,7 +12,7 @@ class PostPolicy
 
     public function update(User $user, Post $post)
     {
-        return $user->owns($post);
+        return ($post->created_by == $user->id);
     }
 
     public function delete(User $user, Post $post)

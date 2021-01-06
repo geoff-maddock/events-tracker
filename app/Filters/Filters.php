@@ -2,6 +2,7 @@
 
 namespace App\Filters;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 abstract class Filters
@@ -12,20 +13,12 @@ abstract class Filters
 
     protected $builder;
 
-    /**
-     * Filters constructor.
-     */
     public function __construct(Request $request)
     {
         $this->request = $request;
     }
 
-    /**
-     * @param $builder
-     *
-     * @return mixed
-     */
-    public function apply($builder)
+    public function apply(Builder $builder): Builder
     {
         $this->builder = $builder;
 
@@ -38,20 +31,12 @@ abstract class Filters
         return $this->builder;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getFilters()
+    public function getFilters(): array
     {
         return $this->request->intersect($this->filters);
     }
 
-    /**
-     * @param $filter
-     *
-     * @return bool
-     */
-    protected function hasFilter($filter)
+    protected function hasFilter(array $filter): bool
     {
         return method_exists($this, $filter) && $this->request->has($filter);
     }

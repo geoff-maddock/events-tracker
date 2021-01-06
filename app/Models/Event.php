@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use DateTime;
 
 /**
  * App\Models\Event
@@ -113,7 +114,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static Builder|Event whereUpdatedBy($value)
  * @method static Builder|Event whereVenueId($value)
  * @method static Builder|Event whereVisibilityId($value)
- * @mixin \Eloquent
  */
 class Event extends Eloquent
 {
@@ -175,9 +175,9 @@ class Event extends Eloquent
     /**
      * Set the soundcheck_at attribute.
      *
-     * @param $date
+     * @param ?string $date
      */
-    public function setSoundcheckAtAttribute($date)
+    public function setSoundcheckAtAttribute(?string $date)
     {
         if (!empty($date)) {
             $this->attributes['soundcheck_at'] = Carbon::parse($date);
@@ -189,9 +189,9 @@ class Event extends Eloquent
     /**
      * Set the start_at attribute.
      *
-     * @param $date
+     * @param ?string $date
      */
-    public function setStartAtAttribute($date)
+    public function setStartAtAttribute(?string $date)
     {
         if (!empty($date)) {
             $this->attributes['start_at'] = Carbon::parse($date);
@@ -203,9 +203,9 @@ class Event extends Eloquent
     /**
      * Set the end_at attribute.
      *
-     * @param $date
+     * @param ?string $date
      */
-    public function setEndAtAttribute($date)
+    public function setEndAtAttribute(?string $date)
     {
         if (!empty($date)) {
             $this->attributes['end_at'] = Carbon::parse($date);
@@ -217,9 +217,9 @@ class Event extends Eloquent
     /**
      * Set the cancelled at attribute.
      *
-     * @param $date
+     * @param ?string $date
      */
-    public function setCancelledAtAttribute($date)
+    public function setCancelledAtAttribute(?string $date)
     {
         if (!empty($date)) {
             $this->attributes['cancelled_at'] = Carbon::parse($date);
@@ -231,9 +231,9 @@ class Event extends Eloquent
     /**
      * Set the door_at attribute.
      *
-     * @param $date
+     * @param ?string $date
      */
-    public function setDoorAtAttribute($date)
+    public function setDoorAtAttribute(?string $date)
     {
         if (!empty($date)) {
             $this->attributes['door_at'] = Carbon::parse($date);
@@ -245,9 +245,9 @@ class Event extends Eloquent
     /**
      * Set the door_price attribute.
      *
-     * @param $price
+     * @param ?string $price
      */
-    public function setDoorPriceAttribute($price)
+    public function setDoorPriceAttribute(?string $price)
     {
         if (!empty($price)) {
             $this->attributes['door_price'] = $price;
@@ -259,9 +259,9 @@ class Event extends Eloquent
     /**
      * Set the promoter attribute.
      *
-     * @param $value
+     * @param ?int $value
      */
-    public function setPromoterIdAttribute($value): void
+    public function setPromoterIdAttribute(?int $value): void
     {
         if (!empty($value)) {
             $this->attributes['promoter_id'] = $value;
@@ -273,9 +273,9 @@ class Event extends Eloquent
     /**
      * Set the series attribute.
      *
-     * @param $value
+     * @param ?int $value
      */
-    public function setSeriesIdAttribute($value): void
+    public function setSeriesIdAttribute(?int $value): void
     {
         if (!empty($value)) {
             $this->attributes['series_id'] = $value;
@@ -287,9 +287,9 @@ class Event extends Eloquent
     /**
      * Set the venue attribute.
      *
-     * @param $value
+     * @param ?int $value
      */
-    public function setVenueIdAttribute($value): void
+    public function setVenueIdAttribute(?int $value): void
     {
         if (!empty($value)) {
             $this->attributes['venue_id'] = $value;
@@ -300,10 +300,8 @@ class Event extends Eloquent
 
     /**
      * Create the slug from the name if none was passed.
-     *
-     * @param $value
      */
-    public function setPresalePriceAttribute($value)
+    public function setPresalePriceAttribute(?float $value)
     {
         if (!empty($value)) {
             $this->attributes['presale_price'] = $value;
@@ -346,13 +344,11 @@ class Event extends Eloquent
     /**
      * Returns visible events.
      *
-     * @param Builder $query
-     * @param $date
      */
-    public function scopeStarting($query, $date)
+    public function scopeStarting(BUilder $query, ?string $date)
     {
-        $cdate_yesterday = Carbon::parse($date)->subDay(1);
-        $cdate_tomorrow = Carbon::parse($date)->addDay(1);
+        $cdate_yesterday = Carbon::parse($date)->subDay();
+        $cdate_tomorrow = Carbon::parse($date)->addDay();
 
         $query->where('start_at', '>', $cdate_yesterday->toDateString() . ' 23:59:59')
             ->where('start_at', '<', $cdate_tomorrow->toDateString() . ' 00:00:00')
@@ -564,97 +560,66 @@ class Event extends Eloquent
     /**
      * Return a collection of events with the passed tag.
      *
-     * @param $tag
-     *
-     * @return Collection $events
+     * @param string $tag
      */
-    public static function getByTag($tag)
+    public static function getByTag(string $tag)
     {
         // get a list of events that have the passed tag
-        $events = self::whereHas('tags', function ($q) use ($tag) {
+        return self::whereHas('tags', function (Builder $q) use ($tag) {
             $q->where('name', '=', ucfirst($tag));
         });
-
-        return $events;
     }
 
     /**
      * Return a collection of events with the passed venue.
      *
-     * @param $slug
-     *
-     * @return Collection $events
+     * @param string $slug
      */
-    public static function getByVenue($slug)
+    public static function getByVenue(string $slug)
     {
         // get a list of events that have the passed tag
-        $events = self::whereHas('venue', function ($q) use ($slug) {
+        return self::whereHas('venue', function (Builder $q) use ($slug) {
             $q->where('slug', '=', $slug);
         });
-
-        return $events;
     }
 
     /**
      * Return a collection of events with the passed event type.
-     *
-     * @param $slug
-     *
-     * @return Collection $events
      */
-    public static function getByType($slug)
+    public static function getByType(?string $slug): Builder
     {
         // get a list of events that have the passed tag
-        $events = self::whereHas('eventType', function ($q) use ($slug) {
+        return self::whereHas('eventType', function (Builder $q) use ($slug) {
             $q->where('name', '=', $slug);
         });
-
-        return $events;
     }
 
     /**
      * Return a collection of events with the passed series.
-     *
-     * @param $slug
-     *
-     * @return Collection $events
      */
-    public static function getBySeries($slug)
+    public static function getBySeries(?string $slug): Builder
     {
         // get a list of events that have the passed tag
-        $events = self::whereHas('series', function ($q) use ($slug) {
+        return self::whereHas('series', function ($q) use ($slug) {
             $q->where('name', '=', $slug);
         });
-
-        return $events;
     }
 
     /**
      * Return a collection of events with the passed entity.
-     *
-     * @param $slug
-     *
-     * @return Collection $events
      */
-    public static function getByEntity($slug)
+    public static function getByEntity(?string $slug): Builder
     {
         // get a list of events that have the passed entity
-        $events = self::whereHas('entities', function ($q) use ($slug) {
+        return self::whereHas('entities', function ($q) use ($slug) {
             $q->where('slug', '=', $slug);
         });
-
-        return $events;
     }
 
     /**
      * Returns the response status for the passed user.
-     *
-     * @param User $user
-     *
-     * @return Collection $eventResponse
-     *
      **/
-    public function getEventResponse($user)
+    public function getEventResponse(User $user): ?EventResponse
     {
         return EventResponse::where('event_id', '=', $this->id)
             ->where('user_id', '=', $user->id)->first();
@@ -713,16 +678,12 @@ class Event extends Eloquent
 
     /**
      * Return a collection of events that begin on the passed date.
-     *
-     * @param $date
-     *
-     * @return Collection $events
      */
-    public static function getByStartAt($date)
+    public static function getByStartAt(?DateTime $date): Collection
     {
         // get a list of events that start on the passed date
-        $cdate_yesterday = Carbon::parse($date)->subDay(1);
-        $cdate_tomorrow = Carbon::parse($date)->addDay(1);
+        $cdate_yesterday = Carbon::parse($date)->subDay();
+        $cdate_tomorrow = Carbon::parse($date)->addDay();
 
         $events = self::where('start_at', '>', $cdate_yesterday->toDateString())
             ->where('start_at', '<', $cdate_tomorrow->toDateString())
@@ -764,10 +725,8 @@ class Event extends Eloquent
 
     /**
      * Create the slug from the name if none was passed.
-     *
-     * @param $value
      */
-    public function setSlugAttribute($value)
+    public function setSlugAttribute(?string $value)
     {
         // grab the title and slugify it
         if ('' === $value) {

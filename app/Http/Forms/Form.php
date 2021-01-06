@@ -3,6 +3,7 @@
 namespace App\Http\Forms;
 
 use App\Http\Requests\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class Form
@@ -24,7 +25,7 @@ class Form
     {
         try {
             $this->validate($this->request, $this->rules);
-        } catch (\Exception $e) {
+        } catch (ValidationException $e) {
             $this->errors = $e->validator->errors();
         }
 

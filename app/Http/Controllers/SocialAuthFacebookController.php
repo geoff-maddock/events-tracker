@@ -17,8 +17,6 @@ class SocialAuthFacebookController extends Controller
 
     /**
      * Return a callback method from facebook api.
-     *
-     * @return callback URL from facebook
      */
     public function callback(SocialFacebookAccountService $service)
     {

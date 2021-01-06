@@ -23,8 +23,6 @@ class PhotosController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @return Response
      */
     public function index()
     {
@@ -35,8 +33,6 @@ class PhotosController extends Controller
 
     /**
      * Show a form to create a new Article.
-     *
-     * @return view
      **/
     public function create()
     {
@@ -57,7 +53,6 @@ class PhotosController extends Controller
 
         $photo = $photo->create($input);
 
-        $photo->tags()->attach($request->input('tag_list', []));
         $photo->entities()->attach($request->input('entity_list'));
 
         Session::flash('flash_message', 'Your photo has been created!');
@@ -70,8 +65,8 @@ class PhotosController extends Controller
         $this->middleware('auth');
 
         $type = EntityType::where('name', 'Venue')->first();
-        $venues = ['' => ''] + DB::table('entities')->where('entity_type_id', $type->id)->orderBy('name', 'ASC')->pluck('name', 'id');
-        $visibilities = ['' => ''] + Visibility::pluck('name', 'id');
+        $venues = array_merge(['' => ''], DB::table('entities')->where('entity_type_id', $type->id)->orderBy('name', 'ASC')->pluck('name', 'id'));
+        $visibilities = array_merge(['' => ''], Visibility::pluck('name', 'id'));
         $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id');
         $entities = Entity::orderBy('name', 'ASC')->pluck('name', 'id');
 
@@ -82,7 +77,6 @@ class PhotosController extends Controller
     {
         $photo->fill($request->input())->save();
 
-        $photo->tags()->sync($request->input('tag_list', []));
         $photo->entities()->sync($request->input('entity_list', []));
 
         \Session::flash('flash_message', 'Your photo has been updated!');

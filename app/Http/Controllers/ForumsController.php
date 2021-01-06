@@ -12,6 +12,8 @@ use App\Models\Visibility;
 use App\Models\Activity;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\Response;
 
 class ForumsController extends Controller
 {
@@ -110,9 +112,8 @@ class ForumsController extends Controller
 
     /**
      * Update the page list parameters from the request
-     * @param $request
      */
-    protected function updatePaging($request)
+    protected function updatePaging(Request $request)
     {
         // set sort by column
         if ($request->input('sort_by')) {
@@ -175,10 +176,8 @@ class ForumsController extends Controller
 
     /**
      * Get session filters
-     *
-     * @return Array
      */
-    public function getFilters(Request $request)
+    public function getFilters(Request $request): array
     {
         return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
     }
@@ -193,8 +192,7 @@ class ForumsController extends Controller
      */
     public function getAttribute($attribute, $default = null, Request $request)
     {
-        return $request->session()
-            ->get($this->prefix . $attribute, $default);
+        return $request->session()->get($this->prefix . $attribute, $default);
     }
 
     /**
@@ -209,11 +207,8 @@ class ForumsController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
-    public function edit(Forum $forum)
+    public function edit(Forum $forum): View
     {
         $this->middleware('auth');
 
@@ -224,12 +219,8 @@ class ForumsController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
-    public function update(ForumRequest $request, Forum $forum)
+    public function update(ForumRequest $request, Forum $forum): RedirectResponse
     {
         $msg = '';
 
@@ -260,11 +251,8 @@ class ForumsController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
-    public function destroy(Forum $forum)
+    public function destroy(Forum $forum): RedirectResponse
     {
         // add to activity log
         Activity::log($forum, $this->user, 3);

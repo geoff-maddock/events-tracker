@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class Permission extends Model
 {
@@ -28,8 +29,6 @@ class Permission extends Model
 
     /**
      * Return a collection of permissions related to the group.
-     *
-     * @return Collection $permissions
      *
      **/
     public static function getByGroup($group)

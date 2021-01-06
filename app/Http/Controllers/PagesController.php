@@ -10,6 +10,7 @@ use App\Models\Tag;
 use App\Models\Thread;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -72,9 +73,9 @@ class PagesController extends Controller
     /**
      * Checks if there is a valid filter.
      *
-     * @param $filters
+     * @param array $filters
      */
-    public function hasFilter($filters): bool
+    public function hasFilter(array $filters): bool
     {
         $arr = $filters;
         unset($arr['rpp'], $arr['sortOrder'], $arr['sortBy'], $arr['page']);
@@ -85,9 +86,9 @@ class PagesController extends Controller
     /**
      * Update the page list parameters from the request.
      *
-     * @param $filters
+     * @param array $filters
      */
-    protected function getPaging($filters): void
+    protected function getPaging(array $filters): void
     {
         $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
         $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
@@ -418,10 +419,8 @@ class PagesController extends Controller
 
     /**
      * Builds the criteria from the session.
-     *
-     * @return $query
      */
-    public function buildActivityCriteria(Request $request)
+    public function buildActivityCriteria(Request $request): Builder
     {
         // get all the filters from the session
         $filters = $this->getFilters($request);
@@ -517,11 +516,9 @@ class PagesController extends Controller
     }
 
     /**
-     * @param $user
-     *
      * @return \Illuminate\Http\RedirectResponse
      */
-    protected function inviteUser($email)
+    protected function inviteUser(string $email)
     {
         $admin_email = config('app.admin');
         $reply_email = config('app.admin');
