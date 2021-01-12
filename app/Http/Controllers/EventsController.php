@@ -289,6 +289,15 @@ class EventsController extends Controller
         return $this->setAttribute('filters', $input, $request);
     }
 
+    protected function getDefaultRppFilters(): array
+    {
+        return [
+            'rpp' => $this->defaultRpp,
+            'sortBy' => $this->defaultSortBy,
+            'sortOrder' => $this->defaultSortOrder
+        ];
+    }
+
     public function getDefaultFilters(): array
     {
         return [];
@@ -749,6 +758,19 @@ class EventsController extends Controller
         });
 
         return view('events.feed', compact('events'));
+    }
+
+    /**
+     * Reset the rpp, sort, order
+     *
+     * @throws \Throwable
+     */
+    public function rppReset(Request $request): RedirectResponse
+    {
+        // set the rpp, sort, direction to default values
+        $this->setFilters($request, array_merge($this->getFilters($request), $this->getDefaultRppFilters()));
+
+        return redirect()->route('events.index');
     }
 
     /**

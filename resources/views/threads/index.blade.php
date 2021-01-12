@@ -15,7 +15,8 @@
 <div id="filters-container" class="row">
     <div id="filters-content" class="col-lg-9">
 
-        <a href="#" id="filters" class="btn btn-primary">Filters <span id="filters-toggle"
+        <a href="#" id="filters" class="btn btn-primary">Filters
+            <span id="filters-toggle"
                 class="glyphicon @if (!$hasFilter) glyphicon-chevron-down @else glyphicon-chevron-up @endif"></span></a>
         {!! Form::open(['route' => ['threads.filter'], 'method' => 'GET']) !!}
 
@@ -50,7 +51,7 @@
             <div class="col-sm-2">
                 <div class="btn-group col-sm-1">
                     <label></label>
-                    {!! Form::submit('Filter', ['class' =>'btn btn-primary btn-sm btn-tb', 'id' =>
+                    {!! Form::submit('Apply', ['class' =>'btn btn-primary btn-sm btn-tb mx-2', 'id' =>
                     'primary-filter-submit']) !!}
                     {!! Form::close() !!}
                     {!! Form::open(['route' => ['threads.reset'], 'method' => 'GET']) !!}
@@ -64,6 +65,9 @@
     <div id="list-control" class="col-lg-3 visible-lg-block visible-md-block text-right">
         <form action="{{ url()->current() }}" method="GET" class="form-inline">
             <div class="form-group">
+                <a href="{{ url()->action('ThreadsController@rppReset') }}" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-repeat"></span>
+                </a>
                 <?php $rpp_options = [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000]; ?>
                 <?php $sort_by_options = ['name' => 'Name', 'created_by' => 'User', 'created_at' => 'Created At']; ?>
                 <?php $sort_order_options = ['asc' => 'asc', 'desc' => 'desc']; ?>
@@ -81,13 +85,17 @@
 
 <div id="list-container" class="row">
 
-    @if (isset($threads) && count($threads) > 0)
+
     <div class="col-lg-12">
+        @if (isset($threads) && count($threads) > 0)
         {!! $threads->render() !!}
         @include('threads.list', ['threads' => $threads])
         {!! $threads->render() !!}
+        @else
+        No matching threads found.
+        @endif
     </div>
-    @endif
+
 
 </div>
 @endsection

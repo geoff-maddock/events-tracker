@@ -57,7 +57,8 @@
 			<div class="col-sm-2">
 				<div class="btn-group col-sm-1">
 					<label></label>
-					{!! Form::submit('Filter', ['class' =>'btn btn-primary btn-sm btn-tb', 'id' =>
+					<label></label>
+					{!! Form::submit('Apply', ['class' =>'btn btn-primary btn-sm btn-tb mx-2', 'id' =>
 					'primary-filter-submit']) !!}
 					{!! Form::close() !!}
 					{!! Form::open(['route' => ['events.reset'], 'method' => 'GET']) !!}
@@ -72,6 +73,9 @@
 	<div id="list-control" class="col-lg-3 visible-lg-block visible-md-block text-right">
 		<form action="{{ url()->current() }}" method="GET" class="form-inline">
 			<div class="form-group">
+				<a href="{{ url()->action('PagesController@rppResetActivity') }}" class="btn btn-primary">
+					<span class="glyphicon glyphicon-repeat"></span>
+				</a>
 				<?php $rpp_options = [5 => 5, 10 => 10, 24 => 24, 100 => 100, 1000 => 1000]; ?>
 				<?php $sort_by_options = ['name' => 'Name', 'start_at' => 'Start At', 'event_type_id' => 'Event Type', 'updated_at' => 'Updated At']; ?>
 				<?php $sort_order_options = ['asc' => 'asc', 'desc' => 'desc']; ?>
