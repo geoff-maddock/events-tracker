@@ -170,6 +170,15 @@ class EntitiesController extends Controller
         return [];
     }
 
+    protected function getDefaultRppFilters(): array
+    {
+        return [
+            'rpp' => $this->defaultRpp,
+            'sortBy' => $this->defaultSortBy,
+            'sortOrder' => $this->defaultSortOrder
+        ];
+    }
+
     /**
      * Gets the base criteria.
      *
@@ -368,6 +377,21 @@ class EntitiesController extends Controller
     protected function setAttribute(string $attribute, $value, Request $request): void
     {
         $request->session()->put($this->prefix . $attribute, $value);
+    }
+
+    /**
+     * Reset the rpp, sort, order
+     *
+     * @return Response
+     *
+     * @throws \Throwable
+     */
+    public function rppReset(Request $request): Response
+    {
+        // set the rpp, sort, direction to default values
+        $this->setFilters($request, array_merge($this->getFilters($request), $this->getDefaultRppFilters()));
+
+        return redirect()->route('entities.index');
     }
 
     /**

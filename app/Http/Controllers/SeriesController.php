@@ -253,6 +253,20 @@ class SeriesController extends Controller
     }
 
     /**
+     * Reset the rpp, sort, order
+     *
+     *
+     * @throws \Throwable
+     */
+    public function rppReset(Request $request): RedirectResponse
+    {
+        // set the rpp, sort, direction to default values
+        $this->setFilters($request, array_merge($this->getFilters($request), $this->getDefaultRppFilters()));
+
+        return redirect()->route('series.index');
+    }
+
+    /**
      * @return string
      *
      * @throws \Throwable
@@ -918,6 +932,15 @@ class SeriesController extends Controller
     public function getDefaultFilters()
     {
         return [];
+    }
+
+    protected function getDefaultRppFilters(): array
+    {
+        return [
+            'rpp' => $this->defaultRpp,
+            'sortBy' => $this->defaultSortBy,
+            'sortOrder' => $this->defaultSortOrder
+        ];
     }
 
     /**

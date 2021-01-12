@@ -76,6 +76,7 @@ Route::get('activity', 'PagesController@activity')->name('pages.activity');
 
 Route::get('activity/filter', ['as' => 'activity.filter', 'uses' => 'PagesController@filter']);
 Route::get('activity/reset', ['as' => 'activity.reset', 'uses' => 'PagesController@reset']);
+Route::get('activity/rpp-reset', ['as' => 'activity.rppResetActivity', 'uses' => 'PagesController@rppResetActivity']);
 
 Route::get('tools', 'PagesController@tools')->name('pages.tools');
 Route::post('invite', 'PagesController@invite')->name('pages.invite');
@@ -130,6 +131,7 @@ Route::get('users/{id}/delete', [
 
 Route::get('users/filter', ['as' => 'users.filter', 'uses' => 'UsersController@filter']);
 Route::get('users/reset', ['as' => 'users.reset', 'uses' => 'UsersController@reset']);
+Route::get('users/rpp-reset', ['as' => 'users.rppReset', 'uses' => 'UsersController@rppReset']);
 
 Route::resource('users', 'UsersController');
 
@@ -171,6 +173,7 @@ Route::get('events/attending', 'EventsController@indexAttending')->name('events.
 
 Route::get('events/filter', ['as' => 'events.filter', 'uses' => 'EventsController@filter']);
 Route::get('events/reset', ['as' => 'events.reset', 'uses' => 'EventsController@reset']);
+Route::get('events/rpp-reset', ['as' => 'events.rppReset', 'uses' => 'EventsController@rppReset']);
 
 Route::get('events/tag/{tag}', 'EventsController@indexTags')->name('events.tag');
 Route::get('events/venue/{slug}', 'EventsController@indexVenues')->name('events.venue');
@@ -251,6 +254,7 @@ Route::get('threads/{id}/unlock', 'ThreadsController@unlock')->name('threads.unl
 
 Route::get('threads/filter', ['as' => 'threads.filter', 'uses' => 'ThreadsController@filter']);
 Route::get('threads/reset', ['as' => 'threads.reset', 'uses' => 'ThreadsController@reset']);
+Route::get('threads/rpp-reset', ['as' => 'threads.rppReset', 'uses' => 'ThreadsController@rppReset']);
 
 Route::get('threads/{id}/like', [
     'as' => 'threads.like',
@@ -348,6 +352,7 @@ Route::get('entities/role/{role}', 'EntitiesController@indexRoles')->name('entit
 
 Route::get('entities/filter', ['as' => 'entities.filter', 'uses' => 'EntitiesController@filter']);
 Route::get('entities/reset', ['as' => 'entities.reset', 'uses' => 'EntitiesController@reset']);
+Route::get('entities/rpp-reset', ['as' => 'entities.rppReset', 'uses' => 'EntitiesController@rppReset']);
 
 Route::get('entities/tag/{tag}', 'EntitiesController@indexTags')->name('entities.tag');
 Route::get('entities/alias/{alias}', 'EntitiesController@indexAliases')->name('entities.alias');
@@ -428,6 +433,7 @@ Route::get(
 );
 Route::get('series/filter', ['as' => 'series.filter', 'uses' => 'SeriesController@filter']);
 Route::get('series/reset', ['as' => 'series.reset', 'uses' => 'SeriesController@reset']);
+Route::get('series/rpp-reset', ['as' => 'series.rppReset', 'uses' => 'SeriesController@rppReset']);
 
 Route::get('series/{id}/follow', [
     'as' => 'series.follow',

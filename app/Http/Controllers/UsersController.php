@@ -262,6 +262,19 @@ class UsersController extends Controller
     }
 
     /**
+     * Reset the rpp, sort, order
+     *
+     * @throws \Throwable
+     */
+    public function rppReset(Request $request): RedirectResponse
+    {
+        // set the rpp, sort, direction to default values
+        $this->setFilters($request, array_merge($this->getFilters($request), $this->getDefaultRppFilters()));
+
+        return redirect()->route('users.index');
+    }
+
+    /**
      * Update the page list parameters from the request.
      */
     protected function updatePaging(Request $request): void
@@ -321,6 +334,15 @@ class UsersController extends Controller
         return [];
     }
 
+    protected function getDefaultRppFilters(): array
+    {
+        return [
+            'rpp' => $this->defaultRpp,
+            'sortBy' => $this->defaultSortBy,
+            'sortOrder' => $this->defaultSortOrder
+        ];
+    }
+
     /**
      * Get the default tags array.
      *
@@ -345,10 +367,7 @@ class UsersController extends Controller
         return view('users.create');
     }
 
-    /**
-     * @return View
-     */
-    public function show(User $user, Request $request): View
+    public function show(User $user, Request $request)
     {
         //$this->setTabs($request, $this->getDefaultTabs());
 

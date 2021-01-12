@@ -55,7 +55,7 @@
             <div class="col-sm-2">
                 <div class="btn-group col-sm-1">
                     <label></label>
-                    {!! Form::submit('Filter', ['class' =>'btn btn-primary btn-sm btn-tb', 'id' =>
+                    {!! Form::submit('Apply', ['class' =>'btn btn-primary btn-sm btn-tb mx-2', 'id' =>
                     'primary-filter-submit']) !!}
                     {!! Form::close() !!}
                     {!! Form::open(['route' => ['entities.reset'], 'method' => 'GET']) !!}
@@ -71,6 +71,8 @@
     <div id="list-control" class="col-lg-3 visible-lg-block visible-md-block text-right">
         <form action="{{ url()->action('EntitiesController@filter') }}" method="GET" class="form-inline">
             <div class="form-group">
+                <a href="{{ url()->action('EntitiesController@rppReset') }}" class="btn btn-primary"><span
+                        class="glyphicon glyphicon-repeat"></span></a>
                 <?php $rpp_options = [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000]; ?>
                 <?php $sort_by_options = ['name' => 'Name', 'slug' => 'Slug', 'entity_type_id' => 'Type', 'created_at' => 'Created']; ?>
                 <?php $sort_order_options = ['asc' => 'asc', 'desc' => 'desc']; ?>

@@ -362,6 +362,20 @@ class PagesController extends Controller
     }
 
     /**
+     * Reset the rpp, sort, order
+     *
+     *
+     * @throws \Throwable
+     */
+    public function rppResetActivity(Request $request): RedirectResponse
+    {
+        // set the rpp, sort, direction to default values
+        $this->setFilters($request, array_merge($this->getFilters($request), $this->getDefaultRppFilters()));
+
+        return redirect()->route('pages.activity');
+    }
+
+    /**
      * Get session filters.
      *
      * @return array
@@ -393,6 +407,15 @@ class PagesController extends Controller
     protected function getDefaultFilters()
     {
         return [];
+    }
+
+    protected function getDefaultRppFilters(): array
+    {
+        return [
+            'rpp' => $this->defaultRpp,
+            'sortBy' => $this->defaultSortBy,
+            'sortOrder' => $this->defaultSortOrder
+        ];
     }
 
     /**
