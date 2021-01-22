@@ -265,3 +265,9 @@ li.selected:hover {
     font-weight: 600;
 }
 
+#filter-list {
+	background-color: #ec945a; 
+	position: relative; 
+	right: -15px;
+	padding: 5px;
+}

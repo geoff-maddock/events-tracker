@@ -159,7 +159,7 @@ Route::get('events/dispatch', function () {
 Route::get('update', function () {
     EventUpdated::dispatch(new Event());
 });
-Route::get('events/all', 'EventsController@indexAll');
+
 Route::get('events/today', 'EventsController@indexToday');
 Route::get('events/grid', 'EventsController@grid')->name('events.grid');
 Route::get('events/timeline', 'EventsController@indexTimeline')->name('events.timeline');
@@ -170,8 +170,7 @@ Route::get('events/starting/{date}', 'EventsController@indexStarting');
 Route::get('events/daily', 'EventsController@daily');
 Route::get('events/day/{day}', 'EventsController@day')->name('events.day');
 Route::get('events/attending', 'EventsController@indexAttending')->name('events.attending');
-
-Route::get('events/filter', ['as' => 'events.filter', 'uses' => 'EventsController@filter']);
+Route::match(['get', 'post'], 'events/filter', ['as' => 'events.filter', 'uses' => 'EventsController@filter']);
 Route::get('events/reset', ['as' => 'events.reset', 'uses' => 'EventsController@reset']);
 Route::get('events/rpp-reset', ['as' => 'events.rppReset', 'uses' => 'EventsController@rppReset']);
 
