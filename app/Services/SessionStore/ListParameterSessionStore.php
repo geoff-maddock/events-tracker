@@ -29,35 +29,35 @@ class ListParameterSessionStore implements ListParameterStore
     // this is the key prefix for the tab
     private $keyPrefix = '';
 
-    private $filters;
+    private ?array $filters;
 
     private $isEmptyFilter = false;
 
-    private $sortDirection;
+    private ?string $sortDirection;
 
-    private $limit;
+    private ?int $limit;
 
-    private $sortFieldName;
+    private ?string $sortFieldName;
 
-    private $indexTab;
+    private ?string $indexTab;
 
     public function __construct(Store $session)
     {
         $this->session = $session;
     }
 
-    public function setBaseIndex($baseIndex)
+    public function setBaseIndex(string $baseIndex)
     {
         $this->baseIndex = $baseIndex;
     }
 
-    public function setKeyPrefix($keyPrefix)
+    public function setKeyPrefix(string $keyPrefix)
     {
         $this->keyPrefix = $keyPrefix;
         $this->loadSessionData();
     }
 
-    public function setFilters($filters)
+    public function setFilters(?array $filters)
     {
         $this->filters = $filters;
     }
@@ -74,8 +74,6 @@ class ListParameterSessionStore implements ListParameterStore
 
     /**
      * Sets the base index route for the tab.
-     *
-     * @param $indexTab
      */
     public function setIndexTab($indexTab)
     {
