@@ -217,3 +217,14 @@ li.selected:hover {
     font-variant-caps: normal;
     color: initial;
 }
+
+#filter-list {
+	background-color: #7ABDE1; 
+	position: relative; 
+	right: -15px;
+	padding: 5px;
+}
+
+.navbar-default .navbar-brand {
+    color: #FFF;
+}

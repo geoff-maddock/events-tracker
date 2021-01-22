@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Entity;
 use App\Models\Event;
 use App\Models\EventType;
@@ -11,11 +12,15 @@ use App\Models\Tag;
 use App\Models\Thread;
 use App\Models\User;
 use App\Models\Visibility;
+use App\Services\SessionStore\ListParameterSessionStore;
+use App\Services\SessionStore\ListParameterStore;
+use Illuminate\Session\Store;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -88,8 +93,14 @@ class AppServiceProvider extends ServiceProvider
         );
 
         if ($this->app->environment('local', 'testing')) {
-//            $this->app->register(DuskServiceProvider::class);
-//            $this->app->register(\Barryvdh\Debugbar\ServiceProvider::class);
         }
+
+        $this->app->bind(SessionInterface::class, Store::class);
+        $this->app->bind(ListParameterStore::class, ListParameterSessionStore::class);
+
+        // make sure there is only one instance of the param session store
+        $this->app->singleton(ListParameterSessionStore::class, function ($app) {
+            return new ListParameterSessionStore($app->make(Store::class));
+        });
     }
 }
