@@ -14,35 +14,17 @@ class ListQueryParameters
      */
     private $listRequest;
 
-    /**
-     * @var ListParameterStore
-     */
-    private $listParamStore;
+    private ListParameterStore $listParamStore;
 
-    /**
-     * @var
-     */
-    private $defaultSortField;
+    private ?string $defaultSortField = null;
 
-    /**
-     * @var array
-     */
-    private $defaultFilters = [];
+    private array $defaultFilters = [];
 
-    /**
-     * @var string
-     */
-    private $defaultSortDirection;
+    private ?string $defaultSortDirection = null;
 
-    /**
-     * @var int
-     */
-    private $defaultLimit = 25;
+    private ?int $defaultLimit = 25;
 
-    /**
-     * @var int
-     */
-    private $defaultPage = 1;
+    private ?int $defaultPage = 1;
 
     /**
      * ListQueryParameters constructor.
@@ -53,9 +35,6 @@ class ListQueryParameters
         $this->listParamStore = $listParamStore;
     }
 
-    /**
-     * @return string
-     */
     public function getSortFieldName(): ?string
     {
         $sortFieldName = $this->defaultSortField;
@@ -69,9 +48,6 @@ class ListQueryParameters
         return $sortFieldName;
     }
 
-    /**
-     * @return array|mixed|null
-     */
     public function getFilters(): array
     {
         $filters = $this->defaultFilters;
@@ -87,9 +63,6 @@ class ListQueryParameters
         return $filters;
     }
 
-    /**
-     * @return mixed|string|null
-     */
     public function getSortDirection(): ?string
     {
         $sortDirection = $this->defaultSortDirection;
@@ -103,9 +76,6 @@ class ListQueryParameters
         return $sortDirection;
     }
 
-    /**
-     * @return int|mixed|null
-     */
     public function getLimit(): int
     {
         $limit = $this->defaultLimit;
@@ -119,9 +89,6 @@ class ListQueryParameters
         return $limit;
     }
 
-    /**
-     * @return int|null
-     */
     public function getPage(): int
     {
         if ($this->listRequest->getPage()) {
@@ -165,10 +132,7 @@ class ListQueryParameters
         return $this->listRequest->getRouteParams();
     }
 
-    /**
-     * @param $requestFilters
-     */
-    private function stripEmptyFields($requestFilters): array
+    private function stripEmptyFields(array $requestFilters): array
     {
         $result = [];
         foreach ($requestFilters as $filterField => $filterValue) {

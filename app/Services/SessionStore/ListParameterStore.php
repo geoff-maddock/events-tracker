@@ -10,7 +10,7 @@ interface ListParameterStore
     /**
      * @return mixed
      */
-    public function setFilters($filters);
+    public function setFilters(?array $filters);
 
     /**
      * @return mixed
@@ -26,6 +26,11 @@ interface ListParameterStore
      * @return mixed
      */
     public function setLimit($limit);
+
+    /**
+     * @return mixed
+     */
+    public function setIsEmptyFilter(bool $isEmpty);
 
     /**
      * @return mixed
