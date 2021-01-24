@@ -98,22 +98,22 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
     {
         // Apply parent filter
         if (!empty($this->parentFilter)) {
-            $this->queryBuilder = $this->filter->apply($this->queryBuilder, $this->parentFilter);
+            $this->queryBuilder = $this->filter->applyFilters($this->queryBuilder, $this->parentFilter);
         }
 
         // Apply fixed filters
         if (!empty($this->fixedFilters)) {
-            $this->queryBuilder = $this->filter->apply($this->queryBuilder, $this->fixedFilters);
+            $this->queryBuilder = $this->filter->applyFilters($this->queryBuilder, $this->fixedFilters);
         }
         // Apply user form filters
         $this->userFilters = $this->listQueryParameters->getFilters();
         $this->isEmptyFilter = $this->listQueryParameters->getIsEmptyFilter();
 
         if (!empty($this->userFilters)) {
-            $this->queryBuilder = $this->filter->apply($this->queryBuilder, $this->userFilters);
+            $this->queryBuilder = $this->filter->applyFilters($this->queryBuilder, $this->userFilters);
         } elseif (!empty($this->defaultFilters) && !$this->isEmptyFilter) {
             $this->userFilters = $this->defaultFilters;
-            $this->queryBuilder = $this->filter->apply($this->queryBuilder, $this->userFilters);
+            $this->queryBuilder = $this->filter->applyFilters($this->queryBuilder, $this->userFilters);
         }
     }
 
