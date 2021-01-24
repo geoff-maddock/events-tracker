@@ -16,11 +16,11 @@ abstract class QueryFilter
         $this->request = $request;
     }
 
-    public function apply(Builder $builder, array $filters)
+    public function apply(Builder $builder)
     {
         $this->builder = $builder;
 
-        foreach ($filters as $name => $value) {
+        foreach ($this->filters() as $name => $value) {
             if (method_exists($this, $name)) {
                 call_user_func_array([$this, $name], array_filter([$value]));
             }
