@@ -161,7 +161,7 @@ Route::get('update', function () {
 });
 
 Route::get('events/today', 'EventsController@indexToday');
-Route::get('events/grid', 'EventsController@grid')->name('events.grid');
+Route::get('events/grid', 'EventsController@indexGrid')->name('events.grid');
 Route::get('events/timeline', 'EventsController@indexTimeline')->name('events.timeline');
 Route::get('events/future', 'EventsController@indexFuture')->name('events.future');
 Route::get('events/past', 'EventsController@indexPast');

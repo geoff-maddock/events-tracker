@@ -775,4 +775,32 @@ class Series extends Eloquent
             ->where('follows.object_id', $this->id)
             ->get();
     }
+
+    /**
+     * Returns the format for a calendar entry
+     */
+    public function getCalendarFormat(): array
+    {
+        /**
+         * [
+         *  title,
+         *  full day,
+         *  start date time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
+         *  end date time,
+         *  id,
+         *  options
+         * ]
+         */
+        return [
+            $this->name,
+            false,
+            $this->nextOccurrenceDate()->format('Y-m-d H:i'),
+            ($this->nextOccurrenceEndDate() ? $this->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
+            $this->id,
+            [
+                'url' => '/series/' . $this->id,
+                'color' => '#99bcdb',
+            ]
+        ];
+    }
 }

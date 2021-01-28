@@ -78,10 +78,9 @@ class EventsController extends Controller
 
     protected $fb;
 
-    public function __construct(Event $event, EventFilters $filter)
+    public function __construct(EventFilters $filter)
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'indexAttending', 'calendarAttending']]);
-        $this->event = $event;
         $this->filter = $filter;
 
         // prefix for session storage
@@ -100,44 +99,11 @@ class EventsController extends Controller
         $this->page = 1;
         $this->sort = ['name', 'desc'];
 
+        // previously LaravelFacebookSdk was injected and set here
         $this->fb = null;
 
-        $this->hasFilter = 0;
+        $this->hasFilter = false;
         parent::__construct();
-    }
-
-    /**
-     * Get user session attribute.
-     *
-     * @param string $attribute
-     * @param mixed  $default
-     *
-     * @return mixed
-     */
-    public function getAttribute(Request $request, string $attribute, $default = null)
-    {
-        return $request->session()
-            ->get($this->prefix . $attribute, $default);
-    }
-
-    /**
-     * Set user session attribute.
-     *
-     * @param string $attribute
-     * @param mixed  $value
-     *
-     * @return mixed
-     */
-    public function setAttribute(string $attribute, $value, Request $request)
-    {
-        $request->session()->put($this->prefix . $attribute, $value);
-
-        return true;
-    }
-
-    public function getDefaultSort(): array
-    {
-        return ['id', 'desc'];
     }
 
     /**
@@ -151,17 +117,21 @@ class EventsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
         // initialized listParamSessionStore with baseindex key
-        // list entity result builder
         $listParamSessionStore->setBaseIndex('internal_event');
         $listParamSessionStore->setKeyPrefix('internal_event_index');
 
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
+
         $listEntityResultBuilder
             ->setFilter($this->filter)
-            ->setQueryBuilder(Event::query())
-            ->setDefaultSort(['start_at' => 'desc']);
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['events.start_at' => 'desc'])
+            //->setDefaultFilters(['start_at' => ['start' => Carbon::now()]])
+;
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
@@ -194,15 +164,28 @@ class EventsController extends Controller
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('events.index')
-            ->with(array_merge([
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters()
-            ], $this->getFilterOptions()))
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
             ->with(compact('events'))
             ->render();
+    }
+
+    protected function getListControlOptions(): array
+    {
+        return  [
+            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
+            'sortOptions' => ['events.name' => 'Name', 'start_at' => 'Start At', 'event_types.name' => 'Event Type', 'events.updated_at' => 'Updated At'],
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+        ];
     }
 
     protected function getFilterOptions(): array
@@ -212,6 +195,22 @@ class EventsController extends Controller
             'venueOptions' => ['' => ''] + Entity::getVenues()->pluck('name', 'name')->all(),
             'relatedOptions' => ['' => ''] + Entity::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
             'eventTypeOptions' => ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'name')->all()
+        ];
+    }
+
+    protected function getFormOptions(): array
+    {
+        return [
+            'venueOptions' => ['' => ''] + Entity::getVenues()->pluck('name', 'id')->all(),
+            'promoterOptions' => ['' => ''] + Entity::whereHas('roles', function ($q) {
+                $q->where('name', '=', 'Promoter');
+            })->orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'eventTypeOptions' => ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'seriesOptions' => ['' => ''] + Series::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all()
         ];
     }
 
@@ -233,7 +232,9 @@ class EventsController extends Controller
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
-        //$listParamSessionStore->setLimit(100);
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
+
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder(Event::query())
@@ -270,142 +271,19 @@ class EventsController extends Controller
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('events.index')
-            ->with(array_merge([
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters()
-            ], $this->getFilterOptions()))
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
             ->with(compact('events'))
             ->render();
-    }
-
-    /**
-     * Update the page list parameters from the request.
-     */
-    protected function updatePaging(Request $request)
-    {
-        if (!empty($request->input('sort_by'))) {
-            $this->sortBy = $request->input('sort_by');
-        }
-
-        if (!empty($request->input('sort_order'))) {
-            $this->sortOrder = $request->input('sort_order');
-        }
-
-        if (!empty($request->input('rpp')) && is_numeric($request->input('rpp'))) {
-            $this->rpp = $request->input('rpp');
-        }
-    }
-
-    /**
-     * Update the page list parameters from the request.
-     */
-    protected function getPaging(array $filters): void
-    {
-        $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
-        $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
-        if (isset($filters['rpp']) && is_numeric($filters['rpp'])) {
-            $this->rpp = $filters['rpp'];
-        } else {
-            $this->rpp = $this->defaultRpp;
-        }
-    }
-
-    protected function getGridPaging(array $filters): void
-    {
-        $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
-        $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
-        if (isset($filters['rpp']) && is_numeric($filters['rpp'])) {
-            $this->gridRpp = $filters['rpp'];
-        } else {
-            $this->gridRpp = $this->defaultGridRpp;
-        }
-    }
-
-    public function getFilters(Request $request): array
-    {
-        return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
-    }
-
-    public function setFilters(Request $request, array $input)
-    {
-        // only set if the key starts with filter
-        return $this->setAttribute('filters', $input, $request);
-    }
-
-    protected function getDefaultRppFilters(): array
-    {
-        return [
-            'rpp' => $this->defaultRpp,
-            'sortBy' => $this->defaultSortBy,
-            'sortOrder' => $this->defaultSortOrder
-        ];
-    }
-
-    public function getDefaultFilters(): array
-    {
-        return [];
-    }
-
-    public function buildCriteria(Request $request)
-    {
-        // get all the filters from the session
-        $filters = $this->getFilters($request);
-
-        // base criteria
-        $query = Event::query();
-
-        // at the least we should be able to just apply the filter methods
-        // $query = $filter->apply($filters));
-
-        // add the criteria from the session
-        // check request for passed filter values
-        if (!empty($filters['filter_name'])) {
-            // getting name from the request
-            $name = $filters['filter_name'];
-            $query->where('name', 'like', '%' . $name . '%');
-            $filters['filter_name'] = $name;
-        }
-
-        if (!empty($filters['filter_tag'])) {
-            $tag = $filters['filter_tag'];
-            $query->whereHas('tags', function ($q) use ($tag) {
-                $q->where('name', '=', ucfirst($tag));
-            });
-
-            // add to filters array
-            $filters['filter_tag'] = $tag;
-        }
-
-        if (!empty($filters['filter_venue'])) {
-            $venue = $filters['filter_venue'];
-            // add has clause
-            $query->whereHas('venue', function ($q) use ($venue) {
-                $q->where('name', '=', $venue);
-            });
-
-            // add to filters array
-            $filters['filter_venue'] = $venue;
-        }
-
-        if (!empty($filters['filter_related'])) {
-            $related = $filters['filter_related'];
-            $query->whereHas('entities', function ($q) use ($related) {
-                $q->where('name', '=', ucfirst($related));
-            });
-
-            // add to filters array
-            $filters['filter_related'] = $related;
-        }
-
-        // change this - should be separate
-        if (!empty($filters['filter_rpp'])) {
-            $this->rpp = $filters['filter_rpp'];
-        }
-
-        return $query;
     }
 
     /**
@@ -413,138 +291,221 @@ class EventsController extends Controller
      *
      * @throws \Throwable
      */
-    public function grid(Request $request): string
-    {
-        // update filters from request
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+    public function indexGrid(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_grid');
 
-        // get all the filters from the session
-        $this->filters = $this->getFilters($request);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
-        // get sort, sort order, rpp from session, update from request
-        $this->getGridPaging($this->filters);
-        $this->updatePaging($request);
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
 
-        // set flag if there are filters
-        $this->hasFilter = $this->hasFilter($this->filters);
+        $listEntityResultBuilder
+        ->setFilter($this->filter)
+        ->setQueryBuilder($baseQuery)
+        ->setDefaultSort(['events.start_at' => 'desc'])
+        //->setDefaultFilters(['start_at' => ['start' => Carbon::now()]])
+;
 
-        // base criteria
-        $query = $this->buildCriteria($request); //,'start_at', 'desc' );
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
-        // get future events
-        $events = $query->orderBy('created_at', 'desc')->paginate($this->rpp);
-        $events->filter(function ($e) {
-            return (isset($e->visibility) && 'Public' === $e->visibility->name) || ($this->user && $e->created_by === $this->user->id);
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        $query
+        // public or where created by
+        ->where(function ($query) {
+            $query->whereIn('visibility_id', [1, 2])
+                ->where('created_by', '=', $this->user ? $this->user->id : null);
+            // if logged in, can see guarded
+            if ($this->user) {
+                $query->orWhere('visibility_id', '=', 4);
+            }
+            $query->orWhere('visibility_id', '=', 3);
+
+            return $query;
         });
 
+        // get the events
+        $events = $query
+            ->with('visibility', 'venue')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
         return view('events.grid')
-            ->with([
-                'rpp' => $this->gridRpp,
-                'sortBy' => $this->sortBy,
-                'sortOrder' => $this->sortOrder,
+        ->with(array_merge(
+            [
+                'limit' => $listResultSet->getLimit(),
+                'sort' => $listResultSet->getSort(),
+                'direction' => $listResultSet->getSortDirection(),
                 'hasFilter' => $this->hasFilter,
-                'filters' => $this->filters,
-            ])
-            ->with(compact('events'))
-            ->render();
+                'filters' => $listResultSet->getFilters()
+            ],
+            $this->getFilterOptions(),
+            $this->getListControlOptions()
+        ))
+        ->with(compact('events'))
+        ->render();
     }
 
     /**
      * Display a listing of events from this point in time both future and past.
      *
-     * @return View | string
+     * @return string
      *
      * @throws \Throwable
      */
-    public function indexTimeline(Request $request)
-    {
-        $hasFilter = 1;
+    public function indexTimeline(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_grid');
 
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
-        // get filters from session
-        $filters = $this->getFilters($request);
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Event::past()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
 
-        // base criteria
-        $query_past = $this->buildCriteria($request);
-        $query_future = $this->buildCriteria($request);
+        $listEntityResultBuilder
+        ->setFilter($this->filter)
+        ->setQueryBuilder($baseQuery)
+        ->setDefaultSort(['events.start_at' => 'desc']);
 
-        $query_past->past();
-        $query_future->future();
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
-        // get future events
-        $future_events = $query_future->where('start_at', '>', Carbon::today()->startOfDay())
-            ->where(function ($query) {
-                return $query->where('visibility_id', '=', 3)
-                    ->orWhere('created_by', '=', $this->user ? $this->user->id : null);
-            })
-            ->with('visibility')->paginate($this->rpp);
+        // get the query builder
+        $query = $listResultSet->getList();
 
-        // get past events
-        $past_events = $query_past->where('start_at', '<', Carbon::today()->startOfDay())->where(function ($query) {
-            return $query->where('visibility_id', '=', 3)
-                ->orWhere('created_by', '=', $this->user ? $this->user->id : null);
-        })
-            ->with('visibility')->paginate($this->rpp);
+        $query
+        // public or where created by
+        ->where(function ($query) {
+            $query->whereIn('visibility_id', [1, 2])
+                ->where('created_by', '=', $this->user ? $this->user->id : null);
+            // if logged in, can see guarded
+            if ($this->user) {
+                $query->orWhere('visibility_id', '=', 4);
+            }
+            $query->orWhere('visibility_id', '=', 3);
+
+            return $query;
+        });
+
+        // get the past events
+        $past_events = $query->past()
+            ->with('visibility', 'venue')
+            ->paginate($listResultSet->getLimit());
+
+        // get the future events
+        $future_events = $query->future()
+            ->with('visibility', 'venue')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('events.index')
-            ->with(
-                array_merge(
-                    ['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter],
-                    $this->getFilterOptions()
-                )
-            )
-            ->with(compact('future_events'))
-            ->with(compact('past_events'))
-            ->render();
+        ->with(array_merge(
+            [
+                'limit' => $listResultSet->getLimit(),
+                'sort' => $listResultSet->getSort(),
+                'direction' => $listResultSet->getSortDirection(),
+                'hasFilter' => $this->hasFilter,
+                'filters' => $listResultSet->getFilters()
+            ],
+            $this->getFilterOptions(),
+            $this->getListControlOptions()
+        ))
+        ->with(['future_events' => $future_events])
+        ->with(['past_events' => $past_events])
+        ->render();
     }
 
     /**
-     * Checks if there is a valid filter.
-     *
-     */
-    public function hasFilter(array $filters): bool
-    {
-        if (!is_array($filters)) {
-            return false;
-        }
-
-        unset($filters['rpp'], $filters['sortOrder'], $filters['sortBy'], $filters['page']);
-
-        return count(array_filter($filters, function ($x) { return !empty($x); }));
-    }
-
-    /**
-     * Display a listing of the resource.
+     * Display a listing of only future events
      *
      * @return Response | View
      */
-    public function indexFuture(Request $request)
-    {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+    public function indexFuture(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ) {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_future');
 
-        // get filters from session
-        $filters = $this->getFilters($request);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
-        $this->hasFilter = count($filters);
+        // get the base query for today's events and add any necessary joins for sorting
+        $baseQuery = Event::future()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
 
-        $this->rpp = 10;
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['events.start_at' => 'desc']);
 
-        $future_events = Event::future()->paginate($this->rpp);
-        $future_events->filter(function ($e) {
-            return ('Public' === $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
-        });
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        $query
+            // public or where created by
+            ->where(function ($query) {
+                $query->whereIn('visibility_id', [1, 2])
+                    ->where('created_by', '=', $this->user ? $this->user->id : null);
+                // if logged in, can see guarded
+                if ($this->user) {
+                    $query->orWhere('visibility_id', '=', 4);
+                }
+                $query->orWhere('visibility_id', '=', 3);
+
+                return $query;
+            });
+
+        // get the events
+        $events = $query
+            ->with('visibility', 'venue')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('events.index')
-            ->with(
-                array_merge(
-                    ['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter],
-                    $this->getFilterOptions()
-                )
-            )
-            ->with(compact('future_events'));
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
+            ->with(compact('events'));
     }
 
     /**
@@ -552,30 +513,138 @@ class EventsController extends Controller
      *
      * @return Response | View
      */
-    public function indexToday(Request $request)
-    {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+    public function indexToday(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ) {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_today');
 
-        // get filters from session
-        $filters = $this->getFilters($request);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
-        $this->hasFilter = count($filters);
+        // get the base query for today's events and add any necessary joins for sorting
+        $baseQuery = Event::today()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
 
-        $this->rpp = 10;
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['events.start_at' => 'desc']);
 
-        $events = Event::today()->paginate($this->rpp);
-        $events->filter(function ($e) {
-            return ($e->visibility && 'Public' === $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
-        });
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        $query
+            // public or where created by
+            ->where(function ($query) {
+                $query->whereIn('visibility_id', [1, 2])
+                    ->where('created_by', '=', $this->user ? $this->user->id : null);
+                // if logged in, can see guarded
+                if ($this->user) {
+                    $query->orWhere('visibility_id', '=', 4);
+                }
+                $query->orWhere('visibility_id', '=', 3);
+
+                return $query;
+            });
+
+        // get the events
+        $events = $query
+            ->with('visibility', 'venue')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('events.index')
-            ->with(
-                array_merge(
-                    ['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter],
-                    $this->getFilterOptions()
-                )
-            )
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
+            ->with(compact('events'));
+    }
+
+    /**
+     * Display a listing of only past events
+     *
+     * @return Response | View
+     */
+    public function indexPast(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ) {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_past');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
+
+        // get the base query for today's events and add any necessary joins for sorting
+        $baseQuery = Event::past()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['events.start_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        $query
+            // public or where created by
+            ->where(function ($query) {
+                $query->whereIn('visibility_id', [1, 2])
+                    ->where('created_by', '=', $this->user ? $this->user->id : null);
+                // if logged in, can see guarded
+                if ($this->user) {
+                    $query->orWhere('visibility_id', '=', 4);
+                }
+                $query->orWhere('visibility_id', '=', 3);
+
+                return $query;
+            });
+
+        // get the events
+        $events = $query
+            ->with('visibility', 'venue')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        return view('events.index')
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
             ->with(compact('events'));
     }
 
@@ -584,90 +653,84 @@ class EventsController extends Controller
      *
      * @return Response | View
      */
-    public function indexPast(Request $request)
-    {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
-
-        // get filters from session
-        $filters = $this->getFilters($request);
-
-        $this->hasFilter = count($filters);
-
-        $this->rpp = 10;
-
-        $past_events = Event::past()->paginate($this->rpp);
-        $past_events->filter(function ($e) {
-            return ($e->visibility && 'Public' === $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
-        });
-
-        return view('events.index')
-            ->with(
-                array_merge(
-                    ['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter],
-                    $this->getFilterOptions()
-                )
-            )
-            ->with(compact('past_events'));
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return Response | View
-     */
-    public function indexAttending(Request $request)
-    {
+    public function indexAttending(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ) {
         $this->middleware('auth');
 
-        // update filters from request
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_attending');
 
-        // get all the filters from the session
-        $filters = $this->getFilters($request);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
-        // get  sort, sort order, rpp from session, update from request
-        $this->getPaging($filters);
-        $this->updatePaging($request);
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        //$baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
+        $baseQuery = $this->user->getAttending();
 
-        // this view has no additional filters?
-        $this->hasFilter = $this->hasFilter($filters);
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['events.start_at' => 'desc']);
 
-        $events = $this->user->getAttending()->paginate($this->rpp);
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
-        $events->filter(function ($e) {
-            return ($e->visibility && 'Public' === $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
-        });
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        $query
+            // public or where created by
+            ->where(function ($query) {
+                $query->whereIn('visibility_id', [1, 2])
+                    ->where('created_by', '=', $this->user ? $this->user->id : null);
+                // if logged in, can see guarded
+                if ($this->user) {
+                    $query->orWhere('visibility_id', '=', 4);
+                }
+                $query->orWhere('visibility_id', '=', 3);
+
+                return $query;
+            });
+
+        // get the events
+        $events = $query
+            ->with('visibility', 'venue')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('events.index')
-            ->with(
-                array_merge(
-                    [
-                        'tag' => 'Attending',
-                        'rpp' => $this->rpp,
-                        'sortBy' => $this->sortBy,
-                        'sortOrder' => $this->sortOrder,
-                        'hasFilter' => $this->hasFilter],
-                    $this->getFilterOptions()
-                )
-            )
+        ->with(array_merge(
+            [
+                'tag' => 'Attending',
+                'limit' => $listResultSet->getLimit(),
+                'sort' => $listResultSet->getSort(),
+                'direction' => $listResultSet->getSortDirection(),
+                'hasFilter' => $this->hasFilter,
+                'filters' => $listResultSet->getFilters()
+            ],
+            $this->getFilterOptions(),
+            $this->getListControlOptions()
+        ))
             ->with(compact('events'));
     }
 
     /**
      * Display a simple text feed of future events.
      *
-     * @return Response | View
+     * @return View
      */
     public function feed()
     {
         // set number of results per page
-        $this->rpp = 10000;
-
-        $events = Event::future()->simplePaginate($this->rpp);
-        $events->filter(function ($e) {
-            return ('Public' === $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
-        });
+        $events = Event::future()->simplePaginate(10000);
 
         return view('events.feed', compact('events'));
     }
@@ -680,12 +743,7 @@ class EventsController extends Controller
     public function feedTags($tag)
     {
         // set number of results per page
-        $this->rpp = 10000;
-
-        $events = Event::getByTag(ucfirst($tag))->future()->simplePaginate($this->rpp);
-        $events->filter(function ($e) {
-            return ('Public' === $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
-        });
+        $events = Event::getByTag(ucfirst($tag))->future()->simplePaginate(10000);
 
         return view('events.feed', compact('events'));
     }
@@ -695,10 +753,17 @@ class EventsController extends Controller
      *
      * @throws \Throwable
      */
-    public function rppReset(Request $request): RedirectResponse
-    {
-        // set the rpp, sort, direction to default values
-        $this->setFilters($request, array_merge($this->getFilters($request), $this->getDefaultRppFilters()));
+    public function rppReset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ): RedirectResponse {
+        // set the rpp, sort, direction only to default values
+        $keyPrefix = $request->get('key') ?? 'internal_event_index';
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
+
+        // clear
+        $listParamSessionStore->clearSort();
 
         return redirect()->route('events.index');
     }
@@ -709,10 +774,13 @@ class EventsController extends Controller
      * @return RedirectResponse | View
      */
     public function reset(
+        Request $request,
         ListParameterSessionStore $listParamSessionStore
     ) {
+        // set filters and list controls to default values
+        $keyPrefix = $request->get('key') ?? 'internal_event_index';
         $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_index');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
 
         // clear
         $listParamSessionStore->clearFilter();
@@ -722,9 +790,10 @@ class EventsController extends Controller
     }
 
     /**
+     * TODO This is not used in the UI - find where to add
      * Send a reminder to all users who are attending this event.
      *
-     * @return Response | RedirectResponse
+     * @return RedirectResponse
      */
     public function remind(int $id, Mail $mail)
     {
@@ -757,17 +826,21 @@ class EventsController extends Controller
      *
      * @throws \Throwable
      */
-    public function day(Request $request, string $day)
+    public function day(string $day)
     {
         if (!$day) {
             flash()->error('Error', 'No such day');
 
             return back();
         }
-        $day = \Carbon\Carbon::parse($day);
+        $day = Carbon::parse($day);
 
         return view('events.day')
-            ->with(['day' => $day, 'position' => 0, 'offset' => 0])
+            ->with([
+                'day' => $day,
+                'position' => 0,
+                'offset' => 0
+            ])
             ->render();
     }
 
@@ -820,10 +893,10 @@ class EventsController extends Controller
 
         foreach ($events as $event) {
             $eventList[] = \Calendar::event(
-                $event->name, //event title
-                false, //full day event?
-                $event->start_at->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
-                ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
+                $event->name, // event title
+                false, // full day event?
+                $event->start_at->format('Y-m-d H:i'), // start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
+                ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null), // end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
                 $event->id, //optional event ID
                 [
                     'url' => 'events/' . $event->id,
@@ -836,9 +909,6 @@ class EventsController extends Controller
         $series = Series::getByEntity(ucfirst($slug))->active()->get();
 
         $series = $series->filter(function ($e) {
-            // all public events
-            // all events that you created
-            // all events that you are invited to
             return (('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
         });
 
@@ -859,12 +929,14 @@ class EventsController extends Controller
             }
         }
 
-        $calendar = \Calendar::addEvents($eventList)//add an array with addEvents
-        ->setOptions([ //set fullcalendar options
+        $calendar = \Calendar::addEvents($eventList) // add an array with addEvents
+        ->setOptions([
+            //set fullcalendar options
             'firstDay' => 0,
             'height' => 840,
-        ])->setCallbacks([ //set fullcalendar callback options (will not be JSON encoded)
-            //'viewRender' => 'function() {alert("Callbacks!");}'
+        ])->setCallbacks([
+            // set fullcalendar callback options (will not be JSON encoded)
+            //'viewRender' => 'function() { alert("Callbacks!"); }'
         ]);
 
         return view('events.calendar', compact('calendar', 'slug'));
@@ -907,10 +979,8 @@ class EventsController extends Controller
         // get all the upcoming series events
         $series = Series::getByTag(ucfirst($tag))->active()->get();
 
+        // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
-            // all public events
-            // all events that you created
-            // all events that you are invited to
             return (('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
         });
 
@@ -931,12 +1001,12 @@ class EventsController extends Controller
             }
         }
 
-        $calendar = \Calendar::addEvents($eventList)//add an array with addEvents
-        ->setOptions([ //set fullcalendar options
+        $calendar = \Calendar::addEvents($eventList) // add an array with addEvents
+        ->setOptions([ // set fullcalendar options
             'firstDay' => 0,
             'height' => 840,
-        ])->setCallbacks([ //set fullcalendar callback options (will not be JSON encoded)
-            //'viewRender' => 'function() {alert("Callbacks!");}'
+        ])->setCallbacks([ // set fullcalendar callback options (will not be JSON encoded)
+            // 'viewRender' => 'function() {alert("Callbacks!");}'
         ]);
 
         return view('events.calendar', compact('calendar', 'tag'));
@@ -949,23 +1019,21 @@ class EventsController extends Controller
      **/
     public function calendar()
     {
+        // TO DO add filter to calendar
+
         // get all public events
         $events = Event::all();
 
+        // filter for only events that are public or that were created by the current user
         $events = $events->filter(function ($e) {
-            // all public events
-            // all events that you created
-            // all events that you are invited to
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by === $this->user->id);
         });
 
         // get all the upcoming series events
         $series = Series::active()->get();
 
+        // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
-            // all public events
-            // all events that you created
-            // all events that you are invited to
             return (('Public' == $e->visibility->name) || ($this->user && $e->created_by === $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
         });
 
@@ -987,13 +1055,14 @@ class EventsController extends Controller
 
         foreach ($events as $event) {
             $eventList[] = \Calendar::event(
-                $event->name, //event title
-                false, //full day event?
+                $event->name, // event title
+                false, // full day event
                 $event->start_at->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
                 ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
                 $event->id, //optional event ID
                 [
                     'url' => '/events/' . $event->id,
+                    // optional params
                     //'color' => '#fc0'
                 ]
             );
@@ -1016,13 +1085,12 @@ class EventsController extends Controller
             }
         }
 
-        $calendar = \Calendar::addEvents($eventList)//add an array with addEvents
-        ->setOptions([ //set fullcalendar options
+        $calendar = \Calendar::addEvents($eventList)
+        ->setOptions([
             'firstDay' => 0,
             'height' => 840,
-        ])->setCallbacks([ //set fullcalendar callback options (will not be JSON encoded)
-            //'viewRender' => 'function() {alert("Callbacks!");}'
-        ]);
+        ])
+        ->setCallbacks([]);
 
         return view('events.calendar', compact('calendar', 'tag'));
     }
@@ -1041,20 +1109,16 @@ class EventsController extends Controller
             ->orderBy('name', 'ASC')
             ->get();
 
+        // filter events that are public or created by the logged in user
         $events = $events->filter(function ($e) {
-            // all public events
-            // all events that you created
-            // all events that you are invited to
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         // get all the upcoming series events
         $series = $this->user->getSeriesFollowing();
 
+        // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
-            // all public events
-            // all events that you created
-            // all events that you are invited to
             return (('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
         });
 
@@ -1075,20 +1139,16 @@ class EventsController extends Controller
             ->orderBy('name', 'ASC')
             ->get();
 
+        // filter public events and those created by the current user
         $events = $events->filter(function ($e) {
-            // all public events
-            // all events that you created
-            // all events that you are invited to
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         // get all the upcoming series events
         $series = Series::where('door_price', 0)->active()->get();
 
+        // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
-            // all public events
-            // all events that you created
-            // all events that you are invited to
             return (('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
         });
 
@@ -1111,20 +1171,16 @@ class EventsController extends Controller
             ->orderBy('name', 'ASC')
             ->get();
 
+        // filter only public events and those created by the user
         $events = $events->filter(function ($e) {
-            // all public events
-            // all events that you created
-            // all events that you are invited to
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         // get all the upcoming series events
         $series = Series::where('min_age', '<=', $age)->active()->get();
 
+        // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
-            // all public events
-            // all events that you created
-            // all events that you are invited to
             return (('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
         });
 
@@ -1155,14 +1211,13 @@ class EventsController extends Controller
 
         foreach ($events as $event) {
             $eventList[] = \Calendar::event(
-                $event->name, //event title
-                false, //full day event?
-                $event->start_at->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
-                ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
+                $event->name, // event title
+                false, // full day event
+                $event->start_at->format('Y-m-d H:i'), // start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
+                ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null), // end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
                 $event->id, //optional event ID
                 [
                     'url' => 'events/' . $event->id,
-                    //'color' => '#fc0'
                 ]
             );
         }
@@ -1170,10 +1225,8 @@ class EventsController extends Controller
         // get all the upcoming series events
         $series = Series::getByType(ucfirst($tag))->active()->get();
 
+        // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
-            // all public events
-            // all events that you created
-            // all events that you are invited to
             return (('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
         });
 
@@ -1194,42 +1247,26 @@ class EventsController extends Controller
             }
         }
 
-        $calendar = \Calendar::addEvents($eventList)//add an array with addEvents
-        ->setOptions([ //set fullcalendar options
+        $calendar = \Calendar::addEvents($eventList)
+        ->setOptions([
             'firstDay' => 0,
             'height' => 840,
-        ])->setCallbacks([ //set fullcalendar callback options (will not be JSON encoded)
-            //'viewRender' => 'function() {alert("Callbacks!");}'
+        ])->setCallbacks([
+            // set fullcalendar callback options (will not be JSON encoded)
+            // 'viewRender' => 'function() {alert("Callbacks!");}'
         ]);
 
         return view('events.calendar', compact('calendar', 'tag'));
     }
 
     /**
-     * Show a form to create a new Article.
+     * Show a form to create a new event
      *
      * @return view
      **/
     public function create()
     {
-        // get a list of venues
-        $venues = ['' => ''] + Entity::getVenues()->pluck('name', 'id')->all();
-
-        // get a list of promoters
-        $promoters = ['' => ''] + Entity::whereHas('roles', function ($q) {
-            $q->where('name', '=', 'Promoter');
-        })->orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $eventTypes = ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $seriesList = ['' => ''] + Series::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $entities = Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $userList = ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        return view('events.create', compact('venues', 'eventTypes', 'visibilities', 'tags', 'entities', 'promoters', 'seriesList', 'userList'));
+        return view('events.create')->with($this->getFormOptions());
     }
 
     /**
@@ -1259,7 +1296,7 @@ class EventsController extends Controller
     /**
      * @param Event $event
      *
-     * @return bool|\Illuminate\Http\RedirectResponse
+     * @return bool| RedirectResponse
      */
     protected function addFbPhoto(Event $event)
     {
@@ -1339,6 +1376,7 @@ class EventsController extends Controller
             $spl = explode('/', $str);
             $event_id = $spl[4];
 
+            // TODO change this to use a session variable to store the access token?
             $token = $this->fb->getJavaScriptHelper()->getAccessToken();
             $response = $this->fb->get($event_id . '?fields=' . $fields, $token);
 
@@ -1412,6 +1450,7 @@ class EventsController extends Controller
             }
         }
 
+        // set the access token
         $this->fb->setDefaultAccessToken($token);
     }
 
@@ -1433,10 +1472,9 @@ class EventsController extends Controller
     {
         $msg = '';
 
-        // get the request
         $input = $request->all();
 
-        // transform the slug
+        // transform the slug passed in the request
         $input['slug'] = Str::slug($request->input('slug', '-'));
 
         // validation happening in EventRequest->rules
@@ -1545,7 +1583,7 @@ class EventsController extends Controller
 
         // moved necessary lists into AppServiceProvider
 
-        return view('events.edit', compact('event'));
+        return view('events.edit', compact('event'))->with($this->getFormOptions());
     }
 
     public function update(Event $event, EventRequest $request): RedirectResponse
@@ -1788,7 +1826,7 @@ class EventsController extends Controller
         // initialized listParamSessionStore with baseindex key
         // list entity result builder
         $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_index');
+        $listParamSessionStore->setKeyPrefix('internal_event_tags');
 
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
@@ -1833,13 +1871,19 @@ class EventsController extends Controller
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('events.index')
-            ->with(array_merge([
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters()
-            ], $this->getFilterOptions()))
+            ->with(
+                array_merge(
+                    [
+                        'limit' => $listResultSet->getLimit(),
+                        'sort' => $listResultSet->getSort(),
+                        'direction' => $listResultSet->getSortDirection(),
+                        'hasFilter' => $this->hasFilter,
+                        'filters' => $listResultSet->getFilters()
+                    ],
+                    $this->getFilterOptions(),
+                    $this->getListControlOptions()
+                )
+            )
             ->with(compact('future_events'))
             ->with(compact('past_events'))
             ->with(compact('tag'));
@@ -1856,43 +1900,65 @@ class EventsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         string $slug
     ) {
-        $slug = urldecode($slug);
+        $slug = Str::title(str_replace('-', ' ', $slug));
 
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_related');
 
-        // get filters from session
-        $filters = $this->getFilters($request);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
-        $this->hasFilter = count($filters);
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder(Event::query())
+            ->setDefaultSort(['start_at' => 'desc'])
+            ->setParentFilter(['related' => $slug]);
 
-        $future_events = Event::getByEntity(strtolower($slug))
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $pastQuery = $listResultSet->getList();
+        $futureQuery = clone $pastQuery;
+
+        $future_events = $futureQuery
             ->future()
-            ->where(function ($query) {
-                $query->visible($this->user);
-            })
             ->orderBy('start_at', 'ASC')
             ->orderBy('name', 'ASC')
-            ->paginate($this->rpp);
+            ->paginate($listResultSet->getLimit());
 
-        $past_events = Event::getByEntity(strtolower($slug))
+        $future_events->filter(function ($e) {
+            return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+        });
+
+        $past_events = $pastQuery
             ->past()
-            ->where(function ($query) {
-                $query->visible($this->user);
-            })
             ->orderBy('start_at', 'ASC')
             ->orderBy('name', 'ASC')
-            ->paginate($this->rpp);
+            ->with('visibility', 'venue')
+            ->paginate($listResultSet->getLimit());
+
+        $past_events->filter(function ($e) {
+            return ($e->visibility && 'Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+        });
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('events.index')
             ->with(
                 array_merge(
                     [
-                        'rpp' => $this->rpp,
-                        'sortBy' => $this->sortBy,
-                        'sortOrder' => $this->sortOrder,
-                        'hasFilter' => $this->hasFilter],
-                    $this->getFilterOptions()
+                        'limit' => $listResultSet->getLimit(),
+                        'sort' => $listResultSet->getSort(),
+                        'direction' => $listResultSet->getSortDirection(),
+                        'hasFilter' => $this->hasFilter,
+                        'filters' => $listResultSet->getFilters()
+                    ],
+                    $this->getFilterOptions(),
+                    $this->getListControlOptions()
                 )
             )
             ->with(compact('future_events'))
@@ -1912,7 +1978,7 @@ class EventsController extends Controller
     ) {
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_index');
+        $listParamSessionStore->setKeyPrefix('internal_event_starting');
 
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
@@ -1956,7 +2022,8 @@ class EventsController extends Controller
                         'hasFilter' => $this->hasFilter,
                         'filters' => $listResultSet->getFilters()
                     ],
-                    $this->getFilterOptions()
+                    $this->getFilterOptions(),
+                    $this->getListControlOptions()
                 )
             )
             ->with(compact('future_events'))
@@ -2025,7 +2092,8 @@ class EventsController extends Controller
                         'hasFilter' => $this->hasFilter,
                         'filters' => $listResultSet->getFilters()
                     ],
-                    $this->getFilterOptions()
+                    $this->getFilterOptions(),
+                    $this->getListControlOptions()
                 )
             )
             ->with(compact('future_events'))
@@ -2038,39 +2106,76 @@ class EventsController extends Controller
      *
      * @return View
      */
-    public function indexTypes(Request $request, string $slug)
-    {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+    public function indexTypes(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $type
+    ) {
+        $type = Str::title(str_replace('-', ' ', $type));
 
-        // get filters from session
-        $filters = $this->getFilters($request);
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_types');
 
-        $this->hasFilter = count($filters);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
-        $slug = urldecode($slug);
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder(Event::query())
+            ->setDefaultSort(['start_at' => 'desc'])
+            ->setParentFilter(['event_type' => $type]);
 
-        $future_events = Event::getByType($slug)
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $pastQuery = $listResultSet->getList();
+        $futureQuery = clone $pastQuery;
+
+        $future_events = $futureQuery
             ->future()
-            ->where(function ($query) {
-                $query->visible($this->user);
-            })
-//					->orderBy('start_at', 'ASC')
-            ->paginate($this->rpp);
+            ->orderBy('start_at', 'ASC')
+            ->orderBy('name', 'ASC')
+            ->paginate($listResultSet->getLimit());
 
-        $past_events = Event::getByType($slug)
+        $future_events->filter(function ($e) {
+            return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+        });
+
+        $past_events = $pastQuery
             ->past()
-            ->where(function ($query) {
-                $query->visible($this->user);
-            })
-            //				->orderBy('start_at', 'ASC')
-            ->paginate($this->rpp);
+            ->orderBy('start_at', 'ASC')
+            ->orderBy('name', 'ASC')
+            ->with('visibility', 'venue')
+            ->paginate($listResultSet->getLimit());
+
+        $past_events->filter(function ($e) {
+            return ($e->visibility && 'Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+        });
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('events.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
+            ->with(
+                array_merge(
+                    [
+                        'limit' => $listResultSet->getLimit(),
+                        'sort' => $listResultSet->getSort(),
+                        'direction' => $listResultSet->getSortDirection(),
+                        'hasFilter' => $this->hasFilter,
+                        'filters' => $listResultSet->getFilters()
+                    ],
+                    $this->getFilterOptions(),
+                    $this->getListControlOptions()
+                )
+            )
             ->with(compact('future_events'))
             ->with(compact('past_events'))
-            ->with(compact('slug'));
+            ->with(compact('type'));
     }
 
     /**
@@ -2078,36 +2183,73 @@ class EventsController extends Controller
      *
      * @return View
      */
-    public function indexSeries(Request $request, string $slug)
-    {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+    public function indexSeries(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $slug
+    ) {
+        $slug = Str::title(str_replace('-', ' ', $slug));
 
-        // get filters from session
-        $filters = $this->getFilters($request);
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_series');
 
-        $this->hasFilter = count($filters);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
-        $slug = urldecode($slug);
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder(Event::query())
+            ->setDefaultSort(['start_at' => 'desc'])
+            ->setParentFilter(['series' => $slug]);
 
-        $future_events = Event::getBySeries(strtolower($slug))
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $pastQuery = $listResultSet->getList();
+        $futureQuery = clone $pastQuery;
+
+        $future_events = $futureQuery
             ->future()
-            ->where(function ($query) {
-                $query->visible($this->user);
-            })
-            //->orderBy('start_at', 'ASC')
-            ->paginate($this->rpp);
+            ->orderBy('start_at', 'ASC')
+            ->orderBy('name', 'ASC')
+            ->paginate($listResultSet->getLimit());
 
-        $past_events = Event::getBySeries(strtolower($slug))
+        $future_events->filter(function ($e) {
+            return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+        });
+
+        $past_events = $pastQuery
             ->past()
-            ->where(function ($query) {
-                $query->visible($this->user);
-            })
-            //	->orderBy('start_at', 'ASC')
-            ->paginate($this->rpp);
+            ->orderBy('start_at', 'ASC')
+            ->orderBy('name', 'ASC')
+            ->with('visibility', 'venue')
+            ->paginate($listResultSet->getLimit());
+
+        $past_events->filter(function ($e) {
+            return ($e->visibility && 'Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
+        });
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('events.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
+            ->with(
+                array_merge(
+                    [
+                        'limit' => $listResultSet->getLimit(),
+                        'sort' => $listResultSet->getSort(),
+                        'direction' => $listResultSet->getSortDirection(),
+                        'hasFilter' => $this->hasFilter,
+                        'filters' => $listResultSet->getFilters()
+                    ],
+                    $this->getFilterOptions(),
+                    $this->getListControlOptions()
+                )
+            )
             ->with(compact('future_events'))
             ->with(compact('past_events'))
             ->with(compact('slug'));
@@ -2120,8 +2262,7 @@ class EventsController extends Controller
      */
     public function indexWeek(Request $request)
     {
-        $this->rpp = 7;
-
+        // no filters or sorting applied, just future events
         $events = Event::future()->get();
         $events->filter(function ($e) {
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
@@ -2214,6 +2355,23 @@ class EventsController extends Controller
         return back();
     }
 
+    protected function getSeriesFormOptions()
+    {
+        return [
+            'venueOptions' => ['' => ''] + Entity::getVenues()->pluck('name', 'id')->all(),
+            'promoterOptions' => ['' => ''] + Entity::whereHas('roles', function ($q) {
+                $q->where('name', '=', 'Promoter');
+            })->orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'eventTypeOptions' => ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'occurrenceTypeOptions' => ['' => ''] + OccurrenceType::pluck('name', 'id')->all(),
+            'dayOptions' => ['' => ''] + OccurrenceDay::pluck('name', 'id')->all(),
+            'weekOptions' => ['' => ''] + OccurrenceWeek::pluck('name', 'id')->all()
+        ];
+    }
+
     /**
      * @return string | View
      */
@@ -2223,45 +2381,32 @@ class EventsController extends Controller
 
         $event = Event::find($request->id);
 
-        // get a list of venues
-        $venues = array_merge(['' => ''], Entity::getVenues()->pluck('name', 'id')->all());
-
-        // get a list of promoters
-        $promoters = ['' => ''] + Entity::whereHas('roles', function ($q) {
-            $q->where('name', '=', 'Promoter');
-        })->orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $eventTypes = ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $entities = Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $occurrenceTypes = ['' => ''] + OccurrenceType::pluck('name', 'id')->all();
-        $days = ['' => ''] + OccurrenceDay::pluck('name', 'id')->all();
-        $weeks = ['' => ''] + OccurrenceWeek::pluck('name', 'id')->all();
-
         // initialize the form object with the values from the template
-        $series = new Series(['name' => $event->name,
-            'slug' => $event->slug,
-            'short' => $event->short,
-            'venue_id' => $event->venue_id,
-            'description' => $event->description,
-            'event_type_id' => $event->event_type_id,
-            'promoter_id' => $event->promoter_id,
-            'soundcheck_at' => $event->soundcheck_at,
-            'door_at' => $event->door_at,
-            'founded_at' => $event->start_at,
-            'start_at' => $event->start_at,
-            'end_at' => $event->end_at,
-            'presale_price' => $event->presale_price,
-            'door_price' => $event->door_price,
-            'min_age' => $event->min_age,
-            'visibility_id' => $event->visibility_id,
-        ]);
+        $series = new Series(
+            [
+                'name' => $event->name,
+                'slug' => $event->slug,
+                'short' => $event->short,
+                'venue_id' => $event->venue_id,
+                'description' => $event->description,
+                'event_type_id' => $event->event_type_id,
+                'promoter_id' => $event->promoter_id,
+                'soundcheck_at' => $event->soundcheck_at,
+                'door_at' => $event->door_at,
+                'founded_at' => $event->start_at,
+                'start_at' => $event->start_at,
+                'end_at' => $event->end_at,
+                'presale_price' => $event->presale_price,
+                'door_price' => $event->door_price,
+                'min_age' => $event->min_age,
+                'visibility_id' => $event->visibility_id,
+                'length' => null
+            ]
+        );
 
-        return view('events.createSeries', compact('series', 'venues', 'occurrenceTypes', 'days', 'weeks', 'eventTypes', 'visibilities', 'tags', 'entities', 'promoters'))->with(['event' => $event]);
+        return view('events.createSeries', compact('series'))
+        ->with($this->getSeriesFormOptions())
+        ->with(['event' => $event]);
     }
 
     public function createThread(Request $request): RedirectResponse
@@ -2290,23 +2435,49 @@ class EventsController extends Controller
 
     public function export(
         Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
         RssFeed $feed
     ) {
-        // update filters from request
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_index');
 
-        // get all the filters from the session
-        $filters = $this->getFilters($request);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
-        // get  sort, sort order, rpp from session, update from request
-        $this->getPaging($filters);
-        $this->updatePaging($request);
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
 
-        // set flag if there are filters
-        $this->hasFilter = $this->hasFilter($filters);
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['events.start_at' => 'desc']);
 
-        // base criteria
-        $events = $this->buildCriteria($request)->take($this->rpp)->get();
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        $query
+            // public or where created by
+            ->where(function ($query) {
+                $query->whereIn('visibility_id', [1, 2])
+                    ->where('created_by', '=', $this->user ? $this->user->id : null);
+                // if logged in, can see guarded
+                if ($this->user) {
+                    $query->orWhere('visibility_id', '=', 4);
+                }
+                $query->orWhere('visibility_id', '=', 3);
+
+                return $query;
+            });
+
+        // get the events
+        $events = $query
+            ->with('visibility', 'venue')
+            ->paginate($listResultSet->getLimit());
 
         return view('events.feed', compact('events'));
     }
@@ -2325,17 +2496,5 @@ class EventsController extends Controller
 
         return response($rss)
             ->header('Content-type', 'application/rss+xml');
-    }
-
-    /**
-     * Returns true if the user has any filters outside of the default.
-     */
-    protected function getIsFiltered(Request $request): bool
-    {
-        if (($filters = $this->getFilters($request)) == $this->getDefaultFilters()) {
-            return false;
-        }
-
-        return (bool) count($filters);
     }
 }

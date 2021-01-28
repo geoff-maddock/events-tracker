@@ -138,13 +138,9 @@
 				<a href="{{ url()->action('EventsController@rppReset') }}" class="btn btn-primary">
 					<span class="glyphicon glyphicon-repeat"></span>
 				</a>
-				<?php $rpp_options = [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000]; ?>
-				<?php $sort_by_options = ['name' => 'Name', 'start_at' => 'Start At', 'event_type_id' => 'Event Type', 'updated_at' => 'Updated At']; ?>
-				<?php $sort_order_options = ['asc' => 'asc', 'desc' => 'desc']; ?>
-				{!! Form::select('limit', $rpp_options, ($limit ?? 10), ['class' =>'form-control auto-submit']) !!}
-				{!! Form::select('sort', $sort_by_options, ($sort ?? 'name'), ['class' =>'form-control
-				auto-submit']) !!}
-				{!! Form::select('direction', $sort_order_options, ($direction ?? 'asc'), ['class' =>'form-control
+				{!! Form::select('limit', $limitOptions, ($limit ?? 10), ['class' =>'form-control auto-submit']) !!}
+				{!! Form::select('sort', $sortOptions, ($sort ?? 'name'), ['class' =>'form-control auto-submit']) !!}
+				{!! Form::select('direction', $directionOptions, ($direction ?? 'asc'), ['class' =>'form-control
 				auto-submit']) !!}
 			</div>
 		</form>

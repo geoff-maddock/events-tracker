@@ -57,21 +57,23 @@
 
 	<div class="form-group col-md-3 {{$errors->has('event_type_id') ? 'has-error' : '' }}">
 		{!! Form::label('event_type_id','Event type:') !!}
-		{!! Form::select('event_type_id', $eventTypes, (isset($event->event_type_id) ? $event->event_type_id : NULL),
+		{!! Form::select('event_type_id', $eventTypeOptions, (isset($event->event_type_id) ? $event->event_type_id :
+		NULL),
 		['class' =>'form-control']) !!}
 		{!! $errors->first('event_type_id','<span class="help-block">:message</span>') !!}
 	</div>
 
 	<div class="form-group col-md-3">
 		{!! Form::label('venue_id','Venue') !!}
-		{!! Form::select('venue_id', $venues, (isset($event->venue_id) ? $event->venue_id : NULL), ['class'
+		{!! Form::select('venue_id', $venueOptions, (isset($event->venue_id) ? $event->venue_id : NULL), ['class'
 		=>'form-control select2']) !!}
 		{!! $errors->first('venue_id','<span class="help-block">:message</span>') !!}
 	</div>
 
 	<div class="form-group col-md-3">
 		{!! Form::label('promoter_id','Promoter') !!}
-		{!! Form::select('promoter_id', $promoters, (isset($event->promoter_id) ? $event->promoter_id : NULL), ['class'
+		{!! Form::select('promoter_id', $promoterOptions, (isset($event->promoter_id) ? $event->promoter_id : NULL),
+		['class'
 		=>'form-control select2']) !!}
 		{!! $errors->first('promoter_id','<span class="help-block">:message</span>') !!}
 	</div>
@@ -149,7 +151,8 @@
 <div class="row">
 	<div class="form-group col-md-3 {{$errors->has('visibility_id') ? 'has-error' : '' }}">
 		{!! Form::label('visibility_id','Visibility:') !!}
-		{!! Form::select('visibility_id', $visibilities, (isset($event->visibility_id) ? $event->visibility_id : 3),
+		{!! Form::select('visibility_id', $visibilityOptions, (isset($event->visibility_id) ? $event->visibility_id :
+		3),
 		['class' =>'form-control']) !!}
 		{!! $errors->first('visibility_id','<span class="help-block">:message</span>') !!}
 	</div>
@@ -158,7 +161,7 @@
 <div class="row">
 	<div class="form-group col-md-3">
 		{!! Form::label('series_id','Series:') !!}
-		{!! Form::select('series_id', $seriesList, (isset($event->series_id) ? $event->series_id : NULL), ['class'
+		{!! Form::select('series_id', $seriesOptions, (isset($event->series_id) ? $event->series_id : NULL), ['class'
 		=>'form-control select2']) !!}
 		{!! $errors->first('series_id','<span class="help-block">:message</span>') !!}
 	</div>
@@ -167,7 +170,7 @@
 <div class="row">
 	<div class="form-group col-md-6">
 		{!! Form::label('entity_list','Related Entities:') !!}
-		{!! Form::select('entity_list[]', $entities, null, [
+		{!! Form::select('entity_list[]', $entityOptions, null, [
 		'id' => 'entity_list',
 		'class' =>'form-control select2',
 		'data-placeholder' => 'Choose a related artist, producer, dj',
@@ -180,7 +183,7 @@
 <div class="row">
 	<div class="form-group col-md-6">
 		{!! Form::label('tag_list','Tags:') !!}
-		{!! Form::select('tag_list[]', $tags, null, [
+		{!! Form::select('tag_list[]', $tagOptions, null, [
 		'id' => 'tag_list',
 		'class' =>'form-control select2',
 		'data-placeholder' => 'Choose a tag',
@@ -193,7 +196,7 @@
 <div class="row">
 	<div class="form-group col-md-3">
 		{!! Form::label('created_by','Owner:') !!}
-		{!! Form::select('created_by', $userList, (isset($event->created_by) ? $event->created_by : NULL), ['class'
+		{!! Form::select('created_by', $userOptions, (isset($event->created_by) ? $event->created_by : NULL), ['class'
 		=>'form-control select2']) !!}
 		{!! $errors->first('created_by','<span class="help-block">:message</span>') !!}
 	</div>
