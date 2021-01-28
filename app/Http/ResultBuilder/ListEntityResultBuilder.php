@@ -109,6 +109,8 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
         $this->userFilters = $this->listQueryParameters->getFilters();
         $this->isEmptyFilter = $this->listQueryParameters->getIsEmptyFilter();
 
+        // dump($this->userFilters);
+
         if (!empty($this->userFilters)) {
             $this->queryBuilder = $this->filter->applyFilters($this->queryBuilder, $this->userFilters);
         } elseif (!empty($this->defaultFilters) && !$this->isEmptyFilter) {
@@ -126,17 +128,6 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
         $this->addMultiSort();
 
         return $this->queryBuilder;
-        // // refactor this as it doesn't use the paginator
-        // return $this->paginator->paginate(
-        //     $this->queryBuilder,
-        //     $this->listQueryParameters->getPage(),
-        //     $this->listQueryParameters->getLimit(),
-        //     [
-        //         'defaultSortFieldName' => $this->appliedSortField,
-        //         'defaultSortDirection' => $this->appliedSortDirection,
-        //         'wrap-queries' => true,
-        //     ]
-        // );
     }
 
     private function countQueryResult()

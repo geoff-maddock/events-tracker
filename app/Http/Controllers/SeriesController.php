@@ -426,6 +426,23 @@ class SeriesController extends Controller
             ->render();
     }
 
+    protected function getSeriesFormOptions()
+    {
+        return [
+            'venueOptions' => ['' => ''] + Entity::getVenues()->pluck('name', 'id')->all(),
+            'promoterOptions' => ['' => ''] + Entity::whereHas('roles', function ($q) {
+                $q->where('name', '=', 'Promoter');
+            })->orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'eventTypeOptions' => ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'occurrenceTypeOptions' => ['' => ''] + OccurrenceType::pluck('name', 'id')->all(),
+            'dayOptions' => ['' => ''] + OccurrenceDay::pluck('name', 'id')->all(),
+            'weekOptions' => ['' => ''] + OccurrenceWeek::pluck('name', 'id')->all()
+        ];
+    }
+
     /**
      * Show a form to create a new series.
      *
@@ -433,27 +450,10 @@ class SeriesController extends Controller
      **/
     public function create()
     {
-        // get a list of venues
-        $venues = ['' => ''] + Entity::getVenues()->pluck('name', 'id')->all();
-
-        // get a list of promoters
-        $promoters = ['' => ''] + Entity::whereHas('roles', function ($q) {
-            $q->where('name', '=', 'Promoter');
-        })->orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $eventTypes = ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $occurrenceTypes = ['' => ''] + OccurrenceType::pluck('name', 'id')->all();
-        $days = ['' => ''] + OccurrenceDay::pluck('name', 'id')->all();
-        $weeks = ['' => ''] + OccurrenceWeek::pluck('name', 'id')->all();
-
-        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $entities = Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all();
         $userList = ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('series.create', compact('venues', 'eventTypes', 'visibilities', 'tags', 'entities', 'promoters', 'weeks', 'days', 'occurrenceTypes', 'userList'));
+        return view('series.create', compact('userList'))
+        ->with($this->getSeriesFormOptions());
     }
 
     public function show(Series $series)
@@ -514,28 +514,10 @@ class SeriesController extends Controller
 
     public function edit(Series $series)
     {
-        // get a list of venues
-        $venues = ['' => ''] + Entity::getVenues()->pluck('name', 'id')->all();
-
-        // get a list of promoters
-        $promoters = ['' => ''] + Entity::whereHas('roles', function ($q) {
-            $q->where('name', '=', 'Promoter');
-        })->orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $eventTypes = ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $occurrenceTypes = ['' => ''] + OccurrenceType::pluck('name', 'id')->all();
-        $days = ['' => ''] + OccurrenceDay::pluck('name', 'id')->all();
-        $weeks = ['' => ''] + OccurrenceWeek::pluck('name', 'id')->all();
-
-        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $entities = Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
         $userList = User::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('series.edit', compact('series', 'venues', 'eventTypes', 'visibilities', 'tags', 'entities', 'promoters', 'weeks', 'days', 'occurrenceTypes', 'userList'));
+        return view('series.edit', compact('series', 'userList'))
+            ->with($this->getSeriesFormOptions());
     }
 
     public function export(

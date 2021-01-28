@@ -7,7 +7,18 @@ class EventFilters extends QueryFilter
     public function name($value = null)
     {
         if (isset($value)) {
-            return $this->builder->where('name', 'like', '%' . $value . '%');
+            return $this->builder->where('events.name', 'like', '%' . $value . '%');
+        } else {
+            return $this->builder;
+        }
+    }
+
+    public function venue($value = null)
+    {
+        if (isset($value)) {
+            return $this->builder->whereHas('venue', function ($q) use ($value) {
+                $q->where('name', '=', ucfirst($value));
+            });
         } else {
             return $this->builder;
         }
@@ -35,6 +46,17 @@ class EventFilters extends QueryFilter
         }
     }
 
+    public function series($value = null)
+    {
+        if (isset($value)) {
+            return $this->builder->whereHas('series', function ($q) use ($value) {
+                $q->where('name', '=', ucfirst($value));
+            });
+        } else {
+            return $this->builder;
+        }
+    }
+
     public function event_type($value = null)
     {
         if (isset($value)) {
@@ -55,12 +77,12 @@ class EventFilters extends QueryFilter
                 return $this->builder;
             }
 
-            if ($start = $value['start']) {
+            if (isset($value['start']) && $start = $value['start']) {
                 $this->builder->whereDate('start_at', '>=', $start);
             }
 
-            if ($end = $value['end']) {
-                $this->builder->whereDate('start_at', '>=', $end);
+            if (isset($value['end']) && $end = $value['end']) {
+                $this->builder->whereDate('start_at', '<=', $end);
             }
 
             return $this->builder;

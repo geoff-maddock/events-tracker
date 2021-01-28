@@ -53,20 +53,6 @@ class AppServiceProvider extends ServiceProvider
             $view->with('theme', $theme);
         });
 
-        // always include these values in the events edit view
-        View::composer('events.edit', function ($view) {
-            $view->with('venues', ['' => ''] + Entity::getVenues()->pluck('name', 'id')->all());
-            $view->with('promoters', ['' => ''] + Entity::whereHas('roles', function ($q) {
-                $q->where('name', '=', 'Promoter');
-            })->orderBy('name', 'ASC')->pluck('name', 'id')->all());
-            $view->with('eventTypes', ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all());
-            $view->with('visibilities', ['' => ''] + Visibility::pluck('name', 'id')->all());
-            $view->with('tags', Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all());
-            $view->with('entities', Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all());
-            $view->with('seriesList', ['' => ''] + Series::orderBy('name', 'ASC')->pluck('name', 'id')->all());
-            $view->with('userList', ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all());
-        });
-
         View::composer('series.createOccurrence', function ($view) {
             $view->with('userList', ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all());
         });
