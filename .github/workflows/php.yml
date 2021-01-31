@@ -71,6 +71,7 @@ jobs:
 
     - name: Run test suite
       env:
+        APP_URL: http://localhost
         DB_CONNECTION: mysql
         DB_HOST: 127.0.0.1
         DB_DATABASE: event-repo-db-name
