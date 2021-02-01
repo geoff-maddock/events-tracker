@@ -2426,9 +2426,13 @@ class EventsController extends Controller
             'visibility_id' => $event->visibility_id,
             'event_id' => $event->id,
             'likes' => 0,
+            'tag'
         ]);
 
         $thread->save();
+
+        $thread->tags()->attach($event->tags()->pluck('tags.id')->toArray());
+        $thread->entities()->attach($event->entities()->pluck('entities.id')->toArray());
 
         return redirect()->route('events.show', ['event' => $event->id]);
     }

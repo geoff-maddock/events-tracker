@@ -9,7 +9,7 @@ use App\Models\EntityType;
 use App\Models\Role;
 use DB;
 
-class EntityTableSeeder extends Seeder
+class EntitiesTableSeeder extends Seeder
 {
     public function run()
     {
