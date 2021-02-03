@@ -207,7 +207,7 @@
 	<div class="form-group col-md-3">
 		{!! Form::label('attending','Attending') !!}
 		@if (isset($event))
-		{{ $event->attending }}
+		{{ $event->attending ?? 0 }}
 		@else
 		0
 		@endif
@@ -215,7 +215,7 @@
 </div>
 
 <div class="form-group">
-	{!! Form::submit(isset($action) && $action == 'update' ? 'Update Event' : 'Add Event', null, ['class' =>'btn
+	{!! Form::submit(isset($action) && $action == 'update' ? 'Update Event' : 'Add Event', ['class' =>'btn
 	btn-primary']) !!}
 </div>
 

@@ -173,6 +173,7 @@ class Activity extends Eloquent
             $act = Action::where('name', '=', $action)->first();
             $a = $act ? $act->id : null;
         } else {
+            // if this action can't be found, it fails with a 404
             $act = Action::findOrFail($action);
             $a = $action;
         }
