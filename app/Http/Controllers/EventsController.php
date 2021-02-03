@@ -1529,10 +1529,7 @@ class EventsController extends Controller
         return redirect()->route('events.show', compact('event'));
     }
 
-    /**
-     * @return RedirectResponse
-     */
-    protected function notifyFollowing(Event $event): RedirectResponse
+    protected function notifyFollowing(Event $event): void
     {
         $reply_email = config('app.noreplyemail');
         $site = config('app.app_name');
@@ -1573,8 +1570,6 @@ class EventsController extends Controller
                 }
             }
         }
-
-        return back();
     }
 
     public function edit(Event $event): View

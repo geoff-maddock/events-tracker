@@ -82,6 +82,9 @@ class ProdPittsburghDatabaseSeeder extends Seeder
         $this->call(UserStatusesTableSeeder::class);
         $this->command->info('User statuses table seeded.');
 
+        $this->call(ActionsTableSeeder::class);
+        $this->command->info('Action table seeded.');
+
         // EXTRA data - this includes Pittsburgh specific data - more to another seeder
 
         $this->call(EntitiesTableSeeder::class);

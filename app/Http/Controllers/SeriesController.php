@@ -508,7 +508,6 @@ class SeriesController extends Controller
 
         flash()->success('Success', 'Your event series has been created');
 
-        //return redirect('series');
         return redirect()->route('series.show', compact('series'));
     }
 
@@ -549,21 +548,8 @@ class SeriesController extends Controller
 
         $series = Series::find($request->id);
 
-        // get a list of venues
-        $venues = ['' => ''] + Entity::getVenues()->pluck('name', 'id')->all();
-
-        // get a list of promoters
-        $promoters = ['' => ''] + Entity::whereHas('roles', function ($q) {
-            $q->where('name', '=', 'Promoter');
-        })->orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $eventTypes = ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $seriesList = ['' => ''] + Series::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $entities = Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $seriesOptions = ['' => ''] + Series::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $userOptions = ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
         // calculate the next occurrence date based on template settings
         $nextDate = $series->nextOccurrenceDate();
@@ -589,7 +575,9 @@ class SeriesController extends Controller
             'length' => 0,
         ]);
 
-        return view('series.createOccurrence', compact('seriesList', 'event', 'venues', 'eventTypes', 'visibilities', 'tags', 'entities', 'promoters'))->with(['series' => $series]);
+        return view('series.createOccurrence', compact('seriesOptions', 'userOptions', 'event'))
+        ->with($this->getSeriesFormOptions())
+        ->with(['series' => $series]);
     }
 
     public function update(Series $series, SeriesRequest $request)
