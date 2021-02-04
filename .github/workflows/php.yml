@@ -72,6 +72,9 @@ jobs:
     - name: Run test suite
       env:
         APP_URL: http://localhost
+        FACEBOOK_APP_ID: 7777777
+        FACEBOOK_APP_SECRET: 6666666
+        FACEBOOK_GRAPH_VERSION: v2.1
         DB_CONNECTION: mysql
         DB_HOST: 127.0.0.1
         DB_DATABASE: event-repo-db-name

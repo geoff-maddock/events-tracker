@@ -1417,46 +1417,46 @@ class EventsController extends Controller
      * TODO Deprecate - we shouldn't need this
      * Makes a call to the FB API if there is a link present and downloads the event cover photo.
      */
-    public function getToken()
-    {
-        // Obtain an access token.
-        try {
-            $token = $this->fb->getAccessTokenFromRedirect();
-        } catch (Exception $e) {
-            Log::error(sprintf('FB SDK exception: %s', $e->getMessage()));
+    // public function getToken()
+    // {
+    //     // Obtain an access token.
+    //     try {
+    //         $token = $this->fb->getAccessTokenFromRedirect();
+    //     } catch (Exception $e) {
+    //         Log::error(sprintf('FB SDK exception: %s', $e->getMessage()));
 
-            return;
-        }
+    //         return;
+    //     }
 
-        // Access token will be null if the user denied the request
-        // or if someone just hit this URL outside of the OAuth flow.
-        if (!$token) {
-            // Get the redirect helper
-            $helper = $this->fb->getRedirectLoginHelper();
+    //     // Access token will be null if the user denied the request
+    //     // or if someone just hit this URL outside of the OAuth flow.
+    //     if (!$token) {
+    //         // Get the redirect helper
+    //         $helper = $this->fb->getRedirectLoginHelper();
 
-            if (!$helper->getError()) {
-                abort(403, 'Unauthorized action.');
-            }
+    //         if (!$helper->getError()) {
+    //             abort(403, 'Unauthorized action.');
+    //         }
 
-            // User denied the request
-            Log::error(sprintf('FB SDK Error: %s %s %s %s', $helper->getError(), $helper->getErrorCode(), $helper->getErrorReason(), $helper->getErrorDescription()));
-        }
+    //         // User denied the request
+    //         Log::error(sprintf('FB SDK Error: %s %s %s %s', $helper->getError(), $helper->getErrorCode(), $helper->getErrorReason(), $helper->getErrorDescription()));
+    //     }
 
-        if (!$token->isLongLived()) {
-            // OAuth 2.0 client handler
-            $oauth_client = $this->fb->getOAuth2Client();
+    //     if (!$token->isLongLived()) {
+    //         // OAuth 2.0 client handler
+    //         $oauth_client = $this->fb->getOAuth2Client();
 
-            // Extend the access token.
-            try {
-                $token = $oauth_client->getLongLivedAccessToken($token);
-            } catch (Exception $e) {
-                Log::error(sprintf('FB SDK exception: %s', $e->getMessage()));
-            }
-        }
+    //         // Extend the access token.
+    //         try {
+    //             $token = $oauth_client->getLongLivedAccessToken($token);
+    //         } catch (Exception $e) {
+    //             Log::error(sprintf('FB SDK exception: %s', $e->getMessage()));
+    //         }
+    //     }
 
-        // set the access token
-        $this->fb->setDefaultAccessToken($token);
-    }
+    //     // set the access token
+    //     $this->fb->setDefaultAccessToken($token);
+    // }
 
     /**
      * @return View
