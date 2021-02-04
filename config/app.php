@@ -1,5 +1,7 @@
 <?php
 
+use App\Providers\FacebookServiceProvider;
+
 return [
     'env' => env('APP_ENV', 'production'),
 
@@ -185,7 +187,10 @@ return [
         // Nsivanoly\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
         // Scottybo\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
 
-        NotificationChannels\Twitter\TwitterServiceProvider::class
+        NotificationChannels\Twitter\TwitterServiceProvider::class,
+
+        // facebook service
+        App\Providers\FacebookServiceProvider::class
     ],
 
     /*
