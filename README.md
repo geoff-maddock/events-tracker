@@ -1,7 +1,7 @@
-# Event Repo
+# Events Tracker
 > A web based event calendar and tracking tool for music and arts communities.
 
-Event Repo is a CMS designed to be set up for a music or arts community to track events, weekly and monthly series, promoters, artists, producers, djs, venues and other entities.
+Events Tracker is a CMS designed to be set up for a music or arts community to track events, weekly and monthly series, promoters, artists, producers, djs, venues and other entities.
 Run an instance to create your own community where events, event series, entities, attendees and other objects can be added, tagged maintained and followed.  Keep the discussion going through a related discussion forum.  
 
 
@@ -55,7 +55,7 @@ If you'd like to contribute, please fork the repository and use a feature
 branch. Pull requests are warmly welcome.
 
 ## Author
-Events Repo was created by `Geoff Maddock`.  Send queries to geoff.maddock @ gmail.com.
+Events Tracker was created by `Geoff Maddock`.  Send queries to geoff.maddock @ gmail.com.
 
 ## Licensing
 
