@@ -30,6 +30,7 @@ use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
 use Exception;
+use Facebook\Facebook;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -76,9 +77,9 @@ class EventsController extends Controller
 
     protected Event $event;
 
-    protected $fb;
+    protected Facebook $facebook;
 
-    public function __construct(EventFilters $filter)
+    public function __construct(EventFilters $filter, Facebook $facebook)
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'indexAttending', 'calendarAttending']]);
         $this->filter = $filter;
@@ -99,8 +100,8 @@ class EventsController extends Controller
         $this->page = 1;
         $this->sort = ['name', 'desc'];
 
-        // previously LaravelFacebookSdk was injected and set here
-        $this->fb = null;
+        // inject Facebook into class
+        $this->facebook = $facebook;
 
         $this->hasFilter = false;
         parent::__construct();
@@ -1301,7 +1302,8 @@ class EventsController extends Controller
     protected function addFbPhoto(Event $event)
     {
         // some fields may have been deprecated - only need cover here
-        //$fields = 'attending_count,category,cover,interested_count,type,name,noreply_count,maybe_count,owner,place,roles';
+
+        // $fields = 'attending_count,category,cover,interested_count,type,name,noreply_count,maybe_count,owner,place,roles';
         $fields = 'cover';
 
         $str = $event->primary_link;
@@ -1316,8 +1318,9 @@ class EventsController extends Controller
         $event_id = $spl[4];
 
         try {
-            $token = $this->fb->getJavaScriptHelper()->getAccessToken();
-            $response = $this->fb->get($event_id . '?fields=' . $fields, $token);
+            // FB API new call
+            $token = $this->facebook->getJavaScriptHelper()->getAccessToken();
+            $response = $this->facebook->get($event_id . '?fields=' . $fields, $token);
 
             if ($cover = $response->getGraphNode()->getField('cover')) {
                 $source = $cover->getField('source');
@@ -1377,8 +1380,8 @@ class EventsController extends Controller
             $event_id = $spl[4];
 
             // TODO change this to use a session variable to store the access token?
-            $token = $this->fb->getJavaScriptHelper()->getAccessToken();
-            $response = $this->fb->get($event_id . '?fields=' . $fields, $token);
+            $token = $this->facebook->getJavaScriptHelper()->getAccessToken();
+            $response = $this->facebook->get($event_id . '?fields=' . $fields, $token);
 
             // get the cover from FB
             if (($cover = $response->getGraphNode()->getField('cover')) && ($source = $cover->getField('source'))) {
@@ -1411,6 +1414,7 @@ class EventsController extends Controller
     }
 
     /**
+     * TODO Deprecate - we shouldn't need this
      * Makes a call to the FB API if there is a link present and downloads the event cover photo.
      */
     public function getToken()
