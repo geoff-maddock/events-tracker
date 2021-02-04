@@ -20,9 +20,7 @@
                 class="glyphicon @if (!$hasFilter) glyphicon-chevron-down @else glyphicon-chevron-up @endif"></span></a>
         {!! Form::open(['route' => ['threads.filter'], 'method' => 'GET']) !!}
 
-        <div id="filter-list" @if (!$hasFilter)style="display: none" @endif>
-
-            <!-- BEGIN: FILTERS -->
+        <div id="filter-list" class="row @if (!$hasFilter) d-block d-xs-none @endif" <!-- BEGIN: FILTERS -->
 
             <div class="form-group col-sm-2 ">
 
