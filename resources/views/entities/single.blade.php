@@ -5,6 +5,10 @@
 		<img src="/{!! str_replace(' ','%20',$entity->getPrimaryPhoto()->thumbnail) !!}" alt="{{ $entity->name}}"
 			style="max-width: 100px; ">
 	</div>
+	@else
+	<div class="card-thumb" style="float: left; padding: 5px;">
+		<img src="/images/entity-placeholder.png" alt="{{ $entity->name}}" style="max-width: 100px; ">
+	</div>
 	@endif
 
 	{!! link_to_route('entities.show', $entity->name, [$entity->slug], ['class' => 'item-title']) !!}

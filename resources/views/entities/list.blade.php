@@ -1,15 +1,17 @@
 @if (isset($entities) && count($entities) > 0)
 
-<?php $type = NULL;?>
+<?php $type = null; ?>
 <ul class='list'>
 	@foreach ($entities as $entity)
 
 	<li id="entity-{{ $entity->id }}" class="@if ($entity->entityStatus && $entity->entityStatus->name === "Inactive") mute-card @else card @endif" style="clear: both;">
+	<div class="card-thumb event-list-thumbnail">
 		@if ($primary = $entity->getPrimaryPhoto())
-		<div class="card-thumb" style="float: left; padding: 5px;">
-				<img src="{{ $primary->getStorageThumbnail() }}" alt="{{ $entity->name}}"  style="max-width: 100px;">
-		</div>
+			<img src="{{ $primary->getStorageThumbnail() }}" alt="{{ $entity->name}}" >
+		@else
+			<img src="/images/entity-placeholder.png" alt="{{ $entity->name}}" >
 		@endif
+	</div>
 
 		{!! link_to_route('entities.show', $entity->name, [$entity->slug], ['class' => 'item-title']) !!}
 		@if ($entity->entityStatus && $entity->entityStatus->name === "Inactive")
