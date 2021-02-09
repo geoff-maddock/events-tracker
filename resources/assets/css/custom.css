@@ -125,3 +125,13 @@
 .image-lg {
     width: 200px;
 }
+
+.event-list-thumbnail {
+    float: left; 
+    padding: 5px; 
+    padding-right: 15px;
+}
+
+.card-thumb img {
+    max-width: 100px;
+}
