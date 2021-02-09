@@ -23,33 +23,34 @@
 
 	@if ($signedIn && ($event->ownedBy($user) || $user->hasGroup('super_admin')))
 	<a href="{!! route('events.edit', ['event' => $event->id],  ['alt' => 'Edit '.$event->name, 'aria-label' => 'Edit '.$event->name]) !!}"
-		title="Edit this event."><span class='glyphicon glyphicon-pencil'></span></a>
+		title="Edit this event."><span class='glyphicon glyphicon-pencil card-actions'></span></a>
 	@endif
 
 	@if ($thread = $event->threads->first())
 	<a href="{!! route('threads.show', ['thread' => $thread->id]) !!}" title="Show the related thread."><span
-			class='glyphicon glyphicon-comment'></span></a>
+			class='glyphicon glyphicon-comment card-actions'></span></a>
 	@endif
 
 
 	@if ($link = $event->primary_link)
 	<a href="{{ $link }}" title="External link for this event" target="_blank" rel="noopener"><span
-			class='glyphicon glyphicon-link'></span></a>
+			class='glyphicon glyphicon-link card-actions'></span></a>
 	@endif
 
 	@if ($ticket = $event->ticket_link)
-	<a href="{{ $ticket }}" target="_" title="Ticket link"><span class='glyphicon glyphicon-shopping-cart'></span></a>
+	<a href="{{ $ticket }}" target="_" title="Ticket link"><span
+			class='glyphicon glyphicon-shopping-cart card-actions'></span></a>
 	@endif
 
 	@if ($signedIn)
 	@if ($response = $event->getEventResponse($user))
 	<a href="{!! route('events.unattend', ['id' => $event->id]) !!}" data-target="#event-{{ $event->id }}"
 		class="ajax-action" title="{{ $response->responseType->name }}"><span
-			class='glyphicon glyphicon-star text-warning'></span></a>
+			class='glyphicon glyphicon-star text-warning card-actions'></span></a>
 	@else
 	<a href="{!! route('events.attend', ['id' => $event->id]) !!}" data-target="#event-{{ $event->id }}"
 		class="ajax-action" title="Click star to mark attending"><span
-			class='glyphicon glyphicon-star-empty text-info'></span></a>
+			class='glyphicon glyphicon-star-empty text-info card-actions'></span></a>
 	@endif
 	@endif
 

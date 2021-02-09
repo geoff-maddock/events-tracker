@@ -135,3 +135,12 @@
 .card-thumb img {
     max-width: 100px;
 }
+
+.card-actions {
+    float: right;
+    padding: 3px;
+}
+
+.card-actions:hover {
+    color: #31b0d5;
+}
