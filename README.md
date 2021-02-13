@@ -49,9 +49,12 @@ $ composer install
 * Run migrations to create the initial database.
   - php artisan migrate:fresh
 * Seed database tables from one of the provided default seeders.  Only run this when starting the production app the first time.
-  - php artisan db:seed --class=ProdBasicDatabaseSeeder   // The most basic data to run the app, some additional config will be required.
-  - php artisan db:seed --class=ProdExtraDatabaseSeeder   // This includes base data for all modules and more fleshed out permissions.  No specific content.
-  - php artisan db:seed --class=ProdPittsburghDatabaseSeeder // This includes everything in the ProdExtra seeder, plus some base specific data for Pittsburgh.
+  - ```php artisan db:seed --class=ProdBasicDatabaseSeeder```
+    - The most basic data to run the app, some additional config will be required.
+  - ```php artisan db:seed --class=ProdExtraDatabaseSeeder```
+    - This includes base data for all modules and more fleshed out permissions.  No specific content.
+  - ```php artisan db:seed --class=ProdPittsburghDatabaseSeeder```
+    - This includes everything in the ProdExtra seeder, plus some base specific data for Pittsburgh.
 * Fix permissions with ./fix_permission.sh
 * Point web server to /html/index.php
 
