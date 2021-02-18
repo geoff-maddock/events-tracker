@@ -184,7 +184,7 @@ class EventsController extends Controller
     {
         return  [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
-            'sortOptions' => ['events.name' => 'Name', 'start_at' => 'Start At', 'event_types.name' => 'Event Type', 'events.updated_at' => 'Updated At'],
+            'sortOptions' => ['events.name' => 'Name', 'events.start_at' => 'Start At', 'event_types.name' => 'Event Type', 'events.updated_at' => 'Updated At'],
             'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
         ];
     }

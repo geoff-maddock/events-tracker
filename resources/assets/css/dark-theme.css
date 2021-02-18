@@ -271,3 +271,7 @@ li.selected:hover {
 	right: -15px;
 	padding: 5px;
 }
+
+li.select2-results__option {
+	color: #989898;
+}
