@@ -131,6 +131,7 @@ class EventsController extends Controller
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['events.start_at' => 'desc'])
+            // TO DO Determine if we want to set a default filter?
             //->setDefaultFilters(['start_at' => ['start' => Carbon::now()]])
 ;
 
@@ -172,6 +173,87 @@ class EventsController extends Controller
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
                     'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
+            ->with(compact('events'))
+            ->render();
+    }
+
+    /**
+      * Display a listing of events by date
+      *
+      * @throws \Throwable
+      */
+    public function indexByDate(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $year,
+        ?string $month = null,
+        ?string $day = null
+    ): string {
+        // set the start_at from and to dates based on the passed params
+        if ($year && !$month && !$day) {
+            $start_at_from = $year . '0101';
+            $start_at_to = $year . '1231';
+            $tag = $year;
+        } elseif (!$day) {
+            $start_at_from = Carbon::parse($year . $month . '01');
+            $start_at_to = Carbon::parse($start_at_from)->endOfMonth();
+            $tag = $year . ' - ' . $month;
+        } else {
+            $start_at_from = Carbon::parse($year . $month . $day);
+            $start_at_to = Carbon::parse($start_at_from)->addDay();
+            $tag = $year . ' - ' . $month . ' - ' . $day;
+        }
+
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_index');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['events.start_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        $events = Event::where('start_at', '>', $start_at_from)
+            ->where('start_at', '<', $start_at_to)
+            ->where(function ($query) {
+                $query->visible($this->user);
+            })
+            ->orderBy('start_at', 'ASC')
+            ->orderBy('name', 'ASC')
+            ->with('visibility', 'venue')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        return view('events.index')
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters(),
+                    'tag' => $tag,
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
