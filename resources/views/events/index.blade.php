@@ -139,8 +139,10 @@
 					<span class="glyphicon glyphicon-repeat"></span>
 				</a>
 				{!! Form::select('limit', $limitOptions, ($limit ?? 10), ['class' =>'form-control auto-submit']) !!}
-				{!! Form::select('sort', $sortOptions, ($sort ?? 'name'), ['class' =>'form-control auto-submit']) !!}
-				{!! Form::select('direction', $directionOptions, ($direction ?? 'asc'), ['class' =>'form-control
+				{!! Form::select('sort', $sortOptions, ($sort ?? 'events.start_at'), ['class' =>'form-control
+				auto-submit'])
+				!!}
+				{!! Form::select('direction', $directionOptions, ($direction ?? 'desc'), ['class' =>'form-control
 				auto-submit']) !!}
 			</div>
 		</form>
