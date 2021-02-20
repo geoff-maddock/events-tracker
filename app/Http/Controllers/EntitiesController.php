@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\EntityFilters;
 use App\Models\Activity;
 use App\Models\Alias;
 use App\Models\Entity;
@@ -9,11 +10,13 @@ use App\Models\EntityStatus;
 use App\Models\EntityType;
 use App\Models\Follow;
 use App\Http\Requests\EntityRequest;
+use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Photo;
 use App\Models\Role;
 use App\Models\Tag;
 use App\Models\TagType;
 use App\Models\User;
+use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -48,11 +51,15 @@ class EntitiesController extends Controller
 
     protected array $filters;
 
+    // this is the class specifying the filters methods for each field
+    protected EntityFilters $filter;
+
     protected bool $hasFilter;
 
-    public function __construct()
+    public function __construct(EntityFilters $filter)
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
+        $this->filter = $filter;
 
         // prefix for session storage
         $this->prefix = 'app.entities.';
@@ -79,29 +86,55 @@ class EntitiesController extends Controller
      *
      * @throws \Throwable
      */
-    public function index(Request $request)
-    {
-        // update filters from request
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+    public function index(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_entity');
+        $listParamSessionStore->setKeyPrefix('internal_entity_index');
 
-        // get all the filters from the session
-        $filters = $this->getFilters($request);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
 
-        // get  sort, sort order, rpp from session, update from request
-        $this->getPaging($filters);
-        $this->updatePaging($request);
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Entity::query()->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')->select('entities.*');
 
-        // set flag if there are filters
-        $hasFilter = $this->hasFilter($filters);
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['entities.name' => 'asc'])
+            //->setDefaultFilters(['start_at' => ['start' => Carbon::now()]])
+;
 
-        // base criteria
-        $query = $this->buildCriteria($request);
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
 
         // get the threads
-        $entities = $query->paginate($this->rpp);
+        $entities = $query
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('entities.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter, 'filters' => $filters])
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
             ->with(compact('entities'))
             ->render();
     }
@@ -323,36 +356,53 @@ class EntitiesController extends Controller
      *
      * @throws \Throwable
      */
-    public function filter(Request $request)
-    {
-        // update filters from request
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+    public function filter(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_entity');
+        $listParamSessionStore->setKeyPrefix('internal_entity_index');
 
-        // get all the filters from the session
-        $this->filters = $this->getFilters($request);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
 
-        // get  sort, sort order, rpp from session, update from request
-        $this->getPaging($this->filters);
-        $this->updatePaging($request);
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Entity::query()->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')->select('entities.*');
 
-        // set flag if there are filters
-        $this->hasFilter = $this->hasFilter($this->filters);
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder(Entity::query())
+            ->setDefaultSort(['entities.name' => 'asc']);
 
-        // get the criteria given the request (could pass filters instead?)
-        $query = $this->buildCriteria($request);
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
-        // apply the filters to the query
-        // get the entities and paginate
-        $entities = $query->paginate($this->rpp);
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the threads
+        $entities = $query
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('entities.index')
-            ->with([
-                'rpp' => $this->rpp,
-                'sortBy' => $this->sortBy,
-                'sortOrder' => $this->sortOrder,
-                'filters' => $this->filters,
-                'hasFilter' => $this->hasFilter,
-            ])
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
             ->with(compact('entities'))
             ->render();
     }
@@ -382,14 +432,19 @@ class EntitiesController extends Controller
     /**
      * Reset the rpp, sort, order
      *
-     * @return Response
-     *
      * @throws \Throwable
      */
-    public function rppReset(Request $request): Response
-    {
-        // set the rpp, sort, direction to default values
-        $this->setFilters($request, array_merge($this->getFilters($request), $this->getDefaultRppFilters()));
+    public function rppReset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ): RedirectResponse {
+        // set the rpp, sort, direction only to default values
+        $keyPrefix = $request->get('key') ?? 'internal_entity_index';
+        $listParamSessionStore->setBaseIndex('internal_entity');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
+
+        // clear
+        $listParamSessionStore->clearSort();
 
         return redirect()->route('entities.index');
     }
@@ -401,23 +456,18 @@ class EntitiesController extends Controller
      *
      * @throws \Throwable
      */
-    public function reset(Request $request): Response
-    {
-        // set the filters to empty
-        $this->setFilters($request, $this->getDefaultFilters());
+    public function reset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ): Response {
+        // set filters and list controls to default values
+        $keyPrefix = $request->get('key') ?? 'internal_entity_index';
+        $listParamSessionStore->setBaseIndex('internal_entity');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
 
-        $hasFilter = 0;
-
-        // default
-        $query = Entity::where(function ($query) {
-            $query->active()
-                ->orWhere('created_by', '=', ($this->user ? $this->user->id : null));
-        })
-            ->orderBy('entity_type_id', 'ASC')
-            ->orderBy('name', 'ASC');
-
-        // paginate
-        $entities = $query->paginate($this->rpp);
+        // clear
+        $listParamSessionStore->clearFilter();
+        $listParamSessionStore->clearSort();
 
         return redirect()->route('entities.index');
     }
@@ -848,5 +898,23 @@ class EntitiesController extends Controller
         \Session::flash('flash_message', 'Not authorized');
 
         return redirect('/');
+    }
+
+    protected function getListControlOptions(): array
+    {
+        return  [
+            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
+            'sortOptions' => ['entities.name' => 'Name', 'entity_types.name' => 'Entity Type', 'entities.created_at' => 'Created At'],
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+        ];
+    }
+
+    protected function getFilterOptions(): array
+    {
+        return  [
+            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+            'roleOptions' => ['' => ''] + Role::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+            'entityTypeOptions' => ['' => ''] + EntityType::orderBy('name', 'ASC')->pluck('name', 'name')->all()
+        ];
     }
 }

@@ -21,36 +21,63 @@
 
 <div id="filters-container" class="row">
     <div id="filters-content" class="col-lg-9">
-
-        <a href="#" id="filters" class="btn btn-primary">Filters <span id="filters-toggle"
+        <a href="#" id="filters" class="btn btn-primary">
+            Filters
+            <span id="filters-toggle"
                 class="glyphicon @if (!$hasFilter) glyphicon-chevron-down @else glyphicon-chevron-up @endif"></span></a>
-        {!! Form::open(['route' => ['entities.filter'], 'method' => 'GET']) !!}
+        {!! Form::open(['route' => ['entities.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
 
-        <div id="filter-list" @if (!$hasFilter)style="display: none" @endif>
+        <div id="filter-list" class="row @if (!$hasFilter) d-block d-xs-none @endif"
+            style="@if (!$hasFilter) display: none; @endif">
 
             <!-- BEGIN: FILTERS -->
             <div class="form-group col-sm-2">
                 {!! Form::label('filter_name','Filter By Name') !!}
 
-                {!! Form::text('filter_name', (isset($filters['filter_name']) ? $filters['filter_name'] : NULL),
-                ['class' =>'form-control']) !!}
+                {!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
+                ['class' =>'form-control', 'name' => 'filters[name]']) !!}
             </div>
 
             <div class="form-group col-sm-2">
                 {!! Form::label('filter_role','Filter By Role', array('width' => '100%')) !!}<br>
-                <?php $roles = ['' => '&nbsp;'] + App\Models\Role::orderBy('name', 'ASC')->pluck('name', 'name')->all(); ?>
-                {!! Form::select('filter_role', $roles, (isset($filters['filter_role']) ? $filters['filter_role'] :
-                NULL), ['data-theme' => 'bootstrap', 'data-style' => '100%', 'data-width' => '100%', 'class'
-                =>'form-control select2', 'data-placeholder' => 'Select a role']) !!}
+                {!! Form::select('filter_role', $roleOptions, (isset($filters['role']) ? $filters['role']
+                : NULL),
+                [
+                'data-theme' => 'bootstrap',
+                'data-style' => '100%',
+                'data-width' => '100%',
+                'class' => 'form-control select2',
+                'data-placeholder' => 'Select a role',
+                'name' => 'filters[role]'
+                ]) !!}
             </div>
 
             <div class="form-group col-sm-2">
                 {!! Form::label('filter_tag','Filter By Tag', array('width' => '100%')) !!}
-                <?php $tags = ['' => '&nbsp;'] + App\Models\Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all(); ?>
-                {!! Form::select('filter_tag', $tags, (isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL),
-                ['data-theme' => 'bootstrap', 'class' =>'form-control select2', 'data-width' => '100%',
-                'data-placeholder' => 'Select a tag']) !!}
+                {!! Form::select('filter_tag', $tagOptions, (isset($filters['tag']) ? $filters['tag'] :
+                NULL),
+                [
+                'data-theme' => 'bootstrap',
+                'class' =>'form-control select2',
+                'data-width' => '100%',
+                'data-placeholder' => 'Select a tag',
+                'name' => 'filters[tag]'
+                ])
+                !!}
             </div>
+
+            <div class="form-group col-sm-2">
+				{!! Form::label('filter_entity_type','Type') !!}
+				{!! Form::select('filter_entity_type', $entityTypeOptions, (isset($filters['entity_type'])
+				? $filters['entity_type'] : NULL),
+				[
+				'data-theme' => 'bootstrap',
+				'data-width' => '100%',
+				'class' => 'form-control select2',
+				'data-placeholder' => 'Select a type',
+				'name' => 'filters[entity_type]'
+				]) !!}
+			</div>
 
             <div class="col-sm-2">
                 <div class="btn-group col-sm-1">
@@ -73,13 +100,10 @@
             <div class="form-group">
                 <a href="{{ url()->action('EntitiesController@rppReset') }}" class="btn btn-primary"><span
                         class="glyphicon glyphicon-repeat"></span></a>
-                <?php $rpp_options = [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000]; ?>
-                <?php $sort_by_options = ['name' => 'Name', 'slug' => 'Slug', 'entity_type_id' => 'Type', 'created_at' => 'Created']; ?>
-                <?php $sort_order_options = ['asc' => 'asc', 'desc' => 'desc']; ?>
-                {!! Form::select('rpp', $rpp_options, ($rpp ?? 10), ['class' =>'form-control auto-submit']) !!}
-                {!! Form::select('sortBy', $sort_by_options, ($sortBy ?? 'name'), ['class' =>'form-control
-                auto-submit']) !!}
-                {!! Form::select('sortOrder', $sort_order_options, ($sortOrder ?? 'asc'), ['class' =>'form-control
+                {!! Form::select('limit', $limitOptions, ($limit ?? 10), ['class' =>'form-control auto-submit']) !!}
+                {!! Form::select('sort', $sortOptions, ($sort ?? 'events.name'), ['class' =>'form-control auto-submit'])
+                !!}
+                {!! Form::select('direction', $directionOptions, ($direction ?? 'asc'), ['class' =>'form-control
                 auto-submit']) !!}
             </div>
         </form>

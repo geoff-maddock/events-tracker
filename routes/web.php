@@ -352,7 +352,7 @@ Route::get('entities/type/{type}', 'EntitiesController@indexTypes');
 
 Route::get('entities/role/{role}', 'EntitiesController@indexRoles')->name('entities.role');
 
-Route::get('entities/filter', ['as' => 'entities.filter', 'uses' => 'EntitiesController@filter']);
+Route::match(['get', 'post'], 'entities/filter', ['as' => 'entities.filter', 'uses' => 'EntitiesController@filter']);
 Route::get('entities/reset', ['as' => 'entities.reset', 'uses' => 'EntitiesController@reset']);
 Route::get('entities/rpp-reset', ['as' => 'entities.rppReset', 'uses' => 'EntitiesController@rppReset']);
 

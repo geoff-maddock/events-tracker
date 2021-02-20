@@ -353,6 +353,8 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
+        dump($listResultSet);
+
         return view('events.index')
             ->with(array_merge(
                 [
