@@ -14,7 +14,7 @@
 
 	{!! Form::model($entity, ['route' => ['entities.update', $entity->slug], 'method' => 'PATCH']) !!}
 
-		@include('entities.form', ['action' => 'update', 'entityTypes' => $entityTypes])
+		@include('entities.form', ['action' => 'update'])
 
 	{!! Form::close() !!}
 

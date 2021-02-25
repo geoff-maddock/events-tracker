@@ -96,7 +96,7 @@
     </div>
 
     <div id="list-control" class="col-lg-3 visible-lg-block visible-md-block text-right">
-        <form action="{{ url()->action('EntitiesController@filter') }}" method="GET" class="form-inline">
+        <form action="" method="GET" class="form-inline">
             <div class="form-group">
                 <a href="{{ url()->action('EntitiesController@rppReset') }}" class="btn btn-primary"><span
                         class="glyphicon glyphicon-repeat"></span></a>

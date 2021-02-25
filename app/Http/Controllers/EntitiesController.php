@@ -51,7 +51,6 @@ class EntitiesController extends Controller
 
     protected array $filters;
 
-    // this is the class specifying the filters methods for each field
     protected EntityFilters $filter;
 
     protected bool $hasFilter;
@@ -82,7 +81,6 @@ class EntitiesController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return Response | string
      *
      * @throws \Throwable
      */
@@ -139,65 +137,6 @@ class EntitiesController extends Controller
             ->render();
     }
 
-    /**
-     * Update the page list parameters from the request.
-     */
-    protected function getPaging(array $filters): void
-    {
-        $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
-        $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
-        if (isset($filters['rpp']) && is_numeric($filters['rpp'])) {
-            $this->rpp = $filters['rpp'];
-        } else {
-            $this->rpp = $this->defaultRpp;
-        }
-    }
-
-    /**
-     * Update the page list parameters from the request.
-     */
-    protected function updatePaging(Request $request)
-    {
-        // set sort by column
-        if ($request->input('sort_by')) {
-            $this->sortBy = $request->input('sort_by');
-        }
-
-        // set sort direction
-        if ($request->input('sort_order')) {
-            $this->sortOrder = $request->input('sort_order');
-        }
-
-        // set results per page
-        if ($request->input('rpp') && is_numeric($request->input('rpp'))) {
-            $this->rpp = $request->input('rpp');
-        }
-    }
-
-    /**
-     * Get session filters.
-     *
-     * @return mixed
-     */
-    protected function getFilters(Request $request)
-    {
-        return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
-    }
-
-    /**
-     * Get user session attribute.
-     *
-     * @param string $attribute
-     * @param mixed  $default
-     *
-     * @return mixed
-     */
-    protected function getAttribute(Request $request, $attribute, $default = null)
-    {
-        return $request->session()
-            ->get($this->prefix . $attribute, $default);
-    }
-
     protected function getDefaultFilters(): array
     {
         return [];
@@ -225,82 +164,58 @@ class EntitiesController extends Controller
     }
 
     /**
-     * Builds the criteria from the session.
-     */
-    public function buildCriteria(Request $request): Builder
-    {
-        // get all the filters from the session
-        $filters = $this->getFilters($request);
-
-        // base criteria
-        $query = Entity::active()
-            ->orderBy('entity_type_id', 'ASC')
-            ->orderBy($this->sortBy, $this->sortOrder);
-
-        // add the criteria from the session
-        // check request for passed filter values
-
-        if (!empty($filters['filter_name'])) {
-            // getting name from the request
-            $name = $filters['filter_name'];
-            $query->where('name', 'like', '%' . $name . '%');
-        }
-
-        if (!empty($filters['filter_tag'])) {
-            $tag = $filters['filter_tag'];
-            $query->whereHas('tags', function ($q) use ($tag) {
-                $q->where('name', '=', ucfirst($tag));
-            });
-        }
-
-        if (!empty($filters['filter_role'])) {
-            $role = $filters['filter_role'];
-            // add has clause
-            $query->whereHas('roles', function ($q) use ($role) {
-                $q->where('slug', '=', strtolower($role));
-            });
-        }
-
-        if (!empty($filters['filter_alias'])) {
-            $alias = $filters['filter_alias'];
-            $query = Entity::getByAlias(ucfirst($alias))
-                ->where(function ($query) {
-                    $query->active()
-                        ->orWhere('created_by', '=', ($this->user ? $this->user->id : null));
-                })
-                ->orderBy('entity_type_id', 'ASC')
-                ->orderBy('name', 'ASC');
-        }
-
-        // change this - should be seperate
-        if (!empty($filters['filter_rpp'])) {
-            $this->rpp = $filters['filter_rpp'];
-        }
-
-        return $query;
-    }
-
-    /**
      * Display a listing of entities by type.
-     *
-     * @return Response | string
      *
      * @throws \Throwable
      */
-    public function indexTypes($type)
-    {
-        $hasFilter = 1;
+    public function indexTypes(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $type
+    ) {
+        $listParamSessionStore->setBaseIndex('internal_entity');
+        $listParamSessionStore->setKeyPrefix('internal_entity_roles');
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
 
-        $entities = Entity::ofType(ucfirst($type))
-            ->where(function ($query) {
-                $query->active()
-                    ->orWhere('created_by', '=', ($this->user ? $this->user->id : null));
-            })
-            ->orderBy('entity_type_id', 'ASC')->orderBy('name', 'ASC')
-            ->paginate();
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Entity::query()->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')->select('entities.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['entities.name' => 'asc'])
+            ->setParentFilter(['entity_type' => $type]);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the threads
+        $entities = $query
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('entities.index')
-            ->with(['type' => $type, 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
+            ->with(['type' => $type])
             ->with(compact('entities'))
             ->render();
     }
@@ -308,32 +223,59 @@ class EntitiesController extends Controller
     /**
      * Display a listing of entities by role.
      *
-     * @return Response | string
-     *
      * @throws \Throwable
      */
-    public function indexRoles(Request $request, $role)
-    {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+    public function indexRoles(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        $role
+    ): string {
+        // $tag = urldecode($tag);
+        // initialized listParamSessionStore with baseindex key
+        // list entity result builder
+        $listParamSessionStore->setBaseIndex('internal_entity');
+        $listParamSessionStore->setKeyPrefix('internal_entity_roles');
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
 
-        // get filters from session
-        $filters = $this->getFilters($request);
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Entity::query()->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')->select('entities.*');
 
-        $this->hasFilter = count($filters);
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['entities.name' => 'asc'])
+            ->setParentFilter(['role' => $role]);
 
-        // modify the criteria
-        $entities = Entity::getByRole(ucfirst($role))
-            ->where(function ($query) {
-                $query->active()
-                    ->orWhere('created_by', '=', ($this->user ? $this->user->id : null));
-            })
-            ->orderBy('entity_type_id', 'ASC')
-            ->orderBy('name', 'ASC')
-            ->paginate();
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the threads
+        $entities = $query
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('entities.index')
-            ->with(['role' => $role, 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
+            ->with(['role' => $role])
             ->with(compact('entities'))
             ->render();
     }
@@ -351,8 +293,6 @@ class EntitiesController extends Controller
 
     /**
      * Filter the list of entities.
-     *
-     * @return Response | string
      *
      * @throws \Throwable
      */
@@ -373,7 +313,7 @@ class EntitiesController extends Controller
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
-            ->setQueryBuilder(Entity::query())
+            ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['entities.name' => 'asc']);
 
         // get the result set from the builder
@@ -405,28 +345,6 @@ class EntitiesController extends Controller
             ))
             ->with(compact('entities'))
             ->render();
-    }
-
-    /**
-     * Set filters attribute.
-     * @param Request $request
-     * @param array $input
-     */
-    protected function setFilters(Request $request, array $input): void
-    {
-        $this->setAttribute('filters', $input, $request);
-    }
-
-    /**
-     * Set user session attribute.
-     *
-     * @param string $attribute
-     * @param mixed  $value
-
-     */
-    protected function setAttribute(string $attribute, $value, Request $request): void
-    {
-        $request->session()->put($this->prefix . $attribute, $value);
     }
 
     /**
@@ -475,34 +393,56 @@ class EntitiesController extends Controller
     /**
      * Display a listing of entities by tag.
      *
-     * @return Response | string
-     *
      * @throws \Throwable
      */
-    public function indexTags(Request $request, string $role)
-    {
-        $this->rpp = 1000;
+    public function indexTags(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $tag
+    ): string {
+        $listParamSessionStore->setBaseIndex('internal_entity');
+        $listParamSessionStore->setKeyPrefix('internal_entity_tags');
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
 
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Entity::query()->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')->select('entities.*');
 
-        // get filters from session
-        $filters = $this->getFilters($request);
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['entities.name' => 'asc'])
+            ->setParentFilter(['tag' => $tag]);
 
-        $this->hasFilter = count($filters);
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
-        $query = Entity::getByTag(ucfirst($role))
-            ->where(function ($query) {
-                $query->active()
-                    ->orWhere('created_by', '=', ($this->user ? $this->user->id : null));
-            })
-            ->orderBy('entity_type_id', 'ASC')
-            ->orderBy('name', 'ASC');
-        // paginate
-        $entities = $query->paginate($this->rpp);
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the threads
+        $entities = $query
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('entities.index')
-            ->with(['role' => $role, 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
+            ->with(['tag' => $tag])
             ->with(compact('entities'))
             ->render();
     }
@@ -510,31 +450,55 @@ class EntitiesController extends Controller
     /**
      * Display a listing of entities by alias.
      *
-     * @return Response | string
-     *
      * @throws \Throwable
      */
-    public function indexAliases(Request $request, string $role)
-    {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+    public function indexAliases(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $alias
+    ): string {
+        $listParamSessionStore->setBaseIndex('internal_entity');
+        $listParamSessionStore->setKeyPrefix('internal_entity_tags');
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
 
-        // get filters from session
-        $filters = $this->getFilters($request);
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Entity::getByAlias($alias)->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')->select('entities.*');
 
-        $this->hasFilter = count($filters);
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['entities.name' => 'asc']);
 
-        $entities = Entity::getByAlias(ucfirst($role))
-            ->where(function ($query) {
-                $query->active()
-                    ->orWhere('created_by', '=', ($this->user ? $this->user->id : null));
-            })
-            ->orderBy('entity_type_id', 'ASC')
-            ->orderBy('name', 'ASC')
-            ->get();
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the threads
+        $entities = $query
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('entities.index')
-            ->with(['role' => $role, 'rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
+            ->with(['role' => $alias])
             ->with(compact('entities'))
             ->render();
     }
@@ -548,12 +512,9 @@ class EntitiesController extends Controller
      */
     public function indexSlug(string $slug)
     {
-        $hasFilter = 1;
-
         $entity = Entity::getBySlug(strtolower($slug))->firstOrFail();
 
         return view('entities.show')
-            ->with(['hasFilter' => $hasFilter])
             ->with(compact('entity'))
             ->render();
     }
@@ -565,15 +526,7 @@ class EntitiesController extends Controller
      */
     public function create()
     {
-        $entityTypes = EntityType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $entityStatuses = EntityStatus::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $aliases = Alias::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $roles = Role::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $userList = ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        return view('entities.create', compact('entityTypes', 'entityStatuses', 'tags', 'aliases', 'roles', 'userList'));
+        return view('entities.create')->with($this->getFormOptions());
     }
 
     /**
@@ -658,16 +611,8 @@ class EntitiesController extends Controller
     {
         $this->middleware('auth');
 
-        $entityTypes = EntityType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $entityStatuses = EntityStatus::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $tags = Tag::orderBy('name')->pluck('name', 'id')->all();
-        $aliases = Alias::orderBy('name')->pluck('name', 'id')->all();
-        $roles = Role::orderBy('name')->pluck('name', 'id')->all();
-
-        $userList = User::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        return view('entities.edit', compact('entity', 'entityTypes', 'entityStatuses', 'tags', 'aliases', 'roles', 'userList'));
+        return view('entities.edit', compact('entity'))
+        ->with($this->getFormOptions());
     }
 
     /**
@@ -915,6 +860,18 @@ class EntitiesController extends Controller
             'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
             'roleOptions' => ['' => ''] + Role::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
             'entityTypeOptions' => ['' => ''] + EntityType::orderBy('name', 'ASC')->pluck('name', 'name')->all()
+        ];
+    }
+
+    protected function getFormOptions(): array
+    {
+        return [
+            'entityTypeOptions' => ['' => ''] + EntityType::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'entityStatusOptions' => EntityStatus::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'aliasOptions' => Alias::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'roleOptions' => Role::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all()
         ];
     }
 }

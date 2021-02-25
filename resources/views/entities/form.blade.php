@@ -34,14 +34,14 @@
 <div class="row">
 	<div class="form-group col-md-6">
 	{!! Form::label('entity_type_id','Type') !!}
-	{!! Form::select('entity_type_id', $entityTypes, (isset($entity->entity_type_id) ? $entity->entity_type_id : NULL), ['class' =>'form-control']) !!}
+	{!! Form::select('entity_type_id', $entityTypeOptions, (isset($entity->entity_type_id) ? $entity->entity_type_id : NULL), ['class' =>'form-control']) !!}
 	{!! $errors->first('entity_type_id','<span class="help-block">:message</span>') !!}
 	</div>
 
 
 	<div class="form-group col-md-6">
 	{!! Form::label('entity_status_id','Status') !!}
-	{!! Form::select('entity_status_id', $entityStatuses, (isset($entity->entity_status_id) ? $entity->entity_status_id : NULL),['class' =>'form-control']) !!}
+	{!! Form::select('entity_status_id', $entityStatusOptions, (isset($entity->entity_status_id) ? $entity->entity_status_id : NULL),['class' =>'form-control']) !!}
 	{!! $errors->first('entity_status_id','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -64,7 +64,7 @@
 <div class="row">
 	<div class="form-group col-md-6">
 	{!! Form::label('role_list','Roles:') !!}
-	{!! Form::select('role_list[]', $roles, null, ['id' => 'role_list',	'class' =>'form-control select2',
+	{!! Form::select('role_list[]', $roleOptions, null, ['id' => 'role_list',	'class' =>'form-control select2',
 	'data-placeholder' => 'Choose a role',
 	'data-tags' => 'false',
 	'multiple']) !!}
@@ -75,7 +75,7 @@
 <div class="row">
 	<div class="form-group col-md-6">
 	{!! Form::label('tag_list','Tags:') !!}
-	{!! Form::select('tag_list[]', $tags, null, ['id' => 'tag_list', 'class' =>'form-control select2',
+	{!! Form::select('tag_list[]', $tagOptions, null, ['id' => 'tag_list', 'class' =>'form-control select2',
 	'data-placeholder' => 'Choose a tag',
 	'data-tags' => 'true',
 	 'multiple']) !!}
@@ -86,7 +86,7 @@
 <div class="row">
 	<div class="form-group col-md-6">
 	{!! Form::label('alias_list','Aliases:') !!}
-	{!! Form::select('alias_list[]', $aliases, null, ['id' => 'alias_list',	'class' =>'form-control select2',
+	{!! Form::select('alias_list[]', $aliasOptions, null, ['id' => 'alias_list',	'class' =>'form-control select2',
 	'data-placeholder' => 'Choose an alias',
 	'data-tags' =>'true',
 	'multiple']) !!}
@@ -97,7 +97,7 @@
 <div class="row">
 	<div class="form-group col-md-3">
 		{!! Form::label('created_by','Owner:') !!}
-		{!! Form::select('created_by', $userList, (isset($event->created_by) ? $event->created_by : NULL), ['class' =>'form-control select2']) !!}
+		{!! Form::select('created_by', $userOptions, (isset($event->created_by) ? $event->created_by : NULL), ['class' =>'form-control select2']) !!}
 		{!! $errors->first('created_by','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
