@@ -13,13 +13,12 @@
 
 <div id="filters-container" class="row">
     <div id="filters-content" class="col-lg-9">
-
         <a href="#" id="filters" class="btn btn-primary">Filters <span id="filters-toggle"
                 class="glyphicon @if (!$hasFilter) glyphicon-chevron-down @else glyphicon-chevron-up @endif"></span></a>
 
         {!! Form::open(['route' => ['series.filter'], 'method' => 'GET']) !!}
 
-        <div id="filter-list" @if (!$hasFilter)style="display: none" @endif>
+        <div id="filter-list" class="row @if (!$hasFilter) d-block d-xs-none @endif"
             <!-- BEGIN: FILTERS -->
 
             <div class="form-group col-sm-2">
