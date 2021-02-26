@@ -161,7 +161,7 @@ Route::get('update', function () {
 });
 
 Route::get('events/today', 'EventsController@indexToday');
-Route::get('events/grid', 'EventsController@indexGrid')->name('events.grid');
+Route::match(['get', 'post'], 'events/grid', 'EventsController@indexGrid')->name('events.grid');
 Route::get('events/timeline', 'EventsController@indexTimeline')->name('events.timeline');
 Route::get('events/future', 'EventsController@indexFuture')->name('events.future');
 Route::get('events/past', 'EventsController@indexPast');
@@ -172,7 +172,7 @@ Route::get('events/by-date/{year}/{month?}/{day?}', 'EventsController@indexByDat
     ->where('month', '(0?[1-9]|1[012])$');
 Route::get('events/daily', 'EventsController@daily');
 Route::get('events/day/{day}', 'EventsController@day')->name('events.day');
-Route::get('events/attending', 'EventsController@indexAttending')->name('events.attending');
+Route::match(['get', 'post'], 'events/attending', 'EventsController@indexAttending')->name('events.attending');
 Route::match(['get', 'post'], 'events/filter', ['as' => 'events.filter', 'uses' => 'EventsController@filter']);
 Route::get('events/reset', ['as' => 'events.reset', 'uses' => 'EventsController@reset']);
 Route::get('events/rpp-reset', ['as' => 'events.rppReset', 'uses' => 'EventsController@rppReset']);

@@ -353,8 +353,6 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        dump($listResultSet);
-
         return view('events.index')
             ->with(array_merge(
                 [
@@ -386,7 +384,7 @@ class EventsController extends Controller
         $listParamSessionStore->setKeyPrefix('internal_event_grid');
 
         // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'indexGrid']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
@@ -394,9 +392,7 @@ class EventsController extends Controller
         $listEntityResultBuilder
         ->setFilter($this->filter)
         ->setQueryBuilder($baseQuery)
-        ->setDefaultSort(['events.start_at' => 'desc'])
-        //->setDefaultFilters(['start_at' => ['start' => Carbon::now()]])
-;
+        ->setDefaultSort(['events.start_at' => 'desc']);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
@@ -754,7 +750,7 @@ class EventsController extends Controller
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
         //$baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
-        $baseQuery = $this->user->getAttending();
+        $baseQuery = $this->user->getAttending()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -799,7 +795,10 @@ class EventsController extends Controller
                 'sort' => $listResultSet->getSort(),
                 'direction' => $listResultSet->getSortDirection(),
                 'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters()
+                'filters' => $listResultSet->getFilters(),
+                'filterRoute' => 'events.attending',
+                'key' => 'internal_event_attending',
+                'redirect' => 'events.attending'
             ],
             $this->getFilterOptions(),
             $this->getListControlOptions()
@@ -871,7 +870,7 @@ class EventsController extends Controller
         $listParamSessionStore->clearFilter();
         $listParamSessionStore->clearSort();
 
-        return redirect()->route('events.index');
+        return redirect()->route($request->get('redirect') ?? 'events.index');
     }
 
     /**
