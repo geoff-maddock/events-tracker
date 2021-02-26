@@ -21,16 +21,18 @@
 			Filters
 			<span id="filters-toggle"
 				class="glyphicon @if (!$hasFilter) glyphicon-chevron-down @else glyphicon-chevron-up @endif"></span></a>
-		{!! Form::open(['route' => ['events.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
+		{!! Form::open(['route' => [$filterRoute ?? 'events.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
 
 		<div id="filter-list" class="row @if (!$hasFilter) d-block d-xs-none @endif"
 			style="@if (!$hasFilter) display: none; @endif">
 
 			<div class="form-group col-sm-2">
-				{!! Form::label('filter_name','Event Name') !!}
+				{!! Form::label('filter_name','Filter By Name') !!}
 				{!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
-				['class' => 'form-control', 'name' => 'filters[name]'])
-				!!}
+				[
+					'class' => 'form-control',
+					'name' => 'filters[name]'
+				]) !!}
 			</div>
 
 			<div class="form-group col-sm-2">
@@ -122,6 +124,8 @@
 					!!}
 					{!! Form::close() !!}
 					{!! Form::open(['route' => ['events.reset'], 'method' => 'GET']) !!}
+					{!! Form::hidden('redirect', $redirect ?? 'events.index') !!}
+					{!! Form::hidden('key', $key ?? 'internal_event_index') !!}
 					{!! Form::submit('Reset',
 					[
 					'class' => 'btn btn-primary btn-sm btn-tb',
