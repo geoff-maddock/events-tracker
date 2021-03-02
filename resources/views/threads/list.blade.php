@@ -16,25 +16,28 @@
 	@foreach ($threads as $thread)
 
 	<tr>
-	<td>{!! link_to_route('threads.show', $thread->name, [$thread->id], ['id' => 'thread-name', 'title' => 'Thread topic.', 'class' => 'forum-link']) !!}
-            @if ($event = $thread->event)
-                <a href="{!! route('events.show', ['event' => $event->id]) !!}" title="Show event."><span class='glyphicon glyphicon-calendar'></span></a>
-            @endif
-			@if ($signedIn && (($thread->ownedBy($user) && $thread->isRecent()) || $user->hasGroup('super_admin')))
-			<a href="{!! route('threads.edit', ['thread' => $thread->id]) !!}" title="Edit this thread."><span class='glyphicon glyphicon-pencil'></span></a>
-            {!! link_form_icon('glyphicon-trash text-warning', $thread, 'DELETE', 'Delete the thread', NULL, 'delete') !!}
-			@endif
+	<td>
+    {!! link_to_route('threads.show', $thread->name, [$thread->id], ['id' => 'thread-name', 'title' => 'Thread topic.', 'class' => 'forum-link']) !!}
 
-            <br>
+    @if ($event = $thread->event)
+        <a href="{!! route('events.show', ['event' => $event->id]) !!}" title="Show event."><span class='glyphicon glyphicon-calendar'></span></a>
+    @endif
 
-            @unless ($thread->series->isEmpty())
-            Series:
-                @foreach ($thread->series as $series)
-                    <span class="label label-tag"><a href="/threads/series/{{ urlencode($series->slug) }}" class="label-link">{{ $series->name }}</a>
-                        <a href="{!! route('series.show', ['series' => $series->id]) !!}" title="Show this series."><span class='glyphicon glyphicon-link text-info'></span></a>
-                    </span>
-                @endforeach
-            @endunless
+    @if ($signedIn && (($thread->ownedBy($user) && $thread->isRecent()) || $user->hasGroup('super_admin')))
+        <a href="{!! route('threads.edit', ['thread' => $thread->id]) !!}" title="Edit this thread."><span class='glyphicon glyphicon-pencil'></span></a>
+        {!! link_form_icon('glyphicon-trash text-warning', $thread, 'DELETE', 'Delete the thread', NULL, 'delete') !!}
+    @endif
+
+    <br>
+
+    @unless ($thread->series->isEmpty())
+    Series:
+        @foreach ($thread->series as $series)
+            <span class="label label-tag"><a href="/threads/series/{{ urlencode($series->slug) }}" class="label-link">{{ $series->name }}</a>
+                <a href="{!! route('series.show', ['series' => $series->id]) !!}" title="Show this series."><span class='glyphicon glyphicon-link text-info'></span></a>
+            </span>
+        @endforeach
+    @endunless
 
 			@unless ($thread->entities->isEmpty())
 			Related:
@@ -104,5 +107,4 @@ $('button.delete').on('click', function(e){
   });
 })
 </script>
-
 @stop

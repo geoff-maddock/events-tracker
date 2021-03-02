@@ -50,13 +50,17 @@
 					<a href="#" class="dropdown-toggle visible-xs-block visible-sm-block visible-md-block" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">More <span class="caret"></span></a>
 
 					<ul class="dropdown-menu">
+						@isset ($hasForum))
 						<li class="{{ Request::is('threads') ? 'active' : '' }}"><a href="{{ url('/threads')}}" title="Show a list of discussion forums.">Forum</a></li>
+						@endisset
 						<li class="{{ Request::is('tags') ? 'active' : '' }}"><a href="{{ url('/tags') }}" title="Show a list of tag topics.">Tags</a></li>
 						<li class="{{ Request::is('users') ? 'active' : '' }}"><a href="{{ url('/users') }}" title="Show a list of registered users.">Users</a></li>
 					</ul>
 				</li>
                 <!-- MORE end -->
+				@isset ($hasForum)
 				<li class="{{ Request::is('threads') ? 'active' : '' }} visible-lg"><a href="{{ url('/threads')}}" title="Show a list of discussion forums.">Forum</a></li>
+				@endisset
 				<li class="{{ Request::is('tags') ? 'active' : '' }} visible-lg"><a href="{{ url('/tags') }}" title="Show a list of keyword topics.">Keywords</a></li>
 				@if (!Auth::guest())
 					<li class="{{ Request::is('users') ? 'active' : '' }} visible-lg"><a href="{{ url('/users') }}" title="Show a list of registered users.">Users</a></li>

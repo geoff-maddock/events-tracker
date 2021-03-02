@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Event;
 use App\Models\Menu;
 use App\Models\Role;
+use App\Models\Forum;
 use Illuminate\Support\ServiceProvider;
 
 class ViewComposerServiceProvider extends ServiceProvider
@@ -36,6 +37,7 @@ class ViewComposerServiceProvider extends ServiceProvider
         view()->composer('partials.nav', function ($view) {
             $view->with('latest', Event::latest()->first());
             $view->with('roles', Role::orderBy('name', 'ASC')->get());
+            $view->with('hasForum', Forum::latest()->first());
             $view->with('menus', Menu::orderBy('name', 'ASC')->visible(auth()->user())->get());
         });
     }
