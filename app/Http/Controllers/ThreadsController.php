@@ -14,6 +14,7 @@ use App\Models\TagType;
 use App\Models\Thread;
 use App\Models\ThreadCategory;
 use App\Models\Visibility;
+use App\Models\Forum;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -450,7 +451,20 @@ class ThreadsController extends Controller
         $series = Series::orderBy('name', 'ASC')->pluck('name', 'id')->all();
         $events = ['' => ''] + Event::orderBy('name', 'ASC')->pluck('slug', 'id')->all();
 
-        return view('threads.create', compact('threadCategories', 'visibilities', 'tags', 'entities', 'series', 'events'));
+        return view('threads.create')->with($this->getFormOptions());
+    }
+
+    protected function getFormOptions(): array
+    {
+        return [
+            'threadCategoryOptions' => ['' => ''] + ThreadCategory::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'eventOptions' => ['' => ''] + Event::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'seriesOptions' => ['' => ''] + Series::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'forumOptions' => ['' => ''] + Forum::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+        ];
     }
 
     /**

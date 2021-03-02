@@ -29,9 +29,19 @@
 
 <div class="row">
 
+	<div class="form-group col-md-2 {{$errors->has('forum_id') ? 'has-error' : '' }}">
+	{!! Form::label('forum_id','Forum:') !!}
+	{!! Form::select('forum_id', $forumOptions, (isset($thread->forum_id) ? $thread->forum_id : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select a forum']) !!}
+	{!! $errors->first('forum_id','<span class="help-block">:message</span>') !!}
+	</div>
+
+</div>
+
+<div class="row">
+
 	<div class="form-group col-md-2 {{$errors->has('thread_type_id') ? 'has-error' : '' }}">
 	{!! Form::label('thread_category_id','Thread category:') !!}
-	{!! Form::select('thread_category_id', $threadCategories, (isset($thread->thread_category_id) ? $thread->thread_category_id : NULL), ['class' =>'form-control']) !!}
+	{!! Form::select('thread_category_id', $threadCategoryOptions, (isset($thread->thread_category_id) ? $thread->thread_category_id : NULL), ['class' =>'form-control']) !!}
 	{!! $errors->first('thread_category_id','<span class="help-block">:message</span>') !!}
 	</div>
 
@@ -40,7 +50,7 @@
 <div class="row">
 	<div class="form-group col-md-2 {{$errors->has('visibility_id') ? 'has-error' : '' }}">
 	{!! Form::label('visibility_id','Visibility:') !!}
-	{!! Form::select('visibility_id', $visibilities, (isset($thread->visibility_id) ? $thread->visibility_id : 3), ['class' =>'form-control']) !!}
+	{!! Form::select('visibility_id', $visibilityOptions, (isset($thread->visibility_id) ? $thread->visibility_id : 3), ['class' =>'form-control']) !!}
 	{!! $errors->first('visibility_id','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -50,7 +60,7 @@
 <div class="row">
 	<div class="form-group col-md-2">
 	{!! Form::label('entity_list','Related Entities:') !!}
-	{!! Form::select('entity_list[]', $entities, null, ['id' => 'entity_list',
+	{!! Form::select('entity_list[]', $entityOptions, null, ['id' => 'entity_list',
 	 'class' =>'form-control select2',
 	 'data-placeholder' =>'Choose a related artist, producer, dj',
 	 'data-tags' => 'false',
@@ -63,7 +73,7 @@
 
 	<div class="form-group col-md-2 {{$errors->has('event_id') ? 'has-error' : '' }}">
 	{!! Form::label('event_id','Event:') !!}
-	{!! Form::select('event_id', $events, (isset($thread->event_id) ? $thread->event_id : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select an event']) !!}
+	{!! Form::select('event_id', $eventOptions, (isset($thread->event_id) ? $thread->event_id : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select an event']) !!}
 	{!! $errors->first('event_id','<span class="help-block">:message</span>') !!}
 	</div>
 
@@ -72,7 +82,7 @@
 <div class="row">
 	<div class="form-group col-md-2">
 	{!! Form::label('series_list','Related Series:') !!}
-	{!! Form::select('series_list[]', $series, isset($thread) ? $thread->series->pluck('id', 'id')->all() : NULL, ['id' => 'series_list', 'class' =>'form-control select2',
+	{!! Form::select('series_list[]', $seriesOptions, isset($thread) ? $thread->series->pluck('id', 'id')->all() : NULL, ['id' => 'series_list', 'class' =>'form-control select2',
 	 'data-placeholder' => 'Choose a related event series',
 	 'data-tags' => 'false',
 	  'multiple']) !!}
@@ -83,7 +93,7 @@
 <div class="row">
 	<div class="form-group col-md-2">
 	{!! Form::label('tag_list','Tags:') !!}
-	{!! Form::select('tag_list[]', $tags, null, ['id' => 'tag_list', 'class' =>'form-control select2',
+	{!! Form::select('tag_list[]', $tagOptions, null, ['id' => 'tag_list', 'class' =>'form-control select2',
 	'data-placeholder' => 'Choose a tag',
 	'data-tags' =>'true',
 	 'multiple']) !!}
@@ -92,9 +102,10 @@
 </div>
 
 
+
+
 <div class="form-group">
-{!! Form::hidden('forum_id', '1', array('id' => 'forum_id')) !!}
-{!! Form::submit(isset($action) && $action == 'update' ? 'Update Thread' : 'Add Thread', null, ['class' =>'btn btn-primary']) !!}
+	{!! Form::submit(isset($action) && $action == 'update' ? 'Update Thread' : 'Add Thread', null, ['class' =>'btn btn-primary']) !!}
 </div>
 
 
