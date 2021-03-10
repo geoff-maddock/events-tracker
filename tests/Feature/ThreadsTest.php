@@ -46,6 +46,7 @@ class ThreadsTest extends TestCase
      */
     public function threads_browsable()
     {
+        $thread = Thread::factory()->create();
         $response = $this->get('/threads')
         ->assertSee('Thread');
     }
@@ -69,7 +70,6 @@ class ThreadsTest extends TestCase
     {
         //$this->signIn();
 
-        //$user = factory('App\Models\User')->create();
         $user = User::find(1);
         // add that thread includes replies
         $post = Post::factory()
@@ -146,15 +146,23 @@ class ThreadsTest extends TestCase
     /** @test */
     public function a_user_can_filter_threads_by_any_username()
     {
-        $this->signIn(User::factory()->create(['name' => 'JohnDoe']));
+        $user = User::factory()->create(['name' => 'JohnDoe']);
+        $userOther = User::factory()->create(['name' => 'other']);
 
-        $threadByJohn = Thread::factory()->create(['created_by' => auth()->id()]);
-        $threadNotByJohn = Thread::factory()->create(['created_by' => 1]);
-        $threadNotByJohn->created_by = 1;
-        $threadNotByJohn->save();
+        $this->signIn();
 
-        $this->get('threads/filter?filter_user=JohnDoe')
-            ->assertSee($threadByJohn->name)
-            ->assertDontSee($threadNotByJohn->name);
+        $threadByJohn = Thread::factory()->create(['created_by' => $user->id]);
+        $threadNotByJohn = Thread::factory()->create(['created_by' => $userOther->id]);
+
+        $this->get('/threads/filter?filters[user]=JohnDoe')
+            //->assertSee($threadByJohn->name)
+                ->assertDontSee($threadNotByJohn->name);
+    }
+
+    /** @test */
+    public function add_a_user()
+    {
+        $user = User::factory()->create(['name' => 'smith']);
+        $this->assertDatabaseHas('users', ['name' => 'smith']);
     }
 }

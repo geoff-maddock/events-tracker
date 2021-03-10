@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\ThreadFilters;
 use App\Models\Activity;
 use App\Models\Entity;
 use App\Models\Event;
 use App\Models\Follow;
 use App\Http\Requests\ThreadRequest;
+use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Like;
 use App\Models\Series;
 use App\Models\Tag;
@@ -15,18 +17,16 @@ use App\Models\Thread;
 use App\Models\ThreadCategory;
 use App\Models\Visibility;
 use App\Models\Forum;
+use App\Models\User;
+use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
-use DateTime;
 
 class ThreadsController extends Controller
 {
@@ -55,11 +55,14 @@ class ThreadsController extends Controller
 
     protected array $filters;
 
+    // this is the class specifying the filters methods for each field
+    protected ThreadFilters $filter;
+
     protected array $criteria;
 
     protected ?Thread $thread;
 
-    public function __construct()
+    public function __construct(ThreadFilters $filter)
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
 
@@ -79,72 +82,51 @@ class ThreadsController extends Controller
         $this->defaultCriteria = [];
         $this->hasFilter = 1;
 
+        $this->filter = $filter;
+
         parent::__construct();
-    }
-
-    /**
-     * Checks if there is a valid filter.
-     *
-     * @param array $filters
-     */
-    public function hasFilter(array $filters): bool
-    {
-        $arr = $filters;
-        unset($arr['rpp'], $arr['sortOrder'], $arr['sortBy'], $arr['page']);
-
-        return count(array_filter($arr, function ($x) { return !empty($x); }));
-    }
-
-    /**
-     * Set user session attribute.
-     *
-     * @param mixed $value
-     */
-    public function setAttribute(string $attribute, $value, Request $request): void
-    {
-        $request->session()
-            ->put($this->prefix . $attribute, $value);
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @return View | string
-     *
      * @throws \Throwable
      */
-    public function index(Request $request)
-    {
-        // update filters from request
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+    public function index(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with base index key
+        $listParamSessionStore->setBaseIndex('internal_thread');
+        $listParamSessionStore->setKeyPrefix('internal_thread_index');
 
-        // get all the filters from the session
-        $this->filters = $this->getFilters($request);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
 
-        // get  sort, sort order, rpp from session, update from request
-        $this->getPaging($this->filters);
-        $this->updatePaging($request);
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Thread::query()
+        ->select('threads.*');
 
-        // set flag if there are filters
-        $this->hasFilter = $this->hasFilter($this->filters);
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['threads.created_at' => 'desc']);
 
-        // initialize the query
-        $query = $this->buildCriteria($request);
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
-        // get the threads
-        $threads = $query->with('visibility')->paginate($this->rpp);
+        // get the query builder
+        $query = $listResultSet->getList();
 
-        // filter only public threads or those created by the logged in user
-        $threads->filter(function ($e) {
-            return ('Public' === $e->visibility->name) || ($this->user && $e->created_by === $this->user->id);
-        });
+        $threads = $query->visible($this->user)
+            ->with('visibility')
+            ->paginate($listResultSet->getLimit());
 
-        // if the user is not authenticated, filter out any guarded threads
-        if (!Auth::check()) {
-            $threads->filter(function ($e) {
-                return 'Guarded' !== $e->visibility->name;
-            });
-        }
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         // return json only
         if (request()->wantsJson()) {
@@ -152,173 +134,81 @@ class ThreadsController extends Controller
         }
 
         return view('threads.index')
-                    ->with(compact('threads'))
-                    ->with(['rpp' => $this->rpp,
-                        'sortBy' => $this->sortBy,
-                        'sortOrder' => $this->sortOrder,
+                ->with(array_merge(
+                    [
+                        'limit' => $listResultSet->getLimit(),
+                        'sort' => $listResultSet->getSort(),
+                        'direction' => $listResultSet->getSortDirection(),
                         'hasFilter' => $this->hasFilter,
-                        'filters' => $this->filters,
-                    ])->render();
-    }
-
-    /**
-     * Update the page list parameters from the request.
-     *
-     * @param array $filters
-     */
-    protected function getPaging(array $filters): void
-    {
-        $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
-        $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
-        if (isset($filters['rpp']) && is_numeric($filters['rpp'])) {
-            $this->rpp = $filters['rpp'];
-        } else {
-            $this->rpp = $this->defaultRpp;
-        }
-    }
-
-    /**
-     * Update the page list parameters from the request.
-     *
-     */
-    protected function updatePaging(Request $request): void
-    {
-        // set sort by column
-        if ($request->input('sort_by')) {
-            $this->sortBy = $request->input('sort_by');
-        }
-
-        // set sort direction
-        if ($request->input('sort_direction')) {
-            $this->sortOrder = $request->input('sort_direction');
-        }
-
-        if (!empty($request->input('rpp')) && is_numeric($request->input('rpp'))) {
-            $this->rpp = $request->input('rpp');
-        }
-    }
-
-    /**
-     * Builds the criteria from the session.
-     *
-     * @return Builder
-     */
-    public function buildCriteria(Request $request): Builder
-    {
-        // get all the filters from the session and put into an array
-        $filters = $this->getFilters($request);
-
-        // base criteria
-        $query = Thread::orderBy($this->sortBy, $this->sortOrder);
-
-        // add the criteria from the session
-        // check request for passed filter values
-
-        if (!empty($filters['filter_name'])) {
-            // getting name from the request
-            $name = $filters['filter_name'];
-            $query->where('name', 'like', '%' . $name . '%');
-        }
-
-        if (!empty($filters['filter_user'])) {
-            $user = $filters['filter_user'];
-
-            // add has clause
-            $query->whereHas('user', function ($q) use ($user) {
-                $q->where('name', '=', $user);
-            });
-        }
-
-        if (!empty($filters['filter_tag'])) {
-            $tag = $filters['filter_tag'];
-            $query->whereHas('tags', function ($q) use ($tag) {
-                $q->where('name', '=', ucfirst($tag));
-            });
-        }
-
-        // change this - should be seperate
-        if (!empty($filters['filter_rpp'])) {
-            $this->rpp = $filters['filter_rpp'];
-        }
-
-        return $query;
+                        'filters' => $listResultSet->getFilters()
+                    ],
+                    $this->getFilterOptions(),
+                    $this->getListControlOptions()
+                ))
+                ->with(compact('threads'))
+                ->render();
     }
 
     /**
      * Filter the list of events.
      *
-     * @return View
-     *
      * @internal param $Request
      */
-    public function filter(Request $request)
-    {
-        // update filters from request
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+    public function filter(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with base index key
+        $listParamSessionStore->setBaseIndex('internal_thread');
+        $listParamSessionStore->setKeyPrefix('internal_thread_index');
 
-        // get all the filters from the session
-        $this->filters = $this->getFilters($request);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
 
-        // get  sort, sort order, rpp from session, update from request
-        $this->getPaging($this->filters);
-        $this->updatePaging($request);
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Thread::query()
+        ->select('threads.*');
 
-        // set flag if there are filters
-        $this->hasFilter = $this->hasFilter($this->filters);
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['threads.created_at' => 'desc']);
 
-        // get the criteria given the request (could pass filters instead?)
-        $query = $this->buildCriteria($request);
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
-        // get threads
-        $threads = $query->paginate($this->rpp);
-        $threads->filter(function ($e) {
-            return ($e->visibility && 'Public' === $e->visibility->name) || ($this->user && $e->created_by === $this->user->id);
-        });
+        // get the query builder
+        $query = $listResultSet->getList();
 
-        return view('threads.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter, 'filters' => $this->filters,
-            ])
-            ->with(compact('threads'));
-    }
+        $threads = $query->visible($this->user)
+            ->with('visibility')
+            ->paginate($listResultSet->getLimit());
 
-    /**
-     * Set filters attribute.
-     */
-    public function setFilters(Request $request, array $input)
-    {
-        $this->setAttribute('filters', $input, $request);
-    }
+        // saves the updated session
+        $listParamSessionStore->save();
 
-    /**
-     * Reset the filtering of entities.
-     *
-     * @return Response | string
-     *
-     * @throws \Throwable
-     */
-    public function reset(Request $request)
-    {
-        // set the filters to empty
-        $this->setFilters($request, $this->getDefaultFilters());
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        $this->hasFilter = 0;
-
-        // default
-        $query = Thread::where(function ($query) {
-            $query->visible($this->user);
-        })
-                    ->orderBy($this->sortBy, $this->sortOrder)
-                    ->orderBy('name', 'ASC');
-
-        // paginate
-        $threads = $query->paginate($this->rpp);
-
-        $filters = [];
+        // return json only
+        if (request()->wantsJson()) {
+            return $threads;
+        }
 
         return view('threads.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter,  'filters' => $filters])
-            ->with(compact('threads'))
-            ->render();
+        ->with(array_merge(
+            [
+                'limit' => $listResultSet->getLimit(),
+                'sort' => $listResultSet->getSort(),
+                'direction' => $listResultSet->getSortDirection(),
+                'hasFilter' => $this->hasFilter,
+                'filters' => $listResultSet->getFilters()
+            ],
+            $this->getFilterOptions(),
+            $this->getListControlOptions()
+        ))
+        ->with(compact('threads'))
+        ->render();
     }
 
     /**
@@ -326,131 +216,346 @@ class ThreadsController extends Controller
      *
      * @throws \Throwable
      */
-    public function rppReset(Request $request): RedirectResponse
-    {
-        // set the rpp, sort, direction to default values
-        $this->setFilters($request, array_merge($this->getFilters($request), $this->getDefaultRppFilters()));
+    public function rppReset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ): RedirectResponse {
+        // set the rpp, sort, direction only to default values
+        $keyPrefix = $request->get('key') ?? 'internal_thread_index';
+        $listParamSessionStore->setBaseIndex('internal_thread');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
+
+        // clear
+        $listParamSessionStore->clearSort();
 
         return redirect()->route('threads.index');
     }
 
     /**
-     * Display a listing of the resource.
+     * Reset the filtering of entities.
      *
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse | View
      */
-    public function indexAll(Request $request)
-    {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+    public function reset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ) {
+        // set filters and list controls to default values
+        $keyPrefix = $request->get('key') ?? 'internal_thread_index';
+        $listParamSessionStore->setBaseIndex('internal_thread');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
 
-        // get filters from session
-        $filters = $this->getFilters($request);
+        // clear
+        $listParamSessionStore->clearFilter();
+        $listParamSessionStore->clearSort();
 
-        $this->hasFilter = count($filters);
-
-        $threads = Thread::orderBy('created_at', 'desc')->paginate(1000000);
-        $threads->filter(function ($e) {
-            return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
-        });
-
-        return view('threads.index')
-                    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
-                    ->with(compact('threads'));
+        return redirect()->route($request->get('redirect') ?? 'threads.index');
     }
 
     /**
-     * Display a listing of threads by category.
+     * Display a listing of the resource.
+     *
      */
-    public function indexCategories(Request $request, ?string $slug): View
-    {
-        $hasFilter = 1;
+    public function indexAll(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with base index key
+        $listParamSessionStore->setBaseIndex('internal_thread');
+        $listParamSessionStore->setKeyPrefix('internal_thread_index');
 
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
 
-        $threads = Thread::getByCategory(strtolower($slug))
-        ->orderBy($this->sortBy, 'ASC')
-        ->where(function ($query) {
-            $query->visible($this->user);
-        })
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Thread::query()
+        ->select('threads.*');
 
-                    ->paginate($this->rpp);
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['threads.created_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        $threads = $query->visible($this->user)
+            ->with('visibility')
+            ->paginate(1000000000);
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        // return json only
+        if (request()->wantsJson()) {
+            return $threads;
+        }
 
         return view('threads.index')
-                    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'slug' => $slug, 'hasFilter' => $hasFilter])
-                    ->with(compact('threads'));
+        ->with(array_merge(
+            [
+                'limit' => $listResultSet->getLimit(),
+                'sort' => $listResultSet->getSort(),
+                'direction' => $listResultSet->getSortDirection(),
+                'hasFilter' => $this->hasFilter,
+                'filters' => $listResultSet->getFilters()
+            ],
+            $this->getFilterOptions(),
+            $this->getListControlOptions()
+        ))
+        ->with(compact('threads'))
+        ->render();
     }
 
     /**
      * Display a listing of threads by tag.
      */
-    public function indexTags(Request $request, ?string $tag): View
-    {
-        $hasFilter = 1;
-
-        // updates sort, rpp from request
-        $this->updatePaging($request);
-
+    public function indexTags(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $tag
+    ) {
         $tag = urldecode($tag);
+        // initialized listParamSessionStore with baseindex key
+        // list entity result builder
+        $listParamSessionStore->setBaseIndex('internal_thread');
+        $listParamSessionStore->setKeyPrefix('internal_thread_tags');
 
-        $threads = Thread::getByTag(ucfirst($tag))
-                    ->orderBy('created_at', 'ASC')
-                    ->paginate($this->rpp);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Thread::query()
+        ->select('threads.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['threads.created_at' => 'desc'])
+            ->setParentFilter(['tag' => ucfirst($tag)]);
+        ;
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        $threads = $query->visible($this->user)
+            ->with('visibility')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('threads.index')
-                    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'tag' => $tag, 'hasFilter' => $hasFilter])
-                    ->with(compact('threads'));
+        ->with(array_merge(
+            [
+                'limit' => $listResultSet->getLimit(),
+                'sort' => $listResultSet->getSort(),
+                'direction' => $listResultSet->getSortDirection(),
+                'hasFilter' => $this->hasFilter,
+                'filters' => $listResultSet->getFilters()
+            ],
+            $this->getFilterOptions(),
+            $this->getListControlOptions()
+        ))
+        ->with(compact('threads'))
+        ->render();
     }
 
     /**
-     * Display a listing of threads by series.
+     * Display a listing of threads by category
      */
-    public function indexSeries(Request $request, ?string $tag): View
-    {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+    public function indexCategories(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $category
+    ) {
+        // initialized listParamSessionStore with baseindex key
+        // list entity result builder
+        $listParamSessionStore->setBaseIndex('internal_thread');
+        $listParamSessionStore->setKeyPrefix('internal_thread_category');
 
-        $tag = urldecode($tag);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
 
-        $threads = Thread::getBySeries(ucfirst($tag))
-                    ->orderBy('created_at', 'ASC')
-                    ->paginate($this->rpp);
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Thread::query()->select('threads.*');
+
+        // configure the list entity results builder
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['threads.created_at' => 'desc'])
+            ->setParentFilter(['category' => strtolower($category)]);
+        ;
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        $threads = $query->visible($this->user)
+            ->with('visibility')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('threads.index')
-                    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'tag' => $tag, 'hasFilter' => $this->hasFilter])
-                    ->with(compact('threads'));
+        ->with(array_merge(
+            [
+                'limit' => $listResultSet->getLimit(),
+                'sort' => $listResultSet->getSort(),
+                'direction' => $listResultSet->getSortDirection(),
+                'hasFilter' => $this->hasFilter,
+                'filters' => $listResultSet->getFilters(),
+                'tag' => $category
+            ],
+            $this->getFilterOptions(),
+            $this->getListControlOptions()
+        ))
+        ->with(compact('threads'))
+        ->render();
+    }
+
+    /**
+     * Display a listing of threads by series
+     */
+    public function indexSeries(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $series
+    ) {
+        $series = urldecode($series);
+        // initialized listParamSessionStore with baseindex key
+        // list entity result builder
+        $listParamSessionStore->setBaseIndex('internal_thread');
+        $listParamSessionStore->setKeyPrefix('internal_thread_series');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Thread::query()
+        ->select('threads.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['threads.created_at' => 'desc'])
+            ->setParentFilter(['series' => ucfirst($series)]);
+        ;
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        $threads = $query->visible($this->user)
+            ->with('visibility')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        return view('threads.index')
+        ->with(array_merge(
+            [
+                'limit' => $listResultSet->getLimit(),
+                'sort' => $listResultSet->getSort(),
+                'direction' => $listResultSet->getSortDirection(),
+                'hasFilter' => $this->hasFilter,
+                'filters' => $listResultSet->getFilters(),
+                'tag' => $series
+            ],
+            $this->getFilterOptions(),
+            $this->getListControlOptions()
+        ))
+        ->with(compact('threads'))
+        ->render();
     }
 
     /**
      * Display a listing of threads by entity.
      */
-    public function indexRelatedTo(Request $request, string $slug): View
-    {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+    public function indexRelatedTo(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $relatedTo
+    ) {
+        $relatedTo = Str::title(str_replace('-', ' ', $relatedTo));
 
-        $tag = urldecode($slug);
+        // list entity result builder
+        $listParamSessionStore->setBaseIndex('internal_thread');
+        $listParamSessionStore->setKeyPrefix('internal_thread_related_to');
 
-        $threads = Thread::getByEntity(ucfirst($tag))
-                    ->orderBy('created_at', 'ASC')
-                    ->paginate($this->rpp);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Thread::query()
+        ->select('threads.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['threads.created_at' => 'desc'])
+            ->setParentFilter(['related' => $relatedTo]);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        $threads = $query->visible($this->user)
+            ->with('visibility')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('threads.index')
-                    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'tag' => $tag, 'hasFilter' => $this->hasFilter])
-                    ->with(compact('threads'));
+        ->with(array_merge(
+            [
+                'limit' => $listResultSet->getLimit(),
+                'sort' => $listResultSet->getSort(),
+                'direction' => $listResultSet->getSortDirection(),
+                'hasFilter' => $this->hasFilter,
+                'filters' => $listResultSet->getFilters(),
+                'tag' => $relatedTo
+            ],
+            $this->getFilterOptions(),
+            $this->getListControlOptions()
+        ))
+        ->with(compact('threads'))
+        ->render();
     }
 
     public function create(): View
     {
-        $threadCategories = ['' => ''] + ThreadCategory::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $entities = Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $series = Series::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $events = ['' => ''] + Event::orderBy('name', 'ASC')->pluck('slug', 'id')->all();
-
         return view('threads.create')->with($this->getFormOptions());
     }
 
@@ -629,15 +734,7 @@ class ThreadsController extends Controller
     {
         $this->middleware('auth');
 
-        $threadCategories = ['' => ''] + ThreadCategory::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $visibilities = ['' => ''] + Visibility::pluck('name', 'id')->all();
-        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $entities = Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $series = Series::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $events = ['' => ''] + Event::orderBy('name', 'ASC')->pluck('slug', 'id')->all();
-
-        return view('threads.edit', compact('thread', 'threadCategories', 'visibilities', 'tags', 'entities', 'series', 'events'));
+        return view('threads.edit', compact('thread'))->with($this->getFormOptions());
     }
 
     public function update(Thread $thread, ThreadRequest $request): RedirectResponse
@@ -852,44 +949,6 @@ class ThreadsController extends Controller
     }
 
     /**
-     * Returns true if the user has any filters outside of the default.
-     *
-     * @return bool
-     */
-    protected function getIsFiltered(Request $request): bool
-    {
-        if (($filters = $this->getFilters($request)) === $this->getDefaultFilters()) {
-            return false;
-        }
-
-        return (bool) count($filters);
-    }
-
-    /**
-     * Get session filters.
-     *
-     * @return array
-     */
-    public function getFilters(Request $request): array
-    {
-        return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
-    }
-
-    /**
-     * Get user session attribute.
-     *
-     * @param string $attribute
-     * @param mixed  $default
-     *
-     * @return mixed
-     */
-    public function getAttribute(Request $request, string $attribute, $default = null)
-    {
-        return $request->session()
-            ->get($this->prefix . $attribute, $default);
-    }
-
-    /**
      * Get the default filters array.
      *
      * @return array
@@ -905,6 +964,23 @@ class ThreadsController extends Controller
             'rpp' => $this->defaultRpp,
             'sortBy' => $this->defaultSortBy,
             'sortOrder' => $this->defaultSortOrder
+        ];
+    }
+
+    protected function getFilterOptions(): array
+    {
+        return  [
+            'userOptions' => ['' => '&nbsp;'] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+        ];
+    }
+
+    protected function getListControlOptions(): array
+    {
+        return  [
+            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
+            'sortOptions' => ['threads.name' => 'Name', 'users.username' => 'User', 'threads.created_at' => 'Created At'],
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
         ];
     }
 }

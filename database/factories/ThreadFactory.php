@@ -41,9 +41,7 @@ class ThreadFactory extends Factory
             'description' => $this->faker->paragraph,
             'body' => $this->faker->paragraph,
             'allow_html' => $this->faker->boolean,
-            'visibility_id' => function () {
-                return Visibility::all()->random()->id;
-            },
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
             'recipient_id' => null,
             'sort_order' => $this->faker->boolean,
             'is_edittable' => $this->faker->boolean,
