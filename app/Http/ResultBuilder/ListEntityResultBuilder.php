@@ -109,8 +109,6 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
         $this->userFilters = $this->listQueryParameters->getFilters();
         $this->isEmptyFilter = $this->listQueryParameters->getIsEmptyFilter();
 
-        // dump($this->userFilters);
-
         if (!empty($this->userFilters)) {
             $this->queryBuilder = $this->filter->applyFilters($this->queryBuilder, $this->userFilters);
         } elseif (!empty($this->defaultFilters) && !$this->isEmptyFilter) {

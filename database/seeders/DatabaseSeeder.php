@@ -86,8 +86,11 @@ class DatabaseSeeder extends Seeder
         $this->call(UserStatusesTableSeeder::class);
         $this->command->info('User statuses table seeded.');
 
-        $this->call(ForumsTableSeeder::class);
-        $this->command->info('Forums table seeded.');
+        $this->call(ThreadsTableSeeder::class);
+        $this->command->info('Threads table seeded.');
+
+        // $this->call(ForumsTableSeeder::class);
+        // $this->command->info('Forums table seeded.');
 
         // For additional seed data, look at *DatabaseSeeder classes
         // PittsburghDatabaseSeeder - some base data for Pittsburgh events

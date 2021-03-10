@@ -254,7 +254,7 @@ Route::post('threads/{thread}/posts', 'PostsController@store');
 Route::get('threads/{id}/lock', 'ThreadsController@lock')->name('threads.lock');
 Route::get('threads/{id}/unlock', 'ThreadsController@unlock')->name('threads.unlock');
 
-Route::get('threads/filter', ['as' => 'threads.filter', 'uses' => 'ThreadsController@filter']);
+Route::match(['get', 'post'], 'threads/filter', ['as' => 'threads.filter', 'uses' => 'ThreadsController@filter']);
 Route::get('threads/reset', ['as' => 'threads.reset', 'uses' => 'ThreadsController@reset']);
 Route::get('threads/rpp-reset', ['as' => 'threads.rppReset', 'uses' => 'ThreadsController@rppReset']);
 
