@@ -2,7 +2,7 @@
 
 @section('content')
 
-	<h3>Add a New Entity</h3>
+	<h4>Add a New Entity</h4>
 
 	{!! Form::open(['route' => 'entities.store']) !!}
 

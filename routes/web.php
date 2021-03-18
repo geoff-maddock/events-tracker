@@ -433,7 +433,7 @@ Route::get(
         'uses' => 'SeriesController@export'
     ]
 );
-Route::get('series/filter', ['as' => 'series.filter', 'uses' => 'SeriesController@filter']);
+Route::match(['get', 'post'], 'series/filter', ['as' => 'series.filter', 'uses' => 'SeriesController@filter']);
 Route::get('series/reset', ['as' => 'series.reset', 'uses' => 'SeriesController@reset']);
 Route::get('series/rpp-reset', ['as' => 'series.rppReset', 'uses' => 'SeriesController@rppReset']);
 
