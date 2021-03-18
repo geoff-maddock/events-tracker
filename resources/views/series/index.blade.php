@@ -16,47 +16,63 @@
         <a href="#" id="filters" class="btn btn-primary">Filters <span id="filters-toggle"
                 class="glyphicon @if (!$hasFilter) glyphicon-chevron-down @else glyphicon-chevron-up @endif"></span></a>
 
-        {!! Form::open(['route' => ['series.filter'], 'method' => 'GET']) !!}
+                {!! Form::open(['route' => [$filterRoute ?? 'series.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
 
-        <div id="filter-list" class="row @if (!$hasFilter) d-block d-xs-none @endif"
-            <!-- BEGIN: FILTERS -->
+                <div id="filter-list" class="row @if (!$hasFilter) d-block d-xs-none @endif"
+                    style="@if (!$hasFilter) display: none; @endif">
 
             <div class="form-group col-sm-2">
 
                 {!! Form::label('filter_name','Filter By Name') !!}
 
-                {!! Form::text('filter_name', (isset($filters['filter_name']) ? $filters['filter_name'] : NULL),
-                ['class' =>'form-control']) !!}
+                {!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
+                [
+                    'class' =>'form-control',
+                    'name' => 'filters[name]'
+                    ]) !!}
             </div>
 
             <div class="form-group col-sm-2">
 
                 {!! Form::label('filter_occurrence_type','Occurrence Type') !!}
-                <?php $types = ['' => ''] + App\Models\OccurrenceType::orderBy('name', 'ASC')->pluck('name', 'name')->all(); ?>
-                {!! Form::select('filter_occurrence_type', $types, (isset($filters['filter_occurrence_type']) ?
-                $filters['filter_occurrence_type'] : NULL), ['class' =>'form-control']) !!}
+                {!! Form::select('filter_occurrence_type', $occurrenceTypeOptions, (isset($filters['occurrence_type']) ?
+                $filters['occurrence_type'] : NULL), 
+                [
+                    'class' =>'form-control',
+                    'name' => 'filters[occurrence_type]'
+                ]) !!}
             </div>
 
             <div class="form-group col-sm-2">
                 {!! Form::label('filter_occurrence_week','Week') !!}
-                <?php $weeks = ['' => ''] + App\Models\OccurrenceWeek::orderBy('id', 'ASC')->pluck('name', 'name')->all(); ?>
-                {!! Form::select('filter_occurrence_week', $weeks, (isset($filters['filter_occurrence_week']) ?
-                $filters['filter_occurrence_week'] : NULL), ['class' =>'form-control']) !!}
+                {!! Form::select('filter_occurrence_week', $occurrenceWeekOptions, (isset($filters['occurrence_week']) ?
+                $filters['occurrence_week'] : NULL),
+                [
+                    'class' => 'form-control',
+                    'name' => 'filters[occurrence_week]'
+                ]) !!}
             </div>
 
             <div class="form-group col-sm-2">
                 {!! Form::label('filter_occurrence_day','Day') !!}
-                <?php $days = ['' => ''] + App\Models\OccurrenceDay::orderBy('id', 'ASC')->pluck('name', 'name')->all(); ?>
-                {!! Form::select('filter_occurrence_day', $days, (isset($filters['filter_occurrence_day']) ?
-                $filters['filter_occurrence_day'] : NULL), ['class' =>'form-control']) !!}
+                {!! Form::select('filter_occurrence_day', $occurrenceDayOptions, (isset($filters['occurrence_day']) ?
+                $filters['occurrence_day'] : NULL), 
+                [
+                    'class' => 'form-control',
+                    'name' => 'filters[occurrence_day]',
+                ]) !!}
             </div>
 
             <div class="form-group col-sm-2">
                 {!! Form::label('filter_tag','Tag') !!}
-                <?php $tags = ['' => '&nbsp;'] + App\Models\Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all(); ?>
-                {!! Form::select('filter_tag', $tags, (isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL),
-                ['data-theme'=> 'bootstrap', 'data-width' => '100%', 'class' =>'form-control select2',
-                'data-placeholder' => 'Select a tag']) !!}
+                {!! Form::select('filter_tag', $tagOptions, (isset($filters['tag']) ? $filters['tag'] : NULL),
+                [
+                    'data-theme'=> 'bootstrap',
+                    'data-width' => '100%', 
+                    'class' =>'form-control select2',
+                    'data-placeholder' => 'Select a tag',
+                    'name' => 'filters[tag]'
+                ]) !!}
             </div>
 
             <div class="col-sm-2">
@@ -80,14 +96,12 @@
                 <a href="{{ url()->action('SeriesController@rppReset') }}" class="btn btn-primary">
                     <span class="glyphicon glyphicon-repeat"></span>
                 </a>
-                <?php $rpp_options = [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000]; ?>
-                <?php $sort_by_options = ['name' => 'Name', 'created_at' => 'Created']; ?>
-                <?php $sort_order_options = ['asc' => 'asc', 'desc' => 'desc']; ?>
-                {!! Form::select('rpp', $rpp_options, ($rpp ?? 10), ['class' =>'form-control auto-submit']) !!}
-                {!! Form::select('sortBy', $sort_by_options, ($sortBy ?? 'name'), ['class' =>'form-control
-                auto-submit']) !!}
-                {!! Form::select('sortOrder', $sort_order_options, ($sortOrder ?? 'asc'), ['class' =>'form-control
-                auto-submit']) !!}
+				{!! Form::select('limit', $limitOptions, ($limit ?? 10), ['class' =>'form-control auto-submit']) !!}
+				{!! Form::select('sort', $sortOptions, ($sort ?? 'events.start_at'), ['class' =>'form-control
+				auto-submit'])
+				!!}
+				{!! Form::select('direction', $directionOptions, ($direction ?? 'desc'), ['class' =>'form-control
+				auto-submit']) !!}
             </div>
         </form>
     </div>

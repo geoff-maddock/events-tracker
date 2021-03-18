@@ -36,7 +36,7 @@
 
 	@endunless
 	<P>
-	<b>{{ $entity->entityType->name }}</b>
+	<b>{{ $entity->entityType ? $entity->entityType->name : ''}}</b>
 	</P>
 	<p>
 	@if ($entity->short)

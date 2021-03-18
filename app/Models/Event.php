@@ -336,9 +336,17 @@ class Event extends Eloquent
      */
     public function scopeVisible($query, $user)
     {
-        $public = Visibility::where('name', '=', 'Public')->first();
+        return $query->where(function ($query) use ($user) {
+            $query->whereIn('visibility_id', [1, 2])
+                ->where('created_by', '=', $user ? $user->id : null);
+            // if logged in, can see guarded
+            if ($user) {
+                $query->orWhere('visibility_id', '=', 4);
+            }
+            $query->orWhere('visibility_id', '=', 3);
 
-        $query->where('visibility_id', '=', $public ? $public->id : null)->orWhere('created_by', '=', ($user ? $user->id : null));
+            return $query;
+        });
     }
 
     /**

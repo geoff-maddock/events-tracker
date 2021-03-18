@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\SeriesFilters;
 use App\Models\Activity;
 use App\Models\Entity;
 use App\Models\Event;
 use App\Models\EventType;
 use App\Models\Follow;
 use App\Http\Requests\SeriesRequest;
+use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\OccurrenceDay;
 use App\Models\OccurrenceType;
 use App\Models\OccurrenceWeek;
@@ -18,6 +20,7 @@ use App\Models\Tag;
 use App\Models\TagType;
 use App\Models\User;
 use App\Models\Visibility;
+use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,7 +28,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\View;
+use Illuminate\Contracts\View\View;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class SeriesController extends Controller
@@ -56,12 +59,13 @@ class SeriesController extends Controller
 
     protected array $filters;
 
-    protected Series $series;
+    // this is the class specifying the filters methods for each field
+    protected SeriesFilters $filter;
 
-    public function __construct(Series $series)
+    public function __construct(SeriesFilters $filter)
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
-        $this->series = $series;
+        $this->filter = $filter;
 
         // prefix for session storage
         $this->prefix = 'app.series.';
@@ -77,7 +81,6 @@ class SeriesController extends Controller
         $this->defaultRpp = 5;
         $this->defaultSortBy = 'name';
         $this->defaultSortOrder = 'asc';
-        $this->filters = [];
 
         $this->defaultCriteria = [];
         $this->hasFilter = 0;
@@ -118,183 +121,113 @@ class SeriesController extends Controller
     /**
      * Filter the list of events.
      *
-     * @return View | string
-     *
-     * @internal param $Request
-     *
      * @throws \Throwable
      */
-    public function filter(Request $request)
-    {
-        // update filters from request
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+    public function filter(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_series');
+        $listParamSessionStore->setKeyPrefix('internal_series_index');
 
-        // get all the filters from the session
-        $this->filters = $this->getFilters($request);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([SeriesController::class, 'index']));
 
-        // get  sort, sort order, rpp from session, update from request
-        $this->getPaging($this->filters);
-        $this->updatePaging($request);
+        // create the base query including any required joins; needs select to make sure only series entities are returned
+        $baseQuery = $this->baseQuery();
 
-        // set flag if there are filters
-        $this->hasFilter = $this->hasFilter($this->filters);
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['series.created_at' => 'desc']);
 
-        // get the criteria given the request (could pass filters instead?)
-        $query = $this->buildCriteria($request);
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
-        // apply the filters to the query
-        // get the entities and paginate
-        $series = $query->paginate($this->rpp);
-        $series->filter(function ($e) {
-            return ($e->visibility && 'Public' === $e->visibility->name) || ($this->user && $e->created_by === $this->user->id);
-        });
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the events
+        $series = $query
+            ->with('occurrenceType', 'visibility', 'tags')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('series.index')
-            ->with(['rpp' => $this->rpp,
-                'sortBy' => $this->sortBy,
-                'sortOrder' => $this->sortOrder,
-                'filters' => $this->filters,
-                'hasFilter' => $this->hasFilter,
-            ])
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
             ->with(compact('series'))
             ->render();
-    }
-
-    /**
-     * Update the page list parameters from the request.
-     *
-     * @param Request $request
-     */
-    protected function updatePaging(Request $request)
-    {
-        // set sort by column
-        if ($request->input('sort_by')) {
-            $this->sortBy = $request->input('sort_by');
-        }
-
-        // set sort direction
-        if ($request->input('sort_direction')) {
-            $this->sortOrder = $request->input('sort_direction');
-        }
-
-        if (!empty($request->input('rpp')) && is_numeric($request->input('rpp'))) {
-            $this->rpp = $request->input('rpp');
-        }
     }
 
     /**
      * Get the base criteria.
      */
-    protected function baseCriteria()
+    protected function baseQuery()
     {
-        $query = Series::where('cancelled_at', null)
-            ->orderBy('occurrence_type_id', 'ASC')
-            ->orderBy('occurrence_week_id', 'ASC')
-            ->orderBy('occurrence_day_id', 'ASC')
-            ->orderBy('name', 'ASC');
-
-        return $query;
-    }
-
-    /**
-     * Set filters attribute.
-     *
-     * @return array
-     */
-    public function setFilters(Request $request, array $input)
-    {
-        return $this->setAttribute($request, 'filters', $input);
-    }
-
-    /**
-     * Set user session attribute.
-     *
-     * @param string $attribute
-     * @param mixed  $value
-     *
-     * @return mixed
-     */
-    public function setAttribute(Request $request, $attribute, $value)
-    {
-        $request->session()->put($this->prefix . $attribute, $value);
-    }
-
-    /**
-     * Reset the filtering of entities.
-     *
-     * @return Response | View | string
-     *
-     * @throws \Throwable
-     */
-    public function reset(Request $request)
-    {
-        // doesn't have filter, but temp
-        $this->hasFilter = 0;
-
-        // set the filters to empty
-        $this->setFilters($request, $this->getDefaultFilters());
-
-        // base criteria
-        $query = $this->baseCriteria();
-
-        // updates sort, rpp from request
-        $this->updatePaging($request);
-
-        // get future events
-        $series = $query->paginate($this->rpp);
-        $series->filter(function ($e) {
-            return ('Public' === $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
-        });
-
-        return view('series.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
-            ->with(compact('series'))
-            ->render();
+        return  Series::query()
+        ->leftJoin('event_types', 'series.event_type_id', '=', 'event_types.id')
+        ->leftJoin('occurrence_types', 'series.occurrence_type_id', '=', 'occurrence_types.id')
+        ->orderBy('occurrence_type_id', 'ASC')
+        ->orderBy('occurrence_week_id', 'ASC')
+        ->orderBy('occurrence_day_id', 'ASC')
+        ->select('series.*');
     }
 
     /**
      * Reset the rpp, sort, order
      *
-     *
      * @throws \Throwable
      */
-    public function rppReset(Request $request): RedirectResponse
-    {
-        // set the rpp, sort, direction to default values
-        $this->setFilters($request, array_merge($this->getFilters($request), $this->getDefaultRppFilters()));
+    public function rppReset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ): RedirectResponse {
+        // set the rpp, sort, direction only to default values
+        $keyPrefix = $request->get('key') ?? 'internal_series_index';
+        $listParamSessionStore->setBaseIndex('internal_series');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
+
+        // clear
+        $listParamSessionStore->clearSort();
 
         return redirect()->route('series.index');
     }
 
     /**
-     * @return string
+     * Reset the filtering of entities.
      *
-     * @throws \Throwable
+     * @return RedirectResponse | View
      */
-    public function index(Request $request)
-    {
-        // update filters from request
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+    public function reset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ) {
+        // set filters and list controls to default values
+        $keyPrefix = $request->get('key') ?? 'internal_series_index';
+        $listParamSessionStore->setBaseIndex('internal_series');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
 
-        // get all the filters from the session
-        $filters = $this->getFilters($request);
+        // clear
+        $listParamSessionStore->clearFilter();
+        $listParamSessionStore->clearSort();
 
-        // get  sort, sort order, rpp from session, update from request
-        $this->getPaging($filters);
-        $this->updatePaging($request);
-
-        // set flag if there are filters
-        $this->hasFilter = $this->hasFilter($filters);
-
-        // base criteria
-        $query = $this->buildCriteria($request);
-
-        $series = $query->with('occurrenceType', 'visibility', 'tags')->paginate($this->rpp);
-
-        return view('series.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter, 'filters' => $this->filters])
-            ->with(compact('series'))
-            ->render();
+        return redirect()->route($request->get('redirect') ?? 'series.index');
     }
 
     /**
@@ -302,35 +235,131 @@ class SeriesController extends Controller
      *
      * @throws \Throwable
      */
-    public function indexCancelled(Request $request)
-    {
-        // update filters from request
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+    public function index(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_series');
+        $listParamSessionStore->setKeyPrefix('internal_series_index');
 
-        // get all the filters from the session
-        $this->filters = $this->getFilters($request);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([SeriesController::class, 'index']));
 
-        // get  sort, sort order, rpp from session, update from request
-        $this->getPaging($this->filters);
-        $this->updatePaging($request);
+        // create the base query including any required joins; needs select to make sure only series entities are returned
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($this->baseQuery())
+            ->setDefaultSort(['series.created_at' => 'desc']);
 
-        // set flag if there are filters
-        $this->hasFilter = $this->hasFilter($this->filters);
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
-        $series = $this->series
-            ->whereNotNull('cancelled_at')
-            ->orderBy('occurrence_type_id', 'ASC')
-            ->orderBy('occurrence_week_id', 'ASC')
-            ->orderBy('occurrence_day_id', 'ASC')
-            ->orderBy('name', 'ASC')
-            ->paginate();
+        // get the query builder
+        $query = $listResultSet->getList();
 
-        //      $series = $series->filter(function ($e) {
-        //          return ('Public' === $e->visibility->name) || ($this->user && $e->created_by === $this->user->id);
-        //       });
+        // get the events
+        $series = $query
+            ->with('occurrenceType', 'visibility', 'tags')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('series.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
+            ->with(compact('series'))
+            ->render();
+    }
+
+    protected function getListControlOptions(): array
+    {
+        return  [
+            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
+            'sortOptions' => ['series.name' => 'Name', 'series.created_at' => 'Created At', 'event_types.name' => 'Event Type'],
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+        ];
+    }
+
+    protected function getFilterOptions(): array
+    {
+        return  [
+            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+            'venueOptions' => ['' => ''] + Entity::getVenues()->pluck('name', 'name')->all(),
+            'relatedOptions' => ['' => ''] + Entity::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+            'eventTypeOptions' => ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+            'occurrenceTypeOptions' => ['' => ''] + OccurrenceType::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+            'occurrenceWeekOptions' => ['' => ''] + OccurrenceWeek::orderBy('id', 'ASC')->pluck('name', 'name')->all(),
+            'occurrenceDayOptions' => ['' => ''] + OccurrenceDay::orderBy('id', 'ASC')->pluck('name', 'name')->all(),
+        ];
+    }
+
+    /**
+     * @return string
+     *
+     * @throws \Throwable
+     */
+    public function indexCancelled(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_series');
+        $listParamSessionStore->setKeyPrefix('internal_series_cancelled');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([SeriesController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only series entities are returned
+        $baseQuery = $this->baseQuery()->whereNotNull('cancelled_at');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['series.created_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the events
+        $series = $query
+            ->with('occurrenceType', 'visibility', 'tags')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        return view('series.index')
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
             ->with(compact('series'))
             ->render();
     }
@@ -338,29 +367,57 @@ class SeriesController extends Controller
     /**
      * Display a listing of event series in a week view.
      *
-     * @return View | string
-     *
      * @throws \Throwable
      */
-    public function indexWeek(Request $request)
-    {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+    public function indexWeek(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_series');
+        $listParamSessionStore->setKeyPrefix('internal_series_cancelled');
 
-        // get filters from session
-        $filters = $this->getFilters($request);
-
-        // set flag if there are filters
-        $this->hasFilter = $this->hasFilter($this->filters);
-
-        $this->rpp = 5;
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([SeriesController::class, 'index']));
 
         // this is more complex because we want to show weeklies that fall on the days, plus monthlies that fall on the days
         // may be an iterative process that is called from the template to the series model that checks against each criteria and builds a list that way
-        $series = Series::future()->get();
+        $baseQuery = $this->baseQuery()->future();
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['series.created_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the events
+        $series = $query
+            ->with('occurrenceType', 'visibility', 'tags')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('series.indexWeek')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
             ->with(compact('series'))
             ->render();
     }
@@ -370,59 +427,112 @@ class SeriesController extends Controller
      *
      * @param string $slug
      *
-     * @return Response | View | string
-     *
      * @throws \Throwable
      */
-    public function indexRelatedTo(string $slug)
-    {
-        $hasFilter = 1;
-        $slug = urldecode($slug);
+    public function indexRelatedTo(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $slug
+    ): string {
+        $listParamSessionStore->setBaseIndex('internal_series');
+        $listParamSessionStore->setKeyPrefix('internal_series_related');
 
-        $series = Series::getByEntity(strtolower($slug))
-            ->where(function ($query) {
-                $query->visible($this->user);
-            })
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
-            ->paginate();
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([SeriesController::class, 'index']));
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($this->baseQuery())
+            ->setDefaultSort(['series.created_at' => 'desc'])
+            ->setParentFilter(['related' => $slug]);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the events
+        $series = $query->visible($this->user)
+            ->with('occurrenceType', 'visibility', 'tags')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
 
         return view('series.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
-            ->with(compact('series', 'slug'))
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
+            ->with(compact('series'))
+            ->with(compact('slug'))
             ->render();
     }
 
     /**
      * Display a listing of events by tag.
      *
-     * @return Response | View | string
-     *
      * @throws \Throwable
      */
-    public function indexTags(Request $request, string $tag)
-    {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
-
-        // get filters from session
-        $filters = $this->getFilters($request);
-
-        // set flag if there are filters
-        $this->hasFilter = $this->hasFilter($this->filters);
+    public function indexTags(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $tag
+    ): string {
         $tag = urldecode($tag);
+        // initialized listParamSessionStore with baseindex key
+        // list entity result builder
+        $listParamSessionStore->setBaseIndex('internal_series');
+        $listParamSessionStore->setKeyPrefix('internal_series_tags');
 
-        $series = Series::getByTag(ucfirst($tag))
-            ->where(function ($query) {
-                $query->visible($this->user);
-            })
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
-            ->paginate();
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([SeriesController::class, 'index']));
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($this->baseQuery())
+            ->setDefaultSort(['series.created_at' => 'desc'])
+            ->setParentFilter(['tag' => ucfirst($tag)]);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the events
+        $series = $query
+            ->with('occurrenceType', 'visibility', 'tags')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('series.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter, 'filters' => $filters])
-            ->with(compact('series', 'tag'))
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
+            ->with(compact('series'))
             ->render();
     }
 
@@ -439,7 +549,8 @@ class SeriesController extends Controller
             'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'occurrenceTypeOptions' => ['' => ''] + OccurrenceType::pluck('name', 'id')->all(),
             'dayOptions' => ['' => ''] + OccurrenceDay::pluck('name', 'id')->all(),
-            'weekOptions' => ['' => ''] + OccurrenceWeek::pluck('name', 'id')->all()
+            'weekOptions' => ['' => ''] + OccurrenceWeek::pluck('name', 'id')->all(),
+            'userOptions' => User::orderBy('name', 'ASC')->pluck('name', 'id')->all()
         ];
     }
 
@@ -450,13 +561,15 @@ class SeriesController extends Controller
      **/
     public function create()
     {
-        $userList = ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        // initialize a series and pass in
+        $series = new Series();
+        $series->visibility_id = Visibility::VISIBILITY_PUBLIC;
 
-        return view('series.create', compact('userList'))
-        ->with($this->getSeriesFormOptions());
+        return view('series.create', compact('series'))
+            ->with($this->getSeriesFormOptions());
     }
 
-    public function show(Series $series)
+    public function show(Series $series): View
     {
         $events = $series->events()->paginate($this->childRpp);
         $threads = $series->threads()->paginate($this->childRpp);
@@ -513,31 +626,43 @@ class SeriesController extends Controller
 
     public function edit(Series $series)
     {
-        $userList = User::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        return view('series.edit', compact('series', 'userList'))
+        return view('series.edit', compact('series'))
             ->with($this->getSeriesFormOptions());
     }
 
     public function export(
         Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
         RssFeed $feed
     ) {
-        // update filters from request
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_series');
+        $listParamSessionStore->setKeyPrefix('internal_series_index');
 
-        // get all the filters from the session
-        $filters = $this->getFilters($request);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([SeriesController::class, 'index']));
 
-        // get  sort, sort order, rpp from session, update from request
-        $this->getPaging($filters);
-        $this->updatePaging($request);
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($this->baseQuery())
+            ->setDefaultSort(['series.created_at' => 'desc']);
 
-        // set flag if there are filters
-        $this->hasFilter = $this->hasFilter($filters);
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
-        // base criteria
-        $series = $this->buildCriteria($request)->take($this->rpp)->get();
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the events
+        $series = $query
+            ->with('occurrenceType', 'visibility', 'tags')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('series.feed', compact('series'));
     }
@@ -769,132 +894,6 @@ class SeriesController extends Controller
     }
 
     /**
-     * Set page attribute.
-     *
-     * @param int $input
-     *
-     * @return int
-     */
-    public function setPage(Request $request, $input)
-    {
-        return $this->setAttribute($request, 'page', $input);
-    }
-
-    /**
-     * Set results per page attribute.
-     *
-     * @param int $input
-     *
-     * @return int
-     */
-    public function setRpp(Request $request, $input)
-    {
-        return $this->setAttribute($request, 'rpp', 5);
-    }
-
-    /**
-     * Set sort order attribute.
-     *
-     * @return array
-     */
-    public function setSort(Request $request, array $input)
-    {
-        return $this->setAttribute($request, 'sort', $input);
-    }
-
-    /**
-     * Builds the criteria from the session.
-     */
-    public function buildCriteria(Request $request): Builder
-    {
-        // get all the filters from the session
-        $filters = $this->getFilters($request);
-
-        // base criteria
-        $query = $this->baseCriteria();
-
-        // add the criteria from the session
-        // check request for passed filter values
-
-        if (!empty($filters['filter_name'])) {
-            // getting name from the request
-            $name = $filters['filter_name'];
-            $query->where('name', 'like', '%' . $name . '%');
-        }
-
-        if (!empty($filters['filter_occurrence_type'])) {
-            $type = $filters['filter_occurrence_type'];
-            // add has clause
-            $query->whereHas(
-                'occurrenceType',
-                function ($q) use ($type) {
-                    $q->where('name', '=', ucfirst($type));
-                }
-            );
-        }
-
-        if (!empty($filters['filter_occurrence_week'])) {
-            $week = $filters['filter_occurrence_week'];
-            // add has clause
-            $query->whereHas(
-                'occurrenceWeek',
-                function ($q) use ($week) {
-                    $q->where('name', '=', ucfirst($week));
-                }
-            );
-        }
-
-        if (!empty($filters['filter_occurrence_day'])) {
-            $day = $filters['filter_occurrence_day'];
-            // add has clause
-            $query->whereHas(
-                'occurrenceDay',
-                function ($q) use ($day) {
-                    $q->where('name', '=', ucfirst($day));
-                }
-            );
-        }
-
-        if (!empty($filters['filter_tag'])) {
-            $tag = $filters['filter_tag'];
-            $query->whereHas('tags', function ($q) use ($tag) {
-                $q->where('name', '=', ucfirst($tag));
-            });
-        }
-
-        // change this - should be separate
-        if (!empty($filters['filter_rpp'])) {
-            $this->rpp = $filters['filter_rpp'];
-        }
-
-        return $query;
-    }
-
-    /**
-     * Get session filters.
-     *
-     * @return array
-     */
-    public function getFilters(Request $request)
-    {
-        return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
-    }
-
-    /**
-     * Get user session attribute.
-     *
-     * @param string $attribute
-     * @param mixed  $default
-     *
-     * @return mixed
-     */
-    public function getAttribute($attribute, $default = null, Request $request)
-    {
-        return $request->session()
-            ->get($this->prefix . $attribute, $default);
-    }
-
-    /**
      * Get the default filters array.
      *
      * @return array
@@ -902,28 +901,5 @@ class SeriesController extends Controller
     public function getDefaultFilters()
     {
         return [];
-    }
-
-    protected function getDefaultRppFilters(): array
-    {
-        return [
-            'rpp' => $this->defaultRpp,
-            'sortBy' => $this->defaultSortBy,
-            'sortOrder' => $this->defaultSortOrder
-        ];
-    }
-
-    /**
-     * Returns true if the user has any filters outside of the default.
-     *
-     * @return bool
-     */
-    protected function getIsFiltered(Request $request)
-    {
-        if (($filters = $this->getFilters($request)) == $this->getDefaultFilters()) {
-            return false;
-        }
-
-        return (bool) count($filters);
     }
 }

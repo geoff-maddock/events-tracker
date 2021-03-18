@@ -150,8 +150,7 @@
 
 	<div class="form-group col-md-2">
 		{!! Form::label('min_age','Min Age:') !!}
-		{!! Form::select('min_age', [ '0' => 'All Ages', '18' => '18', '21' => '21'], (isset($event->min_age) ?
-		$event->min_age : NULL), ['class' =>'form-control']) !!}
+		{!! Form::select('min_age', [ '0' => 'All Ages', '18' => '18', '21' => '21'], (isset($series->min_age) ? $series->min_age : NULL), ['class' =>'form-control']) !!}
 		{!! $errors->first('min_age','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -173,7 +172,7 @@
 <div class="row">
 	<div class="form-group col-md-2 {{$errors->has('visibility_id') ? 'has-error' : '' }}">
 		{!! Form::label('visibility_id','Visibility:') !!}
-		{!! Form::select('visibility_id', $visibilityOptions, (isset($event->visibility_id) ? $event->visibility_id :
+		{!! Form::select('visibility_id', $visibilityOptions, (isset($series->visibility_id) ? $series->visibility_id :
 		NULL),
 		['class' =>'form-control']) !!}
 		{!! $errors->first('visibility_id','<span class="help-block">:message</span>') !!}
@@ -206,7 +205,7 @@
 <div class="row">
 	<div class="form-group col-md-3">
 		{!! Form::label('created_by','Owner:') !!}
-		{!! Form::select('created_by', $userList, (isset($event->created_by) ? $event->created_by : NULL), ['class'
+		{!! Form::select('created_by', $userOptions, (isset($series->created_by) ? $series->created_by : NULL), ['class'
 		=>'form-control select2']) !!}
 		{!! $errors->first('created_by','<span class="help-block">:message</span>') !!}
 	</div>
