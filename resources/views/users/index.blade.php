@@ -10,28 +10,40 @@
 <div id="filters-container" class="row">
     <div id="filters-content" class="col-lg-9">
 
-        <a href="#" id="filters" class="btn btn-primary">Filters <span id="filters-toggle"
+        <a href="#" id="filters" class="btn btn-primary">
+            Filters
+            <span id="filters-toggle"
                 class="glyphicon @if (!$hasFilter) glyphicon-chevron-down @else glyphicon-chevron-up @endif"></span></a>
-        {!! Form::open(['route' => ['users.filter'], 'method' => 'GET']) !!}
+        {!! Form::open(['route' => ['users.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
 
-        <div id="filter-list" @if (!$hasFilter)style="display: none" @endif>
+        <div id="filter-list" class="row @if (!$hasFilter) d-block d-xs-none @endif"
+            style="@if (!$hasFilter) display: none; @endif">
             <!-- BEGIN: FILTERS -->
             <div class="form-group col-sm-3">
                 {!! Form::label('filter_email','Email') !!}
-                {!! Form::text('filter_email', ($filters['filter_email'] ?? NULL), ['class' =>'form-control']) !!}
+
+                {!! Form::text('filter_email', (isset($filters['email']) ? $filters['email'] : NULL),
+                ['class' =>'form-control', 'name' => 'filters[email]']) !!}
             </div>
 
             <div class="form-group col-sm-3">
                 {!! Form::label('filter_name','Name') !!}
-                {!! Form::text('filter_name', ($filters['filter_name'] ?? NULL), ['class' =>'form-control']) !!}
+
+                {!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
+                ['class' =>'form-control', 'name' => 'filters[name]']) !!}
             </div>
 
             <div class="form-group col-sm-2">
                 {!! Form::label('filter_status','Status') !!}
-                <?php $venues = ['' => ''] + App\Models\UserStatus::orderBy('name', 'ASC')->pluck('name', 'name')->all(); ?>
-                {!! Form::select('filter_status', $venues, $filters['filter_status'] ?? NULL, ['data-theme' =>
-                'bootstrap', 'data-width' => '100%','class' =>'form-control select2', 'data-placeholder' => 'Select a
-                status']) !!}
+                {!! Form::select('filter_status', $userStatusOptions, (isset($filters['status']) ? $filters['status'] :NULL), 
+                [
+                    'data-theme' => 'bootstrap',
+                    'data-width' => '100%',
+                    'class' => 'form-control select2',
+                    'data-placeholder' => 'Select a status',
+                    'name' => 'filters[status]'
+                ])
+                !!}
             </div>
 
             <div class="col-sm-2">
@@ -51,17 +63,13 @@
     <div id="list-control" class="col-lg-3 visible-lg-block visible-md-block text-right">
         <form action="{{ url()->action('UsersController@filter') }}" method="GET" class="form-inline">
             <div class="form-group">
-                <a href="{{ url()->action('UsersController@rppReset') }}" class="btn btn-primary">
-                    <span class="glyphicon glyphicon-repeat"></span>
-                </a>
-                <?php $rpp_options = [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000]; ?>
-                <?php $sort_by_options = ['name' => 'Username',  'created_at' => 'Created', 'user_status_id' => 'Status']; ?>
-                <?php $sort_order_options = ['asc' => 'asc', 'desc' => 'desc']; ?>
-                {!! Form::select('rpp', $rpp_options, ($rpp ?? 10), ['class' =>'form-control auto-submit']) !!}
-                {!! Form::select('sortBy', $sort_by_options, ($sortBy ?? 'name'), ['class' =>'form-control
-                auto-submit']) !!}
-                {!! Form::select('sortOrder', $sort_order_options, ($sortOrder ?? 'asc'), ['class' =>'form-control
-                auto-submit']) !!}
+                <a href="{{ url()->action('UsersController@rppReset') }}" class="btn btn-primary"><span
+                    class="glyphicon glyphicon-repeat"></span></a>
+            {!! Form::select('limit', $limitOptions, ($limit ?? 10), ['class' =>'form-control auto-submit']) !!}
+            {!! Form::select('sort', $sortOptions, ($sort ?? 'users.name'), ['class' =>'form-control auto-submit'])
+            !!}
+            {!! Form::select('direction', $directionOptions, ($direction ?? 'asc'), ['class' =>'form-control
+            auto-submit']) !!}
             </div>
         </form>
     </div>

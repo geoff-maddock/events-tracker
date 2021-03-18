@@ -129,7 +129,7 @@ Route::get('users/{id}/delete', [
     'uses' => 'UsersController@delete'
 ]);
 
-Route::get('users/filter', ['as' => 'users.filter', 'uses' => 'UsersController@filter']);
+Route::match(['get', 'post'], 'users/filter', ['as' => 'users.filter', 'uses' => 'UsersController@filter']);
 Route::get('users/reset', ['as' => 'users.reset', 'uses' => 'UsersController@reset']);
 Route::get('users/rpp-reset', ['as' => 'users.rppReset', 'uses' => 'UsersController@rppReset']);
 
