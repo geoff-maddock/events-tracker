@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\UserFilters;
 use App\Models\Activity;
 use App\Models\Group;
 use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\UserRequest;
+use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Photo;
 use App\Models\Profile;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Visibility;
+use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
 use Eluceo\iCal\Component\Calendar;
 use Eluceo\iCal\Component\Event;
@@ -58,19 +61,19 @@ class UsersController extends Controller
 
     protected $tabs;
 
-    public function __construct(User $user)
+    public function __construct(UserFilters $filter)
     {
         $this->middleware('auth', ['except' => ['index', 'show']]);
-        $this->user = $user;
+        $this->filter = $filter;
 
         // prefix for session storage
         $this->prefix = 'app.threads.';
 
         $this->rpp = 25;
-        $this->page = 1;
         $this->sort = ['name', 'asc'];
         $this->sortBy = 'name';
         $this->sortOrder = 'asc';
+
         // default list variables
         $this->defaultRpp = 25;
         $this->defaultSortBy = 'name';
@@ -82,66 +85,58 @@ class UsersController extends Controller
     }
 
     /**
-     * Set filters attribute.
-     */
-    public function setFilters(Request $request, array $input): void
-    {
-        $this->setAttribute('filters', $input, $request);
-    }
-
-    /**
-     * Set tabs attribute.
-     */
-    public function setTabs(Request $request, array $input): void
-    {
-        $this->setAttribute('tabs', $input, $request);
-    }
-
-    /**
-     * Set user session attribute.
-     *
-     * @param string $attribute
-     * @param mixed  $value
-     */
-    public function setAttribute($attribute, $value, Request $request): void
-    {
-        $request->session()->put($this->prefix . $attribute, $value);
-    }
-
-    /**
      * Display a listing of the resource.
      *
-     * @return Response | string
      */
-    public function index(Request $request)
-    {
-        // update filters from request
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+    public function index(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_user');
+        $listParamSessionStore->setKeyPrefix('internal_user_index');
 
-        // get all the filters from the session
-        $this->filters = $this->getFilters($request);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([UsersController::class, 'index']));
 
-        // updates sort, rpp from request
-        $this->getPaging($this->filters);
-        $this->updatePaging($request);
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = User::query()->leftJoin('user_statuses', 'users.user_status_id', '=', 'user_statuses.id')->select('users.*');
 
-        // set flag if there are filters
-        $this->hasFilter = $this->hasFilter($this->filters);
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['users.name' => 'asc']);
 
-        // initialize the query
-        $query = $this->buildCriteria($request);
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
-        // get the threads
-        $users = $query->paginate($this->rpp);
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the users
+        $users = $query
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('users.index')
-            ->with(['rpp' => $this->rpp,
-                'sortBy' => $this->sortBy,
-                'sortOrder' => $this->sortOrder,
-                'hasFilter' => $this->hasFilter,
-                'filters' => $this->filters,
-            ])
-            ->with(compact('users'));
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
+            ->with(compact('users'))
+            ->render();
     }
 
     /**
@@ -160,103 +155,55 @@ class UsersController extends Controller
     /**
      * Filter the list of users.
      *
-     * @return Response | string
-     *
      * @throws Throwable
      */
-    public function filter(Request $request)
-    {
-        // update filters from request
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+    public function filter(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_user');
+        $listParamSessionStore->setKeyPrefix('internal_user_index');
 
-        // get all the filters from the session
-        $this->filters = $this->getFilters($request);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([UsersController::class, 'index']));
 
-        // get sort, sort order, rpp from session, update from request
-        $this->getPaging($this->filters);
-        $this->updatePaging($request);
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = User::query()->leftJoin('user_statuses', 'users.user_status_id', '=', 'user_statuses.id')->select('users.*');
 
-        // set flag if there are filters
-        $this->hasFilter = $this->hasFilter($this->filters);
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['users.name' => 'asc']);
 
-        // get the criteria given the request (could pass filters instead?)
-        $query = $this->buildCriteria($request);
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
-        // get the threads
-        $users = $query->paginate($this->rpp);
+        // get the query builder
+        $query = $listResultSet->getList();
 
-        return view('users.index')
-            ->with(['rpp' => $this->rpp,
-                'sortBy' => $this->sortBy,
-                'sortOrder' => $this->sortOrder,
-                'hasFilter' => $this->hasFilter,
-                'filters' => $this->filters,
-            ])
-            ->with(compact('users'));
-    }
+        // get the users
+        $users = $query
+            ->paginate($listResultSet->getLimit());
 
-    /**
-     * Builds the criteria from the session.
-     *
-     * @return Builder
-     */
-    public function buildCriteria(Request $request): Builder
-    {
-        // get all the filters from the session
-        $filters = $this->getFilters($request);
+        // saves the updated session
+        $listParamSessionStore->save();
 
-        // base criteria
-        $query = User::orderBy($this->sortBy, $this->sortOrder);
-
-        // add the criteria from the session
-        // check request for passed filter values
-        if (!empty($filters['filter_email'])) {
-            // getting name from the request
-            $name = $filters['filter_email'];
-            $query->where('email', 'like', '%' . $name . '%');
-        }
-
-        if (!empty($filters['filter_name'])) {
-            // getting name from the request
-            $name = $filters['filter_name'];
-            $query->where('name', 'like', '%' . $name . '%');
-        }
-
-        if (!empty($filters['filter_status'])) {
-            $status = $filters['filter_status'];
-            $query->where('user_status_id', '=', $status);
-
-            // add to filters array
-            $filters['filter_status'] = $status;
-        }
-
-        // change this - should be seperate
-        if (!empty($filters['filter_rpp'])) {
-            $this->rpp = $filters['filter_rpp'];
-        }
-
-        return $query;
-    }
-
-    /**
-     * Reset the filtering of users.
-     * @throws Throwable
-     */
-    public function reset(Request $request): string
-    {
-        // set the filters to empty
-        $this->setFilters($request, $this->getDefaultFilters());
-
-        $hasFilter = 0;
-
-        // default
-        $query = User::orderBy('name', 'ASC');
-
-        // paginate
-        $users = $query->paginate($this->rpp);
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('users.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $hasFilter])
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
             ->with(compact('users'))
             ->render();
     }
@@ -266,10 +213,40 @@ class UsersController extends Controller
      *
      * @throws \Throwable
      */
-    public function rppReset(Request $request): RedirectResponse
-    {
-        // set the rpp, sort, direction to default values
-        $this->setFilters($request, array_merge($this->getFilters($request), $this->getDefaultRppFilters()));
+    public function rppReset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ): RedirectResponse {
+        // set the rpp, sort, direction only to default values
+        $keyPrefix = $request->get('key') ?? 'internal_user_index';
+        $listParamSessionStore->setBaseIndex('internal_user');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
+
+        // clear
+        $listParamSessionStore->clearSort();
+
+        return redirect()->route('users.index');
+    }
+
+    /**
+     * Reset the filtering of useres.
+     *
+     * @return Response
+     *
+     * @throws \Throwable
+     */
+    public function reset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ): RedirectResponse {
+        // set filters and list controls to default values
+        $keyPrefix = $request->get('key') ?? 'internal_user_index';
+        $listParamSessionStore->setBaseIndex('internal_user');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
+
+        // clear
+        $listParamSessionStore->clearFilter();
+        $listParamSessionStore->clearSort();
 
         return redirect()->route('users.index');
     }
@@ -842,5 +819,33 @@ class UsersController extends Controller
         } else {
             $this->rpp = $this->defaultRpp;
         }
+    }
+
+    protected function getListControlOptions(): array
+    {
+        return  [
+            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
+            'sortOptions' => ['users.name' => 'Name', 'user_statuses.name' => 'Status', 'users.created_at' => 'Created At'],
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+        ];
+    }
+
+    protected function getFilterOptions(): array
+    {
+        return  [
+            'userStatusOptions' => ['' => ''] + UserStatus::orderBy('name', 'ASC')->pluck('name', 'name')->all()
+        ];
+    }
+
+    protected function getFormOptions(): array
+    {
+        return [
+            // 'entityTypeOptions' => ['' => ''] + EntityType::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            // 'entityStatusOptions' => EntityStatus::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            // 'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            // 'aliasOptions' => Alias::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            // 'roleOptions' => Role::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            // 'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all()
+        ];
     }
 }

@@ -112,7 +112,7 @@ class EntitiesController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
-        // get the threads
+        // get the entities
         $entities = $query
             ->paginate($listResultSet->getLimit());
 
@@ -140,15 +140,6 @@ class EntitiesController extends Controller
     protected function getDefaultFilters(): array
     {
         return [];
-    }
-
-    protected function getDefaultRppFilters(): array
-    {
-        return [
-            'rpp' => $this->defaultRpp,
-            'sortBy' => $this->defaultSortBy,
-            'sortOrder' => $this->defaultSortOrder
-        ];
     }
 
     /**
