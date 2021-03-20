@@ -60,7 +60,7 @@ class UsersController extends Controller
 
     protected $tabs;
 
-    protected array $defaultTabs = [];
+    protected array $defaultTabs;
 
     protected UserFilters $filter;
 
@@ -70,7 +70,7 @@ class UsersController extends Controller
         $this->filter = $filter;
 
         // prefix for session storage
-        $this->prefix = 'app.threads.';
+        $this->prefix = 'app.users.';
 
         $this->rpp = 25;
         $this->sort = ['name', 'asc'];
@@ -272,24 +272,25 @@ class UsersController extends Controller
         return view('users.create')->with($this->getFormOptions());
     }
 
-    /**
-     * Set tabs attribute.
-     */
-    public function setTabs(Request $request, array $input): void
+    public function setTabs(Request $request): void
     {
-        $request->session()->put($this->prefix . 'tabs', $input);
+        if (null !== $request->input('tabs')) {
+            $request->session()->put($this->prefix . 'tabs', $request->input('tabs'));
+        }
+    }
+
+    public function getTabs(Request $request): array
+    {
+        return $request->session()->get($this->prefix . 'tabs', $this->getDefaultTabs());
     }
 
     public function show(User $user, Request $request)
     {
+        // if tabs were passed in the request, store them
+        $this->setTabs($request);
+
         // get the current tabs from the session
-        $tabs = $request->session()->get($this->prefix . 'tabs', $this->getDefaultTabs());
-
-        // store the tabs in the session
-        $request->session()->put($this->prefix . 'tabs', array_replace($tabs, $request->input('tabs') ?? []));
-
-        // reload the tabs - not sure why this is necessary
-        $tabs = $request->session()->get($this->prefix . 'tabs', $this->getDefaultTabs());
+        $tabs = $this->getTabs($request);
 
         // if there is no profile, create one?
         if (!$user->profile) {
@@ -337,7 +338,7 @@ class UsersController extends Controller
         }
 
         // get all the tabs from the session
-        $tabs = $request->session()->get($this->prefix . 'tabs', $this->getDefaultTabs());
+        $tabs = $this->getTabs($request);
 
         // add to activity log
         Activity::log($user, $this->user, 2);

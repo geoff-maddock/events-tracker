@@ -33,7 +33,7 @@
 		"symfony/dom-crawler": "~3.1",
 		"laravel/dusk": "^6.0",
 		"barryvdh/laravel-ide-helper": "^2.8",
-		"nunomaduro/larastan": "^0.6.11"
+		"nunomaduro/larastan": "^0.7"
 	},
 	"autoload": {
 		"psr-4": {

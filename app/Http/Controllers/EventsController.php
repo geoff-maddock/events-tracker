@@ -959,8 +959,6 @@ class EventsController extends Controller
         });
 
         foreach ($events as $event) {
-            dump($event);
-            dump($event->name);
             $eventList[] = \Calendar::event(
                 $event->name, // event title
                 false, // full day event?
@@ -1526,10 +1524,7 @@ class EventsController extends Controller
     //     $this->fb->setDefaultAccessToken($token);
     // }
 
-    /**
-     * @return View
-     */
-    public function show(Event $event)
+    public function show(Event $event):string
     {
         if (empty((array) $event)) {
             abort(404);
@@ -1537,7 +1532,7 @@ class EventsController extends Controller
 
         $thread = Thread::where('event_id', '=', $event->id)->get();
 
-        return view('events.show', compact('event'))->with(['thread' => $thread ? $thread->first() : null]);
+        return view('events.show', compact('event'))->with(['thread' => $thread ? $thread->first() : null])->render();
     }
 
     public function store(EventRequest $request, Event $event)
