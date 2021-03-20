@@ -102,9 +102,7 @@ class EntitiesController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['entities.name' => 'asc'])
-            //->setDefaultFilters(['start_at' => ['start' => Carbon::now()]])
-;
+            ->setDefaultSort(['entities.name' => 'asc']);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();

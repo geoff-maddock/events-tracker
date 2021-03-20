@@ -19,7 +19,6 @@ use Carbon\Carbon;
 use Eluceo\iCal\Component\Calendar;
 use Eluceo\iCal\Component\Event;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -61,6 +60,10 @@ class UsersController extends Controller
 
     protected $tabs;
 
+    protected array $defaultTabs = [];
+
+    protected UserFilters $filter;
+
     public function __construct(UserFilters $filter)
     {
         $this->middleware('auth', ['except' => ['index', 'show']]);
@@ -80,6 +83,9 @@ class UsersController extends Controller
         $this->defaultSortOrder = 'asc';
         $this->defaultCriteria = null;
         $this->hasFilter = 0;
+
+        // tabs
+        $this->defaultTabs = ['events' => 'created', 'following' => 'tags'];
 
         parent::__construct();
     }
@@ -137,19 +143,6 @@ class UsersController extends Controller
             ))
             ->with(compact('users'))
             ->render();
-    }
-
-    /**
-     * Checks if there is a valid filter.
-     *
-     * @param array $filters
-     */
-    public function hasFilter(array $filters): bool
-    {
-        $arr = $filters;
-        unset($arr['rpp'], $arr['sortOrder'], $arr['sortBy'], $arr['page']);
-
-        return count(array_filter($arr, function ($x) { return !empty($x); }));
     }
 
     /**
@@ -231,8 +224,6 @@ class UsersController extends Controller
     /**
      * Reset the filtering of useres.
      *
-     * @return Response
-     *
      * @throws \Throwable
      */
     public function reset(
@@ -252,56 +243,6 @@ class UsersController extends Controller
     }
 
     /**
-     * Update the page list parameters from the request.
-     */
-    protected function updatePaging(Request $request): void
-    {
-        // set sort by column
-        if ($request->input('sort_by')) {
-            $this->sortBy = $request->input('sort_by');
-        }
-
-        // set sort direction
-        if ($request->input('sort_direction')) {
-            $this->sortOrder = $request->input('sort_direction');
-        }
-
-        // set results per page
-        if (!empty($request->input('rpp')) && is_numeric($request->input('rpp'))) {
-            $this->rpp = $request->input('rpp');
-        }
-    }
-
-    /**
-     * Get session filters.
-     *
-     * @return array
-     */
-    public function getFilters(Request $request): array
-    {
-        return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
-    }
-
-    /**
-     * Get session tabs.
-     */
-    public function getTabs(Request $request): array
-    {
-        return $this->getAttribute($request, 'tabs', $this->getDefaultTabs());
-    }
-
-    /**
-     * Get user session attribute.
-     *
-     * @return mixed
-     */
-    public function getAttribute(Request $request, string $attribute, $default = null)
-    {
-        return $request->session()
-            ->get($this->prefix . $attribute, $default);
-    }
-
-    /**
      * Get the default filters array.
      *
      * @return array
@@ -311,15 +252,6 @@ class UsersController extends Controller
         return [];
     }
 
-    protected function getDefaultRppFilters(): array
-    {
-        return [
-            'rpp' => $this->defaultRpp,
-            'sortBy' => $this->defaultSortBy,
-            'sortOrder' => $this->defaultSortOrder
-        ];
-    }
-
     /**
      * Get the default tags array.
      *
@@ -327,7 +259,7 @@ class UsersController extends Controller
      */
     public function getDefaultTabs(): array
     {
-        return [0 => 'created', 1 => 'tags'];
+        return ['events' => 'created', 'following' => 'tags'];
     }
 
     /**
@@ -337,27 +269,27 @@ class UsersController extends Controller
      **/
     public function create(): View
     {
-        $visibilities = array_merge(['' => ''], Visibility::pluck('name', 'id'));
-        $userStatuses = array_merge(['' => ''], UserStatus::orderBy('name', 'ASC')->pluck('name', 'id')->all());
-        $tags = Tag::pluck('name', 'id');
+        return view('users.create')->with($this->getFormOptions());
+    }
 
-        return view('users.create');
+    /**
+     * Set tabs attribute.
+     */
+    public function setTabs(Request $request, array $input): void
+    {
+        $request->session()->put($this->prefix . 'tabs', $input);
     }
 
     public function show(User $user, Request $request)
     {
-        //$this->setTabs($request, $this->getDefaultTabs());
+        // get the current tabs from the session
+        $tabs = $request->session()->get($this->prefix . 'tabs', $this->getDefaultTabs());
 
-        // get all the tabs from the session
-        $this->tabs = $this->getTabs($request);
+        // store the tabs in the session
+        $request->session()->put($this->prefix . 'tabs', array_replace($tabs, $request->input('tabs') ?? []));
 
-        // update tabs based on the request input
-        $this->setTabs($request, array_replace($this->getTabs($request), $request->input('tabs') ? $request->input('tabs') : []));
-
-        // get the merged tabs
-        $this->tabs = $this->getTabs($request);
-
-        $tabs = $this->tabs;
+        // reload the tabs - not sure why this is necessary
+        $tabs = $request->session()->get($this->prefix . 'tabs', $this->getDefaultTabs());
 
         // if there is no profile, create one?
         if (!$user->profile) {
@@ -391,11 +323,8 @@ class UsersController extends Controller
     {
         $this->middleware('auth');
 
-        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $userStatuses = ['' => ''] + UserStatus::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $groups = Group::orderBy('name')->pluck('name', 'id')->all();
-
-        return view('users.edit', compact('user', 'visibilities', 'userStatuses', 'groups'));
+        return view('users.edit', compact('user'))
+            ->with($this->getFormOptions());
     }
 
     public function update(User $user, ProfileRequest $request): View
@@ -408,7 +337,7 @@ class UsersController extends Controller
         }
 
         // get all the tabs from the session
-        $tabs = $this->getTabs($request);
+        $tabs = $request->session()->get($this->prefix . 'tabs', $this->getDefaultTabs());
 
         // add to activity log
         Activity::log($user, $this->user, 2);
@@ -805,22 +734,6 @@ class UsersController extends Controller
         return back();
     }
 
-    /**
-     * Update the page list parameters from the request.
-     *
-     */
-    protected function getPaging(array $filters): void
-    {
-        // TODO revisit this getter
-        $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
-        $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
-        if (isset($filters['rpp']) && is_numeric($filters['rpp'])) {
-            $this->rpp = $filters['rpp'];
-        } else {
-            $this->rpp = $this->defaultRpp;
-        }
-    }
-
     protected function getListControlOptions(): array
     {
         return  [
@@ -840,12 +753,9 @@ class UsersController extends Controller
     protected function getFormOptions(): array
     {
         return [
-            // 'entityTypeOptions' => ['' => ''] + EntityType::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            // 'entityStatusOptions' => EntityStatus::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            // 'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            // 'aliasOptions' => Alias::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            // 'roleOptions' => Role::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            // 'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all()
+            'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'userStatusOptions' => ['' => ''] + UserStatus::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'groupOptions' => Group::orderBy('name')->pluck('name', 'id')->all(),
         ];
     }
 }
