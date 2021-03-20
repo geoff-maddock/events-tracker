@@ -1,4 +1,3 @@
-
 <div class="form-group {{$errors->has('name') ? 'has-error' : '' }}">
 {!! Form::label('first_name','First Name') !!}
 {!! Form::text('first_name', null, ['class' =>'form-control']) !!}
@@ -23,21 +22,19 @@
 {!! $errors->first('bio','<span class="help-block">:message</span>') !!}
 </div>
 
-
 @can('grant_access')
 <div class="row">
     <div class="form-group col-md-3 {{$errors->has('user_status_id') ? 'has-error' : '' }}">
         {!! Form::label('user_status_id','Status:') !!}
-        {!! Form::select('user_status_id', $userStatuses, (isset($user->user_status_id) ? $user->user_status_id : NULL), ['class' =>'form-control']) !!}
+        {!! Form::select('user_status_id', $userStatusOptions, (isset($user->user_status_id) ? $user->user_status_id : NULL), ['class' =>'form-control']) !!}
         {!! $errors->first('user_status_id','<span class="help-block">:message</span>') !!}
     </div>
 </div>
 
-
 <div class="row">
     <div class="form-group col-md-2">
         {!! Form::label('group_list','Group:') !!}
-        {!! Form::select('group_list[]', $groups, (isset($user->groups) ? $user->groups->pluck('id')->toArray() : NULL), ['id' => 'group_list', 'class' =>'form-control select2',
+        {!! Form::select('group_list[]', $groupOptions, (isset($user->groups) ? $user->groups->pluck('id')->toArray() : NULL), ['id' => 'group_list', 'class' =>'form-control select2',
          'data-placeholder' => 'Select group memberships',
          'data-tags' => 'false',
          'multiple']) !!}

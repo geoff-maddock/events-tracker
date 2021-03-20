@@ -940,7 +940,6 @@ class EventsController extends Controller
     /**
      * Display a listing of events related to entity.
      *
-     *
      * @return Response
      */
     public function calendarRelatedTo(Request $request, string $slug)
@@ -960,6 +959,8 @@ class EventsController extends Controller
         });
 
         foreach ($events as $event) {
+            dump($event);
+            dump($event->name);
             $eventList[] = \Calendar::event(
                 $event->name, // event title
                 false, // full day event?
