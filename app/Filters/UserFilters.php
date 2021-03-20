@@ -4,6 +4,15 @@ namespace App\Filters;
 
 class UserFilters extends QueryFilter
 {
+    public function email($value = null)
+    {
+        if (isset($value)) {
+            return $this->builder->where('users.email', 'like', '%' . $value . '%');
+        } else {
+            return $this->builder;
+        }
+    }
+
     public function name($value = null)
     {
         if (isset($value)) {
