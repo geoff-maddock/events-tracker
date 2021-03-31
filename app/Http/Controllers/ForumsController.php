@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\ForumFilters;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ForumRequest;
+use App\Http\ResultBuilder\ListEntityResultBuilder;
 use Illuminate\Http\Request;
 use App\Models\Forum;
 use App\Models\Thread;
 use App\Models\Visibility;
 use App\Models\Activity;
+use App\Models\Tag;
+use App\Models\User;
+use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Contracts\View\View;
@@ -34,7 +39,14 @@ class ForumsController extends Controller
 
     protected string $prefix;
 
-    public function __construct()
+    protected array $filters;
+
+    // this is the class specifying the filters methods for each field
+    protected ForumFilters $filter;
+
+    protected array $criteria;
+
+    public function __construct(ForumFilters $filter)
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
 
@@ -49,6 +61,8 @@ class ForumsController extends Controller
         $this->sortOrder = 'desc';
         $this->defaultCriteria = [];
         $this->hasFilter = 1;
+        $this->filter = $filter;
+
         parent::__construct();
     }
 
@@ -57,21 +71,206 @@ class ForumsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
+    public function index(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
         // if the gate does not allow this user to show a forum redirect to home
         if (Gate::denies('show_forum')) {
-            flash()->error('Unauthorized', 'Your cannot view the forum');
+            flash()->error('Unauthorized', 'Your cannot view the forum index');
 
             return redirect()->back();
         }
 
-        $forums = Forum::orderBy('created_at', 'desc')->paginate($this->rpp);
-        $forums->filter(function ($e) {
-            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-        });
+        // initialized listParamSessionStore with base index key
+        $listParamSessionStore->setBaseIndex('internal_forum');
+        $listParamSessionStore->setKeyPrefix('internal_forum_index');
 
-        return view('forums.index', compact('forums'));
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([ForumsController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Forum::query()
+        ->select('forums.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['forums.created_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        $forums = $query->visible($this->user)
+            ->with('visibility')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        // return json only
+        if (request()->wantsJson()) {
+            return $forums;
+        }
+
+        return view('forums.index')
+                ->with(array_merge(
+                    [
+                        'limit' => $listResultSet->getLimit(),
+                        'sort' => $listResultSet->getSort(),
+                        'direction' => $listResultSet->getSortDirection(),
+                        'hasFilter' => $this->hasFilter,
+                        'filters' => $listResultSet->getFilters()
+                    ],
+                    $this->getFilterOptions(),
+                    $this->getListControlOptions()
+                ))
+                ->with(compact('forums'))
+                ->render();
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function indexAll(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // if the gate does not allow this user to show a forum redirect to home
+        if (Gate::denies('show_forum')) {
+            flash()->error('Unauthorized', 'Your cannot view the forum index');
+
+            return redirect()->back();
+        }
+
+        // initialized listParamSessionStore with base index key
+        $listParamSessionStore->setBaseIndex('internal_forum');
+        $listParamSessionStore->setKeyPrefix('internal_forum_index');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([ForumsController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Forum::query()
+        ->select('forums.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['forums.created_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        $forums = $query->visible($this->user)
+            ->with('visibility')
+            ->paginate(1000000);
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        // return json only
+        if (request()->wantsJson()) {
+            return $forums;
+        }
+
+        return view('forums.index')
+                ->with(array_merge(
+                    [
+                        'limit' => $listResultSet->getLimit(),
+                        'sort' => $listResultSet->getSort(),
+                        'direction' => $listResultSet->getSortDirection(),
+                        'hasFilter' => $this->hasFilter,
+                        'filters' => $listResultSet->getFilters()
+                    ],
+                    $this->getFilterOptions(),
+                    $this->getListControlOptions()
+                ))
+                ->with(compact('forums'))
+                ->render();
+    }
+
+    /**
+     * Filter a list of forums.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function filter(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // if the gate does not allow this user to show a forum redirect to home
+        if (Gate::denies('show_forum')) {
+            flash()->error('Unauthorized', 'Your cannot view the forum index');
+
+            return redirect()->back();
+        }
+
+        // initialized listParamSessionStore with base index key
+        $listParamSessionStore->setBaseIndex('internal_forum');
+        $listParamSessionStore->setKeyPrefix('internal_forum_index');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([ForumsController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Forum::query()
+        ->select('forums.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['forums.created_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        $forums = $query->visible($this->user)
+            ->with('visibility')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        // return json only
+        if (request()->wantsJson()) {
+            return $forums;
+        }
+
+        return view('forums.index')
+                ->with(array_merge(
+                    [
+                        'limit' => $listResultSet->getLimit(),
+                        'sort' => $listResultSet->getSort(),
+                        'direction' => $listResultSet->getSortDirection(),
+                        'hasFilter' => $this->hasFilter,
+                        'filters' => $listResultSet->getFilters()
+                    ],
+                    $this->getFilterOptions(),
+                    $this->getListControlOptions()
+                ))
+                ->with(compact('forums'))
+                ->render();
     }
 
     /**
@@ -83,7 +282,10 @@ class ForumsController extends Controller
     {
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('forums.create', compact('visibilities'));
+        $forum = new Forum();
+        $forum->visibility_id = Visibility::VISIBILITY_PUBLIC;
+
+        return view('forums.create', compact('forum'))->with($this->getFormOptions());
     }
 
     /**
@@ -138,8 +340,12 @@ class ForumsController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function show(Forum $forum, Request $request)
-    {
+    public function show(
+        Forum $forum,
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ) {
         // if the gate does not allow this user to show a forum redirect to home
         if (Gate::denies('show_forum')) {
             flash()->error('Unauthorized', 'Your cannot view the forum');
@@ -147,13 +353,36 @@ class ForumsController extends Controller
             return redirect()->back();
         }
 
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+        // initialized listParamSessionStore with base index key
+        $listParamSessionStore->setBaseIndex('internal_thread');
+        $listParamSessionStore->setKeyPrefix('internal_thread_index');
 
-        // get filters from session
-        $filters = $this->getFilters($request);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
 
-        $this->hasFilter = count($filters);
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Thread::query()->where('forum_id', $forum->id)->orderBy('created_at', 'desc')
+        ->select('threads.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['threads.created_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        $threads = $query->visible($this->user)
+            ->with('visibility')
+            ->paginate(10000000);
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         $threads = Thread::where('forum_id', $forum->id)->orderBy('created_at', 'desc')->paginate(1000000);
         $threads->filter(function ($e) {
@@ -164,14 +393,18 @@ class ForumsController extends Controller
         $slug = $forum->description;
 
         return view('threads.index')
-            ->with(compact('threads', 'slug'))
-        ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder,
-            'hasFilter' => $this->hasFilter,
-            'filters' => $filters,
-            'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : null,  // there should be a better way to do this...
-            'filter_user' => isset($filters['filter_user']) ? $filters['filter_user'] : null,
-            'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : null
-        ]);
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
+            ->with(compact('threads', 'slug'));
     }
 
     /**
@@ -196,25 +429,13 @@ class ForumsController extends Controller
     }
 
     /**
-     * Get the default filters array
-     *
-     * @return array
-     */
-    public function getDefaultFilters()
-    {
-        return [];
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
     public function edit(Forum $forum): View
     {
         $this->middleware('auth');
 
-        $visibilities = ['' => ''] + Visibility::pluck('name', 'id')->all();
-
-        return view('forums.edit', compact('forum', 'visibilities'));
+        return view('forums.edit', compact('forum'))->with($this->getFormOptions());
     }
 
     /**
@@ -262,5 +483,89 @@ class ForumsController extends Controller
         flash()->success('Success', 'Your forum has been deleted!');
 
         return redirect('forums');
+    }
+
+    /**
+     * Reset the rpp, sort, order
+     *
+     * @throws \Throwable
+     */
+    public function rppReset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ): RedirectResponse {
+        // set the rpp, sort, direction only to default values
+        $keyPrefix = $request->get('key') ?? 'internal_forum_index';
+        $listParamSessionStore->setBaseIndex('internal_forum');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
+
+        // clear
+        $listParamSessionStore->clearSort();
+
+        return redirect()->route('forums.index');
+    }
+
+    /**
+     * Reset the filtering of entities.
+     *
+     * @return RedirectResponse | View
+     */
+    public function reset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ) {
+        // set filters and list controls to default values
+        $keyPrefix = $request->get('key') ?? 'internal_forum_index';
+        $listParamSessionStore->setBaseIndex('internal_forum');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
+
+        // clear
+        $listParamSessionStore->clearFilter();
+        $listParamSessionStore->clearSort();
+
+        return redirect()->route($request->get('redirect') ?? 'forums.index');
+    }
+
+    /**
+     * Get the default filters array.
+     *
+     * @return array
+     */
+    public function getDefaultFilters(): array
+    {
+        return [];
+    }
+
+    protected function getDefaultRppFilters(): array
+    {
+        return [
+            'rpp' => $this->defaultRpp,
+            'sortBy' => $this->defaultSortBy,
+            'sortOrder' => $this->defaultSortOrder
+        ];
+    }
+
+    protected function getFilterOptions(): array
+    {
+        return  [
+            'userOptions' => ['' => '&nbsp;'] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+        ];
+    }
+
+    protected function getListControlOptions(): array
+    {
+        return  [
+            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
+            'sortOptions' => ['forums.name' => 'Name', 'forums.created_at' => 'Created At'],
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+        ];
+    }
+
+    protected function getFormOptions(): array
+    {
+        return [
+            'visibilities' => ['' => ''] + Visibility::pluck('name', 'id')->all(),
+        ];
     }
 }

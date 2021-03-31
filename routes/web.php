@@ -237,7 +237,9 @@ Route::bind('forums', function ($id) {
 });
 
 Route::get('forums/all', 'ForumsController@indexAll');
-
+Route::match(['get', 'post'], 'forums/filter', ['as' => 'forums.filter', 'uses' => 'ForumsController@filter']);
+Route::get('forums/reset', ['as' => 'forums.reset', 'uses' => 'ForumsController@reset']);
+Route::get('forums/rpp-reset', ['as' => 'forums.rppReset', 'uses' => 'ForumsController@rppReset']);
 Route::resource('forums', 'ForumsController');
 
 // THREADS
