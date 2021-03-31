@@ -4,7 +4,7 @@
 
 @section('content')
 
-	<h1>Add a New Forum</h1>
+	<h4>Add a New Forum</h4>
 
 	{!! Form::open(['route' => 'forums.store']) !!}
 

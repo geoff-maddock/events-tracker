@@ -4,10 +4,10 @@
 
 @section('content')
 
-<h2>Entity . EDIT
+<h4>Entity . EDIT
 	@include('events.crumbs', ['slug' => $entity->slug ?: $entity->id])
 	  <br> 	<a href="{!! route('entities.show', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Show Entity</a> <a href="{!! URL::route('entities.index') !!}" class="btn btn-info">Return to list</a>
-</h2>
+</h4>
 
 <div class="row">
 	<div class="col-md-6">

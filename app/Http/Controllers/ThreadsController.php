@@ -60,8 +60,6 @@ class ThreadsController extends Controller
 
     protected array $criteria;
 
-    protected ?Thread $thread;
-
     public function __construct(ThreadFilters $filter)
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);

@@ -4,9 +4,9 @@
 
 @section('content')
 
-<h1>Forum . EDIT 
+<h4>Forum . EDIT 
 	@include('forums.crumbs', ['slug' => $forum->slug ? $forum->slug : $forum->id])
-</h1>
+</h4>
 
 	{!! Form::model($forum, ['route' => ['forums.update', $forum->id], 'method' => 'PATCH']) !!}
 
