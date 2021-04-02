@@ -96,46 +96,49 @@ class TagsController extends Controller
      */
     public function index()
     {
+        // default to no tag
         $tag = null;
 
+        // get the tags the user is following
+        $userTags = null;
+        $tagNames = [];
+
+        // get a list of all the user's followed tags
+        if (isset($this->user)) {
+            $userTags = $this->user->getTagsFollowing();
+            foreach ($userTags as $userTag) {
+                $tagNames[] = $userTag->name;
+            }
+        };
+
         // get all series linked to the tag
-        $series = Series::where(function ($query) {
-            $query->visible($this->user);
-        })
+        $series = Series::whereHas('tags', function ($q) use ($tagNames) {
+            $q->whereIn('name', $tagNames);
+        })->visible($this->user)
                     ->orderBy('start_at', 'ASC')
                     ->orderBy('name', 'ASC')
                     ->with('tags', 'entities', 'occurrenceType')
                     ->paginate();
 
         // get all the events linked to the tag
-        $events = Event::orderBy('start_at', 'DESC')
+        $events = Event::whereHas('tags', function ($q) use ($tagNames) {
+            $q->whereIn('name', $tagNames);
+        })->visible($this->user)
+                    ->orderBy('start_at', 'DESC')
                     ->orderBy('name', 'ASC')
                     ->with('visibility', 'tags', 'entities', 'venue', 'eventType', 'threads')
                     ->simplePaginate($this->rpp);
 
-        $events->filter(function ($e) {
-            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-        });
-
         // get all entities linked to the tag
-        $entities = Entity::where(function ($query) {
-            $query->active()
-                        ->orWhere('created_by', '=', ($this->user ? $this->user->id : null));
-        })
-                    ->orderBy('entity_type_id', 'ASC')
+        $entities = Entity::whereHas('tags', function ($q) use ($tagNames) {
+            $q->whereIn('name', $tagNames);
+        })->orderBy('entity_type_id', 'ASC')
                     ->orderBy('name', 'ASC')
-                     ->with('tags', 'locations', 'roles')
+                    ->with('tags', 'locations', 'roles')
                     ->simplePaginate($this->rpp);
 
         // get a list of all tags
         $tags = Tag::orderBy('name', 'ASC')->get();
-
-        $userTags = null;
-
-        // get a list of all the user's followed tags
-        if (isset($this->user)) {
-            $userTags = $this->user->getTagsFollowing();
-        };
 
         return view('tags.index', compact('series', 'entities', 'events', 'tag', 'tags', 'userTags'));
     }
@@ -322,7 +325,7 @@ class TagsController extends Controller
         };
 
         // how can i derive this class from a string?
-        if (!$object = call_user_func('App\\' . ucfirst($type) . '::find', $id)) { // Tag::find($id))
+        if (!$object = call_user_func('App\\Models\\' . ucfirst($type) . '::find', $id)) { // Tag::find($id))
             flash()->error('Error', 'No such ' . $type);
 
             return back();

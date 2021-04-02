@@ -2,16 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\PostFilters;
 use App\Models\Activity;
 use App\Models\Entity;
 use App\Http\Requests\PostRequest;
+use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Like;
 use App\Models\Post;
 use App\Models\Series;
 use App\Models\Tag;
 use App\Models\TagType;
 use App\Models\Thread;
+use App\Models\User;
 use App\Models\Visibility;
+use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -51,7 +55,9 @@ class PostsController extends Controller
 
     protected array $criteria;
 
-    public function __construct(Post $post)
+    protected PostFilters $filter;
+
+    public function __construct(PostFilters $filter)
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
 
@@ -71,18 +77,20 @@ class PostsController extends Controller
         $this->defaultCriteria = [];
         $this->hasFilter = 1;
 
-        $post = $post;
+        $this->filter = $filter;
 
         parent::__construct();
     }
 
     /**
      * Display a listing of the resource.
-     *
-     * @return Response | View | string
+
      */
-    public function index()
-    {
+    public function index(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
         // if the gate does not allow this user to show a forum redirect to home
         if (Gate::denies('show_forum')) {
             flash()->error('Unauthorized', 'Your cannot view the forum');
@@ -90,12 +98,55 @@ class PostsController extends Controller
             return redirect()->back();
         }
 
-        $posts = Post::orderBy('created_at', 'desc')->paginate($this->rpp);
-        $posts->filter(function ($e) {
-            return ($e->visibility && 'Public' === $e->visibility->name) || ($this->user && $e->created_by === $this->user->id);
-        });
+        // initialized listParamSessionStore with base index key
+        $listParamSessionStore->setBaseIndex('internal_post');
+        $listParamSessionStore->setKeyPrefix('internal_post_index');
 
-        return view('posts.index', compact('posts'));
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([PostsController::class, 'index']));
+
+        $baseQuery = Post::query()
+        ->leftJoin('users', 'posts.created_by', '=', 'users.id')
+        ->select('posts.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['posts.created_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        $posts = $query->visible($this->user)
+        ->with('visibility')
+        ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        // return json only
+        if (request()->wantsJson()) {
+            return $posts;
+        }
+
+        return view('posts.index')
+        ->with(array_merge(
+            [
+                'limit' => $listResultSet->getLimit(),
+                'sort' => $listResultSet->getSort(),
+                'direction' => $listResultSet->getSortDirection(),
+                'hasFilter' => $this->hasFilter,
+                'filters' => $listResultSet->getFilters()
+            ],
+            $this->getFilterOptions(),
+            $this->getListControlOptions()
+        ))
+        ->with(compact('posts'))->render();
     }
 
     /**
@@ -476,5 +527,63 @@ class PostsController extends Controller
         \Session::flash('flash_message', 'Not authorized');
 
         return redirect('/');
+    }
+
+    /**
+     * Reset the rpp, sort, order
+     *
+     * @throws \Throwable
+     */
+    public function rppReset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ): RedirectResponse {
+        // set the rpp, sort, direction only to default values
+        $keyPrefix = $request->get('key') ?? 'internal_post_index';
+        $listParamSessionStore->setBaseIndex('internal_post');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
+
+        // clear
+        $listParamSessionStore->clearSort();
+
+        return redirect()->route('posts.index');
+    }
+
+    /**
+     * Reset the filtering of entities.
+     *
+     * @return RedirectResponse | View
+     */
+    public function reset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ) {
+        // set filters and list controls to default values
+        $keyPrefix = $request->get('key') ?? 'internal_post_index';
+        $listParamSessionStore->setBaseIndex('internal_post');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
+
+        // clear
+        $listParamSessionStore->clearFilter();
+        $listParamSessionStore->clearSort();
+
+        return redirect()->route($request->get('redirect') ?? 'posts.index');
+    }
+
+    protected function getFilterOptions(): array
+    {
+        return  [
+            'userOptions' => ['' => '&nbsp;'] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+        ];
+    }
+
+    protected function getListControlOptions(): array
+    {
+        return  [
+            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
+            'sortOptions' => ['posts.name' => 'Name', 'users.name' => 'User', 'posts.created_at' => 'Created At'],
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+        ];
     }
 }

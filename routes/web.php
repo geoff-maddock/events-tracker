@@ -301,6 +301,10 @@ Route::get('posts/{id}/unlike', [
 Route::resource('posts', 'PostsController');
 Route::get('posts/tag/{tag}', 'PostsController@indexTags')->name('posts.tag');
 
+Route::match(['get', 'post'], 'posts/filter', ['as' => 'posts.filter', 'uses' => 'PostsController@filter']);
+Route::get('posts/reset', ['as' => 'posts.reset', 'uses' => 'PostsController@reset']);
+Route::get('posts/rpp-reset', ['as' => 'posts.rppReset', 'uses' => 'PostsController@rppReset']);
+
 // BLOGS
 Route::get('blogs/all', 'BlogsController@indexAll');
 
