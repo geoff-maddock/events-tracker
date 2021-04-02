@@ -68,8 +68,6 @@ class ForumsController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index(
         Request $request,
@@ -137,8 +135,6 @@ class ForumsController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function indexAll(
         Request $request,
@@ -206,8 +202,6 @@ class ForumsController extends Controller
 
     /**
      * Filter a list of forums.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function filter(
         Request $request,
@@ -313,27 +307,6 @@ class ForumsController extends Controller
     }
 
     /**
-     * Update the page list parameters from the request
-     */
-    protected function updatePaging(Request $request)
-    {
-        // set sort by column
-        if ($request->input('sort_by')) {
-            $this->sortBy = $request->input('sort_by');
-        };
-
-        // set sort direction
-        if ($request->input('sort_direction')) {
-            $this->sortOrder = $request->input('sort_direction');
-        };
-
-        // set results per page
-        if ($request->input('rpp')) {
-            $this->rpp = $request->input('rpp');
-        };
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param Forum $forum
@@ -405,27 +378,6 @@ class ForumsController extends Controller
                 $this->getListControlOptions()
             ))
             ->with(compact('threads', 'slug'));
-    }
-
-    /**
-     * Get session filters
-     */
-    public function getFilters(Request $request): array
-    {
-        return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
-    }
-
-    /**
-     * Get user session attribute
-     *
-     * @param String $attribute
-     * @param Mixed $default
-     * @param Request $request
-     * @return Mixed
-     */
-    public function getAttribute($attribute, $default = null, Request $request)
-    {
-        return $request->session()->get($this->prefix . $attribute, $default);
     }
 
     /**
@@ -534,15 +486,6 @@ class ForumsController extends Controller
     public function getDefaultFilters(): array
     {
         return [];
-    }
-
-    protected function getDefaultRppFilters(): array
-    {
-        return [
-            'rpp' => $this->defaultRpp,
-            'sortBy' => $this->defaultSortBy,
-            'sortOrder' => $this->defaultSortOrder
-        ];
     }
 
     protected function getFilterOptions(): array
