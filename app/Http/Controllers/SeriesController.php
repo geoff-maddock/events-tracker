@@ -149,7 +149,7 @@ class SeriesController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
-        // get the events
+        // get the series
         $series = $query
             ->with('occurrenceType', 'visibility', 'tags')
             ->paginate($listResultSet->getLimit());

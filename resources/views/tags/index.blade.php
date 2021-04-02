@@ -128,7 +128,26 @@
 
 				</div>
 			</div>
+
+			<div class="bs-component">
+				<div class="panel panel-info">
+	
+	
+					<div class="panel-heading">
+						<h3 class="panel-title">Entities</h3>
+					</div>
+	
+					<div class="panel-body">
+					@include('entities.list', ['entities' => $entities])
+					{!! $entities->render() !!}
+					</div>
+	
+				</div>
+			</div>
+
 		</div>
+
+
 	@endif
 
 
@@ -150,6 +169,22 @@
 				</div>
 
 			</div>
+
+			<div class="bs-component">
+				<div class="panel panel-info">
+	
+	
+					<div class="panel-heading">
+						<h3 class="panel-title">Entities</h3>
+					</div>
+	
+					<div class="panel-body">
+					@include('entities.list', ['entities' => $entities])
+					{!! $entities->render() !!}
+					</div>
+	
+				</div>
+			</div>
 		</div>
 		@endif
 
@@ -165,7 +200,7 @@
 
 				<div class="panel-body">
 				@include('series.list', ['series' => $series])
-				{!! $events->render() !!}
+				{{-- {!! $events->render() !!} --}}
 				</div>
 
 			</div>
@@ -194,27 +229,6 @@
 		</div>
 		@endif
 	</div>
-
-
-	@if (isset($entities) && count($entities) > 0)
-	<div class="col-lg-5">
-		<div class="bs-component">
-			<div class="panel panel-info">
-
-
-				<div class="panel-heading">
-					<h3 class="panel-title">Entities</h3>
-				</div>
-
-				<div class="panel-body">
-				@include('entities.list', ['entities' => $entities])
-				{!! $entities->render() !!}
-				</div>
-
-			</div>
-		</div>
-	</div>
-	@endif
 
 </div>
 

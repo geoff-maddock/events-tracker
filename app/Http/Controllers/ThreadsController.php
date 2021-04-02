@@ -104,6 +104,7 @@ class ThreadsController extends Controller
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = Thread::query()
+        ->leftJoin('users', 'threads.created_by', '=', 'users.id')
         ->select('threads.*');
 
         $listEntityResultBuilder
@@ -977,7 +978,7 @@ class ThreadsController extends Controller
     {
         return  [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
-            'sortOptions' => ['threads.name' => 'Name', 'users.username' => 'User', 'threads.created_at' => 'Created At'],
+            'sortOptions' => ['threads.name' => 'Name', 'users.name' => 'User', 'threads.created_at' => 'Created At'],
             'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
         ];
     }
