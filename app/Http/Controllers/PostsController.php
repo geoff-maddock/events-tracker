@@ -150,46 +150,134 @@ class PostsController extends Controller
     }
 
     /**
-     * Update the page list parameters from the request.
-     *
+     * Filter a list of posts
      */
-    protected function updatePaging(Request $request): void
-    {
-        // set sort by column
-        if ($request->input('sort_by')) {
-            $this->sortBy = $request->input('sort_by');
+    public function filter(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // if the gate does not allow this user to show a forum redirect to home
+        if (Gate::denies('show_forum')) {
+            flash()->error('Unauthorized', 'Your cannot view the forum');
+
+            return redirect()->back();
         }
 
-        // set sort direction
-        if ($request->input('sort_direction')) {
-            $this->sortOrder = $request->input('sort_direction');
+        // initialized listParamSessionStore with base index key
+        $listParamSessionStore->setBaseIndex('internal_post');
+        $listParamSessionStore->setKeyPrefix('internal_post_index');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([PostsController::class, 'index']));
+
+        $baseQuery = Post::query()
+        ->leftJoin('users', 'posts.created_by', '=', 'users.id')
+        ->select('posts.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['posts.created_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        $posts = $query->visible($this->user)
+        ->with('visibility')
+        ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        // return json only
+        if (request()->wantsJson()) {
+            return $posts;
         }
 
-        if (!empty($request->input('rpp')) && is_numeric($request->input('rpp'))) {
-            $this->rpp = $request->input('rpp');
-        }
+        return view('posts.index')
+        ->with(array_merge(
+            [
+                'limit' => $listResultSet->getLimit(),
+                'sort' => $listResultSet->getSort(),
+                'direction' => $listResultSet->getSortDirection(),
+                'hasFilter' => $this->hasFilter,
+                'filters' => $listResultSet->getFilters()
+            ],
+            $this->getFilterOptions(),
+            $this->getListControlOptions()
+        ))
+        ->with(compact('posts'))->render();
     }
 
     /**
      * Display a listing of posts by tag.
      * @return View
      */
-    public function indexTags(Request $request, string $tag)
-    {
-        $hasFilter = true;
-
-        // updates sort, rpp from request
-        $this->updatePaging($request);
-
+    public function indexTags(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $tag
+    ) {
         $tag = urldecode($tag);
+        // initialized listParamSessionStore with baseindex key
+        // list entity result builder
+        $listParamSessionStore->setBaseIndex('internal_post');
+        $listParamSessionStore->setKeyPrefix('internal_post_tags');
 
-        $posts = Post::getByTag(ucfirst($tag))
-                    ->orderBy('created_at', 'ASC')
-                    ->paginate($this->rpp);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([PostsController::class, 'index']));
+
+        $baseQuery = Post::query()
+        ->leftJoin('users', 'posts.created_by', '=', 'users.id')
+        ->select('posts.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['posts.created_at' => 'desc'])
+            ->setParentFilter(['tag' => ucfirst($tag)]);
+        ;
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        $posts = $query->visible($this->user)
+        ->with('visibility')
+        ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        // return json only
+        if (request()->wantsJson()) {
+            return $posts;
+        }
 
         return view('posts.index')
-                    ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'tag' => $tag, 'hasFilter' => $hasFilter])
-                    ->with(compact('posts'));
+        ->with(array_merge(
+            [
+                'limit' => $listResultSet->getLimit(),
+                'sort' => $listResultSet->getSort(),
+                'direction' => $listResultSet->getSortDirection(),
+                'hasFilter' => $this->hasFilter,
+                'filters' => $listResultSet->getFilters()
+            ],
+            $this->getFilterOptions(),
+            $this->getListControlOptions()
+        ))
+        ->with(compact('posts'))->render();
     }
 
     /**
@@ -199,13 +287,7 @@ class PostsController extends Controller
      */
     public function create()
     {
-        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $entities = Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $series = Series::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        return view('posts.create', compact('visibilities', 'tags', 'entities', 'series'));
+        return view('posts.create')->with($this->getFormOptions());
     }
 
     /**
@@ -365,11 +447,16 @@ class PostsController extends Controller
     {
         $this->middleware('auth');
 
-        $visibilities = ['' => ''] + Visibility::pluck('name', 'id')->all();
-        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $entities = Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        return view('posts.edit', compact('post'))->with($this->getFormOptions());
+    }
 
-        return view('posts.edit', compact('post', 'visibilities', 'tags', 'entities'));
+    protected function getFormOptions(): array
+    {
+        return [
+            'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all()
+        ];
     }
 
     /**

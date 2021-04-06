@@ -10,7 +10,7 @@
 <div class="row">
 	<div class="form-group col-md-2">
 	{!! Form::label('tag_list','Tags:') !!}
-	{!! Form::select('tag_list[]', $tags, null, ['id' => 'tag_list', 'class' =>'form-control select2',
+	{!! Form::select('tag_list[]', $tagOptions, null, ['id' => 'tag_list', 'class' =>'form-control select2',
 	'data-placeholder' => 'Choose a tag',
 	'data-tags' =>'true',
 	 'multiple']) !!}
@@ -22,7 +22,7 @@
 <div class="row">
 	<div class="form-group col-md-2 {{$errors->has('visibility_id') ? 'has-error' : '' }}">
 	{!! Form::label('visibility_id','Visibility:') !!}
-	{!! Form::select('visibility_id', $visibilities, (isset($post->visibility_id) ? $post->visibility_id : NULL), ['class' =>'form-control']) !!}
+	{!! Form::select('visibility_id', $visibilityOptions, (isset($post->visibility_id) ? $post->visibility_id : NULL), ['class' =>'form-control']) !!}
 	{!! $errors->first('visibility_id','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
