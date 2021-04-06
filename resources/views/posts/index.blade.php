@@ -24,12 +24,12 @@
         
                     <div class="form-group col-sm-2 ">
         
-                        {!! Form::label('filter_name','Filter By Name') !!}
+                        {!! Form::label('filter_body','Filter By BodyName') !!}
         
-                        {!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
+                        {!! Form::text('filter_body', (isset($filters['body']) ? $filters['body'] : NULL),
                         [
                             'class' =>'form-control',
-                            'name' => 'filters[name]'
+                            'name' => 'filters[body]'
                         ]
                         ) !!}
                     </div>
@@ -97,11 +97,10 @@
         <table class="table forum table-striped">
         <thead>
         <tr>
-            <th>
-                User
-            </th>
+            <th>User</th>
+            <th class="cell-stat hidden-xs">Thread</th>
             <th class="cell-stat hidden-xs">Category</th>
-            <th class="cell-stat text-center hidden-xs hidden-sm">Views</th>
+            <th class="cell-stat text-center hidden-xs hidden-sm">Likes</th>
             <th class="cell-stat hidden-xs">Last Post</th>
         </tr>
         </thead>
@@ -115,6 +114,9 @@
                     @else
                         User deleted
                     @endif
+                </td>
+                <td class="hidden-xs hidden-sm">
+                    {!! link_to_route('threads.show', $post->thread->name, [$post->thread->id], ['id' => 'thread-name', 'title' => 'Thread topic.', 'class' => 'forum-link']) !!}
                 </td>
                 <td class="hidden-xs hidden-sm">{{ $post->thread->threadCategory ? $post->thread->threadCategory->name : 'General' }}</td>
                 <td class="cell-stat text-center hidden-xs hidden-sm">{{ $post->likes }}</td>

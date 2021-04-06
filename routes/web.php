@@ -54,7 +54,7 @@ $this->get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm
 $this->post('password/reset', 'Auth\ResetPasswordController@reset');
 
 Route::get('/', 'PagesController@home')->name('home');
-Route::get('/home', 'PagesController@home')->name('home');
+Route::get('/home', 'PagesController@home')->name('pages.home');
 
 Route::get('about', 'PagesController@about');
 Route::get('privacy', 'PagesController@privacy');
@@ -197,11 +197,6 @@ Route::get('events/{id}/importPhoto', [
     'uses' => 'EventsController@importPhoto'
 ]);
 
-Route::get('events/{id}/createThread', [
-    'as' => 'events.createThread',
-    'uses' => 'EventsController@createThread'
-]);
-
 Route::get('events/{id}/remind', [
     'as' => 'events.remind',
     'uses' => 'EventsController@remind'
@@ -283,6 +278,10 @@ Route::get('threads/{id}/unfollow', [
 Route::resource('threads', 'ThreadsController');
 
 // POSTS
+Route::match(['get', 'post'], 'posts/filter', ['as' => 'posts.filter', 'uses' => 'PostsController@filter']);
+Route::get('posts/reset', ['as' => 'posts.reset', 'uses' => 'PostsController@reset']);
+Route::get('posts/rpp-reset', ['as' => 'posts.rppReset', 'uses' => 'PostsController@rppReset']);
+Route::get('posts/tag/{tag}', 'PostsController@indexTags')->name('posts.tag');
 Route::get('posts/all', 'PostsController@indexAll');
 
 Route::bind('posts', function ($id) {
@@ -298,12 +297,8 @@ Route::get('posts/{id}/unlike', [
     'as' => 'posts.unlike',
     'uses' => 'PostsController@unlike'
 ]);
-Route::resource('posts', 'PostsController');
-Route::get('posts/tag/{tag}', 'PostsController@indexTags')->name('posts.tag');
 
-Route::match(['get', 'post'], 'posts/filter', ['as' => 'posts.filter', 'uses' => 'PostsController@filter']);
-Route::get('posts/reset', ['as' => 'posts.reset', 'uses' => 'PostsController@reset']);
-Route::get('posts/rpp-reset', ['as' => 'posts.rppReset', 'uses' => 'PostsController@rppReset']);
+Route::resource('posts', 'PostsController');
 
 // BLOGS
 Route::get('blogs/all', 'BlogsController@indexAll');
@@ -366,12 +361,7 @@ Route::get('entities/tag/{tag}', 'EntitiesController@indexTags')->name('entities
 Route::get('entities/alias/{alias}', 'EntitiesController@indexAliases')->name('entities.alias');
 Route::get('entities/slug/{slug}', 'EntitiesController@indexSlug')->name('entities.slug');
 
-Route::get('entities/{id}/follow', [
-    'as' => 'entities.follow',
-    'uses' => 'EntitiesController@follow'
-]);
-
-Route::post('entities/{id}/follow', [
+Route::match(['get', 'post'], 'entities/{id}/follow', [
     'as' => 'entities.follow',
     'uses' => 'EntitiesController@follow'
 ]);
