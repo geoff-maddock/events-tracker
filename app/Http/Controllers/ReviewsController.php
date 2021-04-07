@@ -665,7 +665,7 @@ class ReviewsController extends Controller
             if (!Tag::find($tag)) {
                 $newTag = new Tag;
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tagType()->associate(TagType::find(1));
+                $newTag->tag_type_id = 1;
                 $newTag->save();
 
                 $syncArray[] = $newTag->id;
@@ -780,7 +780,7 @@ class ReviewsController extends Controller
             if (!Tag::find($tag)) {
                 $newTag = new Tag;
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tagType()->associate(TagType::find(1));
+                $newTag->tag_type_id = 1;
                 $newTag->save();
 
                 $syncArray[strtolower($tag)] = $newTag->id;

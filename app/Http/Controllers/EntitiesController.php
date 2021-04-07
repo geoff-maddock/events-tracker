@@ -539,7 +539,7 @@ class EntitiesController extends Controller
             if (!DB::table('tags')->where('id', $tag)->get()) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tagType()->associate(TagType::find(1));
+                $newTag->tag_type_id = 1;
                 $newTag->save();
 
                 // log adding of new tag
@@ -635,7 +635,7 @@ class EntitiesController extends Controller
             if (!Tag::find($tag)) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tagType()->associate(TagType::find(1));
+                $newTag->tag_type_id = 1;
                 $newTag->save();
 
                 // log adding of new tag
