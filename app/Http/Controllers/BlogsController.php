@@ -204,7 +204,7 @@ class BlogsController extends Controller
             if (!DB::table('tags')->where('id', $tag)->get()) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tagType()->associate(TagType::find(1));
+                $newTag->tag_type_id = 1;
                 $newTag->save();
 
                 $syncArray[] = $newTag->id;

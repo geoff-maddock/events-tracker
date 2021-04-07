@@ -1553,7 +1553,7 @@ class EventsController extends Controller
             if (!Tag::find($tag)) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tagType()->associate(TagType::find(1));
+                $newTag->tag_type_id = 1;
                 $newTag->save();
 
                 // log adding of new tag
@@ -1665,8 +1665,9 @@ class EventsController extends Controller
         foreach ($tagArray as $key => $tag) {
             if (!Tag::find($tag)) {
                 $newTag = new Tag();
+                //dd($newTag);
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tagType()->associate(TagType::find(1));
+                $newTag->tag_type_id = 1;
                 $newTag->save();
 
                 // log adding of new tag

@@ -7,12 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Collection;
 use DateTime;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int $id
  * @property int|null $user_id
  * @property string $name
  * @property TagType $tagType
+ * @property int|null $tag_type_id
  * @property DateTime $created_at
  */
 class Tag extends Eloquent
@@ -77,7 +79,7 @@ class Tag extends Eloquent
     /**
      * A tag has one type.
      */
-    public function tagType()
+    public function tagType(): HasOne
     {
         return $this->hasOne(TagType::class, 'id', 'tag_type_id');
     }

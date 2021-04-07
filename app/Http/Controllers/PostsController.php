@@ -313,10 +313,10 @@ class PostsController extends Controller
 
         // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
-            if (!DB::table('tags')->where('id', $tag)->get()) {
+            if (!Tag::find($tag)) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tagType()->associate(TagType::find(1));
+                $newTag->tagType->save(TagType::find(1));
                 $newTag->save();
 
                 $syncArray[] = $newTag->id;
@@ -479,10 +479,10 @@ class PostsController extends Controller
 
         // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
-            if (!DB::table('tags')->where('id', $tag)->get()) {
+            if (!Tag::find($tag)) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
-                $newTag->tagType()->associate(TagType::find(1));
+                $newTag->tagType->save(TagType::find(1));
                 $newTag->save();
 
                 $syncArray[] = $newTag->id;
