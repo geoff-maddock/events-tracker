@@ -23,7 +23,6 @@ use App\Models\ResponseType;
 use App\Models\Series;
 use App\Services\RssFeed;
 use App\Models\Tag;
-use App\Models\TagType;
 use App\Models\Thread;
 use App\Models\User;
 use App\Models\Visibility;

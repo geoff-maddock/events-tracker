@@ -3,10 +3,10 @@
 	<thead>
 	<!-- CONVERT TO PARTIAL THAT BUILDS THE HEADERS FROM A CONFIGURED ARRAY OR ARRAY FROM DB - SEE MY WORK NOTES -->
 	<tr class="bg-info">
-		<th><a href="?sort_by=id&sort_order={{ $sortOrder == 'desc' ? 'asc' : 'desc' }}">ID</a></th>
-		<th><a href="?sort_by=name&sort_order={{ $sortOrder == 'desc' ? 'asc' : 'desc' }}">Name</a></th>
-		<th><a href="?sort_by=label&sort_order={{ $sortOrder == 'desc' ? 'asc' : 'desc' }}">Label</a></th>
-		<th><a href="?sort_by=level&sort_order={{ $sortOrder == 'desc' ? 'asc' : 'desc' }}">Level</a></th>
+		<th><a href="?sort=id&direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">ID</a></th>
+		<th><a href="?sort=name&direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">Name</a></th>
+		<th><a href="?sort=label&direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">Label</a></th>
+		<th><a href="?sort=level&direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">Level</a></th>
 		<th style="width: 60px"></th>
 	</tr>
 	</thead>
