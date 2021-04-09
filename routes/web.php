@@ -320,6 +320,9 @@ Route::get('menus/{id}/content', 'MenusController@content');
 
 // PERMISSIONS
 Route::get('permissions/all', 'PermissionsController@indexAll');
+Route::match(['get', 'post'], 'permissions/filter', ['as' => 'permissions.filter', 'uses' => 'PermissionsController@filter']);
+Route::get('permissions/reset', ['as' => 'permissions.reset', 'uses' => 'PermissionsController@reset']);
+Route::get('permissions/rpp-reset', ['as' => 'permissions.rppReset', 'uses' => 'PermissionsController@rppReset']);
 
 Route::bind('permissions', function ($id) {
     return Permission::whereId($id)->firstOrFail();
