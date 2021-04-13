@@ -21,7 +21,7 @@
 		<td>
 			@can('edit_permission')
 			<a href="{!! route('permissions.edit', ['permission' => $permission->id]) !!}"><span class='glyphicon glyphicon-pencil'></span></a>
-      		{!! link_form_icon('glyphicon-trash text-warning', $permission, 'DELETE', 'Delete the permission') !!}
+      		{!! link_form_icon('glyphicon-trash text-warning', $permission, 'DELETE', 'Delete the permission', NULL, 'delete') !!}
 			@endcan
 		</td>
 
@@ -38,24 +38,5 @@
 </div>
 
 @section('scripts.footer')
-<script type="text/javascript">
-$('button.delete').on('click', function(e){
-  e.preventDefault();
-  var form = $(this).parents('form');
-  Swal.fire({
-    title: "Are you sure?",
-    text: "You will not be able to recover this permission!",
-    type: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#DD6B55",
-    confirmButtonText: "Yes, delete it!",
-    closeOnConfirm: true
-  },
-   function(isConfirm){
-   	if (isConfirm) {
-    	form.submit();
-   	};
-  });
-})
-</script>
+
 @stop
