@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\ActivityFilters;
 use App\Models\Activity;
 use App\Http\Requests\SeriesRequest;
+use App\Http\ResultBuilder\ListEntityResultBuilder;
+use App\Models\Action;
 use App\Models\Series;
 use App\Models\User;
+use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Session;
@@ -34,19 +39,17 @@ class ActivityController extends Controller
 
     protected string $sortOrder;
 
-    protected array $defaultCriteria;
-
     protected bool $hasFilter;
 
     protected array $filters;
 
-    protected string $entityType;
+    // this is the class specifying the filters methods for each field
+    protected ActivityFilters $filter;
 
-    public function __construct()
+    public function __construct(ActivityFilters $filter)
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
-
-        $this->entityType = 'activities';
+        $this->filter = $filter;
 
         // prefix for session storage
         $this->prefix = 'app.activities.';
@@ -59,182 +62,115 @@ class ActivityController extends Controller
         $this->rpp = 100;
         $this->childRpp = 10;
         $this->page = 1;
-        $this->sort = ['name', 'desc'];
-        $this->sortBy = 'name';
-        $this->sortOrder = 'asc';
-        $this->defaultCriteria = null;
-        $this->hasFilter = 0;
+        $this->sort = ['object_name', 'desc'];
+        $this->sortBy = 'object_name';
+        $this->sortOrder = 'desc';
+        $this->hasFilter = false;
         parent::__construct();
     }
 
-    /**
-     * Filter the list of activities.
-     *
-     * @return View | string
-     *
-     * @internal param $Request
-     *
-     * @throws \Throwable
-     */
-    public function filter(Request $request)
-    {
-        // update filters from request
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
+    public function filter(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_activity');
+        $listParamSessionStore->setKeyPrefix('internal_activity_index');
 
-        // get all the filters from the session
-        $this->filters = $this->getFilters($request);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([ActivityController::class, 'index']));
 
-        // get  sort, sort order, rpp from session, update from request
-        $this->getPaging($this->filters);
-        $this->updatePaging($request);
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Activity::query()->select('activities.*');
 
-        // set flag if there are filters
-        $this->hasFilter = $this->hasFilter($this->filters);
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['activities.created_at' => 'desc']);
 
-        // get the criteria given the request (could pass filters instead?)
-        $query = $this->buildCriteria($request);
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
-        // apply the filters to the query
-        // get the entities and paginate
-        $activities = $query->paginate($this->rpp);
-        $activities->filter(function ($e) {
-            return ($e->visibility && 'Public' === $e->visibility->name) || ($this->user && $e->created_by === $this->user->id);
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the activities
+        $activities = $query->paginate($listResultSet->getLimit())
+        ->groupBy(function ($activity) {
+            return $activity->created_at->format('Y-m-d');
         });
 
-        return view('activity.index')
-            ->with(['rpp' => $this->rpp,
-                'sortBy' => $this->sortBy,
-                'sortOrder' => $this->sortOrder,
-                'filters' => $this->filters,
-                'hasFilter' => $this->hasFilter,
-            ])
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        return view('activities.index')
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
             ->with(compact('activities'))
             ->render();
     }
 
-    /**
-     * Checks if there is a valid filter.
-     */
-    public function hasFilter(array $filters): bool
-    {
-        $arr = $filters;
-        unset($arr['rpp'], $arr['sortOrder'], $arr['sortBy'], $arr['page']);
+    public function index(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_activity');
+        $listParamSessionStore->setKeyPrefix('internal_activity_index');
 
-        return count(array_filter($arr, function ($x) { return !empty($x); }));
-    }
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([ActivityController::class, 'index']));
 
-    /**
-     * Update the page list parameters from the request.
-     */
-    protected function getPaging(array $filters): void
-    {
-        $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
-        $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
-        $this->rpp = $filters['rpp'] ?? $this->rpp;
-    }
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Activity::query()->select('activities.*');
 
-    /**
-     * Update the page list parameters from the request.
-     */
-    protected function updatePaging(Request $request): void
-    {
-        // set sort by column
-        if ($request->input('sort_by')) {
-            $this->sortBy = $request->input('sort_by');
-        }
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['activities.created_at' => 'desc']);
 
-        // set sort direction
-        if ($request->input('sort_direction')) {
-            $this->sortOrder = $request->input('sort_direction');
-        }
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
-        // set results per page
-        if ($request->input('rpp')) {
-            $this->rpp = $request->input('rpp');
-        }
-    }
+        // get the query builder
+        $query = $listResultSet->getList();
 
-    /**
-     * Get the base criteria.
-     */
-    protected function baseCriteria()
-    {
-        return Activity::query();
-    }
+        // get the activities
+        $activities = $query->paginate($listResultSet->getLimit())
+        ->groupBy(function ($activity) {
+            return $activity->created_at->format('Y-m-d');
+        });
 
-    /**
-     * Set filters attribute.
-     *
-     * @return array
-     */
-    public function setFilters(Request $request, array $input)
-    {
-        return $this->setAttribute($request, 'filters', $input);
-    }
+        // saves the updated session
+        $listParamSessionStore->save();
 
-    /**
-     * Set user session attribute.
-     *
-     * @param string $attribute
-     * @param mixed  $value
-     */
-    public function setAttribute(Request $request, string $attribute, $value)
-    {
-        $request->session()->put($this->prefix . $attribute, $value);
-    }
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-    /**
-     * Reset the filtering of entities.
-     *
-     * @return Response | View | string
-     *
-     * @throws \Throwable
-     */
-    public function reset(Request $request)
-    {
-        // doesn't have filter, but temp
-        $this->hasFilter = 0;
-
-        // set the filters to empty
-        $this->setFilters($request, $this->getDefaultFilters());
-
-        // base criteria
-        $query = $this->baseCriteria();
-
-        // updates sort, rpp from request
-        $this->updatePaging($request);
-
-        // get activities
-        $activities = $query->paginate($this->rpp);
-
-        return view('activity.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
-            ->with(compact('activities'))
-            ->render();
-    }
-
-    public function index(Request $request)
-    {
-        // update filters from request
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
-
-        // get all the filters from the session
-        $this->filters = $this->getFilters($request);
-
-        // get  sort, sort order, rpp from session, update from request
-        $this->getPaging($this->filters);
-        $this->updatePaging($request);
-
-        // set flag if there are filters
-        $this->hasFilter = $this->hasFilter($this->filters);
-
-        // base criteria
-        $query = $this->buildCriteria($request);
-
-        $activities = $query->paginate($this->rpp);
-
-        return view('activity.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter, 'filters' => $this->filters])
+        return view('activities.index')
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
             ->with(compact('activities'))
             ->render();
     }
@@ -266,36 +202,6 @@ class ActivityController extends Controller
     }
 
     /**
-     * Get the current page for this module.
-     *
-     * @return int
-     */
-    public function getPage(Request $request)
-    {
-        return $this->getAttribute($request, 'page', 1);
-    }
-
-    /**
-     * Get the current results per page.
-     *
-     * @return int
-     */
-    public function getRpp(Request $request)
-    {
-        return $this->getAttribute($request, 'rpp', $this->rpp);
-    }
-
-    /**
-     * Get the sort order and column.
-     *
-     * @return array
-     */
-    public function getSort(Request $request)
-    {
-        return $this->getAttribute($request, 'sort', $this->getDefaultSort());
-    }
-
-    /**
      * Get the default sort array.
      *
      * @return array
@@ -306,92 +212,6 @@ class ActivityController extends Controller
     }
 
     /**
-     * Set page attribute.
-     *
-     * @param int $input
-     *
-     * @return int
-     */
-    public function setPage(Request $request, $input)
-    {
-        return $this->setAttribute($request, 'page', $input);
-    }
-
-    /**
-     * Set results per page attribute.
-     *
-     * @param int $input
-     *
-     * @return int
-     */
-    public function setRpp(Request $request, $input)
-    {
-        return $this->setAttribute($request, 'rpp', 5);
-    }
-
-    /**
-     * Set sort order attribute.
-     *
-     * @return array
-     */
-    public function setSort(Request $request, array $input)
-    {
-        return $this->setAttribute($request, 'sort', $input);
-    }
-
-    /**
-     * Builds the criteria from the session.
-     */
-    public function buildCriteria(Request $request): Builder
-    {
-        // get all the filters from the session
-        $filters = $this->getFilters($request);
-
-        // base criteria
-        $query = $this->baseCriteria();
-
-        if (!empty($filters['filter_name'])) {
-            // getting name from the request
-            $name = $filters['filter_name'];
-            $query->where('name', 'like', '%' . $name . '%');
-        }
-
-        if (!empty($filters['filter_object_table'])) {
-            $object_table = $filters['filter_object_table'];
-            $query->where('object_table', 'like', '%' . $object_table . '%');
-        }
-
-        // change this - should be separate
-        if (!empty($filters['filter_rpp'])) {
-            $this->rpp = $filters['filter_rpp'];
-        }
-
-        return $query;
-    }
-
-    /**
-     * Get session filters.
-     */
-    public function getFilters(Request $request): array
-    {
-        return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
-    }
-
-    /**
-     * Get user session attribute.
-     *
-     * @param string $attribute
-     * @param mixed  $default
-     *
-     * @return mixed
-     */
-    public function getAttribute(Request $request, $attribute, $default = null)
-    {
-        return $request->session()
-            ->get($this->prefix . $attribute, $default);
-    }
-
-    /**
      * Get the default filters array.
      *
      * @return array
@@ -399,5 +219,63 @@ class ActivityController extends Controller
     public function getDefaultFilters()
     {
         return [];
+    }
+
+    /**
+     * Reset the rpp, sort, order
+     *
+     * @throws \Throwable
+     */
+    public function rppReset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ): RedirectResponse {
+        // set the rpp, sort, direction only to default values
+        $keyPrefix = $request->get('key') ?? 'internal_activity_index';
+        $listParamSessionStore->setBaseIndex('internal_activity');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
+
+        // clear
+        $listParamSessionStore->clearSort();
+
+        return redirect()->route('activities.index');
+    }
+
+    /**
+     * Reset the filtering of entities.
+     *
+     * @return Response
+     */
+    public function reset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ) {
+        // set filters and list controls to default values
+        $keyPrefix = $request->get('key') ?? 'internal_activity_index';
+        $listParamSessionStore->setBaseIndex('internal_activity');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
+
+        // clear
+        $listParamSessionStore->clearFilter();
+        $listParamSessionStore->clearSort();
+
+        return redirect()->route($request->get('redirect') ?? 'activities.index');
+    }
+
+    protected function getListControlOptions(): array
+    {
+        return  [
+            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
+            'sortOptions' => ['activities.object_name' => 'Name', 'activities.object_table' => 'Table', 'activities.created_at' => 'Created At'],
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+        ];
+    }
+
+    protected function getFilterOptions(): array
+    {
+        return  [
+            'actionOptions' => ['' => '&nbsp;'] + Action::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+            'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all()
+        ];
     }
 }

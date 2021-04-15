@@ -72,11 +72,10 @@ Route::get('calendar/min_age/{age}', 'EventsController@calendarMinAge')->name('c
 
 Route::get('search', 'PagesController@search');
 
-Route::get('activity', 'PagesController@activity')->name('pages.activity');
-
-Route::get('activity/filter', ['as' => 'activity.filter', 'uses' => 'PagesController@filter']);
-Route::get('activity/reset', ['as' => 'activity.reset', 'uses' => 'PagesController@reset']);
-Route::get('activity/rpp-reset', ['as' => 'activity.rppResetActivity', 'uses' => 'PagesController@rppResetActivity']);
+Route::match(['get', 'post'], 'activity/filter', ['as' => 'activities.filter', 'uses' => 'ActivityController@filter']);
+Route::get('activity', 'ActivityController@index')->name('activities.index');
+Route::get('activity/reset', ['as' => 'activities.reset', 'uses' => 'ActivityController@reset']);
+Route::get('activity/rpp-reset', ['as' => 'activities.rppReset', 'uses' => 'ActivityController@rppReset']);
 
 Route::get('tools', 'PagesController@tools')->name('pages.tools');
 Route::post('invite', 'PagesController@invite')->name('pages.invite');
