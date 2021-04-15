@@ -5,9 +5,9 @@
 @section('content')
 
 
-<h1>Group
+<h4>Group
 	@include('groups.crumbs', ['slug' => $group->label])
-</h1>
+</h4>
 
 <P>
 @can('edit_group')

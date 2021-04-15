@@ -2,7 +2,7 @@
 
 @section('content')
 
-	<h3>Add a New Group</h3>
+	<h4>Add a New Group</h4>
 
 	{!! Form::open(['route' => 'groups.store']) !!}
 

@@ -5,7 +5,7 @@
 @section('content')
 
 
-	<h2>Group . EDIT : {{ $group->name }}</h2>
+	<h4>Group . EDIT : {{ $group->name }}</h4>
 	<br> 	<a href="{!! route('groups.show', ['group' => $group->id]) !!}" class="btn btn-primary">Show Group</a> <a href="{!! URL::route('groups.index') !!}" class="btn btn-info">Return to list</a>
 
 

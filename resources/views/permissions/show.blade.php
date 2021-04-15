@@ -5,9 +5,9 @@
 @section('content')
 
 
-<h1>Permission
+<h4>Permission
 	@include('permissions.crumbs', ['slug' => $permission->label])
-</h1>
+</h4>
 
 <P>
 @can('edit_permission')

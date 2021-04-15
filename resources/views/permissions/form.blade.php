@@ -34,7 +34,7 @@
 <div class="row">
 	<div class="form-permission col-md-2">
 	{!! Form::label('group_list','Groups:') !!}
-		{!! Form::select('group_list[]', $groups, null, ['id' => 'group_list', 'class' =>'form-control select2',
+		{!! Form::select('group_list[]', $groupOptions, null, ['id' => 'group_list', 'class' =>'form-control select2',
 'data-placeholder' => 'Choose a group',
 'data-tags' =>'true',
  'multiple']) !!}
@@ -43,8 +43,9 @@
 	</div>
 </div>
 
-
-<div class="form-permission">
-{!! Form::submit(isset($action) ? 'Update Permission' : 'Add Permission', null, ['class' =>'btn btn-primary']) !!}
+<div class="row mt-2 mb-2">
+	<div class="form-permission col-md-2">
+	{!! Form::submit(isset($action) ? 'Update Permission' : 'Add Permission', ['class' =>'btn btn-primary']) !!}
+	</div>
 </div>
 
