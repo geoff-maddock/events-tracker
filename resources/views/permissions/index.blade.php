@@ -94,7 +94,7 @@
 		<div id="all-permissions-list" class="col-lg-6">
 			{!! $permissions->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->render() !!}
 			@include('permissions.list', ['permissions' => $permissions])
-		{!! $permissions->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->render() !!}
+			{!! $permissions->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->render() !!}
 		</div>
 
 @stop
