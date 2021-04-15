@@ -341,7 +341,11 @@ Route::resource('entity-types', 'EntityTypesController');
 Route::delete('entity-types/{id}', 'EntityTypesController@destroy');
 
 // GROUPS
+Route::match(['get', 'post'], 'groups/filter', ['as' => 'groups.filter', 'uses' => 'GroupsController@filter']);
 Route::get('groups/all', 'GroupsController@indexAll');
+
+Route::get('groups/reset', ['as' => 'groups.reset', 'uses' => 'GroupsController@reset']);
+Route::get('groups/rpp-reset', ['as' => 'groups.rppReset', 'uses' => 'GroupsController@rppReset']);
 
 Route::bind('groups', function ($id) {
     return Group::whereId($id)->firstOrFail();

@@ -2,7 +2,7 @@
 
 @section('content')
 
-	<h3>Add a New Permission</h3>
+	<h4>Add a New Permission</h4>
 
 	{!! Form::open(['route' => 'permissions.store']) !!}
 

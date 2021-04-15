@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\GroupFilters;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupRequest;
+use App\Http\ResultBuilder\ListEntityResultBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\Group;
 use App\Models\Permission;
 use App\Models\User;
+use App\Services\SessionStore\ListParameterSessionStore;
+use Illuminate\Http\RedirectResponse;
 
 class GroupsController extends Controller
 {
@@ -38,14 +42,29 @@ class GroupsController extends Controller
 
     protected bool $hasFilter;
 
-    public function __construct()
+    // this is the class specifying the filters methods for each field
+    protected GroupFilters $filter;
+
+    public function __construct(GroupFilters $filter)
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
+        $this->filter = $filter;
+
+        // prefix for session storage
+        $this->prefix = 'app.groups.';
 
         // default list variables
-        $this->rpp = 15;
+        $this->defaultRpp = 10;
+        $this->defaultSortBy = 'name';
+        $this->defaultSortOrder = 'asc';
+
         $this->sortBy = 'created_at';
         $this->sortOrder = 'desc';
+        $this->rpp = 10;
+        $this->page = 1;
+        $this->sort = ['name', 'desc'];
+
+        $this->hasFilter = false;
 
         parent::__construct();
     }
@@ -55,110 +74,150 @@ class GroupsController extends Controller
      *
      * @return Response
      */
-    public function index(Request $request)
-    {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+    public function index(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ) {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_group');
+        $listParamSessionStore->setKeyPrefix('internal_group_index');
 
-        $groups = Group::orderBy($this->sortBy, $this->sortOrder)->paginate($this->rpp);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([GroupsController::class, 'index']));
 
-        return view('groups.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
-            ->with(compact('groups'));
-    }
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Group::query()->select('groups.*');
 
-    /**
-     * Update the page list parameters from the request
-     *
-     */
-    protected function updatePaging($request)
-    {
-        // set sort by column
-        if ($request->input('sort_by')) {
-            $this->sortBy = $request->input('sort_by');
-        };
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['groups.created_at' => 'desc']);
 
-        // set sort order
-        if ($request->input('sort_order')) {
-            $this->sortOrder = $request->input('sort_order');
-        };
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
-        // set results per page
-        if ($request->input('rpp')) {
-            $this->rpp = $request->input('rpp');
-        };
-    }
+        // get the query builder
+        $query = $listResultSet->getList();
 
-    /**
-     * Display a listing of groups by user
-     *
-     * @return Response
-     */
-    public function indexUsers(Request $request, User $user)
-    {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+        // get the groups
+        $groups = $query->paginate($listResultSet->getLimit());
 
-        $groups = Group::getByUser(ucfirst($user))
-                    ->orderBy('name', 'ASC')
-                    ->get();
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('groups.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
-            ->with(compact('groups', 'user'));
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
+            ->with(compact('groups'))
+            ->render();
     }
 
     /**
-     * Display a listing of groups by permission
+     * Display a listing of the resource.
      *
      * @return Response
      */
-    public function indexPermissions($permission)
-    {
-        $groups = Group::getByPermission(ucfirst($permission))
-                    ->orderBy('name', 'ASC')
-                    ->get();
+    public function filter(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ) {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_group');
+        $listParamSessionStore->setKeyPrefix('internal_group_index');
 
-        return view('groups.index', compact('groups', 'permission'));
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([GroupsController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Group::query()->select('groups.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['groups.created_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the groups
+        $groups = $query->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        return view('groups.index')
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
+            ->with(compact('groups'))
+            ->render();
     }
 
     /**
-     * Filter the list of groups
+     * Reset the rpp, sort, order
      *
-     * @return Response
+     * @throws \Throwable
      */
-    public function filter(Request $request)
-    {
-        $groups = Group::all();
-        $permission = null;
+    public function rppReset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ): RedirectResponse {
+        // set the rpp, sort, direction only to default values
+        $keyPrefix = $request->get('key') ?? 'internal_group_index';
+        $listParamSessionStore->setBaseIndex('internal_group');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
 
-        // check request for passed filter values
-        if ($request->input('filter_permission')) {
-            $permission = $request->input('filter_permission');
-            $groups = Group::getByPermission(ucfirst($permission))
-                        ->orderBy('name', 'ASC')
-                        ->get();
-        };
+        // clear
+        $listParamSessionStore->clearSort();
 
-        if ($request->input('filter_name')) {
-            $name = $request->input('filter_name');
-            $groups = Group::where('name', $name)->get();
-        }
-
-        return view('groups.index', compact('groups', 'permission'));
+        return redirect()->route('groups.index');
     }
 
     /**
-     * Reset the filtering of groups
+     * Reset the filtering of entities.
      *
      * @return Response
      */
-    public function reset()
-    {
-        $groups = Group::orderBy('name', 'ASC')
-                        ->get();
+    public function reset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ) {
+        // set filters and list controls to default values
+        $keyPrefix = $request->get('key') ?? 'internal_group_index';
+        $listParamSessionStore->setBaseIndex('internal_group');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
 
-        return view('groups.index', compact('groups'));
+        // clear
+        $listParamSessionStore->clearFilter();
+        $listParamSessionStore->clearSort();
+
+        return redirect()->route($request->get('redirect') ?? 'groups.index');
     }
 
     /**
@@ -168,10 +227,8 @@ class GroupsController extends Controller
      */
     public function create()
     {
-        $permissions = Permission::orderBy('name')->pluck('name', 'id')->all();
-        $users = User::orderBy('name')->pluck('name', 'id')->all();
-
-        return view('groups.create', compact('permissions', 'users'));
+        return view('groups.create')
+            ->with($this->getFormOptions());
     }
 
     /**
@@ -216,10 +273,8 @@ class GroupsController extends Controller
     {
         $this->middleware('auth');
 
-        $permissions = Permission::orderBy('name')->pluck('name', 'id')->all();
-        $users = User::orderBy('name')->pluck('name', 'id')->all();
-
-        return view('groups.edit', compact('group', 'permissions', 'users'));
+        return view('groups.edit', compact('group'))
+          ->with($this->getFormOptions());
     }
 
     /**
@@ -234,14 +289,6 @@ class GroupsController extends Controller
         $msg = '';
 
         $group->fill($request->input())->save();
-
-        // do a check here that the user can update groups
-        /*
-        if (!$group->ownedBy(\Auth::user()))
-        {
-            $this->unauthorized($request);
-        };
-        */
 
         $group->permissions()->sync($request->input('permission_list', []));
 
@@ -262,5 +309,28 @@ class GroupsController extends Controller
         $group->delete();
 
         return redirect('groups');
+    }
+
+    protected function getListControlOptions(): array
+    {
+        return  [
+            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
+            'sortOptions' => ['groups.name' => 'Name', 'groups.created_at' => 'Created At', 'groups.label' => 'Label', 'groups.level' => 'Level'],
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+        ];
+    }
+
+    protected function getFilterOptions(): array
+    {
+        return  [
+        ];
+    }
+
+    protected function getFormOptions(): array
+    {
+        return [
+            'permissionOptions' => Permission::orderBy('name')->pluck('name', 'id')->all(),
+            'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all()
+        ];
     }
 }

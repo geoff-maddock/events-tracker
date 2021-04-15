@@ -275,3 +275,17 @@ li.selected:hover {
 li.select2-results__option {
 	color: #989898;
 }
+.invalid-feedback {
+    display: none;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 80%;
+    color: #d9534f;
+}
+
+.help-block {
+	display: block;
+	margin-top: 5px;
+	margin-bottom: 10px;
+	color: #d9534f !important;
+  }

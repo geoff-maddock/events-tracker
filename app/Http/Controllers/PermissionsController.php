@@ -192,44 +192,6 @@ class PermissionsController extends Controller
     }
 
     /**
-     * Update the page list parameters from the request
-     *
-     */
-    protected function updatePaging($request)
-    {
-        if (!empty($request->input('sort_by'))) {
-            $this->sortBy = $request->input('sort_by');
-        }
-
-        if (!empty($request->input('sort_order'))) {
-            $this->sortOrder = $request->input('sort_order');
-        }
-
-        if (!empty($request->input('rpp')) && is_numeric($request->input('rpp'))) {
-            $this->rpp = $request->input('rpp');
-        }
-    }
-
-    /**
-     * Display a listing of permissions by group
-     *
-     * @return Response
-     */
-    public function indexGroups(Request $request, $group)
-    {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
-
-        $permissions = Permission::getByGroup(ucfirst($group))
-                    ->orderBy('name', 'ASC')
-                    ->get();
-
-        return view('permissions.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder])
-            ->with(compact('permissions', 'group'));
-    }
-
-    /**
      * Reset the rpp, sort, order
      *
      * @throws \Throwable
@@ -279,7 +241,8 @@ class PermissionsController extends Controller
     {
         $groups = Group::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('permissions.create', compact('groups'));
+        return view('permissions.create')
+        ->with($this->getFormOptions());
     }
 
     /**
@@ -327,7 +290,8 @@ class PermissionsController extends Controller
 
         $groups = Group::orderBy('name')->pluck('name', 'id')->all();
 
-        return view('permissions.edit', compact('permission', 'groups'));
+        return view('permissions.edit', compact('permission'))
+        ->with($this->getFormOptions());
     }
 
     /**
@@ -359,5 +323,12 @@ class PermissionsController extends Controller
         $permission->delete();
 
         return redirect('permissions');
+    }
+
+    protected function getFormOptions(): array
+    {
+        return [
+            'groupOptions' => Permission::orderBy('name')->pluck('name', 'id')->all(),
+        ];
     }
 }

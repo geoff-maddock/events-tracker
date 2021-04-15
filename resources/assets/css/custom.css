@@ -144,3 +144,10 @@
 .card-actions:hover {
     color: #31b0d5;
 }
+.invalid-feedback {
+    display: none;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 80%;
+    color: #d9534f;
+}

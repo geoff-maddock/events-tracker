@@ -3,10 +3,10 @@
 	<thead>
 	<!-- CONVERT TO PARTIAL THAT BUILDS THE HEADERS FROM A CONFIGURED ARRAY OR ARRAY FROM DB - SEE MY WORK NOTES -->
 	<tr class="bg-info">
-		<th><a href="?sort_by=id&sort_order={{ $sortOrder == 'desc' ? 'asc' : 'desc' }}">ID</a></th>
-		<th><a href="?sort_by=name&sort_order={{ $sortOrder == 'desc' ? 'asc' : 'desc' }}">Name</a></th>
-		<th><a href="?sort_by=label&sort_order={{ $sortOrder == 'desc' ? 'asc' : 'desc' }}">Label</a></th>
-		<th><a href="?sort_by=level&sort_order={{ $sortOrder == 'desc' ? 'asc' : 'desc' }}">Level</a></th>
+		<th><a href="?sort_by=id&sort_order={{ $direction == 'desc' ? 'asc' : 'desc' }}">ID</a></th>
+		<th><a href="?sort_by=name&sort_order={{ $direction == 'desc' ? 'asc' : 'desc' }}">Name</a></th>
+		<th><a href="?sort_by=label&sort_order={{ $direction == 'desc' ? 'asc' : 'desc' }}">Label</a></th>
+		<th><a href="?sort_by=level&sort_order={{ $direction == 'desc' ? 'asc' : 'desc' }}">Level</a></th>
 		<th style="width: 60px"></th>
 	</tr>
 	</thead>
@@ -38,24 +38,4 @@
 </div>
 
 @section('scripts.footer')
-<script type="text/javascript">
-$('button.delete').on('click', function(e){
-  e.preventDefault();
-  var form = $(this).parents('form');
-  Swal.fire({
-    title: "Are you sure?",
-    text: "You will not be able to recover this group!",
-    type: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#DD6B55",
-    confirmButtonText: "Yes, delete it!",
-    closeOnConfirm: true
-  },
-   function(isConfirm){
-   	if (isConfirm) {
-    	form.submit();
-   	};
-  });
-})
-</script>
 @stop
