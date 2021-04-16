@@ -81,7 +81,7 @@
 							<span class="glyphicon glyphicon-repeat"></span>
 						</a>
 						{!! Form::select('limit', $limitOptions, ($limit ?? 10), ['class' =>'form-control auto-submit']) !!}
-						{!! Form::select('sort', $sortOptions, ($sort ?? 'permissions.name'), ['class' =>'form-control
+						{!! Form::select('sort', $sortOptions, ($sort ?? 'blogs.created_by'), ['class' =>'form-control
 						auto-submit'])
 						!!}
 						{!! Form::select('direction', $directionOptions, ($direction ?? 'desc'), ['class' =>'form-control

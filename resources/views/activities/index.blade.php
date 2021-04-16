@@ -98,12 +98,11 @@
 <br style="clear: left;" />
 
 <!-- LIST OF ALL RECENT ACTIVITY -->
+{!! $activities->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->render() !!}
 <ul class="list-group">
 	@if (count($activities) > 0)
 
-	@foreach ($activities as $date => $record)
-	<h4>{{ $date }}</h4>
-	@foreach ($record as $activity)
+	@foreach ($activities as $activity)
 	<li class="list-group-item {{ $activity->style }} ">
 		{{ $activity->id }}
 		<a href="{{ strtolower($activity->getShowLink()) }}">{{ $activity->message }}</a>
@@ -115,10 +114,9 @@
 			['.$activity->ip_address.']' : '') }} </small>
 	</li>
 	@endforeach
-	@endforeach
 	@endif
-
 </ul>
+{!! $activities->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->render() !!}
 @stop
 
 @section('footer')

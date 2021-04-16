@@ -21,15 +21,9 @@ class PermissionsController extends Controller
 
     protected int $defaultRpp;
 
-    protected int $defaultGridRpp;
-
     protected string $defaultSortBy;
 
     protected string $defaultSortOrder;
-
-    protected int $gridRpp;
-
-    protected int $page;
 
     protected array $sort;
 
@@ -54,15 +48,12 @@ class PermissionsController extends Controller
 
         // default list variables
         $this->defaultRpp = 10;
-        $this->defaultGridRpp = 24;
         $this->defaultSortBy = 'name';
         $this->defaultSortOrder = 'asc';
 
         $this->sortBy = 'created_at';
         $this->sortOrder = 'desc';
         $this->rpp = 10;
-        $this->gridRpp = 24;
-        $this->page = 1;
         $this->sort = ['name', 'desc'];
 
         $this->hasFilter = false;

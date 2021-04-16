@@ -96,10 +96,7 @@ class ActivityController extends Controller
         $query = $listResultSet->getList();
 
         // get the activities
-        $activities = $query->paginate($listResultSet->getLimit())
-        ->groupBy(function ($activity) {
-            return $activity->created_at->format('Y-m-d');
-        });
+        $activities = $query->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();
@@ -149,10 +146,7 @@ class ActivityController extends Controller
         $query = $listResultSet->getList();
 
         // get the activities
-        $activities = $query->paginate($listResultSet->getLimit())
-        ->groupBy(function ($activity) {
-            return $activity->created_at->format('Y-m-d');
-        });
+        $activities = $query->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();

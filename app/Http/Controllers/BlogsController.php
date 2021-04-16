@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\BlogFilters;
 use App\Models\Activity;
 use App\Models\Blog;
 use App\Models\ContentType;
 use App\Models\Entity;
 use App\Http\Requests\BlogRequest;
+use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Like;
 use App\Models\Menu;
 use App\Models\Tag;
-use App\Models\TagType;
+use App\Models\User;
 use App\Models\Visibility;
+use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -23,20 +26,49 @@ use Illuminate\View\View;
 
 class BlogsController extends Controller
 {
+    protected string $prefix;
+
     protected int $rpp;
+
+    protected int $defaultRpp;
+
+    protected string $defaultSortBy;
+
+    protected string $defaultSortOrder;
+
+    protected array $sort;
 
     protected string $sortBy;
 
-    protected string $sortDirection;
+    protected string $sortOrder;
 
-    public function __construct()
+    protected array $filters;
+
+    protected bool $hasFilter;
+
+    // this is the class specifying the filters methods for each field
+    protected BlogFilters $filter;
+
+    public function __construct(BlogFilters $filter)
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
 
+        $this->filter = $filter;
+
+        // prefix for session storage
+        $this->prefix = 'app.blogs.';
+
         // default list variables
-        $this->rpp = 15;
+        $this->defaultRpp = 10;
+        $this->defaultSortBy = 'created_at';
+        $this->defaultSortOrder = 'asc';
+
         $this->sortBy = 'created_at';
-        $this->sortDirection = 'desc';
+        $this->sortOrder = 'desc';
+        $this->rpp = 10;
+        $this->sort = ['name', 'desc'];
+
+        $this->hasFilter = false;
 
         parent::__construct();
     }
@@ -44,23 +76,107 @@ class BlogsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
-    {
-        // if the gate does not allow this user to show a blog redirect to home
-//        if (Gate::denies('show_blog')) {
-//            flash()->error('Unauthorized', 'Your cannot view the blog');
-//
-//            return redirect()->back();
-//        }
+    public function index(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_blog');
+        $listParamSessionStore->setKeyPrefix('internal_blog_index');
 
-        $blogs = Blog::orderBy('created_at', 'desc')->paginate($this->rpp);
-        $blogs->filter(function ($e) {
-            return ($e->visibility && 'Public' === $e->visibility->name) || ($this->user && $e->created_by === $this->user->id);
-        });
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([BlogsController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Blog::query()->select('blogs.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['blogs.created_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // query and paginate the blogs
+        $blogs = $query->visible($this->user)->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('blogs.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
-            ->with(compact('blogs'));
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
+            ->with(compact('blogs'))
+            ->render();
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function filter(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_blog');
+        $listParamSessionStore->setKeyPrefix('internal_blog_index');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([BlogsController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Blog::query()->select('blogs.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['blogs.created_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // query and paginate the blogs
+        $blogs = $query->visible($this->user)->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        return view('blogs.index')
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
+            ->with(compact('blogs'))
+            ->render();
     }
 
     /**
@@ -70,13 +186,11 @@ class BlogsController extends Controller
      */
     public function create()
     {
-        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $menus = ['' => ''] + Menu::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $entities = Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $contentTypes = ['' => ''] + ContentType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $blog = new Blog();
+        $blog->content_type_id = ContentType::PLAIN_TEXT;
 
-        return view('blogs.create', compact('visibilities', 'tags', 'entities', 'menus', 'contentTypes'));
+        return view('blogs.create', compact('blog'))
+            ->with($this->getFormOptions());
     }
 
     /**
@@ -155,13 +269,6 @@ class BlogsController extends Controller
      */
     public function show(Blog $blog)
     {
-        // if the gate does not allow this user to show a forum redirect to home
-//        if (Gate::denies('show_blog')) {
-//            flash()->error('Unauthorized', 'Your cannot view the blog');
-//
-//            return redirect()->back();
-//        }
-
         return view('blogs.show', compact('blog'));
     }
 
@@ -174,13 +281,8 @@ class BlogsController extends Controller
     {
         $this->middleware('auth');
 
-        $visibilities = ['' => ''] + Visibility::pluck('name', 'id')->all();
-        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $entities = Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $menus = ['' => ''] + Menu::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $contentTypes = ['' => ''] + ContentType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        return view('blogs.edit', compact('blog', 'visibilities', 'tags', 'entities', 'menus', 'contentTypes'));
+        return view('blogs.edit', compact('blog'))
+            ->with($this->getFormOptions());
     }
 
     /**
@@ -322,6 +424,47 @@ class BlogsController extends Controller
         return back();
     }
 
+    /**
+     * Reset the rpp, sort, order
+     *
+     * @throws \Throwable
+     */
+    public function rppReset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ): RedirectResponse {
+        // set the rpp, sort, direction only to default values
+        $keyPrefix = $request->get('key') ?? 'internal_blog_index';
+        $listParamSessionStore->setBaseIndex('internal_blog');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
+
+        // clear
+        $listParamSessionStore->clearSort();
+
+        return redirect()->route('blogs.index');
+    }
+
+    /**
+     * Reset the filtering of blogs.
+     *
+     * @return Response
+     */
+    public function reset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ) {
+        // set filters and list controls to default values
+        $keyPrefix = $request->get('key') ?? 'internal_blog_index';
+        $listParamSessionStore->setBaseIndex('internal_blog');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
+
+        // clear
+        $listParamSessionStore->clearFilter();
+        $listParamSessionStore->clearSort();
+
+        return redirect()->route($request->get('redirect') ?? 'blogs.index');
+    }
+
     protected function unauthorized(Request $request): RedirectResponse
     {
         if ($request->ajax()) {
@@ -331,5 +474,33 @@ class BlogsController extends Controller
         Session::flash('flash_message', 'Not authorized');
 
         return redirect('/');
+    }
+
+    protected function getListControlOptions(): array
+    {
+        return  [
+            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
+            'sortOptions' => ['blogs.name' => 'Name', 'blogs.created_at' => 'Created At'],
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+        ];
+    }
+
+    protected function getFilterOptions(): array
+    {
+        return  [
+            'userOptions' => ['' => '&nbsp;'] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+        ];
+    }
+
+    protected function getFormOptions(): array
+    {
+        return [
+            'visibilityOptions' => ['' => ''] + Visibility::pluck('name', 'id')->all(),
+            'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'menuOptions' => ['' => ''] + Menu::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'contentTypeOptions' => ['' => ''] + ContentType::orderBy('name', 'ASC')->pluck('name', 'id')->all()
+        ];
     }
 }

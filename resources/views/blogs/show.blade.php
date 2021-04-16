@@ -5,9 +5,9 @@
 @section('content')
 
 
-<h1>Blog
+<h4>Blog
 	@include('blogs.crumbs', ['slug' => $blog->label])
-</h1>
+</h4>
 
 <P>
 @can('edit_blog')
