@@ -13,10 +13,32 @@ class BlogFilters extends QueryFilter
         }
     }
 
-    public function slug($value = null)
+    public function body($value = null)
     {
         if (isset($value)) {
-            return $this->builder->where('slug', $value);
+            return $this->builder->where('body', $value);
+        } else {
+            return $this->builder;
+        }
+    }
+
+    public function user($value = null)
+    {
+        if (isset($value)) {
+            return $this->builder->whereHas('user', function ($q) use ($value) {
+                $q->where('name', '=', $value);
+            });
+        } else {
+            return $this->builder;
+        }
+    }
+
+    public function tag($value = null)
+    {
+        if (isset($value)) {
+            return $this->builder->whereHas('tags', function ($q) use ($value) {
+                $q->where('name', '=', ucfirst($value));
+            });
         } else {
             return $this->builder;
         }

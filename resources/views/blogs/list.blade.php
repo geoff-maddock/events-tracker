@@ -3,9 +3,9 @@
 	<thead>
 	<!-- CONVERT TO PARTIAL THAT BUILDS THE HEADERS FROM A CONFIGURED ARRAY OR ARRAY FROM DB - SEE MY WORK NOTES -->
 	<tr class="bg-info">
-		<th><a href="?sort_by=id&sort_direction={{ $sortDirection == 'desc' ? 'asc' : 'desc' }}">ID</a></th>
-		<th><a href="?sort_by=name&sort_direction={{ $sortDirection == 'desc' ? 'asc' : 'desc' }}">Name</a></th>
-		<th><a href="?sort_by=slug&sort_direction={{ $sortDirection == 'desc' ? 'asc' : 'desc' }}">Slug</a></th>
+		<th><a href="?sort_by=id&sort_direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">ID</a></th>
+		<th><a href="?sort_by=name&sort_direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">Name</a></th>
+		<th><a href="?sort_by=slug&sort_direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">Slug</a></th>
 		<th style="width: 60px"></th>
 	</tr>
 	</thead>

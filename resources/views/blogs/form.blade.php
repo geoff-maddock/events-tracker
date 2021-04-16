@@ -27,7 +27,7 @@
 
 	<div class="form-group col-md-2 {{$errors->has('menu_id') ? 'has-error' : '' }}">
 		{!! Form::label('menu_id', 'Menu:') !!}
-		{!! Form::select('menu_id', $menus, ($blog->menu_id ?? NULL), ['class' =>'form-control']) !!}
+		{!! Form::select('menu_id', $menuOptions, ($blog->menu_id ?? NULL), ['class' =>'form-control']) !!}
 		{!! $errors->first('menu_id','<span class="help-block">:message</span>') !!}
 	</div>
 
@@ -36,7 +36,7 @@
 <div class="row">
 	<div class="form-group col-md-2 {{$errors->has('content_type_id') ? 'has-error' : '' }}">
 		{!! Form::label('content_type_id','Content Type:') !!}
-		{!! Form::select('content_type_id', $contentTypes, ($blog->content_type_id ?? NULL), ['class' =>'form-control']) !!}
+		{!! Form::select('content_type_id', $contentTypeOptions, ($blog->content_type_id ?? NULL), ['class' =>'form-control']) !!}
 		{!! $errors->first('content_type_id','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -45,7 +45,7 @@
 <div class="row">
 	<div class="form-group col-md-2 {{$errors->has('visibility_id') ? 'has-error' : '' }}">
 		{!! Form::label('visibility_id','Visibility:') !!}
-		{!! Form::select('visibility_id', $visibilities, ($blog->visibility_id ?? 3), ['class' =>'form-control']) !!}
+		{!! Form::select('visibility_id', $visibilityOptions, ($blog->visibility_id ?? 3), ['class' =>'form-control']) !!}
 		{!! $errors->first('visibility_id','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -61,7 +61,7 @@
 <div class="row">
 	<div class="form-group col-md-2">
 		{!! Form::label('entity_list','Related Entities:') !!}
-		{!! Form::select('entity_list[]', $entities, null, ['id' => 'entity_list',
+		{!! Form::select('entity_list[]', $entityOptions, null, ['id' => 'entity_list',
          'class' =>'form-control select2',
          'data-placeholder' =>'Choose a related artist, producer, dj',
          'data-tags' => 'false',
@@ -73,7 +73,7 @@
 <div class="row">
 	<div class="form-group col-md-2">
 		{!! Form::label('tag_list','Tags:') !!}
-		{!! Form::select('tag_list[]', $tags, null, ['id' => 'tag_list', 'class' =>'form-control select2',
+		{!! Form::select('tag_list[]', $tagOptions, null, ['id' => 'tag_list', 'class' =>'form-control select2',
         'data-placeholder' => 'Choose a tag',
         'data-tags' =>'true',
          'multiple']) !!}
