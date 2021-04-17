@@ -4,9 +4,10 @@
 
 @section('content')
 
-	<P><B>Event</B> > {!! link_to_route('events.show', $event->id, [$event->id]) !!}</P>
+	<h4><B>Event</B>  {!! link_to_route('events.show', $event->name, [$event->id]) !!}</P>
 
-	<h3>Add a Review</h3>
+		<a href="{!! route('events.show', ['event' => $event->id]) !!}" class="btn btn-primary">View Event</a>
+	<h4>Add a Review</h4>
 
 	{!! Form::open(['route' => ['events.reviews.store', $event->id], 'method' => 'POST']) !!}
 

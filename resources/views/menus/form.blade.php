@@ -36,11 +36,10 @@
 <div class="row">
 	<div class="form-group col-md-2 {{$errors->has('visibility_id') ? 'has-error' : '' }}">
 		{!! Form::label('visibility_id','Visibility:') !!}
-		{!! Form::select('visibility_id', $visibilityOptions, (isset($menu->visibility_id) ? $menu->visibility_id : NULL), ['class' =>'form-control']) !!}
+		{!! Form::select('visibility_id', $visibilityOptions, (isset($menu->visibility) ? $menu->visibility->id : NULL), ['class' =>'form-control']) !!}
 		{!! $errors->first('visibility_id','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
-
 
 
 <div class="form-permission">

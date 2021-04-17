@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Auth;
  * @property int|null $updated_by
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\ContentType|null $contentType
+ * @property \App\Models\ContentType|null $contentType
  * @property-read \App\Models\User $creator
  * @property-read Collection|\App\Models\Entity[] $entities
  * @property-read int|null $entities_count
@@ -43,7 +43,7 @@ use Illuminate\Support\Facades\Auth;
  * @property-read Collection|\App\Models\Tag[] $tags
  * @property-read int|null $tags_count
  * @property-read \App\Models\User $user
- * @property-read \App\Models\Visibility|null $visibility
+ * @property \App\Models\Visibility|null $visibility
  * @method static \Illuminate\Database\Eloquent\Builder|Blog filter(\App\Filters\QueryFilter $filters)
  * @method static \Illuminate\Database\Eloquent\Builder|Blog html($user)
  * @method static \Illuminate\Database\Eloquent\Builder|Blog newModelQuery()

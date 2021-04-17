@@ -43,4 +43,14 @@ class Visibility extends Eloquent
     {
         return $this->hasMany(Event::class);
     }
+
+    /**
+     * A visibility can have many menus
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function menus()
+    {
+        return $this->hasMany(Visibility::class);
+    }
 }

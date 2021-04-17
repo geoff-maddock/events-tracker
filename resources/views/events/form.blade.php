@@ -151,7 +151,7 @@
 <div class="row">
 	<div class="form-group col-md-3 {{$errors->has('visibility_id') ? 'has-error' : '' }}">
 		{!! Form::label('visibility_id','Visibility:') !!}
-		{!! Form::select('visibility_id', $visibilityOptions, (isset($event->visibility_id) ? $event->visibility_id :
+		{!! Form::select('visibility_id', $visibilityOptions, (isset($event->visibility) ? $event->visibility->id :
 		3),
 		['class' =>'form-control']) !!}
 		{!! $errors->first('visibility_id','<span class="help-block">:message</span>') !!}
