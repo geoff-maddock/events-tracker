@@ -313,7 +313,9 @@ Route::resource('blogs', 'BlogsController');
 
 // MENUS
 Route::get('menus/all', 'MenusController@indexAll');
-
+Route::match(['get', 'post'], 'menus/filter', ['as' => 'menus.filter', 'uses' => 'MenusController@filter']);
+Route::get('menus/reset', ['as' => 'menus.reset', 'uses' => 'MenusController@reset']);
+Route::get('menus/rpp-reset', ['as' => 'menus.rppReset', 'uses' => 'MenusController@rppReset']);
 Route::bind('menus', function ($id) {
     return Menu::whereId($id)->firstOrFail();
 });

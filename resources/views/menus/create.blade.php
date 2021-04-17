@@ -2,7 +2,7 @@
 
 @section('content')
 
-	<h3>Add a New Menu</h3>
+	<h4>Add a New Menu</h4>
 
 	{!! Form::open(['route' => 'menus.store']) !!}
 
