@@ -4,31 +4,58 @@ namespace App\Http\Controllers;
 
 use App\Filters\MenuFilters;
 use App\Http\Requests\MenuRequest;
+use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Menu;
 use App\Models\Visibility;
+use App\Services\SessionStore\ListParameterSessionStore;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
 
 class MenusController extends Controller
 {
-    protected $menu;
+    protected string $prefix;
 
-    protected $rpp;
+    protected int $limit;
 
-    protected $sortBy;
+    protected int $defaultLimit;
 
-    protected $sortDirection;
+    protected string $defaultSort;
 
-    public function __construct(Menu $menu)
+    protected string $defaultSortOrder;
+
+    // array of sort criteria to be applied in order
+    protected array $sortCriteria;
+
+    protected string $sort;
+
+    protected string $sortDirection;
+
+    protected array $filters;
+
+    protected bool $hasFilter;
+
+    protected MenuFilters $filter;
+
+    public function __construct(MenuFilters $filter)
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
-        $this->menu = $menu;
+        $this->filter = $filter;
+
+        // prefix for session storage
+        $this->prefix = 'app.menus.';
 
         // default list variables
-        $this->rpp = 15;
-        $this->sortBy = 'created_at';
+        $this->defaultSort = 'name';
+        $this->defaultSortDirection = 'asc';
+        $this->defaultLimit = 10;
+
+        $this->sort = 'name';
         $this->sortDirection = 'desc';
+        $this->limit = 10;
+
+        $this->hasFilter = false;
 
         parent::__construct();
     }
@@ -36,69 +63,146 @@ class MenusController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
-    {
-        // updates sort, rpp from request
-        $this->updatePaging($request);
+    public function index(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        $listParamSessionStore->setBaseIndex('internal_menu');
+        $listParamSessionStore->setKeyPrefix('internal_menu_index');
 
-        $menus = Menu::orderBy($this->sortBy, $this->sortDirection)->paginate($this->rpp);
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([MenusController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Menu::query()->select('menus.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort([$this->defaultSort => $this->defaultSortDirection]);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // query and paginate the menus
+        $menus = $query->visible($this->user)->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('menus.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortDirection' => $this->sortDirection])
-            ->with(compact('menus'));
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
+            ->with(compact('menus'))
+            ->render();
     }
 
     /**
-     * Update the page list parameters from the request.
+     * Display a listing of the resource.
      */
-    protected function updatePaging($request)
-    {
-        // set sort by column
-        if ($request->input('sort_by')) {
-            $this->sortBy = $request->input('sort_by');
-        }
+    public function filter(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        $listParamSessionStore->setBaseIndex('internal_menu');
+        $listParamSessionStore->setKeyPrefix('internal_menu_index');
 
-        // set sort direction
-        if ($request->input('sort_direction')) {
-            $this->sortDirection = $request->input('sort_direction');
-        }
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([MenusController::class, 'index']));
 
-        // set results per page
-        if ($request->input('rpp')) {
-            $this->rpp = $request->input('rpp');
-        }
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Menu::query()->select('menus.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort([$this->defaultSort => $this->defaultSortDirection]);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // query and paginate the blogs
+        $menus = $query->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        return view('menus.index')
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
+            ->with(compact('menus'))
+            ->render();
     }
 
     /**
-     * Filter the list of menus.
+     * Reset the rpp, sort, order
+     *
+     * @throws \Throwable
+     */
+    public function rppReset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ): RedirectResponse {
+        // set the rpp, sort, direction only to default values
+        $keyPrefix = $request->get('key') ?? 'internal_menu_index';
+        $listParamSessionStore->setBaseIndex('internal_menu');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
+
+        // clear
+        $listParamSessionStore->clearSort();
+
+        return redirect()->route('menus.index');
+    }
+
+    /**
+     * Reset the filtering of entities.
      *
      * @return Response
      */
-    public function filter(Request $request, MenuFilters $filters)
-    {
-        // refactor this to filter by an array of $filter params that contain all the passed filters
+    public function reset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ) {
+        // set filters and list controls to default values
+        $keyPrefix = $request->get('key') ?? 'internal_menu_index';
+        $listParamSessionStore->setBaseIndex('internal_menu');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
 
-        $menus = $this->menu->active();
+        // clear
+        $listParamSessionStore->clearFilter();
+        $listParamSessionStore->clearSort();
 
-        if ($request->input('filter_name')) {
-            $name = $request->input('filter_name');
-            $menus = Menu::where('name', $name)->get();
-        }
-
-        return view('menus.index', compact('menus'));
-    }
-
-    /**
-     * Reset the filtering of permissions.
-     *
-     * @return Response
-     */
-    public function reset()
-    {
-        $menus = Menu::orderBy('name', 'ASC')
-                    ->get();
-
-        return view('menus.index', compact('menus'));
+        return redirect()->route($request->get('redirect') ?? 'menus.index');
     }
 
     /**
@@ -108,10 +212,10 @@ class MenusController extends Controller
      */
     public function create()
     {
-        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $parents = ['' => ''] + Menu::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $menu = new Menu();
+        $menu->visibility_id = Visibility::VISIBILITY_PUBLIC;
 
-        return view('menus.create', compact('visibilities', 'parents'));
+        return view('menus.create', compact('menu'))->with($this->getFormOptions());
     }
 
     /**
@@ -173,7 +277,7 @@ class MenusController extends Controller
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
         $parents = ['' => ''] + Menu::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('menus.edit', compact('menu', 'visibilities', 'parents'));
+        return view('menus.edit', compact('menu'))->with($this->getFormOptions());
     }
 
     /**
@@ -200,5 +304,30 @@ class MenusController extends Controller
         $menu->delete();
 
         return redirect('menus');
+    }
+
+    protected function getListControlOptions(): array
+    {
+        return  [
+            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
+            'sortOptions' => ['menus.name' => 'Name', 'menus.created_at' => 'Created At'],
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+        ];
+    }
+
+    protected function getFilterOptions(): array
+    {
+        return  [
+            'visibilityOptions' => ['' => '&nbsp;'] + Visibility::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+        ];
+    }
+
+    protected function getFormOptions(): array
+    {
+        return [
+            'sortOrderOptions' => ['' => '', 'asc' => 'asc', 'desc' => 'desc'],
+            'visibilityOptions' => ['' => ''] + Visibility::pluck('name', 'id')->all(),
+            'menuOptions' => ['' => ''] + Menu::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+        ];
     }
 }

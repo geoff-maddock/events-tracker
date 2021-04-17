@@ -12,6 +12,7 @@ class Menu extends Eloquent
     protected $fillable = [
         'name',
         'slug',
+        'body',
         'menu_parent_id',
         'visibility_id',
     ];
@@ -22,8 +23,8 @@ class Menu extends Eloquent
     ];
 
     protected $attributes = [
-        'sort_order' => 0,
         'menu_parent_id' => null,
+        'body' => null
     ];
 
     /**
