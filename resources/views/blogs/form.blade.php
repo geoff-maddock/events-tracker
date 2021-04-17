@@ -36,7 +36,7 @@
 <div class="row">
 	<div class="form-group col-md-2 {{$errors->has('content_type_id') ? 'has-error' : '' }}">
 		{!! Form::label('content_type_id','Content Type:') !!}
-		{!! Form::select('content_type_id', $contentTypeOptions, ($blog->content_type_id ?? NULL), ['class' =>'form-control']) !!}
+		{!! Form::select('content_type_id', $contentTypeOptions, ($blog->content_type ? $blog->content_type->id : NULL), ['class' =>'form-control']) !!}
 		{!! $errors->first('content_type_id','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -45,7 +45,7 @@
 <div class="row">
 	<div class="form-group col-md-2 {{$errors->has('visibility_id') ? 'has-error' : '' }}">
 		{!! Form::label('visibility_id','Visibility:') !!}
-		{!! Form::select('visibility_id', $visibilityOptions, ($blog->visibility_id ?? 3), ['class' =>'form-control']) !!}
+		{!! Form::select('visibility_id', $visibilityOptions, ($blog->visibility ? $blog->visibility->id : null), ['class' =>'form-control']) !!}
 		{!! $errors->first('visibility_id','<span class="help-block">:message</span>') !!}
 	</div>
 </div>

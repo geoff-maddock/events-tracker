@@ -8,9 +8,9 @@
 
 
 <div class="row">
-	<div class="form-group col-md-2">
+	<div class="form-group {{$errors->has('review_type_id') ? 'has-error' : '' }} col-md-2">
 		{!! Form::label('review_type_id','Type') !!}
-		{!! Form::select('review_type_id', $reviewTypes, (isset($eventReview->review_type_id) ? $eventReview->event_type_id : NULL),['class' =>'form-control']) !!}
+		{!! Form::select('review_type_id', $reviewTypeOptions, (isset($eventReview->review_type_id) ? $eventReview->review_type_id : NULL),['class' =>'form-control']) !!}
 		{!! $errors->first('review_type_id','<span class="help-block">:message</span>') !!}
 	</div>
 
@@ -18,13 +18,13 @@
 <div class="row">
 	<div class="form-group col-md-2">
 		{!! Form::label('attended','Attended') !!}
-		{!! Form::checkbox('attended', null, ['placeholder' => 'Attended','class' =>'form-control']) !!}
+		{!! Form::checkbox('attended', 1, [ 'placeholder' => 'Attended','class' =>'form-control']) !!}
 		{!! $errors->first('attended','<span class="help-block">:message</span>') !!}
 	</div>
 
 	<div class="form-group col-md-2">
 		{!! Form::label('confirmed','Confirmed') !!}
-		{!! Form::checkbox('confirmed', null, ['placeholder' => 'Attendance confirmed','class' =>'form-control']) !!}
+		{!! Form::checkbox('confirmed', 1, ['placeholder' => 'Attendance confirmed','class' =>'form-control']) !!}
 		{!! $errors->first('confirmed','<span class="help-block">:message</span>') !!}
 	</div>
 </div>

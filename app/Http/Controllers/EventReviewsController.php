@@ -7,6 +7,7 @@ use App\Models\EventReview;
 use App\Models\ReviewType;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EventReviewRequest;
 use Illuminate\Http\Request;
 
 class EventReviewsController extends Controller
@@ -41,19 +42,23 @@ class EventReviewsController extends Controller
      */
     public function create(Event $event)
     {
-        $reviewTypes = ['' => ''] + ReviewType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        return view('reviews.create', compact('event'))
+            ->with($this->getFormOptions());
+    }
 
-        return view('reviews.create', compact('event', 'reviewTypes'));
+    protected function getFormOptions(): array
+    {
+        return [
+            'reviewTypeOptions' => ['' => ''] + ReviewType::orderBy('name', 'ASC')->pluck('name', 'id')->all()
+        ];
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  Request 			$request
-     * @param  Event 		$event
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Event $event)
+    public function store(EventReviewRequest $request, Event $event)
     {
         $msg = '';
 
@@ -61,6 +66,16 @@ class EventReviewsController extends Controller
         $input = $request->all();
         $input['event_id'] = $event->id;
         $input['user_id'] = $this->user->id;
+        if (isset($input['attended'])) {
+            $input['attended'] = $input['attended'] == 'on' ? 1 : 0;
+        } else {
+            $input['attended'] = 0;
+        }
+        if (isset($input['confirmed'])) {
+            $input['confirmed'] = $input['confirmed'] == 'on' ? 1 : 0;
+        } else {
+            $input['confirmed'] = 0;
+        }
 
         $this->validate($request, $this->rules);
 

@@ -23,7 +23,7 @@ class MenusController extends Controller
 
     protected string $defaultSort;
 
-    protected string $defaultSortOrder;
+    protected string $defaultSortDirection;
 
     // array of sort criteria to be applied in order
     protected array $sortCriteria;
@@ -213,7 +213,8 @@ class MenusController extends Controller
     public function create()
     {
         $menu = new Menu();
-        $menu->visibility_id = Visibility::VISIBILITY_PUBLIC;
+
+        $menu->visibility = Visibility::find(Visibility::VISIBILITY_PUBLIC);
 
         return view('menus.create', compact('menu'))->with($this->getFormOptions());
     }

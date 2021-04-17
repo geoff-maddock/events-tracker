@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
+/**
+ * @property \App\Models\Visibility|null $visibility
+ **/
 class Menu extends Eloquent
 {
     use HasFactory;
@@ -36,7 +39,7 @@ class Menu extends Eloquent
     }
 
     /**
-     * A location has one visibility.
+     * A menu has one visibility.
      */
     public function visibility()
     {
@@ -44,7 +47,7 @@ class Menu extends Eloquent
     }
 
     /**
-     * Returns visible events.
+     * Returns visible menus.
      */
     public function scopeVisible($query, $user)
     {
@@ -64,7 +67,7 @@ class Menu extends Eloquent
     }
 
     /**
-     * Set the soundcheck_at attribute.
+     * Set the menu_parent attribute.
      */
     public function setMenuParent($value)
     {
