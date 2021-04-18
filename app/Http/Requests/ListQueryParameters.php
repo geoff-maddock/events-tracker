@@ -76,9 +76,11 @@ class ListQueryParameters
         return $sortDirection;
     }
 
-    public function getLimit(): int
+    public function getLimit($defaultLimit): int
     {
-        $limit = $this->defaultLimit;
+        // use the passed in default or the overall default limit
+        $limit = $defaultLimit ?? $this->defaultLimit;
+
         if ($this->listRequest->getLimit()) {
             $limit = $this->listRequest->getLimit();
         } elseif ($this->listParamStore->getLimit()) {

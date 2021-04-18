@@ -6,7 +6,7 @@
 
 	<P><B>{{ ucfirst($type) }}</B> > {!! link_to_route(Str::plural($type).'.show', $object->name, [$object->id]) !!}</P>
 
-	<h3>Add a New Comment</h3>
+	<h4>Add a New Comment</h4>
 
 	{!! Form::open(['route' => [Str::plural($type).'.comments.store', $object->getRouteKey()], 'method' => 'POST']) !!}
 

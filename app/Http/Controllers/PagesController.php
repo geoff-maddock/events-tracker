@@ -128,6 +128,7 @@ class PagesController extends Controller
     }
 
     /**
+     * Primary site searchbar action
      * @return View
      */
     public function search(Request $request)
@@ -137,6 +138,7 @@ class PagesController extends Controller
         // override rpp, while not breaking template that tries to render
         $this->rpp = 20;
 
+        // find matching events by entity, tag or series or name
         $events = Event::getByEntity(strtolower($slug))
                     ->orWhereHas('tags', function ($q) use ($slug) {
                         $q->where('name', '=', ucfirst($slug));
@@ -152,6 +154,7 @@ class PagesController extends Controller
                     ->orderBy('name', 'ASC')
                     ->paginate($this->rpp);
 
+        // find matching series by entity, tag or name
         $series = Series::getByEntity(strtolower($slug))
                     ->orWhereHas('tags', function ($q) use ($slug) {
                         $q->where('name', '=', ucfirst($slug));
@@ -164,6 +167,7 @@ class PagesController extends Controller
                     ->orderBy('name', 'ASC')
                     ->paginate($this->rpp);
 
+        // find entities by name, tags or aliases
         $entities = Entity::where('name', 'like', '%' . $slug . '%')
                 ->orWhereHas('tags', function ($q) use ($slug) {
                     $q->where('name', '=', ucfirst($slug));
@@ -175,14 +179,17 @@ class PagesController extends Controller
                 ->orderBy('name', 'ASC')
                 ->paginate($this->rpp);
 
+        // find tags by name
         $tags = Tag::where('name', 'like', '%' . $slug . '%')
                 ->orderBy('name', 'ASC')
                 ->simplePaginate($this->rpp);
 
+        // find users by name
         $users = User::where('name', 'like', '%' . $slug . '%')
                 ->orderBy('name', 'ASC')
                 ->simplePaginate($this->rpp);
 
+        // find threads by name
         $threads = Thread::where('name', 'like', '%' . $slug . '%')
             ->orWhereHas('tags', function ($q) use ($slug) {
                 $q->where('name', '=', ucfirst($slug));
@@ -190,7 +197,7 @@ class PagesController extends Controller
             ->orderBy('name', 'ASC')
             ->paginate($this->rpp);
 
-        return view('events.search', compact('events', 'entities', 'series', 'users', 'threads', 'tags', 'slug'));
+        return view('pages.search', compact('events', 'entities', 'series', 'users', 'threads', 'tags', 'slug'));
     }
 
     public function help()
