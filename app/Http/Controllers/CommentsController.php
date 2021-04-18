@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ContactRequest;
 use Illuminate\Http\Request;
 use App\Models\Entity;
 use App\Models\Event;
 use App\Models\Comment;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Redirect;
 
 class CommentsController extends Controller
 {
@@ -102,7 +101,7 @@ class CommentsController extends Controller
     /**
      * Show the form for editing the specified comment
      */
-    public function edit(Comment $comment): View
+    public function edit(Entity $entity, Comment $comment): View
     {
         $object = $comment->commentable;
         $entity = null;
@@ -125,13 +124,13 @@ class CommentsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Entity $entity, Comment $comment): RedirectResponse
+    public function update(ContactRequest $request, Entity $entity, Comment $comment): RedirectResponse
     {
         $msg = '';
 
         $comment->fill($request->input())->save();
 
-        \Session::flash('flash_message', 'Your comment has been updated!');
+        flash('Success', 'Your comment has been updated');
 
         return redirect()->route('entities.show', $entity->getRouteKey());
     }

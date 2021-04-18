@@ -6,7 +6,7 @@
 
 	<P><B>Entity</B> > {!! link_to_route('entities.show', $entity->name, [$entity->slug], ['class' => 'text-'.$entity->entityStatus->getDisplayClass()]) !!}</P>
 
-	<h1>Edit Contact: <i>{{ $contact->name }}</i> </h1> 
+	<h4>Edit Contact: <i>{{ $contact->name }}</i> </h4> 
 
 	{!! Form::model($contact, ['route' => ['entities.contacts.update', $entity->slug, $contact->id], 'method' => 'PATCH']) !!}
 

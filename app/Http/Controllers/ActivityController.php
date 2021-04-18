@@ -10,36 +10,30 @@ use App\Models\Action;
 use App\Models\Series;
 use App\Models\User;
 use App\Services\SessionStore\ListParameterSessionStore;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\View;
 
 class ActivityController extends Controller
 {
     protected string $prefix;
 
-    protected int $defaultRpp;
+    protected int $defaultLimit;
 
-    protected string $defaultSortBy;
+    protected string $defaultSort;
 
-    protected string $defaultSortOrder;
+    protected string $defaultSortDirection;
 
-    protected int $childRpp;
+    protected int $limit;
 
-    protected int $rpp;
+    protected string $sort;
 
-    protected int $page;
+    protected string $sortDirection;
 
-    protected array $sort;
+    protected array $defaultSortCriteria;
 
-    protected string $sortBy;
-
-    protected string $sortOrder;
-
-    protected bool $hasFilter;
+    protected bool $hasFilter = false;
 
     protected array $filters;
 
@@ -55,17 +49,15 @@ class ActivityController extends Controller
         $this->prefix = 'app.activities.';
 
         // default list variables
-        $this->defaultRpp = 100;
-        $this->defaultSortBy = 'name';
-        $this->defaultSortOrder = 'asc';
+        $this->defaultLimit = 100;
+        $this->defaultSort = 'name';
+        $this->defaultSortDirection = 'asc';
+        $this->defaultSortCriteria = ['object_name' => 'desc'];
 
-        $this->rpp = 100;
-        $this->childRpp = 10;
-        $this->page = 1;
-        $this->sort = ['object_name', 'desc'];
-        $this->sortBy = 'object_name';
-        $this->sortOrder = 'desc';
-        $this->hasFilter = false;
+        $this->limit = 100;
+        $this->sort = 'object_name';
+        $this->sortDirection = 'desc';
+
         parent::__construct();
     }
 
@@ -169,14 +161,6 @@ class ActivityController extends Controller
             ->render();
     }
 
-    public function show(Series $series)
-    {
-        $events = $series->events()->paginate($this->childRpp);
-        $threads = $series->threads()->paginate($this->childRpp);
-
-        return view('series.show', compact('series', 'events', 'threads'));
-    }
-
     protected function unauthorized(SeriesRequest $request)
     {
         if ($request->ajax()) {
@@ -193,16 +177,6 @@ class ActivityController extends Controller
         $activity->delete();
 
         return redirect('activity');
-    }
-
-    /**
-     * Get the default sort array.
-     *
-     * @return array
-     */
-    public function getDefaultSort()
-    {
-        return ['id', 'desc'];
     }
 
     /**
@@ -229,7 +203,7 @@ class ActivityController extends Controller
         $listParamSessionStore->setBaseIndex('internal_activity');
         $listParamSessionStore->setKeyPrefix($keyPrefix);
 
-        // clear
+        // clear sorting from session
         $listParamSessionStore->clearSort();
 
         return redirect()->route('activities.index');

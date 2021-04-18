@@ -3,9 +3,10 @@
 	<thead>
 	<!-- CONVERT TO PARTIAL THAT BUILDS THE HEADERS FROM A CONFIGURED ARRAY OR ARRAY FROM DB - SEE MY WORK NOTES -->
 	<tr class="bg-info">
-		<th><a href="?sort_by=id&sort_direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">ID</a></th>
-		<th><a href="?sort_by=name&sort_direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">Name</a></th>
-		<th><a href="?sort_by=slug&sort_direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">Slug</a></th>
+		<th><a href="?sort=id&sdirection={{ $direction == 'desc' ? 'asc' : 'desc' }}">ID</a></th>
+		<th><a href="?sort=name&direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">Name</a></th>
+		<th><a href="?sort=slug&direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">Slug</a></th>
+		<th><a href="?sort=slug&direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">Created At</a></th>
 		<th style="width: 60px"></th>
 	</tr>
 	</thead>
@@ -16,6 +17,7 @@
 		<td>{!! $blog->id !!}</td>
 		<td>{!! link_to_route('blogs.show', $blog->name, [$blog->id], ['class' => 'item-title']) !!}</td>
 		<td>{!! $blog->slug !!}</td>
+		<td>{!! $blog->created_at !!}</td>
 		<td>
 			@can('edit_blog')
 			<a href="{!! route('blogs.edit', ['blog' => $blog->id]) !!}"><span class='glyphicon glyphicon-pencil'></span></a>

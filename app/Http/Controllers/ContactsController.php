@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ContactRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\Entity;
@@ -40,11 +41,11 @@ class ContactsController extends Controller
      *
      * @return Response
      */
-    public function create(Contact $contact)
+    public function create(Entity $entity, Contact $contact)
     {
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('contacts.create', compact('contact', 'visibilities'));
+        return view('contacts.create', compact('entity', 'contact', 'visibilities'));
     }
 
     /**
@@ -102,12 +103,12 @@ class ContactsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  Request $request
+     * @param  ContactRequest $request
      * @param  Entity $entity
      * @param  Contact $contact
      * @return Response
      */
-    public function update(Request $request, Entity $entity, Contact $contact)
+    public function update(ContactRequest $request, Entity $entity, Contact $contact)
     {
         $msg = '';
 

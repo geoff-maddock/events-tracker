@@ -27,19 +27,19 @@ class BlogsController extends Controller
 {
     protected string $prefix;
 
-    protected int $rpp;
+    protected int $defaultLimit;
 
-    protected int $defaultRpp;
+    protected string $defaultSort;
 
-    protected string $defaultSortBy;
+    protected string $defaultSortDirection;
 
-    protected string $defaultSortOrder;
+    protected array $defaultSortCriteria;
 
-    protected array $sort;
+    protected int $limit;
 
-    protected string $sortBy;
+    protected string $sort;
 
-    protected string $sortOrder;
+    protected string $sortDirection;
 
     protected array $filters;
 
@@ -58,14 +58,14 @@ class BlogsController extends Controller
         $this->prefix = 'app.blogs.';
 
         // default list variables
-        $this->defaultRpp = 10;
-        $this->defaultSortBy = 'created_at';
-        $this->defaultSortOrder = 'asc';
+        $this->defaultLimit = 10;
+        $this->defaultSort = 'created_at';
+        $this->defaultSortDirection = 'desc';
+        $this->defaultSortCriteria = ['blogs.created_at' => 'desc'];
 
-        $this->sortBy = 'created_at';
-        $this->sortOrder = 'desc';
-        $this->rpp = 10;
-        $this->sort = ['name', 'desc'];
+        $this->limit = $this->defaultLimit;
+        $this->sort = $this->defaultSort;
+        $this->sortDirection = $this->defaultSortDirection;
 
         $this->hasFilter = false;
 
@@ -93,7 +93,8 @@ class BlogsController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['blogs.created_at' => 'desc']);
+            ->setDefaultLimit($this->defaultLimit)
+            ->setDefaultSort($this->defaultSortCriteria);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
@@ -146,7 +147,8 @@ class BlogsController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['blogs.created_at' => 'desc']);
+            ->setDefaultLimit($this->defaultLimit)
+            ->setDefaultSort($this->defaultSortCriteria);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
@@ -438,7 +440,7 @@ class BlogsController extends Controller
         $listParamSessionStore->setBaseIndex('internal_blog');
         $listParamSessionStore->setKeyPrefix($keyPrefix);
 
-        // clear
+        // clear all sort
         $listParamSessionStore->clearSort();
 
         return redirect()->route('blogs.index');

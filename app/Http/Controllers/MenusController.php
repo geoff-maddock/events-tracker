@@ -11,13 +11,10 @@ use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\View\View;
 
 class MenusController extends Controller
 {
     protected string $prefix;
-
-    protected int $limit;
 
     protected int $defaultLimit;
 
@@ -25,12 +22,14 @@ class MenusController extends Controller
 
     protected string $defaultSortDirection;
 
-    // array of sort criteria to be applied in order
-    protected array $sortCriteria;
+    protected int $limit;
 
     protected string $sort;
 
     protected string $sortDirection;
+
+    // array of sort criteria to be applied in order
+    protected array $sortCriteria;
 
     protected array $filters;
 
@@ -51,9 +50,12 @@ class MenusController extends Controller
         $this->defaultSortDirection = 'asc';
         $this->defaultLimit = 10;
 
+        // set list variables
         $this->sort = 'name';
         $this->sortDirection = 'desc';
         $this->limit = 10;
+
+        $this->sortCriteria = ['menu.name' => 'desc'];
 
         $this->hasFilter = false;
 

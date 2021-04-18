@@ -398,6 +398,9 @@ Route::bind('contacts', function ($id) {
     return Contact::whereId($id)->firstOrFail();
 });
 
+Route::get('/entities/{entity:slug}/contacts/{contact:id}/create', 'ContactsController@create');
+Route::get('/entities/{entity:slug}/contacts/{contact:id}/edit', 'ContactsController@edit');
+Route::post('/entities/{entity:slug}/contacts/{contact:id}/update', 'ContactsController@update');
 Route::resource('entities.contacts', 'ContactsController');
 
 Route::bind('links', function ($id) {
@@ -409,6 +412,9 @@ Route::resource('entities.links', 'LinksController');
 Route::bind('comments', function ($id) {
     return Comment::whereId($id)->firstOrFail();
 });
+
+Route::get('/entities/{entity:slug}/comments/{comment:id}/edit', 'CommentsController@edit');
+Route::delete('/entities/{entity:slug}/comments/{comment:id}/edit', 'CommentsController@destroy');
 
 Route::resource('entities.comments', 'CommentsController');
 Route::resource('events.comments', 'CommentsController');

@@ -2,7 +2,7 @@
 
 @section('content')
 
-	<h3>Add a New Blog</h3>
+	<h4>Add a New Blog</h4>
 
 	{!! Form::open(['route' => 'blogs.store']) !!}
 

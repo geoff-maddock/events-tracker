@@ -1,5 +1,5 @@
 <div class="row">
-	<div class="form-permission {{$errors->has('name') ? 'has-error' : '' }} col-md-4">
+	<div class="form-group {{$errors->has('name') ? 'has-error' : '' }} col-md-4">
 	{!! Form::label('name','Name') !!}
 	{!! Form::text('name', null, ['class' =>'form-control']) !!}
 	{!! $errors->first('name','<span class="help-block">:message</span>') !!}
@@ -7,10 +7,10 @@
 </div>
 
 <div class="row">
-	<div class="form-permission col-md-4">
+	<div class="form-group {{$errors->has('slug') ? 'has-error' : '' }} col-md-4">
 	{!! Form::label('slug','Slug') !!}
 	{!! Form::text('slug', null, ['placeholder' => 'Descriptive slug', 'class' =>'form-control']) !!}
-	{!! $errors->first('label','<span class="help-block">:message</span>') !!}
+	{!! $errors->first('slug','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
 
@@ -36,7 +36,7 @@
 <div class="row">
 	<div class="form-group col-md-2 {{$errors->has('content_type_id') ? 'has-error' : '' }}">
 		{!! Form::label('content_type_id','Content Type:') !!}
-		{!! Form::select('content_type_id', $contentTypeOptions, ($blog->content_type ? $blog->content_type->id : NULL), ['class' =>'form-control']) !!}
+		{!! Form::select('content_type_id', $contentTypeOptions, ($blog->contentType ? $blog->contentType->id : NULL), ['class' =>'form-control']) !!}
 		{!! $errors->first('content_type_id','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -82,7 +82,7 @@
 </div>
 
 
-<div class="form-permission">
+<div class="form-group">
 {!! Form::submit(isset($action) ? 'Update Blog' : 'Add Blog', null, ['class' =>'btn btn-primary']) !!}
 </div>
 

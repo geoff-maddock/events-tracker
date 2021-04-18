@@ -30,6 +30,8 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
 
     private $defaultSort;
 
+    private $defaultLimit = null;
+
     private $multiSort;
 
     private $appliedSortField;
@@ -90,6 +92,13 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
     public function setDefaultSort(array $defaultSort): ListEntityResultBuilder
     {
         $this->defaultSort = $defaultSort;
+
+        return $this;
+    }
+
+    public function setDefaultLimit(int $defaultLimit): ListEntityResultBuilder
+    {
+        $this->defaultLimit = $defaultLimit;
 
         return $this;
     }
@@ -186,7 +195,7 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
         $listResult->setParentFilters($this->parentFilter);
         $listResult->setFixedFilters($this->fixedFilters);
         $listResult->setIsEmptyFilter($this->isEmptyFilter);
-        $listResult->setLimit($this->listQueryParameters->getLimit());
+        $listResult->setLimit($this->listQueryParameters->getLimit($this->defaultLimit));
         $listResult->setPage($this->listQueryParameters->getPage());
 
         return $listResult;
