@@ -61,10 +61,10 @@ function link_form_icon($icon, $path, $type, $title = '', $label = '', $class = 
     if (is_object($path)) {
         $object = get_class_name(get_class($path));
 
-        $action = '/' . $path->getTable(); // photos
+        $action = '/' . str_replace('_', '-', $path->getTable());
 
         if (in_array($type, ['PUT', 'PATCH', 'DELETE'])) {
-            $action .= '/' . $path->getKey(); // photos/1
+            $action .= '/' . $path->getKey();
         }
     } else {
         $action = $path;

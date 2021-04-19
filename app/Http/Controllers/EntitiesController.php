@@ -14,7 +14,6 @@ use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Photo;
 use App\Models\Role;
 use App\Models\Tag;
-use App\Models\TagType;
 use App\Models\User;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Database\Eloquent\Builder;
@@ -31,29 +30,25 @@ class EntitiesController extends Controller
 {
     protected string $prefix;
 
-    protected int $defaultRpp;
+    protected int $defaultLimit;
 
-    protected string $defaultSortBy;
+    protected string $defaultSort;
 
-    protected string $defaultSortOrder;
+    protected string $defaultSortDirection;
 
-    protected int $rpp;
+    protected array $defaultSortCriteria;
 
-    protected int $page;
+    protected int $limit;
 
-    protected array $sort;
+    protected string $sort;
 
-    protected string $sortBy;
-
-    protected string $sortOrder;
-
-    protected $defaultCriteria;
+    protected string $sortDirection;
 
     protected array $filters;
 
-    protected EntityFilters $filter;
-
     protected bool $hasFilter;
+
+    protected EntityFilters $filter;
 
     public function __construct(EntityFilters $filter)
     {
@@ -64,17 +59,17 @@ class EntitiesController extends Controller
         $this->prefix = 'app.entities.';
 
         // default list variables
-        $this->defaultRpp = 5;
-        $this->defaultSortBy = 'name';
-        $this->defaultSortOrder = 'asc';
+        $this->defaultLimit = 5;
+        $this->defaultSort = 'name';
+        $this->defaultSortDirection = 'asc';
+        $this->defaultSortCriteria = ['entities.name' => 'asc'];
 
-        $this->rpp = 5;
-        $this->sortBy = 'name';
-        $this->sortOrder = 'asc';
+        $this->limit = $this->defaultLimit;
+        $this->sort = $this->defaultSort;
+        $this->sortDirection = $this->defaultSortDirection;
 
-        $this->page = 1;
-        $this->sort = ['name', 'desc'];
-        $this->defaultCriteria = null;
+        $this->hasFilter = false;
+
         parent::__construct();
     }
 
@@ -220,7 +215,6 @@ class EntitiesController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         $role
     ): string {
-        // $tag = urldecode($tag);
         // initialized listParamSessionStore with baseindex key
         // list entity result builder
         $listParamSessionStore->setBaseIndex('internal_entity');
@@ -267,17 +261,6 @@ class EntitiesController extends Controller
             ->with(['role' => $role])
             ->with(compact('entities'))
             ->render();
-    }
-
-    /**
-     * Checks if there is a valid filter.
-     */
-    public function hasFilter(array $filters): bool
-    {
-        $arr = $filters;
-        unset($arr['rpp'], $arr['sortOrder'], $arr['sortBy'], $arr['page']);
-
-        return count(array_filter($arr, function ($x) { return !empty($x); }));
     }
 
     /**
@@ -818,9 +801,9 @@ class EntitiesController extends Controller
     /**
      * Get the default sort array.
      */
-    protected function getDefaultSort(): array
+    protected function getDefaultSortCriteria(): array
     {
-        return ['id', 'desc'];
+        return ['id' => 'desc'];
     }
 
     protected function unauthorized(EntityRequest $request)

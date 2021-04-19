@@ -2,10 +2,10 @@
 <table class="table">
 	<thead>
 	<tr class="bg-info">
-		<th><a href="?sort_by=id&sort_order={{ $sortOrder == 'desc' ? 'asc' : 'desc' }}">ID</a></th>
-		<th><a href="?sort_by=name&sort_order={{ $sortOrder == 'desc' ? 'asc' : 'desc' }}">Name</a></th>
-		<th><a href="?sort_by=slug&sort_order={{ $sortOrder == 'desc' ? 'asc' : 'desc' }}">Slug</a></th>
-        <th><a href="?sort_by=short&sort_order={{ $sortOrder == 'desc' ? 'asc' : 'desc' }}">Short</a></th>
+		<th><a href="?sort=id&direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">ID</a></th>
+		<th><a href="?sort=name&direction={{ $direction = 'desc' ? 'asc' : 'desc' }}">Name</a></th>
+		<th><a href="?sort=slug&direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">Slug</a></th>
+        <th><a href="?sort=short&direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">Short</a></th>
 		<th style="width: 60px"></th>
 	</tr>
 	</thead>
@@ -35,26 +35,6 @@
 @endif
 </table>
 </div>
-
 @section('scripts.footer')
-<script type="text/javascript">
-$('button.delete').on('click', function(e){
-  e.preventDefault();
-  var form = $(this).parents('form');
-  Swal.fire({
-    title: "Are you sure?",
-    text: "You will not be able to recover this entityType!",
-    type: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#DD6B55",
-    confirmButtonText: "Yes, delete it!",
-    closeOnConfirm: true
-  },
-   function(isConfirm){
-   	if (isConfirm) {
-    	form.submit();
-   	};
-  });
-})
-</script>
+
 @stop
