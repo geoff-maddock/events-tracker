@@ -337,6 +337,10 @@ Route::resource('permissions', 'PermissionsController');
 // EntityTypes
 Route::get('entity-types/all', 'EntityTypesController@indexAll');
 
+Route::match(['get', 'post'], 'entity-types/filter', ['as' => 'entity-types.filter', 'uses' => 'EntityTypesController@filter']);
+Route::get('entity-types/reset', ['as' => 'entityTypes.reset', 'uses' => 'EntityTypesController@reset']);
+Route::get('entity-types/rpp-reset', ['as' => 'entityTypes.rppReset', 'uses' => 'EntityTypesController@rppReset']);
+
 Route::bind('entity-types', function ($id) {
     return EntityType::whereId($id)->firstOrFail();
 });

@@ -2,7 +2,7 @@
 
 @section('content')
 
-	<h3>Add a New Entity Type</h3>
+	<h4>Add a New Entity Type</h4>
 
 	{!! Form::open(['route' => 'entity-types.store']) !!}
 
