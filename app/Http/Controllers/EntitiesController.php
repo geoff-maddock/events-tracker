@@ -136,15 +136,13 @@ class EntitiesController extends Controller
     }
 
     /**
-     * Gets the base criteria.
+     * Gets the base query.
      *
      * @return Builder
      */
-    public function getBaseCriteria(Request $request): Builder
+    public function getBaseQuery(): Builder
     {
-        return Entity::active()
-            ->orderBy('entity_type_id', 'ASC')
-            ->orderBy($this->sortBy, $this->sortOrder);
+        return Entity::query()->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')->select('entities.*');
     }
 
     /**
@@ -164,7 +162,7 @@ class EntitiesController extends Controller
         $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Entity::query()->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')->select('entities.*');
+        $baseQuery = $this->getBaseQuery();
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -223,7 +221,7 @@ class EntitiesController extends Controller
         $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Entity::query()->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')->select('entities.*');
+        $baseQuery = $this->getBaseQuery();
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -379,7 +377,7 @@ class EntitiesController extends Controller
         $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Entity::query()->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')->select('entities.*');
+        $baseQuery = $this->getBaseQuery();
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -571,7 +569,7 @@ class EntitiesController extends Controller
      */
     public function show(Entity $entity): View
     {
-        $threads = $entity->threads()->paginate($this->rpp);
+        $threads = $entity->threads()->paginate($this->limit);
 
         return view('entities.show', compact('entity', 'threads'));
     }

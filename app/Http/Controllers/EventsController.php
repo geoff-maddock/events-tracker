@@ -46,25 +46,21 @@ class EventsController extends Controller
 {
     protected string $prefix;
 
-    protected int $rpp;
+    protected int $defaultLimit;
 
-    protected int $defaultRpp;
+    protected string $defaultSort;
 
-    protected int $defaultGridRpp;
+    protected string $defaultSortDirection;
 
-    protected string $defaultSortBy;
+    protected array $defaultSortCriteria;
 
-    protected string $defaultSortOrder;
+    protected int $limit;
 
-    protected int $gridRpp;
+    protected string $sort;
 
-    protected int $page;
+    protected string $sortDirection;
 
-    protected array $sort;
-
-    protected string $sortBy;
-
-    protected string $sortOrder;
+    protected int $gridlimit;
 
     // this should be an array of filter values
     protected array $filters;
@@ -85,17 +81,17 @@ class EventsController extends Controller
         $this->prefix = 'app.events.';
 
         // default list variables
-        $this->defaultRpp = 10;
-        $this->defaultGridRpp = 24;
-        $this->defaultSortBy = 'name';
-        $this->defaultSortOrder = 'asc';
+        $this->defaultLimit = 10;
+        $this->defaultGridLimit = 24;
+        $this->defaultSort = 'name';
+        $this->defaultSortDirection = 'asc';
 
-        $this->sortBy = 'name';
-        $this->sortOrder = 'asc';
-        $this->rpp = 10;
-        $this->gridRpp = 24;
-        $this->page = 1;
-        $this->sort = ['name', 'desc'];
+        $this->limit = $this->defaultLimit;
+        $this->sort = $this->defaultSort;
+        $this->sortDirection = $this->defaultSortDirection;
+        $this->gridLimit = 24;
+
+        $this->defaultSortCriteria = ['events.name' => 'asc'];
 
         // inject Facebook into class
         $this->facebook = $facebook;
@@ -329,7 +325,7 @@ class EventsController extends Controller
         // get the events
         $events = $query
             ->with('visibility', 'venue')
-            ->paginate($this->rpp);
+            ->paginate($this->limit);
 
         // saves the updated session
         $listParamSessionStore->save();
@@ -816,7 +812,7 @@ class EventsController extends Controller
     }
 
     /**
-     * Reset the rpp, sort, order
+     * Reset the limit, sort, order
      *
      * @throws \Throwable
      */
@@ -921,11 +917,42 @@ class EventsController extends Controller
         // get all the users
         $users = User::orderBy('name', 'ASC')->get();
 
+        $site = config('app.app_name');
+        $url = config('app.url');
+
         // cycle through all the users
         foreach ($users as $user) {
+            $interests = [];
+            $seriesList = [];
+
             $events = $user->getAttendingFuture()->take(100);
 
-            Mail::send('emails.daily-events', ['user' => $user, 'events' => $events], function ($email) use ($user) {
+            // build an array of future events based on tags the user follows
+            if ($tags = $user->getTagsFollowing()) {
+                foreach ($tags as $tag) {
+                    if (count($tag->todaysEvents()) > 0) {
+                        $interests[$tag->name] = $tag->todaysEvents();
+                    }
+                }
+            }
+
+            // build an array of series that the user is following
+            if ($series = $user->getSeriesFollowing()) {
+                foreach ($series as $s) {
+                    // if the series does not have NO SCHEDULE AND CANCELLED AT IS NULL
+                    if ($s->occurrenceType->name !== 'No Schedule' && (null === $s->cancelled_at)) {
+                        // add matches to list
+                        $next_date = $s->nextOccurrenceDate()->format('Y-m-d');
+
+                        // today's date is the next series date
+                        if ($next_date === Carbon::now()->format('Y-m-d')) {
+                            $seriesList[] = $s;
+                        }
+                    }
+                }
+            }
+
+            Mail::send('emails.daily-events', ['user' => $user, 'events' => $events, 'seriesList' => $seriesList, 'interests' => $interests, 'url' => $url, 'site' => $site], function ($email) use ($user) {
                 $email->from('admin@events.cutupsmethod.com', 'Event Repo');
                 $email->to($user->email, $user->name)->subject('Event Repo: Daily Events Reminder');
             });
@@ -2128,7 +2155,7 @@ class EventsController extends Controller
             })
             ->orderBy('start_at', 'ASC')
             ->orderBy('name', 'ASC')
-            ->paginate($this->rpp);
+            ->paginate($this->limit);
 
         $past_events = Event::getByVenue(strtolower($slug))
             ->past()
@@ -2137,7 +2164,7 @@ class EventsController extends Controller
             })
             ->orderBy('start_at', 'ASC')
             ->orderBy('name', 'ASC')
-            ->paginate($this->rpp);
+            ->paginate($this->limit);
 
         // saves the updated session
         $listParamSessionStore->save();

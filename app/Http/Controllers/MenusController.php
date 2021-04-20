@@ -51,9 +51,9 @@ class MenusController extends Controller
         $this->defaultLimit = 10;
 
         // set list variables
-        $this->sort = 'name';
-        $this->sortDirection = 'desc';
-        $this->limit = 10;
+        $this->sort = $this->defaultSort;
+        $this->sortDirection = $this->defaultSortDirection;
+        $this->limit = $this->defaultLimit;
 
         $this->sortCriteria = ['menu.name' => 'desc'];
 

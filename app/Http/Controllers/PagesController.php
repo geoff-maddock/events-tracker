@@ -22,25 +22,21 @@ class PagesController extends Controller
 {
     protected $prefix;
 
-    protected $defaultRpp;
+    protected int $defaultLimit;
 
-    protected $defaultSortBy;
+    protected string $defaultSort;
 
-    protected $defaultSortOrder;
+    protected string $defaultSortDirection;
 
-    protected $rpp;
+    protected array $defaultSortCriteria;
 
-    protected $page;
+    protected int $limit;
 
-    protected $sort;
+    protected string $sort;
 
-    protected $sortBy;
+    protected string $sortDirection;
 
-    protected $sortOrder;
-
-    protected $defaultCriteria;
-
-    protected $filters;
+    protected array $filters;
 
     protected $hasFilter;
 
@@ -57,16 +53,16 @@ class PagesController extends Controller
         $this->prefix = 'app.pages.';
 
         // default list variables
-        $this->defaultRpp = 100;
-        $this->defaultSortBy = 'created_at';
-        $this->defaultSortOrder = 'desc';
+        $this->defaultLimit = 100;
+        $this->defaultSort = 'created_at';
+        $this->defaultSortDirection = 'desc';
 
-        $this->rpp = 100;
-        $this->page = 1;
-        $this->sort = ['created_at', 'desc'];
-        $this->sortBy = 'created_at';
-        $this->sortOrder = 'desc';
-        $this->defaultCriteria = null;
+        $this->limit = $this->defaultLimit;
+        $this->sort = $this->defaultSort;
+        $this->sortDirection = $this->defaultSortDirection;
+
+        $this->defaultSortCriteria = ['created_at' => 'desc'];
+
         parent::__construct();
     }
 
@@ -78,21 +74,9 @@ class PagesController extends Controller
     public function hasFilter(array $filters): bool
     {
         $arr = $filters;
-        unset($arr['rpp'], $arr['sortOrder'], $arr['sortBy'], $arr['page']);
+        unset($arr['limit'], $arr['sortOrder'], $arr['sortBy'], $arr['page']);
 
         return count(array_filter($arr, function ($x) { return !empty($x); }));
-    }
-
-    /**
-     * Update the page list parameters from the request.
-     *
-     * @param array $filters
-     */
-    protected function getPaging(array $filters): void
-    {
-        $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
-        $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
-        $this->rpp = $filters['rpp'] ?? $this->rpp;
     }
 
     /**
@@ -106,8 +90,8 @@ class PagesController extends Controller
         }
 
         // set results per page
-        if ($request->input('rpp')) {
-            $this->rpp = $request->input('rpp');
+        if ($request->input('limit')) {
+            $this->limit = $request->input('limit');
         }
     }
 
@@ -135,8 +119,8 @@ class PagesController extends Controller
     {
         $slug = $request->input('keyword');
 
-        // override rpp, while not breaking template that tries to render
-        $this->rpp = 20;
+        // override limit, while not breaking template that tries to render
+        $this->limit = 20;
 
         // find matching events by entity, tag or series or name
         $events = Event::getByEntity(strtolower($slug))
@@ -152,7 +136,7 @@ class PagesController extends Controller
                     })
                     ->orderBy('start_at', 'DESC')
                     ->orderBy('name', 'ASC')
-                    ->paginate($this->rpp);
+                    ->paginate($this->limit);
 
         // find matching series by entity, tag or name
         $series = Series::getByEntity(strtolower($slug))
@@ -165,7 +149,7 @@ class PagesController extends Controller
                     })
                     ->orderBy('start_at', 'DESC')
                     ->orderBy('name', 'ASC')
-                    ->paginate($this->rpp);
+                    ->paginate($this->limit);
 
         // find entities by name, tags or aliases
         $entities = Entity::where('name', 'like', '%' . $slug . '%')
@@ -177,17 +161,17 @@ class PagesController extends Controller
                 })
                 ->orderBy('entity_type_id', 'ASC')
                 ->orderBy('name', 'ASC')
-                ->paginate($this->rpp);
+                ->paginate($this->limit);
 
         // find tags by name
         $tags = Tag::where('name', 'like', '%' . $slug . '%')
                 ->orderBy('name', 'ASC')
-                ->simplePaginate($this->rpp);
+                ->simplePaginate($this->limit);
 
         // find users by name
         $users = User::where('name', 'like', '%' . $slug . '%')
                 ->orderBy('name', 'ASC')
-                ->simplePaginate($this->rpp);
+                ->simplePaginate($this->limit);
 
         // find threads by name
         $threads = Thread::where('name', 'like', '%' . $slug . '%')
@@ -195,7 +179,7 @@ class PagesController extends Controller
                 $q->where('name', '=', ucfirst($slug));
             })
             ->orderBy('name', 'ASC')
-            ->paginate($this->rpp);
+            ->paginate($this->limit);
 
         return view('pages.search', compact('events', 'entities', 'series', 'users', 'threads', 'tags', 'slug'));
     }
@@ -227,157 +211,30 @@ class PagesController extends Controller
 
     public function home(Request $request)
     {
-        // updates sort, rpp from request
+        // updates sort, limit from request
         $this->updatePaging($request);
 
         // handle the request if ajax
         if ($request->ajax()) {
             return view('pages.4daysAjax')
-                    ->with(['rpp' => $this->rpp, 'dayOffset' => $this->dayOffset])
+                    ->with(['limit' => $this->limit, 'dayOffset' => $this->dayOffset])
                     ->render();
         }
 
         return view('pages.home')
-                    ->with(['rpp' => $this->rpp, 'dayOffset' => $this->dayOffset]);
+                    ->with(['limit' => $this->limit, 'dayOffset' => $this->dayOffset]);
     }
 
     /**
-     * @return View
-     */
-    public function activity(Request $request)
-    {
-        $this->middleware('auth');
-        $offset = 0;
-
-        if ($request->input('offset')) {
-            $offset = $request->input('offset');
-        }
-
-//        // get all the filters from the session
-//        $this->filters = $this->getFilters($request);
-
-        // update filters based on the request input
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->input()));
-
-        // get the merged filters
-        $this->filters = $this->getFilters($request);
-
-        // updates sort, rpp from request
-        $this->updatePaging($request);
-
-        // flag that there are filters
-        $this->hasFilter = $this->hasFilter($this->filters);
-
-        // get the criteria given the request (could pass filters instead?)
-        $query = $this->buildActivityCriteria($request);
-
-        $activities = $query->take($this->rpp)
-            ->offset($offset)
-            ->get()
-            ->groupBy(function ($activity) {
-                return $activity->created_at->format('Y-m-d');
-            });
-
-        return view('pages.activity')
-            ->with(['rpp' => $this->rpp,
-                'sortBy' => $this->sortBy,
-                'sortOrder' => $this->sortOrder,
-                'filters' => $this->filters,
-                'hasFilter' => $this->hasFilter,
-            ])
-            ->with(compact('activities'));
-    }
-
-    /**
-     * Filter the list of entities.
-     *
-     * @return Response | View | string
-     *
-     * @throws \Throwable
-     */
-    public function filter(Request $request)
-    {
-        $offset = 0;
-        // update filters from request
-        $this->setFilters($request, array_merge($this->getFilters($request), $request->all()));
-
-        // get all the filters from the session
-        $this->filters = $this->getFilters($request);
-
-        // get  sort, sort order, rpp from session, update from request
-        $this->getPaging($this->filters);
-        $this->updatePaging($request);
-
-        // set flag if there are filters
-        $this->hasFilter = $this->hasFilter($this->filters);
-
-        // get the criteria given the request (could pass filters instead?)
-        $query = $this->buildActivityCriteria($request);
-
-        $activities = $query->take($this->rpp)
-            ->offset($offset)
-            ->get()
-            ->groupBy(static function ($activity) {
-                return $activity->created_at->format('Y-m-d');
-            });
-
-        return view('pages.activity')
-            ->with(['rpp' => $this->rpp,
-                'sortBy' => $this->sortBy,
-                'sortOrder' => $this->sortOrder,
-                'filters' => $this->filters,
-                'hasFilter' => $this->hasFilter,
-            ])
-            ->with(compact('activities'))
-            ->render();
-    }
-
-    /**
-     * Reset the filtering of activities.
-     *
-     * @return Response
-     *
-     * @throws \Throwable
-     */
-    public function reset(Request $request)
-    {
-        $offset = 0;
-
-        // set the filters to empty
-        $this->setFilters($request, $this->getDefaultFilters());
-
-        $this->hasFilter = 0;
-
-        // get the criteria given the request (could pass filters instead?)
-        $query = $this->buildActivityCriteria($request);
-
-        $activities = $query->take($this->rpp)
-            ->offset($offset)
-            ->get()
-            ->groupBy(function ($activity) {
-                return $activity->created_at->format('Y-m-d');
-            });
-
-        return view('pages.activity')
-            ->with(['rpp' => $this->rpp,
-                'sortBy' => $this->sortBy,
-                'sortOrder' => $this->sortOrder,
-                'filters' => $this->filters,
-                'hasFilter' => $this->hasFilter,
-            ])
-            ->with(compact('activities'));
-    }
-
-    /**
-     * Reset the rpp, sort, order
+     * Reset the limit, sort, order
      *
      *
      * @throws \Throwable
      */
-    public function rppResetActivity(Request $request): RedirectResponse
+    public function limitResetActivity(Request $request): RedirectResponse
     {
-        // set the rpp, sort, direction to default values
-        $this->setFilters($request, array_merge($this->getFilters($request), $this->getDefaultRppFilters()));
+        // set the limit, sort, direction to default values
+        $this->setFilters($request, array_merge($this->getFilters($request), $this->getDefaultlimitFilters()));
 
         return redirect()->route('pages.activity');
     }
@@ -416,12 +273,12 @@ class PagesController extends Controller
         return [];
     }
 
-    protected function getDefaultRppFilters(): array
+    protected function getDefaultlimitFilters(): array
     {
         return [
-            'rpp' => $this->defaultRpp,
-            'sortBy' => $this->defaultSortBy,
-            'sortOrder' => $this->defaultSortOrder
+            'limit' => $this->defaultlimit,
+            'sort' => $this->defaultSort,
+            'sortDirection' => $this->defaultSortDirection
         ];
     }
 
@@ -492,8 +349,8 @@ class PagesController extends Controller
         }
 
         // change this - should be seperate
-        if (!empty($filters['rpp'])) {
-            $this->rpp = $filters['rpp'];
+        if (!empty($filters['limit'])) {
+            $this->limit = $filters['limit'];
         }
 
         return $query;

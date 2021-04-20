@@ -11,6 +11,22 @@ use App\Models\Visibility;
 
 class LinksController extends Controller
 {
+    protected int $defaultLimit;
+
+    protected string $defaultSort;
+
+    protected string $defaultSortDirection;
+
+    protected array $defaultSortCriteria;
+
+    protected int $limit;
+
+    protected string $sort;
+
+    protected string $sortDirection;
+
+    protected array $filters;
+
     protected $rules = [
         'text' => ['required', 'min:3'],
         'url' => ['required', 'min:3'],
@@ -19,6 +35,18 @@ class LinksController extends Controller
     public function __construct()
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
+
+        // default list variables
+        $this->defaultLimit = 5;
+        $this->defaultSort = 'text';
+        $this->defaultSortDirection = 'asc';
+        $this->defaultSortCriteria = ['links.text' => 'asc'];
+
+        $this->limit = $this->defaultLimit;
+        $this->sort = $this->defaultSort;
+        $this->sortDirection = $this->defaultSortDirection;
+
+        $this->hasFilter = false;
 
         parent::__construct();
     }
@@ -42,9 +70,8 @@ class LinksController extends Controller
      */
     public function create(Entity $entity)
     {
-        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        return view('links.create', compact('entity', 'visibilities'));
+        return view('links.create', compact('entity'))
+            ->with($this->getFormOptions());
     }
 
     /**
@@ -94,9 +121,8 @@ class LinksController extends Controller
      */
     public function edit(Entity $entity, Link $link)
     {
-        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        return view('links.edit', compact('entity', 'link', 'visibilities'));
+        return view('links.edit', compact('entity', 'link'))
+            ->with($this->getFormOptions());
     }
 
     /**
@@ -131,5 +157,12 @@ class LinksController extends Controller
         flash()->success('Success', 'Your link has been deleted!');
 
         return redirect()->route('entities.show', $entity->slug);
+    }
+
+    protected function getFormOptions(): array
+    {
+        return [
+            'visibilities' => ['' => ''] + Visibility::pluck('name', 'id')->all(),
+        ];
     }
 }

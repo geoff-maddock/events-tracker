@@ -18,25 +18,19 @@ class GroupsController extends Controller
 {
     protected string $prefix;
 
-    protected int $rpp;
+    protected int $defaultLimit;
 
-    protected int $defaultRpp;
+    protected string $defaultSort;
 
-    protected int $defaultGridRpp;
+    protected string $defaultSortDirection;
 
-    protected string $defaultSortBy;
+    protected array $defaultSortCriteria;
 
-    protected string $defaultSortOrder;
+    protected int $limit;
 
-    protected int $gridRpp;
+    protected string $sort;
 
-    protected int $page;
-
-    protected array $sort;
-
-    protected string $sortBy;
-
-    protected string $sortOrder;
+    protected string $sortDirection;
 
     protected array $filters;
 
@@ -54,15 +48,14 @@ class GroupsController extends Controller
         $this->prefix = 'app.groups.';
 
         // default list variables
-        $this->defaultRpp = 10;
-        $this->defaultSortBy = 'name';
-        $this->defaultSortOrder = 'asc';
+        $this->defaultLimit = 10;
+        $this->defaultSort = 'name';
+        $this->defaultSortDirection = 'asc';
 
-        $this->sortBy = 'created_at';
-        $this->sortOrder = 'desc';
-        $this->rpp = 10;
-        $this->page = 1;
-        $this->sort = ['name', 'desc'];
+        $this->limit = $this->defaultLimit;
+        $this->sort = $this->defaultSort;
+        $this->sortDirection = $this->defaultSortDirection;
+        $this->defaultSortCriteria = ['groups.name', 'asc'];
 
         $this->hasFilter = false;
 
@@ -180,7 +173,7 @@ class GroupsController extends Controller
     }
 
     /**
-     * Reset the rpp, sort, order
+     * Reset the limit, sort, order
      *
      * @throws \Throwable
      */
@@ -188,7 +181,7 @@ class GroupsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
+        // set the limit, sort, direction only to default values
         $keyPrefix = $request->get('key') ?? 'internal_group_index';
         $listParamSessionStore->setBaseIndex('internal_group');
         $listParamSessionStore->setKeyPrefix($keyPrefix);
