@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LocationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\Entity;
@@ -12,8 +13,25 @@ use App\Models\Visibility;
 
 class LocationsController extends Controller
 {
+    protected int $defaultLimit;
+
+    protected string $defaultSort;
+
+    protected string $defaultSortDirection;
+
+    protected array $defaultSortCriteria;
+
+    protected int $limit;
+
+    protected string $sort;
+
+    protected string $sortDirection;
+
+    protected array $filters;
+
     protected $rules = [
         'name' => ['required', 'min:3'],
+        'slug' => ['required', 'min:3'],
         'city' => ['required', 'min:3'],
         'visibility_id' => ['required'],
         'location_type_id' => ['required'],
@@ -22,6 +40,16 @@ class LocationsController extends Controller
     public function __construct()
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
+
+        // default list variables
+        $this->defaultLimit = 10;
+        $this->defaultSort = 'name';
+        $this->defaultSortDirection = 'asc';
+
+        $this->limit = $this->defaultLimit;
+        $this->sort = $this->defaultSort;
+        $this->sortDirection = $this->defaultSortDirection;
+        $this->defaultSortCriteria = ['locations.name', 'asc'];
 
         parent::__construct();
     }
@@ -45,10 +73,19 @@ class LocationsController extends Controller
      */
     public function create(Entity $entity)
     {
-        $locationTypes = ['' => ''] + LocationType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $locationTypes = LocationType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('locations.create', compact('entity', 'locationTypes', 'visibilities'));
+        return view('locations.create', compact('entity'))
+            ->with($this->getFormOptions());
+    }
+
+    protected function getFormOptions(): array
+    {
+        return [
+            'locationTypeOptions' => ['' => ''] + LocationType::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all()
+        ];
     }
 
     /**

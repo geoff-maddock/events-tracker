@@ -7,7 +7,7 @@
 </div>
 
 <div class="row">
-	<div class="form-group col-md-4">
+	<div class="form-group {{$errors->has('slug') ? 'has-error' : '' }} col-md-4">
 	{!! Form::label('slug','Slug') !!}
 	{!! Form::text('slug', null, ['placeholder' => 'Unique name for this entity (will validate)', 'class' =>'form-control']) !!}
 	{!! $errors->first('slug','<span class="help-block">:message</span>') !!}
@@ -91,7 +91,7 @@
 <div class="row">
 	<div class="form-group col-md-2">
 	{!! Form::label('location_type_id','Type') !!}
-	{!! Form::select('location_type_id', $locationTypes, (isset($location->location_type_id) ? $location->location_type_id : NULL),['class' =>'form-control']) !!}
+	{!! Form::select('location_type_id', $locationTypeOptions, (isset($location->location_type_id) ? $location->location_type_id : NULL),['class' =>'form-control']) !!}
 	{!! $errors->first('location_type_id','<span class="help-block">:message</span>') !!}
 	</div>
 
@@ -104,7 +104,7 @@
 	<div class="row">
 		<div class="form-group col-md-3 {{$errors->has('visibility_id') ? 'has-error' : '' }}">
 			{!! Form::label('visibility_id','Visibility:') !!}
-			{!! Form::select('visibility_id', $visibilities, (isset($event->visibility_id) ? $event->visibility_id : 3), ['class' =>'form-control']) !!}
+			{!! Form::select('visibility_id', $visibilityOptions, (isset($event->visibility_id) ? $event->visibility_id : 3), ['class' =>'form-control']) !!}
 			{!! $errors->first('visibility_id','<span class="help-block">:message</span>') !!}
 		</div>
 	</div>
