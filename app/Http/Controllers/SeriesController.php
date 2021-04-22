@@ -35,23 +35,19 @@ class SeriesController extends Controller
 {
     protected string $prefix;
 
-    protected int $defaultRpp;
+    protected int $defaultLimit;
 
-    protected string $defaultSortBy;
+    protected string $defaultSort;
 
-    protected string $defaultSortOrder;
+    protected string $defaultSortDirection;
 
-    protected int $childRpp;
+    protected int $limit;
 
-    protected int $rpp;
+    protected string $sort;
 
-    protected int $page;
+    protected string $sortDirection;
 
-    protected array $sort;
-
-    protected string $sortBy;
-
-    protected string $sortOrder;
+    protected int $childLimit;
 
     protected array $defaultCriteria;
 
@@ -71,51 +67,22 @@ class SeriesController extends Controller
         $this->prefix = 'app.series.';
 
         // default list variables
-        $this->rpp = 100;
-        $this->childRpp = 10;
+
+        // default list variables
+        $this->defaultSort = 'name';
+        $this->defaultSortDirection = 'asc';
+        $this->defaultLimit = 5;
+
+        // set list variables
+        $this->sort = $this->defaultSort;
+        $this->sortDirection = $this->defaultSortDirection;
+        $this->limit = $this->defaultLimit;
+
+        $this->childLimit = 10;
         $this->page = 1;
-        $this->sort = ['name', 'desc'];
-        $this->sortBy = 'name';
-        $this->sortOrder = 'asc';
-
-        $this->defaultRpp = 5;
-        $this->defaultSortBy = 'name';
-        $this->defaultSortOrder = 'asc';
-
-        $this->defaultCriteria = [];
+        $this->defaultSortCriteria = ['name' => 'desc'];
         $this->hasFilter = 0;
         parent::__construct();
-    }
-
-    /**
-     * Update the page list parameters from the request.
-     *
-     * @param array $filters
-     */
-    protected function getPaging(array $filters): void
-    {
-        $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
-        $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
-        if (isset($filters['rpp']) && is_numeric($filters['rpp'])) {
-            $this->rpp = $filters['rpp'];
-        } else {
-            $this->rpp = $this->defaultRpp;
-        }
-    }
-
-    /**
-     * Checks if there is a valid filter.
-     *
-     * @param array $filters
-     */
-    public function hasFilter(array $filters): bool
-    {
-        if (!is_array($filters)) {
-            return false;
-        }
-        unset($filters['rpp'], $filters['sortOrder'], $filters['sortBy'], $filters['page']);
-
-        return count(array_filter($filters, function ($x) { return !empty($x); }));
     }
 
     /**
@@ -181,12 +148,12 @@ class SeriesController extends Controller
     protected function baseQuery()
     {
         return  Series::query()
-        ->leftJoin('event_types', 'series.event_type_id', '=', 'event_types.id')
-        ->leftJoin('occurrence_types', 'series.occurrence_type_id', '=', 'occurrence_types.id')
-        ->orderBy('occurrence_type_id', 'ASC')
-        ->orderBy('occurrence_week_id', 'ASC')
-        ->orderBy('occurrence_day_id', 'ASC')
-        ->select('series.*');
+            ->leftJoin('event_types', 'series.event_type_id', '=', 'event_types.id')
+            ->leftJoin('occurrence_types', 'series.occurrence_type_id', '=', 'occurrence_types.id')
+            ->orderBy('occurrence_type_id', 'ASC')
+            ->orderBy('occurrence_week_id', 'ASC')
+            ->orderBy('occurrence_day_id', 'ASC')
+            ->select('series.*');
     }
 
     /**
@@ -571,8 +538,8 @@ class SeriesController extends Controller
 
     public function show(Series $series): View
     {
-        $events = $series->events()->paginate($this->childRpp);
-        $threads = $series->threads()->paginate($this->childRpp);
+        $events = $series->events()->paginate($this->childLimit);
+        $threads = $series->threads()->paginate($this->childLimit);
 
         return view('series.show', compact('series', 'events', 'threads'));
     }

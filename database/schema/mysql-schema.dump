@@ -518,6 +518,7 @@ DROP TABLE IF EXISTS `event_reviews`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `event_reviews` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `event_id` int(11) unsigned NOT NULL,
   `user_id` int(11) unsigned NOT NULL,
   `review_type_id` int(11) unsigned NOT NULL,

@@ -17,19 +17,20 @@ class PermissionsController extends Controller
 {
     protected string $prefix;
 
-    protected int $rpp;
+    protected int $defaultLimit;
 
-    protected int $defaultRpp;
+    protected string $defaultSort;
 
-    protected string $defaultSortBy;
+    protected string $defaultSortDirection;
 
-    protected string $defaultSortOrder;
+    protected int $limit;
 
-    protected array $sort;
+    protected string $sort;
 
-    protected string $sortBy;
+    protected string $sortDirection;
 
-    protected string $sortOrder;
+    // array of sort criteria to be applied in order
+    protected array $sortCriteria;
 
     protected array $filters;
 
@@ -47,14 +48,15 @@ class PermissionsController extends Controller
         $this->prefix = 'app.permissions.';
 
         // default list variables
-        $this->defaultRpp = 10;
-        $this->defaultSortBy = 'name';
-        $this->defaultSortOrder = 'asc';
+        $this->defaultLimit = 10;
+        $this->defaultSort = 'name';
+        $this->defaultSortDirection = 'asc';
 
-        $this->sortBy = 'created_at';
-        $this->sortOrder = 'desc';
-        $this->rpp = 10;
-        $this->sort = ['name', 'desc'];
+        // set list variables
+        $this->sort = $this->defaultSort;
+        $this->sortDirection = $this->defaultSortDirection;
+        $this->limit = $this->defaultLimit;
+        $this->sortCriteria = ['name', 'desc'];
 
         $this->hasFilter = false;
 
@@ -183,7 +185,7 @@ class PermissionsController extends Controller
     }
 
     /**
-     * Reset the rpp, sort, order
+     * Reset the limit, sort, direction
      *
      * @throws \Throwable
      */
@@ -191,7 +193,7 @@ class PermissionsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
+        // set the limit, sort, direction only to default values
         $keyPrefix = $request->get('key') ?? 'internal_permission_index';
         $listParamSessionStore->setBaseIndex('internal_permission');
         $listParamSessionStore->setKeyPrefix($keyPrefix);
@@ -230,10 +232,8 @@ class PermissionsController extends Controller
      */
     public function create()
     {
-        $groups = Group::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
         return view('permissions.create')
-        ->with($this->getFormOptions());
+            ->with($this->getFormOptions());
     }
 
     /**

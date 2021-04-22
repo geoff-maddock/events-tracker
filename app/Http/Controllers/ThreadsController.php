@@ -33,23 +33,21 @@ class ThreadsController extends Controller
     // define a list of variables
     protected string $prefix;
 
-    protected int $rpp;
+    protected int $defaultLimit;
 
-    protected int $page;
+    protected string $defaultSort;
 
-    protected int $defaultRpp;
+    protected string $defaultSortDirection;
 
-    protected string $defaultSortBy;
+    protected int $limit;
 
-    protected string $defaultSortOrder;
+    protected string $sort;
 
-    protected array $sort;
-
-    protected string $sortBy;
-
-    protected string $sortOrder;
+    protected string $sortDirection;
 
     protected array $defaultCriteria;
+
+    protected int $page;
 
     protected bool $hasFilter;
 
@@ -68,17 +66,18 @@ class ThreadsController extends Controller
         $this->prefix = 'app.threads.';
 
         // default list variables - move to function that set from session or default
-        $this->defaultRpp = 10;
-        $this->defaultSortBy = 'created_at';
-        $this->defaultSortOrder = 'desc';
+        $this->defaultSort = 'created_at';
+        $this->defaultSortDirection = 'desc';
+        $this->defaultLimit = 10;
 
-        $this->rpp = 10;
+        $this->sort = $this->defaultSort;
+        $this->sortDirection = $this->defaultSortDirection;
+        $this->limit = $this->defaultLimit;
+
+        $this->defaultSortCriteria = ['thread.created_at' => 'desc'];
+
         $this->page = 1;
-        $this->sort = ['name', 'desc'];
-        $this->sortBy = 'created_at';
-        $this->sortOrder = 'desc';
-        $this->defaultCriteria = [];
-        $this->hasFilter = 1;
+        $this->hasFilter = false;
 
         $this->filter = $filter;
 
@@ -167,7 +166,8 @@ class ThreadsController extends Controller
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = Thread::query()
-        ->select('threads.*');
+            ->leftJoin('users', 'threads.created_by', '=', 'users.id')
+             ->select('threads.*');
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -211,7 +211,7 @@ class ThreadsController extends Controller
     }
 
     /**
-     * Reset the rpp, sort, order
+     * Reset the limit, sort, order
      *
      * @throws \Throwable
      */
@@ -219,7 +219,7 @@ class ThreadsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
+        // set the limit, sort, direction only to default values
         $keyPrefix = $request->get('key') ?? 'internal_thread_index';
         $listParamSessionStore->setBaseIndex('internal_thread');
         $listParamSessionStore->setKeyPrefix($keyPrefix);
@@ -957,10 +957,10 @@ class ThreadsController extends Controller
         return [];
     }
 
-    protected function getDefaultRppFilters(): array
+    protected function getDefaultLimitFilters(): array
     {
         return [
-            'rpp' => $this->defaultRpp,
+            'limit' => $this->defaultLimit,
             'sortBy' => $this->defaultSortBy,
             'sortOrder' => $this->defaultSortOrder
         ];

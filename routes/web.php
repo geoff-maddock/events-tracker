@@ -169,6 +169,10 @@ Route::get('events/starting/{date}', 'EventsController@indexStarting');
 Route::get('events/by-date/{year}/{month?}/{day?}', 'EventsController@indexByDate')
     ->where('year', '[1-9][0-9][0-9][0-9]')
     ->where('month', '(0?[1-9]|1[012])$');
+// Use this route for the front page to display a window of events
+Route::get('events/window/{year}/{month?}/{day?}', 'EventsController@indexWindow')
+    ->where('year', '[1-9][0-9][0-9][0-9]')
+    ->where('month', '(0?[1-9]|1[012])$');
 Route::get('events/daily', 'EventsController@daily');
 Route::get('events/day/{day}', 'EventsController@day')->name('events.day');
 Route::match(['get', 'post'], 'events/attending', 'EventsController@indexAttending')->name('events.attending');

@@ -29,7 +29,7 @@ class MenusController extends Controller
     protected string $sortDirection;
 
     // array of sort criteria to be applied in order
-    protected array $sortCriteria;
+    protected array $defaultSortCriteria;
 
     protected array $filters;
 
@@ -55,7 +55,7 @@ class MenusController extends Controller
         $this->sortDirection = $this->defaultSortDirection;
         $this->limit = $this->defaultLimit;
 
-        $this->sortCriteria = ['menu.name' => 'desc'];
+        $this->defaultSortCriteria = ['menu.name' => 'desc'];
 
         $this->hasFilter = false;
 

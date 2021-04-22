@@ -124,11 +124,25 @@ class EventReviewsController extends Controller
     {
         $msg = '';
 
-        $eventReview->fill($request->input())->save();
+        $input = $request->input();
+        $input['event_id'] = $event->id;
+        $input['user_id'] = $this->user->id;
+        if (isset($input['attended'])) {
+            $input['attended'] = $input['attended'] == 'on' ? 1 : 0;
+        } else {
+            $input['attended'] = 0;
+        }
+        if (isset($input['confirmed'])) {
+            $input['confirmed'] = $input['confirmed'] == 'on' ? 1 : 0;
+        } else {
+            $input['confirmed'] = 0;
+        }
 
-        flash()->success('Success', 'Your eventReview has been updated!');
+        $eventReview->fill($input)->save();
 
-        return redirect()->route('entities.show', $event->id);
+        flash()->success('Success', 'Your review has been updated!');
+
+        return redirect()->route('events.show', ['event' => $event->id]);
     }
 
     /**
