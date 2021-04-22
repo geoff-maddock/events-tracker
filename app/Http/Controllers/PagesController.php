@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Activity;
+use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Entity;
 use App\Models\Event;
 use App\Models\Series;
 use App\Models\Tag;
 use App\Models\Thread;
 use App\Models\User;
+use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
@@ -36,18 +35,21 @@ class PagesController extends Controller
 
     protected string $sortDirection;
 
+    protected int $offset;
+
+    protected int $defaultOffset;
+
+    protected int $window;
+
+    protected int $defaultWindow;
+
     protected array $filters;
 
     protected $hasFilter;
 
-    protected $dayOffset;
-
     public function __construct()
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'activity', 'tools']]);
-
-        // default list variables
-        $this->dayOffset = 0;
 
         // prefix for session storage
         $this->prefix = 'app.pages.';
@@ -56,27 +58,20 @@ class PagesController extends Controller
         $this->defaultLimit = 100;
         $this->defaultSort = 'created_at';
         $this->defaultSortDirection = 'desc';
+        $this->defaultOffset = 0;
+        $this->defaultWindow = 4;
 
         $this->limit = $this->defaultLimit;
         $this->sort = $this->defaultSort;
         $this->sortDirection = $this->defaultSortDirection;
+        $this->offset = $this->defaultOffset;
+        $this->window = $this->defaultWindow;
 
         $this->defaultSortCriteria = ['created_at' => 'desc'];
 
+        $this->hasFilter = false;
+
         parent::__construct();
-    }
-
-    /**
-     * Checks if there is a valid filter.
-     *
-     * @param array $filters
-     */
-    public function hasFilter(array $filters): bool
-    {
-        $arr = $filters;
-        unset($arr['limit'], $arr['sortOrder'], $arr['sortBy'], $arr['page']);
-
-        return count(array_filter($arr, function ($x) { return !empty($x); }));
     }
 
     /**
@@ -86,7 +81,7 @@ class PagesController extends Controller
     {
         // set starting day offset
         if ($request->input('day_offset')) {
-            $this->dayOffset = $request->input('day_offset');
+            $this->offset = $request->input('day_offset');
         }
 
         // set results per page
@@ -209,34 +204,29 @@ class PagesController extends Controller
         return view('pages.settings');
     }
 
-    public function home(Request $request)
-    {
+    public function home(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ) {
+        $listParamSessionStore->setBaseIndex('internal_page');
+        $listParamSessionStore->setKeyPrefix('internal_page_home');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([PagesController::class, 'home']));
+
         // updates sort, limit from request
         $this->updatePaging($request);
 
         // handle the request if ajax
         if ($request->ajax()) {
             return view('pages.4daysAjax')
-                    ->with(['limit' => $this->limit, 'dayOffset' => $this->dayOffset])
+                    ->with(['limit' => $this->limit, 'dayOffset' => $this->offset, 'window' => $this->window])
                     ->render();
         }
 
         return view('pages.home')
-                    ->with(['limit' => $this->limit, 'dayOffset' => $this->dayOffset]);
-    }
-
-    /**
-     * Reset the limit, sort, order
-     *
-     *
-     * @throws \Throwable
-     */
-    public function limitResetActivity(Request $request): RedirectResponse
-    {
-        // set the limit, sort, direction to default values
-        $this->setFilters($request, array_merge($this->getFilters($request), $this->getDefaultlimitFilters()));
-
-        return redirect()->route('pages.activity');
+                    ->with(['limit' => $this->limit, 'dayOffset' => $this->offset, 'window' => $this->window]);
     }
 
     /**
@@ -304,58 +294,6 @@ class PagesController extends Controller
         $request->session()->put($this->prefix . $attribute, $value);
     }
 
-    /**
-     * Builds the criteria from the session.
-     */
-    public function buildActivityCriteria(Request $request): Builder
-    {
-        // get all the filters from the session
-        $filters = $this->getFilters($request);
-
-        // base criteria
-        $query = Activity::orderBy($this->sortBy, $this->sortOrder);
-
-        // add the criteria from the session
-        // check request for passed filter values
-
-        if (!empty($filters['name'])) {
-            // getting name from the request
-            $name = $filters['name'];
-            $query->where('object_name', 'like', '%' . $name . '%');
-        }
-
-        if (!empty($filters['object_table'])) {
-            // getting object table from the request
-            $type = $filters['object_table'];
-            $query->where('object_table', 'like', '%' . $type . '%');
-        }
-
-        if (!empty($filters['action'])) {
-            $action = $filters['action'];
-
-            // add has clause
-            $query->whereHas('action', function ($q) use ($action) {
-                $q->where('name', '=', $action);
-            });
-        }
-
-        if (!empty($filters['user'])) {
-            $user = $filters['user'];
-
-            // add has clause
-            $query->whereHas('user', function ($q) use ($user) {
-                $q->where('name', '=', $user);
-            });
-        }
-
-        // change this - should be seperate
-        if (!empty($filters['limit'])) {
-            $this->limit = $filters['limit'];
-        }
-
-        return $query;
-    }
-
     public function tools(Request $request)
     {
         $this->middleware('auth');
@@ -365,7 +303,7 @@ class PagesController extends Controller
             die('cannot show admin)');
         }
 
-        // get all the events with no photo
+        // get all the events with a link but no photo
         $events = Event::has('photos', '<', 1)
             ->where('primary_link', '<>', '')
             ->where('primary_link', 'like', '%facebook%')
@@ -391,9 +329,6 @@ class PagesController extends Controller
 
         // email the user
         $this->inviteUser($email);
-
-        // add to activity log - email address was invited
-        // Activity::log($user, $this->user, 12);
 
         Log::info('Email ' . $email . ' was invited to join the site');
 

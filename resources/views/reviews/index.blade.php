@@ -69,13 +69,10 @@
     <div id="list-control" class="col-lg-3 visible-lg-block visible-md-block text-right">
         <form action="{{ url()->current() }}" method="GET" class="form-inline">
             <div class="form-group">
-                <?php $rpp_options = [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000]; ?>
-                <?php $sort_by_options = ['name' => 'Name', 'start_at' => 'Start At', 'event_type_id' => 'Event Type', 'updated_at' => 'Updated At']; ?>
-                <?php $sort_order_options = ['asc' => 'asc', 'desc' => 'desc']; ?>
-                {!! Form::select('rpp', $rpp_options, ($rpp ?? 10), ['class' =>'form-control auto-submit']) !!}
-                {!! Form::select('sortBy', $sort_by_options, ($sortBy ?? 'name'), ['class' =>'form-control
+                {!! Form::select('limit', $limitOptions, ($limit ?? 10), ['class' =>'form-control auto-submit']) !!}
+                {!! Form::select('sort', $sortOptions, ($sort ?? 'name'), ['class' =>'form-control
                 auto-submit']) !!}
-                {!! Form::select('sortOrder', $sort_order_options, ($sortOrder ?? 'asc'), ['class' =>'form-control
+                {!! Form::select('direction', $directionOptions, ($direction ?? 'asc'), ['class' =>'form-control
                 auto-submit']) !!}
             </div>
         </form>
@@ -98,12 +95,7 @@
 
                 <div class="panel-body">
                     {!! $reviews->render() !!}
-                    {!! $reviews->appends(['sort_by' => $sortBy,
-                    'rpp' => $rpp,
-                    'filter_venue' => isset($filters['filter_venue']) ? $filters['filter_venue'] : NULL,
-                    'filter_tag' => isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL,
-                    'filter_name' => isset($filters['filter_name']) ? $filters['filter_name'] : NULL,
-                    ])->render() !!}
+                    {!! $reviews->appends(['sort' => $sort, 'limit' => $limit, 'direction' => $direction])->render() !!}
                     @include('reviews.list', ['reviews' => $reviews])
                 </div>
 

@@ -9,7 +9,6 @@ use App\Http\Requests\PostRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Like;
 use App\Models\Post;
-use App\Models\Series;
 use App\Models\Tag;
 use App\Models\TagType;
 use App\Models\Thread;
@@ -18,7 +17,6 @@ use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -31,29 +29,24 @@ class PostsController extends Controller
 
     protected string $prefix;
 
-    protected int $rpp;
+    protected int $defaultLimit;
 
-    protected int $page;
+    protected string $defaultSort;
 
-    protected int $defaultRpp;
+    protected string $defaultSortDirection;
 
-    protected string $defaultSortBy;
+    protected int $limit;
 
-    protected string $defaultSortOrder;
+    protected string $sort;
 
-    protected array $sort;
-
-    protected string $sortBy;
-
-    protected string $sortOrder;
-
-    protected array $defaultCriteria;
+    protected string $sortDirection;
 
     protected bool $hasFilter;
 
     protected array $filters;
 
-    protected array $criteria;
+    // array of sort criteria to be applied in order
+    protected array $defaultSortCriteria;
 
     protected PostFilters $filter;
 
@@ -65,17 +58,17 @@ class PostsController extends Controller
         $this->prefix = 'app.posts.';
 
         // default list variables - move to function that set from session or default
-        $this->defaultRpp = 10;
-        $this->defaultSortBy = 'created_at';
-        $this->defaultSortOrder = 'desc';
+        $this->defaultSort = 'created_at';
+        $this->defaultSortDirection = 'desc';
+        $this->defaultLimit = 10;
 
-        $this->rpp = 10;
-        $this->page = 1;
-        $this->sort = ['created_at', 'desc'];
-        $this->sortBy = 'created_at';
-        $this->sortOrder = 'desc';
-        $this->defaultCriteria = [];
-        $this->hasFilter = 1;
+        // set list variables
+        $this->sort = $this->defaultSort;
+        $this->sortDirection = $this->defaultSortDirection;
+        $this->limit = $this->defaultLimit;
+
+        $this->defaultCriteria = ['posts.created_at', 'desc'];
+        $this->hasFilter = false;
 
         $this->filter = $filter;
 
@@ -617,7 +610,7 @@ class PostsController extends Controller
     }
 
     /**
-     * Reset the rpp, sort, order
+     * Reset the limit, sort, direction
      *
      * @throws \Throwable
      */
@@ -625,7 +618,7 @@ class PostsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
+        // set the limit, sort, direction only to default values
         $keyPrefix = $request->get('key') ?? 'internal_post_index';
         $listParamSessionStore->setBaseIndex('internal_post');
         $listParamSessionStore->setKeyPrefix($keyPrefix);

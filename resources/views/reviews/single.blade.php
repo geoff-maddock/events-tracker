@@ -16,7 +16,7 @@
 	
 			{!! link_to_route('events.show', $review->event->name, [$review->event->id], ['class' => 'item-title']) !!}
 			@if ($signedIn && $review->ownedBy(Auth::user()))
-				<a href="{!! route('reviews.edit', ['id' => $review->id]) !!}" title="Edit this review."><span class='glyphicon glyphicon-pencil'></span></a>
+				<a href="/reviews/{{ $review->id }}/edit" title="Edit this review."><span class='glyphicon glyphicon-pencil'></span></a>
 			@endif
 
 			<br>

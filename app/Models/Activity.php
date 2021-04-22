@@ -55,6 +55,8 @@ use DateTime;
  */
 class Activity extends Eloquent
 {
+    public const DEFAULT_SHOW_COUNT = 100;
+
     /**
      * The storage format of the model's date columns.
      *

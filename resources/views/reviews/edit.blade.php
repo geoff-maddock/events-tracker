@@ -1,21 +1,23 @@
 @extends('app')
 
-@section('title','Entity Location Edit')
+@section('title','Event Review Edit')
 
 @section('content')
 
-	<P><B>Entity</B> > {!! link_to_route('entities.show', $entity->name, [$entity->id], ['class' => 'text-'.$entity->entityStatus->getDisplayClass()]) !!}</P>
+	<h4><B>Event</B>  {!! link_to_route('events.show', $review->event->name, ['event' => $review->event->id]) !!}</P>
 
-	<h1>Edit Location: <i>{{ $location->name }}</i> </h1> 
+	<a href="{!! route('events.show', ['event' => $review->event->id]) !!}" class="btn btn-primary">View Event</a>
 
-	{!! Form::model($location, ['route' => ['entities.locations.update', $entity->id, $location->id], 'method' => 'PATCH']) !!}
+	<h1>Edit Review by <i>{{ $review->user->name }}</i> </h1> 
 
-		@include('locations.form', ['action' => 'update'])
+	{!! Form::model($review, ['route' => ['events.reviews.update', $review->event->id, $review->id], 'method' => 'PATCH']) !!}
+
+		@include('reviews.form', ['action' => 'update'])
 
 	{!! Form::close() !!}
 
 	<div class="col-md-3">
-	<P>{!! delete_form(['entities.locations.destroy', $entity->id,  $location->id]) !!}</P>
+	<P>{!! delete_form(['events.reviews.destroy', $review->event->id,  $review->id]) !!}</P>
 	</div>
 
 @stop

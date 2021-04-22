@@ -24,35 +24,25 @@ class TagsController extends Controller
 
     protected string $prefix;
 
-    protected int $rpp;
+    protected int $defaultLimit;
 
-    protected int $defaultRpp;
+    protected string $defaultSort;
 
-    protected int $defaultGridRpp;
+    protected string $defaultSortDirection;
 
-    protected string $defaultSortBy;
+    protected int $limit;
 
-    protected string $defaultSortOrder;
+    protected string $sort;
 
-    protected int $gridRpp;
+    protected string $sortDirection;
 
     protected int $page;
-
-    protected array $sort;
-
-    protected string $sortBy;
-
-    protected string $sortOrder;
 
     protected array $filters;
 
     protected bool $hasFilter;
 
-    protected Event $event;
-
-    protected array $criteria;
-
-    protected array $defaultCriteria;
+    protected array $defaultSortCriteria;
 
     public function __construct(Tag $tag)
     {
@@ -60,16 +50,22 @@ class TagsController extends Controller
         $this->tag = $tag;
 
         // prefix for session storage
-        $this->prefix = 'app.threads.';
+        $this->prefix = 'app.tags.';
 
         // default list variables
-        $this->rpp = 25;
-        $this->page = 1;
-        $this->sort = ['name', 'desc'];
-        $this->sortBy = 'created_at';
-        $this->sortOrder = 'desc';
+        $this->defaultSort = 'name';
+        $this->defaultSortDirection = 'asc';
+        $this->defaultLimit = 25;
+
+        // set list variables
+        $this->sort = $this->defaultSort;
+        $this->sortDirection = $this->defaultSortDirection;
+        $this->limit = $this->defaultLimit;
+
+        $this->defaultSortCriteria = ['name' => 'desc'];
+
         $this->defaultCriteria = [];
-        $this->hasFilter = 0;
+        $this->hasFilter = false;
 
         parent::__construct();
     }
@@ -127,7 +123,7 @@ class TagsController extends Controller
                     ->orderBy('start_at', 'DESC')
                     ->orderBy('name', 'ASC')
                     ->with('visibility', 'tags', 'entities', 'venue', 'eventType', 'threads')
-                    ->simplePaginate($this->rpp);
+                    ->simplePaginate($this->limit);
 
         // get all entities linked to the tag
         $entities = Entity::whereHas('tags', function ($q) use ($tagNames) {
@@ -135,7 +131,7 @@ class TagsController extends Controller
         })->orderBy('entity_type_id', 'ASC')
                     ->orderBy('name', 'ASC')
                     ->with('tags', 'locations', 'roles')
-                    ->simplePaginate($this->rpp);
+                    ->simplePaginate($this->limit);
 
         // get a list of all tags
         $tags = Tag::orderBy('name', 'ASC')->get();
@@ -185,7 +181,7 @@ class TagsController extends Controller
         $events = Event::getByTag(ucfirst($tag))
                     ->orderBy('start_at', 'DESC')
                     ->orderBy('name', 'ASC')
-                    ->simplePaginate($this->rpp);
+                    ->simplePaginate($this->limit);
 
         $events->filter(function ($e) {
             return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
@@ -199,7 +195,7 @@ class TagsController extends Controller
                     })
                     ->orderBy('entity_type_id', 'ASC')
                     ->orderBy('name', 'ASC')
-                    ->simplePaginate($this->rpp);
+                    ->simplePaginate($this->limit);
 
         $tags = Tag::orderBy('name', 'ASC')->get();
 
@@ -228,7 +224,7 @@ class TagsController extends Controller
         $events = Event::getByTag(ucfirst($tag))
             ->orderBy('start_at', 'DESC')
             ->orderBy('name', 'ASC')
-            ->simplePaginate($this->rpp);
+            ->simplePaginate($this->limit);
 
         $events->filter(function ($e) {
             return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
@@ -242,7 +238,7 @@ class TagsController extends Controller
             })
             ->orderBy('entity_type_id', 'ASC')
             ->orderBy('name', 'ASC')
-            ->simplePaginate($this->rpp);
+            ->simplePaginate($this->limit);
 
         $tags = Tag::orderBy('name', 'ASC')->get();
 
@@ -471,9 +467,9 @@ class TagsController extends Controller
      * @param Request $request
      * @return integer
      */
-    public function getRpp(Request $request)
+    public function getLimit(Request $request)
     {
-        return $this->getAttribute($request, 'rpp', $this->rpp);
+        return $this->getAttribute($request, 'limit', $this->limit);
     }
 
     /**
@@ -559,9 +555,9 @@ class TagsController extends Controller
      * @param integer $input
      * @return integer
      */
-    public function setRpp(Request $request, int $input)
+    public function setLimit(Request $request, int $input)
     {
-        return $this->setAttribute($request, 'rpp', 5);
+        return $this->setAttribute($request, 'limit', 5);
     }
 
     /**
@@ -599,8 +595,8 @@ class TagsController extends Controller
         }
 
         // change this - should be separate
-        if (!empty($filters['filter_rpp'])) {
-            $this->rpp = $filters['filter_rpp'];
+        if (!empty($filters['filter_limit'])) {
+            $this->limit = $filters['filter_limit'];
         }
 
         return $query;

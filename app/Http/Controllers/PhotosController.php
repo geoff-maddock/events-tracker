@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\Photo;
 use App\Models\Entity;
@@ -149,9 +147,5 @@ class PhotosController extends Controller
         flash('Success', 'The primary photo was unset.');
 
         return back();
-    }
-
-    protected function saveAs($name)
-    {
     }
 }

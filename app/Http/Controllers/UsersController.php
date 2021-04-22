@@ -36,23 +36,22 @@ class UsersController extends Controller
 
     protected string $prefix;
 
-    protected int $rpp;
-
     protected int $page;
 
-    protected int $defaultRpp;
+    protected int $defaultLimit;
 
-    protected string $defaultSortBy;
+    protected string $defaultSort;
 
-    protected string $defaultSortOrder;
+    protected string $defaultSortDirection;
 
-    protected array $sort;
+    protected int $limit;
 
-    protected string $sortBy;
+    protected string $sort;
 
-    protected string $sortOrder;
+    protected string $sortDirection;
 
-    protected $defaultCriteria;
+    // array of sort criteria to be applied in order
+    protected array $defaultSortCriteria;
 
     protected bool $hasFilter;
 
@@ -72,17 +71,16 @@ class UsersController extends Controller
         // prefix for session storage
         $this->prefix = 'app.users.';
 
-        $this->rpp = 25;
-        $this->sort = ['name', 'asc'];
-        $this->sortBy = 'name';
-        $this->sortOrder = 'asc';
+        // default list variables - move to function that set from session or default
+        $this->defaultSort = 'name';
+        $this->defaultSortDirection = 'asc';
+        $this->defaultLimit = 25;
 
-        // default list variables
-        $this->defaultRpp = 25;
-        $this->defaultSortBy = 'name';
-        $this->defaultSortOrder = 'asc';
-        $this->defaultCriteria = null;
-        $this->hasFilter = 0;
+        $this->sort = $this->defaultSort;
+        $this->sortDirection = $this->defaultSortDirection;
+        $this->limit = $this->defaultLimit;
+
+        $this->defaultSortCriteria = ['name' => 'desc'];
 
         // tabs
         $this->defaultTabs = ['events' => 'created', 'following' => 'tags'];
@@ -202,7 +200,7 @@ class UsersController extends Controller
     }
 
     /**
-     * Reset the rpp, sort, order
+     * Reset the limit, sort, order
      *
      * @throws \Throwable
      */
@@ -210,7 +208,7 @@ class UsersController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
+        // set the limit, sort, direction only to default values
         $keyPrefix = $request->get('key') ?? 'internal_user_index';
         $listParamSessionStore->setBaseIndex('internal_user');
         $listParamSessionStore->setKeyPrefix($keyPrefix);
