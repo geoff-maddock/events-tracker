@@ -225,7 +225,7 @@ class EntityTypesController extends Controller
     public function buildCriteria(Request $request): Builder
     {
         // base criteria
-        $query = EntityType::orderBy($this->sortBy, $this->sortOrder);
+        $query = EntityType::orderBy($this->sort, $this->sortDirection);
 
         return $query;
     }

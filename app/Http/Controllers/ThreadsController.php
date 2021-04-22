@@ -45,7 +45,7 @@ class ThreadsController extends Controller
 
     protected string $sortDirection;
 
-    protected array $defaultCriteria;
+    protected array $defaultSortCriteria;
 
     protected int $page;
 
@@ -961,8 +961,8 @@ class ThreadsController extends Controller
     {
         return [
             'limit' => $this->defaultLimit,
-            'sortBy' => $this->defaultSortBy,
-            'sortOrder' => $this->defaultSortOrder
+            'sort' => $this->defaultSort,
+            'sortDirection' => $this->defaultSortDirection
         ];
     }
 
