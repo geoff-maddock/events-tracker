@@ -67,7 +67,7 @@ class PostsController extends Controller
         $this->sortDirection = $this->defaultSortDirection;
         $this->limit = $this->defaultLimit;
 
-        $this->defaultCriteria = ['posts.created_at', 'desc'];
+        $this->defaultSortCriteria = ['posts.created_at', 'desc'];
         $this->hasFilter = false;
 
         $this->filter = $filter;

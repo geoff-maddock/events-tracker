@@ -31,7 +31,7 @@ class BlogsController extends Controller
 
     protected string $defaultSort;
 
-    protected string $defaultSortOrder;
+    protected string $defaultSortDirection;
 
     protected array $defaultSortCriteria;
 

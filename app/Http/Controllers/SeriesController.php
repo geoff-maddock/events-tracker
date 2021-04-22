@@ -49,11 +49,13 @@ class SeriesController extends Controller
 
     protected int $childLimit;
 
-    protected array $defaultCriteria;
+    protected array $defaultSortCriteria;
 
     protected bool $hasFilter;
 
     protected array $filters;
+
+    protected int $page;
 
     // this is the class specifying the filters methods for each field
     protected SeriesFilters $filter;

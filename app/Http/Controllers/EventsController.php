@@ -60,7 +60,9 @@ class EventsController extends Controller
 
     protected string $sortDirection;
 
-    protected int $gridlimit;
+    protected int $defaultGridLimit;
+
+    protected int $gridLimit;
 
     // this should be an array of filter values
     protected array $filters;

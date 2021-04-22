@@ -64,7 +64,6 @@ class TagsController extends Controller
 
         $this->defaultSortCriteria = ['name' => 'desc'];
 
-        $this->defaultCriteria = [];
         $this->hasFilter = false;
 
         parent::__construct();
@@ -442,16 +441,6 @@ class TagsController extends Controller
     }
 
     /**
-     * Criteria provides a way to define criteria to be applied to a tab on the index page.
-     *
-     * @return array
-     */
-    public function getCriteria()
-    {
-        return $this->criteria;
-    }
-
-    /**
      * Get the current page for this module
      *
      * @return integer
@@ -523,19 +512,6 @@ class TagsController extends Controller
     public function setFilters(Request $request, array $input)
     {
         return $this->setAttribute($request, 'filters', $input);
-    }
-
-    /**
-     * Set criteria.
-     *
-     * @param array $input
-     * @return string
-     */
-    public function setCriteria($input)
-    {
-        $this->criteria = $input;
-
-        return $this->criteria;
     }
 
     /**

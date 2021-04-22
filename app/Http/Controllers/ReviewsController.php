@@ -53,6 +53,8 @@ class ReviewsController extends Controller
 
     protected array $filters;
 
+    protected ReviewFilters $filter;
+
     public function __construct(Event $event, ReviewFilters $filter)
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
@@ -72,37 +74,11 @@ class ReviewsController extends Controller
         $this->sortDirection = $this->defaultSortDirection;
         $this->limit = $this->defaultLimit;
 
-        $this->defaultCriteria = ['event_reviews.created_at', 'desc'];
+        $this->defaultSortCriteria = ['event_reviews.created_at', 'desc'];
         $this->hasFilter = false;
 
         $this->hasFilter = 0;
         parent::__construct();
-    }
-
-    /**
-     * Update the page list parameters from the request
-     *
-     */
-    protected function updatePaging($request)
-    {
-        $filters = [];
-        if (!empty($request->input('filter_sort_by'))) {
-            $this->sortBy = $request->input('filter_sort_by');
-            $filters['filter_sort_by'] = $this->sortBy;
-        };
-
-        if (!empty($request->input('filter_sort_order'))) {
-            $this->sortOrder = $request->input('filter_sort_order');
-            $filters['filter_sort_order'] = $this->sortOrder;
-        };
-
-        if (!empty($request->input('filter_rpp'))) {
-            $this->rpp = $request->input('filter_rpp');
-            $filters['filter_rpp'] = $this->rpp;
-        };
-
-        // save filters to session
-        $this->setFilters($request, $filters);
     }
 
     /**
@@ -134,165 +110,6 @@ class ReviewsController extends Controller
     }
 
     /**
-     * Builds the criteria from the session
-     */
-    public function buildCriteria(Request $request): Builder
-    {
-        $hasFilter = 1;
-
-        // get all the filters from the session
-        $filters = $this->getFilters($request);
-
-        // base criteria
-        $query = EventReview::query();
-
-        // add the criteria from the session
-        // check request for passed filter values
-        if (!empty($filters['filter_name'])) {
-            // getting name from the request
-            $name = $filters['filter_name'];
-            $query->where('name', 'like', '%' . $name . '%');
-            $filters['filter_name'] = $name;
-        }
-
-        if (!empty($filters['filter_tag'])) {
-            $tag = $filters['filter_tag'];
-            $query->whereHas('tags', function ($q) use ($tag) {
-                $q->where('name', '=', ucfirst($tag));
-            });
-
-            // add to filters array
-            $filters['filter_tag'] = $tag;
-        }
-
-        if (!empty($filters['filter_venue'])) {
-            $venue = $filters['filter_venue'];
-            // add has clause
-            $query->whereHas('venue', function ($q) use ($venue) {
-                $q->where('name', '=', $venue);
-            });
-
-            // add to filters array
-            $filters['filter_venue'] = $venue;
-        };
-
-        if (!empty($filters['filter_related'])) {
-            $related = $filters['filter_related'];
-            $query->whereHas('entities', function ($q) use ($related) {
-                $q->where('name', '=', ucfirst($related));
-            });
-
-            // add to filters array
-            $filters['filter_related'] = $related;
-        }
-
-        // change this - should be separate
-        if (!empty($filters['filter_rpp'])) {
-            $this->rpp = $filters['filter_rpp'];
-        }
-
-        return $query;
-    }
-
-    /**
-     * Returns true if the user has any filters outside of the default
-     *
-     * @return Boolean
-     */
-    protected function getIsFiltered(Request $request)
-    {
-        if (($filters = $this->getFilters($request)) == $this->getDefaultFilters()) {
-            return false;
-        }
-
-        return (bool)count($filters);
-    }
-
-    /**
-     * Gets the reporting options from the request and saves to session
-     *
-     * @param Request $request
-     */
-    public function getReportingOptions(Request $request)
-    {
-        foreach (['page', 'rpp', 'sort', 'criteria'] as $option) {
-            if (!$request->has($option)) {
-                continue;
-            }
-            switch ($option) {
-                case 'sort':
-                    $value = [
-                        $request->input($option),
-                        $request->input('sort_order', 'asc'),
-                    ];
-                    break;
-                default:
-                    $value = $request->input($option);
-                    break;
-            }
-            call_user_func(
-                [$this, sprintf('set%s', ucwords($option))],
-                $value
-            );
-        }
-    }
-
-    /**
-     * Get user session attribute
-     *
-     * @param String $attribute
-     * @param Mixed $default
-     * @param Request $request
-     * @return Mixed
-     */
-    public function getAttribute(Request $request, $attribute, $default = null)
-    {
-        return $request->session()
-            ->get($this->prefix . $attribute, $default);
-    }
-
-    /**
-     * Get session filters
-     *
-     * @return Array
-     */
-    public function getFilters(Request $request)
-    {
-        return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
-    }
-
-    /**
-     * Get the current page for this module
-     *
-     * @return integer
-     */
-    public function getPage(Request $request)
-    {
-        return $this->getAttribute($request, 'page', 1);
-    }
-
-    /**
-     * Get the current results per page
-     *
-     * @param Request $request
-     * @return integer
-     */
-    public function getRpp(Request $request)
-    {
-        return $this->getAttribute($request, 'rpp', $this->rpp);
-    }
-
-    /**
-     * Get the sort order and column
-     *
-     * @return array
-     */
-    public function getSort(Request $request)
-    {
-        return $this->getAttribute($request, 'sort', $this->getDefaultSort());
-    }
-
-    /**
      * Get the default sort array
      *
      * @return array
@@ -310,62 +127,6 @@ class ReviewsController extends Controller
     public function getDefaultFilters()
     {
         return [];
-    }
-
-    /**
-     * Set user session attribute
-     *
-     * @param Request $request
-     * @param string $attribute
-     * @param Mixed $value
-     */
-    public function setAttribute(Request $request, string $attribute, $value)
-    {
-        $request->session()->put($this->prefix . $attribute, $value);
-    }
-
-    /**
-     * Set filters attribute
-     *
-     * @param array $input
-     * @return array
-     */
-    public function setFilters(Request $request, array $input)
-    {
-        return $this->setAttribute($request, 'filters', $input);
-    }
-
-    /**
-     * Set page attribute
-     *
-     * @param integer $input
-     * @return integer
-     */
-    public function setPage(Request $request, $input)
-    {
-        return $this->setAttribute($request, 'page', $input);
-    }
-
-    /**
-     * Set results per page attribute
-     *
-     * @param integer $input
-     * @return integer
-     */
-    public function setRpp(Request $request, $input)
-    {
-        return $this->setAttribute($request, 'rpp', 5);
-    }
-
-    /**
-     * Set sort order attribute
-     *
-     * @param array $input
-     * @return array
-     */
-    public function setSort(Request $request, array $input)
-    {
-        return $this->setAttribute($request, 'sort', $input);
     }
 
     /**
@@ -481,38 +242,6 @@ class ReviewsController extends Controller
     }
 
     /**
-     * Update the page list parameters from the request.
-     *
-     */
-    protected function getPaging(array $filters): void
-    {
-        $this->sortBy = $filters['sortBy'] ?? $this->defaultSortBy;
-        $this->sortOrder = $filters['sortOrder'] ?? $this->defaultSortOrder;
-
-        if (isset($filters['rpp']) && is_numeric($filters['rpp'])) {
-            $this->rpp = $filters['rpp'];
-        } else {
-            $this->rpp = $this->defaultRpp;
-        }
-    }
-
-    /**
-    * Checks if there is a valid filter.
-    *
-    * @param array $filters
-    */
-    public function hasFilter(array $filters): bool
-    {
-        if (!is_array($filters)) {
-            return false;
-        }
-
-        unset($filters['rpp'], $filters['sortOrder'], $filters['sortBy'], $filters['page']);
-
-        return count(array_filter($filters, function ($x) { return !empty($x); }));
-    }
-
-    /**
      * Display a listing of the resource.
      *
      * @return View
@@ -521,7 +250,7 @@ class ReviewsController extends Controller
     {
         $this->hasFilter = 1;
 
-        // updates sort, rpp from request
+        // updates sort, limit from request
         $this->updatePaging($request);
 
         $future_events = EventReview::future()->paginate(100000);
@@ -535,7 +264,7 @@ class ReviewsController extends Controller
         });
 
         return view('reviews.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
+            ->with(['limit' => $this->limit, 'sortBy' => $this->sort, 'sortOrder' => $this->sortDirection, 'hasFilter' => $this->hasFilter])
             ->with(compact('future_events'))
             ->with(compact('past_events'));
     }
@@ -547,18 +276,18 @@ class ReviewsController extends Controller
     {
         $this->hasFilter = 1;
 
-        // updates sort, rpp from request
+        // updates sort, limit from request
         $this->updatePaging($request);
 
-        $this->rpp = 10;
+        $this->limit = 10;
 
-        $past_events = EventReview::past()->paginate($this->rpp);
+        $past_events = EventReview::past()->paginate($this->limit);
         $past_events->filter(function ($e) {
             return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
         });
 
         return view('reviews.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
+            ->with(['limit' => $this->limit, 'sortBy' => $this->sort, 'sortOrder' => $this->sortDirection, 'hasFilter' => $this->hasFilter])
             ->with(compact('past_events'));
     }
 
@@ -570,7 +299,7 @@ class ReviewsController extends Controller
     public function reset(Request $request)
     {
         // doesn't have filter, but temp
-        $this->hasFilter = 0;
+        $this->hasFilter = false;
 
         // set the filters to empty
         $this->setFilters($request, $this->getDefaultFilters());
@@ -578,18 +307,18 @@ class ReviewsController extends Controller
         // base criteria
         $query = $this->buildCriteria($request);
 
-        // updates sort, rpp from request
+        // updates sort, limit from request
         $this->updatePaging($request);
 
         // get future events
-        $reviews = $query->paginate($this->rpp);
+        $reviews = $query->paginate($this->limit);
 
         if ($redirect = $request->input('redirect')) {
             return redirect()->route($redirect);
         };
 
         return view('reviews.index')
-            ->with(['rpp' => $this->rpp, 'sortBy' => $this->sortBy, 'sortOrder' => $this->sortOrder, 'hasFilter' => $this->hasFilter])
+            ->with(['limit' => $this->limit, 'sortBy' => $this->sort, 'sortOrder' => $this->sortDirection, 'hasFilter' => $this->hasFilter])
             ->with(compact('reviews'))
             ->render();
     }

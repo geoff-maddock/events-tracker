@@ -266,7 +266,7 @@ class PagesController extends Controller
     protected function getDefaultlimitFilters(): array
     {
         return [
-            'limit' => $this->defaultlimit,
+            'limit' => $this->defaultLimit,
             'sort' => $this->defaultSort,
             'sortDirection' => $this->defaultSortDirection
         ];
