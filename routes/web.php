@@ -430,9 +430,11 @@ Route::resource('events.comments', 'CommentsController');
 Route::resource('events.reviews', 'EventReviewsController');
 
 // REVIEWS
-Route::resource('reviews', 'ReviewsController');
+Route::match(['get', 'post'], 'reviews/filter', ['as' => 'reviews.filter', 'uses' => 'ReviewsController@filter']);
 Route::get('reviews/filter', ['as' => 'reviews.filter', 'uses' => 'ReviewsController@filter']);
 Route::get('reviews/reset', ['as' => 'reviews.reset', 'uses' => 'ReviewsController@reset']);
+Route::get('reviews/rpp-reset', ['as' => 'reviews.rppReset', 'uses' => 'ReviewsController@rppReset']);
+Route::resource('reviews', 'ReviewsController');
 
 // SERIES
 Route::get('series/createOccurrence', [

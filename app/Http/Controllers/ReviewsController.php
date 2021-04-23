@@ -27,6 +27,7 @@ use App\Models\TagType;
 use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\RedirectResponse;
 
 class ReviewsController extends Controller
 {
@@ -79,34 +80,6 @@ class ReviewsController extends Controller
 
         $this->hasFilter = 0;
         parent::__construct();
-    }
-
-    /**
-     * Update the filters parameters from the request
-     *
-     */
-    protected function updateFilters($request)
-    {
-        $filters = [];
-
-        if (!empty($request->input('filter_name'))) {
-            $filters['filter_name'] = $request->input('filter_name');
-        };
-
-        if (!empty($request->input('filter_venue'))) {
-            $filters['filter_venue'] = $request->input('filter_venue');
-        };
-
-        if (!empty($request->input('filter_tag'))) {
-            $filters['filter_tag'] = $request->input('filter_tag');
-        };
-
-        if (!empty($request->input('filter_related'))) {
-            $filters['filter_related'] = $request->input('filter_related');
-        };
-
-        // save filters to session
-        $this->setFilters($request, $filters);
     }
 
     /**
@@ -170,17 +143,17 @@ class ReviewsController extends Controller
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('reviews.index')
-        ->with(array_merge(
-            [
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters()
-            ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions()
-        ))
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
             ->with(compact('reviews'))
             ->render();
     }
@@ -226,101 +199,58 @@ class ReviewsController extends Controller
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('reviews.index')
-        ->with(array_merge(
-            [
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters()
-            ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions()
-        ))
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
             ->with(compact('reviews'))
             ->render();
     }
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return View
-     */
-    public function indexAll(Request $request)
-    {
-        $this->hasFilter = 1;
-
-        // updates sort, limit from request
-        $this->updatePaging($request);
-
-        $future_events = EventReview::future()->paginate(100000);
-        $future_events->filter(function ($e) {
-            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-        });
-
-        $past_events = EventReview::past()->paginate(100000);
-        $past_events->filter(function ($e) {
-            return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-        });
-
-        return view('reviews.index')
-            ->with(['limit' => $this->limit, 'sortBy' => $this->sort, 'sortOrder' => $this->sortDirection, 'hasFilter' => $this->hasFilter])
-            ->with(compact('future_events'))
-            ->with(compact('past_events'));
-    }
-
-    /**
-     * Display a listing of the resource.
-     */
-    public function indexPast(Request $request)
-    {
-        $this->hasFilter = 1;
-
-        // updates sort, limit from request
-        $this->updatePaging($request);
-
-        $this->limit = 10;
-
-        $past_events = EventReview::past()->paginate($this->limit);
-        $past_events->filter(function ($e) {
-            return (($e->visibility && $e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
-        });
-
-        return view('reviews.index')
-            ->with(['limit' => $this->limit, 'sortBy' => $this->sort, 'sortOrder' => $this->sortDirection, 'hasFilter' => $this->hasFilter])
-            ->with(compact('past_events'));
-    }
-
-    /**
-     * Reset the filtering of reviews
+     * Reset the rpp, sort, order
      *
      * @throws \Throwable
      */
-    public function reset(Request $request)
-    {
-        // doesn't have filter, but temp
-        $this->hasFilter = false;
+    public function rppReset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ): RedirectResponse {
+        // set the rpp, sort, direction only to default values
+        $keyPrefix = $request->get('key') ?? 'internal_review_index';
+        $listParamSessionStore->setBaseIndex('internal_review');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
 
-        // set the filters to empty
-        $this->setFilters($request, $this->getDefaultFilters());
+        // clear
+        $listParamSessionStore->clearSort();
 
-        // base criteria
-        $query = $this->buildCriteria($request);
+        return redirect()->route('reviews.index');
+    }
 
-        // updates sort, limit from request
-        $this->updatePaging($request);
+    /**
+     * Reset the filtering of entities.
+     */
+    public function reset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ) {
+        // set filters and list controls to default values
+        $keyPrefix = $request->get('key') ?? 'internal_review_index';
+        $listParamSessionStore->setBaseIndex('internal_review');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
 
-        // get future events
-        $reviews = $query->paginate($this->limit);
+        // clear
+        $listParamSessionStore->clearFilter();
+        $listParamSessionStore->clearSort();
 
-        if ($redirect = $request->input('redirect')) {
-            return redirect()->route($redirect);
-        };
-
-        return view('reviews.index')
-            ->with(['limit' => $this->limit, 'sortBy' => $this->sort, 'sortOrder' => $this->sortDirection, 'hasFilter' => $this->hasFilter])
-            ->with(compact('reviews'))
-            ->render();
+        return redirect()->route($request->get('redirect') ?? 'reviews.index');
     }
 
     /**
@@ -330,21 +260,10 @@ class ReviewsController extends Controller
      **/
     public function create()
     {
-        // get a list of venues
-        $venues = ['' => ''] + Entity::getVenues()->pluck('name', 'id')->all();
-
-        // get a list of promoters
-        $promoters = ['' => ''] + Entity::whereHas('roles', function ($q) {
-            $q->where('name', '=', 'Promoter');
-        })->orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $reviewTypes = ['' => ''] + ReviewType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
         $events = Event::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('reviews.create', compact('reviewTypes', 'visibilities', 'tags', 'events'));
+        return view('reviews.create', compact('events'))
+            ->with($this->getFormOptions());
     }
 
     public function show(EventReview $review)
@@ -531,13 +450,13 @@ class ReviewsController extends Controller
     {
         return  [
             'visibilityOptions' => ['' => '&nbsp;'] + Visibility::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+            'reviewTypeOptions' => ['' => ''] + ReviewType::orderBy('name', 'ASC')->pluck('name', 'id')->all()
         ];
     }
 
     protected function getFormOptions(): array
     {
         return [
-            'sortOrderOptions' => ['' => '', 'asc' => 'asc', 'desc' => 'desc'],
             'visibilityOptions' => ['' => ''] + Visibility::pluck('name', 'id')->all(),
             'reviewTypeOptions' => ['' => ''] + ReviewType::orderBy('name', 'ASC')->pluck('name', 'id')->all()
         ];
