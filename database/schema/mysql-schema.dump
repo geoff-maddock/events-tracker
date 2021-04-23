@@ -529,6 +529,7 @@ CREATE TABLE `event_reviews` (
   `review` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
   KEY `event_reviews_event_id_index` (`event_id`),
   KEY `event_reviews_user_id_index` (`user_id`),
   KEY `event_reviews_review_type_id_index` (`review_type_id`),

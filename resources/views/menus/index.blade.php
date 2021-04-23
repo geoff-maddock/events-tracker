@@ -32,6 +32,7 @@
 							'name' => 'filters[name]'
 						]) !!}
 					</div>
+					
 		
 					<div class="col-sm-2">
 						<div class="btn-group col-sm-1">

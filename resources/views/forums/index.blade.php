@@ -33,7 +33,19 @@
 					['class' =>'form-control', 'name' => 'filters[name]']) !!}
 				</div>
 	
-	
+	            <div class="form-group col-sm-2">
+					{!! Form::label('filter_user','Filter By User') !!}
+					{!! Form::select('filter_user', $userOptions, (isset($filters['user']) ? $filters['user'] :
+					NULL), 
+					[
+						'data-theme' => 'bootstrap',
+						'data-width' => '100%', 
+						'class' => 'form-control select2', 
+						'data-placeholder' => 'Select a user',
+						'name' => 'filters[user]'
+						]) !!}
+				</div>
+
 				<div class="col-sm-2">
 					<div class="btn-group col-sm-1">
 						<label></label>

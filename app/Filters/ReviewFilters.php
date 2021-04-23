@@ -12,4 +12,15 @@ class ReviewFilters extends QueryFilter
             return $this->builder;
         }
     }
+
+    public function user($value = null)
+    {
+        if (isset($value)) {
+            return $this->builder->whereHas('user', function ($q) use ($value) {
+                $q->where('name', '=', $value);
+            });
+        } else {
+            return $this->builder;
+        }
+    }
 }

@@ -7,49 +7,37 @@
 <h4>Reviews @include('reviews.crumbs')</h4>
 
 <div id="action-menu" style="margin-bottom: 5px;">
-    <a href="{{ url('/reviews/all') }}" class="btn btn-info">Show all reviews</a>
-    <a href="{!! URL::route('reviews.index') !!}" class="btn btn-info">Show paginated reviews</a>
-    <a href="{!! URL::route('reviews.create') !!}" class="btn btn-primary">Add an review</a> <a
-        href="{!! URL::route('series.create') !!}" class="btn btn-primary">Add an review series</a>
 </div>
 
 <div id="filters-container" class="row">
     <div id="filters-content" class="col-lg-9">
-
-        <a href="#" id="filters" class="btn btn-primary">Filters <span id="filters-toggle"
+        <a href="#" id="filters" class="btn btn-primary">
+            Filters
+            <span id="filters-toggle"
                 class="glyphicon @if (!$hasFilter) glyphicon-chevron-down @else glyphicon-chevron-up @endif"></span></a>
-        {!! Form::open(['route' => ['reviews.filter'], 'method' => 'GET']) !!}
+        {!! Form::open(['route' => [$filterRoute ?? 'reviews.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
+        
+        <div id="filter-list" class="row @if (!$hasFilter) d-block d-xs-none @endif"
+        style="@if (!$hasFilter) display: none; @endif">
 
-        <div id="filter-list" @if (!$hasFilter)style="display: none" @endif class="row">
+            <div class="form-group col-sm-2">
+                {!! Form::label('filter_review','Filter By Review') !!}
 
-            <div class="form-group col-sm-3">
-                {!! Form::label('filter_name','Filter By Name') !!}
-                {!! Form::text('filter_name', (isset($filters['filter_name']) ? $filters['filter_name'] : NULL),
-                ['class' =>'form-control']) !!}
+                {!! Form::text('filter_review', (isset($filters['review']) ? $filters['review'] : NULL),
+                ['class' =>'form-control', 'name' => 'filters[review]']) !!}
             </div>
 
             <div class="form-group col-sm-2">
-                {!! Form::label('filter_venue', 'Filter By Venue', array('width' => '100%')) !!}<br>
-                <?php $venues = ['' => ''] + App\Models\Entity::getVenues()->pluck('name', 'name')->all(); ?>
-                {!! Form::select('filter_venue', $venues, (isset($filters['filter_venue']) ? $filters['filter_venue'] :
-                NULL), ['data-theme' => 'bootstrap', 'data-width' => '100%','class' =>'form-control select2',
-                'data-placeholder' => 'Select a venue']) !!}
-            </div>
-
-            <div class="form-group col-sm-2">
-                {!! Form::label('filter_tag', 'Filter By Tag') !!}
-                <?php $tags = ['' => '&nbsp;'] + App\Models\Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all(); ?>
-                {!! Form::select('filter_tag', $tags, (isset($filters['filter_tag']) ? $filters['filter_tag'] : NULL),
-                ['data-theme' => 'bootstrap', 'data-width' => '100%', 'class' =>'form-control select2',
-                'data-placeholder' => 'Select a tag']) !!}
-            </div>
-
-            <div class="form-group col-sm-2">
-                {!! Form::label('filter_related','Filter By Related') !!}
-                <?php $related = ['' => ''] + App\Models\Entity::orderBy('name', 'ASC')->pluck('name', 'name')->all(); ?>
-                {!! Form::select('filter_related', $related, (isset($filters['filter_related']) ?
-                $filters['filter_related'] : NULL), ['data-theme' => 'bootstrap', 'data-width' => '100%', 'class'
-                =>'form-control select2', 'data-placeholder' => 'Select an entity']) !!}
+                {!! Form::label('filter_review_type','Type') !!}
+                {!! Form::select('filter_review_type', $reviewTypeOptions, (isset($filters['review_type'])
+                ? $filters['review_type'] : NULL),
+                [
+                'data-theme' => 'bootstrap',
+                'data-width' => '100%',
+                'class' => 'form-control select2',
+                'data-placeholder' => 'Select a type',
+                'name' => 'filters[review_type]'
+                ]) !!}
             </div>
 
             <div class="col-sm-2">
@@ -108,8 +96,19 @@
 
 @stop
 
-
 @section('footer')
 <script>
+	$(document).ready(function() {
+		$('#filters').click(function() {
+			$('#filter-list').toggle();
+			if ($('#filters-toggle').hasClass('glyphicon-chevron-down')) {
+				$('#filters-toggle').removeClass('glyphicon-chevron-down');
+				$('#filters-toggle').addClass('glyphicon-chevron-up');
+			} else {
+				$('#filters-toggle').removeClass('glyphicon-chevron-up');
+				$('#filters-toggle').addClass('glyphicon-chevron-down');
+			}
+		});
+	});
 </script>
 @endsection

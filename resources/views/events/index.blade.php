@@ -74,7 +74,6 @@
 				]) !!}
 			</div>
 
-
 			<div class="form-group col-sm-2">
 				{!! Form::label('filter_event_type','Type') !!}
 				{!! Form::select('filter_event_type', $eventTypeOptions, (isset($filters['event_type'])
