@@ -577,8 +577,6 @@ class UsersController extends Controller
      */
     public function ical(int $id, Request $request)
     {
-        app('debugbar')->disable();
-
         // check if there is a logged in user
         if (!$this->user) {
             flash()->error('Error', 'No user is logged in.');
