@@ -12,6 +12,10 @@ Route::get('events', function () {
     return Event::all();
 });
 
+Route::get('calendar-events', function () {
+    return Event::select('id', 'name as title', 'start_at as start', 'end_at as end')->get();
+});
+
 Route::get('events/{id}', function ($id) {
     return Event::find($id);
 });

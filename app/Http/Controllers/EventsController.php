@@ -1117,12 +1117,9 @@ class EventsController extends Controller
         // TO DO add filter to calendar
 
         // get all public events
-        $events = Event::all();
-
-        // filter for only events that are public or that were created by the current user
-        $events = $events->filter(function ($e) {
-            return ('Public' == $e->visibility->name) || ($this->user && $e->created_by === $this->user->id);
-        });
+        $events = Event::where(function ($query) {
+            $query->visible($this->user);
+        })->get();
 
         // get all the upcoming series events
         $series = Series::active()->get();
@@ -1148,13 +1145,14 @@ class EventsController extends Controller
     {
         $eventList = [];
 
+        // adds events to event list
         foreach ($events as $event) {
             $eventList[] = \Calendar::event(
-                $event->name, // event title
-                false, // full day event
-                $event->start_at->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
-                ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
-                $event->id, //optional event ID
+                $event->name,   // event title
+                false,          // full day event
+                $event->start_at->format('Y-m-d H:i'), // start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
+                ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null), // end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
+                'event-' . $event->id,     // optional event ID
                 [
                     'url' => '/events/' . $event->id,
                     // optional params
@@ -1163,15 +1161,16 @@ class EventsController extends Controller
             );
         }
 
+        // adds series to events list
         foreach ($series as $s) {
             if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
                 // add the next instance of each series to the calendar
                 $eventList[] = \Calendar::event(
-                    $s->name, //event title
-                    false, //full day event?
+                    $s->name,   // event title
+                    false,      // full day event?
                     $s->nextOccurrenceDate()->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
                     ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
-                    $s->id, //optional event ID
+                    'series-' . $s->id, // optional event ID
                     [
                         'url' => '/series/' . $s->id,
                         'color' => '#99bcdb',
@@ -1179,6 +1178,8 @@ class EventsController extends Controller
                 );
             }
         }
+
+        // dd($eventList);
 
         $calendar = \Calendar::addEvents($eventList)
         ->setOptions([
