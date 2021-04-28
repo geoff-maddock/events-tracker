@@ -68,7 +68,7 @@ Route::get('calendar/relatedto/{slug}', 'EventsController@calendarRelatedTo');
 Route::get('calendar/free', 'EventsController@calendarFree')->name('calendar.free');
 Route::get('calendar/attending', 'EventsController@calendarAttending')->name('calendar.attending');
 Route::get('calendar/type/{tag}', 'EventsController@calendarEventTypes')->name('calendar.type');
-Route::get('calendar/min_age/{age}', 'EventsController@calendarMinAge')->name('calendar.minAge');
+Route::get('calendar/min-age/{age}', 'EventsController@calendarMinAge')->name('calendar.minAge');
 
 Route::get('search', 'PagesController@search');
 
