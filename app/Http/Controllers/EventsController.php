@@ -986,20 +986,6 @@ class EventsController extends Controller
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
-        foreach ($events as $event) {
-            $eventList[] = \Calendar::event(
-                $event->name, // event title
-                false, // full day event?
-                $event->start_at->format('Y-m-d H:i'), // start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
-                ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null), // end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
-                $event->id, //optional event ID
-                [
-                    'url' => 'events/' . $event->id,
-                    //'color' => '#fc0'
-                ]
-            );
-        }
-
         // get all the upcoming series events
         $series = Series::getByEntity(ucfirst($slug))->active()->get();
 
@@ -1007,34 +993,39 @@ class EventsController extends Controller
             return (('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
         });
 
+        // adds events to event list
+        foreach ($events as $event) {
+            $eventList[] = [
+                'id' => 'event-' . $event->id,
+                'start' => $event->start_at->format('Y-m-d H:i'),
+                'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
+                'title' => $event->name,
+                'url' => '/events/' . $event->id,
+                'backgroundColor' => '#0a57ad',
+                'description' => $event->short,
+            ];
+        }
+
+        // adds series to events list
         foreach ($series as $s) {
-            if (null == $s->nextEvent() and null != $s->nextOccurrenceDate()) {
+            if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
                 // add the next instance of each series to the calendar
-                $eventList[] = \Calendar::event(
-                    $s->name, //event title
-                    false, //full day event?
-                    $s->nextOccurrenceDate()->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
-                    ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
-                    $s->id, //optional event ID
-                    [
-                        'url' => 'series/' . $s->id,
-                        'color' => '#99bcdb',
-                    ]
-                );
+                $eventList[] = [
+                    'id' => 'series-' . $s->id,
+                    'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
+                    'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
+                    'title' => $s->name,
+                    'url' => '/series/' . $s->id,
+                    'backgroundColor' => '#99bcdb',
+                    'description' => $s->short,
+                ];
             }
         }
 
-        $calendar = \Calendar::addEvents($eventList) // add an array with addEvents
-        ->setOptions([
-            //set fullcalendar options
-            'firstDay' => 0,
-            'height' => 840,
-        ])->setCallbacks([
-            // set fullcalendar callback options (will not be JSON encoded)
-            //'viewRender' => 'function() { alert("Callbacks!"); }'
-        ]);
+        // converts array of events into json event list
+        $eventList = json_encode($eventList);
 
-        return view('events.calendar', compact('calendar', 'slug'));
+        return view('events.event-calendar', compact('eventList', 'slug'));
     }
 
     /**
@@ -1057,20 +1048,6 @@ class EventsController extends Controller
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
-        foreach ($events as $event) {
-            $eventList[] = \Calendar::event(
-                $event->name, //event title
-                false, //full day event?
-                $event->start_at->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
-                ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
-                $event->id, //optional event ID
-                [
-                    'url' => 'events/' . $event->id,
-                    //'color' => '#fc0'
-                ]
-            );
-        }
-
         // get all the upcoming series events
         $series = Series::getByTag(ucfirst($tag))->active()->get();
 
@@ -1079,32 +1056,39 @@ class EventsController extends Controller
             return (('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
         });
 
+        // adds events to event list
+        foreach ($events as $event) {
+            $eventList[] = [
+                'id' => 'event-' . $event->id,
+                'start' => $event->start_at->format('Y-m-d H:i'),
+                'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
+                'title' => $event->name,
+                'url' => '/events/' . $event->id,
+                'backgroundColor' => '#0a57ad',
+                'description' => $event->short,
+            ];
+        }
+
+        // adds series to events list
         foreach ($series as $s) {
-            if (null == $s->nextEvent() and null != $s->nextOccurrenceDate()) {
+            if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
                 // add the next instance of each series to the calendar
-                $eventList[] = \Calendar::event(
-                    $s->name, //event title
-                    false, //full day event?
-                    $s->nextOccurrenceDate()->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
-                    ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
-                    $s->id, //optional event ID
-                    [
-                        'url' => 'series/' . $s->id,
-                        'color' => '#99bcdb',
-                    ]
-                );
+                $eventList[] = [
+                    'id' => 'series-' . $s->id,
+                    'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
+                    'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
+                    'title' => $s->name,
+                    'url' => '/series/' . $s->id,
+                    'backgroundColor' => '#99bcdb',
+                    'description' => $s->short,
+                ];
             }
         }
 
-        $calendar = \Calendar::addEvents($eventList) // add an array with addEvents
-        ->setOptions([ // set fullcalendar options
-            'firstDay' => 0,
-            'height' => 840,
-        ])->setCallbacks([ // set fullcalendar callback options (will not be JSON encoded)
-            // 'viewRender' => 'function() {alert("Callbacks!");}'
-        ]);
+        // converts array of events into json event list
+        $eventList = json_encode($eventList);
 
-        return view('events.calendar', compact('calendar', 'tag'));
+        return view('events.event-calendar', compact('eventList', 'tag'));
     }
 
     /**
@@ -1114,7 +1098,7 @@ class EventsController extends Controller
      **/
     public function calendar()
     {
-        // TO DO add filter to calendar
+        $eventList = [];
 
         // get all public events
         $events = Event::where(function ($query) {
@@ -1129,7 +1113,38 @@ class EventsController extends Controller
             return (('Public' == $e->visibility->name) || ($this->user && $e->created_by === $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
         });
 
-        return $this->renderCalendar($events, $series);
+        // adds events to event list
+        foreach ($events as $event) {
+            $eventList[] = [
+                'id' => 'event-' . $event->id,
+                'start' => $event->start_at->format('Y-m-d H:i'),
+                'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
+                'title' => $event->name,
+                'url' => '/events/' . $event->id,
+                'backgroundColor' => '#0a57ad',
+                'description' => $event->short,
+            ];
+        }
+
+        // adds series to events list
+        foreach ($series as $s) {
+            if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
+                // add the next instance of each series to the calendar
+                $eventList[] = [
+                    'id' => 'series-' . $s->id,
+                    'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
+                    'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
+                    'title' => $s->name,
+                    'url' => '/series/' . $s->id,
+                    'backgroundColor' => '#99bcdb',
+                    'description' => $s->short,
+                ];
+            }
+        }
+
+        $eventList = json_encode($eventList);
+
+        return view('events.event-calendar', compact('eventList'));
     }
 
     /**
@@ -1143,6 +1158,7 @@ class EventsController extends Controller
      */
     public function renderCalendar(Collection $events, $series = null, $tag = null)
     {
+        // Change this to instead pass in the json EventsList directly here and render, that way I can just pass anything to this function to display the calendar
         return view('events.event-calendar');
     }
 
@@ -1152,6 +1168,7 @@ class EventsController extends Controller
     public function calendarEventsApi()
     {
         // build the json results to return which include both series and events
+        $eventList = [];
 
         // get all public events
         $events = Event::where(function ($query) {
@@ -1208,6 +1225,8 @@ class EventsController extends Controller
     {
         $this->middleware('auth');
 
+        $eventList = [];
+
         $events = $this->user->getAttending()
             ->orderBy('start_at', 'ASC')
             ->orderBy('name', 'ASC')
@@ -1228,7 +1247,38 @@ class EventsController extends Controller
 
         $tag = 'Attending';
 
-        return $this->renderCalendar($events, $series, $tag);
+        // adds events to event list
+        foreach ($events as $event) {
+            $eventList[] = [
+                'id' => 'event-' . $event->id,
+                'start' => $event->start_at->format('Y-m-d H:i'),
+                'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
+                'title' => $event->name,
+                'url' => '/events/' . $event->id,
+                'backgroundColor' => '#0a57ad',
+                'description' => $event->short,
+            ];
+        }
+
+        // adds series to events list
+        foreach ($series as $s) {
+            if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
+                // add the next instance of each series to the calendar
+                $eventList[] = [
+                    'id' => 'series-' . $s->id,
+                    'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
+                    'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
+                    'title' => $s->name,
+                    'url' => '/series/' . $s->id,
+                    'backgroundColor' => '#99bcdb',
+                    'description' => $s->short,
+                ];
+            }
+        }
+
+        $eventList = json_encode($eventList);
+
+        return view('events.event-calendar', compact('eventList', 'tag'));
     }
 
     /**
@@ -1238,6 +1288,8 @@ class EventsController extends Controller
      **/
     public function calendarFree()
     {
+        $eventList = [];
+
         $events = Event::where('door_price', 0)
             ->orderBy('start_at', 'ASC')
             ->orderBy('name', 'ASC')
@@ -1258,7 +1310,38 @@ class EventsController extends Controller
 
         $tag = 'No Cover';
 
-        return $this->renderCalendar($events, $series, $tag);
+        // adds events to event list
+        foreach ($events as $event) {
+            $eventList[] = [
+                'id' => 'event-' . $event->id,
+                'start' => $event->start_at->format('Y-m-d H:i'),
+                'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
+                'title' => $event->name,
+                'url' => '/events/' . $event->id,
+                'backgroundColor' => '#0a57ad',
+                'description' => $event->short,
+            ];
+        }
+
+        // adds series to events list
+        foreach ($series as $s) {
+            if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
+                // add the next instance of each series to the calendar
+                $eventList[] = [
+                    'id' => 'series-' . $s->id,
+                    'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
+                    'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
+                    'title' => $s->name,
+                    'url' => '/series/' . $s->id,
+                    'backgroundColor' => '#99bcdb',
+                    'description' => $s->short,
+                ];
+            }
+        }
+
+        $eventList = json_encode($eventList);
+
+        return view('events.event-calendar', compact('eventList', 'tag'));
     }
 
     /**
@@ -1269,6 +1352,8 @@ class EventsController extends Controller
     public function calendarMinAge(int $age)
     {
         $age = urldecode($age);
+
+        $eventList = [];
 
         $events = Event::where('min_age', '<=', $age)
             ->orderBy('start_at', 'ASC')
@@ -1290,7 +1375,38 @@ class EventsController extends Controller
 
         $tag = 'Min Age ' . $age;
 
-        return $this->renderCalendar($events, $series, $tag);
+        // adds events to event list
+        foreach ($events as $event) {
+            $eventList[] = [
+                'id' => 'event-' . $event->id,
+                'start' => $event->start_at->format('Y-m-d H:i'),
+                'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
+                'title' => $event->name,
+                'url' => '/events/' . $event->id,
+                'backgroundColor' => '#0a57ad',
+                'description' => $event->short,
+            ];
+        }
+
+        // adds series to events list
+        foreach ($series as $s) {
+            if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
+                // add the next instance of each series to the calendar
+                $eventList[] = [
+                    'id' => 'series-' . $s->id,
+                    'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
+                    'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
+                    'title' => $s->name,
+                    'url' => '/series/' . $s->id,
+                    'backgroundColor' => '#99bcdb',
+                    'description' => $s->short,
+                ];
+            }
+        }
+
+        $eventList = json_encode($eventList);
+
+        return view('events.event-calendar', compact('eventList', 'tag'));
     }
 
     /**
@@ -1313,19 +1429,6 @@ class EventsController extends Controller
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
-        foreach ($events as $event) {
-            $eventList[] = \Calendar::event(
-                $event->name, // event title
-                false, // full day event
-                $event->start_at->format('Y-m-d H:i'), // start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
-                ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null), // end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
-                $event->id, //optional event ID
-                [
-                    'url' => 'events/' . $event->id,
-                ]
-            );
-        }
-
         // get all the upcoming series events
         $series = Series::getByType(ucfirst($tag))->active()->get();
 
@@ -1334,33 +1437,38 @@ class EventsController extends Controller
             return (('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
         });
 
+        // adds events to event list
+        foreach ($events as $event) {
+            $eventList[] = [
+                'id' => 'event-' . $event->id,
+                'start' => $event->start_at->format('Y-m-d H:i'),
+                'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
+                'title' => $event->name,
+                'url' => '/events/' . $event->id,
+                'backgroundColor' => '#0a57ad',
+                'description' => $event->short,
+            ];
+        }
+
+        // adds series to events list
         foreach ($series as $s) {
-            if (null == $s->nextEvent() and null != $s->nextOccurrenceDate()) {
+            if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
                 // add the next instance of each series to the calendar
-                $eventList[] = \Calendar::event(
-                    $s->name, //event title
-                    false, //full day event?
-                    $s->nextOccurrenceDate()->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
-                    ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
-                    $s->id, //optional event ID
-                    [
-                        'url' => 'series/' . $s->id,
-                        'color' => '#99bcdb',
-                    ]
-                );
+                $eventList[] = [
+                    'id' => 'series-' . $s->id,
+                    'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
+                    'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
+                    'title' => $s->name,
+                    'url' => '/series/' . $s->id,
+                    'backgroundColor' => '#99bcdb',
+                    'description' => $s->short,
+                ];
             }
         }
 
-        $calendar = \Calendar::addEvents($eventList)
-        ->setOptions([
-            'firstDay' => 0,
-            'height' => 840,
-        ])->setCallbacks([
-            // set fullcalendar callback options (will not be JSON encoded)
-            // 'viewRender' => 'function() {alert("Callbacks!");}'
-        ]);
+        $eventList = json_encode($eventList);
 
-        return view('events.calendar', compact('calendar', 'tag'));
+        return view('events.event-calendar', compact('eventList', 'tag'));
     }
 
     /**
@@ -1515,51 +1623,6 @@ class EventsController extends Controller
 
         return back();
     }
-
-    /**
-     * TODO Deprecate - we shouldn't need this
-     * Makes a call to the FB API if there is a link present and downloads the event cover photo.
-     */
-    // public function getToken()
-    // {
-    //     // Obtain an access token.
-    //     try {
-    //         $token = $this->fb->getAccessTokenFromRedirect();
-    //     } catch (Exception $e) {
-    //         Log::error(sprintf('FB SDK exception: %s', $e->getMessage()));
-
-    //         return;
-    //     }
-
-    //     // Access token will be null if the user denied the request
-    //     // or if someone just hit this URL outside of the OAuth flow.
-    //     if (!$token) {
-    //         // Get the redirect helper
-    //         $helper = $this->fb->getRedirectLoginHelper();
-
-    //         if (!$helper->getError()) {
-    //             abort(403, 'Unauthorized action.');
-    //         }
-
-    //         // User denied the request
-    //         Log::error(sprintf('FB SDK Error: %s %s %s %s', $helper->getError(), $helper->getErrorCode(), $helper->getErrorReason(), $helper->getErrorDescription()));
-    //     }
-
-    //     if (!$token->isLongLived()) {
-    //         // OAuth 2.0 client handler
-    //         $oauth_client = $this->fb->getOAuth2Client();
-
-    //         // Extend the access token.
-    //         try {
-    //             $token = $oauth_client->getLongLivedAccessToken($token);
-    //         } catch (Exception $e) {
-    //             Log::error(sprintf('FB SDK exception: %s', $e->getMessage()));
-    //         }
-    //     }
-
-    //     // set the access token
-    //     $this->fb->setDefaultAccessToken($token);
-    // }
 
     public function show(Event $event):string
     {

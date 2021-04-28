@@ -20,12 +20,15 @@
 			  var calendar = new FullCalendar.Calendar(calendarEl, {
 				headerToolbar: { center: 'dayGridMonth, timeGridWeek, timeGridDay' },
 				initialView: 'dayGridMonth',
-				eventSources: [
-					{
-						url: '/api/calendar-events',
-					}
-				],
-				height: 820
+				// directly use JSON with events
+				events: {!! $eventList !!},
+				// use an API call with eventSources
+				// eventSources: [
+				// 	{
+				// 		url: '/api/calendar-events',
+				// 	}
+				// ],
+				height: 820,
 			  });
 			  calendar.render();
 			});
