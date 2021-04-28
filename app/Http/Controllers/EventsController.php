@@ -1143,52 +1143,60 @@ class EventsController extends Controller
      */
     public function renderCalendar(Collection $events, $series = null, $tag = null)
     {
-        $eventList = [];
+        return view('events.event-calendar');
+    }
+
+    /**
+     * API endpoint for calendar-events that collects events and series and returns json
+     */
+    public function calendarEventsApi()
+    {
+        // build the json results to return which include both series and events
+
+        // get all public events
+        $events = Event::where(function ($query) {
+            $query->visible($this->user);
+        })->get();
+
+        // get all the upcoming series events
+        $series = Series::active()->get();
+
+        // filter for only events that are public or that were created by the current user and are not "no schedule"
+        $series = $series->filter(function ($e) {
+            return (('Public' == $e->visibility->name) || ($this->user && $e->created_by === $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
+        });
 
         // adds events to event list
         foreach ($events as $event) {
-            $eventList[] = \Calendar::event(
-                $event->name,   // event title
-                false,          // full day event
-                $event->start_at->format('Y-m-d H:i'), // start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
-                ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null), // end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
-                'event-' . $event->id,     // optional event ID
-                [
-                    'url' => '/events/' . $event->id,
-                    // optional params
-                    //'color' => '#fc0'
-                ]
-            );
+            $eventList[] = [
+                'id' => 'event-' . $event->id,
+                'start' => $event->start_at->format('Y-m-d H:i'),
+                'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
+                'title' => $event->name,
+                'url' => '/events/' . $event->id,
+                'backgroundColor' => '#0a57ad',
+                'description' => $event->short,
+            ];
         }
 
         // adds series to events list
         foreach ($series as $s) {
             if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
                 // add the next instance of each series to the calendar
-                $eventList[] = \Calendar::event(
-                    $s->name,   // event title
-                    false,      // full day event?
-                    $s->nextOccurrenceDate()->format('Y-m-d H:i'), //start time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
-                    ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null), //end time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg),
-                    'series-' . $s->id, // optional event ID
-                    [
-                        'url' => '/series/' . $s->id,
-                        'color' => '#99bcdb',
-                    ]
-                );
+                $eventList[] = [
+                    'id' => 'series-' . $s->id,
+                    'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
+                    'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
+                    'title' => $s->name,
+                    'url' => '/series/' . $s->id,
+                    'backgroundColor' => '#99bcdb',
+                    'description' => $s->short,
+                ];
             }
         }
 
-        // dd($eventList);
-
-        $calendar = \Calendar::addEvents($eventList)
-        ->setOptions([
-            'firstDay' => 0,
-            'height' => 840,
-        ])
-        ->setCallbacks([]);
-
-        return view('events.calendar', compact('calendar', 'tag'));
+        // converts array of events into json event list
+        return response()->json($eventList);
     }
 
     /**

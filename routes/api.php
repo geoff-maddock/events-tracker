@@ -12,9 +12,9 @@ Route::get('events', function () {
     return Event::all();
 });
 
-Route::get('calendar-events', function () {
-    return Event::select('id', 'name as title', 'start_at as start', 'end_at as end')->get();
-});
+// This endpoint collects series and events and returns them as JSON
+// Route::get('calendar-events', 'EventsController@calendarEventsApi')->name('calendarEvents.api')->middleware('auth.basic');
+Route::get('calendar-events', 'EventsController@calendarEventsApi')->name('calendarEvents.api');
 
 Route::get('events/{id}', function ($id) {
     return Event::find($id);
