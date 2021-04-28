@@ -12,6 +12,8 @@
 	<meta name="theme-color" content="#636b6f"/>
 	<meta name="csrf-token" content="{{ csrf_token() }}">
 	<title>{{ config('app.app_name')}} - Event + Club Guide - @yield('title')</title>
+	
+	<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.min.css' rel='stylesheet' />
 	<link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/apple-icon-180x180.png">
   	<link rel="alternate" type="application/rss+xml" href="{{ url('rss') }}"
@@ -31,8 +33,8 @@
 	<!-- Fonts -->
 	<link href="//fonts.googleapis.com/css?family=Roboto:400,300&display=swap" rel="stylesheet" type="text/css">
 	<link href="https://fonts.googleapis.com/css?family=Rubik&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.min.js'></script>
 </head>
 <body id="event-repo">
 
@@ -65,7 +67,6 @@
 	<script src="{{ asset('/js/app.js') }}"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-hover-dropdown/2.2.1/bootstrap-hover-dropdown.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.3.1/fullcalendar.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox.min.js"></script>
     <script src="{{ asset('/js/jquery.ba-throttle-debounce.min.js') }}"></script>
 	<script src="{{ asset('/js/auto-submit.js') }}"></script>
