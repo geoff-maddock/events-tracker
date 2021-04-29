@@ -106,4 +106,15 @@ class SeriesFilters extends QueryFilter
     {
         return $this->builder->orderBy('ages_id', $order);
     }
+
+    public function visibility($value = null)
+    {
+        if (isset($value)) {
+            return $this->builder->whereHas('visibility', function ($q) use ($value) {
+                $q->where('id', '=', $value);
+            });
+        } else {
+            return $this->builder;
+        }
+    }
 }

@@ -75,6 +75,18 @@
                 ]) !!}
             </div>
 
+            <div class="form-group col-sm-2">
+                {!! Form::label('filter_visibility','Visibility') !!}
+                {!! Form::select('filter_visibility', $visibilityOptions, (isset($filters['visibility']) ? $filters['visibility'] : NULL),
+                [
+                    'data-theme'=> 'bootstrap',
+                    'data-width' => '100%', 
+                    'class' =>'form-control select2',
+                    'data-placeholder' => 'Select a visibility',
+                    'name' => 'filters[visibility]'
+                ]) !!}
+            </div>
+
             <div class="col-sm-2">
                 <div class="btn-group col-sm-1">
                     <label></label>
