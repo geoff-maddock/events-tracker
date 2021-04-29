@@ -151,6 +151,7 @@ class SeriesController extends Controller
     {
         return  Series::query()
             ->leftJoin('event_types', 'series.event_type_id', '=', 'event_types.id')
+            ->leftJoin('visibilities', 'series.visibility_id', '=', 'visibilities.id')
             ->leftJoin('occurrence_types', 'series.occurrence_type_id', '=', 'occurrence_types.id')
             ->orderBy('occurrence_type_id', 'ASC')
             ->orderBy('occurrence_week_id', 'ASC')
@@ -220,7 +221,8 @@ class SeriesController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($this->baseQuery())
-            ->setDefaultSort(['series.created_at' => 'desc']);
+            ->setDefaultSort(['series.created_at' => 'desc'])
+            ->setDefaultFilters(['visibility' => Visibility::VISIBILITY_PUBLIC]);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
@@ -273,6 +275,7 @@ class SeriesController extends Controller
             'occurrenceTypeOptions' => ['' => ''] + OccurrenceType::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
             'occurrenceWeekOptions' => ['' => ''] + OccurrenceWeek::orderBy('id', 'ASC')->pluck('name', 'name')->all(),
             'occurrenceDayOptions' => ['' => ''] + OccurrenceDay::orderBy('id', 'ASC')->pluck('name', 'name')->all(),
+            'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
         ];
     }
 
