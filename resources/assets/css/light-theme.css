@@ -58,6 +58,14 @@ body {
 	min-height: 130px;
 }
 
+.event-past {
+	background-color: #b9edf7;
+}
+
+.event-future {
+	background-color: #97edf7;
+}
+
 .series-card {
 	padding: 10px;
 	background-color: #c9edf7; /*light blue*/

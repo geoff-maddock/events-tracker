@@ -1,4 +1,4 @@
-<li id="event-{{ $event->id }}" class="event-card" style="display: flow-root;">
+<li id="event-{{ $event->id }}" class="event-card {{ $event->pastOrFuture }}" style="display: flow-root;">
 	@if ($primary = $event->getPrimaryPhoto())
 	<div class="event-list-thumbnail">
 		<a href="{{ $primary->getStoragePath() }}" data-lightbox="{{ $primary->getStoragePath() }}"
