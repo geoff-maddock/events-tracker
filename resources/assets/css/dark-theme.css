@@ -57,6 +57,14 @@ body {
 	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
 }
 
+.event-past {
+	background-color: #334;
+}
+
+.event-future {
+	background-color: #223 !important;
+}
+
 .series-card {
 	padding: 10px;
 	background-color: #223;

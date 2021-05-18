@@ -353,7 +353,7 @@ class Event extends Eloquent
      * Returns visible events.
      *
      */
-    public function scopeStarting(BUilder $query, ?string $date)
+    public function scopeStarting(Builder $query, ?string $date)
     {
         $cdate_yesterday = Carbon::parse($date)->subDay();
         $cdate_tomorrow = Carbon::parse($date)->addDay();
@@ -515,6 +515,18 @@ class Event extends Eloquent
         });
 
         return \count($responses);
+    }
+
+    /**
+     * Get past or future attribute
+     */
+    public function getPastOrFutureAttribute()
+    {
+        if ($this->start_at < Carbon::now()) {
+            return 'event-past';
+        } else {
+            return 'event-future';
+        }
     }
 
     /**
