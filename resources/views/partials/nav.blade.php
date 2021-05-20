@@ -17,7 +17,8 @@
 		          <ul class="dropdown-menu">
 					<li class="{{ Request::is('events') ? 'active' : '' }}"><a href="{{ url('/events') }}">Event Index</a></li>
 					<li class="{{ Request::is('events/grid') ? 'active' : '' }}"><a href="{{ url('/events/grid') }}">Event Grid</a></li>
-                    <li class="{{ Request::is('events/week') ? 'active' : '' }}"><a href="{{ url('/events/week') }}">Week's Events</a></li>
+					<li class="{{ Request::is('events/week') ? 'active' : '' }}"><a href="{{ url('/events/week') }}">Week's Events</a></li>
+                    <li class="{{ Request::is('/') ? 'active' : '' }}"><a href="{{ url('/') }}">Event Window</a></li>
                     <li class="{{ Request::is('events/attending') ? 'active' : '' }}"><a href="{{ url('/events/attending') }}">Events Attending</a></li>
 		            <li class="{{ Request::is('events/feed') ? 'active' : '' }}"><a href="{{ url('/events/feed') }}" target="_blank" rel="noopener">Events Text Only</a></li>
 		            <li class="{{ Request::is('events/create') ? 'active' : '' }}"><a href="{!! url('/events/create') !!}">Add Event</a></li>
@@ -42,6 +43,7 @@
 		            <li class="{{ Request::is('calendar/min-age/0') ? 'active' : '' }}"><a href="{!! url('/calendar/min-age/0') !!}" >All Ages</a></li>
 		            <li class="{{ Request::is('calendar/type/club night') ? 'active' : '' }}"><a href="{!! url('/calendar/type/club night') !!}" >Club Night</a></li>
 					<li class="{{ Request::is('calendar/type/concert') ? 'active' : '' }}"><a href="{!! url('/calendar/type/concert') !!}" >Live Concert</a></li>
+					<li class="{{ Request::is('calendar/type/live stream') ? 'active' : '' }}"><a href="{!! url('/calendar/type/live stream') !!}" >LiveStream</a></li>
 					<li class="{{ Request::is('calendar/attending') ? 'active' : '' }}"><a href="{!! url('/calendar/attending') !!}" >Attending</a></li>
 		          </ul>
 		        </li>
