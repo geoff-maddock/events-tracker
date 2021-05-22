@@ -48,10 +48,10 @@ $this->get('register', 'Auth\RegisterController@showRegistrationForm')->name('re
 $this->post('register', 'Auth\RegisterController@register');
 
 // Password Reset Routes...
-$this->get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.forgot');
-$this->post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail');
-$this->get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
-$this->post('password/reset', 'Auth\ResetPasswordController@reset');
+Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.forgot');
+Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail');
+Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
+Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 
 Route::get('/', 'PagesController@home')->name('home');
 Route::get('/home', 'PagesController@home')->name('pages.home');
@@ -162,6 +162,7 @@ Route::get('update', function () {
 Route::get('events/today', 'EventsController@indexToday');
 Route::match(['get', 'post'], 'events/grid', 'EventsController@indexGrid')->name('events.grid');
 Route::get('events/future', 'EventsController@indexFuture')->name('events.future');
+Route::get('events/upcoming/{date?}', 'EventsController@indexUpcoming')->name('events.upcoming');
 Route::get('events/past', 'EventsController@indexPast');
 Route::get('events/week', 'EventsController@indexWeek')->name('events.week');
 Route::get('events/starting/{date}', 'EventsController@indexStarting');

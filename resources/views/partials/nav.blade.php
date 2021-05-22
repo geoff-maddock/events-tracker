@@ -13,12 +13,13 @@
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			<ul class="nav navbar-nav ">
 				<li class="dropdown {{ Request::is('events') ? 'active' : '' }}">
-		          <a href="{{ url('/events') }}" class="dropdown-toggle" data-hover="dropdown" role="button" aria-haspopup="true" aria-expanded="false" data-toggle="xtooltipx"  data-placement="bottom"  title="Show paginated list of events">Events <span class="caret"></span></a>
+		          <a href="{{ url('/events/future') }}" class="dropdown-toggle" data-hover="dropdown" role="button" aria-haspopup="true" aria-expanded="false" data-toggle="xtooltipx"  data-placement="bottom"  title="Show paginated list of events">Events <span class="caret"></span></a>
 		          <ul class="dropdown-menu">
 					<li class="{{ Request::is('events') ? 'active' : '' }}"><a href="{{ url('/events') }}">Event Index</a></li>
+					<li class="{{ Request::is('events/future') ? 'active' : '' }}"><a href="{{ url('/events/future') }}">Events Future</a></li>
 					<li class="{{ Request::is('events/grid') ? 'active' : '' }}"><a href="{{ url('/events/grid') }}">Event Grid</a></li>
 					<li class="{{ Request::is('events/week') ? 'active' : '' }}"><a href="{{ url('/events/week') }}">Week's Events</a></li>
-                    <li class="{{ Request::is('/') ? 'active' : '' }}"><a href="{{ url('/') }}">Event Window</a></li>
+                    <li class="{{ Request::is('events/upcoming') ? 'active' : '' }}"><a href="{{ url('/events/upcoming') }}">Events Upcoming</a></li>
                     <li class="{{ Request::is('events/attending') ? 'active' : '' }}"><a href="{{ url('/events/attending') }}">Events Attending</a></li>
 		            <li class="{{ Request::is('events/feed') ? 'active' : '' }}"><a href="{{ url('/events/feed') }}" target="_blank" rel="noopener">Events Text Only</a></li>
 		            <li class="{{ Request::is('events/create') ? 'active' : '' }}"><a href="{!! url('/events/create') !!}">Add Event</a></li>

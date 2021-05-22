@@ -221,12 +221,22 @@ class PagesController extends Controller
         // handle the request if ajax
         if ($request->ajax()) {
             return view('pages.4daysAjax')
-                    ->with(['limit' => $this->limit, 'dayOffset' => $this->offset, 'window' => $this->window])
+                    ->with([
+                        'limit' => $this->limit,
+                        'dayOffset' => $this->offset,
+                        'window' => $this->window
+                    ])
                     ->render();
         }
 
         return view('pages.home')
-                    ->with(['limit' => $this->limit, 'dayOffset' => $this->offset, 'window' => $this->window]);
+                    ->with(
+                        [
+                            'limit' => $this->limit,
+                            'dayOffset' => $this->offset,
+                            'window' => $this->window
+                        ]
+                    );
     }
 
     /**
