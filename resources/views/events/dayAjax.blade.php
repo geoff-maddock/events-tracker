@@ -4,7 +4,7 @@
 
 			<div class="panel-heading">
 				<h3 class="panel-title">
-				@if (0 === $offset)
+				@if (\Carbon\Carbon::now('America/New_York')->format('Ymd') === $day)
 				Today's Events
 				@else
 				{{ $day->format('l M jS Y') }}

@@ -10,7 +10,9 @@
             <p>
                 @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser') ) )
                     <a href="{!! route('users.edit', ['user' => $user->id]) !!}" class="btn btn-primary">Edit Profile</a>
+                    <a href="{!! route('user.reset', ['token' => $token]) !!}" class="btn btn-primary">Reset Password</a>
                 @endif
+
                 <a href="{!! URL::route('users.index') !!}" class="btn btn-info">Return to list</a>
 
             </p>

@@ -72,6 +72,8 @@ class EventsController extends Controller
 
     protected bool $hasFilter;
 
+    protected int $defaultWindow;
+
     protected Facebook $facebook;
 
     public function __construct(EventFilters $filter, Facebook $facebook)
@@ -87,6 +89,7 @@ class EventsController extends Controller
         $this->defaultGridLimit = 24;
         $this->defaultSort = 'name';
         $this->defaultSortDirection = 'asc';
+        $this->defaultWindow = 4;
 
         $this->limit = $this->defaultLimit;
         $this->sort = $this->defaultSort;
@@ -125,10 +128,7 @@ class EventsController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['events.start_at' => 'desc'])
-            // TO DO Determine if we want to set a default filter?
-            //->setDefaultFilters(['start_at' => ['start' => Carbon::now()]])
-;
+            ->setDefaultSort(['events.start_at' => 'desc']);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
@@ -478,6 +478,82 @@ class EventsController extends Controller
                 $this->getListControlOptions()
             ))
             ->with(compact('future_events'));
+    }
+
+    // Same as the 4-day window except uses the passed in date for the start date
+
+    public function indexUpcoming(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $date = ''
+    ) {
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_upcoming');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
+
+        // set the date if a date was passed in
+        $start_at_from = Carbon::parse($date);
+
+        // use the window to get the last date and set the criteria between
+        $start_at_to = Carbon::parse($date)->addDays($this->defaultWindow);
+
+        $next_day = Carbon::parse($date)->addDays(1);
+        $next_day_window = Carbon::parse($date)->addDays($this->defaultWindow);
+        $prev_day = Carbon::parse($date)->subDays(1);
+        $prev_day_window = Carbon::parse($date)->subDays($this->defaultWindow);
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['events.start_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the events
+        $events = $query
+        ->where('start_at', '>', $start_at_from)
+        ->where('start_at', '<', $start_at_to)
+            ->where(function ($query) {
+                $query->visible($this->user);
+            })
+            ->with('visibility', 'venue')
+            ->paginate($listResultSet->getLimit());
+
+        // handle the request if ajax
+        if ($request->ajax()) {
+            return view('events.4daysAjax')
+                    ->with([
+                        'events' => $events,
+                        'date' => $date,
+                        'window' => $this->defaultWindow,
+                        'next_day' => $next_day,
+                        'next_day_window' => $next_day_window,
+                        'prev_day' => $prev_day,
+                        'prev_day_window' => $prev_day_window
+                    ])
+                    ->render();
+        }
+
+        return view('events.upcoming')
+        ->with([
+            'events' => $events,
+            'date' => $date,
+            'window' => $this->defaultWindow,
+            'next_day' => $next_day,
+            'next_day_window' => $next_day_window,
+            'prev_day' => $prev_day,
+            'prev_day_window' => $prev_day_window
+        ]);
     }
 
     /**

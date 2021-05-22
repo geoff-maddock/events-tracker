@@ -300,7 +300,9 @@ class UsersController extends Controller
             return redirect('users/' . $user->id);
         }
 
-        return view('users.show', compact('user', 'tabs'));
+        $token = \Password::getRepository()->create($user);
+
+        return view('users.show', compact('user', 'tabs', 'token'));
     }
 
     public function store(UserRequest $request, User $user): void
