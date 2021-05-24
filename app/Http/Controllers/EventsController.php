@@ -494,12 +494,7 @@ class EventsController extends Controller
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
-        // set the date if a date was passed in
-        $start_at_from = Carbon::parse($date);
-
         // use the window to get the last date and set the criteria between
-        $start_at_to = Carbon::parse($date)->addDays($this->defaultWindow);
-
         $next_day = Carbon::parse($date)->addDays(1);
         $next_day_window = Carbon::parse($date)->addDays($this->defaultWindow);
         $prev_day = Carbon::parse($date)->subDays(1);
@@ -513,27 +508,12 @@ class EventsController extends Controller
             ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['events.start_at' => 'desc']);
 
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
-        $events = $query
-        ->where('start_at', '>', $start_at_from)
-        ->where('start_at', '<', $start_at_to)
-            ->where(function ($query) {
-                $query->visible($this->user);
-            })
-            ->with('visibility', 'venue')
-            ->paginate($listResultSet->getLimit());
+        // NOTE normally a query would be created, a list entity result builder configured and events retrieved, but this uses ajax calls
 
         // handle the request if ajax
         if ($request->ajax()) {
             return view('events.4daysAjax')
                     ->with([
-                        'events' => $events,
                         'date' => $date,
                         'window' => $this->defaultWindow,
                         'next_day' => $next_day,
@@ -546,7 +526,6 @@ class EventsController extends Controller
 
         return view('events.upcoming')
         ->with([
-            'events' => $events,
             'date' => $date,
             'window' => $this->defaultWindow,
             'next_day' => $next_day,
