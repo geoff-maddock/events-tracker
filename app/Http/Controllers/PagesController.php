@@ -207,7 +207,8 @@ class PagesController extends Controller
     public function home(
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
-        ListEntityResultBuilder $listEntityResultBuilder
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $date = ''
     ) {
         $listParamSessionStore->setBaseIndex('internal_page');
         $listParamSessionStore->setKeyPrefix('internal_page_home');
@@ -215,16 +216,22 @@ class PagesController extends Controller
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([PagesController::class, 'home']));
 
-        // updates sort, limit from request
-        $this->updatePaging($request);
+        // use the window to get the last date and set the criteria between
+        $next_day = Carbon::parse($date)->addDays(1);
+        $next_day_window = Carbon::parse($date)->addDays($this->defaultWindow);
+        $prev_day = Carbon::parse($date)->subDays(1);
+        $prev_day_window = Carbon::parse($date)->subDays($this->defaultWindow);
 
         // handle the request if ajax
         if ($request->ajax()) {
             return view('pages.4daysAjax')
                     ->with([
-                        'limit' => $this->limit,
-                        'dayOffset' => $this->offset,
-                        'window' => $this->window
+                        'date' => $date,
+                        'window' => $this->defaultWindow,
+                        'next_day' => $next_day,
+                        'next_day_window' => $next_day_window,
+                        'prev_day' => $prev_day,
+                        'prev_day_window' => $prev_day_window
                     ])
                     ->render();
         }
@@ -232,9 +239,12 @@ class PagesController extends Controller
         return view('pages.home')
                     ->with(
                         [
-                            'limit' => $this->limit,
-                            'dayOffset' => $this->offset,
-                            'window' => $this->window
+                            'date' => $date,
+                            'window' => $this->defaultWindow,
+                            'next_day' => $next_day,
+                            'next_day_window' => $next_day_window,
+                            'prev_day' => $prev_day,
+                            'prev_day_window' => $prev_day_window
                         ]
                     );
     }

@@ -180,6 +180,26 @@ var Home = (function()
     {
         this.loadDays();
         this.setupPagination();
+
+        window.addEventListener('popstate', function(event) {
+            console.log('popstate fired');
+            // The popstate event is fired each time when the current history entry changes.
+        
+            var r = true;
+        
+            if (r == true) {
+                // Call Back button programmatically as per user confirmation.
+                history.back();
+                // Uncomment below line to redirect to the previous page instead.
+                // window.location = document.referrer // Note: IE11 is not supporting this.
+            } else {
+                // Stay on the current page.
+                history.pushState(null, null, window.location.pathname);
+            }
+        
+            history.pushState(null, null, window.location.pathname);
+        
+        }, false);
     };
 
     // check the day sections and load via ajax
@@ -198,10 +218,11 @@ var Home = (function()
             e.preventDefault();
             var url = $(this).attr('href');
             getEvents(url);
-            window.history.pushState("", "", url);
+            // window.history.pushState("", "", url);
+            console.log('url: ' + url)
+            history.pushState(null, null, window.location.pathname);
         });
     };
-
 
     // load a day's events
     var getDayEvents = function(url, num) {

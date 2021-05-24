@@ -28,10 +28,9 @@
 		@for ($offset = 0; $offset < 4; $offset++)
 		<?php $day = \Carbon\Carbon::parse($date)->addDay($offset); ?>
 			<section class="day" data-num="{{ $offset }}" id="day-position-{{ $offset }}" href="/events/day/{{ $day->format('Y-m-d') }}">
-			@include('events.dayAjax', ['day' => $day, 'position' => $offset ])
+				@include('events.dayAjax', ['day' => $day, 'position' => $offset ])
 			</section>
 		@endfor
-	
 	</div>
 	<script type="text/javascript">
 		// init app module on document load
