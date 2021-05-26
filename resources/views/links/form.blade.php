@@ -33,5 +33,5 @@
 </div
 
 <div class="form-group">
-{!! Form::submit(isset($action) ? 'Update Link' : 'Add Link', null, ['class' =>'btn btn-primary']) !!}
+{!! Form::submit(isset($action) ? 'Update Link' : 'Add Link', ['class' =>'btn btn-primary']) !!}
 </div>
