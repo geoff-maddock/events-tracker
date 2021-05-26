@@ -4,9 +4,9 @@
 
 @section('content')
 
-	<h1>Forum
+	<h4>Forum
 		@include('threads.crumbs')
-	</h1>
+	</h4>
 
 	<p>
 	<a href="{{ url('/threads/all') }}" class="btn btn-info">Show all threads</a>

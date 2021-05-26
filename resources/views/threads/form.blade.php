@@ -105,7 +105,7 @@
 
 
 <div class="form-group">
-	{!! Form::submit(isset($action) && $action == 'update' ? 'Update Thread' : 'Add Thread', null, ['class' =>'btn btn-primary']) !!}
+	{!! Form::submit(isset($action) && $action == 'update' ? 'Update Thread' : 'Add Thread', ['class' =>'btn btn-primary']) !!}
 </div>
 
 
