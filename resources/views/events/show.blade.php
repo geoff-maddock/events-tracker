@@ -143,7 +143,7 @@
 	</div>
 
 	<div class="col-md-6">
-		@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )
+		@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') || $user->email_verified_at != null) )
 		<form action="/events/{{ $event->id }}/photos" class="dropzone" id="myDropzone" method="POST">
 			<input type="hidden" name="_token" value="{{ csrf_token() }}">
 		</form>

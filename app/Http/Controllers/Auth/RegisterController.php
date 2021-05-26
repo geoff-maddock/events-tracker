@@ -95,6 +95,7 @@ class RegisterController extends Controller
     protected function notifyAdmin(User $user): RedirectResponse
     {
         $admin_email = config('app.admin');
+        $noreply_email = config('app.noreplyemail');
         $site = config('app.app_name');
         $url = config('app.url');
 
