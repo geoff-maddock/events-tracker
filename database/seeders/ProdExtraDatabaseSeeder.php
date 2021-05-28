@@ -37,9 +37,6 @@ class ProdExtraDatabaseSeeder extends Seeder
         $this->call(TagTypesTableSeeder::class);
         $this->command->info('Tag types table seeded.');
 
-        $this->call(TagsTableSeeder::class);
-        $this->command->info('Tags table seeded.');
-
         $this->call(LocationTypesTableSeeder::class);
         $this->command->info('Location Types table seeded.');
 
@@ -82,9 +79,14 @@ class ProdExtraDatabaseSeeder extends Seeder
         $this->call(UserStatusesTableSeeder::class);
         $this->command->info('User statuses table seeded.');
 
-        // EXTRA data
-        // TODO things to include
-        // the "extra" groups and permissions sets
-        // base forum
+        // EXTRA data - non-essential seed data
+        $this->call(ActionsTableSeeder::class);
+        $this->command->info('Action table seeded.');
+
+        $this->call(TagsTableSeeder::class);
+        $this->command->info('Tags table seeded.');
+
+        $this->call(ForumsTableSeeder::class);
+        $this->command->info('Forum table seeded.');
     }
 }
