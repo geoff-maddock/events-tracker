@@ -37,9 +37,6 @@ class ProdPittsburghDatabaseSeeder extends Seeder
         $this->call(TagTypesTableSeeder::class);
         $this->command->info('Tag types table seeded.');
 
-        $this->call(TagsTableSeeder::class);
-        $this->command->info('Tags table seeded.');
-
         $this->call(LocationTypesTableSeeder::class);
         $this->command->info('Location Types table seeded.');
 
@@ -82,11 +79,14 @@ class ProdPittsburghDatabaseSeeder extends Seeder
         $this->call(UserStatusesTableSeeder::class);
         $this->command->info('User statuses table seeded.');
 
+        // EXTRA data - non-essential seed data
         $this->call(ActionsTableSeeder::class);
         $this->command->info('Action table seeded.');
 
-        // EXTRA data - this includes Pittsburgh specific data - more to another seeder
+        $this->call(ForumsTableSeeder::class);
+        $this->command->info('Forum table seeded.');
 
+        // PITTSBRUGH data - this includes Pittsburgh specific data
         $this->call(EntitiesTableSeeder::class);
         $this->command->info('Entity table seeded.');
     }

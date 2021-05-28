@@ -37,9 +37,6 @@ class ProdBasicDatabaseSeeder extends Seeder
         $this->call(TagTypesTableSeeder::class);
         $this->command->info('Tag types table seeded.');
 
-        $this->call(TagsTableSeeder::class);
-        $this->command->info('Tags table seeded.');
-
         $this->call(LocationTypesTableSeeder::class);
         $this->command->info('Location Types table seeded.');
 
