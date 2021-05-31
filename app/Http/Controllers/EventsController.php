@@ -746,10 +746,36 @@ class EventsController extends Controller
      *
      * @return View
      */
-    public function feed()
-    {
-        // set number of results per page
-        $events = Event::future()->simplePaginate(10000);
+    public function feed(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ) {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_index');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['events.start_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the events
+        $events = $query->visible($this->user)
+            ->with('visibility', 'venue')
+            ->paginate(10000);
 
         return view('events.feed', compact('events'));
     }
@@ -1833,8 +1859,6 @@ class EventsController extends Controller
 
         // add to activity log
         Activity::log($event, $this->user, 6);
-
-        Log::info('User ' . $id . ' is attending ' . $event->name);
 
         // handle the request if ajax
         if ($request->ajax()) {
