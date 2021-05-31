@@ -29,7 +29,7 @@
   </div>
 
   <div class="col-md-4">
-    @if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser') ) )
+    @if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser') || $event->canUserPostPhoto($user)) )
     <form action="/events/{{ $event->id }}/photos" class="dropzone" id="myDropzone" method="POST">
       <input type="hidden" name="_token" value="{{ csrf_token() }}">
     </form>

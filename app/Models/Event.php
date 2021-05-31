@@ -645,6 +645,18 @@ class Event extends Eloquent
             ->where('user_id', '=', $user->id)->first();
     }
 
+    public function canUserPostPhoto(User $user): bool
+    {
+        $response = EventResponse::where('event_id', '=', $this->id)
+        ->where('user_id', '=', $user->id)->first();
+
+        if ($this->start_at < Carbon::now() && $response) {
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * Returns the review from the passed use if there is one.
      *
