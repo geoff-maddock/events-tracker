@@ -58,5 +58,5 @@ Tags:
 
 
 @else
-No future events listed
+No events listed
 @endif
