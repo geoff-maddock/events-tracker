@@ -1101,7 +1101,7 @@ class EventsController extends Controller
                 'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
                 'title' => $event->name,
                 'url' => '/events/' . $event->id,
-                'backgroundColor' => '#0a57ad',
+                'backgroundColor' => $event->eventType->backgroundColor(),
                 'description' => $event->short,
             ];
         }
