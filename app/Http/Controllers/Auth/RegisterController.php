@@ -95,14 +95,14 @@ class RegisterController extends Controller
     protected function notifyAdmin(User $user): RedirectResponse
     {
         $admin_email = config('app.admin');
-        $noreply_email = config('app.noreplyemail');
+        $no_reply_email = config('app.noreplyemail');
         $site = config('app.app_name');
         $url = config('app.url');
 
-        Mail::send('emails.register', ['user' => $user, 'admin_email' => $admin_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $admin_email, $site) {
-            $m->from($admin_email, $site);
+        Mail::send('emails.register', ['user' => $user, 'admin_email' => $admin_email, 'no_reply_email' => $no_reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $admin_email, $no_reply_email, $site) {
+            $m->from($no_reply_email, $site);
 
-            $m->to($admin_email, $user->name)->subject($site . ': New User Registered: ' . $user->name . ' :: ' . $user->created_at->format('D F jS'));
+            $m->to($admin_email, 'Administrator')->subject($site . ': New User Registered: ' . $user->name . ' :: ' . $user->created_at->format('D F jS'));
         });
 
         return back();
