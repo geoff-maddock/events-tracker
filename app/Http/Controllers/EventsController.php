@@ -2509,7 +2509,8 @@ class EventsController extends Controller
             'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'occurrenceTypeOptions' => ['' => ''] + OccurrenceType::pluck('name', 'id')->all(),
             'dayOptions' => ['' => ''] + OccurrenceDay::pluck('name', 'id')->all(),
-            'weekOptions' => ['' => ''] + OccurrenceWeek::pluck('name', 'id')->all()
+            'weekOptions' => ['' => ''] + OccurrenceWeek::pluck('name', 'id')->all(),
+            'userOptions' => User::orderBy('name', 'ASC')->pluck('name', 'id')->all()
         ];
     }
 

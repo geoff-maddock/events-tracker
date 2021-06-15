@@ -17,6 +17,12 @@
 <div class="col-md-4">
 	<div class="event-card">
 	<h2>{{ $series->name }}</h2>
+	@if ($photo = $series->getPrimaryPhoto())
+	<div>
+		<img src="{{ $photo->getStoragePath() }}" class="listing">
+	</div>
+	@endif
+
 	<b>{{ $series->occurrenceType->name }}   {{ $series->occurrence_repeat }}</b>
 
 	<p>

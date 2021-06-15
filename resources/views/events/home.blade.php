@@ -4,6 +4,7 @@
 
 @section('content')
 
+	<!-- Add classes to show or hide based on local storage values -->
 	<div class="jumbotron"
 		@if ($theme == config('app.default_theme'))
 			style="background-color: #FF3CAC;background-image: linear-gradient(225deg, #FF3CAC 0%, #784BA0 50%, #2B86C5 100%);"

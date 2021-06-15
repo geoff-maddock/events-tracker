@@ -68,24 +68,9 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-hover-dropdown/2.2.1/bootstrap-hover-dropdown.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox.min.js"></script>
-	{{-- <script src="https://unpkg.com/@popperjs/core@2"></script>
-	<script src='https://unpkg.com/tooltip.js/dist/umd/tooltip.min.js'></script> --}}
     <script src="{{ asset('/js/jquery.ba-throttle-debounce.min.js') }}"></script>
 	<script src="{{ asset('/js/auto-submit.js') }}"></script>
 	<script src="{{ asset('/js/custom.js') }}"></script>
-{{--    <script>--}}
-{{--        if ('serviceWorker' in navigator && `PushManager` in window) {--}}
-{{--            window.addEventListener('load', function() {--}}
-{{--                navigator.serviceWorker.register('/service-worker.js').then(function(registration) {--}}
-{{--                    // Registration was successful--}}
-{{--                    console.log('ServiceWorker registration successful with scope: ', registration.scope);--}}
-{{--                }, function(err) {--}}
-{{--                    // registration failed :(--}}
-{{--                    console.log('ServiceWorker registration failed: ', err);--}}
-{{--                });--}}
-{{--            });--}}
-{{--        }--}}
-{{--    </script>--}}
 	@yield('scripts.footer')
 	@yield('footer')
 	@include('flash')
