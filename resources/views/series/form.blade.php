@@ -218,6 +218,6 @@
 	@if (isset($eventLinkId))
 	{!! Form::hidden('eventLinkId', $eventLinkId) !!}
 	@endif
-	{!! Form::submit(isset($action) && $action == 'update' ? 'Update Series' : 'Add Series', null, ['class' =>'btn
+	{!! Form::submit(isset($action) && $action == 'update' ? 'Update Series' : 'Add Series', ['class' =>'btn
 	btn-primary']) !!}
 </div>

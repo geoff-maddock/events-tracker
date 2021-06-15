@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\AdminMailer;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -33,15 +34,9 @@ class AdminTest extends Command
         $site = config('app.app_name');
         $url = config('app.url');
 
-        // send an email containing that list
-        Mail::send('emails.admin-test', ['admin_email' => $admin_email, 'site' => $site, 'reply_email' => $reply_email, 'url' => $url], static function ($m) use ($admin_email, $site, $reply_email) {
-            $m->from($reply_email, $site);
-
-            $dt = Carbon::now();
-            $m->to($admin_email, $site . ' Admin User')
-                ->bcc($admin_email)
-                ->subject($site . ': Admin Tester - ' . $dt->format('l F jS Y'));
-        });
+        // test using the admin mailer class
+        Mail::to($admin_email)
+            ->send(new AdminMailer($url, $site, $admin_email, $reply_email));
 
         // log that the weekly email was sent
         Log::info('Admin test email was sent to ' . $admin_email);

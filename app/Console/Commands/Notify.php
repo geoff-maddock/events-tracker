@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\DailyReminder;
 use DB;
 use Log;
 use Mail;
@@ -45,20 +46,45 @@ class Notify extends Command
         foreach ($users as $user) {
             $interests = [];
             $seriesList = [];
+            $entityEvents = [];
+            $tagEvents = [];
+            $attendingIdList = [];
+
+            // get the next x events they are attending
+            $attendingEvents = $user->getAttendingToday()->take($show_count);
+            foreach ($attendingEvents as $event) {
+                $attendingIdList[] = $event->id;
+            }
 
             // build an array of events that are today based on what the user follows
             if ($entities = $user->getEntitiesFollowing()) {
                 foreach ($entities as $entity) {
+                    $entityEvents = [];
                     if (count($entity->todaysEvents()) > 0) {
-                        $interests[$entity->name] = $entity->todaysEvents();
+                        foreach ($entity->todaysEvents() as $todaysEvent) {
+                            if (!in_array($todaysEvent->id, $attendingIdList)) {
+                                $entityEvents[] = $todaysEvent;
+                            }
+                        }
+                        if (count($entityEvents) > 0) {
+                            $interests[$entity->name] = $entityEvents;
+                        }
                     }
                 }
             }
             // build an array of future events based on tags the user follows
             if ($tags = $user->getTagsFollowing()) {
                 foreach ($tags as $tag) {
+                    $tagEvents = [];
                     if (count($tag->todaysEvents()) > 0) {
-                        $interests[$tag->name] = $tag->todaysEvents();
+                        foreach ($tag->todaysEvents() as $todaysEvent) {
+                            if (!in_array($todaysEvent->id, $attendingIdList)) {
+                                $tagEvents[] = $todaysEvent;
+                            }
+                        }
+                        if (count($tagEvents) > 0) {
+                            $interests[$tag->name] = $tagEvents;
+                        }
                     }
                 }
             }
@@ -79,20 +105,11 @@ class Notify extends Command
                 }
             }
 
-            // get the next x events they are attending
-            $events = $user->getAttendingToday()->take($show_count);
-
             // if there are more than 0 events
-            if ((null !== $events && $events->count() > 0) || (null !== $seriesList && count($seriesList) > 0) || (null !== $interests && count($interests) > 0)) {
+            if ((null !== $attendingEvents && $attendingEvents->count() > 0) || (null !== $seriesList && count($seriesList) > 0) || (null !== $interests && count($interests) > 0)) {
                 // send an email containing that list
-                Mail::send('emails.daily-events', ['user' => $user, 'events' => $events, 'seriesList' => $seriesList, 'interests' => $interests, 'admin_email' => $admin_email, 'url' => $url, 'site' => $site], function ($m) use ($user, $admin_email, $reply_email, $site) {
-                    $m->from($reply_email, $site);
-
-                    $dt = Carbon::now();
-                    $m->to($user->email, $user->name)
-                                            ->bcc($admin_email)
-                                            ->subject($site . ': Daily Reminder - ' . $dt->format('l F jS Y'));
-                });
+                Mail::to($user->email)
+                    ->send(new DailyReminder($url, $site, $admin_email, $reply_email, $user, $attendingEvents, $seriesList, $interests));
 
                 // log that the weekly email was sent
                 Log::info('Daily events email was sent to ' . $user->name . ' at ' . $user->email . '.');
