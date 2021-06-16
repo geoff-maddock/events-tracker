@@ -56,6 +56,7 @@ class WeeklyUpdate extends Mailable
 
         return $this->markdown('emails.weekly-update-markdown')
             ->from($this->reply_email, $this->site)
-            ->subject($this->site . ': Weekly Update - ' . $dt->format('l F jS Y'));
+            ->subject($this->site . ': Weekly Update - ' . $dt->format('l F jS Y'))
+            ->bcc($this->admin_email);
     }
 }
