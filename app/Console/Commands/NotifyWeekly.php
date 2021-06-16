@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\WeeklyUpdate;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -38,33 +39,77 @@ class NotifyWeekly extends Command
 
         // get each user
         $users = User::orderBy('name', 'ASC')->get();
-        $show_count = 12;
+        $show_count = 21;
 
         // cycle through all the users
         foreach ($users as $user) {
+            $interests = [];
+            $seriesList = [];
+            $entityEvents = [];
+            $tagEvents = [];
+            $attendingIdList = [];
+
             // get the next x events they are attending
-            if ($events = $user->getAttendingToday()->take($show_count)) {
-                // if there are more than 0 events
-                if ($events->count() > 0) {
-                    // send an email containing that list
-                    Mail::send('emails.daily-events', ['user' => $user, 'events' => $events, 'admin_email' => $admin_email, 'url' => $url], function ($m) use ($user, $admin_email, $reply_email, $site) {
-                        $m->from($reply_email, $site);
+            $attendingEvents = $user->getAttendingFuture()->take($show_count);
+            foreach ($attendingEvents as $event) {
+                $attendingIdList[] = $event->id;
+            }
 
-                        $dt = Carbon::now();
-                        $m->to($user->email, $user->name)
-                                                    ->bcc($admin_email)
-                                                    ->subject($site . ': Daily Reminder - ' . $dt->format('l F jS Y'));
-                    });
-
-                    // log that the weekly email was sent
-                    Log::info('Daily events email was sent to ' . $user->name . ' at ' . $user->email . '.');
-                } else {
-                    // log that no email was sent
-                    Log::info('No daily events email was sent to ' . $user->name . ' at ' . $user->email . '.');
+            // build an array of events that are upcoming based on what the user follows
+            if ($entities = $user->getEntitiesFollowing()) {
+                foreach ($entities as $entity) {
+                    $entityEvents = [];
+                    if (count($entity->futureEvents()) > 0) {
+                        foreach ($entity->futureEvents() as $futureEvent) {
+                            if (!in_array($futureEvent->id, $attendingIdList)) {
+                                $entityEvents[] = $futureEvent;
+                            }
+                        }
+                        if (count($entityEvents) > 0) {
+                            $interests[$entity->name] = $entityEvents;
+                        }
+                    }
                 }
+            }
+            // build an array of future events based on tags the user follows
+            if ($tags = $user->getTagsFollowing()) {
+                foreach ($tags as $tag) {
+                    $tagEvents = [];
+                    if (count($tag->futureEvents()) > 0) {
+                        foreach ($tag->futureEvents() as $futureEvent) {
+                            if (!in_array($futureEvent->id, $attendingIdList)) {
+                                $tagEvents[] = $futureEvent;
+                            }
+                        }
+                        if (count($tagEvents) > 0) {
+                            $interests[$tag->name] = $tagEvents;
+                        }
+                    }
+                }
+            }
+
+            // build an array of series that the user is following
+            if ($series = $user->getSeriesFollowing()) {
+                foreach ($series as $s) {
+                    // if the series does not have NO SCHEDULE AND CANCELLED AT IS NULL
+                    if ($s->occurrenceType->name !== 'No Schedule' && (null === $s->cancelled_at)) {
+                        // add matches to list
+                        $seriesList[] = $s;
+                    }
+                }
+            }
+
+            // if there are more than 0 events
+            if ((null !== $attendingEvents && $attendingEvents->count() > 0) || (null !== $seriesList && count($seriesList) > 0) || (null !== $interests && count($interests) > 0)) {
+                // send an email containing that list
+                Mail::to($user->email)
+                    ->send(new WeeklyUpdate($url, $site, $admin_email, $reply_email, $user, $attendingEvents, $seriesList, $interests));
+
+                // log that the weekly email was sent
+                Log::info('Weekly update email was sent to ' . $user->name . ' at ' . $user->email . '.');
             } else {
                 // log that no email was sent
-                Log::info('No daily events email was sent to ' . $user->name . ' at ' . $user->email . '.');
+                Log::info('No weekly update email was sent to ' . $user->name . ' at ' . $user->email . '.');
             }
         }
     }
