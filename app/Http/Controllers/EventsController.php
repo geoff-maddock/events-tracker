@@ -14,6 +14,7 @@ use App\Models\EventType;
 use App\Models\Follow;
 use App\Http\Requests\EventRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
+use App\Mail\FollowingUpdate;
 use App\Notifications\EventPublished;
 use App\Models\OccurrenceDay;
 use App\Models\OccurrenceType;
@@ -1678,6 +1679,7 @@ class EventsController extends Controller
 
     protected function notifyFollowing(Event $event): void
     {
+        $admin_email = config('app.admin');
         $reply_email = config('app.noreplyemail');
         $site = config('app.app_name');
         $url = config('app.url');
@@ -1691,10 +1693,9 @@ class EventsController extends Controller
             foreach ($tag->followers() as $user) {
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site], function ($email) use ($user, $event, $tag, $reply_email, $site) {
-                        $email->from($reply_email, $site);
-                        $email->to($user->email, $user->name)->subject($site . ': ' . $tag->name . ' :: ' . $event->start_at->format('D F jS') . ' ' . $event->name);
-                    });
+                    Mail::to($user->email)
+                        ->send(new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $tag));
+
                     $users[$user->id] = $tag->name;
                 }
             }
@@ -1708,11 +1709,8 @@ class EventsController extends Controller
             foreach ($entity->followers() as $user) {
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $entity, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $event, $entity, $reply_email, $site) {
-                        $m->from($reply_email, $site);
-
-                        $m->to($user->email, $user->name)->subject($site . ': ' . $entity->name . ' :: ' . $event->start_at->format('D F jS') . ' ' . $event->name);
-                    });
+                    Mail::to($user->email)
+                        ->send(new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $entity));
                     $users[$user->id] = $entity->name;
                 }
             }

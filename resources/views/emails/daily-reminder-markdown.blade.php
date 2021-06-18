@@ -13,7 +13,7 @@ Here are the events you are attending today.
 ***
 
 @foreach ($events as $event)
-@include('emails.event-markdown')
+@include('emails.event-update-markdown')
 @endforeach
 @endif
 
@@ -39,7 +39,7 @@ Here are some events happening today that you might be interested in.
 @if (count($list) == 0) *None listed*  @endif
 
 @foreach ($list as $event)
-@include('emails.event-markdown')
+@include('emails.event-update-markdown')
 @endforeach
 @endforeach
 @endif
