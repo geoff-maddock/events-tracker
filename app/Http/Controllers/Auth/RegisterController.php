@@ -6,6 +6,7 @@ use App\Models\Activity;
 use App\Models\User;
 use App\Models\Profile;
 use App\Http\Controllers\Controller;
+use App\Mail\UserRegistration;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -95,15 +96,12 @@ class RegisterController extends Controller
     protected function notifyAdmin(User $user): RedirectResponse
     {
         $admin_email = config('app.admin');
-        $no_reply_email = config('app.noreplyemail');
+        $reply_email = config('app.noreplyemail');
         $site = config('app.app_name');
         $url = config('app.url');
 
-        Mail::send('emails.register', ['user' => $user, 'admin_email' => $admin_email, 'no_reply_email' => $no_reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $admin_email, $no_reply_email, $site) {
-            $m->from($no_reply_email, $site);
-
-            $m->to($admin_email, 'Administrator')->subject($site . ': New User Registered: ' . $user->name . ' :: ' . $user->created_at->format('D F jS'));
-        });
+        Mail::to($user->email)
+            ->send(new UserRegistration($url, $site, $admin_email, $reply_email, $user));
 
         return back();
     }
