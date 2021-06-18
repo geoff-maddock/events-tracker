@@ -13,7 +13,7 @@ This is your weekly update on upcoming events related to artists, venues, promot
 ***
 
 @foreach ($events as $event)
-@include('emails.event-markdown')
+@include('emails.event-update-markdown')
 @endforeach
 @endif
 
@@ -39,7 +39,7 @@ Here are some events happening today bthat you might be interested in based on w
 @if (count($list) == 0) *None listed*  @endif
 
 @foreach ($list as $event)
-@include('emails.event-markdown')
+@include('emails.event-update-markdown')
 @endforeach
 @endforeach
 @endif
