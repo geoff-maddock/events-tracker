@@ -2,7 +2,7 @@
 
 Good morning!
 
-You might be interested in this new event because you are following <b>{!! $tag->name !!}</b>.
+You might be interested in this new event because you are following **{!! $tag->name !!}**.
 
 @include('emails.event-update-markdown')
 

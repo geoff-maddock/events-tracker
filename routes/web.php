@@ -134,7 +134,8 @@ Route::get('users/rpp-reset', ['as' => 'users.rppReset', 'uses' => 'UsersControl
 
 Route::resource('users', 'UsersController');
 
-Route::get('profile/{id}', 'UsersController@show')->name('users.profile');
+Route::get('profile/{id}', 'UsersController@show')->name('users.profile-show');
+Route::get('profile', 'UsersController@profile')->name('users.profile');
 // PHOTOS
 
 Route::delete('photos/{id}', 'PhotosController@destroy');
