@@ -305,6 +305,13 @@ class UsersController extends Controller
         return view('users.show', compact('user', 'tabs', 'token'));
     }
 
+    public function profile(User $user, Request $request)
+    {
+        $this->middleware('auth');
+
+        return redirect('users/' . $this->user->id);
+    }
+
     public function store(UserRequest $request, User $user): void
     {
         $input = $request->all();
