@@ -16,6 +16,8 @@ use App\Models\Series;
 use App\Models\Tag;
 use App\Models\Follow;
 use App\Models\TagType;
+use App\Services\StringHelper;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class TagsController extends Controller
@@ -206,12 +208,13 @@ class TagsController extends Controller
      *
      * @return Response
      */
-    public function show($tag)
+    public function show($slug, StringHelper $stringHelper)
     {
-        $tag = urldecode($tag);
+        // convert the slug to name?
+        $tag = $stringHelper->SlugToName($slug);
 
         // get all series linked to the tag
-        $series = Series::getByTag(ucfirst($tag))
+        $series = Series::getByTag($slug)
             ->where(function ($query) {
                 $query->visible($this->user);
             })
@@ -220,7 +223,7 @@ class TagsController extends Controller
             ->paginate();
 
         // get all the events linked to the tag
-        $events = Event::getByTag(ucfirst($tag))
+        $events = Event::getByTag($slug)
             ->orderBy('start_at', 'DESC')
             ->orderBy('name', 'ASC')
             ->simplePaginate($this->limit);
@@ -230,7 +233,7 @@ class TagsController extends Controller
         });
 
         // get all entities linked to the tag
-        $entities = Entity::getByTag(ucfirst($tag))
+        $entities = Entity::getByTag($slug)
             ->where(function ($query) {
                 $query->active()
                     ->orWhere('created_by', '=', ($this->user ? $this->user->id : null));
@@ -241,7 +244,7 @@ class TagsController extends Controller
 
         $tags = Tag::orderBy('name', 'ASC')->get();
 
-        return view('tags.index', compact('series', 'entities', 'events', 'tag', 'tags'));
+        return view('tags.index', compact('series', 'entities', 'events', 'slug', 'tag', 'tags'));
     }
 
     /**
@@ -271,7 +274,7 @@ class TagsController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created resource
      *
      * @param Request $request
      * @param Tag $tag
@@ -285,8 +288,10 @@ class TagsController extends Controller
         // get the request
         $input = $request->all();
 
-        // check if the tag already exists
+        // if the tag name does not exist, create
         if (!Tag::where('name', '=', $input['name'])->first()) {
+            // set the slug
+            $input['slug'] = Str::slug($input['name'], '-');
             $tag = $tag->create($input);
 
             flash()->success('Success', sprintf('You added a new tag %s.', $tag->name));

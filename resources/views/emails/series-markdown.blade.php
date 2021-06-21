@@ -23,7 +23,7 @@
 @unless ($series->tags->isEmpty())
 **Tags:**
 @foreach ($series->tags as $tag)
-[{{$tag->name}}]({{ $url }}events/tag/{{ $tag->name }})
+[{{$tag->name}}]({{ $url }}events/tag/{{ $tag->slug }})
 @endforeach
 @endunless
 

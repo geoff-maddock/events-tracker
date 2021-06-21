@@ -586,7 +586,7 @@ class Event extends Eloquent
     {
         // get a list of events that have the passed tag
         return self::whereHas('tags', function (Builder $q) use ($tag) {
-            $q->where('name', '=', ucfirst($tag));
+            $q->where('slug', '=', $tag);
         });
     }
 

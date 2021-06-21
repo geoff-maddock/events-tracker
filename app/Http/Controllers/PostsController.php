@@ -15,6 +15,7 @@ use App\Models\Thread;
 use App\Models\User;
 use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
+use App\Services\StringHelper;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -216,9 +217,12 @@ class PostsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder,
-        string $tag
+        string $slug,
+        StringHelper $stringHelper
     ) {
-        $tag = urldecode($tag);
+        // convert the slug to name
+        $tag = $stringHelper->SlugToName($slug);
+
         // initialized listParamSessionStore with baseindex key
         // list entity result builder
         $listParamSessionStore->setBaseIndex('internal_post');
@@ -235,7 +239,7 @@ class PostsController extends Controller
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['posts.created_at' => 'desc'])
-            ->setParentFilter(['tag' => ucfirst($tag)]);
+            ->setParentFilter(['tag' => $slug]);
         ;
 
         // get the result set from the builder
@@ -654,7 +658,7 @@ class PostsController extends Controller
     {
         return  [
             'userOptions' => ['' => '&nbsp;'] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
         ];
     }
 

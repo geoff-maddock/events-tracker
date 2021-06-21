@@ -41,8 +41,8 @@
 			@unless ($post->tags->isEmpty())
 			Tags:
 				@foreach ($post->tags as $tag)
-					<span class="label label-tag"><a href="/posts/tag/{{ urlencode($tag->name) }}">{{ $tag->name }}</a>
-                            <a href="{!! route('tags.show', ['tag' => $tag->name]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a>
+					<span class="label label-tag"><a href="/posts/tag/{{ $tag->slug }}">{{ $tag->name }}</a>
+                            <a href="{!! route('tags.show', ['tag' => $tag->slug]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a>
                 	</span>
 				@endforeach
 			@endunless

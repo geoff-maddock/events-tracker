@@ -75,7 +75,7 @@
 
         @unless ($series->tags->isEmpty())
         @foreach ($series->tags as $tag)
-        <span class="label label-tag"><a href="/series/tag/{{ urlencode($tag->name) }}">{{ $tag->name }}</a></span>
+        <span class="label label-tag"><a href="/series/tag/{{ $tag->slug }}">{{ $tag->name }}</a></span>
         @endforeach
         @endunless
     </P>

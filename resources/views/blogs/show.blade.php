@@ -41,7 +41,7 @@
 		<P><b>Tags:</b>
 
 		@foreach ($blog->tags as $tag)
-		<span class="label label-tag"><a href="/tags/{{ $tag->id }}">{{ $tag->name }}</a></span>
+		<span class="label label-tag"><a href="/tags/{{ $tag->slug }}">{{ $tag->name }}</a></span>
 		@endforeach
 
 	@endunless

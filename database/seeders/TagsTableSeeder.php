@@ -17,16 +17,19 @@ class TagsTableSeeder extends Seeder
         Tag::create([
             'name' => 'Jungle',
             'tag_type_id' => $type->id,
+            'slug' => 'jungle',
         ]);
 
         Tag::create([
             'name' => 'Club Music',
             'tag_type_id' => $type->id,
+            'slug' => 'club-music',
         ]);
 
         Tag::create([
             'name' => 'Footwork',
             'tag_type_id' => $type->id,
+            'slug' => 'footwork',
         ]);
     }
 }

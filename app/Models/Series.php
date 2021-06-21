@@ -369,7 +369,7 @@ class Series extends Eloquent
     {
         // get a list of series that have the passed tag
         return self::whereHas('tags', function ($q) use ($tag) {
-            $q->where('name', '=', ucfirst($tag));
+            $q->where('slug', '=', $tag);
         });
     }
 

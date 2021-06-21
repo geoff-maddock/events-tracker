@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Collection;
 use DateTime;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Str;
 
 /**
  * @property int $id
@@ -26,7 +27,7 @@ class Tag extends Eloquent
      *
      **/
     protected $fillable = [
-        'name', 'tag_type_id',
+        'name', 'tag_type_id', 'slug'
     ];
 
     public function getRouteKeyName()
