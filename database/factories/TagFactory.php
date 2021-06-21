@@ -6,6 +6,7 @@ use App\Models\Tag;
 use App\Models\TagType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class TagFactory extends Factory
 {
@@ -25,6 +26,7 @@ class TagFactory extends Factory
     {
         return [
             'name' => $this->faker->word,
+            'slug' => Str::slug($this->faker->word, '_'),
             'tag_type_id' => function () {
                 return TagType::all()->random()->id;
             },

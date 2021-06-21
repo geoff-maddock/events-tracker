@@ -24,7 +24,7 @@
         
                     <div class="form-group col-sm-2 ">
         
-                        {!! Form::label('filter_body','Filter By BodyName') !!}
+                        {!! Form::label('filter_body','Filter By Body') !!}
         
                         {!! Form::text('filter_body', (isset($filters['body']) ? $filters['body'] : NULL),
                         [

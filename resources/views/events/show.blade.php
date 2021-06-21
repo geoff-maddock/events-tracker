@@ -133,8 +133,8 @@
 	@unless ($event->tags->isEmpty())
 	<P>Tags:
 	@foreach ($event->tags as $tag)
-			<span class="label label-tag"><a href="/events/tag/{{ urlencode($tag->name) }}" class="label-link">{{ $tag->name }}</a>
-                        <a href="{!! route('tags.show', ['tag' => $tag->name]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a>
+			<span class="label label-tag"><a href="/events/tag/{{ $tag->slug }}" class="label-link">{{ $tag->name }}</a>
+                        <a href="{!! route('tags.show', ['tag' => $tag->slug]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a>
 			</span>
 		@endforeach
 	@endunless

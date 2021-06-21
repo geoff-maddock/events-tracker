@@ -163,7 +163,7 @@ class Entity extends Eloquent
     {
         // get a list of entities that have the passed tag
         $entities = self::whereHas('tags', function ($q) use ($tag) {
-            $q->where('name', '=', ucfirst($tag));
+            $q->where('slug', '=', $tag);
         })->orderBy('name', 'ASC');
 
         return $entities;

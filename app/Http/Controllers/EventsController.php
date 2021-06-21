@@ -28,6 +28,7 @@ use App\Models\Thread;
 use App\Models\User;
 use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
+use App\Services\StringHelper;
 use Carbon\Carbon;
 use Exception;
 use Facebook\Facebook;
@@ -256,7 +257,7 @@ class EventsController extends Controller
     protected function getFilterOptions(): array
     {
         return  [
-            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
             'venueOptions' => ['' => ''] + Entity::getVenues()->pluck('name', 'name')->all(),
             'relatedOptions' => ['' => ''] + Entity::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
             'eventTypeOptions' => ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'name')->all()
@@ -1743,7 +1744,6 @@ class EventsController extends Controller
         foreach ($tagArray as $key => $tag) {
             if (!Tag::find($tag)) {
                 $newTag = new Tag();
-                //dd($newTag);
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->tag_type_id = 1;
                 $newTag->save();
@@ -1959,9 +1959,12 @@ class EventsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder,
-        string $tag
+        string $slug,
+        StringHelper $stringHelper
     ) {
-        $tag = urldecode($tag);
+        // convert the slug to name
+        $tag = $stringHelper->SlugToName($slug);
+
         // initialized listParamSessionStore with baseindex key
         // list entity result builder
         $listParamSessionStore->setBaseIndex('internal_event');
@@ -1974,7 +1977,7 @@ class EventsController extends Controller
             ->setFilter($this->filter)
             ->setQueryBuilder(Event::query())
             ->setDefaultSort(['start_at' => 'desc'])
-            ->setParentFilter(['tag' => ucfirst($tag)]);
+            ->setParentFilter(['tag' => $slug]);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();

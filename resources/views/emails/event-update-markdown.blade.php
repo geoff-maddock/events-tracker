@@ -34,7 +34,7 @@
 @unless ($event->tags->isEmpty())
 **Tags:**
 @foreach ($event->tags as $tag)
-[{{$tag->name}}]({{ $url }}events/tag/{{ $tag->name }})
+[{{$tag->name}}]({{ $url }}events/tag/{{ $tag->slug }})
 @endforeach
 @endunless
 

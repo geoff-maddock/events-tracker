@@ -64,7 +64,7 @@
 						@foreach ($tags as $t)
 							@if (isset($tag) && (strtolower($tag) === strtolower($t->name)))
 								<?php $match = $t;?>
-								<li class='list selected'><a href="/tags/{{ $t->name }}" title="Click to show all related events and entities." name="{{ $t->name[0] }}">{{ $t->name }}</a>
+								<li class='list selected'><a href="/tags/{{ $t->slug }}" title="Click to show all related events and entities." name="{{ $t->name[0] }}">{{ $t->name }}</a>
 									@if ($signedIn)
 										@if ($follow = $t->followedBy($user))
 										<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
@@ -74,7 +74,7 @@
 									@endif
 								</li>
 							@else
-								<li class='list'><a href="/tags/{{ $t->name }}"  name="{{ $t->name[0] }}">{{ $t->name }}</a>
+								<li class='list'><a href="/tags/{{ $t->slug }}"  name="{{ $t->name[0] }}">{{ $t->name }}</a>
 									@if ($signedIn)
 										@if ($follow = $t->followedBy($user))
 										<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
@@ -199,8 +199,7 @@
 				</div>
 
 				<div class="panel-body">
-				@include('series.list', ['series' => $series])
-				{{-- {!! $events->render() !!} --}}
+					@include('series.list', ['series' => $series])
 				</div>
 
 			</div>

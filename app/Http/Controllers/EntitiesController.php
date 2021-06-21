@@ -16,6 +16,7 @@ use App\Models\Role;
 use App\Models\Tag;
 use App\Models\User;
 use App\Services\SessionStore\ListParameterSessionStore;
+use App\Services\StringHelper;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -369,7 +370,8 @@ class EntitiesController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder,
-        string $tag
+        string $slug,
+        StringHelper $stringHelper
     ): string {
         $listParamSessionStore->setBaseIndex('internal_entity');
         $listParamSessionStore->setKeyPrefix('internal_entity_tags');
@@ -379,11 +381,14 @@ class EntitiesController extends Controller
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = $this->getBaseQuery();
 
+        // convert the slug to name
+        $tag = $stringHelper->SlugToName($slug);
+
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['entities.name' => 'asc'])
-            ->setParentFilter(['tag' => $tag]);
+            ->setParentFilter(['tag' => $slug]);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
@@ -827,7 +832,7 @@ class EntitiesController extends Controller
     protected function getFilterOptions(): array
     {
         return  [
-            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
             'roleOptions' => ['' => ''] + Role::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
             'entityTypeOptions' => ['' => ''] + EntityType::orderBy('name', 'ASC')->pluck('name', 'name')->all()
         ];

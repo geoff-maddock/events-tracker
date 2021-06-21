@@ -76,7 +76,7 @@ Here is a reminder about this event that you are attending.
 	@unless ($event->tags->isEmpty())
 	<P>Tags:
 	@foreach ($event->tags as $tag)
-		<span class="label label-tag"><a href="/events/tag/{{ $tag->name }}">{{ $tag->name }}</a></span>
+		<span class="label label-tag"><a href="/events/tag/{{ $tag->slug }}">{{ $tag->name }}</a></span>
 		@endforeach
 	@endunless
 	</P>

@@ -26,7 +26,7 @@ You might be interested in this new thread because you are following <b>{!! $obj
 @unless ($thread->tags->isEmpty())
     <P>Tags:
         @foreach ($thread->tags as $tag)
-            <span class="label label-tag"><a href="{{ url('threads/tag/'.$tag->name) }}">{{ $tag->name }}</a></span>
+            <span class="label label-tag"><a href="{{ url('threads/tag/'.$tag->slug) }}">{{ $tag->name }}</a></span>
         @endforeach
         @endunless
     </P>
