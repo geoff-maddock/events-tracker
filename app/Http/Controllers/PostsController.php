@@ -7,6 +7,7 @@ use App\Models\Activity;
 use App\Models\Entity;
 use App\Http\Requests\PostRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
+use App\Mail\FollowingPostUpdate;
 use App\Models\Like;
 use App\Models\Post;
 use App\Models\Tag;
@@ -351,6 +352,7 @@ class PostsController extends Controller
      */
     protected function notifyFollowing($post)
     {
+        $admin_email = config('app.admin');
         $reply_email = config('app.noreplyemail');
         $site = config('app.app_name');
         $url = config('app.url');
@@ -365,26 +367,17 @@ class PostsController extends Controller
         foreach ($thread->followers() as $user) {
             // if the user hasn't already been notified, then email them
             if (!array_key_exists($user->id, $users)) {
-                Mail::send('emails.following-thread-post', ['user' => $user, 'post' => $post, 'thread' => $thread, 'object' => $thread, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $post, $thread, $reply_email, $site) {
-                    $m->from($reply_email, $site);
-
-                    $m->to($user->email, $user->name)->subject($site . ': New post by ' . $post->user->name . ' in thread ' . $thread->name);
-                });
+                Mail::to($user->email)->send(new FollowingPostUpdate($url, $site, $admin_email, $reply_email, $user, $thread, $post));
                 $users[$user->id] = $thread->name;
             }
         }
 
         // notify users following any tags related to the thread
-
         foreach ($tags as $tag) {
             foreach ($tag->followers() as $user) {
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $thread, $tag, $reply_email, $site) {
-                        $m->from($reply_email, $site);
-
-                        $m->to($user->email, $user->name)->subject($site . ': ' . $tag->name . ' :: ' . $thread->created_at->format('D F jS') . ' ' . $thread->name);
-                    });
+                    Mail::to($user->email)->send(new FollowingPostUpdate($url, $site, $admin_email, $reply_email, $user, $thread, $post));
                     $users[$user->id] = $tag->name;
                 }
             }
@@ -397,11 +390,7 @@ class PostsController extends Controller
             foreach ($series->followers() as $user) {
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $series, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $thread, $series, $reply_email, $site) {
-                        $m->from($reply_email, $site);
-
-                        $m->to($user->email, $user->name)->subject($site . ': ' . $series->name . ' :: ' . $thread->created_at->format('D F jS') . ' ' . $thread->name);
-                    });
+                    Mail::to($user->email)->send(new FollowingPostUpdate($url, $site, $admin_email, $reply_email, $user, $thread, $post));
                     $users[$user->id] = $series->name;
                 }
             }

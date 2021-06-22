@@ -1654,9 +1654,6 @@ class EventsController extends Controller
         $event->tags()->attach($syncArray);
         $event->entities()->attach($request->input('entity_list'));
 
-        // make a call to notify all users who are following any of the sync'd tags
-        $this->notifyFollowing($event);
-
         // add to activity log
         Activity::log($event, $this->user, 1);
 
@@ -1669,6 +1666,9 @@ class EventsController extends Controller
             // try to import the photo
             $this->addFbPhoto($event);
         }
+
+        // make a call to notify all users who are following any of the sync'd tags
+        $this->notifyFollowing($event);
 
         // add a twitter notification if the user is admin
         if ($this->user->hasGroup('super_admin') && config('app.twitter_consumer_key') !== '999') {
