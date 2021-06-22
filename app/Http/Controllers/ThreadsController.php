@@ -9,6 +9,7 @@ use App\Models\Event;
 use App\Models\Follow;
 use App\Http\Requests\ThreadRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
+use App\Mail\FollowingThreadUpdate;
 use App\Models\Like;
 use App\Models\Series;
 use App\Models\Tag;
@@ -623,6 +624,7 @@ class ThreadsController extends Controller
 
     protected function notifyFollowing(Thread $thread): RedirectResponse
     {
+        $admin_email = config('app.admin');
         $reply_email = config('app.noreplyemail');
         $site = config('app.app_name');
         $url = config('app.url');
@@ -636,11 +638,9 @@ class ThreadsController extends Controller
             foreach ($tag->followers() as $user) {
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $thread, $tag, $reply_email, $site) {
-                        $m->from($reply_email, $site);
+                    Mail::to($user->email)
+                        ->send(new FollowingThreadUpdate($url, $site, $admin_email, $reply_email, $user, $thread, $tag));
 
-                        $m->to($user->email, $user->name)->subject($site . ': ' . $tag->name . ' :: ' . $thread->created_at->format('D F jS') . ' ' . $thread->name);
-                    });
                     $users[$user->id] = $tag->name;
                 }
             }
@@ -653,11 +653,8 @@ class ThreadsController extends Controller
             foreach ($s->followers() as $user) {
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::send('emails.following-thread', ['user' => $user, 'thread' => $thread, 'object' => $s, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $thread, $s, $reply_email, $site) {
-                        $m->from($reply_email, $site);
-
-                        $m->to($user->email, $user->name)->subject($site . ': ' . $s->name . ' :: ' . $thread->created_at->format('D F jS') . ' ' . $thread->name);
-                    });
+                    Mail::to($user->email)
+                        ->send(new FollowingThreadUpdate($url, $site, $admin_email, $reply_email, $user, $thread, $series));
                     $users[$user->id] = $s->name;
                 }
             }
