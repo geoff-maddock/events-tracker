@@ -16,7 +16,8 @@
 @if ($event->door_price)${{ number_format($event->door_price,0) }}@endif 
 @if ($event->min_age){{ $event->min_age }}@endif 
 @if ($link = $event->primary_link)[Primary Link]({{ $link }})@endif  @if ($ticket = $event->ticket_link)[Buy Ticket]({{ $ticket }})@endif  
-{{ $event->attendingCount }} users attending  
+@if ($event->attendingCount > 0 ){{ $event->attendingCount }} users attending  
+@endif
 
 @if ($event->description)
 {{ $event->description }}  
