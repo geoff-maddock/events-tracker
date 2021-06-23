@@ -808,7 +808,8 @@ class Event extends Eloquent
                 if ('' !== $entity->twitter_username) {
                     $format .= ' @' . $entity->twitter_username;
                 } else {
-                    $format .= ' @' . Str::studly($entity->slug);
+                    // if the twitter username isn't set, then just add a hashtag
+                    $format .= ' #' . Str::studly($entity->slug);
                 }
             }
         }
