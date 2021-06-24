@@ -48,12 +48,12 @@ class Notify extends Command
             $seriesList = [];
             $entityEvents = [];
             $tagEvents = [];
-            $attendingIdList = [];
+            $collectedIdList = [];
 
             // get the next x events they are attending
             $attendingEvents = $user->getAttendingToday()->take($show_count);
             foreach ($attendingEvents as $event) {
-                $attendingIdList[] = $event->id;
+                $collectedIdList[] = $event->id;
             }
 
             // build an array of events that are today based on what the user follows
@@ -62,8 +62,9 @@ class Notify extends Command
                     $entityEvents = [];
                     if (count($entity->todaysEvents()) > 0) {
                         foreach ($entity->todaysEvents() as $todaysEvent) {
-                            if (!in_array($todaysEvent->id, $attendingIdList)) {
+                            if (!in_array($todaysEvent->id, $collectedIdList)) {
                                 $entityEvents[] = $todaysEvent;
+                                $collectedIdList[] = $todaysEvent->id;
                             }
                         }
                         if (count($entityEvents) > 0) {
@@ -78,8 +79,9 @@ class Notify extends Command
                     $tagEvents = [];
                     if (count($tag->todaysEvents()) > 0) {
                         foreach ($tag->todaysEvents() as $todaysEvent) {
-                            if (!in_array($todaysEvent->id, $attendingIdList)) {
+                            if (!in_array($todaysEvent->id, $collectedIdList)) {
                                 $tagEvents[] = $todaysEvent;
+                                $collectedIdList[] = $todaysEvent->id;
                             }
                         }
                         if (count($tagEvents) > 0) {
