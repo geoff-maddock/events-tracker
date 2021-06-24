@@ -10,6 +10,7 @@ var App = (function()
         this.setupLoadingModal();
         this.setupAjaxAction('body');
         $('.auto-submit').autoSubmit();
+        this.setupNameToSlug();
     };
 
     var initTooltip = function () {
@@ -159,6 +160,18 @@ var App = (function()
         });
     };
 
+    const kebabCase = str => str.match(/[A-Z]{2,}(?=[A-Z][a-z0-9]*|\b)|[A-Z]?[a-z0-9]*|[A-Z]|[0-9]+/g)
+  .filter(Boolean)
+  .map(x => x.toLowerCase())
+  .join('-')
+
+    // when a value is typed in a name input, update the slug input with the kebab-case-name
+    var setupNameToSlug = function() {
+        $('body').on('keyup', '#name', function(e) {
+            var content = kebabCase(e.target.value)
+            $('input#slug').val(content);
+        })
+    }
 
     return {
         init: init,
@@ -169,7 +182,7 @@ var App = (function()
         setupAjaxAction: setupAjaxAction,
         setupLoadingModal: setupLoadingModal,
         showLoadingModal: showLoadingModal,
-
+        setupNameToSlug: setupNameToSlug,
     };
 })();
 
@@ -223,6 +236,8 @@ var Home = (function()
             history.pushState(null, null, window.location.pathname);
         });
     };
+
+
 
     // load a day's events
     var getDayEvents = function(url, num) {
