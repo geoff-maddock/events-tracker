@@ -2,9 +2,9 @@
 
 @section('content')
 
-<h2>Event Series
-	@include('series.crumbs', ['slug' => $series->slug])
-</h2>
+<h4>Series
+	@include('series.crumbs', ['slug' => $series->name])
+</h4>
 <P>
 @if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser')  ) )
 	<a href="{!! route('series.edit', ['series' => $series->id]) !!}" class="btn btn-primary">Edit Series</a>

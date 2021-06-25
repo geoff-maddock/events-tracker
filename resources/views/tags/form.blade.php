@@ -19,5 +19,5 @@
 
 
 <div class="form-group">
-	{!! Form::submit(isset($action) ? 'Update Tag' : 'Add Tag', null, ['class' =>'btn btn-primary']) !!}
+	{!! Form::submit(isset($action) ? 'Update Tag' : 'Add Tag', ['class' =>'btn btn-primary']) !!}
 </div>
