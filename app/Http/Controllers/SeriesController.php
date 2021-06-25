@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Contracts\View\View;
+use Str;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class SeriesController extends Controller
@@ -566,6 +567,7 @@ class SeriesController extends Controller
             if (!DB::table('tags')->where('id', $tag)->get()) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
+                $newTag->slug = Str::slug($tag);
                 $newTag->tag_type_id = 1;
                 $newTag->save();
 
@@ -699,6 +701,7 @@ class SeriesController extends Controller
             if (!Tag::find($tag)) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
+                $newTag->slug = Str::slug($tag);
                 $newTag->tag_type_id = 1;
                 $newTag->save();
                 // log adding of new tag

@@ -28,6 +28,7 @@ use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
+use Str;
 
 class ReviewsController extends Controller
 {
@@ -288,6 +289,7 @@ class ReviewsController extends Controller
             if (!Tag::find($tag)) {
                 $newTag = new Tag;
                 $newTag->name = ucwords(strtolower($tag));
+                $newTag->slug = Str::slug($tag);
                 $newTag->tag_type_id = 1;
                 $newTag->save();
 
@@ -403,6 +405,8 @@ class ReviewsController extends Controller
             if (!Tag::find($tag)) {
                 $newTag = new Tag;
                 $newTag->name = ucwords(strtolower($tag));
+                $newTag->slug = Str::slug($tag);
+                ;
                 $newTag->tag_type_id = 1;
                 $newTag->save();
 

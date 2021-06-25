@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use Str;
 
 class BlogsController extends Controller
 {
@@ -308,6 +309,7 @@ class BlogsController extends Controller
             if (!DB::table('tags')->where('id', $tag)->get()) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
+                $newTag->slug = Str::slug($tag);
                 $newTag->tag_type_id = 1;
                 $newTag->save();
 

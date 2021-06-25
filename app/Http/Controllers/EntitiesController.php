@@ -525,6 +525,7 @@ class EntitiesController extends Controller
             if (!DB::table('tags')->where('id', $tag)->get()) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
+                $newTag->slug = Str::slug($tag);
                 $newTag->tag_type_id = 1;
                 $newTag->save();
 
@@ -621,6 +622,7 @@ class EntitiesController extends Controller
             if (!Tag::find($tag)) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
+                $newTag->slug = Str::slug($tag);
                 $newTag->tag_type_id = 1;
                 $newTag->save();
 

@@ -590,6 +590,7 @@ class ThreadsController extends Controller
             if (!Tag::find($tag)) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
+                $newTag->slug = Str::slug($tag);
                 $newTag->tag_type_id = 1;
                 $newTag->save();
                 // log adding of new tag
@@ -753,6 +754,7 @@ class ThreadsController extends Controller
             if (!Tag::find($tag)) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
+                $newTag->slug = Str::slug($tag);
                 $newTag->tag_type_id = 1;
                 $newTag->save();
                 // log adding of new tag

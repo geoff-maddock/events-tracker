@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\View;
+use Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class PostsController extends Controller
@@ -314,6 +315,7 @@ class PostsController extends Controller
             if (!Tag::find($tag)) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
+                $newTag->slug = Str::slug($tag);
                 $newTag->tagType->save(TagType::find(1));
                 $newTag->save();
 
@@ -468,6 +470,7 @@ class PostsController extends Controller
             if (!Tag::find($tag)) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
+                $newTag->slug = Str::slug($tag);
                 $newTag->tagType->save(TagType::find(1));
                 $newTag->save();
 
