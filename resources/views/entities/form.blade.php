@@ -103,5 +103,5 @@
 </div>
 
 <div class="form-group">
-{!! Form::submit(isset($action) ? 'Update Entity' : 'Add Entity', null, ['class' =>'btn btn-primary']) !!}
+{!! Form::submit(isset($action) ? 'Update Entity' : 'Add Entity',  ['class' =>'btn btn-primary']) !!}
 </div>

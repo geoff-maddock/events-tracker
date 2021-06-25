@@ -51,5 +51,5 @@
 </div>
 
 <div class="form-group">
-{!! Form::submit(isset($action) ? 'Update Profile' : 'Add Profile', null, ['class' =>'btn btn-primary']) !!}
+{!! Form::submit(isset($action) ? 'Update Profile' : 'Add Profile',  ['class' =>'btn btn-primary']) !!}
 </div>
