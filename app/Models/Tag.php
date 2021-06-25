@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
  * @property int $id
  * @property int|null $user_id
  * @property string $name
+ * @property string $slug
  * @property TagType $tagType
  * @property int|null $tag_type_id
  * @property DateTime $created_at
