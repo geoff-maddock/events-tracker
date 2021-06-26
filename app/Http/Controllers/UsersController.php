@@ -8,6 +8,7 @@ use App\Models\Group;
 use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
+use App\Mail\UserActivation;
 use App\Models\Photo;
 use App\Models\Profile;
 use App\Models\Tag;
@@ -674,16 +675,12 @@ class UsersController extends Controller
 
     protected function notifyUserActivated(User $user): RedirectResponse
     {
+        $reply_email = config('app.noreplyemail');
         $admin_email = config('app.admin');
         $site = config('app.app_name');
         $url = config('app.url');
 
-        Mail::send('emails.user-activated', ['user' => $user, 'admin_email' => $admin_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $admin_email, $site) {
-            $m->from($admin_email, $site);
-            $m->to($user->email, $user->name)
-                ->bcc($admin_email)
-                ->subject($site . ': Account activated for ' . $user->name . ' :: ' . Carbon::now()->format('D F jS'));
-        });
+        Mail::to($user->email)->send(new UserActivation($url, $site, $admin_email, $reply_email, $user));
 
         return back();
     }
@@ -691,7 +688,7 @@ class UsersController extends Controller
     protected function notifyUserWeekly(User $user): RedirectResponse
     {
         $admin_email = config('app.admin');
-        $reply_email = config('app.admin');
+        $reply_email = config('app.noreplyemail');
         $site = config('app.app_name');
         $url = config('app.url');
 
