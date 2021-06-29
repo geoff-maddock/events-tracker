@@ -3,7 +3,7 @@ Admin -
 
 A new user has registered an account on {{ $site }}.  
 
-Username: {{ $user->name }}  
+Username: [{{ $user->name }}]({{ $url }}users/{{$user->id }})
 Full Name: {{ $user->full_name }}  
 
 You can *activate* the user by clicking [activate]({{ $url }}users/{{$user->id }}/activate).  
