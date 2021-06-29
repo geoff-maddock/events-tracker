@@ -9,6 +9,9 @@ use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Mail\UserActivation;
+use App\Mail\UserSuspended;
+use App\Mail\UserUpdate;
+use App\Mail\WeeklyUpdate;
 use App\Models\Photo;
 use App\Models\Profile;
 use App\Models\Tag;
@@ -443,8 +446,12 @@ class UsersController extends Controller
 
         flash()->success('Success', 'User ' . $user->name . ' is now activated.');
 
-        // email the user
-        $this->notifyUserActivated($user);
+        $reply_email = config('app.noreplyemail');
+        $admin_email = config('app.admin');
+        $site = config('app.app_name');
+        $url = config('app.url');
+
+        Mail::to($user->email)->send(new UserActivation($url, $site, $admin_email, $reply_email, $user));
 
         return back();
     }
@@ -479,6 +486,13 @@ class UsersController extends Controller
         Log::info('User ' . $user->name . ' is suspended.');
 
         flash()->success('Success', 'User ' . $user->name . ' is now suspended.');
+
+        $reply_email = config('app.noreplyemail');
+        $admin_email = config('app.admin');
+        $site = config('app.app_name');
+        $url = config('app.url');
+
+        Mail::to($user->email)->send(new UserSuspended($url, $site, $admin_email, $reply_email, $user));
 
         return back();
     }
@@ -539,9 +553,9 @@ class UsersController extends Controller
         // add to activity log
         Activity::log($user, $this->user, 12);
 
-        Log::info('User ' . $user->name . ' was sent a reminder');
+        Log::info('User ' . $user->name . ' was sent a weekly reminder');
 
-        flash()->success('Success', 'A reminder email was sent to  ' . $user->name . ' at ' . $user->email);
+        flash()->success('Success', 'A weekly reminder email was sent to  ' . $user->name . ' at ' . $user->email);
 
         return back();
     }
@@ -638,49 +652,86 @@ class UsersController extends Controller
     /**
      * @return RedirectResponse | Response
      */
-    protected function notifyUser(User $user)
+    protected function notifyUser(int $id)
     {
+        if (!$user = User::find($id)) {
+            flash()->error('Error', 'No such user');
+
+            return back();
+        }
+
+        $reply_email = config('app.noreplyemail');
         $admin_email = config('app.admin');
         $site = config('app.app_name');
         $url = config('app.url');
 
-        $events = [];
+        $show_count = 12;
+        $interests = [];
+        $seriesList = [];
+        $entityEvents = [];
+        $tagEvents = [];
+        $collectedIdList = [];
 
-        // build an array of events that are in the future based on what the user follows
+        // get the next x events they are attending
+        $attendingEvents = $user->getAttendingToday()->take($show_count);
+        foreach ($attendingEvents as $event) {
+            $collectedIdList[] = $event->id;
+        }
+
+        // build an array of events that are today based on what the user follows
         if ($entities = $user->getEntitiesFollowing()) {
             foreach ($entities as $entity) {
-                if (count($entity->futureEvents()) > 0) {
-                    $events[$entity->name] = $entity->futureEvents();
+                $entityEvents = [];
+                if (count($entity->todaysEvents()) > 0) {
+                    foreach ($entity->todaysEvents() as $todaysEvent) {
+                        if (!in_array($todaysEvent->id, $collectedIdList)) {
+                            $entityEvents[] = $todaysEvent;
+                            $collectedIdList[] = $todaysEvent->id;
+                        }
+                    }
+                    if (count($entityEvents) > 0) {
+                        $interests[$entity->name] = $entityEvents;
+                    }
                 }
             }
         }
         // build an array of future events based on tags the user follows
         if ($tags = $user->getTagsFollowing()) {
             foreach ($tags as $tag) {
-                if (count($tag->futureEvents()) > 0) {
-                    $events[$tag->name] = $tag->futureEvents();
+                $tagEvents = [];
+                if (count($tag->todaysEvents()) > 0) {
+                    foreach ($tag->todaysEvents() as $todaysEvent) {
+                        if (!in_array($todaysEvent->id, $collectedIdList)) {
+                            $tagEvents[] = $todaysEvent;
+                            $collectedIdList[] = $todaysEvent->id;
+                        }
+                    }
+                    if (count($tagEvents) > 0) {
+                        $interests[$tag->name] = $tagEvents;
+                    }
                 }
             }
         }
 
-        Mail::send('emails.user-reminder', ['user' => $user, 'admin_email' => $admin_email, 'site' => $site, 'url' => $url, 'events' => $events], function ($m) use ($user, $admin_email, $site) {
-            $m->from($admin_email, $site);
-            $m->to($user->email, $user->name)
-                ->bcc($admin_email)
-                ->subject($site . ': Site updates for ' . $user->name . ' :: ' . Carbon::now()->format('D F jS'));
-        });
+        // build an array of series that the user is following
+        if ($series = $user->getSeriesFollowing()) {
+            foreach ($series as $s) {
+                // if the series does not have NO SCHEDULE AND CANCELLED AT IS NULL
+                if ($s->occurrenceType->name !== 'No Schedule' && (null === $s->cancelled_at)) {
+                    // add matches to list
+                    $next_date = $s->nextOccurrenceDate()->format('Y-m-d');
 
-        return back();
-    }
+                    // today's date is the next series date
+                    if ($next_date === Carbon::now()->format('Y-m-d')) {
+                        $seriesList[] = $s;
+                    }
+                }
+            }
+        }
 
-    protected function notifyUserActivated(User $user): RedirectResponse
-    {
-        $reply_email = config('app.noreplyemail');
-        $admin_email = config('app.admin');
-        $site = config('app.app_name');
-        $url = config('app.url');
+        Mail::to($user->email)->send(new UserUpdate($url, $site, $admin_email, $reply_email, $user, $attendingEvents, $seriesList, $interests));
 
-        Mail::to($user->email)->send(new UserActivation($url, $site, $admin_email, $reply_email, $user));
+        flash()->success('Success', 'A daily-style notification email was sent to  ' . $user->name . ' at ' . $user->email);
 
         return back();
     }
@@ -692,46 +743,68 @@ class UsersController extends Controller
         $site = config('app.app_name');
         $url = config('app.url');
 
-        $show_count = self::DEFAULT_SHOW_COUNT;
-
-        $events = [];
         $interests = [];
+        $seriesList = [];
+        $entityEvents = [];
+        $tagEvents = [];
+        $attendingIdList = [];
+        $show_count = 36;
 
-        // build an array of events that are in the future based on what the user follows
+        // get the next x events they are attending
+        $attendingEvents = $user->getAttendingFuture()->take($show_count);
+        foreach ($attendingEvents as $event) {
+            $attendingIdList[] = $event->id;
+        }
+
+        // build an array of events that are upcoming based on what the user follows
         if ($entities = $user->getEntitiesFollowing()) {
             foreach ($entities as $entity) {
-                if (count($entity->todaysEvents()) > 0) {
-                    $interests[$entity->name] = $entity->futureEvents();
+                $entityEvents = [];
+                if (count($entity->futureEvents()) > 0) {
+                    foreach ($entity->futureEvents() as $futureEvent) {
+                        if (!in_array($futureEvent->id, $attendingIdList)) {
+                            $entityEvents[] = $futureEvent;
+                        }
+                    }
+                    if (count($entityEvents) > 0) {
+                        $interests[$entity->name] = $entityEvents;
+                    }
                 }
             }
         }
         // build an array of future events based on tags the user follows
         if ($tags = $user->getTagsFollowing()) {
             foreach ($tags as $tag) {
+                $tagEvents = [];
                 if (count($tag->futureEvents()) > 0) {
-                    $interests[$tag->name] = $tag->futureEvents();
+                    foreach ($tag->futureEvents() as $futureEvent) {
+                        if (!in_array($futureEvent->id, $attendingIdList)) {
+                            $tagEvents[] = $futureEvent;
+                        }
+                    }
+                    if (count($tagEvents) > 0) {
+                        $interests[$tag->name] = $tagEvents;
+                    }
                 }
             }
         }
 
-        // get the next x events they are attending
-        $events = $user->getAttendingFuture()->take($show_count);
+        // build an array of series that the user is following
+        if ($series = $user->getSeriesFollowing()) {
+            foreach ($series as $s) {
+                // if the series does not have NO SCHEDULE AND CANCELLED AT IS NULL
+                if ($s->occurrenceType->name !== 'No Schedule' && (null === $s->cancelled_at)) {
+                    // add matches to list
+                    $seriesList[] = $s;
+                }
+            }
+        }
 
         // if there are more than 0 events
-        if ((null !== $events && $events->count() > 0) || (null !== $interests && count($interests) > 0)) {
+        if ((null !== $attendingEvents && $attendingEvents->count() > 0) || (null !== $seriesList && count($seriesList) > 0) || (null !== $interests && count($interests) > 0)) {
             // send an email containing that list
-            Mail::send(
-                'emails.weekly-events',
-                ['user' => $user, 'interests' => $interests, 'events' => $events, 'url' => $url, 'site' => $site],
-                function ($m) use ($user, $admin_email, $reply_email, $site) {
-                    $m->from($reply_email, $site);
-
-                    $dt = Carbon::now();
-                    $m->to($user->email, $user->name)
-                        ->bcc($admin_email)
-                        ->subject($site . ': Weekly Reminder - ' . $dt->format('l F jS Y'));
-                }
-            );
+            Mail::to($user->email)
+                ->send(new WeeklyUpdate($url, $site, $admin_email, $reply_email, $user, $attendingEvents, $seriesList, $interests));
         }
 
         return back();

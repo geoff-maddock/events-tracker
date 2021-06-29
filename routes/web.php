@@ -98,6 +98,11 @@ Route::get('impersonate/{user}', function (User $user) {
 Route::post('users/{id}/photos', 'UsersController@addPhoto');
 Route::delete('users/{id}/photos/{photo_id}', 'UsersController@deletePhoto');
 
+Route::get('users/{id}/notify', [
+    'as' => 'users.notify',
+    'uses' => 'UsersController@notifyUser'
+]);
+
 Route::get('users/{id}/activate', [
     'as' => 'users.activate',
     'uses' => 'UsersController@activate'
