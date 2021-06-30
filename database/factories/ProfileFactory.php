@@ -32,7 +32,10 @@ class ProfileFactory extends Factory
             'last_name' => $this->faker->name,
             'default_theme' => 'light-theme',
             'bio' => $this->faker->paragraph,
-            'location' => $this->faker->optional->city
+            'location' => $this->faker->optional->city,
+            'setting_weekly_update' => 1,
+            'setting_daily_update' => 1,
+            'setting_instant_update' => 1
         ];
     }
 }

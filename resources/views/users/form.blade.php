@@ -44,10 +44,31 @@
 </div>
 @endcan
 
+
 <div class="form-group">
     {!! Form::label('default_theme','Default Theme') !!}
     {!! Form::select('default_theme', Config::get('constants.themes'), (isset($user->profile->default_theme) ? $user->profile->default_theme : NULL), ['class' =>'form-control']) !!}
     {!! $errors->first('default_theme','<span class="help-block">:message</span>') !!}
+</div>
+
+<div class="row">
+<div class="form-group col-md-2  {{$errors->has('setting_weekly_update') ? 'has-error' : '' }}">
+    {!! Form::label('setting_weekly_update','Setting: Receive Weekly Updates') !!}
+    {!! Form::checkbox('setting_weekly_update', (isset($user->profile->setting_weekly_update) ? $user->profile->setting_weekly_update : NULL)) !!}
+    {!! $errors->first('setting_weekly_update','<span class="help-block">:message</span>') !!}
+</div>
+
+<div class="form-group col-md-2  {{$errors->has('setting_daily_update') ? 'has-error' : '' }}">
+    {!! Form::label('setting_daily_update','Setting: Receive Daily Updates') !!}
+    {!! Form::checkbox('setting_daily_update', (isset($user->profile->setting_daily_update) ? $user->profile->setting_daily_update : NULL)) !!}
+    {!! $errors->first('setting_daily_update','<span class="help-block">:message</span>') !!}
+</div>
+
+<div class="form-group col-md-2  {{$errors->has('setting_instant_update') ? 'has-error' : '' }}">
+    {!! Form::label('setting_instant_update','Setting: Receive Instant Updates') !!}
+    {!! Form::checkbox('setting_instant_update', (isset($user->profile->setting_instant_update) ? $user->profile->setting_instant_update : NULL)) !!}
+    {!! $errors->first('setting_instant_update','<span class="help-block">:message</span>') !!}
+</div>
 </div>
 
 <div class="form-group">

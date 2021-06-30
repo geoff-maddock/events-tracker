@@ -60,7 +60,7 @@ class Profile extends Eloquent
      *
      **/
     protected $fillable = [
-        'first_name', 'last_name', 'bio', 'alias', 'location', 'facebook_username', 'twitter_username', 'default_theme'
+        'first_name', 'last_name', 'bio', 'alias', 'location', 'facebook_username', 'twitter_username', 'default_theme', 'setting_weekly_update', 'setting_daily_update', 'setting_instant_update'
     ];
 
     protected $dates = ['updated_at'];
