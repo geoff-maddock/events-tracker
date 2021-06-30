@@ -37,6 +37,11 @@
                     </div>
                 @endif
 
+                <hr>
+                <b>Settings</b><br>
+                Receive Weekly Updates: {{ $user->profile->setting_weekly_update ? 'Yes' : 'No'}}<br>
+                Receive Daily Updates: {{ $user->profile->setting_daily_update ? 'Yes' : 'No'}}<br>
+                Receive Instant Updates: {{ $user->profile->setting_instant_update ? 'Yes' : 'No'}}<br>
 
                 <div class="groups">
                     @unless ($user->groups->isEmpty())

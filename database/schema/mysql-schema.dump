@@ -1059,6 +1059,9 @@ CREATE TABLE `profiles` (
   `first_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `last_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `default_theme` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `setting_weekly_update` tinyint(1) NOT NULL DEFAULT '1',
+  `setting_daily_update` tinyint(1) NOT NULL DEFAULT '1',
+  `setting_instant_update` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `profiles_user_fk` (`user_id`),
   KEY `profiles_visibility_fi` (`visibility_id`) USING BTREE,
@@ -1419,7 +1422,7 @@ CREATE TABLE `users` (
   `remember_token` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `user_status_id` int(11) DEFAULT NULL,
+  `user_status_id` int(11) NOT NULL DEFAULT '1',
   `email_verified_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_email_unique` (`email`)

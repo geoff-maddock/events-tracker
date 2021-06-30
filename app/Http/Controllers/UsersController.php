@@ -341,8 +341,14 @@ class UsersController extends Controller
 
     public function update(User $user, ProfileRequest $request): View
     {
-        $user->fill($request->input())->save();
-        $user->profile->fill($request->input())->save();
+        $input = $request->all();
+
+        $input['setting_weekly_update'] = isset($input['setting_weekly_update']) ? 1 : 0;
+        $input['setting_daily_update'] = isset($input['setting_daily_update']) ? 1 : 0;
+        $input['setting_instant_update'] = isset($input['setting_instant_update']) ? 1 : 0;
+
+        $user->fill($input)->save();
+        $user->profile->fill($input)->save();
 
         if ($request->has('group_list')) {
             $user->groups()->sync($request->input('group_list', []));
@@ -354,7 +360,7 @@ class UsersController extends Controller
         // add to activity log
         Activity::log($user, $this->user, 2);
 
-        flash('Success', 'Your user has been updated');
+        flash('Success', 'The user has been updated');
 
         return view('users.show', compact('user', 'tabs'));
     }
