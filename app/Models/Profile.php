@@ -22,6 +22,9 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
  * @property string|null $first_name
  * @property string|null $last_name
  * @property string|null $default_theme
+ * @property int|null $setting_weekly_update
+ * @property int|null $setting_daily_update
+ * @property int|null $setting_instant_update
  * @property-read mixed $full_name
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Link[] $links
  * @property-read int|null $links_count

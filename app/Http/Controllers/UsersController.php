@@ -553,6 +553,13 @@ class UsersController extends Controller
             return back();
         }
 
+        // if the user does not have this setting, continue
+        if ($user->profile->setting_weekly_update !== 1) {
+            flash()->error('Error', 'User has weekly updates disabled');
+
+            return back();
+        }
+
         // email the user
         $this->notifyUserWeekly($user);
 
@@ -662,6 +669,13 @@ class UsersController extends Controller
     {
         if (!$user = User::find($id)) {
             flash()->error('Error', 'No such user');
+
+            return back();
+        }
+
+        // if the user does not have this setting, continue
+        if ($user->profile->setting_daily_update !== 1) {
+            flash()->error('Error', 'User has daily updates disabled');
 
             return back();
         }

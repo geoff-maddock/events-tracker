@@ -50,6 +50,11 @@ class Notify extends Command
             $tagEvents = [];
             $collectedIdList = [];
 
+            // if the user does not have this setting, continue
+            if ($user->profile->setting_daily_update !== 1) {
+                continue;
+            }
+
             // get the next x events they are attending
             $attendingEvents = $user->getAttendingToday()->take($show_count);
             foreach ($attendingEvents as $event) {

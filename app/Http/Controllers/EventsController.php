@@ -1693,6 +1693,11 @@ class EventsController extends Controller
         // improve this so it will only sent one email to each user per event, and include a list of all tags they were following that led to the notification
         foreach ($tags as $tag) {
             foreach ($tag->followers() as $user) {
+                // if the user does not have this setting, continue
+                if ($user->profile->setting_instant_update !== 1) {
+                    continue;
+                }
+
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
                     Mail::to($user->email)
@@ -1709,6 +1714,10 @@ class EventsController extends Controller
         // improve this so it will only sent one email to each user per event, and include a list of entities they were following that led to the notification
         foreach ($entities as $entity) {
             foreach ($entity->followers() as $user) {
+                // if the user does not have this setting, continue
+                if ($user->profile->setting_instant_update !== 1) {
+                    continue;
+                }
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
                     Mail::to($user->email)
