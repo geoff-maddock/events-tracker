@@ -56,7 +56,8 @@ $(document).ready(function(){
         // try to pull info from the fb object
         FB.api('/'+event_id+'?fields='+fields, function(response) {
             if (!response || response.error) {
-                $('#import_link').after('<small>The FB API did not return anything for that event link.</small>');
+                $('#import-link').after('<span class="help-block" id="fb-api-error">The FB API did not return anything for that event link.</span>');
+                $('#fb-api-error').delay(3000).fadeOut(200);
                 handleError(response.error);
             } else {
                 // process the response and try to set the event form fields
