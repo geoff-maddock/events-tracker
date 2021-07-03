@@ -1694,7 +1694,7 @@ class EventsController extends Controller
         foreach ($tags as $tag) {
             foreach ($tag->followers() as $user) {
                 // if the user does not have this setting, continue
-                if ($user->profile->setting_instant_update !== 1) {
+                if ($user->profile && $user->profile->setting_instant_update !== 1) {
                     continue;
                 }
 
@@ -1715,7 +1715,7 @@ class EventsController extends Controller
         foreach ($entities as $entity) {
             foreach ($entity->followers() as $user) {
                 // if the user does not have this setting, continue
-                if ($user->profile->setting_instant_update !== 1) {
+                if ($user->profile && $user->profile->setting_instant_update !== 1) {
                     continue;
                 }
                 // if the user hasn't already been notified, then email them
