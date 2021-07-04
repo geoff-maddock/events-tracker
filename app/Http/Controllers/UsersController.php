@@ -76,15 +76,15 @@ class UsersController extends Controller
         $this->prefix = 'app.users.';
 
         // default list variables - move to function that set from session or default
-        $this->defaultSort = 'name';
-        $this->defaultSortDirection = 'asc';
+        $this->defaultSort = 'users.created_at';
+        $this->defaultSortDirection = 'desc';
         $this->defaultLimit = 25;
 
         $this->sort = $this->defaultSort;
         $this->sortDirection = $this->defaultSortDirection;
         $this->limit = $this->defaultLimit;
 
-        $this->defaultSortCriteria = ['name' => 'desc'];
+        $this->defaultSortCriteria = ['users.created_at' => 'desc'];
 
         // tabs
         $this->defaultTabs = ['events' => 'created', 'following' => 'tags'];
@@ -114,7 +114,7 @@ class UsersController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['users.name' => 'asc']);
+            ->setDefaultSort($this->defaultSortCriteria);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
