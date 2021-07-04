@@ -98,7 +98,7 @@ class EntitiesController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['entities.name' => 'asc']);
+            ->setDefaultSort($this->defaultSortCriteria);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();

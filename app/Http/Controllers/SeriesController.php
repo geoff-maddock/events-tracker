@@ -73,8 +73,8 @@ class SeriesController extends Controller
         // default list variables
 
         // default list variables
-        $this->defaultSort = 'name';
-        $this->defaultSortDirection = 'asc';
+        $this->defaultSort = 'series.created_at';
+        $this->defaultSortDirection = 'desc';
         $this->defaultLimit = 5;
 
         // set list variables
@@ -84,7 +84,7 @@ class SeriesController extends Controller
 
         $this->childLimit = 10;
         $this->page = 1;
-        $this->defaultSortCriteria = ['name' => 'desc'];
+        $this->defaultSortCriteria = ['series.created_at' => 'desc'];
         $this->hasFilter = 0;
         parent::__construct();
     }
@@ -112,7 +112,7 @@ class SeriesController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['series.created_at' => 'desc']);
+            ->setDefaultSort($this->defaultSortCriteria);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();

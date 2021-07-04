@@ -89,8 +89,8 @@ class EventsController extends Controller
         // default list variables
         $this->defaultLimit = 10;
         $this->defaultGridLimit = 24;
-        $this->defaultSort = 'name';
-        $this->defaultSortDirection = 'asc';
+        $this->defaultSort = 'start_at';
+        $this->defaultSortDirection = 'desc';
         $this->defaultWindow = 4;
 
         $this->limit = $this->defaultLimit;
@@ -98,7 +98,7 @@ class EventsController extends Controller
         $this->sortDirection = $this->defaultSortDirection;
         $this->gridLimit = 24;
 
-        $this->defaultSortCriteria = ['events.name' => 'asc'];
+        $this->defaultSortCriteria = ['events.start_at' => 'desc'];
 
         // inject Facebook into class
         $this->facebook = $facebook;
@@ -130,7 +130,7 @@ class EventsController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['events.start_at' => 'desc']);
+            ->setDefaultSort($this->defaultSortCriteria);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
