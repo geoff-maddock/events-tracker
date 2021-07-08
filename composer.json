@@ -23,7 +23,8 @@
         "laravel/ui": "^3.0",
 		"orangehill/iseed": "^3.0",
 		"guzzlehttp/guzzle": "^7.0.1",
-		"facebook/graph-sdk": "^5.7"
+		"facebook/graph-sdk": "^5.7",
+		"spatie/laravel-honeypot": "^3.0"
     },
 	"require-dev": {
 		"fzaninotto/faker": "~1.4",

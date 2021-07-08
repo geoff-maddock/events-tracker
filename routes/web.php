@@ -32,6 +32,7 @@ use App\Models\Post;
 use App\Models\Series;
 use App\Models\Thread;
 use App\Models\User;
+use Spatie\Honeypot\ProtectAgainstSpam;
 
 Auth::routes(['verify' => true]);
 
@@ -45,7 +46,7 @@ $this->post('logout', 'Auth\LoginController@logout')->name('logout');
 
 // Registration Routes...
 $this->get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
-$this->post('register', 'Auth\RegisterController@register');
+$this->post('register', 'Auth\RegisterController@register')->middleware(ProtectAgainstSpam::class);
 
 // Password Reset Routes...
 Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.forgot');
