@@ -20,6 +20,7 @@ use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Routing\Middleware\ValidateSignature;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Spatie\Honeypot\ProtectAgainstSpam;
 
 class Kernel extends HttpKernel
 {
@@ -37,6 +38,7 @@ class Kernel extends HttpKernel
         VerifyCsrfToken::class,
         TrimStrings::class,
         ConvertEmptyStringsToNull::class,
+        ProtectAgainstSpam::class,
     ];
 
     /**
