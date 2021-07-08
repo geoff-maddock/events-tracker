@@ -55,11 +55,13 @@ var App = (function()
     };
 
     var setupConfirm = function() {
-        $('.confirm').on('click', function (e) {
+        // confirm clicking on links
+        $('a.confirm').on('click', function (e) {
             var link = $(this).attr('href');
             e.preventDefault();
-            var form = $(this).parents('form');
+            var form = null;
             var type = $(this).data('type');
+            console.log('a setupConfirm function called')
             Swal.fire({
                     title: "Are you sure?",
                     type: "warning",
@@ -70,12 +72,48 @@ var App = (function()
                         return new Promise(function(resolve) {
                             setTimeout(function() {
                                 resolve()
-                            }, 2000)
+                            }, 1000)
                         })
                     }
                 }).then(result => {
                     if (form !== null) {
                         // form is not null, so submit
+                        console.log('form is not null')
+                        form.submit();
+                    } else if (result.value) {
+                        // handle Confirm button click
+                        window.location.href = link;
+                    } else {
+                        // handle dismissals
+                        // result.dismiss can be 'cancel', 'overlay', 'esc' or 'timer'
+                        console.log('cancelled confirm')
+                    }
+            });
+        });
+        // confirm clicking on buttons
+        $('button.confirm').on('click', function (e) {
+            var link = $(this).attr('href');
+            e.preventDefault();
+            var form = $(this).parents('form');
+            var type = $(this).data('type');
+            console.log('button setupConfirm function called')
+            Swal.fire({
+                    title: "Are you sure?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirm",
+                    preConfirm: function() {
+                        return new Promise(function(resolve) {
+                            setTimeout(function() {
+                                resolve()
+                            }, 1000)
+                        })
+                    }
+                }).then(result => {
+                    if (form !== null) {
+                        // form is not null, so submit
+                        console.log('form is not null')
                         form.submit();
                     } else if (result.value) {
                         // handle Confirm button click
