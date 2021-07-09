@@ -1,6 +1,11 @@
 @extends('app')
 
-@section('title','Event View')
+@section('title', $event->getTitleFormat())
+@section('og-description', $event->short)
+
+@section('og-image')
+@if ($photo = $event->getPrimaryPhoto()){{ URL::to('/').$photo->getStoragePath() }}@endif
+@endsection
 
 @section('content')
 

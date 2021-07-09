@@ -803,4 +803,21 @@ class Series extends Eloquent
             ]
         ];
     }
+
+    public function getTitleFormat()
+    {
+        $format = $this->name;
+
+        if ($this->occurrenceType != null) {
+            $format .= ' - ' . $this->occurrenceType->name . ' ' . $this->occurrence_repeat;
+        }
+
+        // include the location of the event
+        if ($this->venue) {
+            $format .= ' at ';
+            $format .= $this->venue->name ?? 'No venue specified';
+        }
+
+        return $format;
+    }
 }

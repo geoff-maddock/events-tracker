@@ -779,6 +779,19 @@ class Event extends Eloquent
         return $url;
     }
 
+    public function getTitleFormat()
+    {
+        $format = $this->start_at->format('l F jS Y') . ' ' . $this->name;
+
+        // include the location of the event
+        if ($this->venue) {
+            $format .= ' at ';
+            $format .= $this->venue->name ?? 'No venue specified';
+        }
+
+        return $format;
+    }
+
     // Format the event to post as a tweet
     public function getBriefFormat()
     {
