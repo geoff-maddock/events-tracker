@@ -633,4 +633,19 @@ class Entity extends Eloquent
     {
         return $this->belongsToMany(Thread::class)->withTimestamps();
     }
+
+    public function getTitleFormat()
+    {
+        $format = $this->name;
+
+        if (count($this->roles) > 0) {
+            $format .= ' - ';
+            foreach ($this->roles as $role) {
+                $format .= $role->name . ', ';
+            }
+            $format = substr($format, 0, -2);
+        }
+
+        return $format;
+    }
 }

@@ -1,5 +1,13 @@
 @extends('app')
 
+@section('title', $series->getTitleFormat())
+@section('og-description', $series->short)
+
+@section('og-image')
+@if ($photo = $series->getPrimaryPhoto()){{ URL::to('/').$photo->getStoragePath() }}@endif
+@endsection
+
+
 @section('content')
 
 <h4>Series
@@ -50,7 +58,11 @@
 
 	<p>
         @if ($series->eventType)
-        {{ $series->eventType ? $series->eventType->name : ''}} at {{ $series->venue ? $series->venue->name : 'No venue specified' }}</p>
+        <b>{{ $series->eventType ? $series->eventType->name : ''}} {{ $series->venue ? 'at '.$series->venue->name : ' at no venue specified' }}</b>
+		@if ($series->venue->getPrimaryLocationAddress() != "")
+        at {{ $series->venue->getPrimaryLocationAddress() }}
+        @endif 
+		</p>
         @endif
 
 	@if ($signedIn)

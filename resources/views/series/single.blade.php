@@ -57,8 +57,10 @@
 
     @if ($venue = $series->venue)
     <br>
-    <a href="/entities/{{urlencode($series->venue->slug)}}">{{ $series->venue->name }}</a> at {{
-    $series->venue->getPrimaryLocationAddress() }}
+    <a href="/entities/{{urlencode($series->venue->slug)}}">{{ $series->venue->name }}</a>
+        @if ($series->venue->getPrimaryLocationAddress() != "")
+        at {{ $series->venue->getPrimaryLocationAddress() }}
+        @endif 
     @endunless
 
     @if ($event = $series->nextEvent())

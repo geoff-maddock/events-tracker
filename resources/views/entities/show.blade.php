@@ -1,6 +1,11 @@
 @extends('app')
 
-@section('title','Entity View')
+@section('title', $entity->getTitleFormat())
+@section('og-description', $entity->short)
+
+@section('og-image')
+@if ($photo = $entity->getPrimaryPhoto()){{ URL::to('/').$photo->getStoragePath() }}@endif
+@endsection
 
 @section('content')
 
