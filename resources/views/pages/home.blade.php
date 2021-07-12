@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title','Event Repo - Club Guide')
+@section('title', 'Home'))
 
 @section('content')
 
