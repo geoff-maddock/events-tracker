@@ -4,16 +4,17 @@ let mix = require('laravel-mix');
 require('laravel-mix-purgecss');
 
 // base app js and css
-// this builds public/css/app.css, however, we don't have to use that at all, and can instead use the mix styles files above
+// this builds public/css/app.css
 mix.js('resources/assets/js/app.js', 'public/js')
     .sass('resources/assets/sass/app.scss', 'public/css')
     .purgeCss();
 
 
 // build dark theme
-// 
+// use the app.css above
 mix.styles([
     // 'resources/assets/css/app.css',
+    'public/css/app.css',
     'resources/assets/css/custom.css',
     'resources/assets/css/dark-theme.css',
     // 'resources/assets/css/superhero-bootstrap.min.css',

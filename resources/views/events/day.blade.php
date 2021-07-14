@@ -1,9 +1,7 @@
-<div class="col-lg-3">
-    <div class="bs-component">
-        <div class="panel panel-info">
-
-            <div class="panel-heading">
-                <h3 class="panel-title">
+<div class="col">
+    <div class="card mb-4 rounded-3 shadow-sm">
+            <div class="card-header py-3 bg-primary">
+                <h3 class="my-0 fw-normal">
                     @if (\Carbon\Carbon::now()->format('Y-m-d') == $day->format('Y-m-d'))
                     Today's Events
                     @else
@@ -12,7 +10,7 @@
                 </h3>
             </div>
 
-            <div class="panel-body">
+            <div class="card-body">
                 <?php $events = App\Models\Event::starting($day->format('Y-m-d'))->get(); ?>
 
                 @include('events.list', ['events' => $events])
@@ -21,6 +19,5 @@
                 <?php $series = App\Models\Series::byNextDate($day->format('Y-m-d')); ?>
                 @include('series.list', ['series' => $series])
             </div>
-        </div>
     </div>
 </div>
