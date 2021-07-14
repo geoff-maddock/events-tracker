@@ -28,7 +28,7 @@
 	@else
 		<link href="{{ asset('/css/dark.css') }}" rel="stylesheet">
     @endif
-	<link href="{{ asset('/css/app.css') }}" rel="stylesheet">
+	<!-- <link href="{{ asset('/css/app.css') }}" rel="stylesheet">-->
 	<link href="{{ asset('/css/select2.css') }}" rel="stylesheet">
 	<link href="{{ asset('/css/select2-bootstrap.min.css') }}" rel="stylesheet">
 	<!-- Material Icons -->
@@ -50,19 +50,19 @@
 
 	@include('partials.nav')
 
-	<div id="app-container" class="container-fluid" style="margin-top: 40px;">
+	<div id="app-container">
 		<div id="app-mobile-search" class="container-fluid d-block d-sm-none">
-			<form class="col-xs-12" role="search" action="/search">
+			<form class="col-sm-12" role="search" action="/search">
 				<div class="form-group">
 					<input type="text" class="form-control" placeholder="Search" name="keyword"  value="{{ isset($slug) ? $slug : '' }}">
 				</div>
 			</form>
 		</div>
 
-		<div id="app-content" class="row">
-			<div id="app-content-columns" class="col-md-12">
+		<div id="app-content" class="container-fluid">
+
 				@yield('content')
-			</div>
+
             <event-list></event-list>
 		</div>
 	</div>

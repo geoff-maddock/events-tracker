@@ -151,3 +151,9 @@
     font-size: 80%;
     color: #d9534f;
 }
+
+/* additional css for bootstrap 5 */
+.nav-title {
+    margin-left: -15px;
+    margin-top: -5px;
+}
