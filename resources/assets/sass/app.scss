@@ -3,10 +3,13 @@
 @import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
 
 // Variables
-@import "variables";
+// @import "variables";
 
 // Bootstrap
-@import "~bootstrap-sass/assets/stylesheets/bootstrap";
+@import "~bootswatch/dist/superhero/variables";
+@import "~bootstrap/scss/bootstrap";
+@import "~bootswatch/dist/superhero/bootswatch";
+// @import "~bootstrap-sass/assets/stylesheets/bootstrap";
 
 // Select2 - not working with bootstrap 3
 //@import "~select2/dist/css/select2.min.css";

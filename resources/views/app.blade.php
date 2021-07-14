@@ -26,9 +26,9 @@
     @if ($theme !== config('app.default_theme'))
     	<link href="{{ asset('/css/light.css') }}" rel="stylesheet">
 	@else
-        {{--<link href="{{ asset('/css/'.$theme.'.css') }}" rel="stylesheet">--}}
 		<link href="{{ asset('/css/dark.css') }}" rel="stylesheet">
     @endif
+	<link href="{{ asset('/css/app.css') }}" rel="stylesheet">
 	<link href="{{ asset('/css/select2.css') }}" rel="stylesheet">
 	<link href="{{ asset('/css/select2-bootstrap.min.css') }}" rel="stylesheet">
 	<!-- Material Icons -->
@@ -51,7 +51,7 @@
 	@include('partials.nav')
 
 	<div id="app-container" class="container-fluid" style="margin-top: 40px;">
-		<div id="app-mobile-search" class="container-fluid visible-xs-block">
+		<div id="app-mobile-search" class="container-fluid d-block d-sm-none">
 			<form class="col-xs-12" role="search" action="/search">
 				<div class="form-group">
 					<input type="text" class="form-control" placeholder="Search" name="keyword"  value="{{ isset($slug) ? $slug : '' }}">
