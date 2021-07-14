@@ -4,7 +4,7 @@
 
 @section('content')
 
-	<div class="jumbotron"
+	<div id="home-jumbotron" class="bg-light p-5 rounded-lg m-3"
 		@if ($theme == config('app.default_theme'))
 			style="background-color: #FF3CAC;background-image: linear-gradient(225deg, #FF3CAC 0%, #784BA0 50%, #2B86C5 100%);"
 		 @else
@@ -32,7 +32,7 @@
 
 	</div>
 
-	<section id="4days">
+	<section id="4days" class="container-fluid">
         @include('pages.4days')
  	</section>
 @stop

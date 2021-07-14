@@ -1,5 +1,5 @@
 body {
-	background: #FEFFF1;
+	/*background: #FEFFF1;*/
 	font-family: Roboto,sans-serif !important;
 }
 
@@ -26,8 +26,7 @@ body {
 	min-height: 130px;
 }
 
-.card {
-	padding: 10px;
+/* .card {
 	background-color: #445;
 	margin-left: 5px;
 	margin-bottom: 15px;
@@ -35,7 +34,7 @@ body {
 	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
 	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
 	min-height: 130px;
-}
+} */
 
 .mute-card {
 	padding: 10px;

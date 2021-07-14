@@ -1,6 +1,6 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
 	<div class="container-fluid">
-		<div class="navbar-header">
+		<div class="navbar-header nav-title">
 			<span class="{{ Request::is('/') ? 'active' : '' }} site-title">
 				<a class="navbar-brand p-3" data-toggle="tooltip"  data-placement="bottom"  data-delay='{"show":"500", "hide":"100"}' title="Return to the home page." href="{{ url('/') }}">{{ config('app.app_name')}} </a>
 			</span>
@@ -9,47 +9,53 @@
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			<ul class="navbar-nav me-auto">
 				<li class="nav-item dropdown {{ Request::is('events') ? 'active' : '' }}">
-		          <a href="{{ url('/events/future') }}" class="nav-link dropdown-toggle" data-hover="dropdown" role="button" aria-haspopup="true" aria-expanded="false" data-toggle="xtooltipx"  data-placement="bottom"  title="Show paginated list of events">Events <span class="caret"></span></a>
-		          <ul class="dropdown-menu">
+		          <a href="#" class="nav-link dropdown-toggle" id="event-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  title="Show paginated list of events">Events <span class="caret"></span></a>
+		          <ul class="dropdown-menu" aria-labelledby="event-dropdown">
 					<li class="{{ Request::is('events/future') ? 'active' : '' }}">
-						<a href="{{ url('/events/future') }}">Events Future</a>
+						<a href="{{ url('/events/future') }}" class="dropdown-item">Events Future</a>
 					</li>
 					<li class="{{ Request::is('events') ? 'active' : '' }}">
-						<a href="{{ url('/events') }}">Event Index</a>
+						<a href="{{ url('/events') }}" class="dropdown-item">Event Index</a>
 					</li>
-					<li class="{{ Request::is('events/grid') ? 'active' : '' }}"><a href="{{ url('/events/grid') }}">Event Grid</a></li>
-					<li class="{{ Request::is('events/week') ? 'active' : '' }}"><a href="{{ url('/events/week') }}">Week's Events</a></li>
-                    <li class="{{ Request::is('events/upcoming') ? 'active' : '' }}"><a href="{{ url('/events/upcoming') }}">Events Upcoming</a></li>
-                    <li class="{{ Request::is('events/attending') ? 'active' : '' }}"><a href="{{ url('/events/attending') }}">Events Attending</a></li>
-		            <li class="{{ Request::is('events/feed') ? 'active' : '' }}"><a href="{{ url('/events/feed') }}" target="_blank" rel="noopener">Events Text Only</a></li>
-		            <li class="{{ Request::is('events/create') ? 'active' : '' }}"><a href="{!! url('/events/create') !!}">Add Event</a></li>
+					<li class="{{ Request::is('events/grid') ? 'active' : '' }}"><a href="{{ url('/events/grid') }}" class="dropdown-item">Event Grid</a></li>
+					<li class="{{ Request::is('events/week') ? 'active' : '' }}"><a href="{{ url('/events/week') }}" class="dropdown-item">Week's Events</a></li>
+                    <li class="{{ Request::is('events/upcoming') ? 'active' : '' }}"><a href="{{ url('/events/upcoming') }}" class="dropdown-item">Events Upcoming</a></li>
+                    <li class="{{ Request::is('events/attending') ? 'active' : '' }}"><a href="{{ url('/events/attending') }}" class="dropdown-item">Events Attending</a></li>
+		            <li class="{{ Request::is('events/feed') ? 'active' : '' }}"><a href="{{ url('/events/feed') }}" target="_blank" rel="noopener" class="dropdown-item">Events Text Only</a></li>
+		            <li class="{{ Request::is('events/create') ? 'active' : '' }}"><a href="{!! url('/events/create') !!}" class="dropdown-item">Add Event</a></li>
                       <li role="separator" class="divider"></li>
-                    <li class="{{ Request::is('series') ? 'active' : '' }}"><a href="{{ url('/series') }}">Event Series</a></li>
-		            <li class="{{ Request::is('series/create') ? 'active' : '' }}"><a href="{!! url('/series/create') !!}" title="Add a reoccurring event series.">Add Series</a></li>
+                    <li class="{{ Request::is('series') ? 'active' : '' }}"><a href="{{ url('/series') }}" class="dropdown-item">Event Series</a></li>
+		            <li class="{{ Request::is('series/create') ? 'active' : '' }}"><a href="{!! url('/series/create') !!}" title="Add a reoccurring event series." class="dropdown-item">Add Series</a></li>
 		          </ul>
 		        </li>
 				<li class="nav-item dropdown {{ Request::is('entities') ? 'active' : '' }}">
-		          <a href="{{ url('/entities') }}" class="nav-link dropdown-toggle" data-hover="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Show paginated list of entities">Entities <span class="caret"></span></a>
-		          <ul class="dropdown-menu">
+		          <a href="#" class="nav-link dropdown-toggle" id="entity-dropdown" data-hover="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Show paginated list of entities">Entities <span class="caret"></span></a>
+		          <ul class="dropdown-menu" aria-labelledby="entity-dropdown">
+					<li class="{{ Request::is('entities') ? 'active' : '' }}">
+						<a href="{{ url('/entities') }}" class="dropdown-item">Entity Index</a>
+					</li>
 		          @foreach ($roles as $role)
-		          	<li class="{{ Request::is(strtolower('entities/role/'.$role->name)) ? 'active' : '' }}"><a href="{{ url('/entities/role/'.strtolower($role->name)) }}">{{ $role->name }}</a></li>
+		          	<li class="{{ Request::is(strtolower('entities/role/'.$role->name)) ? 'active' : '' }}">
+						<a href="{{ url('/entities/role/'.strtolower($role->name)) }}" class="dropdown-item">{{ $role->name }}</a></li>
 		          @endforeach
-		            <li class="{{ Request::is('entities/create') ? 'active' : '' }}"><a href="{!! url('/entities/create') !!}" >Add Entity</a></li>
+		            <li class="{{ Request::is('entities/create') ? 'active' : '' }}">
+						<a href="{!! url('/entities/create') !!}" class="dropdown-item">Add Entity</a></li>
 		          </ul>
 		        </li>
 				<li class="nav-item dropdown {{ Request::is('calendar') ? 'active' : '' }}">
-		          <a href="{{ url('/calendar') }}" class="nav-link dropdown-toggle" data-hover="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Show a calendar view of events.">Calendar <span class="caret"></span></a>
-		          <ul class="dropdown-menu">
-		            <li class="{{ Request::is('calendar/free') ? 'active' : '' }}"><a href="{!! url('/calendar/free') !!}" >Free Shows</a></li>
-		            <li class="{{ Request::is('calendar/min-age/0') ? 'active' : '' }}"><a href="{!! url('/calendar/min-age/0') !!}" >All Ages</a></li>
-		            <li class="{{ Request::is('calendar/type/club night') ? 'active' : '' }}"><a href="{!! url('/calendar/type/club night') !!}" >Club Night</a></li>
-					<li class="{{ Request::is('calendar/type/concert') ? 'active' : '' }}"><a href="{!! url('/calendar/type/concert') !!}" >Live Concert</a></li>
-					<li class="{{ Request::is('calendar/type/live stream') ? 'active' : '' }}"><a href="{!! url('/calendar/type/live stream') !!}" >LiveStream</a></li>
-					<li class="{{ Request::is('calendar/attending') ? 'active' : '' }}"><a href="{!! url('/calendar/attending') !!}" >Attending</a></li>
+		          <a href="#" class="nav-link dropdown-toggle" id="calendar-dropdown" data-hover="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Show a calendar view of events.">Calendar <span class="caret"></span></a>
+		          <ul class="dropdown-menu" aria-labelledby="calendar-dropdown">
+		            <li class="{{ Request::is('calendar') ? 'active' : '' }}"><a href="{!! url('/calendar') !!}"  class="dropdown-item">Full Calendar</a></li>					  
+		            <li class="{{ Request::is('calendar/free') ? 'active' : '' }}"><a href="{!! url('/calendar/free') !!}"  class="dropdown-item">Free Shows</a></li>
+		            <li class="{{ Request::is('calendar/min-age/0') ? 'active' : '' }}"><a href="{!! url('/calendar/min-age/0') !!}"  class="dropdown-item">All Ages</a></li>
+		            <li class="{{ Request::is('calendar/type/club night') ? 'active' : '' }}"><a href="{!! url('/calendar/type/club night') !!}"  class="dropdown-item">Club Night</a></li>
+					<li class="{{ Request::is('calendar/type/concert') ? 'active' : '' }}"><a href="{!! url('/calendar/type/concert') !!}"  class="dropdown-item">Live Concert</a></li>
+					<li class="{{ Request::is('calendar/type/live stream') ? 'active' : '' }}"><a href="{!! url('/calendar/type/live stream') !!}"  class="dropdown-item">LiveStream</a></li>
+					<li class="{{ Request::is('calendar/attending') ? 'active' : '' }}"><a href="{!! url('/calendar/attending') !!}"  class="dropdown-item">Attending</a></li>
 		          </ul>
 		        </li>
                 <!-- MORE only shown when collapsed down to medium desktops or smaller -->
-				<li class="nav-item dropdown visible-xs-block visible-sm-block visible-md-block {{ Request::is('forum') ? 'active' : '' }}">
+				<li class="nav-item dropdown d-lg-none {{ Request::is('forum') ? 'active' : '' }}">
 					<a href="#" class="nav-link dropdown-toggle visible-xs-block visible-sm-block visible-md-block" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">More <span class="caret"></span></a>
 
 					<ul class="dropdown-menu">
@@ -62,11 +68,11 @@
 				</li>
                 <!-- MORE end -->
 				@isset ($hasForum)
-				<li class="nav-item {{ Request::is('threads') ? 'active' : '' }} visible-lg">
+				<li class="nav-item {{ Request::is('threads') ? 'active' : '' }} d-none d-xl-block">
 					<a href="{{ url('/threads')}}" title="Show a list of discussion forums." class="nav-link">Forum</a>
 				</li>
 				@endisset
-				<li class="nav-item {{ Request::is('tags') ? 'active' : '' }} visible-lg">
+				<li class="nav-item {{ Request::is('tags') ? 'active' : '' }} d-none d-xl-block">
 					<a href="{{ url('/tags') }}" title="Show a list of keyword topics." class="nav-link">Keywords</a></li>
 				@if (!Auth::guest())
 					<li class="{{ Request::is('users') ? 'active' : '' }} visible-lg"><a href="{{ url('/users') }}" title="Show a list of registered users.">Users</a></li>
