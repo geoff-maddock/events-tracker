@@ -4,7 +4,7 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
-require('./bootstrap');
+ import 'bootstrap';
 
 //import Swal from 'sweetalert2';
 //const Swal = require('sweetalert2')

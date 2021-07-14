@@ -1,16 +1,34 @@
-const mix = require('laravel-mix');
+let mix = require('laravel-mix');
 
-/*
- |--------------------------------------------------------------------------
- | Mix Asset Management
- |--------------------------------------------------------------------------
- |
- | Mix provides a clean, fluent API for defining some Webpack build steps
- | for your Laravel application. By default, we are compiling the Sass
- | file for the application as well as bundling up all the JS files.
- |
- */
+// purgecss is intended to remove any css that is not used by the project
+require('laravel-mix-purgecss');
 
+// base app js and css
+// this builds public/css/app.css, however, we don't have to use that at all, and can instead use the mix styles files above
 mix.js('resources/assets/js/app.js', 'public/js')
- //   .vue()
-    .sass('resources/assets/sass/app.scss', 'public/css');
+    .sass('resources/assets/sass/app.scss', 'public/css')
+    .purgeCss();
+
+
+// build dark theme
+// 
+mix.styles([
+    // 'resources/assets/css/app.css',
+    'resources/assets/css/custom.css',
+    'resources/assets/css/dark-theme.css',
+    // 'resources/assets/css/superhero-bootstrap.min.css',
+    'resources/assets/css/sweetalert.css'
+], 'public/css/dark.css')
+//.purgeCss()
+;
+
+// build light theme
+mix.styles([
+    // 'resources/assets/css/app.css',
+    'resources/assets/css/custom.css',
+    'resources/assets/css/light-theme.css',
+    'resources/assets/css/sweetalert.css'
+], 'public/css/light.css')
+//.purgeCss()
+;
+
