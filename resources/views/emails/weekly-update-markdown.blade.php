@@ -31,7 +31,14 @@ Here are the event series you follow that happen today.
 @endif
 
 @if (count($interests) > 0)
-Here are some events happening today that you might be interested in based on what entities and keywords you are following.
+Here are some upcoming events that you might be interested in based on the entities and keywords you are following.
+
+### Summary of events:
+@foreach ($interests as $tag => $list)
+@foreach ($list as $event)
+1. [{{$event->name}}]({{ $url }}events/{{$event->id }})
+@endforeach
+@endforeach
 
 @foreach ($interests as $tag => $list)
 
