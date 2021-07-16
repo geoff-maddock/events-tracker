@@ -61,7 +61,7 @@ class ThreadsController extends Controller
 
     public function __construct(ThreadFilters $filter)
     {
-        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
+        $this->middleware('verified', ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
 
         // prefix for session storage
         $this->prefix = 'app.threads.';

@@ -20,7 +20,7 @@
 		"pusher/pusher-php-server": "^4.1",
 		"eluceo/ical": "^0.16.0",
         "facade/ignition": "^2.5.3",
-        "laravel/ui": "^3.0",
+        "laravel/ui": "^3.3",
 		"orangehill/iseed": "^3.0",
 		"guzzlehttp/guzzle": "^7.0.1",
 		"facebook/graph-sdk": "^5.7",

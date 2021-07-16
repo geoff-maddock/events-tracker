@@ -503,36 +503,4 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     {
         return $this->groups->pluck('id')->all();
     }
-
-    /**
-     * Determine if the user has verified their email address.
-     *
-     * @return bool
-     */
-    public function hasVerifiedEmail()
-    {
-        // TODO: Implement hasVerifiedEmail() method.
-        return false;
-    }
-
-    /**
-     * Mark the given user's email as verified.
-     *
-     * @return bool
-     */
-    public function markEmailAsVerified()
-    {
-        // TODO: Implement markEmailAsVerified() method.
-        return false;
-    }
-
-    /**
-     * Send the email verification notification.
-     *
-     * @return void
-     */
-    public function sendEmailVerificationNotification()
-    {
-        // TODO: Implement sendEmailVerificationNotification() method.
-    }
 }

@@ -502,3 +502,7 @@ Route::resource('tags', 'TagsController');
 // Add the route for rss
 Route::get('rss', 'EventsController@rss');
 Route::get('rss/tag/{tag}', 'EventsController@rssTags');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
