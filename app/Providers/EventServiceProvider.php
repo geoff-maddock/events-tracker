@@ -18,9 +18,9 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'event.name' => [
-            'EventListener',
-        ],
+        // 'event.name' => [
+        //     'EventListener',
+        // ],
         RouteMatched::class => [
             RouterMatchedListener::class,
         ],

@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Models\Activity;
-use App\Models\User;
-use App\Models\Profile;
 use App\Http\Controllers\Controller;
-use App\Mail\UserRegistration;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
+use App\Providers\RouteServiceProvider;
+use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
@@ -24,6 +21,7 @@ class RegisterController extends Controller
     | provide this functionality without requiring any additional code.
     |
     */
+
     use RegistersUsers;
 
     /**
@@ -31,7 +29,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = RouteServiceProvider::HOME;
 
     /**
      * Create a new controller instance.
@@ -51,11 +49,10 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
-        // add some othe validation that prevents spam?
         return Validator::make($data, [
-            'name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|min:8|confirmed',
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
     }
 
@@ -63,46 +60,14 @@ class RegisterController extends Controller
      * Create a new user instance after a valid registration.
      *
      * @param  array  $data
-     * @return User
+     * @return \App\Models\User
      */
     protected function create(array $data)
     {
-        $user = User::create([
+        return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'password' => bcrypt($data['password']),
+            'password' => Hash::make($data['password']),
         ]);
-
-        // do some profile setting here - set default status
-        $profile = new Profile();
-        $name = split_name($data['name']);
-        $profile->first_name = $name['firstname'];
-        $profile->last_name = $name['lastname'];
-        $profile->user_id = $user->id;
-        $profile->save();
-
-        // log the registration
-        Activity::log($user, $user, 1);
-
-        // send a notification to admin to approve the new user
-        $this->notifyAdmin($user);
-
-        return $user;
-    }
-
-    /**
-     * Notify the admin user that a new user was registered
-     */
-    protected function notifyAdmin(User $user): RedirectResponse
-    {
-        $admin_email = config('app.admin');
-        $reply_email = config('app.noreplyemail');
-        $site = config('app.app_name');
-        $url = config('app.url');
-
-        Mail::to($user->email)
-            ->send(new UserRegistration($url, $site, $admin_email, $reply_email, $user));
-
-        return back();
     }
 }

@@ -31,7 +31,7 @@ class CreateThreadsTest extends TestCase
 
         $result = $this->delete($thread->path());
 
-        $result->assertSee('login');
+        $result->assertSee('verify');
     }
 
     /** @test */

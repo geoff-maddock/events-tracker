@@ -53,7 +53,7 @@ class EntitiesController extends Controller
 
     public function __construct(EntityFilters $filter)
     {
-        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
+        $this->middleware('verified', ['only' => ['create', 'edit', 'store', 'update']]);
         $this->filter = $filter;
 
         // prefix for session storage
