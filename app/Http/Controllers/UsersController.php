@@ -442,7 +442,7 @@ class UsersController extends Controller
         }
 
         // add the following response
-        $user->user_status_id = 2;
+        $user->user_status_id = UserStatus::ACTIVE;
         $user->save();
 
         Log::info('User ' . $user->name . ' is activated.');
