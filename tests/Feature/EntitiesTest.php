@@ -6,6 +6,7 @@ use Tests\TestCase;
 use App\Models\Entity;
 use App\Models\Photo;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -55,7 +56,7 @@ class EntitiesTest extends TestCase
     public function a_user_can_edit_an_entity_they_own()
     {
         // create a user
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email_verified_at' => Carbon::now()]);
 
         // add an entity created by that user
         $entity = Entity::factory()

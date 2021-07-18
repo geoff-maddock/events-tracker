@@ -4,6 +4,8 @@ namespace App\Console;
 
 use App\Console\Commands\AdminTest;
 use App\Console\Commands\Notify;
+use App\Console\Commands\NotifyWeekly;
+use App\Console\Commands\UserCleanup;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
@@ -21,6 +23,8 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Notify::class,
         AdminTest::class,
+        NotifyWeekly::class,
+        UserCleanup::class
     ];
 
     /**
@@ -28,9 +32,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // WEEKLY UPDATE
+        // WEEKLY
         // schedule weekly update email of events each user is attending or interested in
         $schedule->command('notifyWeekly')->weekly()->mondays()->timezone('America/New_York')->at('5:00');
+
+        // DAILY
+        // schedule daily user cleanup process
+        $schedule->command('userCleanup')->daily()->timezone('America/New_York')->at('07:00');
 
         // schedule daily email of events each user is attending today
         $schedule->command('notify')->daily()->timezone('America/New_York')->at('09:00');
