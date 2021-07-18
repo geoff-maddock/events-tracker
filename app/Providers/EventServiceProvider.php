@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Listeners\ActivateVerifiedUserListener;
 use App\Listeners\LogSuccessfulLogin;
 use App\Listeners\RouterMatchedListener;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Routing\Events\RouteMatched;
@@ -29,6 +31,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        Verified::class => [
+            ActivateVerifiedUserListener::class,
         ],
     ];
 
