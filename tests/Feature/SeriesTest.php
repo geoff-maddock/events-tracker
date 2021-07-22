@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Series;
 use App\Models\User;
 use App\Models\Entity;
+use App\Models\UserStatus;
+use Carbon\Carbon;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
@@ -26,7 +28,7 @@ class SeriesTest extends TestCase
      */
     public function testCreateWithUser()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email_verified_at' => Carbon::now(), 'user_status_id' => UserStatus::ACTIVE]);
 
         $response = $this->actingAs($user)
             ->withSession([])

@@ -7,15 +7,15 @@
     <div class="row">
         <div class="col-md-12">
             <h2>{{ $user->name }}</h2>
-            <p>
+            <div class="mx-2">
                 @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser') ) )
                     <a href="{!! route('users.edit', ['user' => $user->id]) !!}" class="btn btn-primary">Edit Profile</a>
                     <a href="{{ url('/password/reset') }}" class="btn btn-primary">Reset Password</a>
+                    {!! delete_form(['users.destroy', $user->id]) !!}
                 @endif
 
                 <a href="{!! URL::route('users.index') !!}" class="btn btn-info">Return to list</a>
-
-            </p>
+            </div>
             <div class="col-lg-6 profile-card">
                 <b>Name </b> {{ $user->full_name }}<br>
                 <b>Status </b> {{ $user->status ? $user->status->name : '' }}<br>
@@ -237,6 +237,25 @@
             myDropzone.options.addPhotosForm.init();
 
         })
+        $('input.delete').on('click', function(e){
+        e.preventDefault();
+        var form = $(this).parents('form');
+        Swal.fire({
+                title: "Are you sure?",
+                text: "You will not be able to recover this user!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: true
+            },
+            function(isConfirm){
+                if (isConfirm)
+                {
+                    form.submit();
+                };
+            });
+    })
     </script>
 @stop
 
