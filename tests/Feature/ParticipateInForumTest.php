@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Post;
 use App\Models\Thread;
 use App\Models\User;
+use App\Models\UserStatus;
+use Carbon\Carbon;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -32,8 +34,10 @@ class ParticipateInForumTest extends TestCase
     /** @test  */
     public function an_authenticated_user_may_participate_in_forum_threads()
     {
+        $user = User::factory()->create(['email_verified_at' => Carbon::now(), 'user_status_id' => UserStatus::ACTIVE]);
+
         // given we have an authenticated user
-        $this->be($user = User::factory()->create());
+        $this->be($user);
 
         // an an existing thread
         $thread = Thread::factory()->create();
