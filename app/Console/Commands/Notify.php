@@ -51,7 +51,7 @@ class Notify extends Command
             $collectedIdList = [];
 
             // if the user does not have this setting, continue
-            if ($user->profile->setting_daily_update !== 1) {
+            if ($user->profile == null || $user->profile->setting_daily_update !== 1) {
                 continue;
             }
 
