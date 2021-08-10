@@ -834,7 +834,8 @@ class Event extends Eloquent
                         continue;
                     }
 
-                    $format .= ' @' . $entity->twitter_username;
+		    // this was using an @ mention, but changing to hashtag, see https://github.com/geoff-maddock/events-tracker/issues/555
+                    $format .= ' #' . $entity->twitter_username;
                 } else {
                     // check the length of the tag and if there is enough room to add
                     if (strlen($format) + strlen($entity->slug) > 244) {
