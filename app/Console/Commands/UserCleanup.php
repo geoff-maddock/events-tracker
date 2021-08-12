@@ -44,7 +44,7 @@ class UserCleanup extends Command
     public function handle()
     {
         // number of days that users have to verify their email before their user is deleted
-        $days_to_verify = 14;
+        $days_to_verify = 7;
 
         // get all the users who have not verified their email within the number of days granted and delete them
         $users = User::whereNull('email_verified_at')->where('created_at', '<', Carbon::now()->subDays($days_to_verify))->orderBy('name', 'ASC')->get();
@@ -53,7 +53,7 @@ class UserCleanup extends Command
             $user->delete();
         }
 
-        $days_for_reminder = 7;
+        $days_for_reminder = 3;
 
         // for all users who have not verified their email after the reminder days, resend the verification email
         $users = User::whereNull('email_verified_at')->where('created_at', '<', Carbon::now()->subDays($days_for_reminder))->orderBy('name', 'ASC')->get();

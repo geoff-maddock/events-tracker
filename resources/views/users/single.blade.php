@@ -48,7 +48,7 @@
             <b>Last Active:</b> {{ $user->lastActivity ?  $user->lastActivity->created_at->format('m.d.y') : 'Never'}}<br>
 
 
-        @if ($events = $user->getAttending()->get()->take(3))
+        @if ($events = $user->getAttending()->get()->take(3) and count($events) > 0)
             <br>
             <b>Events Attending</b>
             @foreach ($events as $event)

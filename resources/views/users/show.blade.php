@@ -110,7 +110,7 @@
                                     <li role="presentation" class="@if ($tabs['events'] === 'attending') active @endif"><a href="/users/{{ $user->id }}?tabs[events]=attending&tabs[following]={{ $tabs['following'] }}">Attending</a></li>
                                 </ul>
                                 <div class="panel-body">
-                                @include('events.list', ['events' => $user->events->take(20)])
+                                @include('events.list', ['events' => $user->events ? $user->events->take(20) : null])
                                 </div>
                             @else
                             <div class="panel-heading">
