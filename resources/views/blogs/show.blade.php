@@ -16,24 +16,16 @@
 	<a href="{!! URL::route('blogs.index') !!}" class="btn btn-info">Return to list</a>
 </P>
 
-<div class="row">
-	<div class="profile-card col-md-4">
-	<h2 class='item-title'>{{ $blog->label }}</h2>
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">{{ $blog->name }}</h5>
 
-	<p>
-
-	@if ($blog->name)
-	<label>Name: </label> <i>{{ $blog->name }} </i><br><br>
-	@endif
-
-	@if ($blog->slug)
-	<label>Slug: </label> <i>{{ $blog->slug }} </i><br><br>
-	@endif
+    @if ($blog->slug)
+    <small>{{ $blog->slug }}</small>
+    @endif
 
     @if ($blog->body)
-            <p>
-            {!! $blog->body !!}
-            </p>
+      <p>{!! $blog->body !!}</p>
     @endif
 
     @unless ($blog->tags->isEmpty())
@@ -41,7 +33,7 @@
 		<P><b>Tags:</b>
 
 		@foreach ($blog->tags as $tag)
-		<span class="label label-tag"><a href="/tags/{{ $tag->slug }}">{{ $tag->name }}</a></span>
+		  <span class="badge rounded-pill bg-dark"><a href="/tags/{{ $tag->slug }}">{{ $tag->name }}</a></span>
 		@endforeach
 
 	@endunless

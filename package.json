@@ -27,6 +27,7 @@
     "webpack": "^5.45.1"
   },
   "dependencies": {
+    "bootstrap-icons": "^1.5.0",
     "bootstrap-sass": "^3.4.1",
     "bootswatch": "^5.0.2",
     "cryptiles": "^4.1.3",
