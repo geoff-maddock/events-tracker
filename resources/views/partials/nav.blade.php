@@ -23,7 +23,7 @@
                     <li class="{{ Request::is('events/attending') ? 'active' : '' }}"><a href="{{ url('/events/attending') }}" class="dropdown-item">Events Attending</a></li>
 		            <li class="{{ Request::is('events/feed') ? 'active' : '' }}"><a href="{{ url('/events/feed') }}" target="_blank" rel="noopener" class="dropdown-item">Events Text Only</a></li>
 		            <li class="{{ Request::is('events/create') ? 'active' : '' }}"><a href="{!! url('/events/create') !!}" class="dropdown-item">Add Event</a></li>
-                      <li role="separator" class="divider"></li>
+                      <li role="separator" class="divider"><hr class="dropdown-divider"></li>
                     <li class="{{ Request::is('series') ? 'active' : '' }}"><a href="{{ url('/series') }}" class="dropdown-item">Event Series</a></li>
 		            <li class="{{ Request::is('series/create') ? 'active' : '' }}"><a href="{!! url('/series/create') !!}" title="Add a reoccurring event series." class="dropdown-item">Add Series</a></li>
 		          </ul>
@@ -45,7 +45,7 @@
 				<li class="nav-item dropdown {{ Request::is('calendar') ? 'active' : '' }}">
 		          <a href="#" class="nav-link dropdown-toggle" id="calendar-dropdown" data-hover="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Show a calendar view of events.">Calendar <span class="caret"></span></a>
 		          <ul class="dropdown-menu" aria-labelledby="calendar-dropdown">
-		            <li class="{{ Request::is('calendar') ? 'active' : '' }}"><a href="{!! url('/calendar') !!}"  class="dropdown-item">Full Calendar</a></li>					  
+		            <li class="{{ Request::is('calendar') ? 'active' : '' }}"><a href="{!! url('/calendar') !!}" class="dropdown-item">Full Calendar</a></li>					  
 		            <li class="{{ Request::is('calendar/free') ? 'active' : '' }}"><a href="{!! url('/calendar/free') !!}"  class="dropdown-item">Free Shows</a></li>
 		            <li class="{{ Request::is('calendar/min-age/0') ? 'active' : '' }}"><a href="{!! url('/calendar/min-age/0') !!}"  class="dropdown-item">All Ages</a></li>
 		            <li class="{{ Request::is('calendar/type/club night') ? 'active' : '' }}"><a href="{!! url('/calendar/type/club night') !!}"  class="dropdown-item">Club Night</a></li>
@@ -55,15 +55,23 @@
 		          </ul>
 		        </li>
                 <!-- MORE only shown when collapsed down to medium desktops or smaller -->
+<<<<<<< 565343d806e3ca4349ea798d69b1bd5d8cc66c0a
 				<li class="nav-item dropdown d-lg-none {{ Request::is('forum') ? 'active' : '' }}">
 					<a href="#" class="nav-link dropdown-toggle visible-xs-block visible-sm-block visible-md-block" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">More <span class="caret"></span></a>
 
 					<ul class="dropdown-menu">
 						@isset ($hasForum)
 						<li class="{{ Request::is('threads') ? 'active' : '' }}"><a href="{{ url('/threads')}}" title="Show a list of discussion forums.">Forum</a></li>
+=======
+				<li class="nav-item dropdown d-xl-none {{ Request::is('forum') ? 'active' : '' }}">
+					<a href="#" class="nav-link dropdown-toggle visible-xs-block visible-sm-block visible-md-block" data-hover="dropdown" id="more-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">More <span class="caret"></span></a>
+					<ul class="dropdown-menu" aria-labelledby="more-dropdown">
+						@isset ($hasForum)
+						<li class="{{ Request::is('threads') ? 'active' : '' }}"><a href="{{ url('/threads')}}"  class="dropdown-item" title="Show a list of discussion forums.">Forum</a></li>
+>>>>>>> Issue #114.  Fixed the nav menu to work with bootstrap 5.
 						@endisset
-						<li class="{{ Request::is('tags') ? 'active' : '' }}"><a href="{{ url('/tags') }}" title="Show a list of tag topics.">Tags</a></li>
-						<li class="{{ Request::is('users') ? 'active' : '' }}"><a href="{{ url('/users') }}" title="Show a list of registered users.">Users</a></li>
+						<li class="{{ Request::is('tags') ? 'active' : '' }}"><a href="{{ url('/tags') }}"  class="dropdown-item" title="Show a list of tag topics.">Tags</a></li>
+						<li class="{{ Request::is('users') ? 'active' : '' }}"><a href="{{ url('/users') }}"  class="dropdown-item" title="Show a list of registered users.">Users</a></li>
 					</ul>
 				</li>
                 <!-- MORE end -->
@@ -73,11 +81,14 @@
 				</li>
 				@endisset
 				<li class="nav-item {{ Request::is('tags') ? 'active' : '' }} d-none d-xl-block">
-					<a href="{{ url('/tags') }}" title="Show a list of keyword topics." class="nav-link">Keywords</a></li>
+					<a href="{{ url('/tags') }}" title="Show a list of keyword topics." class="nav-link">Keywords</a>
+				</li>
 				@if (!Auth::guest())
-					<li class="{{ Request::is('users') ? 'active' : '' }} visible-lg"><a href="{{ url('/users') }}" title="Show a list of registered users.">Users</a></li>
+					<li class="{{ Request::is('users') ? 'active' : '' }} d-none d-xl-block">
+						<a href="{{ url('/users') }}" title="Show a list of registered users." class="nav-link">Users</a>
+					</li>
 		        @endif
-		        <li>
+		        <li class="mx-2">
 				  <form class="navbar-form navbar-left" role="search" action="/search">
 					<div class="form-group">
 					  <input type="text" class="form-control" placeholder="Search" name="keyword" style="width: 150px;" value="{{ isset($slug) ? $slug : '' }}">
@@ -86,55 +97,77 @@
 		     	</li>
 			</ul>
 
-			<ul class="nav navbar-nav navbar-right">
+			<ul class="navbar-nav navbar-right">
 
 				@if (Auth::guest())
 					@foreach ($menus as $menu)
 						<li class="nav-item">
-							<a href="{{ url('/menus/'.$menu->id.'/content') }}" class="visible-lg nav-link">{{ $menu->name  }}</a>
+							<a href="{{ url('/menus/'.$menu->id.'/content') }}" class="d-none d-xl-block nav-link" title="{{ $menu->body}}">{{ $menu->name  }}</a>
 						</li>
 					@endforeach
-					<li class="nav-item"><a href="{{ url('/login') }}" class="visible-lg nav-link">Login</a></li>
-					<li class="nav-item"><a href="{{ url('/register') }}" class="visible-lg nav-link">Register</a></li>
-                    <li class="nav-item"><a href="{{ url('/login') }}" class="hidden-lg nav-link"><span class="glyphicon glyphicon-user" title="Login"></span></a></li>
-                    <li class="nav-item"><a href="{{ url('/register') }}" class="visible-md nav-link"><span class="glyphicon glyphicon-flag" title="Register"></span></a></li>
+					<li class="nav-item">
+						<a href="{{ url('/login') }}" class="d-none d-xl-block nav-link" title="Log in with a registered account." >Login</a>
+					</li>
+					<li class="nav-item">
+						<a href="{{ url('/register') }}" class="d-none d-xl-block nav-link" title="Register a new user account.">Register</a>
+					</li>
+                    <li class="nav-item d-xl-none">
+						<a href="{{ url('/login') }}" class="visible-xs-block visible-sm-block visible-md-block visible-lg-block nav-link">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+							<path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+						  </svg>
+						</a>
+					</li>
+                    <li class="nav-item d-xl-none">
+						<a href="{{ url('/register') }}" class="visible-xs-block visible-sm-block visible-md-block visible-lg-block nav-link">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-flag-fill" viewBox="0 0 16 16">
+								<path d="M14.778.085A.5.5 0 0 1 15 .5V8a.5.5 0 0 1-.314.464L14.5 8l.186.464-.003.001-.006.003-.023.009a12.435 12.435 0 0 1-.397.15c-.264.095-.631.223-1.047.35-.816.252-1.879.523-2.71.523-.847 0-1.548-.28-2.158-.525l-.028-.01C7.68 8.71 7.14 8.5 6.5 8.5c-.7 0-1.638.23-2.437.477A19.626 19.626 0 0 0 3 9.342V15.5a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 1 0v.282c.226-.079.496-.17.79-.26C4.606.272 5.67 0 6.5 0c.84 0 1.524.277 2.121.519l.043.018C9.286.788 9.828 1 10.5 1c.7 0 1.638-.23 2.437-.477a19.587 19.587 0 0 0 1.349-.476l.019-.007.004-.002h.001"/>
+							</svg>
+						</a>
+					</li>
 				@else
 					@if ($latest)
 					<li></li>
 					@endif
 						@foreach ($menus as $menu)
-							<li class="nav-item"><a href="{{ url('/menus/'.$menu->id.'/content') }}" class="nav-link visible-lg">{{ $menu->name  }}</a></li>
+							<li class="nav-item d-none d-xl-block"><a href="{{ url('/menus/'.$menu->id.'/content') }}" class="nav-link visible-lg">{{ $menu->name  }}</a></li>
 						@endforeach
-					<li class="dropdown">
-						<a href="{{ url('/users/'.Auth::user()->id) }}" class="dropdown-toggle nav-link visible-xs-block visible-sm-block visible-md-block" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user" title="Login"></span> <span class="caret"></span></a>
-                        <a href="{{ url('/users/'.Auth::user()->id) }}" class="dropdown-toggle nav-link visible-lg" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ Auth::user()->name }} <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-							<li><a href="{{ url('/users/'.Auth::user()->id) }}">Profile</a></li>
+
+					<li class="nav-item dropdown">
+							<a href="#" class="nav-link dropdown-toggle d-xl-none" id="profile-dropdown-icon" data-hover="dropdown" data-bs-toggle="dropdown"  aria-haspopup="true" aria-expanded="false">
+								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+									<path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+								  </svg>
+							</a>
+							<a href="#" class="nav-link dropdown-toggle d-none d-xl-block" id="profile-dropdown" data-hover="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Show a calendar view of events.">{{ Auth::user()->name }} <span class="caret"></span></a>
+							<ul class="dropdown-menu" aria-labelledby="profile-dropdown">
+
+							<li class="nav-item"><a href="{{ url('/users/'.Auth::user()->id) }}" class="dropdown-item">Profile</a></li>
 							@can('show_admin')
-								<li role="separator" class="divider"></li>
-								<li><a href="#"><b>Admin</b></a></li>
-								<li><a href="{{ url('/forums')}}" title="Show discussion forums">Forum</a></li>
-								<li><a href="{{ url('/posts')}}" title="Show all the latests posts">Posts</a></li>
-								<li><a href="{{ url('/permissions')}}" title="Show a list of user permissions">Permissions</a></li>
-								<li><a href="{{ url('/groups')}}" title="Show a list of user permission groups">Groups</a></li>
+								<li role="separator" class="divider"><hr class="dropdown-divider"></li>
+								<li class="nav-item"><a href="#" class="dropdown-item"><b>Admin</b></a></li>
+								<li class="nav-item"><a href="{{ url('/forums')}}" title="Show discussion forums" class="dropdown-item">Forum</a></li>
+								<li class="nav-item"><a href="{{ url('/posts')}}" title="Show all the latests posts" class="dropdown-item">Posts</a></li>
+								<li class="nav-item"><a href="{{ url('/permissions')}}" title="Show a list of user permissions" class="dropdown-item">Permissions</a></li>
+								<li class="nav-item"><a href="{{ url('/groups')}}" title="Show a list of user permission groups" class="dropdown-item">Groups</a></li>
 							@endcan
 							@can('show_activity')
-								<li><a href="{{ url('/activity')}}">Activity</a></li>
+								<li class="nav-item"><a href="{{ url('/activity')}}" class="dropdown-item">Activity</a></li>
 							@endcan
 							@can('show_admin')
-								<li><a href="{{ url('/blogs')}}">Blogs</a></li>
-								<li><a href="{{ url('/menus')}}">Menus</a></li>
-								<li><a href="{{ url('/tools')}}">Tools</a></li>
+								<li class="nav-item"><a href="{{ url('/blogs')}}" class="dropdown-item">Blogs</a></li>
+								<li class="nav-item"><a href="{{ url('/menus')}}" class="dropdown-item">Menus</a></li>
+								<li class="nav-item"><a href="{{ url('/tools')}}" class="dropdown-item">Tools</a></li>
 							@endcan
 
-							<li role="separator" class="divider visible-xs-block visible-sm-block"></li>
-							<li><a href="{{ url('/help')}}" class="visible-xs-block visible-sm-block">Help</a></li>
+							<li class="nav-item" role="separator" class="divider visible-xs-block visible-sm-block"><hr class="dropdown-divider"></li>
+							<li class="nav-item"><a href="{{ url('/help')}}" class="visible-xs-block visible-sm-block dropdown-item">Help</a></li>
 
-							<li><a href="mailto:{{ config('app.feedback') }}" title="Send email to {{ config('app.feedback') }}" class="visible-xs-block visible-sm-block">Feedback</a></li>
+							<li><a href="mailto:{{ config('app.feedback') }}" title="Send email to {{ config('app.feedback') }}" class="visible-xs-block visible-sm-block dropdown-item">Feedback</a></li>
 
 							<li role="separator" class="divider"></li>
 							<li>
-								<a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+								<a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="dropdown-item">Logout</a>
 								<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">{{ csrf_field() }}</form>
 							</li>
 						</ul>
@@ -142,11 +175,16 @@
 				@endif
 
 					<li class="dropdown nav-item">
-						<a href="{{ url('/help') }}" class="nav-link dropdown-toggle hidden-xs hidden-sm" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Help"><span class="glyphicon glyphicon-question-sign" title="Help"></span><span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li><a href="{{ url('/help')}}">Help</a></li>
-							<li><a href="{{ url('/register') }}" class="hidden-md hidden-lg">Register</a></li>
-							<li><a href="mailto:{{ config('app.feedback') }}" title="Send email to {{ config('app.feedback') }}">Feedback</a></li>
+						<a href="#" class="nav-link dropdown-toggle d-xs-none" id="help-dropdown" data-hover="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Help">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle-fill" viewBox="0 0 16 16">
+								<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.496 6.033h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286a.237.237 0 0 0 .241.247zm2.325 6.443c.61 0 1.029-.394 1.029-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94 0 .533.425.927 1.01.927z"/>
+							  </svg>
+						</a>
+						<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="help-dropdown">
+							<li class="nav-item"><a href="{{ url('/help')}}" class="dropdown-item">Help</a></li>
+							<li class="nav-item"><a href="{{ url('/register') }}" class="dropdown-item d-md-none d-lg-none d-xl-none">Register</a></li>
+							<li class="nav-item"><a href="mailto:{{ config('app.feedback') }}" title="Send email to {{ config('app.feedback') }}" class="dropdown-item">Feedback</a></li>
+							<li class="nav-item d-xl-none"><a href="{{ url('/menus/'.$menu->id.'/content') }}" class="dropdown-item visible-lg">{{ $menu->name  }}</a></li>
 						</ul>
 					</li>
 			</ul>
