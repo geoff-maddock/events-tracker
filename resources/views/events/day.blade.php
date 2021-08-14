@@ -1,7 +1,7 @@
 <div class="col">
-    <div class="card mb-4 rounded-3 shadow-sm">
-            <div class="card-header py-3 bg-primary">
-                <h3 class="my-0 fw-normal">
+    <div class="card mb-4">
+            <div class="card-header bg-primary">
+                <h5 class="my-0 fw-normal">
                     @if (\Carbon\Carbon::now()->format('Y-m-d') == $day->format('Y-m-d'))
                     Today's Events
                     @else
