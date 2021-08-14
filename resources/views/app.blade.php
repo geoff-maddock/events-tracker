@@ -29,15 +29,18 @@
 		<link href="{{ asset('/css/dark.css') }}" rel="stylesheet">
     @endif
 	<!-- <link href="{{ asset('/css/app.css') }}" rel="stylesheet">-->
-	<link href="{{ asset('/css/select2.css') }}" rel="stylesheet">
-	<link href="{{ asset('/css/select2-bootstrap.min.css') }}" rel="stylesheet">
+	{{-- <link href="{{ asset('/css/select2.css') }}" rel="stylesheet">
+	<link href="{{ asset('/css/select2-bootstrap.min.css') }}" rel="stylesheet"> --}}
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.1.1/dist/select2-bootstrap-5-theme.min.css" />
 	<!-- Material Icons -->
-	<link href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap" rel="stylesheet">
+	{{-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap" rel="stylesheet"> --}}
+	{{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"> --}}
 	<!-- Fonts -->
 	<link href="//fonts.googleapis.com/css?family=Roboto:400,300&display=swap" rel="stylesheet" type="text/css">
 	<link href="https://fonts.googleapis.com/css?family=Rubik&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.min.js"></script>
 </head>
 <body id="event-repo">
 
@@ -68,8 +71,9 @@
 	</div>
 
 	<script src="{{ asset('/js/app.js') }}"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-hover-dropdown/2.2.1/bootstrap-hover-dropdown.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox.min.js"></script>
     <script src="{{ asset('/js/jquery.ba-throttle-debounce.min.js') }}"></script>
 	<script src="{{ asset('/js/auto-submit.js') }}"></script>

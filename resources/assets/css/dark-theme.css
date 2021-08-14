@@ -73,16 +73,7 @@ body {
 	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
 	min-height: 130px;
 }
-.event-date {
-	font-weight: 900;
-	font-size: 1.5rem;
-}
 
-.event-list, .list {
-	list-style-type:none;
-	margin:.5em;
-	padding-left: 0px;
-}
 
 ul.list-click {
 	margin-left: -40px;
