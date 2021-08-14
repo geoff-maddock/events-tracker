@@ -157,3 +157,18 @@
     margin-left: -15px;
     margin-top: -5px;
 }
+
+/* front page event styling - theme agnostic */
+.event-date {
+	font-weight: 900;
+	font-size: 1rem;
+}
+
+.event-time {
+	font-size: .75rem;
+}
+
+.event-list, .list {
+	list-style-type: none;
+	padding-left: 0px;
+}
