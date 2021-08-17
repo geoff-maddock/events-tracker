@@ -1,9 +1,8 @@
-<div class="col-lg-3">
-	<div class="bs-component">
-		<div class="panel panel-info">
+<div class="col">
+    <div class="card mb-4">
 
-			<div class="panel-heading">
-				<h3 class="panel-title">
+            <div class="card-header bg-primary">
+                <h5 class="my-0 fw-normal">
 				@if (\Carbon\Carbon::now('America/New_York')->format('Ymd') === $day)
 				Today's Events
 				@else
@@ -18,6 +17,5 @@
 					<div class="double-bounce2"></div>
 				</div>
 			</div>
-		</div>
 	</div>
 </div>
