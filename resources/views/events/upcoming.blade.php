@@ -32,9 +32,10 @@
 
 	</div>
 
-	<section id="4days">
+	<section id="4days" class="container-fluid">
         @include('events.4days')
  	</section>
+
 @stop
 
 @section('scripts.footer')

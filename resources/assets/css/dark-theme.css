@@ -298,9 +298,10 @@ a {
     text-decoration: none;
 }
 
+/* removes the underline for links and sets the color to a lighter color */
 a:focus, a:hover {
-    color: #df691a;
-    text-decoration: underline;
+    color: #ef991a;
+    text-decoration: none;
 }
 a:active, a:hover {
     outline: 0;
