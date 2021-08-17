@@ -8,5 +8,5 @@
 </ul>
 
 @else
-	<ul class='event-list'><li style='clear:both;'><i>No events listed</i></li></ul> 
+	<div><small>No events listed today.</small></div>
 @endif
