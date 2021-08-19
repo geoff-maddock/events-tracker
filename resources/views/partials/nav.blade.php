@@ -6,7 +6,11 @@
 			</span>
 		</div>
 
-		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-collapsable" aria-controls="navbar-collapsable" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		  </button>
+		
+		<div class="collapse navbar-collapse" id="navbar-collapsable">
 			<ul class="navbar-nav me-auto">
 				<li class="nav-item dropdown {{ Request::is('events') ? 'active' : '' }}">
 		          <a href="#" class="nav-link dropdown-toggle" id="event-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  title="Show paginated list of events">Events <span class="caret"></span></a>

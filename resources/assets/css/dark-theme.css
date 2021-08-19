@@ -17,9 +17,11 @@ body {
 
 .profile-card {
 	padding: 10px;
-	background-color: #433;
-	margin-left: 5px;
+	background-color: var(--bs-dark);
+	/* fixes issue with show page
+	margin-left: 5px; 
 	margin-bottom: 15px;
+	*/
 	border-radius: 5px;
 	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
 	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
@@ -305,4 +307,9 @@ a:focus, a:hover {
 }
 a:active, a:hover {
     outline: 0;
+}
+
+/* dark color for tags - change to specific? */
+span.bg-dark {
+    background-color: #000000 !important;
 }

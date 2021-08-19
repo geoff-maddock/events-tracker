@@ -15,41 +15,64 @@
     </div>
 
     @endif
-    @if ($series->visibility->name !== 'Public')
-    <span class="text-warning">{{ $series->visibility->name }}</span><br>
-    @endif
-    {!! link_to_route('series.show', $series->name, [$series->id], ['class' => 'item-title', 'alt' => $series->name,
-    'aria-label' => $series->name]) !!} {{ $series->short }}
+
+    <span>{{ $series->occurrenceType->name }} {{ $series->occurrence_repeat }}</span>
 
     @if ($signedIn && ($series->ownedBy($user) || $user->hasGroup('super_admin')))
     <a href="{!! route('series.edit', ['series' => $series->id],  ['alt' => 'Edit '.$series->name, 'aria-label' => 'Edit '.$series->name]) !!}"
-        class="card-actions"><span class='glyphicon glyphicon-pencil'></span></a>
+        class="card-actions">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pencil-fill card-actions" viewBox="0 0 16 16">
+            <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+          </svg>
+    </a>
+
     <a href="{!! route('series.createOccurrence', ['id' => $series->id]) !!}"
-        title="Create the next occurrence of {{ $series->name }}" class="card-actions"><span
-            class='glyphicon glyphicon-fire'></span></a>
+        title="Create the next occurrence of {{ $series->name }}" class="card-actions">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-plus" viewBox="0 0 16 16">
+            <path d="M8 7a.5.5 0 0 1 .5.5V9H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V10H6a.5.5 0 0 1 0-1h1.5V7.5A.5.5 0 0 1 8 7z"/>
+            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+          </svg>
+
+        </a>
     @endif
 
     @if ($signedIn)
     @if ($follow = $series->followedBy($user))
     <a href="{!! route('series.unfollow', ['id' => $series->id]) !!}" data-target="#series-{{ $series->id }}"
-        class="ajax-action card-actions" title="Click to unfollow"><span
-            class='glyphicon glyphicon-minus-sign text-warning'></span></a>
+        class="ajax-action card-actions" title="Click to unfollow">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash-circle-fill" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7z"/>
+          </svg>
+    </a>
     @else
     <a href="{!! route('series.follow', ['id' => $series->id]) !!}" data-target="#series-{{ $series->id }}"
-        class="ajax-action card-actions" title="Click to follow"><span
-            class='glyphicon glyphicon-plus-sign text-info'></span></a>
+        class="ajax-action card-actions" title="Click to follow">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+          </svg>
+        </a>
     @endif
 
     @endif
-    <br>
-    {{ $series->occurrenceType->name }} {{ $series->occurrence_repeat }}
-    @if ($series->occurrenceType->name !== 'No Schedule')
-    next is
-    {{ $series->nextEvent() ? $series->nextEvent()->start_at->format('l F jS Y') :
-    $series->cycleFromFoundedAt()->format('l F jS Y') }}
+    <div class='event-time'>
+        @if ($series->occurrenceType->name !== 'No Schedule')
+        Next is
+        {{ $series->nextEvent() ? $series->nextEvent()->start_at->format('l F jS Y') :
+        $series->cycleFromFoundedAt()->format('l F jS Y') }}
+        @endif
+	</div>
+    <div>
+    @if ($series->visibility->name !== 'Public')
+    <span class="text-warning">{{ $series->visibility->name }}</span>
     @endif
 
-    <br>Founded {!! $series->founded_at ? $series->founded_at->format('l F jS Y') : 'unknown'!!}
+    {!! link_to_route('series.show', $series->name, [$series->id], ['class' => 'item-title', 'alt' => $series->name, 'aria-label' => $series->name]) !!}
+    </div>
+
+
+    <small>
+         {{ $series->short }}
+    </small>
 
     @if ($series->cancelled_at != NULL)
     <br> Cancelled {!! $series->cancelled_at ? $series->cancelled_at->format('l F jS Y') : 'unknown'!!}<br>
@@ -70,14 +93,13 @@
     <P>
         @unless ($series->entities->isEmpty())
         @foreach ($series->entities as $entity)
-        <span class="label label-tag"><a href="/series/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name
-                }}</a></span>
+            @include('entities.single_label')
         @endforeach
         @endunless
 
         @unless ($series->tags->isEmpty())
         @foreach ($series->tags as $tag)
-        <span class="label label-tag"><a href="/series/tag/{{ $tag->slug }}">{{ $tag->name }}</a></span>
+            @include('tags.single_label')
         @endforeach
         @endunless
     </P>

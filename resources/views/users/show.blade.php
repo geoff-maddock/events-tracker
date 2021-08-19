@@ -5,17 +5,20 @@
 @section('content')
 
     <div class="row">
-        <div class="col-md-12">
-            <h2>{{ $user->name }}</h2>
-            <div class="mx-2">
-                @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser') ) )
-                    <a href="{!! route('users.edit', ['user' => $user->id]) !!}" class="btn btn-primary">Edit Profile</a>
-                    <a href="{{ url('/password/reset') }}" class="btn btn-primary">Reset Password</a>
-                    {!! delete_form(['users.destroy', $user->id]) !!}
-                @endif
 
-                <a href="{!! URL::route('users.index') !!}" class="btn btn-info">Return to list</a>
-            </div>
+        <div class="m-2">
+            <h2>{{ $user->name }}</h2>
+            @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser') ) )
+                <a href="{!! route('users.edit', ['user' => $user->id]) !!}" class="btn btn-primary">Edit Profile</a>
+                <a href="{{ url('/password/reset') }}" class="btn btn-primary">Reset Password</a>
+                {!! delete_form(['users.destroy', $user->id]) !!}
+            @endif
+
+            <a href="{!! URL::route('users.index') !!}" class="btn btn-info">Return to list</a>
+        </div>
+    </div>
+    <div class="row small-gutter mx-2">
+
             <div class="col-lg-6 profile-card">
                 <b>Name </b> {{ $user->full_name }}<br>
                 <b>Status </b> {{ $user->status ? $user->status->name : '' }}<br>
@@ -47,8 +50,9 @@
                     @unless ($user->groups->isEmpty())
                         <P><b>Groups:</b>
                             @foreach ($user->groups as $group)
-                                <span class="label label-tag"><a href="/groups/{{ $group->id }}"
-                                                                 title="{{ $group->description }}">{{ $group->label }}</a></span>
+                            <span class="badge rounded-pill bg-dark">
+                                <a href="/groups/{{ $group->id }}" title="{{ $group->description }}">{{ $group->label }}</a>
+                            </span>
                         @endforeach
                     @endunless
                 </div>
@@ -62,7 +66,7 @@
                 <br>
             </div>
 
-            <div class="col-md-5">
+            <div class="col-lg-6">
                 @if ($signedIn || $user->id == Config::get('app.superuser'))
                     <form action="/users/{{ $user->id }}/photos" class="dropzone" id="myDropzone" method="POST">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -94,33 +98,41 @@
 
         </div>
 
-    </div>
-    <div class="row">
-        <div class="col-md-12">
+    <div class="row m-2"></div>
+    <div class="row small-gutter mx-2">
+
             <div class="col-lg-6">
-                <div class="bs-component">
-                    <div class="panel panel-info">
+                <div class="card">
+                    <div>
                         @if (isset($tabs))
                             @if ($tabs['events'] === 'created')
-                            <div class="panel-heading">
-                                <h3 class="panel-title">Events  <span  class="label label-primary">{{ $user->eventCount }}</span></h3>
+                            <div class="card-header bg-primary">
+                                <h5 class="my-0 fw-normal">Events  <span  class="badge rounded-pill bg-warning text-dark">{{ $user->eventCount }}</span></h3>
                             </div>
-                                <ul class="nav nav-tabs">
-                                    <li role="presentation" class="@if ($tabs['events'] === 'created') active @endif"><a href="/users/{{ $user->id }}?tabs[events]=created&tabs[following]={{ $tabs['following'] }}">Created</a></li>
-                                    <li role="presentation" class="@if ($tabs['events'] === 'attending') active @endif"><a href="/users/{{ $user->id }}?tabs[events]=attending&tabs[following]={{ $tabs['following'] }}">Attending</a></li>
+                                <ul class="nav nav-pills m-2">
+                                    <li role="presentation" class="nav-item">
+                                        <a class="nav-link @if ($tabs['events'] === 'created')active @endif" aria-current="page" href="/users/{{ $user->id }}?tabs[events]=created&tabs[following]={{ $tabs['following'] }}">Created</a>
+                                    </li>
+                                    <li role="presentation" class="nav-item">
+                                        <a class="nav-link @if ($tabs['events'] === 'attending')active @endif" href="/users/{{ $user->id }}?tabs[events]=attending&tabs[following]={{ $tabs['following'] }}">Attending</a>
+                                    </li>
                                 </ul>
-                                <div class="panel-body">
+                                <div class="card-body">
                                 @include('events.list', ['events' => $user->events ? $user->events->take(20) : null])
                                 </div>
                             @else
-                            <div class="panel-heading">
-                                <h3 class="panel-title">Events  <span  class="label label-primary">{{ $user->attendingCount }}</span></h3>
+                            <div class="card-header bg-primary">
+                                <h5 class="my-0 fw-normal">Events  <span class="badge rounded-pill bg-warning text-dark">{{ $user->attendingCount }}</span></h3>
                             </div>
-                                <ul class="nav nav-tabs">
-                                    <li role="presentation" class="@if ($tabs['events'] === 'created') active @endif"><a href="/users/{{ $user->id }}?tabs[events]=created&tabs[following]={{ $tabs['following'] }}">Created</a></li>
-                                    <li role="presentation" class="@if ($tabs['events'] === 'attending') active @endif"><a href="/users/{{ $user->id }}?tabs[events]=attending&tabs[following]={{ $tabs['following'] }}">Attending</a></li>
+                                <ul class="nav nav-pills m-2">
+                                    <li role="presentation" class="nav-item">
+                                        <a class="nav-link @if ($tabs['events'] === 'created') active @endif" href="/users/{{ $user->id }}?tabs[events]=created&tabs[following]={{ $tabs['following'] }}">Created</a>
+                                    </li>
+                                    <li role="presentation" class="nav-item">
+                                        <a class="nav-link @if ($tabs['events'] === 'attending') active @endif" href="/users/{{ $user->id }}?tabs[events]=attending&tabs[following]={{ $tabs['following'] }}">Attending</a>
+                                    </li>
                                 </ul>
-                                <div class="panel-body">
+                                <div class="card-body">
                                 @include('events.list', ['events' => $user->getAttending()->get()->take(20)])
                                 </div>
                             @endif
@@ -129,78 +141,106 @@
                     </div>
                 </div>
             </div>
+
             <div class="col-lg-6">
-                <div class="bs-component">
+                <div class="card">
+                    <div>
+                            @switch($tabs['following'])
+                                @case('tags')
+                                    <div class="card-header bg-primary">
+                                        <h5 class="my-0 fw-normal">Following <span class="badge rounded-pill bg-warning text-dark">{{ $user->tagsFollowingCount }}</span></h3>
+                                    </div>
+                                    <ul  class="nav nav-pills m-2">
+                                        <li role="presentation" class="nav-item">
+                                            <a class="nav-link @if ($tabs['following'] === 'tags') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=tags">Tags</a>
+                                        </li>
+                                        <li role="presentation" class="">
+                                            <a class="nav-link @if ($tabs['following'] === 'entities') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=entities">Entities</a>
+                                        </li>
+                                        <li role="presentation" class="">
+                                            <a class="nav-link @if ($tabs['following'] === 'series') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=series">Series</a>
+                                        </li>
+                                        <li role="presentation" class="">
+                                            <a class="nav-link @if ($tabs['following'] === 'threads') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=threads">Threads</a>
+                                        </li>
+                                    </ul>
+                                    <div class="card-body">
+                                    @include('tags.list', ['tags' => $user->getTagsFollowing()->take(20)])
+                                    </div>
+                                    @break
 
-                    <div class="bs-component">
-                        <div class="panel panel-info">
-                                @switch($tabs['following'])
-                                    @case('tags')
-                                        <div class="panel-heading">
-                                            <h3 class="panel-title">Following <span class="label label-primary">{{ $user->tagsFollowingCount }}</span></h3>
-                                        </div>
-                                        <ul class="nav nav-tabs">
-                                            <li role="presentation" class="@if ($tabs['following'] === 'tags') active @endif"><a href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=tags">Tags</a></li>
-                                            <li role="presentation" class="@if ($tabs['following'] === 'entities') active @endif"><a href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=entities">Entities</a></li>
-                                            <li role="presentation" class="@if ($tabs['following'] === 'series') active @endif"><a href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=series">Series</a></li>
-                                            <li role="presentation" class="@if ($tabs['following'] === 'threads') active @endif"><a href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=threads">Threads</a></li>
-                                        </ul>
-                                        <div class="panel-body">
-                                        @include('tags.list', ['tags' => $user->getTagsFollowing()->take(20)])
-                                        </div>
-                                        @break
-
-                                    @case('entities')
-                                        <div class="panel-heading">
-                                            <h3 class="panel-title">Following <span class="label label-primary">{{ $user->entitiesFollowingCount }}</span></h3>
-                                        </div>
-                                        <ul class="nav nav-tabs">
-                                            <li role="presentation" class="@if ($tabs['following'] === 'tags') active @endif"><a href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=tags">Tags</a></li>
-                                            <li role="presentation" class="@if ($tabs['following'] === 'entities') active @endif"><a href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=entities">Entities</a></li>
-                                            <li role="presentation" class="@if ($tabs['following'] === 'series') active @endif"><a href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=series">Series</a></li>
-                                            <li role="presentation" class="@if ($tabs['following'] === 'threads') active @endif"><a href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=threads">Threads</a></li>
-                                        </ul>
-                                        <div class="panel-body">
+                                @case('entities')
+                                    <div class="card-header bg-primary">
+                                        <h5 class="my-0 fw-normal">Following <span class="badge rounded-pill bg-warning text-dark">{{ $user->entitiesFollowingCount }}</span></h3>
+                                    </div>
+                                    <ul  class="nav nav-pills m-2">
+                                        <li role="presentation" class="nav-item">
+                                            <a class="nav-link @if ($tabs['following'] === 'tags') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=tags">Tags</a>
+                                        </li>
+                                        <li role="presentation" class="nav-item">
+                                            <a class="nav-link @if ($tabs['following'] === 'entities') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=entities">Entities</a>
+                                        </li>
+                                        <li role="presentation" class="nav-item">
+                                            <a class="nav-link @if ($tabs['following'] === 'series') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=series">Series</a>
+                                        </li>
+                                        <li role="presentation" class="nav-item">
+                                            <a class="nav-link @if ($tabs['following'] === 'threads') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=threads">Threads</a>
+                                        </li>
+                                    </ul>
+                                    <div class="card-body">
                                         @include('entities.list', ['entities' => $user->getEntitiesFollowing()->take(20)])
-                                        </div>
-                                        @break
+                                    </div>
+                                    @break
 
-                                    @case('series')
-                                        <div class="panel-heading">
-                                            <h3 class="panel-title">Following <span class="label label-primary">{{ $user->seriesFollowingCount }}</span></h3>
-                                        </div>
-                                        <ul class="nav nav-tabs">
-                                            <li role="presentation" class="@if ($tabs['following'] === 'tags') active @endif"><a href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=tags">Tags</a></li>
-                                            <li role="presentation" class="@if ($tabs['following'] === 'entities') active @endif"><a href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=entities">Entities</a></li>
-                                            <li role="presentation" class="@if ($tabs['following'] === 'series') active @endif"><a href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=series">Series</a></li>
-                                            <li role="presentation" class="@if ($tabs['following'] === 'threads') active @endif"><a href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=threads">Threads</a></li>
-                                        </ul>
-                                        <div class="panel-body">
+                                @case('series')
+                                    <div class="card-header bg-primary">
+                                        <h5 class="my-0 fw-normal">Following <span class="badge rounded-pill bg-warning text-dark">{{ $user->seriesFollowingCount }}</span></h3>
+                                    </div>
+                                    <ul class="nav nav-pills m-2">
+                                        <li role="presentation" class="nav-item">
+                                            <a class="nav-link @if ($tabs['following'] === 'tags') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=tags">Tags</a>
+                                        </li>
+                                        <li role="presentation" class="nav-item">
+                                            <a class="nav-link @if ($tabs['following'] === 'entities') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=entities">Entities</a>
+                                        </li>
+                                        <li role="presentation" class="nav-item">
+                                            <a class="nav-link @if ($tabs['following'] === 'series') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=series">Series</a>
+                                        </li>
+                                        <li role="presentation" class="nav-item">
+                                            <a class="nav-link @if ($tabs['following'] === 'threads') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=threads">Threads</a>
+                                        </li>
+                                    </ul>
+                                    <div class="card-body">
                                         @include('series.list', ['series' => $user->getSeriesFollowing()->take(20)])
-                                        </div>
-                                        @break
+                                    </div>
+                                    @break
 
-                                    @case('threads')
-                                        <div class="panel-heading">
-                                            <h3 class="panel-title">Following <span class="label label-primary">{{ $user->threadsFollowingCount }}</span></h3>
-                                        </div>
-                                        <ul class="nav nav-tabs">
-                                            <li role="presentation" class="@if ($tabs['following'] === 'tags') active @endif"><a href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=tags">Tags</a></li>
-                                            <li role="presentation" class="@if ($tabs['following'] === 'entities') active @endif"><a href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=entities">Entities</a></li>
-                                            <li role="presentation" class="@if ($tabs['following'] === 'series') active @endif"><a href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=series">Series</a></li>
-                                            <li role="presentation" class="@if ($tabs['following'] === 'threads') active @endif"><a href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=threads">Threads</a></li>
-                                        </ul>
-                                        <div class="panel-body">
+                                @case('threads')
+                                    <div class="card-header bg-primary">
+                                        <h5 class="my-0 fw-normal">Following <span class="badge rounded-pill bg-warning text-dark">{{ $user->threadsFollowingCount }}</span></h3>
+                                    </div>
+                                    <ul class="nav nav-pills m-2">
+                                        <li role="presentation" class="nav-item">
+                                            <a class="nav-link @if ($tabs['following'] === 'tags') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=tags">Tags</a>
+                                        </li>
+                                        <li role="presentation" class="nav-item">
+                                            <a class="nav-link @if ($tabs['following'] === 'entities') active @endif"href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=entities">Entities</a>
+                                        </li>
+                                        <li role="presentation" class="nav-item">
+                                            <a class="nav-link @if ($tabs['following'] === 'series') active @endif"href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=series">Series</a>
+                                        </li>
+                                        <li role="presentation" class="nav-item">
+                                            <a class="nav-link @if ($tabs['following'] === 'threads') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=threads">Threads</a>
+                                        </li>
+                                    </ul>
+                                    <div class="card-body">
                                         @include('threads.list', ['threads' => $user->getThreadsFollowing()->take(20)])
-                                        </div>
-                                        @break
+                                    </div>
+                                    @break
 
-                                @endswitch
-                            </div>
-
+                            @endswitch
                         </div>
                     </div>
-
                 </div>
             </div>
 
