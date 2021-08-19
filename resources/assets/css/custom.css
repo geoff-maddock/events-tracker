@@ -172,3 +172,7 @@
 	list-style-type: none;
 	padding-left: 0px;
 }
+
+.rounded-med {
+    border-radius: 20px !important;
+}
