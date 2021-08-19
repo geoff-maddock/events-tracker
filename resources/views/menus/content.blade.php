@@ -5,15 +5,15 @@
 @section('content')
 
 
-<h1>{{ $menu->name }}
+<h2>{{ $menu->name }}
 	@include('menus.crumbs', ['slug' => $menu->slug])
-</h1>
+</h2>
 
 
 <div class="row">
 
     @forelse ($menu->blogs as $blog)
-        <div class="profile-card col-md-4">
+        <div class="profile-card col-md-8 mx-2">
             @if ($blog->contentType->name === "HTML")
                 {!! $blog->body !!}
             @else
