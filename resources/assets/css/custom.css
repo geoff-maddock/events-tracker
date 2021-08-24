@@ -176,3 +176,9 @@
 .rounded-med {
     border-radius: 20px !important;
 }
+
+#filter-list {
+	position: relative; 
+	right: -12px;
+	padding: 5px;
+}

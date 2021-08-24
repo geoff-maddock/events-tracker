@@ -3,7 +3,7 @@
 @section('content')
 <section class="vh-100">
 	<div class="container-fluid h-custom">
-	  <div class="row d-flex justify-content-center align-items-center h-100">
+	  <div class="row d-flex justify-content-center align-items-center h-100 mt-5">
 		<div class="col-md-9 col-lg-6 col-xl-5">
 		  <img src="images/register-walk.png" class="img-fluid rounded-med" alt="Sign In">
 		</div>
