@@ -269,12 +269,6 @@ li.selected:hover {
     font-weight: 600;
 }
 
-#filter-list {
-	background-color: #ec945a; 
-	position: relative; 
-	right: -15px;
-	padding: 5px;
-}
 
 li.select2-results__option {
 	color: #989898;
@@ -312,4 +306,8 @@ a:active, a:hover {
 /* dark color for tags - change to specific? */
 span.bg-dark {
     background-color: #000000 !important;
+}
+
+#filter-list {
+	background-color: #ec945a; 
 }
