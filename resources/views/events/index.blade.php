@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h4>Events @include('events.crumbs')</h4>
+<h1 class="display-6 text-primary">Events @include('events.crumbs')</h4>
 
 <div id="action-menu" class="mb-2">
 	<a href="{!! URL::route('events.index') !!}" class="btn btn-info mt-2 mr-2">Show event index</a>
@@ -16,7 +16,7 @@
 </div>
 
 <div id="filters-container" class="row">
-	<div id="filters-content" class="col-lg-9">
+	<div id="filters-content" class="col-xl-9">
 		<a href="#" id="filters" class="btn btn-primary">
 			Filters 
 			<span id="filters-toggle" class="@if (!$hasFilter) filter-closed @else filter-open @endif">
@@ -27,9 +27,9 @@
 		</a>
 		{!! Form::open(['route' => [$filterRoute ?? 'events.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
 
-		<div id="filter-list" class="row @if (!$hasFilter)d-none @endif">
-
-			<div class="col-auto">
+		<div id="filter-list" class="px-2 @if (!$hasFilter)d-none @endif">
+		<div class="row">
+			<div class="col">
 				{!! Form::label('filter_name','Filter By Name') !!}
 				{!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
 				[
@@ -39,10 +39,9 @@
 				]) !!}
 			</div>
 
-			<div class="col-auto">
+			<div class="col">
 				{!! Form::label('filter_venue', 'Venue', array('width' => '100%')) !!}<br>
-				{!! Form::select('filter_venue', $venueOptions, (isset($filters['venue']) ? $filters['venue'] :
-				NULL),
+				{!! Form::select('filter_venue', $venueOptions, (isset($filters['venue']) ? $filters['venue'] :	NULL),
 				[
 				'data-theme' => 'bootstrap-5',
 				'data-width' => '100%',
@@ -53,7 +52,7 @@
 				!!}
 			</div>
 
-			<div class="col-auto">
+			<div class="col">
 				{!! Form::label('filter_tag', 'Tag') !!}
 				{!! Form::select('filter_tag', $tagOptions, (isset($filters['tag']) ? $filters['tag'] : NULL),
 				[
@@ -65,7 +64,7 @@
 				]) !!}
 			</div>
 
-			<div class="form-group col-sm-2">
+			<div class="col">
 				{!! Form::label('filter_related','Related Entity') !!}
 				{!! Form::select('filter_related', $relatedOptions, (isset($filters['related'])
 				? $filters['related'] : NULL),
@@ -78,7 +77,7 @@
 				]) !!}
 			</div>
 
-			<div class="form-group col-sm-2">
+			<div class="col">
 				{!! Form::label('filter_event_type','Type') !!}
 				{!! Form::select('filter_event_type', $eventTypeOptions, (isset($filters['event_type'])
 				? $filters['event_type'] : NULL),
@@ -91,7 +90,7 @@
 				]) !!}
 			</div>
 
-			<div class="form-group col-sm-2">
+			<div class="col">
 				{!! Form::label('filter_start_at','Start At') !!}
 
 				<div class="d-flex">
@@ -117,7 +116,8 @@
 					!!}
 				</div>
 			</div>
-
+		</div>
+		<div class="row">
 			<div class="col-sm-2">
 				<div class="btn-group col-sm-1">
 					<label></label>
@@ -141,7 +141,8 @@
 			</div>
 		</div>
 	</div>
-	<div id="list-control" class="col-lg-3 visible-lg-block visible-md-block text-right">
+</div>
+	<div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right">
 		<form action="{{ url()->current() }}" method="GET" class="form-inline">
 			<div class="form-group row gx-1 justify-content-end">
 				<div class="col-auto">
@@ -174,10 +175,6 @@
 	<div id="all-events-list" class="col-lg-6">
 		<div class="bs-component">
 			<div class="panel panel-info">
-
-				<div class="panel-heading">
-					<h3 class="panel-title">Events</h3>
-				</div>
 
 				<div class="panel-body">
 					{!! $events->render() !!}

@@ -2,14 +2,16 @@
 	@if ($primary = $event->getPrimaryPhoto())
 	<div class="event-list-thumbnail">
 		<a href="{{ $primary->getStoragePath() }}" data-lightbox="{{ $primary->getStoragePath() }}"
-			title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img
-				src="{{ $primary->getStorageThumbnail() }}" alt="{{ $event->name}}"></a>
+			title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom">
+			<img src="{{ $primary->getStorageThumbnail() }}" alt="{{ $event->name}}" class="thumnail-image">
+		</a>
 	</div>
 	@else
 	<div class="event-list-thumbnail">
 		<a href="/images/event-placeholder.png" data-lightbox="/images/event-placeholder.png"
-			title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img
-				src="/images/event-placeholder.png" alt="{{ $event->name}}"></a>
+			title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom">
+			<img src="/images/event-placeholder.png" alt="{{ $event->name}}" class="thumnail-image">
+		</a>
 	</div>
 	@endif
 
