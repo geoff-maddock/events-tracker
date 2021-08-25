@@ -7,9 +7,17 @@
     max-width: 50px !important;
 }
 
-#event-repo .event-card img {
+/* Deprecated.  Max width for image in event card.  Replace with img-fluid */
+
+#event-repo .thumnail-image img {
     max-width: 100px;
 }
+
+/* #event-repo .event-card img {
+    max-width: 100px;
+} */
+
+/*
 
 #event-repo .series-card img {
     max-width: 100px;
@@ -18,7 +26,7 @@
 
 #event-repo img.listing{
     max-width: 100%;
-}
+} */
 
 .load-spinner {
     width: 40px;
@@ -138,7 +146,7 @@
 
 .card-actions {
     float: right;
-    padding: 3px;
+    margin-left: .2rem;
 }
 
 .card-actions:hover {
@@ -179,6 +187,30 @@
 
 #filter-list {
 	position: relative; 
-	right: -12px;
 	padding: 5px;
 }
+
+/* work with a smaller form text size? */
+
+/* .form-control {
+    font-size: .75rem !important;
+}
+
+.form-select {
+    font-size: .75rem !important;
+}
+
+.select2-container--bootstrap-5 .select2-selection {
+    font-size: .75rem !important;
+} */
+
+/* disable the button on focus outline */
+.btn:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+.btn-primary:focus {
+    outline: none;
+    box-shadow: none;
+  }

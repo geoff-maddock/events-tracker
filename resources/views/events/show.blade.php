@@ -9,9 +9,7 @@
 
 @section('content')
 
-<h4>Events
-	@include('events.crumbs', ['slug' => '#'.$event->id])
-</h4>
+<h1 class="display-6 text-primary">Events	@include('events.crumbs', ['slug' => $event->name])</h1>
 
 <p id="show_actions">
 	@include('events.show.actions', ['event' => $event, 'user' => $user])
@@ -19,7 +17,7 @@
 
 
 <div class="row">
-<div class="col-md-6">
+<div class="col-lg-6">
 	<div class="event-card">
 	<div class="event-date">
 		@if ($event->visibility->name !== 'Public')
