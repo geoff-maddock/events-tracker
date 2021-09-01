@@ -79,6 +79,32 @@ function link_form_icon($icon, $path, $type, $title = '', $label = '', $class = 
 EOT;
 }
 
+function link_form_bootstrap_icon($icon, $path, $type, $title = '', $label = '', $class = '', $confirm = 'confirm')
+{
+    $csrf = csrf_token();
+    $object = 'object';
+
+    if (is_object($path)) {
+        $object = get_class_name(get_class($path));
+
+        $action = '/' . str_replace('_', '-', $path->getTable());
+
+        if (in_array($type, ['PUT', 'PATCH', 'DELETE'])) {
+            $action .= '/' . $path->getKey();
+        }
+    } else {
+        $action = $path;
+    }
+
+    return <<< EOT
+    <form method="POST" action="{$action}" style="display: inline;">
+        <input type='hidden' name='_method' value='{$type}'>
+        <input type="hidden" name="_token" value="{$csrf}">
+        <button type="submit" class="{$confirm} no-button {$class}" data-type="{$object}">{$label} <i class="{$icon}" title="{$title}"></i></button>
+    </form>
+EOT;
+}
+
 function get_class_name($classname)
 {
     if ($pos = strrpos($classname, '\\')) {
