@@ -16,7 +16,6 @@
 	<meta name="csrf-token" content="{{ csrf_token() }}">
 	<title>{{ config('app.app_name')}} - Event + Club Guide - @yield('title')</title>
 	
-	<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.min.css' rel='stylesheet' />
 	<link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/apple-icon-180x180.png">
   	<link rel="alternate" type="application/rss+xml" href="{{ url('rss') }}"
@@ -31,14 +30,15 @@
 	<!-- <link href="{{ asset('/css/app.css') }}" rel="stylesheet">-->
 	{{-- <link href="{{ asset('/css/select2.css') }}" rel="stylesheet">
 	<link href="{{ asset('/css/select2-bootstrap.min.css') }}" rel="stylesheet"> --}}
+	<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.min.css' rel='stylesheet' />
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.1.1/dist/select2-bootstrap-5-theme.min.css" />
 	<!-- Material Icons -->
 	{{-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap" rel="stylesheet"> --}}
-	{{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"> --}}
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
 	<!-- Fonts -->
 	<link href="//fonts.googleapis.com/css?family=Roboto:400,300&display=swap" rel="stylesheet" type="text/css">
-	<link href="https://fonts.googleapis.com/css?family=Rubik&display=swap" rel="stylesheet">
+	{{-- <link href="https://fonts.googleapis.com/css?family=Rubik&display=swap" rel="stylesheet"> --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.min.js"></script>
 </head>

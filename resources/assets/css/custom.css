@@ -9,7 +9,7 @@
 
 /* Deprecated.  Max width for image in event card.  Replace with img-fluid */
 
-#event-repo .thumnail-image img {
+#event-repo img.thumbnail-image {
     max-width: 100px;
 }
 
@@ -214,3 +214,9 @@
     outline: none;
     box-shadow: none;
   }
+
+  /* specificly target the dropzone used for event photos */
+#myDropzone {
+    min-height: 114px;
+    padding: 10px;
+}
