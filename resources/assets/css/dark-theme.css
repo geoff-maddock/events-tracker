@@ -295,12 +295,9 @@ a {
 }
 
 /* removes the underline for links and sets the color to a lighter color */
-a:focus, a:hover {
+a:focus, a:hover, a:active {
     color: #ef991a;
     text-decoration: none;
-}
-a:active, a:hover {
-    outline: 0;
 }
 
 /* dark color for tags - change to specific? */
@@ -312,7 +309,82 @@ span.bg-dark {
 	background-color: #ec945a; 
 }
 
+/* form related darkmode styles */
+/* 
 .form-control, .form-control:active, .form-control:hover, .form-control:focus {
 	background-color: var(--bs-secondary);
 	color:  rgba(255, 255, 255, 0.5) !important;
+} */
+
+input.form-control, input.form-control:active, input.form-control:hover, input.form-control:focus,
+textarea.form-control, textarea.form-control:active, textarea.form-control:hover, textarea.form-control:focus,
+select.form-control, select.form-control:active, select.form-control:hover, select.form-control:focus.card-thumb
+{
+	background-color: var(--bs-secondary);
+	color:  rgba(255, 255, 255, 0.5) !important;
+}
+
+/* select2 dark styles */
+.select2 { 
+	background-color: var(--bs-secondary);
+	color:  rgba(255, 255, 255, 0.5) !important;
+}
+.selection span.select2-selection { 
+	background-color: var(--bs-secondary) !important;
+	color:  rgba(255, 255, 255, 0.5) !important;
+}
+.selection span.select2-selection__rendered { 
+	background-color: var(--bs-secondary) !important;
+	color:  rgba(255, 255, 255, 0.5) !important;
+}
+.select2-container input.select2-search {
+	background-color: var(--bs-secondary) !important;
+	color:  rgba(255, 255, 255, 0.5) !important;
+}
+.select2-container span.select2-dropdown { 
+	background-color: var(--bs-secondary) !important;
+	color:  rgba(255, 255, 255, 0.5) !important;
+}
+.select2-search { 
+	background-color: var(--bs-secondary) !important;
+	color:  rgba(255, 255, 255, 0.5) !important;
+}
+.select2-choice { 
+	background-color: var(--bs-secondary) !important; 
+	color:  rgba(255, 255, 255, 0.5) !important;
+}
+.selection li.select2-selection__choice { 
+	color:  var(--bs-secondary);
+}
+
+.dropzone {
+	background-color: var(--bs-secondary);
+	color:  rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Change Autocomplete styles in Chrome*/
+input:-internal-autofill-selected,
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+	transition: background-color 600000s 0s, color 600000s 0s;
+}
+
+/* icon color and hover color */
+.icon {
+	color: var(--bs-warning);
+}
+
+.icon:hover {
+	filter: brightness(120%);
+}
+
+.table > :not(:last-child) > :last-child > * {
+	border-bottom-color: var(--bs-dark);
 }

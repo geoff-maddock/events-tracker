@@ -1,12 +1,22 @@
 <tr>
-    <td>{!! link_to_route('threads.show', $thread->name, [$thread->id], ['class' => 'forum-link']) !!}
+    <td>
+        <span class="pe-2">
+        {!! link_to_route('threads.show', $thread->name, [$thread->id], ['class' => 'forum-link']) !!}
+        </span>
         @if ($signedIn && (($thread->ownedBy($user) && $thread->isRecent()) || $user->hasGroup('super_admin')))
-            <a href="{!! route('threads.edit', ['thread' => $thread->id]) !!}" title="Edit this thread." class="hover-dim"><span class='glyphicon glyphicon-pencil text-primary'></span></a>
-            {!! link_form_icon('glyphicon-trash text-warning', $thread, 'DELETE', 'Delete the [thread]') !!}
+            
+        <a href="{!! route('threads.edit', ['thread' => $thread->id]) !!}" title="Edit this thread."><i class="bi bi-pencil-fill icon"></i></a>
+            
+            {!! link_form_bootstrap_icon('bi bi-trash-fill icon', $thread, 'DELETE', 'Delete the thread') !!}
+
             @if (!$thread->is_locked)
-                <a href="{!! route('threads.lock', ['id' => $thread->id]) !!}" title="Lock this thread." class="hover-dim"><span class='material-icons md-18 icon-correct text-primary'>lock</span></a>
+                <a href="{!! route('threads.lock', ['id' => $thread->id]) !!}" title="Lock this thread.">
+                    <i class="bi bi-unlock-fill icon"></i>
+                </a>
             @else
-                <a href="{!! route('threads.unlock', ['id' => $thread->id]) !!}" title="Thread is locked.  Click to unlock." class="hover-dim"><span class='material-icons md-18 icon-correct text-danger'>lock</span></a>
+                <a href="{!! route('threads.unlock', ['id' => $thread->id]) !!}" title="Thread is locked.  Click to unlock.">
+                    <i class="bi bi-lock-fill icon"></i>
+                </a>
             @endif
         @endif
         @if ($signedIn)
@@ -25,13 +35,13 @@
 
         @if ($event = $thread->event)
             Event:
-            <span class="label label-tag"><a href="{!! route('events.show', ['event' => $event->id]) !!}">{{ $event->name }}</a></span>
+            <span class="badge rounded-pill bg-dark"><a href="{!! route('events.show', ['event' => $event->id]) !!}">{{ $event->name }}</a></span>
         @endif
 
         @unless ($thread->series->isEmpty())
             Series:
             @foreach ($thread->series as $series)
-                <span class="label label-tag"><a href="/threads/series/{{ urlencode($series->slug) }}">{{ $series->name }}</a>
+                <span class="badge rounded-pill bg-dark"><a href="/threads/series/{{ urlencode($series->slug) }}">{{ $series->name }}</a>
                             <a href="{!! route('series.show', ['series' => $series->id]) !!}" title="Show this series."><span class='glyphicon glyphicon-link text-info'></span></a>
                         </span>
             @endforeach
@@ -41,7 +51,7 @@
         @unless ($thread->entities->isEmpty())
             Related:
             @foreach ($thread->entities as $entity)
-                <span class="label label-tag"><a href="/threads/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a>
+                <span class="badge rounded-pill bg-dark"><a href="/threads/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a>
                             <a href="{!! route('entities.show', ['entity' => $entity->id]) !!}" title="Show this entity."><span class='glyphicon glyphicon-link text-info'></span></a>
                         </span>
             @endforeach
@@ -50,7 +60,7 @@
         @unless ($thread->tags->isEmpty())
             Tags:
             @foreach ($thread->tags as $tag)
-                <span class="label label-tag"><a href="/threads/tag/{{ urlencode($tag->name) }}">{{ $tag->name }}</a>
+                <span class="badge rounded-pill bg-dark"><a href="/threads/tag/{{ urlencode($tag->name) }}">{{ $tag->name }}</a>
                             <a href="{!! route('tags.show', ['tag' => $tag->name]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a>
                         </span>
             @endforeach
@@ -70,7 +80,7 @@
 </tr>
 <tr>
     <td colspan="7">
-        <div style="padding-left: 5px;">
+        <div class="p-2">
             <!-- TO DO: change this to storing the trust in the user at thread save -->
             @if (isset($thread->user) && $thread->user->can('trust_thread'))
                 {!! $thread->body !!}
