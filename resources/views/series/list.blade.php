@@ -6,7 +6,7 @@
 	@foreach ($series as $s)
 		@if ($type !== $s->occurrence_type_id)
 			<li style="margin-left: 10px;">
-				<h3>{{ $s->occurrenceType->name }}</h3>
+				<h4>{{ $s->occurrenceType->name }}</h3>
                 <?php $type = $s->occurrence_type_id; ?>
 			</li>
 		@endif

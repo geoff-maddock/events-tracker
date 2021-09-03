@@ -33,7 +33,7 @@
 				{!! Form::label('filter_name','Filter By Name') !!}
 				{!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
 				[
-					'class' => 'form-control',
+					'class' => 'form-control form-background',
 					'name' => 'filters[name]',
 					'data-theme' => 'bootstrap-5',
 				]) !!}
@@ -43,11 +43,11 @@
 				{!! Form::label('filter_venue', 'Venue', array('width' => '100%')) !!}<br>
 				{!! Form::select('filter_venue', $venueOptions, (isset($filters['venue']) ? $filters['venue'] :	NULL),
 				[
-				'data-theme' => 'bootstrap-5',
-				'data-width' => '100%',
-				'class' => 'form-select select2',
-				'data-placeholder' => 'Select a venue',
-				'name' => 'filters[venue]'
+					'data-theme' => 'bootstrap-5',
+					'data-width' => '100%',
+					'class' => 'form-select select2',
+					'data-placeholder' => 'Select a venue',
+					'name' => 'filters[venue]'
 				])
 				!!}
 			</div>
@@ -56,11 +56,11 @@
 				{!! Form::label('filter_tag', 'Tag') !!}
 				{!! Form::select('filter_tag', $tagOptions, (isset($filters['tag']) ? $filters['tag'] : NULL),
 				[
-				'data-theme' => 'bootstrap-5',
-				'data-width' => '100%',
-				'class' =>'form-select  select2',
-				'data-placeholder' => 'Select a tag',
-				'name' => 'filters[tag]'
+					'data-theme' => 'bootstrap-5',
+					'data-width' => '100%',
+					'class' =>'form-select select2',
+					'data-placeholder' => 'Select a tag',
+					'name' => 'filters[tag]'
 				]) !!}
 			</div>
 
@@ -94,24 +94,26 @@
 				{!! Form::label('filter_start_at','Start At') !!}
 
 				<div class="d-flex">
-					{!! Form::label('start', 'From:', ['style' => 'width: 35px;']) !!}
+					{!! Form::label('start', 'From:', ['style' => 'width: 3rem;']) !!}
 					{!! Form::date('start_at',
 					(isset($filters['start_at']['start']) ? $filters['start_at']['start'] : NULL),
 					[
-					'style' => 'padding: 8px 16px;',
-					'name' => 'filters[start_at][start]',
-					'data-theme' => 'bootstrap-5',
+						'style' => 'padding: 8px 16px;',
+						'name' => 'filters[start_at][start]',
+						'data-theme' => 'bootstrap-5',
+						'class' => 'form-control form-background'
 					])
 					!!}
 				</div>
 				<div class="d-flex">
-					{!! Form::label('end','To:', ['style' => 'width: 35px;']) !!}
+					{!! Form::label('end','To:', ['style' => 'width: 3rem;']) !!}
 					{!! Form::date('start_at',
 					(isset($filters['start_at']['end']) ? $filters['start_at']['end'] : NULL),
 					[
-					'style' => 'padding: 8px 16px;',
-					'name' => 'filters[start_at][end]',
-					'data-theme' => 'bootstrap-5',
+						'style' => 'padding: 8px 16px;',
+						'name' => 'filters[start_at][end]',
+						'data-theme' => 'bootstrap-5',
+						'class' => 'form-control form-background'
 					])
 					!!}
 				</div>
@@ -154,13 +156,13 @@
 					</a>
 				</div>
 				<div class="col-auto">
-					{!! Form::select('limit', $limitOptions, ($limit ?? 10), ['class' =>'form-select auto-submit']) !!}
+					{!! Form::select('limit', $limitOptions, ($limit ?? 10), ['class' =>'form-background form-select auto-submit']) !!}
 				</div>
 				<div class="col-auto">
-					{!! Form::select('sort', $sortOptions, ($sort ?? 'events.start_at'), ['class' =>'form-select auto-submit']) !!}
+					{!! Form::select('sort', $sortOptions, ($sort ?? 'events.start_at'), ['class' =>'form-background form-select auto-submit']) !!}
 				</div>
 				<div class="col-auto">
-					{!! Form::select('direction', $directionOptions, ($direction ?? 'desc'), ['class' =>'form-select auto-submit']) !!}
+					{!! Form::select('direction', $directionOptions, ($direction ?? 'desc'), ['class' =>'form-background form-select auto-submit']) !!}
 				</div>
 			</div>
 		</form>
@@ -185,6 +187,8 @@
 			</div>
 		</div>
 	</div>
+	@else 
+	<div><small class="text-muted">No matching events.</small></div>
 	@endif
 
 	@if (isset($past_events) && count($past_events) > 0)

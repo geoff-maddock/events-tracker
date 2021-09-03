@@ -95,7 +95,7 @@
 		        <li class="mx-2">
 				  <form class="navbar-form navbar-left" role="search" action="/search">
 					<div class="form-group">
-					  <input type="text" class="form-control" placeholder="Search" name="keyword" style="width: 150px;" value="{{ isset($slug) ? $slug : '' }}">
+					  <input type="text" class="form-control form-background" placeholder="Search" name="keyword" style="width: 150px;" value="{{ isset($slug) ? $slug : '' }}">
 					</div>
 				  </form>
 		     	</li>
