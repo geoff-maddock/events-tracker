@@ -57,12 +57,12 @@
 		<div id="app-mobile-search" class="container-fluid d-block d-sm-none">
 			<form class="col-sm-12" role="search" action="/search">
 				<div class="form-group">
-					<input type="text" class="form-control" placeholder="Search" name="keyword"  value="{{ isset($slug) ? $slug : '' }}">
+					<input type="text" class="form-control form-background" placeholder="Search" name="keyword"  value="{{ isset($slug) ? $slug : '' }}">
 				</div>
 			</form>
 		</div>
 
-		<div id="app-content" class="container-fluid">
+		<div id="app-content" class="container-fluid mt-2">
 
 				@yield('content')
 

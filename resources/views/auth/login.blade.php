@@ -44,14 +44,14 @@
   
 			<!-- Email input -->
 			<div class="form-outline mb-4">
-			  <input type="email" name="email" id="email" class="form-control form-control-lg"
+			  <input type="email" name="email" id="email" class="form-control form-control-lg form-background"
 				placeholder="Enter a valid email address" />
 			  <label class="form-label" for="email">Email address</label>
 			</div>
   
 			<!-- Password input -->
 			<div class="form-outline mb-3">
-			  <input type="password" name="password" id="password" class="form-control form-control-lg"
+			  <input type="password" name="password" id="password" class="form-control form-control-lg form-background"
 				placeholder="Enter password" />
 			  <label class="form-label" for="password">Password</label>
 			</div>

@@ -316,17 +316,22 @@ span.bg-dark {
 	color:  rgba(255, 255, 255, 0.5) !important;
 } */
 
-input.form-control, input.form-control:active, input.form-control:hover, input.form-control:focus,
+/* input.form-control, input.form-control:active, input.form-control:hover, input.form-control:focus,
 textarea.form-control, textarea.form-control:active, textarea.form-control:hover, textarea.form-control:focus,
-select.form-control, select.form-control:active, select.form-control:hover, select.form-control:focus.card-thumb
+select.form-control, select.form-control:active, select.form-control:hover, select.form-control:focus.card-thumb,
+#filter-list input
 {
+	background-color: var(--bs-secondary);
+	color:  rgba(255, 255, 255, 0.5) !important;
+} */
+
+.form-background, .form-background:active, .form-background:hover, .form-background:focus {
 	background-color: var(--bs-secondary);
 	color:  rgba(255, 255, 255, 0.5) !important;
 }
 
 /* select2 dark styles */
 .select2 { 
-	background-color: var(--bs-secondary);
 	color:  rgba(255, 255, 255, 0.5) !important;
 }
 .selection span.select2-selection { 
@@ -355,6 +360,10 @@ select.form-control, select.form-control:active, select.form-control:hover, sele
 }
 .selection li.select2-selection__choice { 
 	color:  var(--bs-secondary);
+}
+
+.select2-container .select2-selection {
+	border-radius: 4px;
 }
 
 .dropzone {

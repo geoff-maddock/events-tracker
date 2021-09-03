@@ -470,6 +470,7 @@ class EventsController extends Controller
         return view('events.index')
             ->with(array_merge(
                 [
+                    'tag' => 'Future',
                     'limit' => $listResultSet->getLimit(),
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
@@ -686,7 +687,6 @@ class EventsController extends Controller
         $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        //$baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
         $baseQuery = $this->user->getAttending()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
 
         $listEntityResultBuilder

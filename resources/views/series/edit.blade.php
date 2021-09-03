@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h4>Series . Edit . {{ $series->name }}</h4>
+<h1 class="display-6 text-primary">Series . Edit . {{ $series->name }}</h1>
 
 <i>{{ $series->start_at ? $series->start_at->format('l F jS Y \\a\\t h:i A') : ''}} </i>
 <div class="row">

@@ -2,9 +2,9 @@
 
 @section('content')
 
-<h4>Event Series</h4>
+<h1 class="display-6 text-primary">Event Series @include('series.crumbs')</h1>
 
-<div id="action-menu" style="margin-bottom: 5px;">
+<div id="action-menu" class="mb-2">
     <a href="{!! URL::route('series.create') !!}" class="btn btn-primary">Add an event series</a>
     <a href="{!! URL::route('series.index') !!}" class="btn btn-info">Show current series</a>
     <a href="{!! URL::route('series.cancelled') !!}" class="btn btn-info">Show cancelled series</a>
@@ -12,22 +12,26 @@
 </div>
 
 <div id="filters-container" class="row">
-    <div id="filters-content" class="col-lg-9">
-        <a href="#" id="filters" class="btn btn-primary">Filters <span id="filters-toggle"
-                class="glyphicon @if (!$hasFilter) glyphicon-chevron-down @else glyphicon-chevron-up @endif"></span></a>
+	<div id="filters-content" class="col-xl-9">
+		<a href="#" id="filters" class="btn btn-primary">
+			Filters 
+			<span id="filters-toggle" class="@if (!$hasFilter) filter-closed @else filter-open @endif">
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+				<path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+			  </svg>
+			</span>
+		</a>
+		{!! Form::open(['route' => [$filterRoute ?? 'events.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
 
-                {!! Form::open(['route' => [$filterRoute ?? 'series.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
-
-                <div id="filter-list" class="row @if (!$hasFilter) d-block d-xs-none @endif"
-                    style="@if (!$hasFilter) display: none; @endif">
-
-            <div class="form-group col-sm-2">
+		<div id="filter-list" class="px-2 @if (!$hasFilter)d-none @endif">
+            <div class="row">
+                <div class="col">
 
                 {!! Form::label('filter_name','Filter By Name') !!}
 
                 {!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
                 [
-                    'class' =>'form-control',
+                    'class' => 'form-control form-background',
                     'name' => 'filters[name]'
                     ]) !!}
             </div>
@@ -38,7 +42,7 @@
                 {!! Form::select('filter_occurrence_type', $occurrenceTypeOptions, (isset($filters['occurrence_type']) ?
                 $filters['occurrence_type'] : NULL), 
                 [
-                    'class' =>'form-control',
+                    'class' => 'form-control form-background',
                     'name' => 'filters[occurrence_type]'
                 ]) !!}
             </div>
@@ -48,7 +52,7 @@
                 {!! Form::select('filter_occurrence_week', $occurrenceWeekOptions, (isset($filters['occurrence_week']) ?
                 $filters['occurrence_week'] : NULL),
                 [
-                    'class' => 'form-control',
+                    'class' => 'form-control form-background',
                     'name' => 'filters[occurrence_week]'
                 ]) !!}
             </div>
@@ -58,7 +62,7 @@
                 {!! Form::select('filter_occurrence_day', $occurrenceDayOptions, (isset($filters['occurrence_day']) ?
                 $filters['occurrence_day'] : NULL), 
                 [
-                    'class' => 'form-control',
+                    'class' => 'form-control form-background',
                     'name' => 'filters[occurrence_day]',
                 ]) !!}
             </div>
@@ -67,7 +71,7 @@
                 {!! Form::label('filter_tag','Tag') !!}
                 {!! Form::select('filter_tag', $tagOptions, (isset($filters['tag']) ? $filters['tag'] : NULL),
                 [
-                    'data-theme'=> 'bootstrap',
+                    'data-theme'=> 'bootstrap-5',
                     'data-width' => '100%', 
                     'class' =>'form-control select2',
                     'data-placeholder' => 'Select a tag',
@@ -79,7 +83,7 @@
                 {!! Form::label('filter_visibility','Visibility') !!}
                 {!! Form::select('filter_visibility', $visibilityOptions, (isset($filters['visibility']) ? $filters['visibility'] : NULL),
                 [
-                    'data-theme'=> 'bootstrap',
+                    'data-theme'=> 'bootstrap-5',
                     'data-width' => '100%', 
                     'class' =>'form-control select2',
                     'data-placeholder' => 'Select a visibility',
@@ -101,19 +105,27 @@
             </div>
         </div>
     </div>
-
-    <div id="list-control" class="col-lg-3 visible-lg-block visible-md-block text-right">
+</div>
+<div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right">
         <form action="{{ url()->action('SeriesController@filter') }}" method="GET" class="form-inline">
-            <div class="form-group">
-                <a href="{{ url()->action('SeriesController@rppReset') }}" class="btn btn-primary">
-                    <span class="glyphicon glyphicon-repeat"></span>
-                </a>
-				{!! Form::select('limit', $limitOptions, ($limit ?? 10), ['class' =>'form-control auto-submit']) !!}
-				{!! Form::select('sort', $sortOptions, ($sort ?? 'events.start_at'), ['class' =>'form-control
-				auto-submit'])
-				!!}
-				{!! Form::select('direction', $directionOptions, ($direction ?? 'desc'), ['class' =>'form-control
-				auto-submit']) !!}
+			<div class="form-group row gx-1 justify-content-end">
+                <div class="col-auto">
+                    <a href="{{ url()->action('SeriesController@rppReset') }}" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                        </svg>
+                    </a>
+                </div>
+                <div class="col-auto">
+				    {!! Form::select('limit', $limitOptions, ($limit ?? 10), ['class' =>'form-select form-background auto-submit']) !!}
+                </div>
+                <div class="col-auto">
+                    {!! Form::select('sort', $sortOptions, ($sort ?? 'events.start_at'), ['class' =>'form-select form-background auto-submit']) !!}
+                </div>
+                <div class="col-auto">
+    				{!! Form::select('direction', $directionOptions, ($direction ?? 'desc'), ['class' =>'form-select form-background auto-submit']) !!}
+                </div>
             </div>
         </form>
     </div>
@@ -135,19 +147,7 @@
 </div>
 @stop
 
+
 @section('footer')
-<script>
-    $(document).ready(function() {
-        $('#filters').click(function() {
-            $('#filter-list').toggle();
-            if ($('#filters-toggle').hasClass('glyphicon-chevron-down')) {
-                $('#filters-toggle').removeClass('glyphicon-chevron-down');
-                $('#filters-toggle').addClass('glyphicon-chevron-up');
-            } else {
-                $('#filters-toggle').removeClass('glyphicon-chevron-up');
-                $('#filters-toggle').addClass('glyphicon-chevron-down');
-            }
-        });
-    });
-</script>
+@include('partials.filter-js')
 @endsection

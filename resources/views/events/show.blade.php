@@ -143,25 +143,22 @@
 	@endif
 
 	<br>
-
-	<i>Added by <a href="/users/{{ $event->user ? $event->user->id : ''}}">{{ $event->user ? $event->user->name : '' }}</a></i>
-
-	<P>
 	@unless ($event->entities->isEmpty())
 	Related Entities:
 		@foreach ($event->entities as $entity)
 			@include('entities.single_label')
 		@endforeach
 	@endunless
-	</P>
-
+	<br>
 	@unless ($event->tags->isEmpty())
-	<P>Tags:
+	Tags:
 		@foreach ($event->tags as $tag)
 			@include('tags.single_label')
 		@endforeach
 	@endunless
-	</P>
+
+	<div><small class="text-muted">Added by <a href="/users/{{ $event->user ? $event->user->id : ''}}">{{ $event->user ? $event->user->name : '' }}</a></small></div>
+
 	</div>
 	</div>
 
