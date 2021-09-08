@@ -178,18 +178,5 @@
 @stop
 
 @section('footer')
-<script>
-    $(document).ready(function() {
-        $('#filters').click(function() {
-            $('#filter-list').toggle();
-            if ($('#filters-toggle').hasClass('glyphicon-chevron-down')) {
-                $('#filters-toggle').removeClass('glyphicon-chevron-down');
-                $('#filters-toggle').addClass('glyphicon-chevron-up');
-            } else {
-                $('#filters-toggle').removeClass('glyphicon-chevron-up');
-                $('#filters-toggle').addClass('glyphicon-chevron-down');
-            }
-        });
-    });
-</script>
+@include('partials.filter-js')
 @endsection

@@ -2,7 +2,7 @@
 @if ($group->groupStatus->name === "Inactive") mute-card @else card @endif" style="clear: both;">
 	@if ($primary = $group->getPrimaryPhoto())
 	<div class="card-thumb" style="float: left; padding: 5px;">
-			<img src="/{!! str_replace(' ','%20',$group->getPrimaryPhoto()->thumbnail) !!}" alt="{{ $group->name}}"  style="max-width: 100px; ">
+		<img src="/{!! str_replace(' ','%20',$group->getPrimaryPhoto()->thumbnail) !!}" alt="{{ $group->name}}"  style="max-width: 100px; ">
 	</div>
 	@endif
 
@@ -13,14 +13,15 @@
 
 	@if ($signedIn && $group->ownedBy($user))
 	<a href="{!! route('groups.edit', ['id' => $group->id]) !!}">
-	<span class='glyphicon glyphicon-pencil'></span></a>
+		<i class="bi bi-pencil-fill icon"></i>
+	</a>
 	@endif 
 	
 	@if ($signedIn)
 	@if ($follow = $group->followedBy($user))
-	<a href="{!! route('groups.unfollow', ['id' => $group->id]) !!}" title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
+	<a href="{!! route('groups.unfollow', ['id' => $group->id]) !!}" title="Click to unfollow"><i class="bi bi-dash-circle-fill"></i></a>
 	@else
-	<a href="{!! route('groups.follow', ['id' => $group->id]) !!}" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
+	<a href="{!! route('groups.follow', ['id' => $group->id]) !!}" title="Click to follow"><i class="bi bi-plus-circle-fill"></i></a>
 	@endif
 
 	@endif 
@@ -35,7 +36,7 @@
 	@endif
     <br>
 	@foreach ($group->roles as $role)
-	<span class="label label-tag"><a href="/groups/role/{{ $role->name }}">{{ $role->name }}</a></span>
+		<span class="badge rounded-pill bg-dark"><a href="/groups/role/{{ $role->name }}">{{ $role->name }}</a></span>
 	@endforeach
 	<br>
 	<ul class="list">

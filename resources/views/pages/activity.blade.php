@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h4>Activity</h4>
+<h1 class="display-6 text-primary">Activity</h1>
 
 <!-- NAV / FILTER -->
 <div id="filters-container" class="row">
@@ -113,18 +113,5 @@
 @stop
 
 @section('footer')
-<script>
-	$(document).ready(function() {
-		$('#filters').click(function() {
-			$('#filter-list').toggle();
-			if ($('#filters-toggle').hasClass('glyphicon-chevron-down')) {
-				$('#filters-toggle').removeClass('glyphicon-chevron-down');
-				$('#filters-toggle').addClass('glyphicon-chevron-up');
-			} else {
-				$('#filters-toggle').removeClass('glyphicon-chevron-up');
-				$('#filters-toggle').addClass('glyphicon-chevron-down');
-			}
-		});
-	});
-</script>
+@include('partials.filter-js')
 @endsection

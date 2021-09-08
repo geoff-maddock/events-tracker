@@ -20,8 +20,8 @@
 		<td>{!! $group->level !!}</td>
 		<td>
 			@can('edit_group')
-			<a href="{!! route('groups.edit', ['group' => $group->id]) !!}"><span class='glyphicon glyphicon-pencil'></span></a>
-      		{!! link_form_icon('glyphicon-trash text-warning', $group, 'DELETE', 'Delete the group') !!}
+			<a href="{!! route('groups.edit', ['group' => $group->id]) !!}"><i class="bi bi-pencil-fill icon"></i></a>
+      		{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $group, 'DELETE', 'Delete the group') !!}
 			@endcan
 		</td>
 

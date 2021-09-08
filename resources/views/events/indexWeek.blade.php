@@ -22,7 +22,7 @@
 
 <!-- DISPLAY THE NEXT SIX DAYS OF EVENTS -->
 <?php 	$today = \Carbon\Carbon::now(); ?>
-<div class="row">
+<div class="row gx-2">
 
 	@for ($i = 0; $i < 6; $i++) <?php $day = \Carbon\Carbon::parse($today)->addDay($i); ?>
 		<div class="col">

@@ -19,8 +19,8 @@
         <td>{!! $entityType->short !!}</td>
 		<td>
 			@can('edit_entityType')
-			<a href="{!! route('entity-types.edit', ['entity_type' => $entityType->id]) !!}"><span class='glyphicon glyphicon-pencil'></span></a>
-      		{!! link_form_icon('glyphicon-trash text-warning', $entityType, 'DELETE', 'Delete the entityType') !!}
+			<a href="{!! route('entity-types.edit', ['entity_type' => $entityType->id]) !!}"><i class="bi bi-pencil"></i>></a>
+      		{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $entityType, 'DELETE', 'Delete the entityType') !!}
 			@endcan
 		</td>
 

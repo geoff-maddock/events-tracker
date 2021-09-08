@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+<nav class="navbar navbar-expand-md navbar-background navbar-dark">
 	<div class="container-fluid">
 		<div class="navbar-header nav-title">
 			<span class="{{ Request::is('/') ? 'active' : '' }} site-title">

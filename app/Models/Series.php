@@ -765,7 +765,7 @@ class Series extends Eloquent
     /**
      * Returns the users that follow the series.
      *
-     * @return Collection
+     * @return Collection $follows
      *
      **/
     public function followers()
@@ -774,6 +774,16 @@ class Series extends Eloquent
             ->where('follows.object_type', 'series')
             ->where('follows.object_id', $this->id)
             ->get();
+    }
+
+    /**
+     * The follows that belong to the entity.
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\Morph
+     */
+    public function follows()
+    {
+        return $this->morphMany(Follow::class, 'object', 'object_type', 'object_id');
     }
 
     /**

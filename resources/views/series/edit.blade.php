@@ -6,6 +6,10 @@
 
 <h1 class="display-6 text-primary">Series . Edit . {{ $series->name }}</h1>
 
+<div id="action-menu" class="mb-2">
+<a href="{!! route('series.show', ['series' => $series->id]) !!}" class="btn btn-primary">Show Series</a> <a href="{!! URL::route('series.index') !!}" class="btn btn-info">Return to list</a>
+</div>
+
 <i>{{ $series->start_at ? $series->start_at->format('l F jS Y \\a\\t h:i A') : ''}} </i>
 <div class="row">
     <div class="col-md-8">
@@ -17,7 +21,6 @@
 
         {!! delete_form(['series.destroy', $series->id]) !!}
 
-        {!! link_to_route('series.index','Return to list') !!}
     </div>
 
     <div class="col-md-4">
@@ -37,13 +40,11 @@
                         src="{{ $photo->getStorageThumbnail() }}" alt="{{ $series->name}}" style="max-width: 100%;"></a>
                 @if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser') ) )
                 @if ($signedIn || $user->id == Config::get('app.superuser'))
-                {!! link_form_icon('glyphicon-trash text-warning', $photo, 'DELETE', 'Delete the photo') !!}
+                {!! link_form_bootstrap_icon('bi bi-trash-fill text-warning', $photo, 'DELETE', 'Delete the photo') !!}
                 @if ($photo->is_primary)
-                {!! link_form_icon('glyphicon-star text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST',
-                'Primary Photo [Click to unset]') !!}
+                {!! link_form_bootstrap_icon('bi bi-star-fill text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
                 @else
-                {!! link_form_icon('glyphicon-star-empty text-info', '/photos/'.$photo->id.'/setPrimary', 'POST', 'Set
-                as primary photo') !!}
+                {!! link_form_bootstrap_icon('bi bi-star text-info', '/photos/'.$photo->id.'/setPrimary', 'POST', 'Set as primary photo') !!}
                 @endif
                 @endif
                 @endif

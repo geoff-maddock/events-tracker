@@ -11,10 +11,9 @@
 
 <h1 class="display-6 text-primary">Events	@include('events.crumbs', ['slug' => $event->name])</h1>
 
-<p id="show_actions">
+<div id="action-menu" class="mb-2">
 	@include('events.show.actions', ['event' => $event, 'user' => $user])
-</p>
-
+</div>
 
 <div class="row">
 <div class="col-lg-6">
@@ -120,14 +119,13 @@
             </span>
             @endif
 		@else
-			<a href="{!! route('events.attend', ['id' => $event->id]) !!}" title="Click to mark attending"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star text-info" viewBox="0 0 16 16">
-					<path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
-				  </svg> No response</a>
+			<a href="{!! route('events.attend', ['id' => $event->id]) !!}" title="Click to mark attending">
+				<i class="bi bi-star icon"></i> No response</a>
 		@endif
 
 		@if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser') ) )
 			<a href="{!! route('events.tweet', ['id' => $event->id]) !!}" title="Click to tweet event">
-				<span class='fa fa-twitter glyphicon glyphicon-music text-info'></span>
+				<i class="bi bi-twitter"></i>
 			</a>
 		@endif
 	@endif
@@ -167,7 +165,7 @@
 		<div class="row">
 			@foreach ($event->photos->chunk(4) as $set)
 				@foreach ($set as $photo)
-				<div class="col-md-2" style="padding-bottom: 10px;">
+					<div class="col-md-2">
 					<a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->getStoragePath() }}" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom">
 						<img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $event->name}}"  style="max-width: 100%;">
 					</a>
@@ -184,7 +182,7 @@
 				</div>
 				@endforeach
 			@endforeach
-			<div class="col-md-2" style="padding-bottom: 10px;">
+			<div class="col">
 				<form action="/events/{{ $event->id }}/photos" class="dropzone" id="myDropzone" method="POST">
 					<input type="hidden" name="_token" value="{{ csrf_token() }}">
 				</form>
@@ -216,7 +214,7 @@
 									<form method="POST" action="{{ $thread->path().'/posts' }}">
 										{{ csrf_field() }}
 										<div class="form-group">
-											<textarea name="body" id="body" class="form-control" placeholder="Have something to say?" rows="5"></textarea>
+											<textarea name="body" id="body" class="form-control form-background" placeholder="Have something to say?" rows="5"></textarea>
 										</div>
 										<button type="submit" class="btn btn-primary my-2">Post</button>
 									</form>

@@ -5,34 +5,32 @@
 @section('content')
 
 
-<h4>Menu
+<h1 class="display-6 text-primary">Menu
 	@include('menus.crumbs', ['slug' => $menu->label])
-</h4>
+</h1>
 
-<P>
-@can('edit_menu')
+<div id="action-menu" class="mb-2">
+	@can('edit_menu')
 	<a href="{!! route('menus.edit', ['menu' => $menu->id]) !!}" class="btn btn-primary">Edit Menu</a>
-@endcan
+	@endcan
 	<a href="{!! URL::route('menus.index') !!}" class="btn btn-info">Return to list</a>
-</P>
+</div>
 
 <div class="row">
-	<div class="profile-card col-md-4">
-	<h2 class='item-title'>{{ $menu->label }}</h2>
+	<div class="col-lg-6">
+		<div class="profile-card">
+		<h2 class='item-title'>{{ $menu->label }}</h2>
 
-	<p>
+		@if ($menu->name)
+		<label>Name: </label> <i>{{ $menu->name }} </i><br>
+		@endif
 
-	@if ($menu->name)
-	<label>Name: </label> <i>{{ $menu->name }} </i><br><br>
-	@endif
-
-	@if ($menu->slug)
-	<label>Slug: </label> <i>{{ $menu->slug }} </i><br><br>
-	@endif
-
+		@if ($menu->slug)
+		<label>Slug: </label> <i>{{ $menu->slug }} </i><br>
+		@endif
 
 	@can('edit_menu')
-		{!! link_form_icon('glyphicon-trash text-warning', $menu, 'DELETE', 'Delete the [menu]') !!}
+		{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $menu, 'DELETE', 'Delete the [menu]') !!}
 	@endcan
   </div>
 

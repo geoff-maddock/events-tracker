@@ -36,3 +36,18 @@ $input-color-placeholder: lighten($text-color, 30%);
 
 // Panels
 $panel-default-heading-bg: #fff;
+
+// Border
+$border-width:                1px;
+$border-widths: (
+  1: 1px,
+  2: 2px,
+  3: 3px,
+  4: 4px,
+  5: 5px
+);
+
+$border-radius:               .25rem;
+$border-radius-sm:            .2rem;
+$border-radius-lg:            .3rem;
+$border-radius-pill:          50rem;

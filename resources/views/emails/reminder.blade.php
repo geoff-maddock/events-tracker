@@ -40,12 +40,12 @@ Here is a reminder about this event that you are attending.
 	<br>
 	@if ($link = $event->primary_link)
 	<a href="{{ $link }}" target="_" title="Primary link">
-	<span class='glyphicon glyphicon-link'></span>
+		<i class="bi bi-link-45deg"></i>
 	</a>
 	@endif
 	@if ($ticket = $event->ticket_link)
 	<a href="{{ $link }}" target="_" title="Ticket link">
-	<span class='glyphicon glyphicon-shopping-cart'></span>
+		<i class="bi bi-cart-fill"></i>
 	</a>
 	@endif
 

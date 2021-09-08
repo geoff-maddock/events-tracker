@@ -4,7 +4,7 @@
 
 @section('content')
 
-	<P><B>Entity</B> > {!! link_to_route('entities.show', $entity->name, [$entity->slug], ['class' => 'text-'.$entity->entityStatus->getDisplayClass()]) !!}</P>
+	<h1 class="display-6 text-primary">{!! link_to_route('entities.index', 'Entity', [$entity->slug]) !!} . {!! link_to_route('entities.show', $entity->name, [$entity->slug], ['class' => 'text-'.$entity->entityStatus->getDisplayClass()]) !!}</h1>
 
 	<h4>Add a New Location</h4>
 

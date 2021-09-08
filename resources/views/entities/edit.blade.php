@@ -4,10 +4,10 @@
 
 @section('content')
 
-<h4>Entity . EDIT
-	@include('events.crumbs', ['slug' => $entity->slug ?: $entity->id])
-	  <br> 	<a href="{!! route('entities.show', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Show Entity</a> <a href="{!! URL::route('entities.index') !!}" class="btn btn-info">Return to list</a>
-</h4>
+<h1 class="display-6 text-primary">Entity . EDIT
+	@include('events.crumbs', ['slug' => $entity->name ?: $entity->id])
+</h1>
+      <a href="{!! route('entities.show', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Show Entity</a> <a href="{!! URL::route('entities.index') !!}" class="btn btn-info">Return to list</a>
 
 <div class="row">
 	<div class="col-md-6">
@@ -18,7 +18,7 @@
 
 	{!! Form::close() !!}
 
-	{!! delete_form(['entities.destroy', $entity->slug]) !!}
+	{!! delete_form(['entities.destroy', $entity->slug, 'my-2']) !!}
 	</div>
 
 	<div class="col-md-6">
@@ -37,11 +37,11 @@
 
 			<a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->getStoragePath() }}"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $entity->name}}"  style="max-width: 100%;"></a>
 			@if ($user && (Auth::user()->id === $entity->user->id || $user->id === Config::get('app.superuser')))
-				{!! link_form_icon('glyphicon-trash text-warning', $photo, 'DELETE', 'Delete the photo') !!}
+				{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $photo, 'DELETE', 'Delete the photo') !!}
 				@if ($photo->is_primary)
-				{!! link_form_icon('glyphicon-star text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
+				{!! link_form_bootstrap_icon('bi bi-star-fill text-primary icon', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
 				@else
-				{!! link_form_icon('glyphicon-star-empty text-info', '/photos/'.$photo->id.'/setPrimary', 'POST', 'Set as primary photo') !!}
+				{!! link_form_bootstrap_icon('bi bi-star text-info icon', '/photos/'.$photo->id.'/setPrimary', 'POST', 'Set as primary photo') !!}
 				@endif
 			@endif
 			</div>

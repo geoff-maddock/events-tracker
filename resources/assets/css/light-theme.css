@@ -236,3 +236,8 @@ li.selected:hover {
 .navbar-default .navbar-brand {
     color: #FFF;
 }
+
+.navbar-background {
+    background-color: var(--bs-dark);
+    color: rgba(255, 255, 255, 0.5) !important;
+}

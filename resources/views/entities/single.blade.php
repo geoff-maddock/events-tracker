@@ -1,9 +1,7 @@
-<li id="entity-{{ $entity->id }}" class="@if ($entity->entityStatus->name === " Inactive") mute-card @else card @endif"
-	style="display: flow-root;">
+<li id="entity-{{ $entity->id }}" class="event-card @if ($entity->entityStatus->name === " Inactive") mute-card @else card @endif"	style="display: flow-root;">
 	@if ($primary = $entity->getPrimaryPhoto())
 	<div class="card-thumb" style="float: left; padding: 5px;">
-		<img src="/{!! str_replace(' ','%20',$entity->getPrimaryPhoto()->thumbnail) !!}" alt="{{ $entity->name}}"
-			style="max-width: 100px; ">
+			<img src="{{ $primary->getStorageThumbnail() }}" alt="{{ $entity->name}}" class="thumbnail-image">
 	</div>
 	@else
 	<div class="card-thumb" style="float: left; padding: 5px;">
@@ -17,18 +15,22 @@
 	@endif
 
 	@if ($signedIn && $entity->ownedBy($user))
-	<a href="{!! route('entities.edit', ['entity' => $entity->slug]) !!}"><span
-			class='glyphicon glyphicon-pencil'></span></a>
+	<a href="{!! route('entities.edit', ['entity' => $entity->slug]) !!}">
+		<i class="bi bi-pencil-fill"></i>
+	</a>
 	@endif
 
 	@if ($signedIn)
 	@if ($follow = $entity->followedBy($user))
 	<a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}" data-target="#entity-{{ $entity->id }}"
-		class="ajax-action" title="Click to unfollow"><span
-			class='glyphicon glyphicon-minus-sign text-warning'></span></a>
+		class="ajax-action" title="Click to unfollow">
+		<i class="bi bi-dash-circle-fill"></i>
+	</a>
 	@else
 	<a href="{!! route('entities.follow', ['id' => $entity->id]) !!}" data-target="#entity-{{ $entity->id }}"
-		class="ajax-action" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
+		class="ajax-action" title="Click to follow">
+		<i class="bi bi-plus-circle-fill"></i>
+	</a>
 	@endif
 	@endif
 
@@ -42,7 +44,7 @@
 	@endif
 	<br>
 	@foreach ($entity->roles as $role)
-	<span class="label label-tag"><a href="/entities/role/{{ $role->name }}">{{ $role->name }}</a></span>
+	<span class="badge rounded-pill bg-dark"><a href="/entities/role/{{ $role->name }}">{{ $role->name }}</a></span>
 	@endforeach
 	<br>
 	<ul class="list">

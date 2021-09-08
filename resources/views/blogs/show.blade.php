@@ -5,16 +5,14 @@
 @section('content')
 
 
-<h4>Blog
-	@include('blogs.crumbs', ['slug' => $blog->label])
-</h4>
+<h1 class="display-6 text-primary">Blog	@include('blogs.crumbs', ['slug' => $blog->label])</h1>
 
-<P>
+<div id="action-menu" class="mb-2">
 @can('edit_blog')
 	<a href="{!! route('blogs.edit', ['blog' => $blog->id]) !!}" class="btn btn-primary">Edit Blog</a>
 @endcan
 	<a href="{!! URL::route('blogs.index') !!}" class="btn btn-info">Return to list</a>
-</P>
+</div>
 
 <div class="card">
   <div class="card-body">
@@ -48,12 +46,10 @@
 
     @endunless
 
-	@can('edit_blog')
-		{!! link_form_icon('glyphicon-trash text-warning', $blog, 'DELETE', 'Delete the [blog]') !!}
-	@endcan
+    @can('edit_blog')
+      {!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $blog, 'DELETE', 'Delete the [blog]') !!}
+    @endcan
   </div>
-
-
 @stop
 
 @section('scripts.footer')

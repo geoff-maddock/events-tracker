@@ -4,20 +4,18 @@
 
 @section('content')
 
+<h1 class="display-6 text-primary">Group @include('groups.crumbs', ['slug' => $group->label])</h4>
 
-<h4>Group
-	@include('groups.crumbs', ['slug' => $group->label])
-</h4>
-
-<P>
-@can('edit_group')
-	<a href="{!! route('groups.edit', ['group' => $group->id]) !!}" class="btn btn-primary">Edit Group</a>
-@endcan
+<div id="action-menu" class="mb-2">
+	@can('edit_group')
+		<a href="{!! route('groups.edit', ['group' => $group->id]) !!}" class="btn btn-primary">Edit Group</a>
+	@endcan
 	<a href="{!! URL::route('groups.index') !!}" class="btn btn-info">Return to list</a>
-</P>
+</div>
 
 <div class="row">
-	<div class="profile-card col-md-4">
+	<div class="col-lg-6">
+		<div class="profile-card">
 	<h2 class='item-title'>{{ $group->label }}</h2>
 
 	<p>
@@ -35,7 +33,7 @@
 		<P><b>Permissions:</b>
 
 		@foreach ($group->permissions as $permission)
-		<span class="label label-tag"><a href="/permissions/{{ $permission->id }}">{{ $permission->name }}</a></span>
+		<span class="badge rounded-pill bg-dark"><a href="/permissions/{{ $permission->id }}">{{ $permission->name }}</a></span>
 		@endforeach
 
 	@endunless
@@ -45,16 +43,16 @@
 		<P><b>Users:</b>
 
 		@foreach ($group->users as $user)
-		<span class="label label-tag"><a href="/users/{{ $user->id }}">{{ $user->name }}</a></span>
+		<span class="badge rounded-pill bg-dark"><a href="/users/{{ $user->id }}">{{ $user->name }}</a></span>
 		@endforeach
 
 	@endunless
 
 	@can('edit_group')
-		{!! link_form_icon('glyphicon-trash text-warning', $group, 'DELETE', 'Delete the [group]') !!}
+		{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $group, 'DELETE', 'Delete the [group]') !!}
 	@endcan
   </div>
-
+</div>
 
 @stop
 

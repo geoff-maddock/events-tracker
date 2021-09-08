@@ -37,7 +37,7 @@
 	<tr>
 	<td>{!! link_to_route('threads.show', $thread->name, [$thread->id], ['class' => 'forum-link']) !!}
 			@if ($signedIn && $thread->ownedBy($user))
-			<a href="{!! route('threads.edit', ['id' => $thread->id]) !!}" title="Edit this thread."><span class='glyphicon glyphicon-pencil'></span></a>
+			<a href="{!! route('threads.edit', ['id' => $thread->id]) !!}" title="Edit this thread."><i class="bi bi-pencil-fill icon"></i></a>
 			@endif
 			<br>
             @unless ($thread->series->isEmpty())
@@ -81,7 +81,8 @@
     	</div>
     </td>
     </tr>
-				@include('posts.list', ['thread' => $thread, 'posts' => $thread->posts])
+		
+	@include('posts.list', ['thread' => $thread, 'posts' => $thread->posts])
 
 	</tbody>
 	</table>
@@ -106,20 +107,5 @@
 	</div>
 @stop
 @section('footer')
-	<script>
-        $(document).ready(function() {
-            $('#filters').click(function () {
-                $('#filter-list').toggle();
-                if ($('#filters-toggle').hasClass('glyphicon-chevron-down'))
-                {
-                    $('#filters-toggle').removeClass('glyphicon-chevron-down');
-                    $('#filters-toggle').addClass('glyphicon-chevron-up');
-                } else {
-                    $('#filters-toggle').removeClass('glyphicon-chevron-up');
-                    $('#filters-toggle').addClass('glyphicon-chevron-down');
-                }
-            });
-        });
-	</script>
+@include('partials.filter-js')
 @endsection
-@stop

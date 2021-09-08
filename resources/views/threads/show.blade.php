@@ -4,15 +4,15 @@
 
 @section('content')
 
-	<h4>Forum
+	<h1 class="display-6 text-primary">Forum
 		@include('threads.crumbs')
 	</h4>
 
-	<p>
+    <div id="action-menu" class="mb-2">
 	<a href="{{ url('/threads/all') }}" class="btn btn-info">Show all threads</a>
 	<a href="{!! URL::route('threads.index') !!}" class="btn btn-info">Show paginated threads</a>
 	<a href="{!! URL::route('threads.create') !!}" class="btn btn-primary">Add an thread</a>
-	</p>
+	</div>
 
 	<br style="clear: left;"/>
 
@@ -50,7 +50,7 @@
                 <form method="POST" action="{{ $thread->path().'/posts' }}">
                 {{ csrf_field() }}
                 <div class="form-group">
-                    <textarea name="body" id="body" class="form-control" placeholder="Have something to say?" rows="5"></textarea>
+                    <textarea name="body" id="body" class="form-control form-background" placeholder="Have something to say?" rows="5"></textarea>
                 </div>
                 <div class="row">
                     <div class="form-group col-md-12">
@@ -63,7 +63,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Post</button>
+                <button type="submit" class="btn btn-primary my-2">Post</button>
                 </form>
 
                 @else

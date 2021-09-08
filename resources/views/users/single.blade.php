@@ -1,44 +1,50 @@
-<li class="card" style="clear: both;">
+<li class="card event-card" style="display: flow-root;">
 	@if ($primary = $user->getPrimaryPhoto())
-	<div class="card-thumb" style="float: left; padding: 5px;">
-			<img src="{!! str_replace(' ','%20', $primary->getStorageThumbnail()) !!}" alt="{{ $user->name}}"  style="max-width: 100px; ">
+	<div class="event-list-thumbnail">
+			<img src="{!! str_replace(' ','%20', $primary->getStorageThumbnail()) !!}" alt="{{ $user->name}}"  class="thumbnail-image">
 	</div>
 	@else
-		<div class="card-thumb" style="float: left; padding: 5px;">
-			<img src="/images/avatar-placeholder-generic.jpg"  style="max-width: 100px; ">
+	<div class="event-list-thumbnail">
+			<img src="/images/avatar-placeholder-generic.jpg"  class="thumbnail-image">
 		</div>
 	@endif
-
+	<span>
 	{!! link_to_route('users.show', $user->name, [$user->id]) !!}
-
+	</span>
 	@if ($signedIn && (Auth::user()->id === $user->id || Auth::user()->id === Config::get('app.superuser') || Auth::user()->hasGroup('super_admin') ))
-	<a href="{!! route('users.edit', ['user' => $user->id]) !!}">
-	<span class='glyphicon glyphicon-pencil'></span></a>
-    {!! link_form_icon('glyphicon-trash text-warning', $user, 'DELETE', 'Delete the user', NULL, 'delete') !!}
 
-			@can('grant_access')
-				@if (!$user->isActive)
-				<a href="{!! route('users.activate', ['id' => $user->id]) !!}" class="confirm">
-					<span class='glyphicon glyphicon-ok-circle' title='Activate the user'></span></a>
-				@endif
-			@endcan
-			@can('grant_access')
-				@if ($user->isActive)
-					<a href="{!! route('users.reminder', ['id' => $user->id]) !!}"  class="confirm">
-						<span class='glyphicon glyphicon-pushpin' title='Send reminder'></span></a>
-				@endif
-			@endcan
-			@can('impersonate_user')
-				<a href="{!! route('user.impersonate', ['user' => $user->id]) !!}" title="Impersonate {{ $user->name }}"  class="confirm">
-					<span class='glyphicon glyphicon-user'></span>
+		<a href="{!! route('users.edit', ['user' => $user->id]) !!}"><i class="bi bi-pencil-fill card-actions"></i></a>
+
+		<span class="card-actions">
+    		{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning card-actions py-0 my-0 icon', $user, 'DELETE', 'Delete the user', NULL, 'py-0 my-0 delete') !!}
+		</span>
+
+		@can('grant_access')
+			@if (!$user->isActive)
+			<a href="{!! route('users.activate', ['id' => $user->id]) !!}" class="confirm">
+				<i class="bi bi-check-circle card-actions" title='Activate the user'></i>
+			</a>
+			@endif
+		@endcan
+		@can('grant_access')
+			@if ($user->isActive)
+				<a href="{!! route('users.reminder', ['id' => $user->id]) !!}"  class="confirm">
+					<i class="bi bi-pin-fill card-actions"  title='Send reminder'></i>
 				</a>
 			@endif
-			@can('grant_access')
-				@if ($user->isActive)
-					<a href="{!! route('users.weekly', ['id' => $user->id]) !!}"  class="confirm">
-						<span class='glyphicon glyphicon-envelope' title='Send weekly update'></span></a>
-				@endif
-			@endcan
+		@endcan
+		@can('impersonate_user')
+			<a href="{!! route('user.impersonate', ['user' => $user->id]) !!}" title="Impersonate {{ $user->name }}"  class="confirm">
+				<i class="bi bi-person-fill card-actions"></i>
+			</a>
+		@endif
+		@can('grant_access')
+			@if ($user->isActive)
+				<a href="{!! route('users.weekly', ['id' => $user->id]) !!}"  class="confirm">
+					<i class="bi bi-envelope-fill card-actions" title='Send weekly update'></i>
+				</a>
+			@endif
+		@endcan
 	@endif
 
 	<ul class="list" style="display:inline;">
