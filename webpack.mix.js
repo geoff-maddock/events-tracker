@@ -26,6 +26,7 @@ mix.styles([
 // build light theme
 mix.styles([
     // 'resources/assets/css/app.css',
+    'public/css/app.css',
     'resources/assets/css/custom.css',
     'resources/assets/css/light-theme.css',
     'resources/assets/css/sweetalert.css'

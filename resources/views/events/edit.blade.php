@@ -8,10 +8,11 @@
 <script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
 
 <h1 class="display-6 text-primary">Events. Edit	@include('events.crumbs', ['slug' => $event->slug ?: $event->id])</h1>
+
   <a href="{!! route('events.show', ['event' => $event->id]) !!}" class="btn btn-primary">Show Event</a>
 
   @if (!empty($event->threads) && $user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser')) )
-    <a href="{!! route('events.createThread', ['id' => $event->id]) !!}" title="Create an thread related to this event." class="btn btn-primary"><span class='glyphicon glyphicon-comment'></span> Create Thread</a>
+    <a href="{!! route('events.createThread', ['id' => $event->id]) !!}" title="Create an thread related to this event." class="btn btn-primary"><i class="bi bi-chat-text-fill"></i> Create Thread</a>
   @endif
 
   <a href="{!! URL::route('events.index') !!}" class="btn btn-info">Return to list</a>
@@ -29,35 +30,36 @@
   </div>
 
   <div class="col-md-4">
-    @if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser') || $event->canUserPostPhoto($user)) )
-    <form action="/events/{{ $event->id }}/photos" class="dropzone" id="myDropzone" method="POST">
-      <input type="hidden" name="_token" value="{{ csrf_token() }}">
-    </form>
-    @endif
+    <div class="row">
+    @foreach ($event->photos->chunk(4) as $set)
+      @foreach ($set as $photo)
+        <div class="col-md-2">
+        <a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->getStoragePath() }}"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $event->name}}"  style="max-width: 100%;"></a>
+        @if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser')))
+        @if ($signedIn || $user->id === Config::get('app.superuser'))
+          {!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $photo, 'DELETE', 'Delete the photo') !!}
+          @if ($photo->is_primary)
+          {!! link_form_bootstrap_icon('bi bi-star-fill text-primary icon', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
+          @else
+          {!! link_form_bootstrap_icon('bi bi-star text-info icon', '/photos/'.$photo->id.'/setPrimary', 'POST', 'Set as primary photo') !!}
+          @endif
+        @endif
+        @endif
+        </div>
+      @endforeach
+    @endforeach
+
+      <div class="col" style="padding-bottom: 10px;">
+      @if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser') || $event->canUserPostPhoto($user)) )
+      <form action="/events/{{ $event->id }}/photos" class="dropzone" id="myDropzone" method="POST">
+        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+      </form>
+      @endif
+    </div>
 
     <br style="clear: left;"/>
       <div id="api-show"></div>
-    @foreach ($event->photos->chunk(4) as $set)
-    <div class="row">
-    @foreach ($set as $photo)
-      <div class="col-md-2">
-      <a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->getStoragePath() }}"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $event->name}}"  style="max-width: 100%;"></a>
-      @if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser')))
-      @if ($signedIn || $user->id === Config::get('app.superuser'))
-        {!! link_form_icon('glyphicon-trash text-warning', $photo, 'DELETE', 'Delete the photo') !!}
-        @if ($photo->is_primary)
-        {!! link_form_icon('glyphicon-star text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
-        @else
-        {!! link_form_icon('glyphicon-star-empty text-info', '/photos/'.$photo->id.'/setPrimary', 'POST', 'Set as primary photo') !!}
-        @endif
-      @endif
-      @endif
-      </div>
-    @endforeach
     </div>
-    @endforeach
-    </div>
-
   </div>
 @stop
 

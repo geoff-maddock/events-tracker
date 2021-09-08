@@ -24,8 +24,8 @@
     @endif
 
     @if ($signedIn && (($thread->ownedBy($user) && $thread->isRecent()) || $user->hasGroup('super_admin')))
-        <a href="{!! route('threads.edit', ['thread' => $thread->id]) !!}" title="Edit this thread."><span class='glyphicon glyphicon-pencil'></span></a>
-        {!! link_form_icon('glyphicon-trash text-warning', $thread, 'DELETE', 'Delete the thread', NULL, 'delete') !!}
+        <a href="{!! route('threads.edit', ['thread' => $thread->id]) !!}" title="Edit this thread."><i class="bi bi-pencil-fill icon"></i></a>
+        {!! link_form_bootstrap_icon('bi bi-trash-fill text-warning', $thread, 'DELETE', 'Delete the thread', NULL, 'delete') !!}
     @endif
 
     <br>
@@ -39,23 +39,20 @@
         @endforeach
     @endunless
 
-			@unless ($thread->entities->isEmpty())
-			Related:
-				@foreach ($thread->entities as $entity)
-					<span class="label label-tag"><a href="/threads/relatedto/{{ urlencode($entity->slug) }}" class="label-link">{{ $entity->name }}</a>
-                        <a href="{!! route('entities.show', ['entity' => $entity->slug]) !!}" title="Show this entity."><span class='glyphicon glyphicon-link text-info'></span></a>
-                    </span>
-				@endforeach
-			@endunless
 
-			@unless ($thread->tags->isEmpty())
-			Tags:
-				@foreach ($thread->tags as $tag)
-					<span class="label label-tag"><a href="/threads/tag/{{ $tag->slug }}" class="label-link">{{ $tag->name }}</a>
-                        <a href="{!! route('tags.show', ['tag' => $tag->slug]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a>
-                    </span>
-				@endforeach
-		@endunless
+    @unless ($thread->entities->isEmpty())
+    Related Entities:
+      @foreach ($thread->entities as $entity)
+        @include('entities.single_label')
+      @endforeach
+    @endunless
+
+      @unless ($thread->tags->isEmpty())
+      Tags:
+        @foreach ($thread->tags as $tag)
+          @include('tags.single_label')
+        @endforeach
+      @endunless
 
 	</td>
     <td>@if (isset($thread->threadCategory))

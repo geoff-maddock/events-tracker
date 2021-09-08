@@ -4,19 +4,16 @@
 
 @section('content')
 
-    <h4>Entity Type. Edit
-		@include('entityTypes.crumbs', ['slug' => $entityType->slug ?: $entityType->id])
-	</h4>
-    <a href="{!! route('entity-types.show', ['entity_type' => $entityType->id]) !!}" class="btn btn-primary">Show entity type</a>
-    <a href="{!! URL::route('entity-types.index') !!}" class="btn btn-info">Return to list</a>
+<h1 class="display-6 text-primary">Entity Type . Edit @include('entityTypes.crumbs', ['slug' => $entityType->slug ?: $entityType->id])</h1>
 
-	{!! Form::model($entityType, ['route' => ['entity-types.update', $entityType->id], 'method' => 'PATCH']) !!}
+<a href="{!! route('entity-types.show', ['entity_type' => $entityType->id]) !!}" class="btn btn-primary">Show entity type</a>
+<a href="{!! URL::route('entity-types.index') !!}" class="btn btn-info">Return to list</a>
 
-		@include('entityTypes.form', ['action' => 'update'])
+{!! Form::model($entityType, ['route' => ['entity-types.update', $entityType->id], 'method' => 'PATCH']) !!}
 
-	{!! Form::close() !!}
+	@include('entityTypes.form', ['action' => 'update'])
 
-	{!! delete_form(['entity-types.destroy', $entityType->id]) !!}
+{!! Form::close() !!}
 
-	{!! link_to_route('entity-types.index','Return to list') !!}
+{!! delete_form(['entity-types.destroy', $entityType->id]) !!}
 @stop

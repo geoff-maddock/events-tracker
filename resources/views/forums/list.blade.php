@@ -15,10 +15,10 @@
 	@foreach ($forums as $forum)
 
 	<tr>
-	<td>{!! link_to_route('forums.show', $forum->name, [$forum->id], ['id' => 'forum-name', 'title' => 'Forum topic.', 'class' => 'forum-link']) !!}
+	<td>{!! link_to_route('forums.show', $forum->name, [$forum->id], ['id' => 'forum-name', 'title' => 'Forum topic.', 'class' => 'forum-link pe-2']) !!}
 			@if ($signedIn && $forum->ownedBy($user))
-			<a href="{!! route('forums.edit', ['forum' => $forum->id]) !!}" title="Edit this forum."><span class='glyphicon glyphicon-pencil'></span></a>
-      {!! link_form_icon('glyphicon-trash text-warning', $forum, 'DELETE', 'Delete the forum', NULL, 'delete') !!}
+			<a href="{!! route('forums.edit', ['forum' => $forum->id]) !!}" title="Edit this forum."><i class="bi bi-pencil-fill icon"></i></a>
+      {!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $forum, 'DELETE', 'Delete the forum', NULL, 'delete') !!}
 			@endif
 	</td>
     <td>{{ $forum->threadsCount ?? 0 }}

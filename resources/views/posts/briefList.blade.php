@@ -17,11 +17,13 @@
 	<tr>
 		<td colspan='6' class="post-body p-2">
 			<!-- TO DO: change this to storing the trust in the user at post save -->
+			<span class="p-2">
 			@if (isset($post->user) && $post->user->can('trust_post'))
 				{!! $post->body !!}
 			@else
 				{{ $post->body }}
 			@endcan
+			</span>
 			<span>
 
 			@if ($signedIn && (($post->ownedBy($user) && $post->isRecent()) || $user->hasGroup('super_admin')))

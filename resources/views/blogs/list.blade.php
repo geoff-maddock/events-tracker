@@ -1,5 +1,4 @@
-<div class="panel">
-<table class="table">
+<table class="table table-striped">
 	<thead>
 	<!-- CONVERT TO PARTIAL THAT BUILDS THE HEADERS FROM A CONFIGURED ARRAY OR ARRAY FROM DB - SEE MY WORK NOTES -->
 	<tr class="bg-info">
@@ -20,8 +19,8 @@
 		<td>{!! $blog->created_at !!}</td>
 		<td>
 			@can('edit_blog')
-			<a href="{!! route('blogs.edit', ['blog' => $blog->id]) !!}"><span class='glyphicon glyphicon-pencil'></span></a>
-      		{!! link_form_icon('glyphicon-trash text-warning', $blog, 'DELETE', 'Delete the blog') !!}
+			<a href="{!! route('blogs.edit', ['blog' => $blog->id]) !!}"><i class="bi bi-pencil-fill icon"></i></a>
+      		{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $blog, 'DELETE', 'Delete the blog') !!}
 			@endcan
 		</td>
 
@@ -35,7 +34,6 @@
 	</tr>
 @endif
 </table>
-</div>
 
 @section('scripts.footer')
 <script type="text/javascript">

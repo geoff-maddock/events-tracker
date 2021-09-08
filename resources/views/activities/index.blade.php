@@ -4,53 +4,54 @@
 
 @section('content')
 
-<h4>Activity</h4>
+<h1 class="display-6 text-primary">Activity</h1>
 
-<!-- NAV / FILTER -->
 <div id="filters-container" class="row">
-	<div id="filters-content" class="col-lg-9">
-
+	<div id="filters-content" class="col-xl-9">
 		<a href="#" id="filters" class="btn btn-primary">
-			Filters <span id="filters-toggle"
-				class="glyphicon @if (!$hasFilter) glyphicon-chevron-down @else glyphicon-chevron-up @endif"></span></a>
-				{!! Form::open(['route' => [$filterRoute ?? 'activities.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
+            Filters
+			<span id="filters-toggle" class="@if (!$hasFilter) filter-closed @else filter-open @endif">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                  </svg>
+                </span>
+        </a>
+		{!! Form::open(['route' => [$filterRoute ?? 'activities.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
 
-			<div id="filter-list" class="row @if (!$hasFilter) d-block d-xs-none @endif"
-					style="@if (!$hasFilter) display: none; @endif">
-
-			<!-- BEGIN: FILTERS -->
-			<div class="form-group col-sm-2">
+		<div id="filter-list" class="px-2 @if (!$hasFilter)d-none @endif">
+            <div class="row">
+                <div class="col">
 				{!! Form::label('filter_message','Filter By Message') !!}
 				{!! Form::text('filter_message', (isset($filters['message']) ? $filters['message'] : NULL),
 				[
-					'class' => 'form-control',
+					'class' => 'form-control form-background',
 					'name' => 'filters[message]'
 				]) !!}
-			</div>
+            </div>
 
-			<div class="form-group col-sm-2">
+			<div class="col">
 				{!! Form::label('filter_type','Filter By Table') !!}
 				{!! Form::text('filter_object_table', (isset($filters['object_table']) ?
 				$filters['object_table'] : NULL), 
 				[
-					'class' =>'form-control',
+					'class' =>'form-control form-background',
 					'name' => 'filters[object_table]',
 					]) !!}
-			</div>
+            </div>
 
-			<div class="form-group col-sm-2">
+			<div class="col">
 				{!! Form::label('filter_action','Filter By Action') !!}
 				{!! Form::select('filter_action', $actionOptions, (isset($filters['action']) ?
 				$filters['action'] : NULL), 
 				[
 					'data-width' => '100%',
-					'class' =>'form-control',
+					'class' =>'form-control form-background',
 					'data-placeholder' => 'Select an action',
 					'name' => 'filters[action]'
 					]) !!}
-			</div>
+            </div>
 
-			<div class="form-group col-sm-2">
+			<div class="col">
 				{!! Form::label('filter_user_id','Filter By User') !!}
 				{!! Form::select('filter_user', $userOptions, (isset($filters['user']) ? $filters['user'] :
 				NULL), 
@@ -60,13 +61,13 @@
 					'data-placeholder' => 'Select a user',
 					'name' => 'filters[user]'
 					]) !!}
-			</div>
-
-			<div class="col-sm-2">
-				<div class="btn-group col-sm-1">
+            </div>
+        </div>
+			<div class="row my-1">
+				<div class="col-sm-2">
+					<div class="btn-group col-sm-1">
 					<label></label>
-					{!! Form::submit('Apply', ['class' =>'btn btn-primary btn-sm btn-tb mx-2', 'id' =>
-					'primary-filter-submit']) !!}
+					{!! Form::submit('Apply', ['class' =>'btn btn-primary btn-sm btn-tb mx-2', 'id' =>	'primary-filter-submit']) !!}
 					{!! Form::close() !!}
 					{!! Form::open(['route' => ['activities.reset'], 'method' => 'GET']) !!}
 					{!! Form::submit('Reset', ['class' =>'btn btn-primary btn-sm btn-tb', 'id' =>
@@ -76,19 +77,26 @@
 			</div>
 		</div>
 	</div>
+</div>
 
-	<div id="list-control" class="col-lg-3 visible-lg-block visible-md-block text-right">
+<div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right">
 		<form action="{{ url()->action('ActivityController@filter') }}" method="GET" class="form-inline">
-			<div class="form-group">
-				<a href="{{ url()->action('ActivityController@rppReset') }}" class="btn btn-primary">
-					<span class="glyphicon glyphicon-repeat"></span>
-				</a>
-				{!! Form::select('limit', $limitOptions, ($limit ?? 10), ['class' =>'form-control auto-submit']) !!}
-				{!! Form::select('sort', $sortOptions, ($sort ?? 'activities.name'), ['class' =>'form-control
-				auto-submit'])
+			<div class="form-group row gx-1 justify-content-end">
+				<div class="col-auto">
+					<a href="{{ url()->action('ActivityController@rppReset') }}" class="btn btn-primary">
+						<i class="bi bi-arrow-clockwise"></i>
+					</a>
+				</div>
+				<div class="col-auto">		
+					{!! Form::select('limit', $limitOptions, ($limit ?? 10), ['class' => 'form-background form-select auto-submit']) !!}
+				</div>
+				<div class="col-auto">		
+				{!! Form::select('sort', $sortOptions, ($sort ?? 'activities.name'), ['class' => 'form-background form-select auto-submit'])
 				!!}
-				{!! Form::select('direction', $directionOptions, ($direction ?? 'desc'), ['class' =>'form-control
-				auto-submit']) !!}
+				</div>
+				<div class="col-auto">	 
+				{!! Form::select('direction', $directionOptions, ($direction ?? 'desc'), ['class' => 'form-background form-select auto-submit']) !!}
+				</div>
 			</div>
 		</form>
 	</div>
@@ -99,7 +107,7 @@
 
 <!-- LIST OF ALL RECENT ACTIVITY -->
 {!! $activities->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->render() !!}
-<ul class="list-group">
+<ul class="list">
 	@if (count($activities) > 0)
 
 	@foreach ($activities as $activity)
@@ -120,18 +128,5 @@
 @stop
 
 @section('footer')
-<script>
-	$(document).ready(function() {
-		$('#filters').click(function() {
-			$('#filter-list').toggle();
-			if ($('#filters-toggle').hasClass('glyphicon-chevron-down')) {
-				$('#filters-toggle').removeClass('glyphicon-chevron-down');
-				$('#filters-toggle').addClass('glyphicon-chevron-up');
-			} else {
-				$('#filters-toggle').removeClass('glyphicon-chevron-up');
-				$('#filters-toggle').addClass('glyphicon-chevron-down');
-			}
-		});
-	});
-</script>
+@include('partials.filter-js')
 @endsection

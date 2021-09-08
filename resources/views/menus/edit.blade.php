@@ -4,10 +4,11 @@
 
 @section('content')
 
-    <h4>Menu. Edit
-        @include('menus.crumbs', ['slug' => $menu->slug ?: $menu->id])</h4>
-    <a href="{!! route('menus.show', ['menu' => $menu->id]) !!}" class="btn btn-primary">Show Menu</a>
-    <a href="{!! URL::route('menus.index') !!}" class="btn btn-info">Return to list</a>
+<h1 class="display-6 text-primary">Menu. Edit @include('menus.crumbs', ['slug' => $menu->slug ?: $menu->id])</h1>
+<div id="action-menu" class="mb-2">
+	<a href="{!! route('menus.show', ['menu' => $menu->id]) !!}" class="btn btn-primary">Show Menu</a>
+	<a href="{!! URL::route('menus.index') !!}" class="btn btn-info">Return to list</a>
+</div>
 
 	{!! Form::model($menu, ['route' => ['menus.update', $menu->id], 'method' => 'PATCH']) !!}
 

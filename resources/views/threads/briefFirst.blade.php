@@ -10,25 +10,21 @@
             {!! link_form_bootstrap_icon('bi bi-trash-fill icon', $thread, 'DELETE', 'Delete the thread') !!}
 
             @if (!$thread->is_locked)
-                <a href="{!! route('threads.lock', ['id' => $thread->id]) !!}" title="Lock this thread.">
-                    <i class="bi bi-unlock-fill icon"></i>
-                </a>
+                <a href="{!! route('threads.lock', ['id' => $thread->id]) !!}" title="Lock this thread."><i class="bi bi-unlock-fill icon"></i></a>
             @else
-                <a href="{!! route('threads.unlock', ['id' => $thread->id]) !!}" title="Thread is locked.  Click to unlock.">
-                    <i class="bi bi-lock-fill icon"></i>
-                </a>
+                <a href="{!! route('threads.unlock', ['id' => $thread->id]) !!}" title="Thread is locked.  Click to unlock."><i class="bi bi-lock-fill icon"></i></a>
             @endif
         @endif
         @if ($signedIn)
             @if ($follow = $thread->followedBy($user))
-                <a href="{!! route('threads.unfollow', ['id' => $thread->id]) !!}" title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
+                <a href="{!! route('threads.unfollow', ['id' => $thread->id]) !!}" title="Click to unfollow"><i class="bi bi-dash-circle-fill icon"></i></a>
             @else
-                <a href="{!! route('threads.follow', ['id' => $thread->id]) !!}" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
+                <a href="{!! route('threads.follow', ['id' => $thread->id]) !!}" title="Click to follow"><i class="bi bi-plus-circle-fill icon"></i></a>
             @endif
             @if ($like = $thread->likedBy($user))
-                <a href="{!! route('threads.unlike', ['id' => $thread->id]) !!}" title="Click to unlike"><span class='glyphicon glyphicon-star text-success'></span></a>
+                <a href="{!! route('threads.unlike', ['id' => $thread->id]) !!}" title="Click to unlike"><i class="bi bi-star-fill icon"></i></a>
             @else
-                <a href="{!! route('threads.like', ['id' => $thread->id]) !!}" title="Click to like"><span class='glyphicon glyphicon-star-empty text-warning'></span></a>
+                <a href="{!! route('threads.like', ['id' => $thread->id]) !!}" title="Click to like"><i class="bi bi-star icon"></i></a>
             @endif
         @endif
         <br>

@@ -7,144 +7,148 @@
 @if ($photo = $series->getPrimaryPhoto()){{ URL::to('/').$photo->getStoragePath() }}@endif
 @endsection
 
-
 @section('content')
 
-<h4>Series
-	@include('series.crumbs', ['slug' => $series->name])
-</h4>
-<P>
-@if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser')  ) )
+<h1 class="display-6 text-primary">Series	@include('series.crumbs', ['slug' => $series->name])</h4>
+
+<div id="action-menu" class="mb-2">	
+	@if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser')  ) )
 	<a href="{!! route('series.edit', ['series' => $series->id]) !!}" class="btn btn-primary">Edit Series</a>
 	<a href="{!! route('series.createOccurrence', ['id' => $series->id]) !!}" class="btn btn-primary">Add Occurrence</a>
-@endif
+	@endif
 	<a href="{!! URL::route('series.index') !!}" class="btn btn-info">Return to list</a>
-</P>
+</div>
 
 <div class="row">
-<div class="col-md-4">
-	<div class="event-card">
-	<h2>{{ $series->name }}</h2>
-	@if ($photo = $series->getPrimaryPhoto())
-	<div>
-		<img src="{{ $photo->getStoragePath() }}" class="listing">
-	</div>
-	@endif
+	<div class="col-lg-6">
+		<div class="event-card">
 
-	<b>{{ $series->occurrenceType->name }}   {{ $series->occurrence_repeat }}</b>
-
-	<p>
-	Founded {!! $series->founded_at ? $series->founded_at->format('l F jS Y') : 'unknown'!!}<br>
-	@if ($series->cancelled_at != NULL)
-	Cancelled {!! $series->cancelled_at ? $series->cancelled_at->format('l F jS Y') : 'unknown'!!}<br>
-	@endif
-
-	@if ($series->occurrenceType->name != 'No Schedule')
-	Starts {!! $series->start_at ? $series->start_at->format('h:i A') : 'unknown';  !!} - Ends {!! $series->end_at ? $series->end_at->format('h:i A') : 'unknown';  !!} ({{ $series->length() }} hours)<br>
-		@if ($nextEvent = $series->nextEvent() )
-			Next is {{ $nextEvent->start_at->format('l F jS Y')}}<br>
-		@elseif ($series->cancelled_at == NULL)
-			Next is {{ $series->nextEvent() ? $series->nextEvent()->start_at->format('l F jS Y') : $series->cycleFromFoundedAt()->format('l F jS Y') }} (not yet created)<br>
+		@if ($photo = $series->getPrimaryPhoto())
+		<div>
+			<img src="{{ $photo->getStoragePath() }}" class="img-fluid">
+		</div>
 		@endif
 
-	@endif
-	</p>
+		<h2 class="my-2">{{ $series->name }}</h2>
 
-	@if ($series->description)
-	<description class="body">
-		{!! nl2br($series->description) !!}
-	</description>
-	@endif
+		<b>{{ $series->occurrenceType->name }}   {{ $series->occurrence_repeat }}</b>
 
-	<p>
-        @if ($series->eventType)
-        <b>{{ $series->eventType ? $series->eventType->name : ''}} {{ $series->venue ? 'at '.$series->venue->name : ' at no venue specified' }}</b>
-		@if ($series->venue->getPrimaryLocationAddress() != "")
-        at {{ $series->venue->getPrimaryLocationAddress() }}
-        @endif 
+		<p>
+		Founded {!! $series->founded_at ? $series->founded_at->format('l F jS Y') : 'unknown'!!}<br>
+		@if ($series->cancelled_at != NULL)
+		Cancelled {!! $series->cancelled_at ? $series->cancelled_at->format('l F jS Y') : 'unknown'!!}<br>
+		@endif
+
+		@if ($series->occurrenceType->name != 'No Schedule')
+		Starts {!! $series->start_at ? $series->start_at->format('g:i A') : 'unknown';  !!} - Ends {!! $series->end_at ? $series->end_at->format('h:i A') : 'unknown';  !!} ({{ $series->length() }} hours)<br>
+			@if ($nextEvent = $series->nextEvent() )
+				Next is {{ $nextEvent->start_at->format('l F jS Y')}}<br>
+			@elseif ($series->cancelled_at == NULL)
+				Next is {{ $series->nextEvent() ? $series->nextEvent()->start_at->format('l F jS Y') : $series->cycleFromFoundedAt()->format('l F jS Y') }} (not yet created)<br>
+			@endif
+		@endif
 		</p>
+
+		@if ($series->description)
+		<description class="body">
+			{!! nl2br($series->description) !!}
+		</description>
+		@endif
+
+		<p>
+        @if ($series->eventType)
+			<b>{{ $series->eventType ? $series->eventType->name : ''}} {{ $series->venue ? 'at '.$series->venue->name : ' at no venue specified' }}</b>
+			@if ($series->venue->getPrimaryLocationAddress() != "")
+			at {{ $series->venue->getPrimaryLocationAddress() }}
+			@endif 
         @endif
+		</p>
 
-	@if ($signedIn)
-	<br>
-	@if ($follow = $series->followedBy($user))
-	<b>You Are Following</b> <a href="{!! route('series.unfollow', ['id' => $series->id]) !!}" title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
-	@else
-	Click to Follow <a href="{!! route('series.follow', ['id' => $series->id]) !!}" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
-	@endif
+		@if ($signedIn)
+		<br>
+		{{ count($series->followers()) }} Follows |
+		@if ($follow = $series->followedBy($user))
+			<b>You Are Following</b> 
+			<a href="{!! route('series.unfollow', ['id' => $series->id]) !!}" title="Click to unfollow">
+				<i class="bi bi-dash-circle-fill"></i>
+			</a>
+		@else
+			Click to Follow 
+			<a href="{!! route('series.follow', ['id' => $series->id]) !!}" title="Click to follow">
+				<i class="bi bi-plus-circle-fill"></i>
+			</a>
+		@endif
 
-	@endif
+		@endif
 
-	<P>
-	@unless ($series->entities->isEmpty())
-	Related Entities:
-		@foreach ($series->entities as $entity)
-		<span class="label label-tag"><a href="/series/relatedto/{{ $entity->slug }}">{{ $entity->name }}</a>
-		<a href="{!! route('entities.show', ['entity' => $entity->slug]) !!}" title="Show this entity."><span class='glyphicon glyphicon-link text-info'></span></a>
-		</span>
+		@unless ($series->entities->isEmpty())
+		<br>
+		Related Entities:
+			@foreach ($series->entities as $entity)
+			<span class="badge rounded-pill bg-dark"><a href="/series/relatedto/{{ $entity->slug }}">{{ $entity->name }}</a>
+			<a href="{!! route('entities.show', ['entity' => $entity->slug]) !!}" title="Show this entity.">
+				<i class="bi bi-link-45deg"></i>
+			</a>
+			</span>
+			@endforeach
+		@endunless
+
+		@unless ($series->tags->isEmpty())
+		<br>
+		Tags:
+		@foreach ($series->tags as $tag)
+			@include('tags.single_label')
 		@endforeach
-	@endunless
-	</P>
+		@endunless
 
-	@unless ($series->tags->isEmpty())
-	<P>Tags:
-	@foreach ($series->tags as $tag)
-		<span class="label label-tag"><a href="/series/tag/{{ $tag->slug }}">{{ $tag->name }}</a>
-		<a href="{!! route('tags.show', ['tag' => $tag->slug]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a></span>
-		@endforeach
-	@endunless
-	</P>
+		<div><small class="text-muted">Added by {{ $series->user->name ?? '' }}</small></div>
 
-	<p>	<i>Added by {{ $series->user->name ?? '' }}</i></p>
+	</div>
+	</div>
 
+	<div class="col-lg-6">
 		<div class="row">
-			<div class="col-sm-12">
-				<div class="bs-component">
-					<div class="panel panel-info">
+		@foreach ($series->photos->chunk(4) as $set)
+			@foreach ($set as $photo)
+			<div class="col-2">
+				<a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->path }}" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $entity->name}}"  style="max-width: 100%;"></a>
+				@if ($user && (Auth::user()->id == $entity->user->id || $user->id == Config::get('app.superuser')))
+					{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning', $photo, 'DELETE', 'Delete the photo') !!}
+					@if ($photo->is_primary)
+					{!! link_form_bootstrap_icon('bi bi-star-fill text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
+					@else
+					{!! link_form_bootstrap_icon('bi bi-star text-info', '/photos/'.$photo->id.'/setPrimary', 'POST', 'Set as primary photo') !!}
+					@endif
+				@endif
+			</div>
+			@endforeach
+		@endforeach
+		<div class="col">
+			@if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser')))
+			<form action="/series/{{ $series->id }}/photos" class="dropzone h-auto" id="myDropzone" method="POST">
+				<input type="hidden" name="_token" value="{{ csrf_token() }}">
+			</form>
+			@endif
+		</div>
+</div>
 
-						<div class="panel-heading">
-							<h3 class="panel-title">Events</h3>
-						</div>
-						<div class="panel-body">
-								<div class="panel-body">
-								@include('events.list', ['events' => $events])
-								{!! $events->render() !!}
-								</div>
-						</div>
-					</div>
-				</div>
+<div class="row">
+
+	<div class="col-xl-12">
+		<div class="card bg-dark">
+
+			<h5 class="card-header bg-primary">Events</h5>
+			<div class="card-body">
+
+				@include('events.list', ['events' => $events])
+				{!! $events->render() !!}
+
 			</div>
 		</div>
 
 	</div>
 </div>
 
-<div class="col-md-6">
-@if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser') ) )
-<form action="/series/{{ $series->id }}/photos" class="dropzone" id="myDropzone" method="POST">
-	<input type="hidden" name="_token" value="{{ csrf_token() }}">
-</form>
-@endif
-
-<br style="clear: left;"/>
-
-@foreach ($series->photos->chunk(4) as $set)
-	<div class="row">
-	@foreach ($set as $photo)
-		<div class="col-md-2" style="padding-bottom: 10px;">
-			<a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->getStoragePath() }}" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{$photo->name}}"  style="max-width: 100%;" ></a>
-			@if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser') ))
-						{!! link_form_icon('glyphicon-trash text-warning', $photo, 'DELETE', 'Delete the photo') !!}
-						@if ($photo->is_primary)
-						{!! link_form_icon('glyphicon-star text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
-						@else
-						{!! link_form_icon('glyphicon-star-empty text-info', '/photos/'.$photo->id.'/setPrimary', 'POST', 'Set as primary photo') !!}
-						@endif
-			@endif
-		</div>
-	@endforeach
-	</div>
-@endforeach
 </div>
 	<br>
 	<div class="row">

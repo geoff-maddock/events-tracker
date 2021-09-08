@@ -1,12 +1,13 @@
 <tr>
-    <td>{!! link_to_route('threads.show', $thread->name, [$thread->id], ['class' => 'forum-link']) !!}
+    <td>{!! link_to_route('threads.show', $thread->name, [$thread->id], ['class' => 'forum-link pe-2']) !!}
         @if ($signedIn && (($thread->ownedBy($user) && $thread->isRecent()) || $user->hasGroup('super_admin')))
-            <a href="{!! route('threads.edit', ['thread' => $thread->id]) !!}" title="Edit this thread." class="hover-dim"><span class='glyphicon glyphicon-pencil text-primary'></span></a>
-            {!! link_form_icon('glyphicon-trash text-warning', $thread, 'DELETE', 'Delete the [thread]') !!}
+            <a href="{!! route('threads.edit', ['thread' => $thread->id]) !!}" title="Edit this thread." class="hover-dim"><i class="bi bi-pencil-fill icon"></i></a>
+            {!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $thread, 'DELETE', 'Delete the [thread]') !!}
             @if (!$thread->is_locked)
-                <a href="{!! route('threads.lock', ['id' => $thread->id]) !!}" title="Lock this thread." class="hover-dim"><span class='material-icons md-18 icon-correct text-primary'>lock</span></a>
+                <a href="{!! route('threads.lock', ['id' => $thread->id]) !!}" title="Lock this thread."><i class="bi bi-unlock-fill icon"></i></a>
             @else
-                <a href="{!! route('threads.unlock', ['id' => $thread->id]) !!}" title="Thread is locked.  Click to unlock." class="hover-dim"><span class='material-icons md-18 icon-correct text-danger'>lock</span></a>
+                <a href="{!! route('threads.unlock', ['id' => $thread->id]) !!}" title="Thread is locked.  Click to unlock."><i class="bi bi-lock-fill icon"></i>
+                </a>
             @endif
         @endif
         @if ($signedIn)
@@ -25,13 +26,13 @@
 
         @if ($event = $thread->event)
             Event:
-            <span class="label label-tag"><a href="{!! route('events.show', ['event' => $event->id]) !!}">{{ $event->name }}</a></span>
+            <span class="badge rounded-pill bg-dark"><a href="{!! route('events.show', ['event' => $event->id]) !!}">{{ $event->name }}</a></span>
         @endif
 
         @unless ($thread->series->isEmpty())
             Series:
             @foreach ($thread->series as $series)
-                <span class="label label-tag"><a href="/threads/series/{{ urlencode($series->slug) }}">{{ $series->name }}</a>
+                <span class="badge rounded-pill bg-dark"><a href="/threads/series/{{ urlencode($series->slug) }}">{{ $series->name }}</a>
                             <a href="{!! route('series.show', ['series' => $series->id]) !!}" title="Show this series."><span class='glyphicon glyphicon-link text-info'></span></a>
                         </span>
             @endforeach
@@ -41,7 +42,7 @@
         @unless ($thread->entities->isEmpty())
             Related:
             @foreach ($thread->entities as $entity)
-                <span class="label label-tag"><a href="/threads/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a>
+                <span class="badge rounded-pill bg-dark"><a href="/threads/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a>
                             <a href="{!! route('entities.show', ['entity' => $entity->slug]) !!}" title="Show this entity."><span class='glyphicon glyphicon-link text-info'></span></a>
                 </span>
             @endforeach
@@ -50,8 +51,13 @@
         @unless ($thread->tags->isEmpty())
             Tags:
             @foreach ($thread->tags as $tag)
-                <span class="label label-tag"><a href="/threads/tag/{{ urlencode($tag->name) }}">{{ $tag->name }}</a>
-                            <a href="{!! route('tags.show', ['tag' => $tag->name]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a>
+                <span class="badge rounded-pill bg-dark"><a href="/threads/tag/{{ urlencode($tag->name) }}">{{ $tag->name }}</a>
+                            <a href="{!! route('tags.show', ['tag' => $tag->name]) !!}" title="Show this tag.">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
+                                    <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/>
+                                    <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/>
+                                  </svg>
+                            </a>
                 </span>
             @endforeach
         @endunless

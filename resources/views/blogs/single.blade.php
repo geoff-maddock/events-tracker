@@ -13,16 +13,16 @@
 
 	@if ($signedIn && $permission->ownedBy($user))
 	<a href="{!! route('entities.edit', ['id' => $permission->id]) !!}">
-	<span class='glyphicon glyphicon-pencil'></span></a>
+		<i class="bi bi-pencil"></i>
+	</a>
 	@endif 
 	
 	@if ($signedIn)
-	@if ($follow = $permission->followedBy($user))
-	<a href="{!! route('entities.unfollow', ['id' => $permission->id]) !!}" title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
-	@else
-	<a href="{!! route('entities.follow', ['id' => $permission->id]) !!}" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
-	@endif
-
+		@if ($follow = $permission->followedBy($user))
+		<a href="{!! route('entities.unfollow', ['id' => $permission->id]) !!}" title="Click to unfollow"><i class="bi bi-dash-circle-fill"></i></a>
+		@else
+		<a href="{!! route('entities.follow', ['id' => $permission->id]) !!}" title="Click to follow"><i class="bi bi-plus-circle-fill"></i></a>
+		@endif
 	@endif 
 
 
@@ -35,7 +35,7 @@
 	@endif
     <br>
 	@foreach ($permission->roles as $role)
-	<span class="label label-tag"><a href="/entities/role/{{ $role->name }}">{{ $role->name }}</a></span>
+		<span class="badge rounded-pill bg-dark"><a href="/entities/role/{{ $role->name }}">{{ $role->name }}</a></span>
 	@endforeach
 	<br>
 	<ul class="list">

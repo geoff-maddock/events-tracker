@@ -1,7 +1,7 @@
 <div class="row">
 	<div class="form-group {{$errors->has('name') ? 'has-error' : '' }} col-md-12">
 	{!! Form::label('name','Name') !!}
-	{!! Form::text('name', null, ['class' =>'form-control']) !!}
+	{!! Form::text('name', null, ['class' => 'form-control form-background']) !!}
 	{!! $errors->first('name','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -9,7 +9,7 @@
 <div class="row">
 	<div class="form-group col-md-12">
 	{!! Form::label('slug','Slug') !!}
-	{!! Form::text('slug', null, ['placeholder' => 'Unique name for this entity (will validate)', 'class' =>'form-control']) !!}
+	{!! Form::text('slug', null, ['placeholder' => 'Unique name for this entity (will validate)', 'class' => 'form-control form-background']) !!}
 	{!! $errors->first('slug','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -17,7 +17,7 @@
 <div class="row">
 	<div class="form-group col-md-12">
 	{!! Form::label('short','Short description') !!}
-	{!! Form::text('short', null, ['placeholder' => 'Add a brief description of this entity.','class' =>'form-control']) !!}
+	{!! Form::text('short', null, ['placeholder' => 'Add a brief description of this entity.','class' => 'form-control form-background']) !!}
 	{!! $errors->first('short','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -26,7 +26,7 @@
 <div class="row">
 	<div class="form-group col-md-12">
 	{!! Form::label('description','In Depth') !!}
-	{!! Form::textarea('description', null, ['placeholder' => 'Add a more in depth description here.','class' =>'form-control']) !!}
+	{!! Form::textarea('description', null, ['placeholder' => 'Add a more in depth description here.','class' => 'form-control form-background']) !!}
 	{!! $errors->first('description','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -34,14 +34,14 @@
 <div class="row">
 	<div class="form-group col-md-6">
 	{!! Form::label('entity_type_id','Type') !!}
-	{!! Form::select('entity_type_id', $entityTypeOptions, (isset($entity->entity_type_id) ? $entity->entity_type_id : NULL), ['class' =>'form-control']) !!}
+	{!! Form::select('entity_type_id', $entityTypeOptions, (isset($entity->entity_type_id) ? $entity->entity_type_id : NULL), ['class' => 'form-control form-background']) !!}
 	{!! $errors->first('entity_type_id','<span class="help-block">:message</span>') !!}
 	</div>
 
 
 	<div class="form-group col-md-6">
 	{!! Form::label('entity_status_id','Status') !!}
-	{!! Form::select('entity_status_id', $entityStatusOptions, (isset($entity->entity_status_id) ? $entity->entity_status_id : NULL),['class' =>'form-control']) !!}
+	{!! Form::select('entity_status_id', $entityStatusOptions, (isset($entity->entity_status_id) ? $entity->entity_status_id : NULL),['class' => 'form-control form-background']) !!}
 	{!! $errors->first('entity_status_id','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -50,13 +50,13 @@
 <div class="row">
 	<div class="form-group col-md-6">
 		{!! Form::label('facebook_username','FB Username') !!}
-		{!! Form::text('facebook_username', null, ['placeholder' => 'Add the related facebook username if there is one.','class' =>'form-control']) !!}
+		{!! Form::text('facebook_username', null, ['placeholder' => 'Add the related facebook username if there is one.','class' => 'form-control form-background']) !!}
 		{!! $errors->first('facebook_username','<span class="help-block">:message</span>') !!}
 	</div>
 
 	<div class="form-group col-md-6">
 		{!! Form::label('twitter_username','Twitter Username') !!}
-		{!! Form::text('twitter_username', null, ['placeholder' => 'Add the related twitter username if there is one.','class' =>'form-control']) !!}
+		{!! Form::text('twitter_username', null, ['placeholder' => 'Add the related twitter username if there is one.','class' => 'form-control form-background']) !!}
 		{!! $errors->first('twitter_username','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -64,7 +64,7 @@
 <div class="row">
 	<div class="form-group col-md-6">
 	{!! Form::label('role_list','Roles:') !!}
-	{!! Form::select('role_list[]', $roleOptions, null, ['id' => 'role_list',	'class' =>'form-control select2',
+	{!! Form::select('role_list[]', $roleOptions, null, ['id' => 'role_list',	'class' => 'form-control select2',
 	'data-placeholder' => 'Choose a role',
 	'data-tags' => 'false',
 	'multiple']) !!}
@@ -103,5 +103,5 @@
 </div>
 
 <div class="form-group">
-{!! Form::submit(isset($action) ? 'Update Entity' : 'Add Entity',  ['class' =>'btn btn-primary']) !!}
+{!! Form::submit(isset($action) ? 'Update Entity' : 'Add Entity',  ['class' =>'btn btn-primary my-2']) !!}
 </div>

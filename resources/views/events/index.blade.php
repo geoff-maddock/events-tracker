@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h1 class="display-6 text-primary">Events @include('events.crumbs')</h4>
+<h1 class="display-6 text-primary">Events @include('events.crumbs')</h1>
 
 <div id="action-menu" class="mb-2">
 	<a href="{!! URL::route('events.index') !!}" class="btn btn-info mt-2 mr-2">Show event index</a>
@@ -69,11 +69,11 @@
 				{!! Form::select('filter_related', $relatedOptions, (isset($filters['related'])
 				? $filters['related'] : NULL),
 				[
-				'data-theme' => 'bootstrap-5',
-				'data-width' => '100%',
-				'class' => 'form-control select2',
-				'data-placeholder' => 'Select an entity',
-				'name' => 'filters[related]'
+					'data-theme' => 'bootstrap-5',
+					'data-width' => '100%',
+					'class' => 'form-control select2',
+					'data-placeholder' => 'Select an entity',
+					'name' => 'filters[related]'
 				]) !!}
 			</div>
 
@@ -82,11 +82,11 @@
 				{!! Form::select('filter_event_type', $eventTypeOptions, (isset($filters['event_type'])
 				? $filters['event_type'] : NULL),
 				[
-				'data-theme' => 'bootstrap-5',
-				'data-width' => '100%',
-				'class' => 'form-control select2',
-				'data-placeholder' => 'Select a type',
-				'name' => 'filters[event_type]'
+					'data-theme' => 'bootstrap-5',
+					'data-width' => '100%',
+					'class' => 'form-control select2',
+					'data-placeholder' => 'Select a type',
+					'name' => 'filters[event_type]'
 				]) !!}
 			</div>
 
@@ -135,8 +135,8 @@
 					{!! Form::hidden('key', $key ?? 'internal_event_index') !!}
 					{!! Form::submit('Reset',
 					[
-					'class' => 'btn btn-primary btn-sm btn-tb',
-					'id' => 'primary-filter-reset'
+						'class' => 'btn btn-primary btn-sm btn-tb',
+						'id' => 'primary-filter-reset'
 					]) !!}
 					{!! Form::close() !!}
 				</div>
@@ -149,20 +149,17 @@
 			<div class="form-group row gx-1 justify-content-end">
 				<div class="col-auto">
 					<a href="{{ url()->action('EventsController@rppReset') }}" class="btn btn-primary">
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
-							<path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
-							<path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
-						</svg>
+						<i class="bi bi-arrow-clockwise"></i>
 					</a>
 				</div>
 				<div class="col-auto">
-					{!! Form::select('limit', $limitOptions, ($limit ?? 10), ['class' =>'form-background form-select auto-submit']) !!}
+					{!! Form::select('limit', $limitOptions, ($limit ?? 10), ['class' => 'form-background form-select auto-submit']) !!}
 				</div>
 				<div class="col-auto">
-					{!! Form::select('sort', $sortOptions, ($sort ?? 'events.start_at'), ['class' =>'form-background form-select auto-submit']) !!}
+					{!! Form::select('sort', $sortOptions, ($sort ?? 'events.start_at'), ['class' => 'form-background form-select auto-submit']) !!}
 				</div>
 				<div class="col-auto">
-					{!! Form::select('direction', $directionOptions, ($direction ?? 'desc'), ['class' =>'form-background form-select auto-submit']) !!}
+					{!! Form::select('direction', $directionOptions, ($direction ?? 'desc'), ['class' => 'form-background form-select auto-submit']) !!}
 				</div>
 			</div>
 		</form>
@@ -173,22 +170,24 @@
 
 <div id="list-container" class="row">
 
-	@if (isset($events) && count($events) > 0)
-	<div id="all-events-list" class="col-lg-6">
-		<div class="bs-component">
-			<div class="panel panel-info">
+	@if (isset($events))
+		@if (count($events) > 0)
+		<div id="all-events-list" class="col-lg-6">
+			<div class="bs-component">
+				<div class="panel panel-info">
 
-				<div class="panel-body">
-					{!! $events->render() !!}
-					@include('events.list', ['events' => $events])
-					{!! $events->render() !!}
+					<div class="panel-body">
+						{!! $events->render() !!}
+						@include('events.list', ['events' => $events])
+						{!! $events->render() !!}
+					</div>
+
 				</div>
-
 			</div>
 		</div>
-	</div>
-	@else 
-	<div><small class="text-muted">No matching events.</small></div>
+		@else 
+		<div><small class="text-muted">No matching events.</small></div>
+		@endif
 	@endif
 
 	@if (isset($past_events) && count($past_events) > 0)

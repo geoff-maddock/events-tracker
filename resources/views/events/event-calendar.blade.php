@@ -4,15 +4,13 @@
 
 @section('content')
 
-	<h4>Events Calendar
-		@include('events.crumbs')
-	</h4>
+	<h1 class="display-6 text-primary">Events Calendar	@include('events.crumbs')</h1>
 
 		<div id='calendar'></div>
 @stop
 
 @section('footer')
-	<div style='margin: 10px;'>
+	<div class='m-2'>
 		<script>
 
 			document.addEventListener('DOMContentLoaded', function() {

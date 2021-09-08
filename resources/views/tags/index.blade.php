@@ -4,31 +4,23 @@
 
 @section('content')
 
-	<h4>Keywords
-		@include('tags.crumbs')
-	</h4>
+<h1 class="display-6 text-primary">Keywords	@include('tags.crumbs')</h1>
 
-	<p>
+<div id="action-menu" class="mb-2">
 	<a href="{{ url('/tags') }}" class="btn btn-info">Show all tags</a>
-		<a href="{!! URL::route('tags.create') !!}" class="btn btn-primary">Add a tag</a>
-	</p>
-
-	<br style="clear: left;"/>
+	<a href="{!! URL::route('tags.create') !!}" class="btn btn-primary">Add a tag</a>
+</div>
 
 	<div class="row">
+		<div class="col-lg-2">
+			<div class="card bg-dark">
+				<h5 class="card-header bg-primary">Keywords
+					<a href="#" ><span class='glyphicon glyphicon-question-sign pull-right' data-toggle="tooltip" data-placement="bottom"  title="Click on a keyword tag name in the left panel to find all related events or entites.  Click on the plus next to the tag to follow, minus to unfollow."></span></a>
+				</h5>
 
-	<div class="col-lg-2">
-			<div class="bs-component">
-			<div class="panel panel-info">
-
-				<div class="panel-heading">
-					<h3 class="panel-title">Keywords
-						<a href="#" ><span class='glyphicon glyphicon-question-sign pull-right' data-toggle="tooltip" data-placement="bottom"  title="Click on a keyword tag name in the left panel to find all related events or entites.  Click on the plus next to the tag to follow, minus to unfollow."></span></a>
-					</h3>
-				</div>
-
-				<div class="panel-body">
-					<div class="col-lg-2">
+				<div class="card-body">
+					<div class="row">
+					<div class="col-lg-1">
 						<ul class="list-click">
 							<li><a href="#A">A</a></li>
 							<li><a href="#B">B</a></li>
@@ -57,19 +49,18 @@
 							<li><a href="#Y">Y</a></li>
 							<li><a href="#Z">Z</a></li>
 						</ul>
-
 					</div>
-					<div class="col-lg-10">
-						<ul style="margin-left: -30px;">
+					<div class="col">
+						<ul>
 						@foreach ($tags as $t)
 							@if (isset($tag) && (strtolower($tag) === strtolower($t->name)))
 								<?php $match = $t;?>
 								<li class='list selected'><a href="/tags/{{ $t->slug }}" title="Click to show all related events and entities." name="{{ $t->name[0] }}">{{ $t->name }}</a>
 									@if ($signedIn)
 										@if ($follow = $t->followedBy($user))
-										<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
+										<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to unfollow"><i class="bi bi-dash-circle-fill text-warning"></i></a>
 										@else
-										<a href="{!! route('tags.follow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
+										<a href="{!! route('tags.follow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to follow"><i class="bi bi-plus-circle-fill text-info"></i></a>
 										@endif
 									@endif
 								</li>
@@ -77,9 +68,9 @@
 								<li class='list'><a href="/tags/{{ $t->slug }}"  name="{{ $t->name[0] }}">{{ $t->name }}</a>
 									@if ($signedIn)
 										@if ($follow = $t->followedBy($user))
-										<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
+										<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to unfollow"><i class="bi bi-dash-circle-fill text-warning"></i></a>
 										@else
-										<a href="{!! route('tags.follow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
+										<a href="{!! route('tags.follow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to follow"><i class="bi bi-plus-circle-fill text-info"></i></a>
 										@endif
 									@endif
 								</li>
@@ -87,7 +78,6 @@
 						@endforeach
 						</ul>
 					</div>
-
 				</div>
 			</div>
 		</div>
@@ -95,18 +85,11 @@
 
 	@if (!isset($tag))
 	<div class="col-lg-10">
-		<div class="bs-component">
-			<div class="panel panel-info">
-
-				<div class="panel-heading">
-					<h3 class="panel-title">Info</h3>
+		<div class="card bg-dark">
+				<h5 class="card-header bg-primary">Info</h5>
+				<div class="card-body">
+					Click on a <b>keyword</b> tag name in the left panel to find all related events or entites.  Click on the <b>plus</b> next to the tag to follow, <b>minus</b> to unfollow.
 				</div>
-
-				<div class="panel-body" style="padding: 15px !important;">
-
-				Click on a <b>keyword</b> tag name in the left panel to find all related events or entites.  Click on the <b>plus</b> next to the tag to follow, <b>minus</b> to unfollow.
-				</div>
-
 			</div>
 		</div>
 	</div>
@@ -114,113 +97,69 @@
 
 	@if (!isset($match) && isset($userTags))
 
-		<div class="col-lg-5">
-			<div class="bs-component">
-				<div class="panel panel-info">
-
-					<div class="panel-heading">
-						<h3 class="panel-title">Tags</h3>
-					</div>
-
-					<div class="panel-body">
+		<div class="col-lg-10">
+			<div class="card bg-dark">
+					<h5 class="card-header bg-primary">Tags</h5>
+					<div class="card-body">
 						@include('tags.list', ['tags' => $userTags])
 					</div>
-
-				</div>
 			</div>
 
-			<div class="bs-component">
-				<div class="panel panel-info">
-	
-	
-					<div class="panel-heading">
-						<h3 class="panel-title">Entities</h3>
+			<div class="card bg-dark">
+					<h5 class="panel-title">Entities</h5>	
+					<div class="card-body">
+						@include('entities.list', ['entities' => $entities])
+						{!! $entities->render() !!}
 					</div>
-	
-					<div class="panel-body">
-					@include('entities.list', ['entities' => $entities])
-					{!! $entities->render() !!}
-					</div>
-	
-				</div>
 			</div>
-
 		</div>
-
 
 	@endif
 
 
-
-	<div class="col-lg-5">
-
+	<div class="col-lg-10">
 		@if (isset($match) )
-		<div class="bs-component">
-			<div class="panel panel-info">
+		<div class="card bg-dark my-2">
+				<h5 class="card-header bg-primary">Tags</h5>
 
-				<div class="panel-heading">
-					<h3 class="panel-title">Tags</h3>
+				<div class="card-body">
+					<ul class='event-list'>
+						@include('tags.single', ['tag' => $match])
+					</ul>
 				</div>
 
-				<div class="panel-body">
-				<ul class='event-list'>
-					@include('tags.single', ['tag' => $match])
-				</ul>
-				</div>
+		</div>
 
-			</div>
-
-			<div class="bs-component">
-				<div class="panel panel-info">
-	
-	
-					<div class="panel-heading">
-						<h3 class="panel-title">Entities</h3>
-					</div>
-	
-					<div class="panel-body">
+		<div class="card bg-dark my-2">
+			<h5 class="card-header bg-primary">Entities</h5>
+			<div class="card-body">
 					@include('entities.list', ['entities' => $entities])
 					{!! $entities->render() !!}
-					</div>
-	
-				</div>
 			</div>
 		</div>
 		@endif
 
 
 		@if (isset($series) && count($series) > 0)
-		<div class="bs-component">
-			<div class="panel panel-info">
-
-
-				<div class="panel-heading">
-					<h3 class="panel-title">Series</h3>
-				</div>
-
-				<div class="panel-body">
-					@include('series.list', ['series' => $series])
-				</div>
-
+		<div class="card bg-dark my-2">
+			<h5 class="card-header bg-primary">Series</h5>
+			<div class="card-body">
+				@include('series.list', ['series' => $series])
 			</div>
 		</div>
 		@endif
 
 		@if (isset($events) && count($events) > 0)
-		<div class="bs-component">
-			<div class="panel panel-info">
+		<div class="card bg-dark  my-2">
 
-				<div class="panel-heading">
-					<h3 class="panel-title">Events
-                        @if (isset($tag))
-						<a href="{!! route('calendar.tag', ['tag' => $tag]) !!}" title="{{ $tag.' Calendar' }}"><span class='glyphicon glyphicon-calendar pull-right'></span></a>
-                            @endif
-					</h3>
+				<h5 class="card-header bg-primary">Events
+                	@if (isset($tag))
+						<a href="{!! route('calendar.tag', ['tag' => $tag]) !!}" title="{{ $tag.' Calendar' }}"><i class='bi bi-calendar-plus text-warning pull-right'></i></a>
+                    @endif
+				</h5>
 
-				</div>
-
-				<div class="panel-body">
-				@include('events.list', ['events' => $events])
+				<div class="card-body">
+					@include('events.list', ['events' => $events])
 				{!! $events->render() !!}
 				</div>
 
