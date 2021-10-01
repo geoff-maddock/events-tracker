@@ -1,22 +1,15 @@
+$border-radius:               .25rem;
+$border-radius-sm:            .2rem;
+$border-radius-lg:            .3rem;
+$border-radius-pill:          50rem;
 
 // Fonts
 @import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
 
-// Variables
-// @import "variables";
-
 // Bootstrap
 @import "~bootswatch/dist/superhero/variables";
 @import "~bootstrap/scss/bootstrap";
-@import "~bootswatch/dist/superhero/bootswatch";
-// @import "~bootstrap-sass/assets/stylesheets/bootstrap";
 
-// Select2 - not working with bootstrap 3
-//@import "~select2/dist/css/select2.min.css";
-//@import "~select2-bootstrap-css/select2-bootstrap.min.css";
-
-// DISABLED Full Calendar
-// @import "~fullcalendar/dist/fullcalendar.min.css";
 
 // Dropzone
 @import "~dropzone/dist/min/dropzone.min.css";

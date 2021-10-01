@@ -5,10 +5,10 @@
         <th>
           Threads
         </th>
-        <th class="cell-stat ">Category</th>
-        <th class="cell-stat hidden-xs hidden-sm">Users</th>
-        <th class="cell-stat text-center hidden-xs hidden-sm">Posts</th>
-        <th class="cell-stat text-center hidden-xs hidden-sm">Views</th>
+        <th class="cell-stat">Category</th>
+        <th class="cell-stat d-none d-md-table-cell">Users</th>
+        <th class="cell-stat text-center d-none d-lg-table-cell">Posts</th>
+        <th class="cell-stat text-center d-none d-lg-table-cell">Views</th>
         <th class="cell-stat ">Last Post</th>
       </tr>
     </thead>
@@ -57,11 +57,11 @@
 	</td>
     <td>@if (isset($thread->threadCategory))
     <a class="forum-link" href="/threads/category/{{ urlencode($thread->threadCategory->name) }}">{{ $thread->threadCategory->name }}</a>
-	@else
+	  @else
     General
     @endif
     </td>
-    <td class="cell-stat hidden-xs hidden-sm">
+    <td class="cell-stat d-none d-md-table-cell">
       @if (isset($thread->user))
         @include('users.avatar', ['user' => $thread->user])
       {!! link_to_route('users.show', $thread->user->name, [$thread->user->id], ['class' => 'forum-link']) !!}
@@ -69,8 +69,8 @@
       User deleted
       @endif
     </td>
-    <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->postCount }}</td>
-    <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->views }}</td>
+    <td class="cell-stat text-center d-none d-lg-table-cell">{{ $thread->postCount }}</td>
+    <td class="cell-stat text-center d-none d-lg-table-cell">{{ $thread->views }}</td>
     <td>{{ $thread->lastPostAt->diffForHumans() }}</td>
     </tr>
 

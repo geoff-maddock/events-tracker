@@ -59,20 +59,11 @@
 		          </ul>
 		        </li>
                 <!-- MORE only shown when collapsed down to medium desktops or smaller -->
-<<<<<<< 565343d806e3ca4349ea798d69b1bd5d8cc66c0a
-				<li class="nav-item dropdown d-lg-none {{ Request::is('forum') ? 'active' : '' }}">
-					<a href="#" class="nav-link dropdown-toggle visible-xs-block visible-sm-block visible-md-block" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">More <span class="caret"></span></a>
-
-					<ul class="dropdown-menu">
-						@isset ($hasForum)
-						<li class="{{ Request::is('threads') ? 'active' : '' }}"><a href="{{ url('/threads')}}" title="Show a list of discussion forums.">Forum</a></li>
-=======
 				<li class="nav-item dropdown d-xl-none {{ Request::is('forum') ? 'active' : '' }}">
 					<a href="#" class="nav-link dropdown-toggle visible-xs-block visible-sm-block visible-md-block" data-hover="dropdown" id="more-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">More <span class="caret"></span></a>
 					<ul class="dropdown-menu" aria-labelledby="more-dropdown">
 						@isset ($hasForum)
 						<li class="{{ Request::is('threads') ? 'active' : '' }}"><a href="{{ url('/threads')}}"  class="dropdown-item" title="Show a list of discussion forums.">Forum</a></li>
->>>>>>> Issue #114.  Fixed the nav menu to work with bootstrap 5.
 						@endisset
 						<li class="{{ Request::is('tags') ? 'active' : '' }}"><a href="{{ url('/tags') }}"  class="dropdown-item" title="Show a list of tag topics.">Tags</a></li>
 						<li class="{{ Request::is('users') ? 'active' : '' }}"><a href="{{ url('/users') }}"  class="dropdown-item" title="Show a list of registered users.">Users</a></li>
@@ -92,7 +83,7 @@
 						<a href="{{ url('/users') }}" title="Show a list of registered users." class="nav-link">Users</a>
 					</li>
 		        @endif
-		        <li class="mx-2">
+		        <li class="mx-2 d-none d-sm-none d-md-block">
 				  <form class="navbar-form navbar-left" role="search" action="/search">
 					<div class="form-group">
 					  <input type="text" class="form-control form-background" placeholder="Search" name="keyword" style="width: 150px;" value="{{ isset($slug) ? $slug : '' }}">

@@ -4,7 +4,7 @@
 
 @section('content')
 
-	<h4>Add a New Thread</h4>
+<h1 class="display-6 text-primary">Add a New Thread</h1>
 
 	{!! Form::open(['route' => 'threads.store']) !!}
 

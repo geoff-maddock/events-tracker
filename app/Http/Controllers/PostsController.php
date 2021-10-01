@@ -117,8 +117,8 @@ class PostsController extends Controller
         $query = $listResultSet->getList();
 
         $posts = $query->visible($this->user)
-        ->with('visibility')
-        ->paginate($listResultSet->getLimit());
+            ->with('visibility')
+            ->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();
@@ -142,7 +142,8 @@ class PostsController extends Controller
             $this->getFilterOptions(),
             $this->getListControlOptions()
         ))
-        ->with(compact('posts'))->render();
+        ->with(compact('posts'))
+        ->render();
     }
 
     /**

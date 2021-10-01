@@ -12,14 +12,14 @@
         @endif
         @if ($signedIn)
             @if ($follow = $thread->followedBy($user))
-                <a href="{!! route('threads.unfollow', ['id' => $thread->id]) !!}" title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
+                <a href="{!! route('threads.unfollow', ['id' => $thread->id]) !!}" title="Click to unfollow"><i class="bi bi-dash-circle-fill text-warning icon"></i></span></a>
             @else
-                <a href="{!! route('threads.follow', ['id' => $thread->id]) !!}" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
+                <a href="{!! route('threads.follow', ['id' => $thread->id]) !!}" title="Click to follow"><i class="bi bi-plus-circle-fill text-info icon"></i></a>
             @endif
             @if ($like = $thread->likedBy($user))
-                <a href="{!! route('threads.unlike', ['id' => $thread->id]) !!}" title="Click to unlike"><span class='glyphicon glyphicon-star text-success'></span></a>
+                <a href="{!! route('threads.unlike', ['id' => $thread->id]) !!}" title="Click to unlike"><i class="bi bi-star-fill icon"></i></a>
             @else
-                <a href="{!! route('threads.like', ['id' => $thread->id]) !!}" title="Click to like"><span class='glyphicon glyphicon-star-empty text-warning'></span></a>
+                <a href="{!! route('threads.like', ['id' => $thread->id]) !!}" title="Click to like"><i class="bi bi-star text-info icon"></i></a>
             @endif
         @endif
         <br>
@@ -33,7 +33,7 @@
             Series:
             @foreach ($thread->series as $series)
                 <span class="badge rounded-pill bg-dark"><a href="/threads/series/{{ urlencode($series->slug) }}">{{ $series->name }}</a>
-                            <a href="{!! route('series.show', ['series' => $series->id]) !!}" title="Show this series."><span class='glyphicon glyphicon-link text-info'></span></a>
+                            <a href="{!! route('series.show', ['series' => $series->id]) !!}" title="Show this series."><i class="bi bi-link-45deg text-info"></i></a>
                         </span>
             @endforeach
         @endunless
@@ -43,7 +43,7 @@
             Related:
             @foreach ($thread->entities as $entity)
                 <span class="badge rounded-pill bg-dark"><a href="/threads/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a>
-                            <a href="{!! route('entities.show', ['entity' => $entity->slug]) !!}" title="Show this entity."><span class='glyphicon glyphicon-link text-info'></span></a>
+                            <a href="{!! route('entities.show', ['entity' => $entity->slug]) !!}" title="Show this entity."><i class="bi bi-link-45deg text-info"></i></a>
                 </span>
             @endforeach
         @endunless
@@ -53,10 +53,7 @@
             @foreach ($thread->tags as $tag)
                 <span class="badge rounded-pill bg-dark"><a href="/threads/tag/{{ urlencode($tag->name) }}">{{ $tag->name }}</a>
                             <a href="{!! route('tags.show', ['tag' => $tag->name]) !!}" title="Show this tag.">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
-                                    <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/>
-                                    <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/>
-                                  </svg>
+                                <i class="bi bi-link-45deg text-info"></i>
                             </a>
                 </span>
             @endforeach

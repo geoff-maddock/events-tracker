@@ -4,20 +4,18 @@
 
 @section('content')
 
+<h1 class="display-6 text-primary">Permission @include('permissions.crumbs', ['slug' => $permission->label])</h1>
 
-<h4>Permission
-	@include('permissions.crumbs', ['slug' => $permission->label])
-</h4>
-
-<P>
+<div id="action-menu" class="mb-2">
 @can('edit_permission')
-	<a href="{!! route('permissions.edit', ['permission' => $permission->id]) !!}" class="btn btn-primary">Edit Permission</a>
+<a href="{!! route('permissions.edit', ['permission' => $permission->id]) !!}" class="btn btn-primary">Edit Permission</a>
 @endcan
-	<a href="{!! URL::route('permissions.index') !!}" class="btn btn-info">Return to list</a>
-</P>
+<a href="{!! URL::route('permissions.index') !!}" class="btn btn-info">Return to list</a>
+</div>
 
 <div class="row">
-	<div class="profile-card col-md-4">
+	<div class="col-lg-6">
+	<div class="profile-card">
 	<h2 class='item-title'>{{ $permission->label }}</h2>
 
 	<p>
@@ -41,7 +39,7 @@
 	@endunless
 
 	@can('edit_permission')
-		{!! link_form_icon('glyphicon-trash text-warning', $permission, 'DELETE', 'Delete the [permission]') !!}
+		{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $permission, 'DELETE', 'Delete the [permission]') !!}
 	@endcan
   </div>
 

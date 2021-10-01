@@ -1,5 +1,4 @@
 body {
-	/*background: #FEFFF1;*/
 	font-family: Roboto,sans-serif !important;
 }
 
@@ -18,25 +17,11 @@ body {
 .profile-card {
 	padding: 10px;
 	background-color: var(--bs-dark);
-	/* fixes issue with show page
-	margin-left: 5px; 
-	margin-bottom: 15px;
-	*/
 	border-radius: 5px;
 	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
 	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
 	min-height: 130px;
 }
-
-/* .card {
-	background-color: #445;
-	margin-left: 5px;
-	margin-bottom: 15px;
-	border-radius: 5px;
-	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
-	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
-	min-height: 130px;
-} */
 
 .mute-card {
 	padding: 10px;
@@ -309,22 +294,6 @@ span.bg-dark {
 	background-color: #ec945a; 
 }
 
-/* form related darkmode styles */
-/* 
-.form-control, .form-control:active, .form-control:hover, .form-control:focus {
-	background-color: var(--bs-secondary);
-	color:  rgba(255, 255, 255, 0.5) !important;
-} */
-
-/* input.form-control, input.form-control:active, input.form-control:hover, input.form-control:focus,
-textarea.form-control, textarea.form-control:active, textarea.form-control:hover, textarea.form-control:focus,
-select.form-control, select.form-control:active, select.form-control:hover, select.form-control:focus.card-thumb,
-#filter-list input
-{
-	background-color: var(--bs-secondary);
-	color:  rgba(255, 255, 255, 0.5) !important;
-} */
-
 .form-background, .form-background:active, .form-background:hover, .form-background:focus {
 	background-color: var(--bs-secondary);
 	color:  rgba(255, 255, 255, 0.5) !important;
@@ -398,8 +367,23 @@ select:-webkit-autofill:focus {
 	border-bottom-color: var(--bs-dark);
 }
 
-
 .navbar-background {
 	background-color: var(--bs-dark);
 	color:  rgba(255, 255, 255, 0.5) !important;
+}
+
+.navbar .navbar-brand {
+	font-size: 1.8rem !important;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover, .navbar-dark .navbar-nav .nav-link:focus {
+    color: #fff;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+a.fc-col-header-cell-cushion {
+	color: var(--bs-info);
 }

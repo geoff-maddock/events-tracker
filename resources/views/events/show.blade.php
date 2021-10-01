@@ -195,7 +195,7 @@
 
 					<h5 class="card-header bg-primary">
 						Posts
-							<a href="#"><span class='badge rounded-pill bg-dark pull-right' data-toggle="tooltip" data-placement="bottom"  title="# of posts that match this search term.">{{ count($thread->posts) }}</span></a>
+							<a href="#"><span class='badge rounded-pill bg-dark float-end' data-toggle="tooltip" data-placement="bottom"  title="# of posts that match this search term.">{{ count($thread->posts) }}</span></a>
 					</h5>
 
 					<div class="card-body">

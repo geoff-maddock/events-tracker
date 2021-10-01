@@ -32,8 +32,8 @@
 			@unless ($post->entities->isEmpty())
 			Related:
 				@foreach ($post->entities as $entity)
-					<span class="label label-tag"><a href="/posts/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a>
-                            <a href="{!! route('entities.show', ['entity' => $entity->slug]) !!}" title="Show this entity."><span class='glyphicon glyphicon-link text-info'></span></a>
+					<span class="badge rounded-pill bg-dark"><a href="/posts/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a>
+                            <a href="{!! route('entities.show', ['entity' => $entity->slug]) !!}" title="Show this entity."><i class="bi bi-link-45deg"></i></a>
                 </span>
 				@endforeach
 			@endunless
@@ -41,8 +41,8 @@
 			@unless ($post->tags->isEmpty())
 			Tags:
 				@foreach ($post->tags as $tag)
-					<span class="label label-tag"><a href="/posts/tag/{{ $tag->slug }}">{{ $tag->name }}</a>
-                            <a href="{!! route('tags.show', ['tag' => $tag->slug]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a>
+					<span class="badge rounded-pill bg-dark"><a href="/posts/tag/{{ $tag->slug }}">{{ $tag->name }}</a>
+                            <a href="{!! route('tags.show', ['tag' => $tag->slug]) !!}" title="Show this tag."><i class="bi bi-link-45deg text-info"></i></a>
                 	</span>
 				@endforeach
 			@endunless
@@ -50,14 +50,14 @@
 
 			<div class="btn-group" role="group" aria-label="...">
 			@if ($signedIn && (($post->ownedBy($user) && $post->isRecent()) || $user->hasGroup('super_admin')))
-				<a href="{!! route('posts.edit', ['post' => $post->id]) !!}" class="btn btn-sm btn-default" title="Edit this post.">Edit <span class='glyphicon glyphicon-pencil text-primary'></span></a>
-				{!! link_form_icon('glyphicon-trash text-warning', $post, 'DELETE', 'Delete the post', NULL, 'delete') !!}
+				<a href="{!! route('posts.edit', ['post' => $post->id]) !!}" class="btn btn-sm btn-default" title="Edit this post.">Edit <i class="bi bi-pencil-fill icon"></i></a>
+				{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $post, 'DELETE', 'Delete the post', NULL, 'delete') !!}
 			@endif
             @if ($signedIn)
                 @if ($like = $post->likedBy($user))
-                    <a href="{!! route('posts.unlike', ['id' => $post->id]) !!}" title="Click to unlike" class="btn btn-sm btn-default">Unlike <span class='glyphicon glyphicon-star text-success'></span></a>
+                    <a href="{!! route('posts.unlike', ['id' => $post->id]) !!}" title="Click to unlike" class="btn btn-sm btn-default">Unlike <i class="bi bi-star-fill icon"></i></span></a>
                 @else
-                    <a href="{!! route('posts.like', ['id' => $post->id]) !!}" title="Click to like" class="btn btn-sm btn-default">Like <span class='glyphicon glyphicon-star-empty text-warning'></span></a>
+                    <a href="{!! route('posts.like', ['id' => $post->id]) !!}" title="Click to like" class="btn btn-sm btn-default">Like <i class="bi bi-star icon"></i></a>
                 @endif
             @endif
 

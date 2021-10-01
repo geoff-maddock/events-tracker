@@ -4,9 +4,9 @@
 
 @section('content')
 
-<h4>Thread . EDIT 
+<h1 class="display-6 text-primary">Thread . Edit
 	@include('threads.crumbs', ['slug' => $thread->slug ? $thread->slug : $thread->id])
-</h4>
+</h1>
 
 	{!! Form::model($thread, ['route' => ['threads.update', $thread->id], 'method' => 'PATCH']) !!}
 

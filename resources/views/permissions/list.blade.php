@@ -20,8 +20,8 @@
 		<td>{!! $permission->level !!}</td>
 		<td>
 			@can('edit_permission')
-			<a href="{!! route('permissions.edit', ['permission' => $permission->id]) !!}"><span class='glyphicon glyphicon-pencil'></span></a>
-      		{!! link_form_icon('glyphicon-trash text-warning', $permission, 'DELETE', 'Delete the permission', NULL, 'delete') !!}
+			<a href="{!! route('permissions.edit', ['permission' => $permission->id]) !!}"><i class="bi bi-pencil-fill icon"></i></a>
+			{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $permission, 'DELETE', 'Delete the permission', NULL, 'delete') !!}
 			@endcan
 		</td>
 
@@ -36,7 +36,3 @@
 @endif
 </table>
 </div>
-
-@section('scripts.footer')
-
-@stop

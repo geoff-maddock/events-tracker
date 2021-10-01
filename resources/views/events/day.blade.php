@@ -7,7 +7,7 @@
                     @else
                     {{ $day->format('l M jS Y') }}
                     @endif
-                </h3>
+                </h5>
             </div>
 
             <div class="card-body">

@@ -1,5 +1,4 @@
-<li class="
-@if ($permission->permissionStatus->name === "Inactive") mute-card @else card @endif" style="clear: both;">
+<li class="@if ($permission->permissionStatus->name === "Inactive") mute-card @else card @endif" style="clear: both;">
 	@if ($primary = $permission->getPrimaryPhoto())
 	<div class="card-thumb" style="float: left; padding: 5px;">
 			<img src="/{!! str_replace(' ','%20',$permission->getPrimaryPhoto()->thumbnail) !!}" alt="{{ $permission->name}}"  style="max-width: 100px; ">
@@ -13,14 +12,14 @@
 
 	@if ($signedIn && $permission->ownedBy($user))
 	<a href="{!! route('entities.edit', ['id' => $permission->id]) !!}">
-	<span class='glyphicon glyphicon-pencil'></span></a>
+		<i class="bi bi-pencil-fill icon"></i>
 	@endif 
 	
 	@if ($signedIn)
 	@if ($follow = $permission->followedBy($user))
-	<a href="{!! route('entities.unfollow', ['id' => $permission->id]) !!}" title="Click to unfollow"><span class='glyphicon glyphicon-minus-sign text-warning'></span></a>
+	<a href="{!! route('entities.unfollow', ['id' => $permission->id]) !!}" title="Click to unfollow"><i class="bi bi-dash-circle-fill text-warning icon"></i></a>
 	@else
-	<a href="{!! route('entities.follow', ['id' => $permission->id]) !!}" title="Click to follow"><span class='glyphicon glyphicon-plus-sign text-info'></span></a>
+	<a href="{!! route('entities.follow', ['id' => $permission->id]) !!}" title="Click to follow"><i class="bi bi-plus-circle-fill text-info icon"></i></a>
 	@endif
 
 	@endif 

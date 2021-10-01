@@ -7,7 +7,7 @@
     <div class="row">
 
         <div class="m-2">
-            <h2>{{ $user->name }}</h2>
+            <h1 class="display-6 text-primary">{{ $user->name }}</h1>
             @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser') ) )
                 <a href="{!! route('users.edit', ['user' => $user->id]) !!}" class="btn btn-primary">Edit Profile</a>
                 <a href="{{ url('/password/reset') }}" class="btn btn-primary">Reset Password</a>
@@ -58,7 +58,7 @@
                 </div>
                 <p>Actions:
                     <a href="/users/{{ $user->id }}/ical" title="Export attending events to iCal">
-                        <span class='glyphicon glyphicon-calendar'></span>
+                        <i class='bi bi-calendar-plus text-warning icon'></i>
                     </a>
                 </p>
 

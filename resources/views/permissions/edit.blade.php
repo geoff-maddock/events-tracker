@@ -5,7 +5,7 @@
 @section('content')
 
 
-	<h4>Edit: {{ $permission->name }}</h4>
+<h1 class="display-6 text-primary">Permission . Edit . {{ $permission->name }}</h1>
 
 	{!! Form::model($permission, ['route' => ['permissions.update', $permission->id], 'method' => 'PATCH']) !!}
 

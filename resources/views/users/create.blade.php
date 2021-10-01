@@ -2,13 +2,13 @@
 
 @section('content')
 
-	<h3>Add a New User</h3>
+<h1 class="display-6 text-primary">Add a New User</h1>
 
-	{!! Form::open(['route' => 'users.store']) !!}
+{!! Form::open(['route' => 'users.store']) !!}
 
-		@include('users.form')
+	@include('users.form')
 
-	{!! Form::close() !!}
+{!! Form::close() !!}
 
-	{!! link_to_route('users.index', 'Return to list') !!}
+{!! link_to_route('users.index', 'Return to list') !!}
 @stop

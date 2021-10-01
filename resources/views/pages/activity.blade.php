@@ -11,8 +11,10 @@
 	<div id="filters-content" class="col-lg-9">
 
 		<a href="#" id="filters" class="btn btn-primary">
-			Filters <span id="filters-toggle"
-				class="glyphicon @if (!$hasFilter) glyphicon-chevron-down @else glyphicon-chevron-up @endif"></span></a>
+			Filters 			
+			<span id="filters-toggle" class="@if (!$hasFilter) filter-closed @else filter-open @endif">
+                <i class="bi bi-chevron-down"></i>
+			</span>
 				{!! Form::open(['route' => [$filterRoute ?? 'activity.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
 
 			<div id="filter-list" class="row @if (!$hasFilter) d-block d-xs-none @endif"
@@ -69,7 +71,7 @@
 		<form action="{{ url()->action('ActivityController@filter') }}" method="GET" class="form-inline">
 			<div class="form-group">
 				<a href="{{ url()->action('ActivityController@rppReset') }}" class="btn btn-primary">
-					<span class="glyphicon glyphicon-repeat"></span>
+					<i class="bi bi-arrow-clockwise"></i>
 				</a>
 				<?php $rpp_options = [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000]; ?>
 				<?php $sort_by_options = ['id' => 'Id', 'object_table' => 'Object', 'action_id' => 'Action', 'created_at' => 'Created']; ?>

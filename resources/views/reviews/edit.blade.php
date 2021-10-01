@@ -4,11 +4,12 @@
 
 @section('content')
 
-	<h4><B>Event</B>  {!! link_to_route('events.show', $review->event->name, ['event' => $review->event->id]) !!}</P>
+<h1 class="display-6 text-primary">Review . {!! link_to_route('events.show', $review->event->name, ['event' => $review->event->id]) !!}</h1>
 
+<div id="action-menu" class="mb-2">
+	<a href="{!! route('reviews.index') !!}" class="btn btn-primary">Reviews List</a>
 	<a href="{!! route('events.show', ['event' => $review->event->id]) !!}" class="btn btn-primary">View Event</a>
-
-	<h1>Edit Review by <i>{{ $review->user->name }}</i> </h1> 
+</div>
 
 	{!! Form::model($review, ['route' => ['events.reviews.update', $review->event->id, $review->id], 'method' => 'PATCH']) !!}
 

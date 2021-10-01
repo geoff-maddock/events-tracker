@@ -23,4 +23,15 @@ class ReviewFilters extends QueryFilter
             return $this->builder;
         }
     }
+
+    public function review_type($value = null)
+    {
+        if (isset($value)) {
+            return $this->builder->whereHas('reviewType', function ($q) use ($value) {
+                $q->where('name', '=', $value);
+            });
+        } else {
+            return $this->builder;
+        }
+    }
 }

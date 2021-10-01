@@ -4,11 +4,11 @@
 
 <h1 class="display-6 text-primary">Add a New Blog</h1>
 
-	{!! Form::open(['route' => 'blogs.store']) !!}
+{!! Form::open(['route' => 'blogs.store']) !!}
 
-		@include('blogs.form')
+	@include('blogs.form')
 
-	{!! Form::close() !!}
+{!! Form::close() !!}
 
-	{!! link_to_route('blogs.index', 'Return to list') !!}
+{!! link_to_route('blogs.index', 'Return to list') !!}
 @stop

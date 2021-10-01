@@ -16,7 +16,7 @@
 			document.addEventListener('DOMContentLoaded', function() {
 			  var calendarEl = document.getElementById('calendar');
 			  var calendar = new FullCalendar.Calendar(calendarEl, {
-				headerToolbar: { center: 'dayGridMonth, timeGridWeek, timeGridDay' },
+				headerToolbar: { center: 'dayGridMonth,timeGridWeek,timeGridDay' },
 				initialView: 'dayGridMonth',
 				// directly use JSON with events
 				events: {!! $eventList !!},
