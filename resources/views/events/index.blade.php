@@ -177,9 +177,9 @@
 				<div class="panel panel-info">
 
 					<div class="panel-body">
-						{!! $events->render() !!}
+						{!! $events->onEachSide(3)->links() !!}
 						@include('events.list', ['events' => $events])
-						{!! $events->render() !!}
+						{!! $events->links() !!}
 					</div>
 
 				</div>

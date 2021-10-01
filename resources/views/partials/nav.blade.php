@@ -2,7 +2,7 @@
 	<div class="container-fluid">
 		<div class="navbar-header nav-title">
 			<span class="{{ Request::is('/') ? 'active' : '' }} site-title">
-				<a class="navbar-brand p-3" data-toggle="tooltip"  data-placement="bottom"  data-delay='{"show":"500", "hide":"100"}' title="Return to the home page." href="{{ url('/') }}">{{ config('app.app_name')}} </a>
+				<a class="navbar-brand p-3" data-toggle="tooltip"  data-placement="bottom"  data-delay='{"show":"500", "hide":"100"}' title="" href="{{ url('/') }}">{{ config('app.app_name')}} </a>
 			</span>
 		</div>
 
