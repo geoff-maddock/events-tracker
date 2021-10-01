@@ -10,7 +10,7 @@
 	<a href="{!! URL::route('menus.create') !!}" class="btn btn-primary">Add a menu</a>
 </div>
 
-<div id="filters-container" class="row">
+<div id="filters-container" class="row my-2">
 	<div id="filters-content" class="col-xl-9">
 		<a href="#" id="filters" class="btn btn-primary">
 			Filters
@@ -24,7 +24,7 @@
 		
 		<div id="filter-list" class="px-2 @if (!$hasFilter)d-none @endif">
 			<div class="row">
-				<div class="col">
+				<div class="col-4">
 						{!! Form::label('filter_name','Filter By Name') !!}
 						{!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
 						[
@@ -59,32 +59,32 @@
 	</div>
 </div>
 <div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right">
-				<form action="{{ url()->current() }}" method="GET" class="form-inline">
-					<div class="form-group row gx-1 justify-content-end">
-						<div class="col-auto">
-							<a href="{{ url()->action('MenusController@rppReset') }}" class="btn btn-primary">
-								<i class="bi bi-arrow-clockwise"></i>
-							</a>
-						</div>
-						<div class="col-auto">							
-							{!! Form::select('limit', $limitOptions, ($limit ?? 10), ['class' => 'form-select form-background auto-submit']) !!}
-						</div>
-						<div class="col-auto">
-							{!! Form::select('sort', $sortOptions, ($sort ?? 'menus.created_by'), ['class' => 'form-select form-background auto-submit'])	!!}
-						</div>
-						<div class="col-auto">
-							{!! Form::select('direction', $directionOptions, ($direction ?? 'desc'), ['class' => 'form-select form-background auto-submit']) !!}
-						</div>
-					</div>
-				</form>
+		<form action="{{ url()->current() }}" method="GET" class="form-inline">
+			<div class="form-group row gx-1 justify-content-end">
+				<div class="col-auto">
+					<a href="{{ url()->action('MenusController@rppReset') }}" class="btn btn-primary">
+						<i class="bi bi-arrow-clockwise"></i>
+					</a>
+				</div>
+				<div class="col-auto">							
+					{!! Form::select('limit', $limitOptions, ($limit ?? 10), ['class' => 'form-select form-background auto-submit']) !!}
+				</div>
+				<div class="col-auto">
+					{!! Form::select('sort', $sortOptions, ($sort ?? 'menus.created_by'), ['class' => 'form-select form-background auto-submit'])	!!}
+				</div>
+				<div class="col-auto">
+					{!! Form::select('direction', $directionOptions, ($direction ?? 'desc'), ['class' => 'form-select form-background auto-submit']) !!}
+				</div>
 			</div>
-		</div>
+		</form>
+	</div>
+</div>
 
-		<div class='col-md-6'>
-		{!! $menus->appends(['sort' => $sort, 'limit' => $limit, 'direction' => $direction])->render() !!}
-			@include('menus.list', ['menus' => $menus])
-		{!! $menus->appends(['sort' => $sort, 'limit' => $limit, 'direction' => $direction])->render() !!}
-		</div>
+<div class='col-md-6'>
+{!! $menus->appends(['sort' => $sort, 'limit' => $limit, 'direction' => $direction])->render() !!}
+	@include('menus.list', ['menus' => $menus])
+{!! $menus->appends(['sort' => $sort, 'limit' => $limit, 'direction' => $direction])->render() !!}
+</div>
 @stop
 
 @section('footer')

@@ -1,8 +1,10 @@
 <li class="event-card" style="clear: both;">
 
 	@if ($primary = $review->event->getPrimaryPhoto())
-		<div style="float: left; padding: 5px;">
-			<a href="/{{ $primary->path }}" data-lightbox="{{ $primary->path }}" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="/{{ $primary->thumbnail }}" alt="{{ $review->event->name}}"  ></a>
+		<div class="event-list-thumbnail">
+			<a href="{{ $primary->getStoragePath() }}" data-lightbox="{{ $primary->getStoragePath() }}"
+				title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom">
+				<img src="{{ $primary->getStorageThumbnail() }}" alt="{{ $review->event->name}}"  class="thumbnail-image"></a>
 		</div>
 	@endif
 
@@ -16,12 +18,12 @@
 	
 			{!! link_to_route('events.show', $review->event->name, [$review->event->id], ['class' => 'item-title']) !!}
 			@if ($signedIn && $review->ownedBy(Auth::user()))
-				<a href="/reviews/{{ $review->id }}/edit" title="Edit this review."><span class='glyphicon glyphicon-pencil'></span></a>
+				<a href="/reviews/{{ $review->id }}/edit" title="Edit this review."><i class="bi bi-pencil"></i></a>
 			@endif
 
 			<br>
 
-		<a href="/reviews/type/{{ urlencode($review->reviewType->name) }}">{{ $review->reviewType->name }}</a>
+		<a href="/reviews?filter[type]={{ $review->reviewType->name }}">{{ $review->reviewType->name }}</a>
 		<br>
 		<div id="review">{!! $review->review !!}</div>
 

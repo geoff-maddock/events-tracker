@@ -22,8 +22,8 @@
         <td>{!! $menu->visibility ? $menu->visibility->name : '' !!}</td>
 		<td>
 			@can('edit_menu')
-			<a href="{!! route('menus.edit', ['menu' => $menu->id]) !!}"><span class='glyphicon glyphicon-pencil'></span></a>
-      		{!! link_form_icon('glyphicon-trash text-warning', $menu, 'DELETE', 'Delete the menu') !!}
+			<a href="{!! route('menus.edit', ['menu' => $menu->id]) !!}"><i class="bi bi-pencil-fill icon"></i></a>
+      		{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $menu, 'DELETE', 'Delete the menu') !!}
 			@endcan
 		</td>
 

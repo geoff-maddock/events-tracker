@@ -24,6 +24,7 @@ use App\Models\Entity;
 use App\Models\Tag;
 use App\Models\Activity;
 use App\Models\TagType;
+use App\Models\User;
 use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Database\Eloquent\Builder;
@@ -454,7 +455,8 @@ class ReviewsController extends Controller
     {
         return  [
             'visibilityOptions' => ['' => '&nbsp;'] + Visibility::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'reviewTypeOptions' => ['' => ''] + ReviewType::orderBy('name', 'ASC')->pluck('name', 'id')->all()
+            'reviewTypeOptions' => ['' => ''] + ReviewType::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'userOptions' => ['' => '&nbsp;'] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
         ];
     }
 

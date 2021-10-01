@@ -163,7 +163,7 @@
 
 					<div class="panel-heading">
 						<h3 class="panel-title">Posts
-							<a href="#" ><span class='label label-tag pull-right' data-toggle="tooltip" data-placement="bottom"  title="# of Threads that match this search term.">{{ count($threads)}}</span></a>
+							<a href="#" ><span class='label label-tag float-end' data-toggle="tooltip" data-placement="bottom"  title="# of Threads that match this search term.">{{ count($threads)}}</span></a>
 						</h3>
 					</div>
 

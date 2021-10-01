@@ -15,7 +15,7 @@
 		<div class="col-lg-2">
 			<div class="card bg-dark">
 				<h5 class="card-header bg-primary">Keywords
-					<a href="#" ><span class='glyphicon glyphicon-question-sign pull-right' data-toggle="tooltip" data-placement="bottom"  title="Click on a keyword tag name in the left panel to find all related events or entites.  Click on the plus next to the tag to follow, minus to unfollow."></span></a>
+					<a href="#" ><i class="bi bi-question-octagon-fill" data-toggle="tooltip" data-placement="bottom"  title="Click on a keyword tag name in the left panel to find all related events or entites.  Click on the plus next to the tag to follow, minus to unfollow."></i></a>
 				</h5>
 
 				<div class="card-body">
@@ -83,42 +83,36 @@
 		</div>
 	</div>
 
-	@if (!isset($tag))
 	<div class="col-lg-10">
-		<div class="card bg-dark">
+	@if (!isset($tag))
+		<div class="card bg-dark my-2">
 				<h5 class="card-header bg-primary">Info</h5>
 				<div class="card-body">
 					Click on a <b>keyword</b> tag name in the left panel to find all related events or entites.  Click on the <b>plus</b> next to the tag to follow, <b>minus</b> to unfollow.
 				</div>
-			</div>
 		</div>
-	</div>
 	@endif
 
 	@if (!isset($match) && isset($userTags))
 
-		<div class="col-lg-10">
-			<div class="card bg-dark">
-					<h5 class="card-header bg-primary">Tags</h5>
-					<div class="card-body">
-						@include('tags.list', ['tags' => $userTags])
-					</div>
-			</div>
-
-			<div class="card bg-dark">
-					<h5 class="panel-title">Entities</h5>	
-					<div class="card-body">
-						@include('entities.list', ['entities' => $entities])
-						{!! $entities->render() !!}
-					</div>
-			</div>
+		<div class="card bg-dark my-2">
+				<h5 class="card-header bg-primary">Tags</h5>
+				<div class="card-body">
+					@include('tags.list', ['tags' => $userTags])
+				</div>
 		</div>
 
+		<div class="card bg-dark my-2">
+				<h5 class="card-header bg-primary">Entities</h5>
+				<div class="card-body">
+					@include('entities.list', ['entities' => $entities])
+					{!! $entities->render() !!}
+				</div>
+		</div>
 	@endif
 
 
-	<div class="col-lg-10">
-		@if (isset($match) )
+	@if (isset($match) )
 		<div class="card bg-dark my-2">
 				<h5 class="card-header bg-primary">Tags</h5>
 
@@ -150,20 +144,19 @@
 		@endif
 
 		@if (isset($events) && count($events) > 0)
-		<div class="card bg-dark  my-2">
+		<div class="card bg-dark my-2">
 
-				<h5 class="card-header bg-primary">Events
-                	@if (isset($tag))
-						<a href="{!! route('calendar.tag', ['tag' => $tag]) !!}" title="{{ $tag.' Calendar' }}"><i class='bi bi-calendar-plus text-warning pull-right'></i></a>
-                    @endif
-				</h5>
+			<h5 class="card-header bg-primary">Events
+				@if (isset($tag))
+					<a href="{!! route('calendar.tag', ['tag' => $tag]) !!}" title="{{ $tag.' Calendar' }}"><i class='bi bi-calendar-plus text-warning float-end'></i></a>
+				@endif
+			</h5>
 
-				<div class="card-body">
-					@include('events.list', ['events' => $events])
+			<div class="card-body">
+				@include('events.list', ['events' => $events])
 				{!! $events->render() !!}
-				</div>
-
 			</div>
+
 		</div>
 		@endif
 	</div>

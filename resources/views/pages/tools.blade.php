@@ -4,6 +4,7 @@
 
 @section('content')
 	<script src="{{ asset('/js/facebook-sdk.js') }}"></script>
+	<h1 class="display-6 text-primary">Tools</h1>
 	<div class="row">
 		<div class="col-md-3">
 			<label></label>
@@ -21,12 +22,11 @@
 		@endforeach
 	@endif
 	</ul>
-	<div>
+	<div class="my-2 col-4">
 		{!! Form::open(['route' => 'pages.invite']) !!}
-
-		<input id="email" name="email" size="64">
+		<input id="email" name="email" size="64" class="form-control form-background my-1">
 		<div class="form-group">
-		{!! Form::submit('Send Invites', ['class' =>'btn btn-primary']) !!}
+			{!! Form::submit('Send Invites', ['class' =>'btn btn-primary']) !!}
 		</div>
 		{!! Form::close() !!}
 

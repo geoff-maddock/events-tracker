@@ -4,8 +4,7 @@
 
 @section('content')
 
-
-	<h2>Edit: {{ $blog->name }}</h2>
+<h1 class="display-6 text-primary">Blog . Edit . {{ $blog->name }}</h1>
 
 	{!! Form::model($blog, ['route' => ['blogs.update', $blog->id], 'method' => 'PATCH']) !!}
 

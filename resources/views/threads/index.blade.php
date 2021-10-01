@@ -63,17 +63,16 @@
                     ]
                     ) !!}
                 </div>
-        </div>
-		<div class="row my-2">
-			<div class="col-sm-2">
-				<div class="btn-group col-sm-1">
+            </div>
+                <div class="row my-2">
+                    <div class="col-sm-2">
+                        <div class="btn-group col-sm-1">
                         <label></label>
                         {!! Form::submit('Apply', ['class' =>'btn btn-primary btn-sm btn-tb mx-2', 'id' =>
                         'primary-filter-submit']) !!}
                         {!! Form::close() !!}
                         {!! Form::open(['route' => ['threads.reset'], 'method' => 'GET']) !!}
-                        {!! Form::submit('Reset', ['class' =>'btn btn-primary btn-sm btn-tb', 'id' =>
-                        'primary-filter-reset']) !!}
+                        {!! Form::submit('Reset', ['class' =>'btn btn-primary btn-sm btn-tb', 'id' =>  'primary-filter-reset']) !!}
                         {!! Form::close() !!}
                     </div>
                 </div>

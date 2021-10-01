@@ -1,19 +1,19 @@
 <div class="row">
 	<div class="col-sm-3">
-	<ul class="pagination pull-left" style="margin-top: 0px;">
+	<ul class="pagination float-start" class="mt-0">
 		<li>{!! link_to_route('events.upcoming', '< Past Week O', ['date' => $prev_day_window->format('Ymd')], ['class' => 'page-link', 'style' => 'white-space: nowrap;']) !!}</li>
 		<li>{!! link_to_route('events.upcoming', '< Past Day', ['date' => $prev_day->format('Ymd')], ['class' => 'page-link', 'style' => 'white-space: nowrap;']) !!}</li>
 	</ul>
 	</div>
 	
 	<div class="col-sm-6">
-	<ul class="pagination" style="margin-top: 0px;">
+	<ul class="pagination" class="mt-0">
 	<li></li>
 	</ul>
 	</div>
 	
 	<div class="col-sm-3">
-	<ul class="pagination pull-right" style="margin-top: 0px;">
+	<ul class="pagination float-end"  class="mt-0">
 		<li>{!! link_to_route('events.upcoming', 'Future Day >', ['date' => $next_day->format('Ymd')], ['class' => 'page-link', 'style' => 'white-space: nowrap;']) !!}</li>
 		<li>{!! link_to_route('events.upcoming', 'Future Week >', ['date' => $next_day_window->format('Ymd')], ['class' => 'page-link', 'style' => 'white-space: nowrap;']) !!}</li>
 	</ul>

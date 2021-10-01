@@ -4,9 +4,7 @@
 
 @section('content')
 
-<h1>Post . EDIT 
-	@include('posts.crumbs', ['slug' => $post->slug ? $post->slug : $post->id])
-</h1>
+<h1 class="display-6 text-primary">Post . Edit  @include('posts.crumbs', ['slug' => $post->slug ? $post->slug : $post->id])</h1>
 
 	{!! Form::model($post, ['route' => ['posts.update', $post->id], 'method' => 'PATCH']) !!}
 

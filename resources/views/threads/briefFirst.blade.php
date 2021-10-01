@@ -38,7 +38,7 @@
             Series:
             @foreach ($thread->series as $series)
                 <span class="badge rounded-pill bg-dark"><a href="/threads/series/{{ urlencode($series->slug) }}">{{ $series->name }}</a>
-                            <a href="{!! route('series.show', ['series' => $series->id]) !!}" title="Show this series."><span class='glyphicon glyphicon-link text-info'></span></a>
+                            <a href="{!! route('series.show', ['series' => $series->id]) !!}" title="Show this series."><i class="bi bi-link-45deg text-info"></i></a>
                         </span>
             @endforeach
         @endunless
@@ -48,7 +48,7 @@
             Related:
             @foreach ($thread->entities as $entity)
                 <span class="badge rounded-pill bg-dark"><a href="/threads/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a>
-                            <a href="{!! route('entities.show', ['entity' => $entity->id]) !!}" title="Show this entity."><span class='glyphicon glyphicon-link text-info'></span></a>
+                            <a href="{!! route('entities.show', ['entity' => $entity->id]) !!}" title="Show this entity."><i class="bi bi-link-45deg text-info"></i></a>
                         </span>
             @endforeach
         @endunless
@@ -57,7 +57,7 @@
             Tags:
             @foreach ($thread->tags as $tag)
                 <span class="badge rounded-pill bg-dark"><a href="/threads/tag/{{ urlencode($tag->name) }}">{{ $tag->name }}</a>
-                            <a href="{!! route('tags.show', ['tag' => $tag->name]) !!}" title="Show this tag."><span class='glyphicon glyphicon-link text-info'></span></a>
+                            <a href="{!! route('tags.show', ['tag' => $tag->name]) !!}" title="Show this tag."><i class="bi bi-link-45deg text-info"></i></a>
                         </span>
             @endforeach
         @endunless

@@ -2,7 +2,7 @@
 
 @section('content')
 
-	<h2>Help</h2>
+<h1 class="display-6 text-primary">Help</h1>
 
 	<h4>Register / Login</h4>
 

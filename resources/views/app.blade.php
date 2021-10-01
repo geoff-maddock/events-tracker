@@ -27,20 +27,16 @@
 	@else
 		<link href="{{ asset('/css/dark.css') }}" rel="stylesheet">
     @endif
-	<!-- <link href="{{ asset('/css/app.css') }}" rel="stylesheet">-->
-	{{-- <link href="{{ asset('/css/select2.css') }}" rel="stylesheet">
-	<link href="{{ asset('/css/select2-bootstrap.min.css') }}" rel="stylesheet"> --}}
-	<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.min.css' rel='stylesheet' />
+	<!-- Select2 -->
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.1.1/dist/select2-bootstrap-5-theme.min.css" />
-	<!-- Material Icons -->
-	{{-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap" rel="stylesheet"> --}}
+	<!-- Icons -->
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
 	<!-- Fonts -->
 	<link href="//fonts.googleapis.com/css?family=Roboto:400,300&display=swap" rel="stylesheet" type="text/css">
-	{{-- <link href="https://fonts.googleapis.com/css?family=Rubik&display=swap" rel="stylesheet"> --}}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.min.js"></script>
+	<!-- Full Calendar -->
+	<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.min.css' rel='stylesheet' />
+	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.min.js"></script>
 </head>
 <body id="event-repo">
 
@@ -54,7 +50,7 @@
 	@include('partials.nav')
 
 	<div id="app-container">
-		<div id="app-mobile-search" class="container-fluid d-block d-sm-none">
+		<div id="app-mobile-search" class="container-fluid d-block d-md-none my-2">
 			<form class="col-sm-12" role="search" action="/search">
 				<div class="form-group">
 					<input type="text" class="form-control form-background" placeholder="Search" name="keyword"  value="{{ isset($slug) ? $slug : '' }}">
