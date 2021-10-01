@@ -179,7 +179,9 @@
 							<li class="nav-item"><a href="{{ url('/help')}}" class="dropdown-item">Help</a></li>
 							<li class="nav-item"><a href="{{ url('/register') }}" class="dropdown-item d-md-none d-lg-none d-xl-none">Register</a></li>
 							<li class="nav-item"><a href="mailto:{{ config('app.feedback') }}" title="Send email to {{ config('app.feedback') }}" class="dropdown-item">Feedback</a></li>
+							@foreach ($menus as $menu)
 							<li class="nav-item d-xl-none"><a href="{{ url('/menus/'.$menu->id.'/content') }}" class="dropdown-item visible-lg">{{ $menu->name  }}</a></li>
+							@endforeach
 						</ul>
 					</li>
 			</ul>
