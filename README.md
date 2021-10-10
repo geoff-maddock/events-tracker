@@ -38,14 +38,23 @@ $ git clone git@github.com:geoff-maddock/events-tracker.git
 $ cd events-tracker
 ```
 
-* Install the dependencies.
+* Install the PHP dependencies.
 ```
 $ composer install
+```
+
+* Install node dependencies
+```
+$ npm install
 ```
 
 ### Configuration
 * Configure .env based on .env.example
 * Run `composer install`
+* Run `npm install`
+* Run node build for your environment
+  - ```npm run dev```
+  - ```npm run prod```
 * Run migrations to create the initial database.
   - php artisan migrate:fresh
 * Seed database tables from one of the provided default seeders.  Only run this when starting the production app the first time.
