@@ -1839,9 +1839,6 @@ class EventsController extends Controller
 
     /**
      * Mark user as attending the event.
-     *
-     * @return Response
-     *
      * @throws \Throwable
      */
     public function attend(int $id, Request $request)
@@ -1889,7 +1886,7 @@ class EventsController extends Controller
      *
      * @throws \Throwable
      */
-    public function unattend(int $id, Request $request): RedirectResponse
+    public function unattend(int $id, Request $request)
     {
         // check if there is a logged in user
         if (!$this->user) {
