@@ -177,9 +177,9 @@
 				<div class="panel panel-info">
 
 					<div class="panel-body">
-						{!! $events->onEachSide(3)->links() !!}
+						{!! $events->onEachSide(2)->links() !!}
 						@include('events.list', ['events' => $events])
-						{!! $events->links() !!}
+						{!! $events->onEachSide(2)->links() !!}
 					</div>
 
 				</div>
@@ -200,9 +200,9 @@
 				</div>
 
 				<div class="panel-body">
-					{!! $past_events->render() !!}
+					{!! $past_events->onEachSide(2)->links() !!}
 					@include('events.list', ['events' => $past_events])
-					{!! $past_events->render() !!}
+					{!! $past_events->onEachSide(2)->links() !!}
 				</div>
 
 			</div>
@@ -220,9 +220,9 @@
 				</div>
 
 				<div class="panel-body">
-					{!! $future_events->render() !!}
+					{!! $future_events->onEachSide(2)->links() !!}
 					@include('events.list', ['events' => $future_events])
-					{!! $future_events->render() !!}
+					{!! $future_events->onEachSide(2)->links() !!}
 				</div>
 
 			</div>
