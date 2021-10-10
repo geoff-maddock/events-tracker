@@ -1,8 +1,7 @@
 <li id="event-{{ $event->id }}" class="event-card {{ $event->pastOrFuture }}" style="display: flow-root;">
 	@if ($primary = $event->getPrimaryPhoto())
 	<div class="event-list-thumbnail">
-		<a href="{{ $primary->getStoragePath() }}" data-lightbox="{{ $primary->getStoragePath() }}"
-			title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom">
+		<a href="{{ $primary->getStoragePath() }}" data-lightbox="{{ $primary->getStoragePath() }}"	title="Click to see enlarged image">
 			<img src="{{ $primary->getStorageThumbnail() }}" alt="{{ $event->name}}" class="thumbnail-image">
 		</a>
 	</div>

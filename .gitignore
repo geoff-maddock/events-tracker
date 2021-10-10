@@ -22,7 +22,6 @@
 .phpunit.result.cache
 /.vagrant
 composer.phar
-composer.lock
 Homestead.yaml
 Homestead.json
 php-latest

@@ -95,13 +95,13 @@
     <div class="col-md-12 col-lg-6">
 
         @if (!$users->isEmpty())
-        {!! $users->render() !!}
+            {!! $users->onEachSide(2)->links() !!}
         @endif
 
         @include('users.list', ['users' => $users])
 
         @if (!$users->isEmpty())
-        {!! $users->render() !!}
+            {!! $users->onEachSide(2)->links() !!}
         @endif
     </div>
 </div>
