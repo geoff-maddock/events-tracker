@@ -157,6 +157,7 @@
 
 							<li class="nav-item" role="separator" class="divider visible-xs-block visible-sm-block"><hr class="dropdown-divider"></li>
 							<li class="nav-item"><a href="{{ url('/help')}}" class="visible-xs-block visible-sm-block dropdown-item">Help</a></li>
+							<li class="nav-item"><a href="{{ url('/privacy')}}" class="visible-xs-block visible-sm-block dropdown-item">Privacy</a></li>
 
 							<li><a href="mailto:{{ config('app.feedback') }}" title="Send email to {{ config('app.feedback') }}" class="visible-xs-block visible-sm-block dropdown-item">Feedback</a></li>
 
@@ -177,6 +178,7 @@
 						</a>
 						<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="help-dropdown">
 							<li class="nav-item"><a href="{{ url('/help')}}" class="dropdown-item">Help</a></li>
+							<li class="nav-item"><a href="{{ url('/privacy')}}" class="dropdown-item">Privacy</a></li>
 							<li class="nav-item"><a href="{{ url('/register') }}" class="dropdown-item d-md-none d-lg-none d-xl-none">Register</a></li>
 							<li class="nav-item"><a href="mailto:{{ config('app.feedback') }}" title="Send email to {{ config('app.feedback') }}" class="dropdown-item">Feedback</a></li>
 							@foreach ($menus as $menu)
