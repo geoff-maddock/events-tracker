@@ -6,13 +6,12 @@ $border-radius-pill:          50rem;
 // Fonts
 @import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
 
-
-// Lightbox2
-@import "~lightbox2/dist/css/lightbox.min.css";
-
 // Bootstrap
 @import "~bootswatch/dist/superhero/variables";
 @import "~bootstrap/scss/bootstrap";
 
 // Dropzone
 @import "~dropzone/dist/min/dropzone.min.css";
+
+// Lightbox2
+@import "~lightbox2/dist/css/lightbox.min.css";

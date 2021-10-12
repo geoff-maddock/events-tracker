@@ -7,7 +7,8 @@ require('laravel-mix-purgecss');
 // this builds public/css/app.css
 mix.js('resources/assets/js/app.js', 'public/js')
     .sass('resources/assets/sass/app.scss', 'public/css')
-    .purgeCss();
+    // .purgeCss()
+;
 
 
 // build dark theme
@@ -18,7 +19,6 @@ mix.styles([
     'resources/assets/css/dark-theme.css',
     'resources/assets/css/sweetalert.css'
 ], 'public/css/dark.css')
-.purgeCss()
 ;
 
 // build light theme
@@ -29,6 +29,5 @@ mix.styles([
     'resources/assets/css/flatly-bootstrap.min.css',
     'resources/assets/css/sweetalert.css'
 ], 'public/css/light.css')
-.purgeCss()
 ;
 
