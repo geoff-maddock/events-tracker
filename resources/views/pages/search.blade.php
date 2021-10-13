@@ -74,7 +74,9 @@
 		</div>
 	@endif
 
+	<div class="row">
 	@if (isset($entities) && count($entities) > 0)
+	<div class="col-lg-6">
 	<div class="card bg-dark my-2">
 
 		<h5 class="card-header bg-primary">Entities
@@ -86,13 +88,14 @@
 				{!! $entities->appends(['keyword' => $slug])->render() !!}
 		</div>
 	</div>
+	</div>
 	@else
 
 	<div class="bs-component">
 		No matching entities found.
 	</div>
-
 	@endif
+</div>
 
 	<div class="col-lg-6">
 		@if (isset($users) && count($users) > 0)

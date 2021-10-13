@@ -777,7 +777,7 @@ class EventsController extends Controller
         // get the events
         $events = $query->visible($this->user)
             ->with('visibility', 'venue')
-            ->paginate(10000);
+            ->paginate(1000);
 
         return view('events.feed', compact('events'));
     }
