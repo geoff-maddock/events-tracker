@@ -45,7 +45,7 @@ Here is a reminder about this event that you are attending.
 	@endif
 	@if ($ticket = $event->ticket_link)
 	<a href="{{ $link }}" target="_" title="Ticket link">
-		<i class="bi bi-cart-fill"></i>
+		<i class="bi bi-cart3"></i>
 	</a>
 	@endif
 

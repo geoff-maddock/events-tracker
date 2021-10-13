@@ -284,6 +284,20 @@ a:focus, a:hover, a:active {
     color: #ef991a;
     text-decoration: none;
 }
+/* 
+a.item-title {
+    color: #5bc0de;
+    text-decoration: none;
+}
+*/
+
+/* removes the underline for links and sets the color to a lighter color */
+/*
+a:focus.item-title, a:hover.item-title, a:active.item-title {
+    color: #79e0ce;
+    text-decoration: none;
+} 
+*/
 
 /* dark color for tags - change to specific? */
 span.bg-dark {

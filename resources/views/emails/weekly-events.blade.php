@@ -49,7 +49,7 @@ Here is a reminder from <a href="{{ $url }}">{{ $url }}</a> about these upcoming
 	@endif
 	@if ($ticket = $event->ticket_link)
 	<a href="{{ $link }}" target="_" title="Ticket link">
-		<i class="bi bi-cart-fill"></i>
+		<i class="bi bi-cart3"></i>
 	</a>
 	@endif
 
