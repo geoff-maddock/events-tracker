@@ -74,6 +74,26 @@
 		</div>
 	@endif
 
+	@if (isset($entities) && count($entities) > 0)
+	<div class="card bg-dark my-2">
+
+		<h5 class="card-header bg-primary">Entities
+			<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Entities that match this search term.">{{ count($entities)}}</span></a>
+		</h5>
+
+		<div class="card-body">
+				@include('entities.list', ['entities' => $entities])
+				{!! $entities->appends(['keyword' => $slug])->render() !!}
+		</div>
+	</div>
+	@else
+
+	<div class="bs-component">
+		No matching entities found.
+	</div>
+
+	@endif
+
 	<div class="col-lg-6">
 		@if (isset($users) && count($users) > 0)
 		<div class="card bg-dark my-2">
@@ -98,25 +118,7 @@
 
 		@endif
 	
-		@if (isset($entities) && count($entities) > 0)
-		<div class="card bg-dark my-2">
 
-			<h5 class="card-header bg-primary">Entities
-				<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Entities that match this search term.">{{ count($entities)}}</span></a>
-			</h5>
-
-			<div class="card-body">
-					@include('entities.list', ['entities' => $entities])
-					{!! $entities->appends(['keyword' => $slug])->render() !!}
-			</div>
-		</div>
-		@else
-
-		<div class="bs-component">
-			No matching entities found.
-		</div>
-
-		@endif
 
 		@if (isset($threads) && count($threads) > 0)
 		<div class="card bg-dark my-2">
@@ -130,6 +132,12 @@
 				{!! $threads->appends(['keyword' => $slug])->render() !!}
 			</div>
 		</div>
+		@else
+
+		<div class="bs-component">
+			No matching threads found.
+		</div>
+
 		@endif
 	</div>
 </div>

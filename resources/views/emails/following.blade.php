@@ -44,7 +44,7 @@ You might be interested in this new event because you are following <b>{!! $obje
 	@endif
 	@if ($ticket = $event->ticket_link)
 	<a href="{{ $link }}" target="_" title="Ticket link">
-		<i class="bi bi-cart-fill"></i>
+		<i class="bi bi-3"></i>
 	</a>
 	@endif
 
