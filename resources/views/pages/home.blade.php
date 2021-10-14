@@ -13,8 +13,8 @@
 		>
 		{{--https://www.grabient.com/--}}
 
-		<h3 class="font-weight-bold">Event Repository <a href="#" id="event-close-box" data-toggle="visibility" data-target="#jumbo-container">...</a></h3>
-		<div id="jumbo-container">
+		<h3 class="font-weight-bold">Event Repository <a href="#jumboContainer" id="event-close-box" data-bs-toggle="collapse" aria-expanded="false" aria-controls="jumboContainer">...</a></h3>
+		<div id="jumboContainer">
 
 		<p>Arcane City is a calendar and guide to events, weekly and  monthly series, promoters, artists, producers, djs, venues and other entities.</p>
 		<P>
