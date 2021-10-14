@@ -175,18 +175,8 @@ return [
         // for image processing, thumbnails
         Intervention\Image\ImageServiceProvider::class,
 
-        // for integration with full calendar
-        //'MaddHatter\LaravelFullcalendar\ServiceProvider',
-
-        //'Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class', // Laravel IDE helper
-
         // laravel tinker provider
         Laravel\Tinker\TinkerServiceProvider::class,
-
-        // Facebook SDK
-        // SammyK\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
-        // Nsivanoly\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
-        // Scottybo\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
 
         NotificationChannels\Twitter\TwitterServiceProvider::class,
 
