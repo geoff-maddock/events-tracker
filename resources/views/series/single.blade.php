@@ -3,7 +3,7 @@
     <div class="event-list-thumbnail">
 
         <a href="{{ $primary->getStoragePath() }}" data-lightbox="{{ $primary->getStoragePath() }}"
-            title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img
+            title="Click to see enlarged image" data-bs-toggle="tooltip" data-placement="bottom"><img
                 src="{{ $primary->getStorageThumbnail() }}" alt="{{ $series->name}}" class="thumbnail-image"></a>
 
     </div>
