@@ -1,7 +1,9 @@
 <li id="entity-{{ $entity->id }}" class="event-card @if ($entity->entityStatus->name === " Inactive") mute-card @else card @endif"	style="display: flow-root;">
 	@if ($primary = $entity->getPrimaryPhoto())
 	<div class="card-thumb" style="float: left; padding: 5px;">
-			<img src="{{ $primary->getStorageThumbnail() }}" alt="{{ $entity->name}}" class="thumbnail-image">
+			<a href="{{ $primary->getStoragePath() }}" data-lightbox="{{ $primary->getStoragePath() }}" data-bs-toggle="tooltip" title="Click to see enlarged image">
+				<img src="{{ $primary->getStorageThumbnail() }}" alt="{{ $entity->name}}" class="thumbnail-image">
+			</a>
 	</div>
 	@else
 	<div class="card-thumb" style="float: left; padding: 5px;">
@@ -29,7 +31,7 @@
 	@else
 	<a href="{!! route('entities.follow', ['id' => $entity->id]) !!}" data-target="#entity-{{ $entity->id }}"
 		class="ajax-action" title="Click to follow">
-		<i class="bi bi-plus-circle-fill"></i>
+		<i class="bi bi-plus-circle-fill text-info"></i>
 	</a>
 	@endif
 	@endif
