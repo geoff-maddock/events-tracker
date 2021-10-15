@@ -1673,7 +1673,10 @@ class EventsController extends Controller
 
         // add a twitter notification if the user is admin
         if ($this->user->hasGroup('super_admin') && config('app.twitter_consumer_key') !== '999') {
-            $event->notify(new EventPublished());
+            // only tweet if there is a primary photo
+            if ($photo = $event->getPrimaryPhoto()) {
+                $event->notify(new EventPublished());
+            }
         }
 
         return redirect()->route('events.show', compact('event'));
