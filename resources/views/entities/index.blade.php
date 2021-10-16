@@ -7,14 +7,14 @@
 <h1 class="display-6 text-primary">Entities  @include('entities.crumbs')</h1>
 
 <div id="action-menu" class="mb-2">
-    <a href="{!! URL::route('entities.create') !!}" class="btn btn-primary">Add an entity</a>
-    <a href="{!! URL::route('entities.role', ['role' => 'artist']) !!}" class="btn btn-info">Show artists</a>
-    <a href="{!! URL::route('entities.role', ['role' => 'band']) !!}" class="btn btn-info">Show bands</a>
-    <a href="{!! URL::route('entities.role', ['role' => 'dj']) !!}" class="btn btn-info">Show DJs</a>
-    <a href="{!! URL::route('entities.role', ['role' => 'producer']) !!}" class="btn btn-info">Show producers</a>
-    <a href="{!! URL::route('entities.role', ['role' => 'promoter']) !!}" class="btn btn-info">Show promoters</a>
-    <a href="{!! URL::route('entities.role', ['role' => 'shop']) !!}" class="btn btn-info">Show shops</a>
-    <a href="{!! URL::route('entities.role', ['role' => 'venue']) !!}" class="btn btn-info">Show venues</a>
+    <a href="{!! URL::route('entities.create') !!}" class="btn btn-primary my-1">Add an entity</a>
+    <a href="{!! URL::route('entities.role', ['role' => 'artist']) !!}" class="btn btn-info my-1">Show artists</a>
+    <a href="{!! URL::route('entities.role', ['role' => 'band']) !!}" class="btn btn-info my-1">Show bands</a>
+    <a href="{!! URL::route('entities.role', ['role' => 'dj']) !!}" class="btn btn-info my-1">Show DJs</a>
+    <a href="{!! URL::route('entities.role', ['role' => 'producer']) !!}" class="btn btn-info my-1">Show producers</a>
+    <a href="{!! URL::route('entities.role', ['role' => 'promoter']) !!}" class="btn btn-info my-1">Show promoters</a>
+    <a href="{!! URL::route('entities.role', ['role' => 'shop']) !!}" class="btn btn-info my-1">Show shops</a>
+    <a href="{!! URL::route('entities.role', ['role' => 'venue']) !!}" class="btn btn-info my-1">Show venues</a>
 </div>
 
 <div id="filters-container" class="row">
@@ -31,8 +31,8 @@
 
 		<div id="filter-list" class="px-2 @if (!$hasFilter)d-none @endif">
             <div class="row">
-                <div class="col">
-                {!! Form::label('filter_name','Filter By Name') !!}
+                <div class="col-sm">
+                {!! Form::label('filter_name','Name') !!}
 
                 {!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
                 [
@@ -41,8 +41,8 @@
                 ]) !!}
             </div>
 
-			<div class="col">
-                {!! Form::label('filter_role','Filter By Role', array('width' => '100%')) !!}<br>
+			<div class="col-sm">
+                {!! Form::label('filter_role','Role', array('width' => '100%')) !!}<br>
                 {!! Form::select('filter_role', $roleOptions, (isset($filters['role']) ? $filters['role']
                 : NULL),
                 [
@@ -69,7 +69,7 @@
                 !!}
             </div>
 
-			<div class="col">
+			<div class="col-sm">
 				{!! Form::label('filter_entity_type','Type') !!}
 				{!! Form::select('filter_entity_type', $entityTypeOptions, (isset($filters['entity_type'])
 				? $filters['entity_type'] : NULL),
@@ -86,11 +86,11 @@
 			<div class="col-sm-2">
 				<div class="btn-group col-sm-1">
                     <label></label>
-                    {!! Form::submit('Apply', ['class' =>'btn btn-primary btn-sm btn-tb mx-2', 'id' =>
+                    {!! Form::submit('Apply', ['class' =>'btn btn-primary btn-sm btn-tb me-2 my-2', 'id' =>
                     'primary-filter-submit']) !!}
                     {!! Form::close() !!}
                     {!! Form::open(['route' => ['entities.reset'], 'method' => 'GET']) !!}
-                    {!! Form::submit('Reset', ['class' =>'btn btn-primary btn-sm btn-tb', 'id' =>
+                    {!! Form::submit('Reset', ['class' =>'btn btn-primary btn-sm btn-tb me-2 my-2', 'id' =>
                     'primary-filter-reset']) !!}
                     {!! Form::close() !!}
                 </div>
@@ -130,11 +130,11 @@
 <div id="list-container" class="row">
     <div class="col-md-12 col-lg-6">
 
-        {!! $entities->render() !!}
+        {!! $entities->onEachSide(2)->links() !!}
 
         @include('entities.list', ['entities' => $entities])
 
-        {!! $entities->render() !!}
+        {!! $entities->onEachSide(2)->links() !!}
     </div>
 </div>
 @stop

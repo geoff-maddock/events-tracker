@@ -25,27 +25,27 @@
 
 		<div id="filter-list" class="px-2 @if (!$hasFilter)d-none @endif">
 			<div class="row">
-				<div class="col">
-					{!! Form::label('filter_name','Filter By Name') !!}
+				<div class="col-sm">
+					{!! Form::label('filter_name','Name') !!}
 					{!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
 					[
-						'class' => 'form-control',
+						'class' => 'form-control form-control form-background',
 						'name' => 'filters[name]'
 					]) !!}
 				</div>
-				<div class="col">
-					{!! Form::label('filter_label','Filter By Label') !!}
+				<div class="col-sm">
+					{!! Form::label('filter_label','Label') !!}
 					{!! Form::text('filter_label', (isset($filters['label']) ? $filters['label'] : NULL),
 					[
-						'class' => 'form-control',
+						'class' => 'form-control form-control form-background',
 						'name' => 'filters[label]'
 					]) !!}
 				</div>
-				<div class="col">
-					{!! Form::label('filter_level','Filter By Level') !!}
+				<div class="col-sm">
+					{!! Form::label('filter_level','Level') !!}
 					{!! Form::text('filter_level', (isset($filters['level']) ? $filters['level'] : NULL),
 					[
-						'class' => 'form-control',
+						'class' => 'form-control form-control form-background',
 						'name' => 'filters[level]'
 					]) !!}
 				</div>
@@ -75,7 +75,7 @@
 		</div>
 	</div>
 </div>
-<div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right">
+<div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right my-2">
 		<form action="{{ url()->current() }}" method="GET" class="form-inline">
 			<div class="form-group row gx-1 justify-content-end">
 				<div class="col-auto">
@@ -98,9 +98,9 @@
 </div>
 
 <div id="all-permissions-list" class="col-lg-6">
-	{!! $permissions->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->render() !!}
+	{!! $permissions->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links() !!}
 	@include('permissions.list', ['permissions' => $permissions])
-	{!! $permissions->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->render() !!}
+	{!! $permissions->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links() !!}
 </div>
 
 @stop

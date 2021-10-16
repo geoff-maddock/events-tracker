@@ -88,7 +88,12 @@
 		<div class="card bg-dark my-2">
 				<h5 class="card-header bg-primary">Info</h5>
 				<div class="card-body">
-					Click on a <b>keyword</b> tag name in the left panel to find all related events or entites.  Click on the <b>plus</b> next to the tag to follow, <b>minus</b> to unfollow.
+					Click on a <b>keyword</b> tag name in the left panel to find all related events or entites.
+					@if (Auth::guest())
+					<br> <a href="{{ url('/login') }}" class="link-danger">Log in</a> so you can subscribe to tags for updates.
+					@else
+					<br>Click on the <b>plus</b> next to the tag to follow, <b>minus</b> to unfollow.
+					@endif
 				</div>
 		</div>
 	@endif
@@ -106,7 +111,7 @@
 				<h5 class="card-header bg-primary">Entities</h5>
 				<div class="card-body">
 					@include('entities.list', ['entities' => $entities])
-					{!! $entities->render() !!}
+					{!! $entities->onEachSide(2)->links() !!}
 				</div>
 		</div>
 	@endif
@@ -128,7 +133,7 @@
 			<h5 class="card-header bg-primary">Entities</h5>
 			<div class="card-body">
 					@include('entities.list', ['entities' => $entities])
-					{!! $entities->render() !!}
+					{!! $entities->onEachSide(2)->links() !!}
 			</div>
 		</div>
 		@endif
@@ -154,7 +159,7 @@
 
 			<div class="card-body">
 				@include('events.list', ['events' => $events])
-				{!! $events->render() !!}
+				{!! $events->onEachSide(2)->links() !!}
 			</div>
 
 		</div>

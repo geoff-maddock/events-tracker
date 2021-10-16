@@ -5,10 +5,10 @@
 <h1 class="display-6 text-primary">Event Series @include('series.crumbs')</h1>
 
 <div id="action-menu" class="mb-2">
-    <a href="{!! URL::route('series.create') !!}" class="btn btn-primary">Add an event series</a>
-    <a href="{!! URL::route('series.index') !!}" class="btn btn-info">Show current series</a>
-    <a href="{!! URL::route('series.cancelled') !!}" class="btn btn-info">Show cancelled series</a>
-    <a href="{!! URL::route('series.export') !!}" class="btn btn-primary" target="_blank">Export</a>
+    <a href="{!! URL::route('series.create') !!}" class="btn btn-primary my-1">Add an event series</a>
+    <a href="{!! URL::route('series.index') !!}" class="btn btn-info my-1">Show current series</a>
+    <a href="{!! URL::route('series.cancelled') !!}" class="btn btn-info my-1">Show cancelled series</a>
+    <a href="{!! URL::route('series.export') !!}" class="btn btn-primary my-1" target="_blank">Export</a>
 </div>
 
 <div id="filters-container" class="row">
@@ -25,9 +25,9 @@
 
 		<div id="filter-list" class="px-2 @if (!$hasFilter)d-none @endif">
             <div class="row">
-                <div class="col">
+                <div class="col-sm">
 
-                {!! Form::label('filter_name','Filter By Name') !!}
+                {!! Form::label('filter_name','Name') !!}
 
                 {!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
                 [
@@ -36,38 +36,38 @@
                     ]) !!}
             </div>
 
-            <div class="form-group col-sm-2">
+            <div class="col-sm">
 
-                {!! Form::label('filter_occurrence_type','Occurrence Type') !!}
+                {!! Form::label('filter_occurrence_type','Occurrence') !!}
                 {!! Form::select('filter_occurrence_type', $occurrenceTypeOptions, (isset($filters['occurrence_type']) ?
                 $filters['occurrence_type'] : NULL), 
                 [
-                    'class' => 'form-control form-background',
+                    'class' => 'form-select form-background',
                     'name' => 'filters[occurrence_type]'
                 ]) !!}
             </div>
 
-            <div class="form-group col-sm-2">
+            <div class="col-sm">
                 {!! Form::label('filter_occurrence_week','Week') !!}
                 {!! Form::select('filter_occurrence_week', $occurrenceWeekOptions, (isset($filters['occurrence_week']) ?
                 $filters['occurrence_week'] : NULL),
                 [
-                    'class' => 'form-control form-background',
+                    'class' => 'form-select form-background',
                     'name' => 'filters[occurrence_week]'
                 ]) !!}
             </div>
 
-            <div class="form-group col-sm-2">
+            <div class="col-sm">
                 {!! Form::label('filter_occurrence_day','Day') !!}
                 {!! Form::select('filter_occurrence_day', $occurrenceDayOptions, (isset($filters['occurrence_day']) ?
                 $filters['occurrence_day'] : NULL), 
                 [
-                    'class' => 'form-control form-background',
+                    'class' => 'form-select form-background',
                     'name' => 'filters[occurrence_day]',
                 ]) !!}
             </div>
 
-            <div class="form-group col-sm-2">
+            <div class="col-sm">
                 {!! Form::label('filter_tag','Tag') !!}
                 {!! Form::select('filter_tag', $tagOptions, (isset($filters['tag']) ? $filters['tag'] : NULL),
                 [
@@ -79,7 +79,7 @@
                 ]) !!}
             </div>
 
-            <div class="form-group col-sm-2">
+            <div class="col-sm">
                 {!! Form::label('filter_visibility','Visibility') !!}
                 {!! Form::select('filter_visibility', $visibilityOptions, (isset($filters['visibility']) ? $filters['visibility'] : NULL),
                 [
@@ -106,7 +106,7 @@
         </div>
     </div>
 </div>
-<div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right">
+<div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right my-2">
         <form action="{{ url()->action('SeriesController@filter') }}" method="GET" class="form-inline">
 			<div class="form-group row gx-1 justify-content-end">
                 <div class="col-auto">
@@ -137,11 +137,11 @@
 <div id="list-container" class="row">
     <div class="col-md-12 col-lg-6">
         @if (!$series->isEmpty())
-        {!! $series->render() !!}
+        {!! $series->onEachSide(2)->links() !!}
         @endif
         @include('series.list', ['series' => $series])
         @if (!$series->isEmpty())
-        {!! $series->render() !!}
+        {!! $series->onEachSide(2)->links() !!}
         @endif
     </div>
 </div>

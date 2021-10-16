@@ -91,7 +91,7 @@
 <div class="row">
 	<div class="form-group col-md-2">
 	{!! Form::label('location_type_id','Type') !!}
-	{!! Form::select('location_type_id', $locationTypeOptions, (isset($location->location_type_id) ? $location->location_type_id : NULL),['class' => 'form-control form-background']) !!}
+	{!! Form::select('location_type_id', $locationTypeOptions, (isset($location->location_type_id) ? $location->location_type_id : NULL),['class' => 'form-select form-background']) !!}
 	{!! $errors->first('location_type_id','<span class="help-block">:message</span>') !!}
 	</div>
 

@@ -24,7 +24,7 @@
 		
 		<div id="filter-list" class="px-2 @if (!$hasFilter)d-none @endif">
 			<div class="row">
-				<div class="col-4">
+				<div class="col-sm-4">
 						{!! Form::label('filter_name','Filter By Name') !!}
 						{!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
 						[
@@ -58,7 +58,7 @@
 		</div>
 	</div>
 </div>
-<div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right">
+<div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right my-2">
 		<form action="{{ url()->current() }}" method="GET" class="form-inline">
 			<div class="form-group row gx-1 justify-content-end">
 				<div class="col-auto">
@@ -81,9 +81,9 @@
 </div>
 
 <div class='col-md-6'>
-{!! $menus->appends(['sort' => $sort, 'limit' => $limit, 'direction' => $direction])->render() !!}
+{!! $menus->appends(['sort' => $sort, 'limit' => $limit, 'direction' => $direction])->onEachSide(2)->links() !!}
 	@include('menus.list', ['menus' => $menus])
-{!! $menus->appends(['sort' => $sort, 'limit' => $limit, 'direction' => $direction])->render() !!}
+{!! $menus->appends(['sort' => $sort, 'limit' => $limit, 'direction' => $direction])->onEachSide(2)->links() !!}
 </div>
 @stop
 
