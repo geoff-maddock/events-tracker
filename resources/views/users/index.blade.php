@@ -21,21 +21,21 @@
 
 		<div id="filter-list" class="px-2 @if (!$hasFilter)d-none @endif">
             <div class="row">
-                <div class="col">
+                <div class="col-sm">
                     {!! Form::label('filter_email','Email') !!}
 
                     {!! Form::text('filter_email', (isset($filters['email']) ? $filters['email'] : NULL),
                     ['class' =>'form-control form-background', 'name' => 'filters[email]']) !!}
                 </div>
 
-                <div class="col">
+                <div class="col-sm">
                     {!! Form::label('filter_name','Name') !!}
 
                     {!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
                     ['class' =>'form-control form-background', 'name' => 'filters[name]']) !!}
                 </div>
 
-                <div class="col">
+                <div class="col-sm">
                 {!! Form::label('filter_status','Status') !!}
                 {!! Form::select('filter_status', $userStatusOptions, (isset($filters['status']) ? $filters['status'] :NULL), 
                     [
@@ -52,11 +52,11 @@
             <div class="col-sm-2">
                 <div class="btn-group col-sm-1">
                     <label></label>
-                    {!! Form::submit('Apply', ['class' =>'btn btn-primary btn-sm btn-tb mx-2', 'id' =>
+                    {!! Form::submit('Apply', ['class' =>'btn btn-primary btn-sm btn-tb me-2 my-2', 'id' =>
                     'primary-filter-submit']) !!}
                     {!! Form::close() !!}
                     {!! Form::open(['route' => ['users.reset'], 'method' => 'GET']) !!}
-                    {!! Form::submit('Reset', ['class' =>'btn btn-primary btn-sm btn-tb', 'id' =>
+                    {!! Form::submit('Reset', ['class' =>'btn btn-primary btn-sm btn-tb me-2 my-2', 'id' =>
                     'primary-filter-reset']) !!}
                     {!! Form::close() !!}
                 </div>
@@ -64,7 +64,7 @@
         </div>
     </div>
 </div>
-<div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right">
+<div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right my-2">
         <form action="{{ url()->action('UsersController@filter') }}" method="GET" class="form-inline">
 			<div class="form-group row gx-1 justify-content-end">
 				<div class="col-auto">

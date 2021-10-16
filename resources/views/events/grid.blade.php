@@ -29,8 +29,8 @@
 
 		<div id="filter-list" class="px-2 @if (!$hasFilter)d-none @endif">
 		<div class="row">
-			<div class="col">
-				{!! Form::label('filter_name','Filter By Name') !!}
+			<div class="col-sm">
+				{!! Form::label('filter_name','Name') !!}
 				{!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
 				[
 					'class' => 'form-control form-background',
@@ -38,7 +38,7 @@
 				]) !!}
 			</div>
 
-			<div class="col">
+			<div class="col-sm">
 				{!! Form::label('filter_venue', 'Venue', array('width' => '100%')) !!}<br>
 				{!! Form::select('filter_venue', $venueOptions, (isset($filters['venue']) ? $filters['venue'] :
 				NULL),
@@ -52,7 +52,7 @@
 				!!}
 			</div>
 
-			<div class="col">
+			<div class="col-sm">
 				{!! Form::label('filter_tag', 'Tag') !!}
 				{!! Form::select('filter_tag', $tagOptions, (isset($filters['tag']) ? $filters['tag'] : NULL),
 				[
@@ -64,7 +64,7 @@
 				]) !!}
 			</div>
 
-			<div class="col">
+			<div class="col-sm">
 				{!! Form::label('filter_related','Related Entity') !!}
 				{!! Form::select('filter_related', $relatedOptions, (isset($filters['related'])
 				? $filters['related'] : NULL),
@@ -77,8 +77,8 @@
 				]) !!}
 			</div>
 
-			<div class="col">
-				{!! Form::label('filter_event_type','Type') !!}
+			<div class="col-sm">
+				{!! Form::label('filter_event_type', 'Type') !!}
 				{!! Form::select('filter_event_type', $eventTypeOptions, (isset($filters['event_type'])
 				? $filters['event_type'] : NULL),
 				[
@@ -90,7 +90,7 @@
 				]) !!}
 			</div>
 
-			<div class="col">
+			<div class="col-sm">
 				{!! Form::label('filter_start_at','Start At') !!}
 
 				<div class="d-flex">
@@ -111,7 +111,7 @@
 					[
 					'style' => 'padding: 8px 16px;',
 					'name' => 'filters[start_at][end]',
-					'class' => 'form-control form-background',
+					'class' => 'form-control form-background my-2',
 					])
 					!!}
 				</div>
@@ -124,7 +124,7 @@
 					<label></label>
 					{!! Form::submit('Apply',
 					[
-						'class' => 'btn btn-primary btn-sm btn-tb mx-2',
+						'class' => 'btn btn-primary btn-sm btn-tb me-2',
 						'id' => 'primary-filter-submit'
 					])
 					!!}

@@ -134,7 +134,7 @@
 	<div class="form-group col-md-3">
 		{!! Form::label('min_age','Min Age:') !!}
 		{!! Form::select('min_age', [ '0' => 'All Ages', '18' => '18', '21' => '21'], (isset($event->min_age) ?
-		$event->min_age : NULL), ['class' => 'form-control form-background']) !!}
+		$event->min_age : NULL), ['class' => 'form-select form-background']) !!}
 		{!! $errors->first('min_age','<span class="help-block">:message</span>') !!}
 	</div>
 </div>

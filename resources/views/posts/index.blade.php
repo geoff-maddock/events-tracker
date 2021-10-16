@@ -24,9 +24,9 @@
         
 		<div id="filter-list" class="px-2 @if (!$hasFilter)d-none @endif">
             <div class="row">
-                <div class="col">
+                <div class="col-sm">
         
-                        {!! Form::label('filter_body','Filter By Body') !!}
+                        {!! Form::label('filter_body','Body') !!}
         
                         {!! Form::text('filter_body', (isset($filters['body']) ? $filters['body'] : NULL),
                         [
@@ -36,26 +36,26 @@
                         ) !!}
                 </div>
 
-                <div class="col">
-                        {!! Form::label('filter_user','Filter By User') !!}
+                <div class="col-sm">
+                        {!! Form::label('filter_user','User') !!}
                         {!! Form::select('filter_user', $userOptions, (isset($filters['user']) ? $filters['user'] :
                         NULL), 
                         [
-                            'data-theme' => 'bootstrap',
+                            'data-theme' => 'bootstrap-5',
                             'data-width' => '100%', 
-                            'class' => 'form-control select2', 
+                            'class' => 'form-select select2', 
                             'data-placeholder' => 'Select a user',
                             'name' => 'filters[user]'
                             ]) !!}
                 </div>
 
-                <div class="col">
-                        {!! Form::label('filter_tag','Filter By Tag') !!}
+                <div class="col-sm">
+                        {!! Form::label('filter_tag','Tag') !!}
                         {!! Form::select('filter_tag', $tagOptions, (isset($filters['tag']) ? $filters['tag'] : NULL),
                         [
-                            'data-theme' => 'bootstrap',
+                            'data-theme' => 'bootstrap-5',
                              'data-width' => '100%',
-                             'class' => 'form-control form-background select2',
+                             'class' => 'form-select form-background select2',
                              'data-placeholder' => 'Select a tag',
                              'name' => 'filters[tag]'
                         ]
@@ -76,7 +76,7 @@
                 </div>
             </div>
         </div>
-    <div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right">
+    <div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right my-2">
         <form action="{{ url()->current() }}" method="GET" class="form-inline">
             <div class="form-group row gx-1 justify-content-end">
                 <div class="col-auto">
@@ -174,7 +174,7 @@
                 </tr>
             </tbody>
         @endforeach
-            {!! $posts->render() !!}
+            {!! $posts->onEachSide(2)->links() !!}
         </div>
         @else
             <tr>

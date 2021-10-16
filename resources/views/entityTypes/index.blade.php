@@ -88,9 +88,9 @@
 <div id="list-container" class="row py-2">
 <div class="col-md-12 col-lg-6">
 
-		{!! $entityTypes->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->render() !!}
+		{!! $entityTypes->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links() !!}
 			@include('entityTypes.list', ['entityTypes' => $entityTypes])
-		{!! $entityTypes->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->render() !!}
+		{!! $entityTypes->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links() !!}
 	
 </div>
 </div>

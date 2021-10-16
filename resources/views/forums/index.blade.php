@@ -26,19 +26,19 @@
 
 		<div id="filter-list" class="px-2 @if (!$hasFilter)d-none @endif">
 			<div class="row">
-				<div class="col">
+				<div class="col-sm">
 				{!! Form::label('filter_name','Filter By Name') !!}
 
 				{!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
 				['class' => 'form-control form-background', 'name' => 'filters[name]']) !!}
 				</div>
 
-				<div class="col">
+				<div class="col-sm">
 					{!! Form::label('filter_user','Filter By User') !!}
 					{!! Form::select('filter_user', $userOptions, (isset($filters['user']) ? $filters['user'] :
 					NULL), 
 					[
-						'data-theme' => 'bootstrap',
+						'data-theme' => 'bootstrap-5',
 						'data-width' => '100%', 
 						'class' => 'form-control form-background select2', 
 						'data-placeholder' => 'Select a user',
@@ -50,11 +50,11 @@
 				<div class="col-sm-2">
 					<div class="btn-group col-sm-1">
 					<label></label>
-					{!! Form::submit('Apply', ['class' =>'btn btn-primary btn-sm btn-tb mx-2', 'id' =>
+					{!! Form::submit('Apply', ['class' =>'btn btn-primary btn-sm btn-tb me-2 my-2', 'id' =>
 					'primary-filter-submit']) !!}
 					{!! Form::close() !!}
 					{!! Form::open(['route' => ['forums.reset'], 'method' => 'GET']) !!}
-					{!! Form::submit('Reset', ['class' =>'btn btn-primary btn-sm btn-tb', 'id' =>
+					{!! Form::submit('Reset', ['class' =>'btn btn-primary btn-sm btn-tb  me-2 my-2', 'id' =>
 					'primary-filter-reset']) !!}
 					{!! Form::close() !!}
 				</div>
@@ -63,7 +63,7 @@
 	</div>
 </div>
 
-	<div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right">
+	<div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right my-2">
 			<form action="" method="GET" class="form-inline">
 				<div class="form-group row gx-1 justify-content-end">
 					<div class="col-auto">
@@ -92,9 +92,9 @@
 
 	@if (isset($forums) && count($forums) > 0)
 	<div class="col-lg-12">
+		{!! $forums->onEachSide(2)->links() !!}
 		@include('forums.list', ['forums' => $forums])
-		{!! $forums->render() !!}
-
+		{!! $forums->onEachSide(2)->links() !!}
 	</div>
 	@endif
 

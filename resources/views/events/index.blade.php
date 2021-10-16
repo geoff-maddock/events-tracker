@@ -7,12 +7,12 @@
 <h1 class="display-6 text-primary">Events @include('events.crumbs')</h1>
 
 <div id="action-menu" class="mb-2">
-	<a href="{!! URL::route('events.index') !!}" class="btn btn-info mt-2 mr-2">Show event index</a>
-	<a href="{!! URL::route('calendar') !!}" class="btn btn-info mt-2 mr-2">Show calendar</a>
-	<a href="{!! URL::route('events.week') !!}" class="btn btn-info mt-2 mr-2">Show week's events</a>
-	<a href="{!! URL::route('events.create') !!}" class="btn btn-primary mt-2 mr-2">Add an event</a>
-	<a href="{!! URL::route('series.create') !!}" class="btn btn-primary mt-2 mr-2">Add an event series</a>
-	<a href="{!! URL::route('events.export') !!}" class="btn btn-primary mt-2 mr-2" target="_blank">Export</a>
+	<a href="{!! URL::route('events.index') !!}" class="btn btn-info my-1">Show event index</a>
+	<a href="{!! URL::route('calendar') !!}" class="btn btn-info my-1">Show calendar</a>
+	<a href="{!! URL::route('events.week') !!}" class="btn btn-info my-1">Show week's events</a>
+	<a href="{!! URL::route('events.create') !!}" class="btn btn-primary my-1">Add an event</a>
+	<a href="{!! URL::route('series.create') !!}" class="btn btn-primary my-1">Add an event series</a>
+	<a href="{!! URL::route('events.export') !!}" class="btn btn-primary my-1" target="_blank">Export</a>
 </div>
 
 <div id="filters-container" class="row">
@@ -29,8 +29,8 @@
 
 		<div id="filter-list" class="px-2 @if (!$hasFilter)d-none @endif">
 		<div class="row">
-			<div class="col">
-				{!! Form::label('filter_name','Filter By Name') !!}
+			<div class="col-sm">
+				{!! Form::label('filter_name','Name') !!}
 				{!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
 				[
 					'class' => 'form-control form-background',
@@ -39,7 +39,7 @@
 				]) !!}
 			</div>
 
-			<div class="col">
+			<div class="col-sm">
 				{!! Form::label('filter_venue', 'Venue', array('width' => '100%')) !!}<br>
 				{!! Form::select('filter_venue', $venueOptions, (isset($filters['venue']) ? $filters['venue'] :	NULL),
 				[
@@ -52,7 +52,7 @@
 				!!}
 			</div>
 
-			<div class="col">
+			<div class="col-sm">
 				{!! Form::label('filter_tag', 'Tag') !!}
 				{!! Form::select('filter_tag', $tagOptions, (isset($filters['tag']) ? $filters['tag'] : NULL),
 				[
@@ -64,7 +64,7 @@
 				]) !!}
 			</div>
 
-			<div class="col">
+			<div class="col-sm">
 				{!! Form::label('filter_related','Related Entity') !!}
 				{!! Form::select('filter_related', $relatedOptions, (isset($filters['related'])
 				? $filters['related'] : NULL),
@@ -77,7 +77,7 @@
 				]) !!}
 			</div>
 
-			<div class="col">
+			<div class="col-sm">
 				{!! Form::label('filter_event_type','Type') !!}
 				{!! Form::select('filter_event_type', $eventTypeOptions, (isset($filters['event_type'])
 				? $filters['event_type'] : NULL),
@@ -90,7 +90,7 @@
 				]) !!}
 			</div>
 
-			<div class="col">
+			<div class="col-sm">
 				{!! Form::label('filter_start_at','Start At') !!}
 
 				<div class="d-flex">
@@ -113,7 +113,7 @@
 						'style' => 'padding: 8px 16px;',
 						'name' => 'filters[start_at][end]',
 						'data-theme' => 'bootstrap-5',
-						'class' => 'form-control form-background'
+						'class' => 'form-control form-background my-2'
 					])
 					!!}
 				</div>
@@ -125,7 +125,7 @@
 					<label></label>
 					{!! Form::submit('Apply',
 					[
-					'class' => 'btn btn-primary btn-sm btn-tb mx-2',
+					'class' => 'btn btn-primary btn-sm btn-tb me-2 my-2',
 					'id' => 'primary-filter-submit'
 					])
 					!!}
@@ -135,7 +135,7 @@
 					{!! Form::hidden('key', $key ?? 'internal_event_index') !!}
 					{!! Form::submit('Reset',
 					[
-						'class' => 'btn btn-primary btn-sm btn-tb',
+						'class' => 'btn btn-primary btn-sm btn-tb me-2 my-2',
 						'id' => 'primary-filter-reset'
 					]) !!}
 					{!! Form::close() !!}

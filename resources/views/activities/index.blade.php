@@ -20,8 +20,8 @@
 
 		<div id="filter-list" class="px-2 @if (!$hasFilter)d-none @endif">
             <div class="row">
-                <div class="col">
-				{!! Form::label('filter_message','Filter By Message') !!}
+                <div class="col-sm">
+				{!! Form::label('filter_message','Message') !!}
 				{!! Form::text('filter_message', (isset($filters['message']) ? $filters['message'] : NULL),
 				[
 					'class' => 'form-control form-background',
@@ -29,8 +29,8 @@
 				]) !!}
             </div>
 
-			<div class="col">
-				{!! Form::label('filter_type','Filter By Table') !!}
+			<div class="col-sm">
+				{!! Form::label('filter_type','Table') !!}
 				{!! Form::text('filter_object_table', (isset($filters['object_table']) ?
 				$filters['object_table'] : NULL), 
 				[
@@ -39,8 +39,8 @@
 					]) !!}
             </div>
 
-			<div class="col">
-				{!! Form::label('filter_action','Filter By Action') !!}
+			<div class="col-sm">
+				{!! Form::label('filter_action','Action') !!}
 				{!! Form::select('filter_action', $actionOptions, (isset($filters['action']) ?
 				$filters['action'] : NULL), 
 				[
@@ -51,8 +51,8 @@
 					]) !!}
             </div>
 
-			<div class="col">
-				{!! Form::label('filter_user_id','Filter By User') !!}
+			<div class="col-sm">
+				{!! Form::label('filter_user_id','User') !!}
 				{!! Form::select('filter_user', $userOptions, (isset($filters['user']) ? $filters['user'] :
 				NULL), 
 				[
@@ -79,7 +79,7 @@
 	</div>
 </div>
 
-<div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right">
+<div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right my-2">
 		<form action="{{ url()->action('ActivityController@filter') }}" method="GET" class="form-inline">
 			<div class="form-group row gx-1 justify-content-end">
 				<div class="col-auto">

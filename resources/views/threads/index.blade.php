@@ -27,7 +27,7 @@
 
 		<div id="filter-list" class="px-2 @if (!$hasFilter)d-none @endif">
             <div class="row">
-                <div class="col">
+                <div class="col-sm">
                     {!! Form::label('filter_name','Filter By Name') !!}
 
                     {!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
@@ -38,7 +38,7 @@
                     ) !!}
                 </div>
 
-                <div class="col">
+                <div class="col-sm">
                     {!! Form::label('filter_user','Filter By User') !!}
                     {!! Form::select('filter_user', $userOptions, (isset($filters['user']) ? $filters['user'] :
                     NULL), 
@@ -51,7 +51,7 @@
                         ]) !!}
                 </div>
 
-                <div class="col">
+                <div class="col-sm">
                     {!! Form::label('filter_tag','Filter By Tag') !!}
                     {!! Form::select('filter_tag', $tagOptions, (isset($filters['tag']) ? $filters['tag'] : NULL),
                     [
@@ -79,7 +79,7 @@
             </div>
         </div>
     </div>
-	<div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right">
+	<div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right my-2">
 		<form action="{{ url()->current() }}" method="GET" class="form-inline">
 			<div class="form-group row gx-1 justify-content-end">
 				<div class="col-auto">
@@ -110,9 +110,9 @@
 
     <div class="col-lg-12">
         @if (isset($threads) && count($threads) > 0)
-        {!! $threads->render() !!}
+        {!! $threads->onEachSide(2)->links() !!}
         @include('threads.list', ['threads' => $threads])
-        {!! $threads->render() !!}
+        {!! $threads->onEachSide(2)->links() !!}
         @else
         No matching threads found.
         @endif
