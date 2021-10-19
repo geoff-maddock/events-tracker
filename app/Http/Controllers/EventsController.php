@@ -1658,6 +1658,7 @@ class EventsController extends Controller
         // add to activity log
         Activity::log($event, $this->user, 1);
 
+        // Dispatch notifications that the event was created
         EventCreated::dispatch($event);
 
         flash()->success('Success', 'Your event has been created');
@@ -1668,7 +1669,7 @@ class EventsController extends Controller
             $this->addFbPhoto($event);
         }
 
-        // make a call to notify all users who are following any of the sync'd tags
+        // make a call to notify all users who are following any of the tags/keywords
         $this->notifyFollowing($event);
 
         // add a twitter notification if the user is admin
@@ -1693,7 +1694,7 @@ class EventsController extends Controller
         $tags = $event->tags()->get();
         $users = [];
 
-        // improve this so it will only sent one email to each user per event, and include a list of all tags they were following that led to the notification
+        // improve this so it will only send one email to each user per event, and include a list of all tags they were following that led to the notification
         foreach ($tags as $tag) {
             foreach ($tag->followers() as $user) {
                 // if the user does not have this setting, continue
@@ -1702,11 +1703,12 @@ class EventsController extends Controller
                 }
 
                 // if the user hasn't already been notified, then email them
-                if (!array_key_exists($user->id, $users)) {
+                if (!array_key_exists($user->user_id, $users)) {
                     Mail::to($user->email)
                         ->send(new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $tag));
-
-                    $users[$user->id] = $tag->name;
+                    $users[$user->user_id] = $tag->name;
+                } else {
+                    $users[$user->user_id] = $users[$user->user_id] . ', ' . $tag->name;
                 }
             }
         }
@@ -1722,10 +1724,12 @@ class EventsController extends Controller
                     continue;
                 }
                 // if the user hasn't already been notified, then email them
-                if (!array_key_exists($user->id, $users)) {
+                if (!array_key_exists($user->user_id, $users)) {
                     Mail::to($user->email)
                         ->send(new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $entity));
-                    $users[$user->id] = $entity->name;
+                    $users[$user->user_id] = $entity->name;
+                } else {
+                    $users[$user->user_id] = $users[$user->user_id] . ', ' . $entity->name;
                 }
             }
         }
