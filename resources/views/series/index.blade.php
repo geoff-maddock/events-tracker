@@ -100,7 +100,7 @@
                     'primary-filter-submit']) !!}
                     {!! Form::close() !!}
                     {!! Form::open(['route' => ['series.reset'], 'method' => 'GET']) !!}
-                    {!! Form::submit('Reset', ['class' =>'btn btn-primary btn-sm btn-tb', 'id' =>
+                    {!! Form::submit('Reset', ['class' =>'btn btn-primary btn-sm btn-tb me-2 my-2', 'id' =>
                     'primary-filter-reset']) !!}
                     {!! Form::close() !!}
                 </div>

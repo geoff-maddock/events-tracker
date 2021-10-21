@@ -59,21 +59,21 @@
 		{!! Form::label('event_type_id','Event type:') !!}
 		{!! Form::select('event_type_id', $eventTypeOptions, (isset($event->event_type_id) ? $event->event_type_id :
 		NULL),
-		['class' => 'form-control form-background']) !!}
+		['class' => 'form-select form-background select2 bootstrap-5', 'data-placeholder' => '']) !!}
 		{!! $errors->first('event_type_id','<span class="help-block">:message</span>') !!}
 	</div>
 
 	<div class="form-group col-md-3">
 		{!! Form::label('venue_id','Venue') !!}
-		{!! Form::select('venue_id', $venueOptions, (isset($event->venue_id) ? $event->venue_id : NULL), ['class'
-		=> 'form-control select2']) !!}
+		{!! Form::select('venue_id', $venueOptions, (isset($event->venue_id) ? $event->venue_id : NULL), 
+		['class' => 'form-select select2', 'data-placeholder' => '']) !!}
 		{!! $errors->first('venue_id','<span class="help-block">:message</span>') !!}
 	</div>
 
 	<div class="form-group col-md-3">
 		{!! Form::label('promoter_id','Promoter') !!}
 		{!! Form::select('promoter_id', $promoterOptions, (isset($event->promoter_id) ? $event->promoter_id : NULL),
-		['class' =>'form-control select2']) !!}
+		['class' =>'form-control select2', 'data-placeholder' => '']) !!}
 		{!! $errors->first('promoter_id','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -161,7 +161,7 @@
 	<div class="form-group col-md-3">
 		{!! Form::label('series_id','Series:') !!}
 		{!! Form::select('series_id', $seriesOptions, (isset($event->series_id) ? $event->series_id : NULL), 
-		['class' => 'form-control select2']) !!}
+		['class' => 'form-control select2',  'data-placeholder' => '']) !!}
 		{!! $errors->first('series_id','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
@@ -195,8 +195,8 @@
 <div class="row">
 	<div class="form-group col-md-3">
 		{!! Form::label('created_by','Owner:') !!}
-		{!! Form::select('created_by', $userOptions, (isset($event->created_by) ? $event->created_by : NULL), ['class'
-		=>'form-control select2']) !!}
+		{!! Form::select('created_by', $userOptions, (isset($event->created_by) ? $event->created_by : NULL), 
+		['class' =>'form-control select2', 'data-placeholder' => '']) !!}
 		{!! $errors->first('created_by','<span class="help-block">:message</span>') !!}
 	</div>
 </div>
