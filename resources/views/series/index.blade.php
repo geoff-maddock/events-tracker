@@ -91,10 +91,12 @@
                 ]) !!}
             </div>
 
-            <div class="col-sm-2">
-                <div class="btn-group col-sm-1">
+		</div>
+		<div class="row">
+			<div class="col-sm-2">
+				<div class="btn-group col-sm-1">
                     <label></label>
-                    {!! Form::submit('Apply', ['class' =>'btn btn-primary btn-sm btn-tb mx-2', 'id' =>
+                    {!! Form::submit('Apply', ['class' =>'btn btn-primary btn-sm btn-tb me-2 my-2', 'id' =>
                     'primary-filter-submit']) !!}
                     {!! Form::close() !!}
                     {!! Form::open(['route' => ['series.reset'], 'method' => 'GET']) !!}

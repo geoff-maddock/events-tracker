@@ -99,7 +99,7 @@
     </div>
 </div>
 
-    <div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right">
+    <div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right my-2">
         <form action="" method="GET" class="form-inline">
 			<div class="form-group row gx-1 justify-content-end">
 				<div class="col-auto">
