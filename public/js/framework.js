@@ -1810,6 +1810,7 @@ var Framework = (function()
 // init framework module on document load
 $(function()
 {
+    console.log('framework init');
     Framework.init();
 });
 

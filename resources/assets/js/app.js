@@ -12,6 +12,7 @@
 window.moment = require('moment');
 window.Swal = require('sweetalert2');
 window.Dropzone = require('dropzone');
+console.log('loaded: /resources/assets/js');
 // add any other dependencies - things i'm including manually in app.layout
 
 window.Vue = require('vue');
