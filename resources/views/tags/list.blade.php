@@ -7,9 +7,9 @@
 		<span style="font-size: 26px;">{!! link_to_route('tags.show', $tag->name, [$tag->slug], ['class' => 'item-title']) !!}</span>
 			@if ($signedIn)
 				@if ($follow = $tag->followedBy($user))
-				<a href="{!! route('tags.unfollow', ['id' => $tag->id]) !!}" title="You are following this tag.  Click to unfollow"><i class="bi bi-dash-circle-fill text-warning icon"></i></a>
+				<a href="{!! route('tags.unfollow', ['id' => $tag->id]) !!}" title="You are following this tag.  Click to unfollow"><i class="bi bi-dash-circle-fill text-info icon"></i></a>
 				@else
-				<a href="{!! route('tags.follow', ['id' => $tag->id]) !!}" title="Click to follow this tag."><i class="bi bi-plus-circle-fill text-info icon"></i></a>
+				<a href="{!! route('tags.follow', ['id' => $tag->id]) !!}" title="Click to follow this tag."><i class="bi bi-plus-circle text-warning  icon"></i></a>
 				@endif
 
                     @if ($signedIn &&  Auth::user()->id == Config::get('app.superuser'))

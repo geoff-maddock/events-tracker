@@ -2,14 +2,16 @@
 	<h1>{!! link_to_route('tags.show', $tag->name, [$tag->name], ['class' => 'item-title']) !!}
 		@if ($signedIn)
 			@if ($follow = $tag->followedBy($user))
-			<a href="{!! route('tags.unfollow', ['id' => $tag->id]) !!}" title="You are following this tag.  Click to unfollow"><i class="bi bi-dash-circle-fill text-warning"></i></a>
+			<a href="{!! route('tags.unfollow', ['id' => $tag->id]) !!}" title="You are following this tag.  Click to unfollow">
+				<i class="bi bi-dash-circle-fill text-info"></i>
+			</a>
 			@else
-			<a href="{!! route('tags.follow', ['id' => $tag->id]) !!}" title="Click to follow this tag."><i class="bi bi-plus-circle-fill text-info"></i></a>
+			<a href="{!! route('tags.follow', ['id' => $tag->id]) !!}" title="Click to follow this tag."><i class="bi bi-plus-circle text-warning"></i></a>
 			@endif
 
             @if ($signedIn &&  Auth::user()->id == Config::get('app.superuser'))
 					<a href="{!! route('tags.edit', ['tag' => $tag->id]) !!}" title="Click to edit"><i class='bi bi-pencil-fill'></i></a>
-                {!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $tag, 'DELETE', 'Delete the tag') !!}
+                {!! link_form_bootstrap_icon('bi bi-trash-fill text-info icon', $tag, 'DELETE', 'Delete the tag') !!}
             @endif
 		@endif
 
