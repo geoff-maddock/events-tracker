@@ -46,6 +46,7 @@ if (token) {
 
 import Visibility from './utilities/visibility';
 Visibility.init('body');
+console.log('assets js bootstrap.js visibility init')
 
 import Echo from 'laravel-echo';
 
