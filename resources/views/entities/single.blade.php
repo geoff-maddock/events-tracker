@@ -18,7 +18,7 @@
 
 	@if ($signedIn && $entity->ownedBy($user))
 	<a href="{!! route('entities.edit', ['entity' => $entity->slug]) !!}">
-		<i class="bi bi-pencil-fill"></i>
+		<i class="bi bi-pencil-fill card-actions"></i>
 	</a>
 	@endif
 
@@ -26,12 +26,12 @@
 	@if ($follow = $entity->followedBy($user))
 	<a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}" data-target="#entity-{{ $entity->id }}"
 		class="ajax-action" title="Click to unfollow">
-		<i class="bi bi-dash-circle-fill"></i>
+		<i class="bi bi-dash-circle-fill card-actions  text-info"></i>
 	</a>
 	@else
 	<a href="{!! route('entities.follow', ['id' => $entity->id]) !!}" data-target="#entity-{{ $entity->id }}"
 		class="ajax-action" title="Click to follow">
-		<i class="bi bi-plus-circle-fill text-info"></i>
+		<i class="bi bi-plus-circle-fill card-actions"></i>
 	</a>
 	@endif
 	@endif

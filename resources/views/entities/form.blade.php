@@ -64,7 +64,7 @@
 <div class="row">
 	<div class="form-group col-md-6">
 	{!! Form::label('role_list','Roles:') !!}
-	{!! Form::select('role_list[]', $roleOptions, null, ['id' => 'role_list',	'class' => 'form-control select2',
+	{!! Form::select('role_list[]', $roleOptions, null, ['id' => 'role_list',	'class' => 'form-control select2 form-background',
 	'data-placeholder' => 'Choose a role',
 	'data-tags' => 'false',
 	'multiple']) !!}
@@ -75,7 +75,7 @@
 <div class="row">
 	<div class="form-group col-md-6">
 	{!! Form::label('tag_list','Tags:') !!}
-	{!! Form::select('tag_list[]', $tagOptions, null, ['id' => 'tag_list', 'class' =>'form-control select2',
+	{!! Form::select('tag_list[]', $tagOptions, null, ['id' => 'tag_list', 'class' =>'form-control select2 form-background',
 	'data-placeholder' => 'Choose a tag',
 	'data-tags' => 'true',
 	 'multiple']) !!}
@@ -86,10 +86,12 @@
 <div class="row">
 	<div class="form-group col-md-6">
 	{!! Form::label('alias_list','Aliases:') !!}
-	{!! Form::select('alias_list[]', $aliasOptions, null, ['id' => 'alias_list',	'class' =>'form-control select2',
-	'data-placeholder' => 'Choose an alias',
-	'data-tags' =>'true',
-	'multiple']) !!}
+	{!! Form::select('alias_list[]', $aliasOptions, null, ['id' => 'alias_list',
+		'class' =>'form-control select2 form-background',
+		'data-placeholder' => 'Choose an alias',
+		'data-tags' =>'true',
+		'multiple'])
+		 !!}
 	{!! $errors->first('aliases','<span class="help-block">:message</span>') !!}
 	</div>
 </div>

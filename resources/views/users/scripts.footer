@@ -6,7 +6,7 @@ $('input.delete').on('click', function(){
     showCancelButton: true,   
     confirmButtonColor: "#DD6B55",
     confirmButtonText: "Yes, delete it!", 
-    closeOnConfirm: false 
+    preConfirm: false 
   }, 
        function(){   
     $("#myform").submit();
