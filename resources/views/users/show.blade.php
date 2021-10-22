@@ -254,28 +254,32 @@
     <script>
         Dropzone.autoDiscover = false;
         $(document).ready(function () {
+            if ($('#myDropzone').length) {
+                $("div#myDropzone").dropzone({ url: "/file/post" });
+                // other code here
 
-            var myDropzone = new Dropzone('#myDropzone', {
-                dictDefaultMessage: "Drop a file here to add a user profile picture."
-            });
+                var myDropzone = new Dropzone('#myDropzone', {
+                    dictDefaultMessage: "Drop a file here to add a user profile picture."
+                });
 
-            $('div.dz-default.dz-message > span').show(); // Show message span
-            $('div.dz-default.dz-message').css({'color': '#000000', 'opacity': 1, 'background-image': 'none'});
+                $('div.dz-default.dz-message > span').show(); // Show message span
+                $('div.dz-default.dz-message').css({'color': '#000000', 'opacity': 1, 'background-image': 'none'});
 
-            myDropzone.options.addPhotosForm = {
-                maxFilesize: 3,
-                accept: ['.jpg', '.png', '.gif'],
-                dictDefaultMessage: "Drop a file here to add a picture.",
-                init: function () {
-                    myDropzone.on("complete", function (file) {
-                        location.href = 'users/{{ $user->id }}';
-                        location.reload();
-                    });
-                }
-            };
+                myDropzone.options.addPhotosForm = {
+                    maxFilesize: 3,
+                    accept: ['.jpg', '.png', '.gif'],
+                    dictDefaultMessage: "Drop a file here to add a picture.",
+                    init: function () {
+                        myDropzone.on("complete", function (file) {
+                            location.href = 'users/{{ $user->id }}';
+                            location.reload();
+                        });
+                    }
+                };
 
-            myDropzone.options.addPhotosForm.init();
+                myDropzone.options.addPhotosForm.init();
 
+            }
         })
         $('input.delete').on('click', function(e){
         e.preventDefault();
@@ -286,15 +290,24 @@
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, delete it!",
-                closeOnConfirm: true
-            },
-            function(isConfirm){
-                if (isConfirm)
-                {
-                    form.submit();
-                };
-            });
+                preConfirm: function() {
+                        return new Promise(function(resolve) {
+                            setTimeout(function() {
+                                resolve()
+                            }, 2000)
+                        })
+                    }
+            }).then(result => {
+            if (result.value) {
+                // handle Confirm button click
+                // result.value will contain `true` or the input value
+                form.submit();
+            } else {
+                // handle dismissals
+                // result.dismiss can be 'cancel', 'overlay', 'esc' or 'timer'
+                console.log('cancelled confirm')
+            }
+        });
     })
     </script>
 @stop
