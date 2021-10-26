@@ -700,20 +700,6 @@ class EventsController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
-        $query
-            // public or where created by
-            ->where(function ($query) {
-                $query->whereIn('visibility_id', [1, 2])
-                    ->where('created_by', '=', $this->user ? $this->user->id : null);
-                // if logged in, can see guarded
-                if ($this->user) {
-                    $query->orWhere('visibility_id', '=', 4);
-                }
-                $query->orWhere('visibility_id', '=', 3);
-
-                return $query;
-            });
-
         // get the events
         $events = $query
             ->with('visibility', 'venue')

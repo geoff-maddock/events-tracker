@@ -325,7 +325,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
             ->join('response_types', 'event_responses.response_type_id', '=', 'response_types.id')
             ->where('response_types.name', '=', 'Attending')
             ->where('event_responses.user_id', '=', $this->id)
-            ->orderBy('events.start_at', 'desc')
+          //  ->orderBy('events.start_at', 'desc')
             ->select('events.*');
 
         return $events;
