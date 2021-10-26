@@ -727,7 +727,7 @@ class EventsController extends Controller
         return view('events.index')
         ->with(array_merge(
             [
-                'tag' => 'Attending',
+                'slug' => 'Attending',
                 'limit' => $listResultSet->getLimit(),
                 'sort' => $listResultSet->getSort(),
                 'direction' => $listResultSet->getSortDirection(),
