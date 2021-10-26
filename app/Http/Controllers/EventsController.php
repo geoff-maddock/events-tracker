@@ -1991,7 +1991,7 @@ class EventsController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder(Event::query())
-            ->setDefaultSort(['start_at' => 'desc'])
+            ->setDefaultSort(['events.start_at' => 'desc'])
             ->setParentFilter(['tag' => $slug]);
 
         // get the result set from the builder
@@ -2003,8 +2003,8 @@ class EventsController extends Controller
 
         $future_events = $futureQuery
             ->future()
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
+            ->orderBy('events.start_at', 'ASC')
+            ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
 
         $future_events->filter(function ($e) {
@@ -2013,8 +2013,8 @@ class EventsController extends Controller
 
         $past_events = $pastQuery
             ->past()
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
+            ->orderBy('events.start_at', 'ASC')
+            ->orderBy('events.name', 'ASC')
             ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
 
@@ -2068,7 +2068,7 @@ class EventsController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder(Event::query())
-            ->setDefaultSort(['start_at' => 'desc'])
+            ->setDefaultSort(['events.start_at' => 'desc'])
             ->setParentFilter(['related' => $slug]);
 
         // get the result set from the builder
@@ -2080,8 +2080,8 @@ class EventsController extends Controller
 
         $future_events = $futureQuery
             ->future()
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
+            ->orderBy('events.start_at', 'ASC')
+            ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
 
         $future_events->filter(function ($e) {
@@ -2090,8 +2090,8 @@ class EventsController extends Controller
 
         $past_events = $pastQuery
             ->past()
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
+            ->orderBy('events.start_at', 'ASC')
+            ->orderBy('events.name', 'ASC')
             ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
 
@@ -2143,7 +2143,7 @@ class EventsController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder(Event::query())
-            ->setDefaultSort(['start_at' => 'desc']);
+            ->setDefaultSort(['evebts.start_at' => 'desc']);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
@@ -2155,13 +2155,13 @@ class EventsController extends Controller
         $cdate_yesterday = Carbon::parse($date)->subDay();
         $cdate_tomorrow = Carbon::parse($date)->addDay();
 
-        $future_events = Event::where('start_at', '>', $cdate_yesterday->toDateString())
-            ->where('start_at', '<', $cdate_tomorrow->toDateString())
+        $future_events = Event::where('events.start_at', '>', $cdate_yesterday->toDateString())
+            ->where('events.start_at', '<', $cdate_tomorrow->toDateString())
             ->where(function ($query) {
                 $query->visible($this->user);
             })
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
+            ->orderBy('events.start_at', 'ASC')
+            ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -2208,7 +2208,7 @@ class EventsController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder(Event::query())
-            ->setDefaultSort(['start_at' => 'desc']);
+            ->setDefaultSort(['events.start_at' => 'desc']);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
@@ -2221,8 +2221,8 @@ class EventsController extends Controller
             ->where(function ($query) {
                 $query->visible($this->user);
             })
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
+            ->orderBy('events.start_at', 'ASC')
+            ->orderBy('events.name', 'ASC')
             ->paginate($this->limit);
 
         $past_events = Event::getByVenue(strtolower($slug))
@@ -2230,8 +2230,8 @@ class EventsController extends Controller
             ->where(function ($query) {
                 $query->visible($this->user);
             })
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
+            ->orderBy('events.start_at', 'ASC')
+            ->orderBy('events.name', 'ASC')
             ->paginate($this->limit);
 
         // saves the updated session
@@ -2280,8 +2280,8 @@ class EventsController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder(Event::query())
-            ->setDefaultSort(['start_at' => 'desc'])
-            ->setParentFilter(['event_type' => $type]);
+            ->setDefaultSort(['events.start_at' => 'desc'])
+            ->setParentFilter(['events.event_type' => $type]);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
@@ -2292,8 +2292,8 @@ class EventsController extends Controller
 
         $future_events = $futureQuery
             ->future()
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
+            ->orderBy('events.start_at', 'ASC')
+            ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
 
         $future_events->filter(function ($e) {
@@ -2302,8 +2302,8 @@ class EventsController extends Controller
 
         $past_events = $pastQuery
             ->past()
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
+            ->orderBy('events.start_at', 'ASC')
+            ->orderBy('events.name', 'ASC')
             ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
 
@@ -2357,7 +2357,7 @@ class EventsController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder(Event::query())
-            ->setDefaultSort(['start_at' => 'desc'])
+            ->setDefaultSort(['events.start_at' => 'desc'])
             ->setParentFilter(['series' => $slug]);
 
         // get the result set from the builder
@@ -2369,8 +2369,8 @@ class EventsController extends Controller
 
         $future_events = $futureQuery
             ->future()
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
+            ->orderBy('events.start_at', 'ASC')
+            ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
 
         $future_events->filter(function ($e) {
@@ -2379,8 +2379,8 @@ class EventsController extends Controller
 
         $past_events = $pastQuery
             ->past()
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
+            ->orderBy('events.start_at', 'ASC')
+            ->orderBy('events.name', 'ASC')
             ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
 

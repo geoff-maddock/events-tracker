@@ -134,6 +134,9 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
         // adds multi-sort options after the selected sort
         $this->addMultiSort();
 
+        // DEBUG uncomment to see the raw SQL
+        // dump($this->queryBuilder->toSql());
+
         return $this->queryBuilder;
     }
 
