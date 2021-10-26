@@ -470,7 +470,7 @@ class EventsController extends Controller
         return view('events.index')
             ->with(array_merge(
                 [
-                    'tag' => 'Future',
+                    'slug' => 'Future',
                     'limit' => $listResultSet->getLimit(),
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
