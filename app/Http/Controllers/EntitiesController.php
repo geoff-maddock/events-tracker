@@ -373,6 +373,9 @@ class EntitiesController extends Controller
         string $slug,
         StringHelper $stringHelper
     ): string {
+        // get the tag by the slug name
+        $tag = Tag::where('slug', '=', $slug)->firstOrFail();
+
         $listParamSessionStore->setBaseIndex('internal_entity');
         $listParamSessionStore->setKeyPrefix('internal_entity_tags');
         // set the index tab in the session
@@ -380,9 +383,6 @@ class EntitiesController extends Controller
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = $this->getBaseQuery();
-
-        // convert the slug to name
-        $tag = $stringHelper->SlugToName($slug);
 
         $listEntityResultBuilder
             ->setFilter($this->filter)

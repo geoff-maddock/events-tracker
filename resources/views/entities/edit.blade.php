@@ -22,7 +22,7 @@
 	</div>
 
 	<div class="col-md-6">
-		@if ($user && (Auth::user()->id === $entity->user->id || $user->id === Config::get('app.superuser')))
+		@if ($user && (Auth::user()->id === $entity->user ? $entity->user->id : null || $user->id === Config::get('app.superuser')))
 		<form action="/entities/{{ $entity->id }}/photos" class="dropzone" id="myDropzone" method="POST">
 			<input type="hidden" name="_token" value="{{ csrf_token() }}">
 		</form>
@@ -36,7 +36,7 @@
 			<div class="col-md-2">
 
 			<a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->getStoragePath() }}"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $entity->name}}"  style="max-width: 100%;"></a>
-			@if ($user && (Auth::user()->id === $entity->user->id || $user->id === Config::get('app.superuser')))
+			@if ($user && (Auth::user()->id === $entity->user ? $entity->user->id : null || $user->id === Config::get('app.superuser')))
 				{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $photo, 'DELETE', 'Delete the photo') !!}
 				@if ($photo->is_primary)
 				{!! link_form_bootstrap_icon('bi bi-star-fill text-primary icon', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}

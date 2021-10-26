@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Str;
 
 /**
  * @property string $name
@@ -35,6 +36,11 @@ class EventType extends Eloquent
     public function events()
     {
         return $this->hasMany('App\Models\Event');
+    }
+
+    public function getSlugAttribute()
+    {
+        return Str::slug($this->name, '-');
     }
 
     public function backgroundColor()

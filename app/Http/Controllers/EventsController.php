@@ -1977,8 +1977,8 @@ class EventsController extends Controller
         string $slug,
         StringHelper $stringHelper
     ) {
-        // convert the slug to name
-        $tag = $stringHelper->SlugToName($slug);
+        // get the tag by the slug name
+        $tag = Tag::where('slug', '=', $slug)->firstOrFail();
 
         // initialized listParamSessionStore with baseindex key
         // list entity result builder
@@ -2057,7 +2057,8 @@ class EventsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         string $slug
     ) {
-        $slug = Str::title(str_replace('-', ' ', $slug));
+        // get the entity by the slug name
+        $related = Entity::where('slug', '=', $slug)->firstOrFail();
 
         $listParamSessionStore->setBaseIndex('internal_event');
         $listParamSessionStore->setKeyPrefix('internal_event_related');
@@ -2069,7 +2070,7 @@ class EventsController extends Controller
             ->setFilter($this->filter)
             ->setQueryBuilder(Event::query())
             ->setDefaultSort(['events.start_at' => 'desc'])
-            ->setParentFilter(['related' => $slug]);
+            ->setParentFilter(['related' => $related->name]);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
@@ -2120,7 +2121,7 @@ class EventsController extends Controller
             )
             ->with(compact('future_events'))
             ->with(compact('past_events'))
-            ->with(compact('slug'));
+            ->with(compact('related'));
     }
 
     /**
@@ -2281,7 +2282,7 @@ class EventsController extends Controller
             ->setFilter($this->filter)
             ->setQueryBuilder(Event::query())
             ->setDefaultSort(['events.start_at' => 'desc'])
-            ->setParentFilter(['events.event_type' => $type]);
+            ->setParentFilter(['event_type' => $type]);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();

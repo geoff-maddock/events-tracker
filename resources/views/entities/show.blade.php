@@ -12,7 +12,7 @@
 <h1 class="display-6 text-primary">Entity	@include('entities.crumbs', ['slug' => $entity->name])</h1>
 
 <div id="action-menu" class="mb-2">
-@if ($user && Auth::user()->id === $entity->user->id)
+@if ($user && Auth::user()->id === $entity->user ? $entity->user->id : null)
 	<a href="{!! route('entities.edit', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Edit Entity</a>
 @endif
 	<a href="{!! URL::route('entities.index') !!}" class="btn btn-info">Return to list</a>
@@ -128,7 +128,7 @@
 			@endunless
 
 			<P>
-			@if ($user && Auth::user()->id == $entity->user->id)
+			@if ($user && Auth::user()->id == ($entity->user ? $entity->user->id : null))
 				<span>
 					<a href="{!! route('entities.locations.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Location</a>
 				</span>
@@ -159,7 +159,7 @@
 			@endif
 
 			<P>
-			@if ($user && Auth::user()->id === $entity->user->id)
+			@if ($user && Auth::user()->id === $entity->user ? $entity->user->id : null)
 				<span>
 					<a href="{!! route('entities.contacts.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Contact</a>
 				</span>
@@ -182,7 +182,7 @@
 			@endunless
 
 			<P>
-			@if ($user && Auth::user()->id === $entity->user->id)
+			@if ($user && Auth::user()->id === $entity->user ? $entity->user->id : null)
 					<span>
 							<a href="{!! route('entities.links.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Link</a>
 					</span>
@@ -190,7 +190,7 @@
 			</P>
 
 			<P>
-			@if ($user && Auth::user()->id === $entity->user->id)
+			@if ($user && Auth::user()->id === $entity->user ? $entity->user->id : null)
 				<span>
 					<a href="{!! route('events.create') !!}" class="btn btn-primary">Add Event</a>
 				</span>
@@ -243,7 +243,7 @@
 				@foreach ($set as $photo)
 				<div class="col-2">
 					<a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->path }}" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $entity->name}}"  style="max-width: 100%;"></a>
-					@if ($user && (Auth::user()->id == $entity->user->id || $user->id == Config::get('app.superuser')))
+					@if ($user && (Auth::user()->id == ($entity->user ? $entity->user->id : null) || $user->id == Config::get('app.superuser')))
 						{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning', $photo, 'DELETE', 'Delete the photo') !!}
 						@if ($photo->is_primary)
 						{!! link_form_bootstrap_icon('bi bi-star-fill text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
@@ -255,7 +255,7 @@
 				@endforeach
 			@endforeach
 			<div class="col">
-				@if ($user && (Auth::user()->id == $entity->user->id || $user->id == Config::get('app.superuser')))
+				@if ($user && (Auth::user()->id == ($entity->user ? $entity->user->id : null) || $user->id == Config::get('app.superuser')))
 				<form action="/entities/{{ $entity->id }}/photos" class="dropzone h-auto" id="myDropzone" method="POST">
 					<input type="hidden" name="_token" value="{{ csrf_token() }}">
 				</form>

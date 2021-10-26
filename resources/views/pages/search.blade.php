@@ -36,20 +36,6 @@
 			</div>
 		@endif
 
-		@if (isset($series) && count($series) > 0)
-			<div class="card bg-dark">
-
-				<h5 class="card-header bg-primary">Series
-						<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Series that match this search term.">{{ count($series)}}</span></a>
-				</h5>
-				
-				<div class="card-body">
-				@include('series.list', ['series' => $series])
-				{!! $series->appends(['keyword' => $slug])->render() !!}
-				</div>
-
-			</div>
-		@endif
 
 			<div class="card bg-dark my-2">
 
@@ -72,6 +58,31 @@
 
 			</div>
 		</div>
+	@endif
+
+	@if (isset($series) && count($series) > 0)
+	
+	<div class="row">
+	<div class="col-lg-6">
+		<div class="card bg-dark">
+			<h5 class="card-header bg-primary">Series
+					<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Series that match this search term.">{{ count($series)}}</span></a>
+			</h5>
+			
+			<div class="card-body">
+			@include('series.list', ['series' => $series])
+			{!! $series->appends(['keyword' => $slug])->render() !!}
+			</div>
+
+		</div>
+	</div>
+</div>
+	@else
+	<div class="bs-component">
+
+		No matching series found.
+
+	</div>
 	@endif
 
 	<div class="row">
