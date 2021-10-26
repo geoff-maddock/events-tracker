@@ -64,10 +64,12 @@ class NotifyWeekly extends Command
             if ($entities = $user->getEntitiesFollowing()) {
                 foreach ($entities as $entity) {
                     $entityEvents = [];
+                    // get the future events for each followed entity
                     if (count($entity->futureEvents()) > 0) {
                         foreach ($entity->futureEvents() as $futureEvent) {
                             if (!in_array($futureEvent->id, $attendingIdList)) {
                                 $entityEvents[] = $futureEvent;
+                                $attendingIdList[] = $futureEvent->id;
                             }
                         }
                         if (count($entityEvents) > 0) {
@@ -80,10 +82,12 @@ class NotifyWeekly extends Command
             if ($tags = $user->getTagsFollowing()) {
                 foreach ($tags as $tag) {
                     $tagEvents = [];
+                    // get the future events for each followed tag
                     if (count($tag->futureEvents()) > 0) {
                         foreach ($tag->futureEvents() as $futureEvent) {
                             if (!in_array($futureEvent->id, $attendingIdList)) {
                                 $tagEvents[] = $futureEvent;
+                                $attendingIdList[] = $futureEvent->id;
                             }
                         }
                         if (count($tagEvents) > 0) {
