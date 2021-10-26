@@ -85,7 +85,7 @@
 		<a href="/series/{{$event->series_id }}">{!! $event->series->name !!}</a> series
 		@endif
 
-		<a href="/events/type/{{ urlencode($event->eventType->name) }}">{{ $event->eventType->name }}</a>
+		<a href="/events/type/{{ $event->eventType->slug }}">{{ $event->eventType->name }}</a>
 
 		@if ($event->venue)
 		at <a href="/entities/{{$event->venue->slug }}">{{ $event->venue->name}}</a>

@@ -48,6 +48,9 @@
 	@foreach ($entity->roles as $role)
 	<span class="badge rounded-pill bg-dark"><a href="/entities/role/{{ $role->name }}">{{ $role->name }}</a></span>
 	@endforeach
+	@foreach ($entity->tags as $tag)
+		@include('tags.single_entity_label')
+	@endforeach
 	<br>
 	<ul class="list">
 		@if ($events = $entity->futureEvents()->take(1))
