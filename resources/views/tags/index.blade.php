@@ -20,7 +20,7 @@
 
 				<div class="card-body">
 					<div class="row">
-					<div class="col-lg-1">
+					<div class="col-1">
 						<ul class="list-click">
 							<li><a href="#A">A</a></li>
 							<li><a href="#B">B</a></li>

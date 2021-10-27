@@ -105,18 +105,19 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
 
     private function addFiltering()
     {
-        // Apply parent filter
+        // Apply parent filter - should apply and not display, cannot be overriden
         if (!empty($this->parentFilter)) {
             $this->queryBuilder = $this->filter->applyFilters($this->queryBuilder, $this->parentFilter);
         }
 
-        // Apply fixed filters
-        if (!empty($this->fixedFilters)) {
-            $this->queryBuilder = $this->filter->applyFilters($this->queryBuilder, $this->fixedFilters);
-        }
         // Apply user form filters
         $this->userFilters = $this->listQueryParameters->getFilters();
         $this->isEmptyFilter = $this->listQueryParameters->getIsEmptyFilter();
+
+        // Apply fixed filters - should display in filters and can be overridden
+        if (!empty($this->fixedFilters)) {
+            $this->queryBuilder = $this->filter->applyFilters($this->queryBuilder, $this->fixedFilters);
+        }
 
         if (!empty($this->userFilters)) {
             $this->queryBuilder = $this->filter->applyFilters($this->queryBuilder, $this->userFilters);
@@ -200,6 +201,8 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
         $listResult->setIsEmptyFilter($this->isEmptyFilter);
         $listResult->setLimit($this->listQueryParameters->getLimit($this->defaultLimit));
         $listResult->setPage($this->listQueryParameters->getPage());
+
+        // dump($listResult);
 
         return $listResult;
     }
