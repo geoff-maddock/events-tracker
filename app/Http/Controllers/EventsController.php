@@ -1213,7 +1213,7 @@ class EventsController extends Controller
             return (('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
         });
 
-        $tag = 'Attending';
+        $slug = 'Attending';
 
         // adds events to event list
         foreach ($events as $event) {
@@ -1246,7 +1246,7 @@ class EventsController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'tag'));
+        return view('events.event-calendar', compact('eventList', 'slug'));
     }
 
     /**
@@ -1276,7 +1276,7 @@ class EventsController extends Controller
             return (('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
         });
 
-        $tag = 'No Cover';
+        $slug = 'No Cover';
 
         // adds events to event list
         foreach ($events as $event) {
@@ -1309,7 +1309,7 @@ class EventsController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'tag'));
+        return view('events.event-calendar', compact('eventList', 'slug'));
     }
 
     /**
@@ -1341,7 +1341,7 @@ class EventsController extends Controller
             return (('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
         });
 
-        $tag = 'Min Age ' . $age;
+        $slug = 'Min Age ' . $age;
 
         // adds events to event list
         foreach ($events as $event) {
@@ -1374,7 +1374,7 @@ class EventsController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'tag'));
+        return view('events.event-calendar', compact('eventList', 'slug'));
     }
 
     /**
@@ -1384,11 +1384,12 @@ class EventsController extends Controller
      */
     public function calendarEventTypes(string $type)
     {
-        $tag = urldecode($type);
+        // $tag = urldecode($type);
+        $slug = Str::title(str_replace('-', ' ', $type));
 
         $eventList = [];
 
-        $events = Event::getByType(ucfirst($tag))
+        $events = Event::getByType($slug)
             ->orderBy('start_at', 'ASC')
             ->orderBy('name', 'ASC')
             ->get();
@@ -1398,7 +1399,7 @@ class EventsController extends Controller
         });
 
         // get all the upcoming series events
-        $series = Series::getByType(ucfirst($tag))->active()->get();
+        $series = Series::getByType($slug)->active()->get();
 
         // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
@@ -1436,7 +1437,7 @@ class EventsController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'tag'));
+        return view('events.event-calendar', compact('eventList', 'slug'));
     }
 
     /**

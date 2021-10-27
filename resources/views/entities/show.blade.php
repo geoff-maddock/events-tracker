@@ -12,7 +12,7 @@
 <h1 class="display-6 text-primary">Entity	@include('entities.crumbs', ['slug' => $entity->name])</h1>
 
 <div id="action-menu" class="mb-2">
-@if ($user && Auth::user()->id === $entity->user ? $entity->user->id : null)
+@if ($user && Auth::user()->id === ($entity->user ? $entity->user->id : null))
 	<a href="{!! route('entities.edit', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Edit Entity</a>
 @endif
 	<a href="{!! URL::route('entities.index') !!}" class="btn btn-info">Return to list</a>
@@ -58,12 +58,12 @@
 				@if ($follow = $entity->followedBy($user))
 				<b>You Are Following</b> 
 				<a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}"  title="Click to unfollow">
-					<i class="bi bi-dash-circle-fill"></i>
+					<i class="bi bi-check-circle-fill text-info"></i>
 				</a>
 				@else
 				Click to Follow 
 				<a href="{!! route('entities.follow', ['id' => $entity->id]) !!}" title="Click to follow">
-					<i class="bi bi-plus-circle-fill"></i>
+					<i class="bi bi-plus-circle icon"></i>
 				</a>
 				@endif
 
