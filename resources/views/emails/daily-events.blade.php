@@ -70,7 +70,7 @@ Good morning!
 		@unless ($event->entities->isEmpty())
 		Related Entities:
 			@foreach ($event->entities as $entity)
-			<span class="label label-tag"><a href="{{ $url }}events/relatedto/{{ $entity->slug }}">{{ $entity->name }}</a></span>
+			<span class="label label-tag"><a href="{{ $url }}events/related-to/{{ $entity->slug }}">{{ $entity->name }}</a></span>
 			@endforeach
 		@endunless
 		</P>
@@ -107,7 +107,7 @@ Good morning!
 			@unless ($s->entities->isEmpty())
 				Related Entities:
 				@foreach ($s->entities as $entity)
-					<span class="label label-tag"><a href="{{ $url }}events/relatedto/{{ $entity->slug }}">{{ $entity->name }}</a></span>
+					<span class="label label-tag"><a href="{{ $url }}events/related-to/{{ $entity->slug }}">{{ $entity->name }}</a></span>
 				@endforeach
 			@endunless
 		</P>

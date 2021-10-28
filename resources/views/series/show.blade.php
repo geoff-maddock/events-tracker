@@ -58,9 +58,11 @@
 		<p>
         @if ($series->eventType)
 			<b>{{ $series->eventType ? $series->eventType->name : ''}} {{ $series->venue ? 'at '.$series->venue->name : ' at no venue specified' }}</b>
-			@if ($series->venue->getPrimaryLocationAddress() != "")
-			at {{ $series->venue->getPrimaryLocationAddress() }}
-			@endif 
+			@if ($series->venue)
+				@if ($series->venue->getPrimaryLocationAddress() != "")
+				at {{ $series->venue->getPrimaryLocationAddress() }}
+				@endif 
+			@endif
         @endif
 		</p>
 
@@ -85,7 +87,7 @@
 		<br>
 		Related Entities:
 			@foreach ($series->entities as $entity)
-			<span class="badge rounded-pill bg-dark"><a href="/series/relatedto/{{ $entity->slug }}">{{ $entity->name }}</a>
+			<span class="badge rounded-pill bg-dark"><a href="/series/related-to/{{ $entity->slug }}">{{ $entity->name }}</a>
 			<a href="{!! route('entities.show', ['entity' => $entity->slug]) !!}" title="Show this entity.">
 				<i class="bi bi-link-45deg"></i>
 			</a>

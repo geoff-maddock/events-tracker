@@ -21,7 +21,7 @@
 			  </svg>
 			</span>
 		</a>
-		{!! Form::open(['route' => [$filterRoute ?? 'events.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
+		{!! Form::open(['route' => [$filterRoute ?? 'series.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
 
 		<div id="filter-list" class="px-2 @if (!$hasFilter)d-none @endif">
             <div class="row">
@@ -73,7 +73,7 @@
                 [
                     'data-theme'=> 'bootstrap-5',
                     'data-width' => '100%', 
-                    'class' =>'form-control select2',
+                    'class' =>'form-control select2 form-background',
                     'data-placeholder' => 'Select a tag',
                     'name' => 'filters[tag]'
                 ]) !!}
@@ -85,7 +85,7 @@
                 [
                     'data-theme'=> 'bootstrap-5',
                     'data-width' => '100%', 
-                    'class' =>'form-control select2',
+                    'class' =>'form-control select2 form-background',
                     'data-placeholder' => 'Select a visibility',
                     'name' => 'filters[visibility]'
                 ]) !!}

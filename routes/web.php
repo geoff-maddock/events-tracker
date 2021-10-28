@@ -65,7 +65,7 @@ Route::get('help', 'PagesController@help');
 
 Route::get('calendar', 'EventsController@calendar')->name('calendar');
 Route::get('calendar/tag/{tag}', 'EventsController@calendarTags')->name('calendar.tag');
-Route::get('calendar/relatedto/{slug}', 'EventsController@calendarRelatedTo');
+Route::get('calendar/related-to/{slug}', 'EventsController@calendarRelatedTo');
 Route::get('calendar/free', 'EventsController@calendarFree')->name('calendar.free');
 Route::get('calendar/attending', 'EventsController@calendarAttending')->name('calendar.attending');
 Route::get('calendar/type/{tag}', 'EventsController@calendarEventTypes')->name('calendar.type');
@@ -189,7 +189,7 @@ Route::get('events/rpp-reset', ['as' => 'events.rppReset', 'uses' => 'EventsCont
 
 Route::get('events/tag/{tag}', 'EventsController@indexTags')->name('events.tag');
 Route::get('events/venue/{slug}', 'EventsController@indexVenues')->name('events.venue');
-Route::get('events/relatedto/{slug}', 'EventsController@indexRelatedTo')->name('events.relatedto');
+Route::get('events/related-to/{slug}', 'EventsController@indexRelatedTo')->name('events.relatedto');
 Route::get('events/type/{slug}', 'EventsController@indexTypes');
 Route::get('events/series/{slug}', 'EventsController@indexSeries');
 Route::get('events/feed', 'EventsController@feed');
@@ -256,7 +256,7 @@ Route::get('threads/all', 'ThreadsController@indexAll');
 Route::get('threads/category/{slug}', 'ThreadsController@indexCategories');
 Route::get('threads/tag/{tag}', 'ThreadsController@indexTags')->name('threads.tag');
 Route::get('threads/series/{tag}', 'ThreadsController@indexSeries');
-Route::get('threads/relatedto/{slug}', 'ThreadsController@indexRelatedTo');
+Route::get('threads/related-to/{slug}', 'ThreadsController@indexRelatedTo');
 Route::post('threads/{thread}/posts', 'PostsController@store');
 Route::get('threads/{id}/lock', 'ThreadsController@lock')->name('threads.lock');
 Route::get('threads/{id}/unlock', 'ThreadsController@unlock')->name('threads.unlock');
@@ -451,7 +451,7 @@ Route::get('series/createOccurrence', [
 
 Route::get('series/type/{type}', 'SeriesController@indexTypes');
 Route::get('series/tag/{tag}', 'SeriesController@indexTags')->name('series.tag');
-Route::get('series/relatedto/{slug}', 'SeriesController@indexRelatedTo');
+Route::get('series/related-to/{slug}', 'SeriesController@indexRelatedTo');
 Route::get('series/week', 'SeriesController@indexWeek');
 Route::get('series/cancelled', 'SeriesController@indexCancelled')->name('series.cancelled');
 Route::post('series/{id}/photos', 'SeriesController@addPhoto');

@@ -68,7 +68,7 @@ Here is a reminder about this event that you are attending.
 	@unless ($event->entities->isEmpty())
 	Related Entities:
 		@foreach ($event->entities as $entity)
-		<span class="label label-tag"><a href="/events/relatedto/{{ $entity->slug }}">{{ $entity->name }}</a></span>
+		<span class="label label-tag"><a href="/events/related-to/{{ $entity->slug }}">{{ $entity->name }}</a></span>
 		@endforeach
 	@endunless
 	</P>
