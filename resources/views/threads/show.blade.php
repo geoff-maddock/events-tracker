@@ -50,12 +50,12 @@
                 <form method="POST" action="{{ $thread->path().'/posts' }}">
                 {{ csrf_field() }}
                 <div class="form-group">
-                    <textarea name="body" id="body" class="form-control form-background" placeholder="Have something to say?" rows="5"></textarea>
+                    <textarea name="body" id="body" class="form-control form-background" autofocus placeholder="Have something to say?" rows="5"></textarea>
                 </div>
                 <div class="row">
                     <div class="form-group col-md-12">
                     {!! Form::label('tag_list','Tags:') !!}
-                    {!! Form::select('tag_list[]', $tags, null, ['id' => 'tag_list', 'class' =>'form-control select2',
+                    {!! Form::select('tag_list[]', $tags, null, ['id' => 'tag_list', 'class' => 'form-control select2',
                     'data-placeholder' => 'Choose a tag',
                     'data-tags' =>'true',
                     'multiple']) !!}
