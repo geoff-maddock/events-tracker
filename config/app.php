@@ -112,6 +112,7 @@ return [
     'default_theme' => 'dark-theme',
     'twitter_consumer_key' => env('TWITTER_CONSUMER_KEY'),
     'default_hashtag' => env('APP_DEFAULT_HASHTAG', ''),
+    'analytics' => env('GOOGLE_ANALYTICS', 'Event Repo'),
 
     /*
     |--------------------------------------------------------------------------
