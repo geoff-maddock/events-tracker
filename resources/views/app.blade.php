@@ -19,7 +19,7 @@
 	<link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/apple-icon-180x180.png">
   	<link rel="alternate" type="application/rss+xml" href="{{ url('rss') }}"
-    	    title="RSS Feed {{ config('blog.title') }}">
+    	    title="RSS Feed {{ config('app.app_name')}}">
 
     <!-- select based on default-theme -->
     @if ($theme !== config('app.default_theme'))
@@ -39,6 +39,7 @@
 	<!-- Full Calendar -->
 	<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.min.css' rel='stylesheet' />
 	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.min.js"></script>
+	@include ('partials.analytics') 
 </head>
 <body id="event-repo">
 
