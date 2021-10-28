@@ -1,7 +1,7 @@
 <div class="row">
 	<div class="form-group {{$errors->has('name') ? 'has-error' : '' }} col-md-12">
 	{!! Form::label('name','Name') !!}
-	{!! Form::text('name', null, ['class' => 'form-control form-background']) !!}
+	{!! Form::text('name', null, ['class' => 'form-control form-background', 'autofocus' => '']) !!}
 	{!! $errors->first('name','<span class="help-block">:message</span>') !!}
 	</div>
 </div>

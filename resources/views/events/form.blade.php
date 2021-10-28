@@ -2,7 +2,7 @@
 
 	<div class="form-group col-md-6">
 		{!! Form::label('primary_link','Primary Link:') !!}
-		{!! Form::text('primary_link', null, ['class' => 'form-control form-background']) !!}
+		{!! Form::text('primary_link', null, ['class' => 'form-control form-background', 'autofocus' => '']) !!}
 		{!! $errors->first('primary_link','<span class="help-block">:message</span>') !!}
 	</div>
 	@if (Config::get('app.fb_app_id') !== '999')

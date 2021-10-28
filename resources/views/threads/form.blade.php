@@ -2,7 +2,7 @@
  
 	<div class="form-group col-md-8 {{$errors->has('name') ? 'has-error' : '' }}">
 	{!! Form::label('name','Name') !!}
-	{!! Form::text('name', null, ['class' => 'form-control form-background']) !!}
+	{!! Form::text('name', null, ['class' => 'form-control form-background', 'autofocus' => '']) !!}
 	{!! $errors->first('name','<span class="help-block">:message</span>') !!}
 	</div>
 
