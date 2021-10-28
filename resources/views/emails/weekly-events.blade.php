@@ -71,7 +71,7 @@ Here is a reminder from <a href="{{ $url }}">{{ $url }}</a> about these upcoming
 	@unless ($event->entities->isEmpty())
 	Related Entities:
 		@foreach ($event->entities as $entity)
-		<span class="label label-tag"><a href="{{ $url }}/events/relatedto/{{ $entity->slug }}">{{ $entity->name }}</a></span>
+		<span class="label label-tag"><a href="{{ $url }}/events/related-to/{{ $entity->slug }}">{{ $entity->name }}</a></span>
 		@endforeach
 	@endunless
 	</P>

@@ -41,7 +41,7 @@
                     [
                         'data-theme' => 'bootstrap-5',
                         'data-width' => '100%',
-                        'class' => 'form-control select2',
+                        'class' => 'form-control select2 form-background',
                         'data-placeholder' => 'Select a status',
                         'name' => 'filters[status]'
                     ])

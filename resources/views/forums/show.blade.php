@@ -50,7 +50,7 @@
 			@unless ($thread->entities->isEmpty())
 			Related:
 				@foreach ($thread->entities as $entity)
-					<span class="label label-tag"><a href="/threads/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a></span>
+					<span class="label label-tag"><a href="/threads/related-to/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a></span>
 				@endforeach
 			@endunless
 

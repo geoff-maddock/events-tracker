@@ -18,7 +18,7 @@ You might be interested in this new thread because you are following <b>{!! $obj
     @unless ($thread->series->isEmpty())
         Related Series:
         @foreach ($thread->series as $s)
-            <span class="label label-tag"><a href="{{ url('threads/relatedto/'.$s->slug) }}">{{ $s->name }}</a></span>
+            <span class="label label-tag"><a href="{{ url('threads/related-to/'.$s->slug) }}">{{ $s->name }}</a></span>
         @endforeach
     @endunless
 </P>

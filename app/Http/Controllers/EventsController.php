@@ -185,15 +185,15 @@ class EventsController extends Controller
         if ($year && !$month && !$day) {
             $start_at_from = $year . '0101';
             $start_at_to = $year . '1231';
-            $tag = $year;
+            $slug = $year;
         } elseif (!$day) {
             $start_at_from = Carbon::parse($year . $month . '01');
             $start_at_to = Carbon::parse($start_at_from)->endOfMonth();
-            $tag = $year . ' - ' . $month;
+            $slug = $year . ' - ' . $month;
         } else {
             $start_at_from = Carbon::parse($year . $month . $day);
             $start_at_to = Carbon::parse($start_at_from)->addDay();
-            $tag = $year . ' - ' . $month . ' - ' . $day;
+            $slug = $year . ' - ' . $month . ' - ' . $day;
         }
 
         // initialized listParamSessionStore with baseindex key
@@ -240,7 +240,7 @@ class EventsController extends Controller
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
                     'filters' => $listResultSet->getFilters(),
-                    'tag' => $tag,
+                    'slug' => $slug,
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -948,7 +948,8 @@ class EventsController extends Controller
      */
     public function calendarRelatedTo(Request $request, string $slug)
     {
-        $slug = urldecode($slug);
+        // get the entity by the slug name
+        $related = Entity::where('slug', '=', $slug)->firstOrFail();
 
         $eventList = [];
 
@@ -1001,7 +1002,7 @@ class EventsController extends Controller
         // converts array of events into json event list
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'slug'));
+        return view('events.event-calendar', compact('eventList', 'related'));
     }
 
     /**
@@ -1009,13 +1010,14 @@ class EventsController extends Controller
      *
      * @return Response
      */
-    public function calendarTags(string $tag)
+    public function calendarTags(string $slug)
     {
-        $tag = urldecode($tag);
+        // get the tag by the slug name
+        $tag = Tag::where('slug', '=', $slug)->firstOrFail();
 
         $eventList = [];
 
-        $events = Event::getByTag(ucfirst($tag))
+        $events = Event::getByTag($tag->name)
             ->orderBy('start_at', 'ASC')
             ->orderBy('name', 'ASC')
             ->get();
@@ -1025,7 +1027,7 @@ class EventsController extends Controller
         });
 
         // get all the upcoming series events
-        $series = Series::getByTag(ucfirst($tag))->active()->get();
+        $series = Series::getByTag($tag->name)->active()->get();
 
         // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {

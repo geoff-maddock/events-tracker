@@ -16,7 +16,7 @@
 @unless ($thread->series->isEmpty())
 **Related Entities:**
 @foreach ($thread->series as $s)
-[{{ $s->name}}]({{ $url }}threads/relatedto/{{ $s->slug }}) 
+[{{ $s->name}}]({{ $url }}threads/related-to/{{ $s->slug }}) 
 @endforeach
 @endunless
 

@@ -49,7 +49,7 @@
                     'data-theme' => 'bootstrap-5',
                     'data-style' => '100%',
                     'data-width' => '100%',
-                    'class' => 'form-control select2',
+                    'class' => 'form-control select2 form-background',
                     'data-placeholder' => 'Select a role',
                     'name' => 'filters[role]'
                 ]) !!}
@@ -61,7 +61,7 @@
                 NULL),
                 [
                     'data-theme' => 'bootstrap-5',
-                    'class' =>'form-control select2',
+                    'class' =>'form-control select2 form-background',
                     'data-width' => '100%',
                     'data-placeholder' => 'Select a tag',
                     'name' => 'filters[tag]'
@@ -76,7 +76,7 @@
 				[
                     'data-theme' => 'bootstrap-5',
                     'data-width' => '100%',
-                    'class' => 'form-control select2',
+                    'class' => 'form-control select2 form-background',
                     'data-placeholder' => 'Select a type',
                     'name' => 'filters[entity_type]'
 				]) !!}

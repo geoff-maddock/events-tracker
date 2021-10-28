@@ -16,7 +16,7 @@
 @unless ($series->entities->isEmpty())
 **Related Entities:**
 @foreach ($series->entities as $entity)
-[{{ $entity->name}}]({{ $url }}events/relatedto/{{ $entity->slug }}) 
+[{{ $entity->name}}]({{ $url }}events/related-to/{{ $entity->slug }}) 
 @endforeach
 @endunless
 

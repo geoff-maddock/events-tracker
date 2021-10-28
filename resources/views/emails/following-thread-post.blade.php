@@ -22,7 +22,7 @@ There was a new post in a thread that you are following with the subject <b>{!! 
     @unless ($thread->series->isEmpty())
         Related Series:
         @foreach ($thread->series as $s)
-            <span class="label label-tag"><a href="{{ url('threads/relatedto/'.$s->slug) }}">{{ $s->name }}</a></span>
+            <span class="label label-tag"><a href="{{ url('threads/related-to/'.$s->slug) }}">{{ $s->name }}</a></span>
         @endforeach
     @endunless
 </P>

@@ -45,7 +45,7 @@
                     [
                         'data-theme' => 'bootstrap-5',
                         'data-width' => '100%', 
-                        'class' => 'form-control select2', 
+                        'class' => 'form-select select2 form-background', 
                         'data-placeholder' => 'Select a user',
                         'name' => 'filters[user]'
                         ]) !!}
@@ -57,7 +57,7 @@
                     [
                         'data-theme' => 'bootstrap-5',
                         'data-width' => '100%',
-                        'class' => 'form-control select2',
+                        'class' => 'form-select select2 form-background',
                         'data-placeholder' => 'Select a tag',
                         'name' => 'filters[tag]'
                     ]

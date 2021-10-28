@@ -45,7 +45,7 @@
 				[
 					'data-theme' => 'bootstrap-5',
 					'data-width' => '100%',
-					'class' => 'form-select select2',
+					'class' => 'form-select select2 form-background',
 					'data-placeholder' => 'Select a venue',
 					'name' => 'filters[venue]'
 				])
@@ -58,7 +58,7 @@
 				[
 					'data-theme' => 'bootstrap-5',
 					'data-width' => '100%',
-					'class' =>'form-select select2',
+					'class' =>'form-select select2 form-background',
 					'data-placeholder' => 'Select a tag',
 					'name' => 'filters[tag]'
 				]) !!}
@@ -71,7 +71,7 @@
 				[
 					'data-theme' => 'bootstrap-5',
 					'data-width' => '100%',
-					'class' => 'form-control select2',
+					'class' => 'form-control select2 form-background',
 					'data-placeholder' => 'Select an entity',
 					'name' => 'filters[related]'
 				]) !!}
@@ -84,7 +84,7 @@
 				[
 					'data-theme' => 'bootstrap-5',
 					'data-width' => '100%',
-					'class' => 'form-control select2',
+					'class' => 'form-control select2 form-background',
 					'data-placeholder' => 'Select a type',
 					'name' => 'filters[event_type]'
 				]) !!}

@@ -30,15 +30,19 @@
 
     <br>
 
+    @if ($event = $thread->event)
+    Event:
+    <span class="badge rounded-pill bg-dark"><a href="{!! route('events.show', ['event' => $event->id]) !!}">{{ $event->name }}</a></span>
+    @endif
+
     @unless ($thread->series->isEmpty())
-    Series:
+        Series:
         @foreach ($thread->series as $series)
-            <span class="label label-tag"><a href="/threads/series/{{ urlencode($series->slug) }}" class="label-link">{{ $series->name }}</a>
-                <a href="{!! route('series.show', ['series' => $series->id]) !!}" title="Show this series."><span class='glyphicon glyphicon-link text-info'></span></a>
-            </span>
+            <span class="badge rounded-pill bg-dark"><a href="/threads/series/{{ urlencode($series->slug) }}">{{ $series->name }}</a>
+                        <a href="{!! route('series.show', ['series' => $series->id]) !!}" title="Show this series."><i class="bi bi-link-45deg text-info"></i></a>
+                    </span>
         @endforeach
     @endunless
-
 
     @unless ($thread->entities->isEmpty())
     Related Entities:

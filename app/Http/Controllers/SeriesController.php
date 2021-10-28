@@ -329,7 +329,8 @@ class SeriesController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
+                    'slug' => 'Cancelled'
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -380,14 +381,15 @@ class SeriesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('series.indexWeek')
+        return view('series.index')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
+                    'slug' => 'Week',
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -409,6 +411,9 @@ class SeriesController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         string $slug
     ): string {
+        // get the entity by the slug name
+        $related = Entity::where('slug', '=', $slug)->firstOrFail();
+
         $listParamSessionStore->setBaseIndex('internal_series');
         $listParamSessionStore->setKeyPrefix('internal_series_related');
 
@@ -448,7 +453,7 @@ class SeriesController extends Controller
                 $this->getListControlOptions()
             ))
             ->with(compact('series'))
-            ->with(compact('slug'))
+            ->with(compact('related'))
             ->render();
     }
 
@@ -464,8 +469,8 @@ class SeriesController extends Controller
         string $slug,
         StringHelper $stringHelper
     ): string {
-        // convert the slug to name
-        $tag = $stringHelper->SlugToName($slug);
+        // get the tag by the slug name
+        $tag = Tag::where('slug', '=', $slug)->firstOrFail();
 
         // initialized listParamSessionStore with baseindex key
         // list entity result builder
@@ -510,6 +515,7 @@ class SeriesController extends Controller
                 $this->getListControlOptions()
             ))
             ->with(compact('series'))
+            ->with(compact('tag'))
             ->render();
     }
 

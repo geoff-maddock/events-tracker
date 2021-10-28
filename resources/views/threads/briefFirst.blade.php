@@ -47,7 +47,7 @@
         @unless ($thread->entities->isEmpty())
             Related:
             @foreach ($thread->entities as $entity)
-                <span class="badge rounded-pill bg-dark"><a href="/threads/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a>
+                <span class="badge rounded-pill bg-dark"><a href="/threads/related-to/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a>
                             <a href="{!! route('entities.show', ['entity' => $entity->id]) !!}" title="Show this entity."><i class="bi bi-link-45deg text-info"></i></a>
                         </span>
             @endforeach

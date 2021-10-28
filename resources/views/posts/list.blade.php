@@ -32,7 +32,7 @@
 			@unless ($post->entities->isEmpty())
 			Related:
 				@foreach ($post->entities as $entity)
-					<span class="badge rounded-pill bg-dark"><a href="/posts/relatedto/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a>
+					<span class="badge rounded-pill bg-dark"><a href="/posts/related-to/{{ urlencode($entity->slug) }}">{{ $entity->name }}</a>
                             <a href="{!! route('entities.show', ['entity' => $entity->slug]) !!}" title="Show this entity."><i class="bi bi-link-45deg"></i></a>
                 </span>
 				@endforeach
