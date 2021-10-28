@@ -99,20 +99,4 @@ class AuthController extends Controller
 
         return property_exists($this, 'redirectTo') ? $this->redirectTo : '/home';
     }
-
-    /**
-     * Log the user out of the application.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    /*
-    public function getLogout()
-    {
-        Activity::log(Auth::user(), Auth::user(), 5);
-
-        Auth::logout();
-
-        return redirect(property_exists($this, 'redirectAfterLogout') ? $this->redirectAfterLogout : '/');
-    }
-    */
 }
