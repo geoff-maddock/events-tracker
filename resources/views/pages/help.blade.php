@@ -1,5 +1,7 @@
 @extends('app')
 
+@section('title', 'Help')
+
 @section('content')
 
 <h1 class="display-6 text-primary">Help</h1>

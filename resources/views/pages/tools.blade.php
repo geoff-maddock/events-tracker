@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title','Event Repo - Club Guide')
+@section('title', 'Tools')
 
 @section('content')
 	<script src="{{ asset('/js/facebook-sdk.js') }}"></script>
