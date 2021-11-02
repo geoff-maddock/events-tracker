@@ -1,6 +1,7 @@
 @extends('app')
 
 @section('title', $entity->getTitleFormat())
+
 @section('og-description', $entity->short)
 
 @section('og-image')

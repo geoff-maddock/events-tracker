@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title','Tags')
+@section('title', isset($tag) ? 'Tags - '.$tag : 'Tags')
 
 @section('content')
 

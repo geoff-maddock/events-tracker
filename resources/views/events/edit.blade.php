@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title','Event Edit')
+@section('title', 'Event Edit')
 
 @section('content')
 

@@ -1,9 +1,10 @@
 @extends('app')
 
+@section('title', 'Privacy')
+
 @section('content')
 
 <h1 class="display-6 text-primary">Privacy</h1>
-
 
 	<ol>
 		<li>General Policy</li>

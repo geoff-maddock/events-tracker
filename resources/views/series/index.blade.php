@@ -1,5 +1,7 @@
 @extends('app')
 
+@section('title', 'Series')
+
 @section('content')
 
 <h1 class="display-6 text-primary">Event Series @include('series.crumbs')</h1>

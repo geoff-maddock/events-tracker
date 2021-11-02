@@ -1,5 +1,7 @@
 @extends('app')
 
+@section('title', 'Entity Add')
+
 @section('content')
 
 	<h1 class="display-6 text-primary">Add a New Entity</h1>

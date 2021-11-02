@@ -1,5 +1,7 @@
 @extends('app')
 
+@section('title', 'Series Add')
+
 @section('content')
 
 <h1 class="display-6 text-primary">Add a New Event Series</h1>
