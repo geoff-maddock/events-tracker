@@ -29,10 +29,10 @@
     @endif
 
     <br>
-
+    <span class="d-none d-md-inline">
     @if ($event = $thread->event)
-    Event:
-    <span class="badge rounded-pill bg-dark"><a href="{!! route('events.show', ['event' => $event->id]) !!}">{{ $event->name }}</a></span>
+      Event:
+      <span class="badge rounded-pill bg-dark"><a href="{!! route('events.show', ['event' => $event->id]) !!}">{{ $event->name }}</a></span>
     @endif
 
     @unless ($thread->series->isEmpty())
@@ -57,7 +57,7 @@
           @include('tags.single_label')
         @endforeach
       @endunless
-
+                  </span>
 	</td>
     <td>@if (isset($thread->threadCategory))
     <a class="forum-link" href="/threads/category/{{ urlencode($thread->threadCategory->name) }}">{{ $thread->threadCategory->name }}</a>
