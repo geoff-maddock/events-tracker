@@ -37,6 +37,5 @@ class EventUpdated implements ShouldBroadcast
     public function broadcastOn()
     {
         return new Channel('events');
-//        return new PrivateChannel('channel-name');
     }
 }
