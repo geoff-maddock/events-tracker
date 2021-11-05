@@ -693,6 +693,13 @@ class Entity extends Eloquent
             }
         }
 
+        // add the primary link
+        if (count($this->futureEvents()) > 0) {
+            $event = $this->futureEvents()->first();
+            $start = $event->start_at->format('m/d');
+            $format .= ' Next: ' . $start . ' ' . $event->name;
+        }
+
         // only return the first 280 chars
         return substr($format, 0, 280);
     }
