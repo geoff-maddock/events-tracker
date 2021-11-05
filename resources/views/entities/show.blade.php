@@ -68,6 +68,12 @@
 				</a>
 				@endif
 
+				@if ($user && (Auth::user()->id === $entity->user->id || $user->id === Config::get('app.superuser') ) )
+				<br>
+				<a href="{!! route('entities.tweet', ['id' => $entity->id]) !!}" title="Click to tweet entity">
+					Tweet <i class="bi bi-twitter"></i>
+				</a>
+				@endif
 			@endif
 
 			@unless ($entity->roles->isEmpty())

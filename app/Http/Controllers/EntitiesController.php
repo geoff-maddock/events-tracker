@@ -15,6 +15,7 @@ use App\Models\Photo;
 use App\Models\Role;
 use App\Models\Tag;
 use App\Models\User;
+use App\Notifications\EventPublished;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
 use Illuminate\Database\Eloquent\Builder;
@@ -799,6 +800,38 @@ class EntitiesController extends Controller
             ];
         }
         flash()->success('Success', 'You are no longer following the entity - ' . $entity->name);
+
+        return back();
+    }
+
+    /**
+     * Tweet this event
+     *
+     * @return Response
+     *
+     * @throws \Throwable
+     */
+    public function tweet(int $id)
+    {
+        // check if there is a logged in user
+        if (!$this->user) {
+            flash()->error('Error', 'No user is logged in.');
+
+            return back();
+        }
+
+        if (!$entity = Entity::find($id)) {
+            flash()->error('Error', 'No such entity');
+
+            return back();
+        }
+
+        // Add a twitter notification
+        $entity->notify(new EventPublished());
+
+        Log::info('User ' . $id . ' tweeted ' . $entity->name);
+
+        flash()->success('Success', 'You tweeted the entity - ' . $entity->name);
 
         return back();
     }

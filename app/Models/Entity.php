@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Notifications\Notifiable;
+use Str;
 
 /**
  * App\Models\Entity
@@ -86,6 +88,7 @@ use Illuminate\Support\Facades\Auth;
 class Entity extends Eloquent
 {
     use HasFactory;
+    use Notifiable;
 
     protected $fillable = [
         'name', 'slug', 'short', 'description', 'entity_type_id', 'entity_status_id', 'entity_address_id', 'facebook_username', 'twitter_username', 'created_by',
@@ -647,5 +650,50 @@ class Entity extends Eloquent
         }
 
         return $format;
+    }
+
+    // Format the entity to post as a tweet
+    public function getBriefFormat()
+    {
+        // max length 280 chars
+        // URLs count as 23 chars
+
+        // add name and type
+        $format = $this->name . ' | ' . $this->entityType->name . ' | ';
+        $format .= $this->short;
+
+        // Turn related tags into hashtags
+        if (!$this->tags->isEmpty()) {
+            foreach ($this->tags as $tag) {
+                // check the length of the tag and if there is enough room to add
+                if (strlen($format) + strlen($tag->name) > 244) {
+                    continue;
+                }
+                $format .= ' #' . Str::studly($tag->name);
+            }
+        }
+
+        // if there are more than 12 chars remaining, add default hashtag
+        if (strlen($format) < 246) {
+            $format .= ' #' . config('app.default_hashtag');
+        }
+
+        // add the arcane city URL
+        if (strlen($format) < 258) {
+            $format .= ' https://arcane.city/entities/' . $this->slug;
+        }
+
+        // add the primary link
+        if (count($this->links) > 0) {
+            foreach ($this->links as $link) {
+                // if there are at least 23 chars remaining, add primary link
+                if (strlen($format) < 258) {
+                    $format .= ' ' . $link->url;
+                }
+            }
+        }
+
+        // only return the first 280 chars
+        return substr($format, 0, 280);
     }
 }

@@ -387,6 +387,11 @@ Route::get('entities/tag/{tag}', 'EntitiesController@indexTags')->name('entities
 Route::get('entities/alias/{alias}', 'EntitiesController@indexAliases')->name('entities.alias');
 Route::get('entities/slug/{slug}', 'EntitiesController@indexSlug')->name('entities.slug');
 
+Route::get('entities/{id}/tweet', [
+    'as' => 'entities.tweet',
+    'uses' => 'EntitiesController@tweet'
+]);
+
 Route::match(['get', 'post'], 'entities/{id}/follow', [
     'as' => 'entities.follow',
     'uses' => 'EntitiesController@follow'
