@@ -1,5 +1,7 @@
 @extends('app')
 
+@section('title', 'Login')
+
 @section('content')
 <section class="vh-100">
 	<div class="container-fluid h-custom">

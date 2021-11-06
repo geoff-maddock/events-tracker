@@ -1,5 +1,7 @@
 @extends('app')
 
+@section('title', 'Verify Email')
+
 @section('content')
     <div class="container">
         <div class="row justify-content-center">

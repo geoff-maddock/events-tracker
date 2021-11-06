@@ -24,9 +24,11 @@ Run an instance to create your own community where events, event series, entitie
 * Bootstrap 3.x
 * Optional Integrations: Facebook, Twitter
 
-### FUTURE
-The medium term goal is to get the project from Beta to a Stable release version with very clear deployment notes.  After that there are various improvements including a fully dockerized version, a UI revamp, and improvements with how users can follow events and entities.
-In a later version we'll add intelligence to help event planning based on vectors such as region, venue, budget, audience, or other specific needs of any entity in the chain, as well as do planned crowd-sourcing or crowd funding.
+### Roadmap
+* Release a stable v1.0 version with clear deployment notes and all basic features in place.
+* Add more integrations with external services.
+* Add theming and UI improvements
+* Add tools for event planning, crowd sourcing and funding.
 
 ## Installing / Getting started
 
