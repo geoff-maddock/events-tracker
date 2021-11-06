@@ -109,7 +109,6 @@ class Entity extends Eloquent
                 $entity->created_by = Auth::user()->id;
                 $entity->updated_by = Auth::user()->id;
             }
-            $entity->short = '';
         });
 
         static::updating(function ($entity) {
