@@ -168,6 +168,7 @@ Route::get('update', function () {
 
 Route::get('events/today', 'EventsController@indexToday');
 Route::match(['get', 'post'], 'events/grid', 'EventsController@indexGrid')->name('events.grid');
+Route::match(['get', 'post'], 'events/photos', 'EventsController@indexPhoto')->name('events.photo');
 Route::get('events/future', 'EventsController@indexFuture')->name('events.future');
 Route::get('events/upcoming/{date?}', 'EventsController@indexUpcoming')->name('events.upcoming');
 Route::get('events/past', 'EventsController@indexPast');

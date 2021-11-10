@@ -428,6 +428,77 @@ class EventsController extends Controller
     }
 
     /**
+     * Display a grid of photos from events.
+     *
+     * @throws \Throwable
+     */
+    public function indexPhoto(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_photo');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'indexPhoto']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
+
+        $listEntityResultBuilder
+        ->setFilter($this->filter)
+        ->setQueryBuilder($baseQuery)
+        ->setDefaultSort(['events.start_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        $query
+        // public or where created by
+        ->where(function ($query) {
+            $query->whereIn('visibility_id', [1, 2])
+                ->where('created_by', '=', $this->user ? $this->user->id : null);
+            // if logged in, can see guarded
+            if ($this->user) {
+                $query->orWhere('visibility_id', '=', 4);
+            }
+            $query->orWhere('visibility_id', '=', 3);
+
+            return $query;
+        });
+
+        // get the events
+        $events = $query
+            ->with('visibility', 'venue')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        return view('events.indexPhoto')
+        ->with(array_merge(
+            [
+                'limit' => $listResultSet->getLimit(),
+                'sort' => $listResultSet->getSort(),
+                'direction' => $listResultSet->getSortDirection(),
+                'hasFilter' => $this->hasFilter,
+                'filters' => $listResultSet->getFilters()
+            ],
+            $this->getFilterOptions(),
+            $this->getListControlOptions()
+        ))
+        ->with(compact('events'))
+        ->render();
+    }
+
+    /**
      * Display a listing of only future events
      *
      * @return Response | View
