@@ -39,13 +39,17 @@
 	<!-- Full Calendar -->
 	<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.min.css' rel='stylesheet' />
 	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.min.js"></script>
-	@include ('partials.analytics') 
+	@if (config('app.google_tags') !== "")
+	@include ('partials.analytics')
+	@endif
 </head>
 <body id="event-repo">
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ config('app.google_tags')}}"
+	@if (config('app.google_tags') !== "")
+	<!-- Google Tag Manager (noscript) -->
+	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ config('app.google_tags')}}"
 	height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 	<!-- End Google Tag Manager (noscript) -->
+	@endif
 	<script src="{{ asset('/js/global-config.js') }}"></script>
 
 	<div id="loading" class="loading">
