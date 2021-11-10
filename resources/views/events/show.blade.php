@@ -160,7 +160,7 @@
 	</div>
 	</div>
 
-	<div class="col-md-6">
+	<div class="col-lg-6">
 		<!-- Show / hide form for adding photos; Only for users with permission -->
 		<div class="row">
 			@foreach ($event->photos->chunk(4) as $set)
@@ -192,7 +192,7 @@
 		</div>
 		<div class="row">
 		@if (isset($thread))
-			<div class="col-md-12">
+			<div class="col-lg-12">
 				<div class="card bg-dark">
 
 					<h5 class="card-header bg-primary">
