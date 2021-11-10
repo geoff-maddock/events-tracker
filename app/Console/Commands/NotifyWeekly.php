@@ -43,6 +43,11 @@ class NotifyWeekly extends Command
 
         // cycle through all the users
         foreach ($users as $user) {
+            // if the user does not have a profile, continue
+            if ($user->profile == null) {
+                continue;
+            }
+
             // if the user does not have this setting, continue
             if ($user->profile->setting_weekly_update !== 1) {
                 continue;
