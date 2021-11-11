@@ -28,6 +28,7 @@ use App\Models\Link;
 use App\Models\Location;
 use App\Models\Menu;
 use App\Models\Permission;
+use App\Models\Photo;
 use App\Models\Post;
 use App\Models\Series;
 use App\Models\Thread;
@@ -143,10 +144,17 @@ Route::resource('users', 'UsersController');
 Route::get('profile/{id}', 'UsersController@show')->name('users.profile-show');
 Route::get('profile', 'UsersController@profile')->name('users.profile');
 // PHOTOS
-
+Route::get('photos/reset', ['as' => 'photos.reset', 'uses' => 'PhotosController@reset']);
+Route::get('photos/rpp-reset', ['as' => 'photos.rppReset', 'uses' => 'PhotosController@rppReset']);
 Route::delete('photos/{id}', 'PhotosController@destroy');
 Route::post('photos/{id}/setPrimary', 'PhotosController@setPrimary');
 Route::post('photos/{id}/unsetPrimary', 'PhotosController@unsetPrimary');
+Route::match(['get', 'post'], 'photos/filter', ['as' => 'photos.filter', 'uses' => 'PhotosController@filter']);
+Route::bind('photos', function ($id) {
+    return Photo::whereId($id)->firstOrFail();
+});
+
+Route::resource('photos', 'PhotosController');
 
 // EVENTS
 Route::get('events/createSeries', [
@@ -157,6 +165,7 @@ Route::get('events/createThread', [
     'as' => 'events.createThread',
     'uses' => 'EventsController@createThread'
 ]);
+
 Route::get('events/dispatch', function () {
     EventUpdated::dispatch();
 
