@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\PhotoFilters;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\ResultBuilder\ListEntityResultBuilder;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use App\Models\Photo;
@@ -11,22 +12,187 @@ use App\Models\Entity;
 use App\Models\EntityType;
 use App\Models\Visibility;
 use App\Models\Tag;
+use App\Services\SessionStore\ListParameterSessionStore;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class PhotosController extends Controller
 {
-    public function __construct()
+    protected string $prefix;
+
+    protected int $defaultLimit;
+
+    protected string $defaultSort;
+
+    protected string $defaultSortDirection;
+
+    protected array $defaultSortCriteria;
+
+    protected int $limit;
+
+    protected string $sort;
+
+    protected string $sortDirection;
+
+    protected int $defaultGridLimit;
+
+    protected int $gridLimit;
+
+    // this should be an array of filter values
+    protected array $filters;
+
+    // this is the class specifying the filters methods for each field
+    protected PhotoFilters $filter;
+
+    protected bool $hasFilter;
+
+    protected int $defaultWindow;
+
+    public function __construct(PhotoFilters $filter)
     {
-        $this->middleware('auth', ['except' => ['index', 'show']]);
+        // $this->middleware('auth', ['except' => ['index', 'show']]);
+
+        $this->filter = $filter;
+
+        // prefix for session storage
+        $this->prefix = 'app.photos.';
+
+        // default list variables
+        $this->defaultLimit = 10;
+        $this->defaultGridLimit = 24;
+        $this->defaultSort = 'created_at';
+        $this->defaultSortDirection = 'desc';
+        $this->defaultWindow = 4;
+
+        $this->limit = $this->defaultLimit;
+        $this->sort = $this->defaultSort;
+        $this->sortDirection = $this->defaultSortDirection;
+        $this->gridLimit = 24;
+
+        $this->defaultSortCriteria = ['photos.created_at' => 'desc'];
     }
 
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function indexSimple()
     {
         $photos = Photo::get();
 
         return view('photos.index', compact('photos'));
+    }
+
+    /**
+     * Display a grid listing of the resource.
+     *
+     * @throws \Throwable
+     */
+    public function index(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_photo');
+        $listParamSessionStore->setKeyPrefix('internal_photo_index');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([PhotosController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Photo::query()->select('photos.*');
+
+        $listEntityResultBuilder
+        ->setFilter($this->filter)
+        ->setQueryBuilder($baseQuery)
+        ->setDefaultSort(['photos.created_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the photos
+        $photos = $query
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        return view('photos.index')
+        ->with(array_merge(
+            [
+                'limit' => $listResultSet->getLimit(),
+                'sort' => $listResultSet->getSort(),
+                'direction' => $listResultSet->getSortDirection(),
+                'hasFilter' => $this->hasFilter,
+                'filters' => $listResultSet->getFilters()
+            ],
+            $this->getFilterOptions(),
+            $this->getListControlOptions()
+        ))
+        ->with(compact('photos'))
+        ->render();
+    }
+
+    /**
+     * Display a grid listing of the resource.
+     *
+     * @throws \Throwable
+     */
+    public function filter(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_photo');
+        $listParamSessionStore->setKeyPrefix('internal_photo_index');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([PhotosController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Photo::query()->select('photos.*');
+
+        $listEntityResultBuilder
+        ->setFilter($this->filter)
+        ->setQueryBuilder($baseQuery)
+        ->setDefaultSort(['photos.created_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the photos
+        $photos = $query
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        return view('photos.index')
+        ->with(array_merge(
+            [
+                'limit' => $listResultSet->getLimit(),
+                'sort' => $listResultSet->getSort(),
+                'direction' => $listResultSet->getSortDirection(),
+                'hasFilter' => $this->hasFilter,
+                'filters' => $listResultSet->getFilters()
+            ],
+            $this->getFilterOptions(),
+            $this->getListControlOptions()
+        ))
+        ->with(compact('photos'))
+        ->render();
     }
 
     /**
@@ -147,5 +313,41 @@ class PhotosController extends Controller
         flash('Success', 'The primary photo was unset.');
 
         return back();
+    }
+
+    protected function getFilterOptions(): array
+    {
+        return  [
+        ];
+    }
+
+    protected function getListControlOptions(): array
+    {
+        return  [
+            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
+            'sortOptions' => ['photos.name' => 'Name', 'photos.created_at' => 'Created At'],
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+        ];
+    }
+
+    /**
+     * Reset the filtering of entities.
+     *
+     * @return RedirectResponse | View
+     */
+    public function reset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ) {
+        // set filters and list controls to default values
+        $keyPrefix = $request->get('key') ?? 'internal_photo_index';
+        $listParamSessionStore->setBaseIndex('internal_photo');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
+
+        // clear
+        $listParamSessionStore->clearFilter();
+        $listParamSessionStore->clearSort();
+
+        return redirect()->route($request->get('redirect') ?? 'photos.index');
     }
 }
