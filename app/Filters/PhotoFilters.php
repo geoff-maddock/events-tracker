@@ -22,6 +22,15 @@ class PhotoFilters extends QueryFilter
         }
     }
 
+    public function is_event($value = null)
+    {
+        if (isset($value)) {
+            return $this->builder->where('photos.is_event', '=', $value);
+        } else {
+            return $this->builder;
+        }
+    }
+
     public function created_at($value = null)
     {
         // if not an array, do not process

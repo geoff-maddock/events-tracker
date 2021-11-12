@@ -27,7 +27,9 @@
                     <li class="{{ Request::is('events/attending') ? 'active' : '' }}"><a href="{{ url('/events/attending') }}" class="dropdown-item">Events Attending</a></li>
 		            <li class="{{ Request::is('events/feed') ? 'active' : '' }}"><a href="{{ url('/events/feed') }}" target="_blank" rel="noopener" class="dropdown-item">Events Text Only</a></li>
 		            <li class="{{ Request::is('events/create') ? 'active' : '' }}"><a href="{!! url('/events/create') !!}" class="dropdown-item">Add Event</a></li>
-                      <li role="separator" class="divider"><hr class="dropdown-divider"></li>
+					<li role="separator" class="divider"><hr class="dropdown-divider"></li>
+					<li class="{{ Request::is('photos') ? 'active' : '' }}"><a href="{{ url('/photos') }}" class="dropdown-item">Photos</a></li>
+					<li role="separator" class="divider"><hr class="dropdown-divider"></li>
                     <li class="{{ Request::is('series') ? 'active' : '' }}"><a href="{{ url('/series') }}" class="dropdown-item">Event Series</a></li>
 		            <li class="{{ Request::is('series/create') ? 'active' : '' }}"><a href="{!! url('/series/create') !!}" title="Add a reoccurring event series." class="dropdown-item">Add Series</a></li>
 		          </ul>

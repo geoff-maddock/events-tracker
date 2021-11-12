@@ -177,6 +177,11 @@
 							@else
 							{!! link_form_bootstrap_icon('bi bi-star text-info', '/photos/'.$photo->id.'/setPrimary', 'POST', 'Set as primary photo','','','') !!}
 							@endif
+							@if ($photo->is_event)
+							{!! link_form_bootstrap_icon('bi bi-calendar2-event-fill text-primary', '/photos/'.$photo->id.'/unsetEvent', 'POST', 'Event photo [Click to unset]','','','') !!}
+							@else
+							{!! link_form_bootstrap_icon('bi bi-calendar2-event text-info', '/photos/'.$photo->id.'/setEvent', 'POST', 'Set as event photo','','','') !!}
+							@endif
 						@endif
 					@endif
 				</div>
