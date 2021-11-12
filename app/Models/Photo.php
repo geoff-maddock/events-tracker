@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * @property string $caption
  * @property int $is_public
  * @property int $is_primary
+ * @property int $is_event
  * @property int $is_approved
  * @property int $created_by
  * @property int|null $updated_by

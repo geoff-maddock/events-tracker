@@ -32,6 +32,7 @@ class PhotoFactory extends Factory
             'caption' => $this->faker->sentence,
             'is_public' => $this->faker->boolean,
             'is_primary' => $this->faker->boolean,
+            'is_event' => $this->faker->boolean,
             'is_approved' => $this->faker->boolean,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
