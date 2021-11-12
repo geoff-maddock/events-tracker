@@ -100,12 +100,16 @@ class PhotosController extends Controller
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([PhotosController::class, 'index']));
 
+        // set the default filter as is_event
+        $defaultFilter = ['is_event' => 1];
+
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = Photo::query()->select('photos.*');
 
         $listEntityResultBuilder
         ->setFilter($this->filter)
         ->setQueryBuilder($baseQuery)
+        ->setDefaultFilters($defaultFilter)
         ->setDefaultSort(['photos.created_at' => 'desc']);
 
         // get the result set from the builder
@@ -311,6 +315,30 @@ class PhotosController extends Controller
         $photo->save();
 
         flash('Success', 'The primary photo was unset.');
+
+        return back();
+    }
+
+    public function setEvent($id)
+    {
+        $photo = Photo::findOrFail($id);
+
+        $photo->is_event = 1;
+        $photo->save();
+
+        flash('Success', 'The photo is labeled as related to the event');
+
+        return back();
+    }
+
+    public function unsetEvent($id)
+    {
+        $photo = Photo::findOrFail($id);
+
+        $photo->is_event = 0;
+        $photo->save();
+
+        flash('Success', 'The photo is no longer labeled as from the event.');
 
         return back();
     }

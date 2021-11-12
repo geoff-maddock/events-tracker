@@ -40,6 +40,14 @@
 					'name' => 'filters[is_primary]'
 				]) !!}
 			</div>
+			<div class="col-sm">
+				{!! Form::label('filter_is_event','Is Event') !!}
+				{!! Form::text('filter_is_event', (isset($filters['is_event']) ? $filters['is_event'] : NULL),
+				[
+					'class' => 'form-control form-background',
+					'name' => 'filters[is_event]'
+				]) !!}
+			</div>
 		</div>
 
 		<div class="row">
