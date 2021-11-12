@@ -1041,6 +1041,7 @@ CREATE TABLE `photos`  (
   `caption` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `is_public` tinyint(1) NOT NULL DEFAULT 1,
   `is_primary` tinyint(1) NOT NULL DEFAULT 0,
+  `is_event` tinyint(1) NOT NULL DEFAULT 0,
   `is_approved` tinyint(1) NOT NULL DEFAULT 0,
   `created_by` int(11) NOT NULL DEFAULT 1,
   `updated_by` int(11) NULL DEFAULT NULL,
