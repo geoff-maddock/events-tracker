@@ -378,4 +378,24 @@ class PhotosController extends Controller
 
         return redirect()->route($request->get('redirect') ?? 'photos.index');
     }
+
+    /**
+     * Reset the limit, sort, order
+     *
+     * @throws \Throwable
+     */
+    public function rppReset(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ): RedirectResponse {
+        // set the rpp, sort, direction only to default values
+        $keyPrefix = $request->get('key') ?? 'internal_photo_index';
+        $listParamSessionStore->setBaseIndex('internal_photo');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
+
+        // clear
+        $listParamSessionStore->clearSort();
+
+        return redirect()->route('photos.index');
+    }
 }

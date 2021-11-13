@@ -151,7 +151,9 @@ Route::post('photos/{id}/setPrimary', 'PhotosController@setPrimary');
 Route::post('photos/{id}/unsetPrimary', 'PhotosController@unsetPrimary');
 Route::post('photos/{id}/setEvent', 'PhotosController@setEvent');
 Route::post('photos/{id}/unsetEvent', 'PhotosController@unsetEvent');
+
 Route::match(['get', 'post'], 'photos/filter', ['as' => 'photos.filter', 'uses' => 'PhotosController@filter']);
+
 Route::bind('photos', function ($id) {
     return Photo::whereId($id)->firstOrFail();
 });
