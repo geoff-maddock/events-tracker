@@ -303,10 +303,10 @@
 
 @section('scripts.footer')
 <script>
-window.Dropzone.autoDiscover = false;
+window.Dropzone.autoDiscover = true;
 $(document).ready(function(){
 
-	var myDropzone = new Dropzone('#myDropzone', {
+	var myDropzone = new window.Dropzone('#myDropzone', {
    		dictDefaultMessage: "Drop a file here to add an entity profile picture"
 	});
 
