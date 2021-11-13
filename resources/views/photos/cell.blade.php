@@ -1,4 +1,4 @@
-<div class="m-2">
+<div class="m-1">
     @if ($event = $photo->events->first())
     <a href="{{ $photo->getStoragePath() }}" data-lightbox="grid"
         data-title="{!! $event->start_at->format('l F jS Y') !!} <a href='/events/{{ $event->id }}'>{{ $event->name }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ $event->venue ? $event->venue->name : '' }}</a>"
