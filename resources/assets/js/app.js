@@ -11,7 +11,8 @@
 
 window.moment = require('moment');
 window.Swal = require('sweetalert2');
-window.Dropzone = require('dropzone');
+const { Dropzone } = require("dropzone");
+window.Dropzone = Dropzone;
 console.log('loaded: /resources/assets/js');
 // add any other dependencies - things i'm including manually in app.layout
 

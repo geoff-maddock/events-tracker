@@ -246,14 +246,14 @@
 
 @if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser') ) )
 <script>
-window.Dropzone.autoDiscover = false;
+window.Dropzone.autoDiscover = true;
 $(document).ready(function(){
 
-	var myDropzone = new Dropzone('#myDropzone', {
-        dictDefaultMessage: "Drop a file here to add a picture"
+	var myDropzone = new window.Dropzone('#myDropzone', {
+        dictDefaultMessage: "Add a picture"
     });
 
-    $('div.dz-default.dz-message').css({'color': '#000000', 'opacity':1, 'background-image': 'none'});
+    $('div.dz-default.dz-message').css({'color': '#000000', 'opacity': 1, 'background-image': 'none'});
 
 	myDropzone.options.addPhotosForm = {
 		maxFilesize: 3,
@@ -265,7 +265,9 @@ $(document).ready(function(){
 	                location.reload();
 
 	            });
-	        }
+				console.log('dropzone init called')
+	        },
+		success: console.log('Upload successful')
 	};
 
 	myDropzone.options.addPhotosForm.init();

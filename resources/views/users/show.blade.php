@@ -250,15 +250,13 @@
 @stop
 
 @section('scripts.footer')
-    <script src="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.2.0/dropzone.js"></script>
     <script>
-        Dropzone.autoDiscover = false;
+        Dropzone.autoDiscover = true;
         $(document).ready(function () {
-            if ($('#myDropzone').length) {
-                $("div#myDropzone").dropzone({ url: "/file/post" });
-                // other code here
 
-                var myDropzone = new Dropzone('#myDropzone', {
+            if ($('#myDropzone').length) {
+
+                var myDropzone = new window.Dropzone('#myDropzone', {
                     dictDefaultMessage: "Drop a file here to add a user profile picture."
                 });
 
