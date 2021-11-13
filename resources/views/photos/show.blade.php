@@ -2,7 +2,11 @@
 
 
 @section('title', 'Photo - '. $photo->name)
-@section('og-description', 'Photo - '. $photo->name )
+
+@section('og-description')
+@include('photos.slug-text', ['photo' => $photo])
+@stop
+
 
 @section('og-image')
 {{ URL::to('/').$photo->getStoragePath() }}
