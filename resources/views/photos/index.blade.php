@@ -100,8 +100,6 @@
 	</div>
 </div>
 
-<br style="clear: left;" />
-
 <div id="grid-container" class="row">
 
 	@if (isset($photos) && count($photos) > 0)
@@ -110,7 +108,7 @@
 			<div class="panel panel-info">
 
 				<div class="panel-body">
-					<div style="display: grid; grid-template-columns:  repeat(auto-fill, minmax(200px, 1fr));">
+					<div class="photo-grid">
 						@foreach ($photos as $photo)
 						@include('photos.cell', ['photo' => $photo])
 						@endforeach

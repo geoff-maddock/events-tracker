@@ -197,3 +197,8 @@
     padding-top: .5rem !important;
     padding-bottom: .5rem !important;
 }
+
+.photo-grid {
+    display: grid; 
+    grid-template-columns:  repeat(auto-fill, minmax(200px, 1fr));
+}
