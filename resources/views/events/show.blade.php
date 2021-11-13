@@ -182,6 +182,8 @@
 							@else
 							{!! link_form_bootstrap_icon('bi bi-calendar2-event text-info', '/photos/'.$photo->id.'/setEvent', 'POST', 'Set as event photo','','','') !!}
 							@endif
+							{!! link_form_bootstrap_icon('bi bi-eye text-info', '/photos/'.$photo->id, 'GET', 'Show photo','','','') !!}
+
 						@endif
 					@endif
 				</div>

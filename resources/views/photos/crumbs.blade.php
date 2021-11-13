@@ -1,3 +1,6 @@
+@if (isset($photo))
+. @include('photos.slug', ['photo' => $photo])
+@endif 
 @if (isset($tag))
 . {!! link_to_route('tags.show', ucfirst($tag->name), [$tag->name], ['class' => 'item-title']) !!}
     @if ($signedIn)
