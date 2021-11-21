@@ -105,62 +105,16 @@
 
 		<div><small class="text-muted">Added by {{ $series->user->name ?? '' }}</small></div>
 
+		
 	</div>
-	</div>
 
-	<div class="col-lg-6">
-		<div class="row">
-		@foreach ($series->photos->chunk(4) as $set)
-			@foreach ($set as $photo)
-			<div class="col-2">
-				<a href="{{ $photo->getStoragePath() }}" data-lightbox="grid" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $entity->name}}"  style="max-width: 100%;"></a>
-				@if ($user && (Auth::user()->id == $entity->user->id || $user->id == Config::get('app.superuser')))
-					{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning', $photo, 'DELETE', 'Delete the photo') !!}
-					@if ($photo->is_primary)
-					{!! link_form_bootstrap_icon('bi bi-star-fill text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
-					@else
-					{!! link_form_bootstrap_icon('bi bi-star text-info', '/photos/'.$photo->id.'/setPrimary', 'POST', 'Set as primary photo') !!}
-					@endif
-				@endif
-			</div>
-			@endforeach
-		@endforeach
-		<div class="col">
-			@if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser')))
-			<form action="/series/{{ $series->id }}/photos" class="dropzone h-auto" id="myDropzone" method="POST">
-				<input type="hidden" name="_token" value="{{ csrf_token() }}">
-			</form>
-			@endif
-		</div>
-</div>
-
-<div class="row">
-
-	<div class="col-xl-12">
-		<div class="card bg-dark">
-
-			<h5 class="card-header bg-primary">Events</h5>
-			<div class="card-body">
-
-				@include('events.list', ['events' => $events])
-				{!! $events->render() !!}
-
-			</div>
-		</div>
-
-	</div>
-</div>
-
-</div>
-	<br>
-	<div class="row">
 	<!-- RELATED THREADS -->
 	@if ($threads)
 		@php
 			$thread = $threads->first()
 		@endphp
 			@if (isset($thread) && count($threads) > 0)
-			<div class="col-lg-6">
+			<div class="col-lg-12">
 				<div class="card bg-dark">
 
 					<h5 class="card-header bg-primary">
@@ -199,6 +153,56 @@
 			</div>
 		@endif
 	@endif
+
+	</div>
+
+	<div class="col-lg-6">
+		<div class="row">
+		@foreach ($series->photos->chunk(4) as $set)
+			@foreach ($set as $photo)
+			<div class="col-2">
+				<a href="{{ $photo->getStoragePath() }}" data-lightbox="grid" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $entity->name}}"  style="max-width: 100%;"></a>
+				@if ($user && (Auth::user()->id == $entity->user->id || $user->id == Config::get('app.superuser')))
+					{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning', $photo, 'DELETE', 'Delete the photo') !!}
+					@if ($photo->is_primary)
+					{!! link_form_bootstrap_icon('bi bi-star-fill text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
+					@else
+					{!! link_form_bootstrap_icon('bi bi-star text-info', '/photos/'.$photo->id.'/setPrimary', 'POST', 'Set as primary photo') !!}
+					@endif
+				@endif
+			</div>
+			@endforeach
+		@endforeach
+		<div class="col">
+			@if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser')))
+			<form action="/series/{{ $series->id }}/photos" class="dropzone h-auto" id="myDropzone" method="POST">
+				<input type="hidden" name="_token" value="{{ csrf_token() }}">
+			</form>
+			@endif
+		</div>
+	
+</div>
+
+<div class="row">
+
+	<div class="col-xl-12">
+		<div class="card bg-dark">
+
+			<h5 class="card-header bg-primary">Events</h5>
+			<div class="card-body">
+
+				@include('events.list', ['events' => $events])
+				{!! $events->render() !!}
+
+			</div>
+		</div>
+
+	</div>
+</div>
+
+</div>
+	<div class="row">
+
 	</div>
 </div>
 @stop
