@@ -160,16 +160,15 @@
 			$thread = $threads->first()
 		@endphp
 			@if (isset($thread) && count($threads) > 0)
-			<div class="col-md-6">
-				<div class="panel panel-info">
+			<div class="col-lg-6">
+				<div class="card bg-dark">
 
-					<div class="panel-heading">
-						<h3 class="panel-title">Posts
-							<a href="#" ><span class='label label-tag float-end' data-toggle="tooltip" data-placement="bottom"  title="# of Threads that match this search term.">{{ count($threads)}}</span></a>
-						</h3>
-					</div>
+					<h5 class="card-header bg-primary">
+						Posts
+							<a href="#" ><span class='badge rounded-pill bg-dark float-end' data-toggle="tooltip" data-placement="bottom"  title="# of Threads that match this search term.">{{ count($threads)}}</span></a>
+					</h5>
 
-					<div class="panel-body">
+					<div class="card-body">
 						<table class="table forum table-striped">
 							@include('threads.briefFirst', ['thread' => $thread])
 							@include('posts.briefList', ['thread' => $thread, 'posts' => $thread->posts])
@@ -185,9 +184,9 @@
 									<form method="POST" action="{{ $thread->path().'/posts' }}">
 										{{ csrf_field() }}
 										<div class="form-group">
-											<textarea name="body" id="body" class="form-control" placeholder="Have something to say?" rows="5"></textarea>
+											<textarea name="body" id="body" class="form-control  form-background" placeholder="Have something to say?" rows="5"></textarea>
 										</div>
-										<button type="submit" class="btn btn-default">Post</button>
+										<button type="submit" class="btn btn-primary my-2">Post</button>
 									</form>
 
 								@else
