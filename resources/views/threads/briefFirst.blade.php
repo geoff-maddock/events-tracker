@@ -77,12 +77,7 @@
 <tr>
     <td colspan="7">
         <div class="p-2">
-            <!-- TO DO: change this to storing the trust in the user at thread save -->
-            @if (isset($thread->user) && $thread->user->can('trust_thread'))
-                {!! $thread->body !!}
-            @else
-                {{ $thread->body }}
-            @endcan
+            <!-- TO DO: change this to storing the trust in the user at thread save -->@if (isset($thread->user) && $thread->user->can('trust_thread')){!! $thread->body !!}@else{{ $thread->body }}@endcan
         </div>
     </td>
 </tr>
