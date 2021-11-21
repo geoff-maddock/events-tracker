@@ -21,6 +21,7 @@ use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Routing\Middleware\ValidateSignature;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Bepsvpt\SecureHeaders\SecureHeadersMiddleware;
 use Spatie\Honeypot\ProtectAgainstSpam;
 
 class Kernel extends HttpKernel
@@ -40,7 +41,8 @@ class Kernel extends HttpKernel
         TrimStrings::class,
         ConvertEmptyStringsToNull::class,
         ProtectAgainstSpam::class,
-        CheckBanned::class
+        CheckBanned::class,
+        SecureHeadersMiddleware::class
     ];
 
     /**
