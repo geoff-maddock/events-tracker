@@ -13,8 +13,10 @@ use App\Models\EntityType;
 use App\Models\Visibility;
 use App\Models\Tag;
 use App\Services\SessionStore\ListParameterSessionStore;
+use App\Services\StringHelper;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 
 class PhotosController extends Controller
@@ -71,6 +73,7 @@ class PhotosController extends Controller
         $this->gridLimit = 24;
 
         $this->defaultSortCriteria = ['photos.created_at' => 'desc'];
+        parent::__construct();
     }
 
     /**
@@ -140,6 +143,76 @@ class PhotosController extends Controller
             $this->getListControlOptions()
         ))
         ->with(compact('photos'))
+        ->render();
+    }
+
+    /**
+     * Display a listing of photos ofevents by tag.
+     *
+     * @return Response
+     */
+    public function indexTags(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $slug,
+        StringHelper $stringHelper
+    ) {
+        // get the tag by the slug name
+        $tag = Tag::where('slug', '=', $slug)->firstOrFail();
+
+        // initialized listParamSessionStore with baseindex key
+        // list entity result builder
+        $listParamSessionStore->setBaseIndex('internal_photo');
+        $listParamSessionStore->setKeyPrefix('internal_photo_tags');
+
+        // set the default filter as is_event
+        $defaultFilter = ['is_event' => 1];
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Photo::query()->select('photos.*')
+            ->leftJoin('event_photo', 'event_photo.photo_id', '=', 'photos.id')
+            ->leftJoin('events', 'events.id', '=', 'event_photo.event_id')
+            ->whereHas('events.tags', function ($q) use ($tag) {
+                $q->where('slug', '=', $tag->slug);
+            });
+        ;
+
+        $listEntityResultBuilder
+        ->setFilter($this->filter)
+        ->setQueryBuilder($baseQuery)
+        ->setDefaultFilters($defaultFilter)
+        ->setDefaultSort(['photos.created_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the photos
+        $photos = $query
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        return view('photos.index')
+        ->with(array_merge(
+            [
+                'limit' => $listResultSet->getLimit(),
+                'sort' => $listResultSet->getSort(),
+                'direction' => $listResultSet->getSortDirection(),
+                'hasFilter' => $this->hasFilter,
+                'filters' => $listResultSet->getFilters()
+            ],
+            $this->getFilterOptions(),
+            $this->getListControlOptions()
+        ))
+        ->with(compact('photos'))
+        ->with(['tag' => $tag])
         ->render();
     }
 
