@@ -151,6 +151,7 @@ Route::post('photos/{id}/setPrimary', 'PhotosController@setPrimary');
 Route::post('photos/{id}/unsetPrimary', 'PhotosController@unsetPrimary');
 Route::post('photos/{id}/setEvent', 'PhotosController@setEvent');
 Route::post('photos/{id}/unsetEvent', 'PhotosController@unsetEvent');
+Route::get('photos/tag/{tag}', 'PhotosController@indexTags')->name('photos.tag');
 
 Route::match(['get', 'post'], 'photos/filter', ['as' => 'photos.filter', 'uses' => 'PhotosController@filter']);
 
