@@ -48,6 +48,9 @@
 		@endif
 
 		<a href="/events/type/{{$event->eventType->name }}">{{ $event->eventType->name }}</a>
+		@if (!empty($event->promoter_id))
+			by <a href="/entities/{{$event->promoter->slug }}">{!! $event->promoter->name !!}</a>				
+		@endif
 		<br>
 
 		@if (!empty($event->venue_id))
@@ -92,8 +95,10 @@
 				<path d="M4 .5a.5.5 0 0 0-1 0V1H2a2 2 0 0 0-2 2v1h16V3a2 2 0 0 0-2-2h-1V.5a.5.5 0 0 0-1 0V1H4V.5zM16 14V5H0v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2zM8.5 8.5V10H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V11H6a.5.5 0 0 1 0-1h1.5V8.5a.5.5 0 0 1 1 0z"/>
 			  </svg>
 		</a>
-
+		<!-- show attending count if you are the event creator or admin -->
+		@if ($signedIn && ($event->ownedBy($user) || $user->hasGroup('super_admin')))
 		{{ $event->attendingCount }} users attending {{ $event->countAttended > 0 ? ', '.$event->countAttended.' user attended' : '' }}
+		@endif
 		<br>
 
 	<!-- display attending actions -->

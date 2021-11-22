@@ -30,9 +30,9 @@
 		@endif
 
 		<h2 class="my-2">{{ $series->name }}</h2>
-
+		<h4 class="listing">
 		<b>{{ $series->occurrenceType->name }}   {{ $series->occurrence_repeat }}</b>
-
+		</h3>
 		<p>
 		Founded {!! $series->founded_at ? $series->founded_at->format('l F jS Y') : 'unknown'!!}<br>
 		@if ($series->cancelled_at != NULL)
@@ -42,28 +42,38 @@
 		@if ($series->occurrenceType->name != 'No Schedule')
 		Starts {!! $series->start_at ? $series->start_at->format('g:i A') : 'unknown';  !!} - Ends {!! $series->end_at ? $series->end_at->format('h:i A') : 'unknown';  !!} ({{ $series->length() }} hours)<br>
 			@if ($nextEvent = $series->nextEvent() )
-				Next is {{ $nextEvent->start_at->format('l F jS Y')}}<br>
+				Next is <a href="{!! route('events.show', ['event' => $nextEvent->id]) !!}">{{ $nextEvent->start_at->format('l F jS Y')}}</a><br>
 			@elseif ($series->cancelled_at == NULL)
 				Next is {{ $series->nextEvent() ? $series->nextEvent()->start_at->format('l F jS Y') : $series->cycleFromFoundedAt()->format('l F jS Y') }} (not yet created)<br>
 			@endif
 		@endif
 		</p>
 
+		<p>
+			@if ($series->eventType)
+				<a href="/events/type/{{ $series->eventType->name }}">{{ $series->eventType->name }}</a> series
+				
+				@if (!empty($series->promoter_id))
+					by <a href="/entities/{{$series->promoter->slug }}">{!! $series->promoter->name !!}</a>				
+				@endif
+				<br>
+				@if (!empty($series->venue_id))
+				<a href="/entities/{{$series->venue->slug }}">{!! $series->venue->name !!}</a>
+					@if ($series->venue->getPrimaryLocationAddress() != "")
+					at {{ $series->venue->getPrimaryLocationAddress() }}
+					@endif 
+				@endif
+			@else
+				no venue specified
+			@endif
+		</p>
+
+		<p>
 		@if ($series->description)
 		<description class="body">
 			{!! nl2br($series->description) !!}
 		</description>
 		@endif
-
-		<p>
-        @if ($series->eventType)
-			<b>{{ $series->eventType ? $series->eventType->name : ''}} {{ $series->venue ? 'at '.$series->venue->name : ' at no venue specified' }}</b>
-			@if ($series->venue)
-				@if ($series->venue->getPrimaryLocationAddress() != "")
-				at {{ $series->venue->getPrimaryLocationAddress() }}
-				@endif 
-			@endif
-        @endif
 		</p>
 
 		@if ($signedIn)

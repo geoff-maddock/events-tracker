@@ -490,6 +490,14 @@ class Series extends Eloquent
     }
 
     /**
+     * An event has one promoter.
+     */
+    public function promoter(): HasOne
+    {
+        return $this->hasOne(Entity::class, 'id', 'promoter_id');
+    }
+
+    /**
      * An event has one venue.
      */
     public function venue()
@@ -560,7 +568,7 @@ class Series extends Eloquent
     {
         $event = null;
 
-        if (null !== $this->cancelled_at) {
+        if (null == $this->cancelled_at) {
             $event = Event::where('series_id', '=', $this->id)->where('start_at', '>=', Carbon::now())
                         ->orderBy('start_at', 'asc')->first();
         }
