@@ -419,6 +419,14 @@ class Event extends Eloquent
     }
 
     /**
+     * An event has one promoter.
+     */
+    public function promoter(): HasOne
+    {
+        return $this->hasOne(Entity::class, 'id', 'promoter_id');
+    }
+
+    /**
      * An event has one venue.
      */
     public function venue(): HasOne
@@ -834,7 +842,7 @@ class Event extends Eloquent
                         continue;
                     }
 
-		    // this was using an @ mention, but changing to hashtag, see https://github.com/geoff-maddock/events-tracker/issues/555
+                    // this was using an @ mention, but changing to hashtag, see https://github.com/geoff-maddock/events-tracker/issues/555
                     $format .= ' #' . $entity->twitter_username;
                 } else {
                     // check the length of the tag and if there is enough room to add
