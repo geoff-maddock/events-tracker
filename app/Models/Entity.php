@@ -385,9 +385,9 @@ class Entity extends Eloquent
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function futureEvents()
+    public function futureEvents($rpp = null)
     {
-        $events = $this->events()->where('start_at', '>=', Carbon::now())->orderBy('start_at', 'ASC')->get();
+        $events = $this->events()->where('start_at', '>=', Carbon::now())->orderBy('start_at', 'ASC')->paginate($rpp);
 
         return $events;
     }
@@ -423,10 +423,9 @@ class Entity extends Eloquent
     {
         $events = $this->events()
             ->where('start_at', '<', Carbon::now())
-            ->orderBy('start_at', 'DESC')
-            ->paginate($rpp);
+            ->orderBy('start_at', 'DESC');
 
-        return $events;
+        return $events->paginate($rpp);
     }
 
     /**
@@ -546,11 +545,14 @@ class Entity extends Eloquent
     /**
      * Checks if the entity is followed by the user.
      *
-     * @return Collection $follows
      *
      **/
     public function followedBy($user)
     {
+        if (!$user) {
+            return null;
+        }
+
         $response = Follow::where('object_type', '=', 'entity')
             ->where('object_id', '=', $this->id)
             ->where('user_id', '=', $user->id)

@@ -54,7 +54,7 @@ class EntitiesController extends Controller
 
     public function __construct(EntityFilters $filter)
     {
-        $this->middleware('verified', ['only' => ['create', 'edit', 'store', 'update']]);
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'follow']]);
         $this->filter = $filter;
 
         // prefix for session storage
@@ -663,7 +663,6 @@ class EntitiesController extends Controller
         // flash this message
         flash()->success('Success', $msg);
 
-        //return redirect('entities');
         return redirect()->route('entities.show', compact('entity'));
     }
 
@@ -731,10 +730,18 @@ class EntitiesController extends Controller
             return back();
         }
 
+        // check if the entity exists
         if (!$entity = Entity::find($id)) {
             flash()->error('Error', 'No such entity');
 
             return back();
+        }
+
+        // check if the user already follows
+        if ($entity->followedBy($this->user) !== null) {
+            flash()->error('Error', 'You are already following ' . $entity->name);
+
+            return redirect()->route('entities.show', compact('entity'));
         }
 
         // add the following response
@@ -745,6 +752,7 @@ class EntitiesController extends Controller
         $follow->save();
 
         Log::info('User ' . $id . ' is following ' . $entity->name);
+
         // add to activity log
         Activity::log($entity, $this->user, 6);
 
@@ -759,7 +767,7 @@ class EntitiesController extends Controller
         }
         flash()->success('Success', 'You are now following the entity - ' . $entity->name);
 
-        return back();
+        return redirect()->route('entities.show', compact('entity'));
     }
 
     /**

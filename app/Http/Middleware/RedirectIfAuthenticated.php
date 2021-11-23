@@ -35,6 +35,7 @@ class RedirectIfAuthenticated
      */
     public function handle($request, Closure $next)
     {
+        // redirects the user if there was an auth check
         if ($this->auth->check()) {
             return new RedirectResponse(url('/home'));
         }
