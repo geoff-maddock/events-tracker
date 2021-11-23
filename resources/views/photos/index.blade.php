@@ -41,6 +41,30 @@
 				]) !!}
 			</div>
 			<div class="col-sm">
+				{!! Form::label('filter_tag', 'Tag') !!}
+				{!! Form::select('filter_tag', $tagOptions, (isset($filters['tag']) ? $filters['tag'] : NULL),
+				[
+					'data-theme' => 'bootstrap-5',
+					'data-width' => '100%',
+					'class' =>'form-select select2 form-background',
+					'data-placeholder' => 'Select a tag',
+					'name' => 'filters[tag]'
+				]) !!}
+			</div>
+
+			<div class="col-sm">
+				{!! Form::label('filter_related','Related Entity') !!}
+				{!! Form::select('filter_related', $relatedOptions, (isset($filters['related'])
+				? $filters['related'] : NULL),
+				[
+					'data-theme' => 'bootstrap-5',
+					'data-width' => '100%',
+					'class' => 'form-control select2 form-background',
+					'data-placeholder' => 'Select an entity',
+					'name' => 'filters[related]'
+				]) !!}
+			</div>
+			<div class="col-sm">
 				{!! Form::label('filter_is_event','Is Event') !!}
 				{!! Form::text('filter_is_event', (isset($filters['is_event']) ? $filters['is_event'] : NULL),
 				[

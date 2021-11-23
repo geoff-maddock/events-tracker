@@ -31,6 +31,34 @@ class PhotoFilters extends QueryFilter
         }
     }
 
+    public function tag($value = null)
+    {
+        if (isset($value)) {
+            return $this->builder
+            ->leftJoin('event_photo', 'event_photo.photo_id', '=', 'photos.id')
+            ->leftJoin('events', 'events.id', '=', 'event_photo.event_id')
+            ->whereHas('events.tags', function ($q) use ($value) {
+                $q->where('slug', '=', $value);
+            });
+        } else {
+            return $this->builder;
+        }
+    }
+
+    public function related($value = null)
+    {
+        if (isset($value)) {
+            return $this->builder
+            ->leftJoin('event_photo', 'event_photo.photo_id', '=', 'photos.id')
+            ->leftJoin('events', 'events.id', '=', 'event_photo.event_id')
+            ->whereHas('events.entities', function ($q) use ($value) {
+                $q->where('name', '=', ucfirst($value));
+            });
+        } else {
+            return $this->builder;
+        }
+    }
+
     public function created_at($value = null)
     {
         // if not an array, do not process
