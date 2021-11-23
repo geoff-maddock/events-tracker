@@ -419,6 +419,8 @@ class PhotosController extends Controller
     protected function getFilterOptions(): array
     {
         return  [
+            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
+            'relatedOptions' => ['' => ''] + Entity::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
         ];
     }
 
