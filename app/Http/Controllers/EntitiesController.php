@@ -27,6 +27,9 @@ use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 
 class EntitiesController extends Controller
 {
@@ -576,6 +579,8 @@ class EntitiesController extends Controller
      */
     public function show(Entity $entity): View
     {
+        app('redirect')->setIntendedUrl(url()->current());
+
         $threads = $entity->threads()->paginate($this->limit);
 
         return view('entities.show', compact('entity', 'threads'));
@@ -767,7 +772,7 @@ class EntitiesController extends Controller
         }
         flash()->success('Success', 'You are now following the entity - ' . $entity->name);
 
-        return redirect()->route('entities.show', compact('entity'));
+        return redirect()->intended('/entities/' . $entity->slug);
     }
 
     /**

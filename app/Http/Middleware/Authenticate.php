@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Contracts\Routing\UrlGenerator;
 
 class Authenticate
 {
@@ -34,6 +35,9 @@ class Authenticate
     public function handle($request, Closure $next)
     {
         if ($this->auth->guest()) {
+            // set the intended URL to the previous page
+            app('redirect')->setIntendedUrl(str_replace(url('/'), '', url()->previous()));
+
             if ($request->ajax()) {
                 return response('Unauthorized.', 401);
             } else {
