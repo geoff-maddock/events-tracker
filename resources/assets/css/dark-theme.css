@@ -381,6 +381,10 @@ select:-webkit-autofill:focus {
 	border-bottom-color: var(--bs-dark);
 }
 
+.table>:not(:first-child) {
+	border-color: var(--bs-dark);
+}
+
 .navbar-background {
 	background-color: var(--bs-dark);
 	color:  rgba(255, 255, 255, 0.5) !important;
