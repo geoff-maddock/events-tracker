@@ -1,4 +1,3 @@
-
 window._ = require('lodash');
 
 /**
@@ -51,11 +50,6 @@ console.log('assets js bootstrap.js visibility init')
 import Echo from 'laravel-echo';
 
 window.Pusher = require('pusher-js');
-
-// import dotenv from 'dotenv';
-//
-// dotenv.config();
-// console.log(process.env.PUSHER_APP_KEY);
 
 window.Echo = new Echo({
     broadcaster: 'pusher',

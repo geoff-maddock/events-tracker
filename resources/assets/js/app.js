@@ -6,17 +6,16 @@
 
  import 'bootstrap';
 
-//import Swal from 'sweetalert2';
-//const Swal = require('sweetalert2')
+console.log('loaded: /resources/assets/js');
 
 window.moment = require('moment');
 window.Swal = require('sweetalert2');
 const { Dropzone } = require("dropzone");
 window.Dropzone = Dropzone;
-console.log('loaded: /resources/assets/js');
-// add any other dependencies - things i'm including manually in app.layout
 
+// add any other dependencies
 window.Vue = require('vue');
+
 //
 // /**
 //  * Next, we will create a fresh Vue application instance and attach it to
