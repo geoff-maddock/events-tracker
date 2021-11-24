@@ -21,7 +21,7 @@ class FollowsTest extends TestCase
         // This test assumes an entity with an id = 1 exists
         $this->withExceptionHandling()
             ->post('/entities/1/follow')
-            ->assertRedirect('/');
+            ->assertRedirect('/login');
     }
 
     /** @test */
