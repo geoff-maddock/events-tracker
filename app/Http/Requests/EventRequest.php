@@ -25,8 +25,9 @@ class EventRequest extends Request
     public function rules()
     {
         return [
-            'name' => 'required|min:3',
+            'name' => 'required|min:3|max:255',
             'slug' => Rule::unique('events')->ignore(isset($this->event) ? $this->event->id : ''),
+            'short' => 'max:255',
             'start_at' => 'required|date',
             'event_type_id' => 'required',
             'visibility_id' => 'required',
