@@ -128,7 +128,7 @@
 				<i class="bi bi-star icon"></i> No response</a>
 		@endif
 
-		@if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser') ) )
+		@if ($user && (Auth::user()->id === $event->user->id || $user->hasGroup('super_admin') ) )
 			<a href="{!! route('events.tweet', ['id' => $event->id]) !!}" title="Click to tweet event">
 				<i class="bi bi-twitter"></i>
 			</a>
