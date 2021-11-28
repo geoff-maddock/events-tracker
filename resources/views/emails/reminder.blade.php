@@ -3,7 +3,7 @@ Here is a reminder about this event that you are attending.
 <div class='event-date'>
 	<h2>{!! $event->start_at->format('l F jS Y') !!}</h2>
 
-	{!! $event->start_at->format('h:i A') !!} {!! $event->end_time ? 'until '.$event->end_time->format('h:i A') : '' !!}
+	{!! $event->start_at->format('g:i A') !!} {!! $event->end_time ? 'until '.$event->end_time->format('g:i A') : '' !!}
 	</div>
 
 	<h2>{{ $event->name }}</h2>

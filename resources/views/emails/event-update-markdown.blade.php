@@ -4,7 +4,7 @@
 
 @endif
 ## {{ $event->name }}  
-**{!! $event->start_at->format('h:i A') !!} {!! $event->end_time ? 'until '.$event->end_time->format('h:i A') : '' !!}**  
+**{!! $event->start_at->format('g:i A') !!} {!! $event->end_time ? 'until '.$event->end_time->format('g:i A') : '' !!}**  
 *{{ $event->short }}* [Link]({{ $url }}events/{{$event->id }}) 
 
 @if (!empty($event->series_id))
