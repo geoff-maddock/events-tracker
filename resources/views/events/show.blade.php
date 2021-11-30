@@ -30,10 +30,10 @@
 				<span class="text-warning">{{ $event->visibility->name }}</span><br>
 			@endif
 			@if ($event->visibility->name == 'Cancelled')
-				<span class="text-warning">Cancelled on {{ $event->cancelled_at->format('l F jS Y') }}</span><br>
+				<span class="text-warning">Cancelled on {{ $event->cancelled_at->format('l M jS Y') }}</span><br>
 			@endif
 	
-			<h3 class="listing">{!! $event->start_at->format('l F jS Y') !!}</h3>
+			<h3 class="listing">{!! $event->start_at->format('l M jS Y') !!}</h3>
 			<h4 class="listing">{!! $event->start_at->format('g:i A') !!} {!! $event->end_time ? 'until '.$event->end_time->format('h:i A') : '' !!}</h4>
 		</div>
 	
