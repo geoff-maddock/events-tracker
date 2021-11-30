@@ -4,9 +4,10 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
- import 'bootstrap';
+import 'bootstrap';
+import Visibility from './utilities/visibility';
 
-console.log('loaded: /resources/assets/js');
+console.log('loaded: /resources/assets/js/app.js');
 
 window.moment = require('moment');
 window.Swal = require('sweetalert2');
@@ -15,6 +16,9 @@ window.Dropzone = Dropzone;
 
 // add any other dependencies
 window.Vue = require('vue');
+
+// init visibility
+Visibility.init('#event-repo');
 
 //
 // /**

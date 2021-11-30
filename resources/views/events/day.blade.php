@@ -5,7 +5,7 @@
                     @if (\Carbon\Carbon::now()->format('Y-m-d') == $day->format('Y-m-d'))
                     Today's Events
                     @else
-                    {{ $day->format('l M jS Y') }}
+                    {{ $day->format('l F jS Y') }}
                     @endif
                 </h5>
             </div>

@@ -4,21 +4,45 @@ const $ = jQuery;
 
 const Visibility = {
     init(target) {
-        $(target).find('[data-toggle="visibility"]').on('click', (event) => {
-            console.log('toggle visibility');
-            console.log(event.currentTarget);
-            event.preventDefault();
-            const defaults = {};
-            const options = {
-                target: $(event.currentTarget).data('target'),
-            };
-            const settings = $.extend(defaults, options);
+        console.log('Visibility.init');
 
-            $(settings.target).toggleClass('hidden');
-            // save into localStorage
-            //localStorage.setItem($(settings.target).attr('id'), $(settings.target).attr('class'));
+        // find all the collapsible items
+        const items = $(target).find('.collapsible');
 
+        $.each(items, function(key, value) {
+            console.log('value: '+ value.id);
+
+            // check the localstorage
+            let stored = localStorage.getItem('#' + value.id);
+            console.log('stored: ' + stored)
+            
+            if (stored !== null) {
+                // if there is a stored state, then the item is closed
+                $('#' + value.id).removeClass('show');
+                $('#' + value.id).addClass('hide');
+                console.log('starts closed');
+            }
         });
+
+        // on click - change the stored visibility state
+        $(target).find('.toggler').on('click', (event) => { 
+            console.log(event.target);
+            let target = event.target.getAttribute("data-bs-target")
+            console.log('click target: ' + target);
+
+            let state = '';
+            // if the stored value is not close, then set to close
+            if (localStorage.getItem(target) !== 'closed') {
+                localStorage.setItem(target, 'closed');
+                state = 'closed';
+            } else {
+                // if the stored value was closed, then remove it
+                localStorage.removeItem(target);
+            }
+
+            console.log('set: ' + target + ' to ' + state);
+        });
+
     },
 
 };
