@@ -105,7 +105,7 @@
 					<li class="nav-item">
 						<a href="{{ url('/login') }}" class="d-none d-xl-block nav-link" title="Log in with a registered account." >Login</a>
 					</li>
-					<li class="nav-item">
+					<li class="	nav-item">
 						<a href="{{ url('/register') }}" class="d-none d-xl-block nav-link" title="Register a new user account.">Register</a>
 					</li>
                     <li class="nav-item d-xl-none">
@@ -140,20 +140,19 @@
 							<ul class="dropdown-menu" aria-labelledby="profile-dropdown">
 
 							<li class="nav-item"><a href="{{ url('/users/'.Auth::user()->id) }}" class="dropdown-item">Profile</a></li>
+							@can('show_activity')
+							<li class="nav-item"><a href="{{ url('/activity')}}" class="dropdown-item">Activity</a></li>
+							@endcan
 							@can('show_admin')
 								<li role="separator" class="divider"><hr class="dropdown-divider"></li>
 								<li class="nav-item"><a href="#" class="dropdown-item"><b>Admin</b></a></li>
-								<li class="nav-item"><a href="{{ url('/forums')}}" title="Show discussion forums" class="dropdown-item">Forum</a></li>
-								<li class="nav-item"><a href="{{ url('/posts')}}" title="Show all the latests posts" class="dropdown-item">Posts</a></li>
-								<li class="nav-item"><a href="{{ url('/permissions')}}" title="Show a list of user permissions" class="dropdown-item">Permissions</a></li>
-								<li class="nav-item"><a href="{{ url('/groups')}}" title="Show a list of user permission groups" class="dropdown-item">Groups</a></li>
-							@endcan
-							@can('show_activity')
-								<li class="nav-item"><a href="{{ url('/activity')}}" class="dropdown-item">Activity</a></li>
-							@endcan
-							@can('show_admin')
 								<li class="nav-item"><a href="{{ url('/blogs')}}" class="dropdown-item">Blogs</a></li>
+								<li class="nav-item"><a href="{{ url('/categories')}}" title="Show thread categories" class="dropdown-item">Categories</a></li>
+								<li class="nav-item"><a href="{{ url('/forums')}}" title="Show discussion forums" class="dropdown-item">Forum</a></li>
+								<li class="nav-item"><a href="{{ url('/groups')}}" title="Show a list of user permission groups" class="dropdown-item">Groups</a></li>
 								<li class="nav-item"><a href="{{ url('/menus')}}" class="dropdown-item">Menus</a></li>
+								<li class="nav-item"><a href="{{ url('/permissions')}}" title="Show a list of user permissions" class="dropdown-item">Permissions</a></li>
+								<li class="nav-item"><a href="{{ url('/posts')}}" title="Show all the latests posts" class="dropdown-item">Posts</a></li>
 								<li class="nav-item"><a href="{{ url('/tools')}}" class="dropdown-item">Tools</a></li>
 							@endcan
 
