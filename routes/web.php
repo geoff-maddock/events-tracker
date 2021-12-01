@@ -32,6 +32,7 @@ use App\Models\Photo;
 use App\Models\Post;
 use App\Models\Series;
 use App\Models\Thread;
+use App\Models\ThreadCategory;
 use App\Models\User;
 use Spatie\Honeypot\ProtectAgainstSpam;
 
@@ -324,6 +325,18 @@ Route::get('posts/{id}/unlike', [
 ]);
 
 Route::resource('posts', 'PostsController');
+
+// THREAD CATEGORIES
+Route::get('categories/all', 'CategoriesController@indexAll');
+Route::match(['get', 'post'], 'categories/filter', ['as' => 'categories.filter', 'uses' => 'CategoriesController@filter']);
+Route::get('categories/reset', ['as' => 'categories.reset', 'uses' => 'CategoriesController@reset']);
+Route::get('categories/rpp-reset', ['as' => 'categories.rppReset', 'uses' => 'CategoriesController@rppReset']);
+
+Route::bind('categories', function ($id) {
+    return ThreadCategory::whereId($id)->firstOrFail();
+});
+
+Route::resource('categories', 'CategoriesController');
 
 // BLOGS
 Route::get('blogs/all', 'BlogsController@indexAll');
