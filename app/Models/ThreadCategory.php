@@ -15,7 +15,8 @@ class ThreadCategory extends Eloquent
      *
      **/
     protected $fillable = [
-        'name'
+        'name',
+        'forum_id'
     ];
 
     /**
@@ -33,6 +34,16 @@ class ThreadCategory extends Eloquent
     public function threads()
     {
         return $this->hasMany(Thread::class);
+    }
+
+    /**
+     * An thread is owned by one forum.
+     *
+     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function forum()
+    {
+        return $this->belongsTo(Forum::class, 'forum_id');
     }
 
     public function getRouteKeyName()
