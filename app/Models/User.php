@@ -198,6 +198,20 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     }
 
     /**
+     * Return the count of logins the user has made
+     */
+    public function getLoginCountAttribute()
+    {
+        $logins = $this->activity()->get();
+        $logins->filter(function ($e) {
+            return 1 == $e->action_id;
+        });
+
+        return count($logins);
+    }
+
+    /**
+     *
      * Return the count of entities the user is following.
      */
     public function getEntitiesFollowingCountAttribute()

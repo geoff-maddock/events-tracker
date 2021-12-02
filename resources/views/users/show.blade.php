@@ -62,7 +62,7 @@
                     </a>
                 </p>
 
-                <h5>Added <b>{{ $user->created_at->format('l F jS Y') }}</b></h5>
+                <b>Joined:</b> {{ $user->created_at->format('m.d.y') }} | Logged in {{ $user->loginCount }} times |  <b>Last Active:</b> {{ $user->lastActivity ?  $user->lastActivity->created_at->format('m.d.y') : 'Never'}}<br>
                 <br>
             </div>
 
