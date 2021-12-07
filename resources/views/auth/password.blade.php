@@ -7,7 +7,7 @@
 	<div class="row">
 		<div class="col-md-8 col-md-offset-2">
 			<div class="panel panel-default">
-				<div class="panel-heading">Reset Password</div>
+				<h1 class="display-6 text-primary">Reset Password</h1>
 				<div class="panel-body">
 					@if (session('status'))
 						<div class="alert alert-success">
@@ -32,12 +32,12 @@
 						<div class="form-group">
 							<label class="col-md-4 control-label">E-Mail Address</label>
 							<div class="col-md-6">
-								<input type="email" class="form-control" name="email" value="{{ old('email') }}">
+								<input type="email" class="form-control form-background" name="email" value="{{ old('email') }}">
 							</div>
 						</div>
 
 						<div class="form-group">
-							<div class="col-md-6 col-md-offset-4">
+							<div class="col-md-6 col-md-offset-4 my-2">
 								<button type="submit" class="btn btn-primary">
 									Send Password Reset Link
 								</button>
