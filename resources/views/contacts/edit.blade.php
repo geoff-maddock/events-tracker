@@ -14,8 +14,8 @@
 
 	{!! Form::close() !!}
 
-	<div class="col-md-3">
-	<P>{!! delete_form(['entities.contacts.destroy', $entity->slug,  $contact->id]) !!}</P>
+	<div class="col-md-3 mx-2">
+	{!! delete_form(['entities.contacts.destroy', $entity->slug,  $contact->id]) !!}
 	</div>
 
 @stop

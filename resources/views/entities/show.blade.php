@@ -103,13 +103,13 @@
 			@unless ($entity->locations->isEmpty())
 
 				<P>
-					<b>Location:</b><br>
+					<b>Location</b><br>
 				@foreach ($entity->locations as $location)
 				@if (isset($location->visibility) && ($location->visibility->name != 'Guarded' || ($location->visibility->name == 'Guarded' && $signedIn)))
 
 				<span><B>{{ isset($location->locationType) ? $location->locationType->name : '' }}</B>  {{ $location->address_one }} {{ $location->neighborhood ?? '' }}  {{ $location->city }} {{ $location->state }} {{ $location->country }}
 
-						@if (isset($location->map_url))
+						@if (isset($location->map_url) && $location->map_url != '')
 						<a href="{!! $location->map_url !!}" target="_" title="Link to map.">
 							<i class="bi bi-pin-map-fill"></i>
 						</a>
@@ -122,8 +122,8 @@
 						</a>
 						@endif
 
+						@if (isset($location->capacity) && $location->capacity !== 0)
 						<br>
-						@if (isset($location->capacity))
 						<b>Capacity:</b> {{  $location->capacity }}
 						@endif
 
@@ -133,17 +133,15 @@
 
 			@endunless
 
-			<P>
 			@if ($user && Auth::user()->id == ($entity->user ? $entity->user->id : null))
 				<span>
 					<a href="{!! route('entities.locations.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Location</a>
 				</span>
 			@endif
-			</P>
+
 
 			@unless ($entity->contacts->isEmpty())
-				<P><b>Contacts:</b>
-				<P>
+				<P><b>Contacts</b><br>
 				@foreach ($entity->contacts as $contact)
 				<span><B>{{ $contact->name }}</B>  {{ $contact->email ?? '' }} {{ $contact->phone ?? '' }}
 						@if ($signedIn && $entity->ownedBy($user))
@@ -155,26 +153,26 @@
 				@endforeach
 			@endunless
 
-			@if ($entity->facebook_username)
-				<br>
-					<b>Facebook:</b> <a href="https://facebook.com/{{ $entity->facebook_username  }}">{{$entity->facebook_username}}</a>
-			@endif
-
-			@if ($entity->twitter_username)
-					<b>Twitter:</b> <a href="https://twitter.com/{{ $entity->twitter_username }}">{{ '@' }}{{  $entity->twitter_username }}</a>
-			@endif
-
-			<P>
-			@if ($user && Auth::user()->id === $entity->user ? $entity->user->id : null)
+			@if ($user && Auth::user()->id == ($entity->user ? $entity->user->id : null))
 				<span>
 					<a href="{!! route('entities.contacts.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Contact</a>
 				</span>
 			@endif
-			</P>
+			
+			<br>
+			@if ($entity->facebook_username)
+				<br>
+					<b>Facebook:</b> <a href="https://facebook.com/{{ $entity->facebook_username }}" target="_">{{$entity->facebook_username}}</a>
+			@endif
+
+			@if ($entity->twitter_username)
+					<b>Twitter:</b> <a href="https://twitter.com/{{ $entity->twitter_username }}" target="_">{{ '@' }}{{  $entity->twitter_username }}</a>
+			@endif
+
+
 
 			@unless ($entity->links->isEmpty())
-					<P><b>Links:</b>
-					<P>
+					<P><b>Links</b><br>
 					@foreach ($entity->links as $link)
 					<span><B>{!! $link->tag !!}</B>
 									@if ($signedIn && $entity->ownedBy($user))
@@ -187,13 +185,11 @@
 
 			@endunless
 
-			<P>
-			@if ($user && Auth::user()->id === $entity->user ? $entity->user->id : null)
+			@if ($user && Auth::user()->id == ($entity->user ? $entity->user->id : null))
 					<span>
 							<a href="{!! route('entities.links.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Link</a>
 					</span>
 			@endif
-			</P>
 
 			<P>
 			@if ($user && Auth::user()->id === $entity->user ? $entity->user->id : null)

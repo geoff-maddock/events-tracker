@@ -71,6 +71,6 @@ class Link extends Model
      */
     public function getTagAttribute()
     {
-        return sprintf('<a href="%s" title="%s">%s</a>', $this->url, $this->title, $this->text);
+        return sprintf('<a href="%s" title="%s" target="_">%s</a>', $this->url, $this->title, $this->text);
     }
 }
