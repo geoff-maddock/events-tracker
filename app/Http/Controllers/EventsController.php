@@ -2338,8 +2338,6 @@ class EventsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         string $type
     ) {
-        $type = Str::title(str_replace('-', ' ', $type));
-
         $listParamSessionStore->setBaseIndex('internal_event');
         $listParamSessionStore->setKeyPrefix('internal_event_types');
 
