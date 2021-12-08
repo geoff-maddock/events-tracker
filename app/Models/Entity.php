@@ -543,6 +543,24 @@ class Entity extends Eloquent
     }
 
     /**
+     * Return the primary location address.
+     *
+     * @return string
+     *
+     **/
+    public function getPrimaryLocationMap()
+    {
+        // get a list of events that start on the passed date
+        $primary = $this->locations()->first();
+
+        if ($primary) {
+            return $primary->map_url;
+        }
+
+        return '';
+    }
+
+    /**
      * Checks if the entity is followed by the user.
      *
      *

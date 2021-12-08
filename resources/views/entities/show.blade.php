@@ -45,7 +45,7 @@
 			</P>
 			<p>
 			@if ($entity->short)
-				<i>{{ $entity->short }} </i><br><br>
+				<i>{{ $entity->short }} </i><br>
 			@endif
 
 			@if ($entity->description)
@@ -111,7 +111,7 @@
 
 						@if (isset($location->map_url) && $location->map_url != '')
 						<a href="{!! $location->map_url !!}" target="_" title="Link to map.">
-							<i class="bi bi-pin-map-fill"></i>
+							<i class="bi bi bi-geo-alt-fill"></i>
 						</a>
 						@endif
 
@@ -127,16 +127,16 @@
 						<b>Capacity:</b> {{  $location->capacity }}
 						@endif
 
-				</span><br>
+				</span>
 				@endif
 				@endforeach
 
 			@endunless
 
 			@if ($user && Auth::user()->id == ($entity->user ? $entity->user->id : null))
-				<span>
+				<div class="my-2">
 					<a href="{!! route('entities.locations.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Location</a>
-				</span>
+				</div>
 			@endif
 
 
@@ -149,19 +149,17 @@
 							<i class="bi bi-pencil"></i>
 						</a>
 						@endif
-				</span><br>
+				</span>
+				<br>
 				@endforeach
 			@endunless
 
 			@if ($user && Auth::user()->id == ($entity->user ? $entity->user->id : null))
-				<span>
-					<a href="{!! route('entities.contacts.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Contact</a>
-				</span>
+				<div class="my-2"><a href="{!! route('entities.contacts.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Contact</a></div>
 			@endif
 			
 			<br>
 			@if ($entity->facebook_username)
-				<br>
 					<b>Facebook:</b> <a href="https://facebook.com/{{ $entity->facebook_username }}" target="_">{{$entity->facebook_username}}</a>
 			@endif
 
@@ -186,9 +184,9 @@
 			@endunless
 
 			@if ($user && Auth::user()->id == ($entity->user ? $entity->user->id : null))
-					<span>
+					<div>
 							<a href="{!! route('entities.links.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Link</a>
-					</span>
+					</div>
 			@endif
 
 			<P>
