@@ -107,7 +107,10 @@ class PhotosController extends Controller
         $defaultFilter = ['is_event' => 1];
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Photo::query()->select('photos.*');
+        $baseQuery = Photo::query()
+        ->leftJoin('event_photo', 'event_photo.photo_id', '=', 'photos.id')
+        ->leftJoin('events', 'events.id', '=', 'event_photo.event_id')
+        ->select('photos.*');
 
         $listEntityResultBuilder
         ->setFilter($this->filter)
@@ -234,7 +237,10 @@ class PhotosController extends Controller
         $listParamSessionStore->setIndexTab(action([PhotosController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Photo::query()->select('photos.*');
+        $baseQuery = Photo::query()
+        ->leftJoin('event_photo', 'event_photo.photo_id', '=', 'photos.id')
+        ->leftJoin('events', 'events.id', '=', 'event_photo.event_id')
+        ->select('photos.*');
 
         $listEntityResultBuilder
         ->setFilter($this->filter)

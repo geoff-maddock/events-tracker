@@ -7,7 +7,9 @@ class PhotoFilters extends QueryFilter
     public function name($value = null)
     {
         if (isset($value)) {
-            return $this->builder->where('events.name', 'like', '%' . $value . '%');
+            return $this->builder
+
+            ->where('events.name', 'like', '%' . $value . '%');
         } else {
             return $this->builder;
         }
@@ -35,8 +37,6 @@ class PhotoFilters extends QueryFilter
     {
         if (isset($value)) {
             return $this->builder
-            ->leftJoin('event_photo', 'event_photo.photo_id', '=', 'photos.id')
-            ->leftJoin('events', 'events.id', '=', 'event_photo.event_id')
             ->whereHas('events.tags', function ($q) use ($value) {
                 $q->where('slug', '=', $value);
             });
@@ -49,8 +49,6 @@ class PhotoFilters extends QueryFilter
     {
         if (isset($value)) {
             return $this->builder
-            ->leftJoin('event_photo', 'event_photo.photo_id', '=', 'photos.id')
-            ->leftJoin('events', 'events.id', '=', 'event_photo.event_id')
             ->whereHas('events.entities', function ($q) use ($value) {
                 $q->where('name', '=', ucfirst($value));
             });
