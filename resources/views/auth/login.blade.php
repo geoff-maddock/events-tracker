@@ -66,7 +66,7 @@
 				  Remember me
 				</label>
 			  </div>
-			  <a href="href="{{ url('/password/reset') }}" >Forgot password?</a>
+			  <a href="/password/reset" >Forgot password?</a>
 			</div>
   
 			<div class="text-center text-lg-start mt-4 pt-2">
