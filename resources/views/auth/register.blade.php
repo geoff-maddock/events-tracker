@@ -82,6 +82,11 @@
 				</div>
 			</div>
   
+			<div class="form-outline mb-4">
+				{!! NoCaptcha::display() !!}
+
+			</div>
+
 			<div class="text-center text-lg-start mt-4 pt-2">
 				<button type="submit" class="btn btn-primary btn-lg" >
 					Register
@@ -95,4 +100,7 @@
 	  </div>
 	</div>
   </section>
+@endsection
+@section('scripts.footer')
+{!! NoCaptcha::renderJs() !!}
 @endsection
