@@ -24,7 +24,8 @@
 		"facebook/graph-sdk": "^5.7",
 		"spatie/laravel-honeypot": "^3.0",
 		"sentry/sentry-laravel": "^2.8",
-		"bepsvpt/secure-headers": "^7.1"
+		"bepsvpt/secure-headers": "^7.1",
+		"anhskohbo/no-captcha": "^3.3"
     },
 	"require-dev": {
 		"fzaninotto/faker": "~1.4",
