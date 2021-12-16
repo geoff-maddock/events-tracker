@@ -34,7 +34,7 @@
 			@endif
 		@endcan
 		@can('impersonate_user')
-			<a href="{!! route('user.impersonate', ['user' => $user->id]) !!}" title="Impersonate {{ $user->name }}"  class="confirm">
+			<a href="{!! route('user.impersonate', ['user' => $user->id]) !!}" title="Impersonate User"  class="confirm">
 				<i class="bi bi-person-fill card-actions"></i>
 			</a>
 		@endif
