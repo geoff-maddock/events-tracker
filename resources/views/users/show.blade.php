@@ -10,6 +10,28 @@
             <h1 class="display-6 text-primary">{{ $user->name }}</h1>
             @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser') ) )
                 <a href="{!! route('users.edit', ['user' => $user->id]) !!}" class="btn btn-primary">Edit Profile</a>
+                @can('grant_access')
+                @if (!$user->isActive)
+                <a href="{!! route('users.activate', ['id' => $user->id]) !!}" class="btn btn-primary confirm">
+                    Activate
+                </a>
+                @endif
+                @if ($user->isActive)
+                    <a href="{!! route('users.reminder', ['id' => $user->id]) !!}"  class="btn btn-primary confirm">
+                        Send Reminder
+                    </a>
+                @endif
+                @endcan
+                @can('impersonate_user')
+                <a href="{!! route('user.impersonate', ['user' => $user->id]) !!}" title="Impersonate user"  class="btn btn-primary confirm">
+                    Impersonate
+                </a>
+                @endif
+                @if ($user->isActive)
+				<a href="{!! route('users.weekly', ['id' => $user->id]) !!}"  class="btn btn-primary confirm">
+					Send Weekly Update
+				</a>
+			    @endif
                 <a href="{{ url('/password/reset') }}" class="btn btn-primary">Reset Password</a>
                 {!! delete_form(['users.destroy', $user->id]) !!}
             @endif
