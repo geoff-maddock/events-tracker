@@ -28,10 +28,10 @@
     @endforelse
 
 
-
 @stop
  
 @section('scripts.footer')
+@include('partials.social-footer')
 <script type="text/javascript">
 $('button.delete').on('click', function(e){
   e.preventDefault();
