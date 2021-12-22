@@ -26,12 +26,14 @@ class FollowingPostUpdate extends Mailable
 
     public $post;
 
+    public $tag;
+
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($url, $site, $admin_email, $reply_email, $user, $thread, $post)
+    public function __construct($url, $site, $admin_email, $reply_email, $user, $thread, $post, $tag = null)
     {
         $this->url = $url;
         $this->site = $site;
@@ -40,6 +42,7 @@ class FollowingPostUpdate extends Mailable
         $this->user = $user;
         $this->thread = $thread;
         $this->post = $post;
+        $this->tag = $tag;
     }
 
     /**
