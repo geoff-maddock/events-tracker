@@ -109,6 +109,7 @@ return [
     'fb_app_id' => env('APP_FB_APP_ID'),
     'app_name' => env('APP_NAME', 'Event Repo'),
     'name' => env('APP_NAME', 'Event Repo'),
+    'tagline' => env('APP_TAGLINE', 'Event Repository'),
     'default_theme' => 'dark-theme',
     'twitter_consumer_key' => env('TWITTER_CONSUMER_KEY'),
     'default_hashtag' => env('APP_DEFAULT_HASHTAG', ''),
