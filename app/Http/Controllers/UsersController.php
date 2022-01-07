@@ -108,8 +108,16 @@ class UsersController extends Controller
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([UsersController::class, 'index']));
 
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = User::query()->leftJoin('user_statuses', 'users.user_status_id', '=', 'user_statuses.id')->select('users.*');
+        // create the base query including any required joins; needs select to make sure only user entities are returned
+        $baseQuery = User::query()
+        ->leftJoin('user_statuses', 'users.user_status_id', '=', 'user_statuses.id')
+        ->select('users.*')
+        ->addSelect(['last_active' => Activity::select('created_at')
+            ->whereColumn('user_id', 'users.id')
+            ->latest()
+            ->take(1)
+        ])
+        ->withCasts(['last_active' => 'created_at']);
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -165,7 +173,15 @@ class UsersController extends Controller
         $listParamSessionStore->setIndexTab(action([UsersController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = User::query()->leftJoin('user_statuses', 'users.user_status_id', '=', 'user_statuses.id')->select('users.*');
+        $baseQuery = User::query()
+        ->leftJoin('user_statuses', 'users.user_status_id', '=', 'user_statuses.id')
+        ->select('users.*')
+        ->addSelect(['last_active' => Activity::select('created_at')
+            ->whereColumn('user_id', 'users.id')
+            ->latest()
+            ->take(1)
+        ])
+        ->withCasts(['last_active' => 'created_at']);
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -834,7 +850,7 @@ class UsersController extends Controller
     {
         return  [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
-            'sortOptions' => ['users.name' => 'Name', 'user_statuses.name' => 'Status', 'users.created_at' => 'Created At'],
+            'sortOptions' => ['users.name' => 'Name', 'user_statuses.name' => 'Status', 'users.created_at' => 'Created At', 'last_active' => 'Last Active'],
             'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
         ];
     }
