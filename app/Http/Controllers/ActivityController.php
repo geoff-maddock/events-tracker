@@ -3,11 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Filters\ActivityFilters;
-use App\Models\Activity;
 use App\Http\Requests\SeriesRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Action;
-use App\Models\Series;
+use App\Models\Activity;
 use App\Models\User;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\RedirectResponse;
@@ -102,7 +101,7 @@ class ActivityController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -152,7 +151,7 @@ class ActivityController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -190,7 +189,7 @@ class ActivityController extends Controller
     }
 
     /**
-     * Reset the rpp, sort, order
+     * Reset the rpp, sort, order.
      *
      * @throws \Throwable
      */
@@ -235,7 +234,7 @@ class ActivityController extends Controller
         return  [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
             'sortOptions' => ['activities.object_name' => 'Name', 'activities.object_table' => 'Table', 'activities.created_at' => 'Created At'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
         ];
     }
 
@@ -243,7 +242,7 @@ class ActivityController extends Controller
     {
         return  [
             'actionOptions' => ['' => '&nbsp;'] + Action::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all()
+            'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
         ];
     }
 }
