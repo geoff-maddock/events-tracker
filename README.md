@@ -21,7 +21,7 @@ Run an instance to create your own community where events, event series, entitie
 * PHP 7.4
 * Laravel 8
 * MySQL 8 (can be database agnostic)
-* Bootstrap 3.x
+* Bootstrap 5
 * Optional Integrations: Facebook, Twitter
 
 ### Roadmap
