@@ -260,13 +260,17 @@ window.Dropzone.autoDiscover = true;
 $(document).ready(function(){
 
 	var myDropzone = new window.Dropzone('#myDropzone', {
-        dictDefaultMessage: "Add a picture"
+        dictDefaultMessage: "Add a picture (Max size 5MB)"
     });
 
     $('div.dz-default.dz-message').css({'color': '#000000', 'opacity': 1, 'background-image': 'none'});
 
+	function sleep(ms) {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	};
+
 	myDropzone.options.addPhotosForm = {
-		maxFilesize: 3,
+		maxFilesize: 5,
 		accept: ['.jpg','.png','.gif'],
         dictDefaultMessage: "Drop a file here to add a picture",
 		init: function () {
@@ -275,7 +279,18 @@ $(document).ready(function(){
 	                location.reload();
 
 	            });
-				console.log('dropzone init called')
+				myDropzone.on("error", function (file, message) {
+					Swal.fire({
+						title: "Are you sure?",
+						text: "You cannot upload a file that large.",
+						type: "warning",
+						showCancelButton: true,
+						confirmButtonColor: "#DD6B55",
+						confirmButtonText: "Ok",
+						closeOnConfirm: true
+					});
+				})
+				console.log('dropzone init called');
 	        },
 		success: console.log('Upload successful')
 	};
