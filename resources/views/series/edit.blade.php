@@ -74,16 +74,35 @@
         });
 
         myDropzone.options.addPhotosForm = {
-            maxFilesize: 3,
-            accept: ['.jpg', '.png', '.gif'],
-            init: function() {
-                myDropzone.on("complete", function(file) {
-                    location.href = 'series/{{ $series->id }}'
-                    location.reload();
-
-                });
-            }
-        };
+		maxFilesize: 5,
+		accept: ['.jpg','.png','.gif'],
+        dictDefaultMessage: "Drop a file here to add a picture. (Max size 5MB)",
+		init: function () {
+				myDropzone.on("success", function (file) {
+	                location.href = 'series/{{ $series->id }}';
+	                location.reload();
+	            });
+	            myDropzone.on("successmultiple", function (file) {
+	                location.href = 'series/{{ $series->id }}';
+	                location.reload();
+	            });
+				myDropzone.on("error", function (file, message) {
+					Swal.fire({
+						title: "Are you sure?",
+						text: "You cannot upload a file that large.",
+						type: "warning",
+						showCancelButton: true,
+						confirmButtonColor: "#DD6B55",
+						confirmButtonText: "Ok",
+				}).then(result => {
+	                location.href = 'series/{{ $series->id }}';
+	                location.reload();
+					});
+				});
+				console.log('dropzone init called');
+	        },
+		success: console.log('Upload successful')
+	};
 
         myDropzone.options.addPhotosForm.init();
 

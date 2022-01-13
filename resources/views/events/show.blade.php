@@ -265,19 +265,18 @@ $(document).ready(function(){
 
     $('div.dz-default.dz-message').css({'color': '#000000', 'opacity': 1, 'background-image': 'none'});
 
-	function sleep(ms) {
-		return new Promise(resolve => setTimeout(resolve, ms));
-	};
-
 	myDropzone.options.addPhotosForm = {
 		maxFilesize: 5,
 		accept: ['.jpg','.png','.gif'],
         dictDefaultMessage: "Drop a file here to add a picture",
 		init: function () {
-	            myDropzone.on("complete", function (file) {
-	                location.href = 'events/{{ $event->id }}'
+				myDropzone.on("success", function (file) {
+	                location.href = 'events/{{ $event->id }}';
 	                location.reload();
-
+	            });
+	            myDropzone.on("successmultiple", function (file) {
+	                location.href = 'events/{{ $event->id }}';
+	                location.reload();
 	            });
 				myDropzone.on("error", function (file, message) {
 					Swal.fire({
@@ -287,9 +286,11 @@ $(document).ready(function(){
 						showCancelButton: true,
 						confirmButtonColor: "#DD6B55",
 						confirmButtonText: "Ok",
-						closeOnConfirm: true
+				}).then(result => {
+					location.href = 'events/{{ $event->id }}';
+	                location.reload();
 					});
-				})
+				});
 				console.log('dropzone init called');
 	        },
 		success: console.log('Upload successful')

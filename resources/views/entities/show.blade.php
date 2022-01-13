@@ -300,23 +300,41 @@ window.Dropzone.autoDiscover = true;
 $(document).ready(function(){
 
 	var myDropzone = new window.Dropzone('#myDropzone', {
-   		dictDefaultMessage: "Drop a file here to add an entity profile picture"
+   		dictDefaultMessage: "Drop a file here to add an entity profile picture (Max size 5MB)"
 	});
 
 	$('div.dz-default.dz-message > span').show(); // Show message span
 	$('div.dz-default.dz-message').css({'color': '#000000', 'opacity':1, 'background-image': 'none'});
 
 	myDropzone.options.addPhotosForm = {
-		maxFilesize: 3,
+		maxFilesize: 5,
 		accept: ['.jpg','.png','.gif'],
-		dictDefaultMessage: "Drop a file here to add a picture",
+        dictDefaultMessage: "Drop a file here to add a picture",
 		init: function () {
-	            myDropzone.on("complete", function (file) {
+				myDropzone.on("success", function (file) {
+	                location.href = 'entities/{{ $entity->slug }}';
+	                location.reload();
+	            });
+	            myDropzone.on("successmultiple", function (file) {
+	                location.href = 'entities/{{ $entity->slug }}';
+	                location.reload();
+	            });
+				myDropzone.on("error", function (file, message) {
+					Swal.fire({
+						title: "Are you sure?",
+						text: "You cannot upload a file that large.",
+						type: "warning",
+						showCancelButton: true,
+						confirmButtonColor: "#DD6B55",
+						confirmButtonText: "Ok",
+				}).then(result => {
 	                location.href = 'entities/{{ $entity->slug }}'
 	                location.reload();
-
-	            });
-	        }
+					});
+				});
+				console.log('dropzone init called');
+	        },
+		success: console.log('Upload successful')
 	};
 
 	myDropzone.options.addPhotosForm.init();
