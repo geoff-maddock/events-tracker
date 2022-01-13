@@ -90,10 +90,14 @@
 		  </svg>
 	</a>
 	@endif
+	@if ($event->venue)
+	
 	@if ($event->venue->getPrimaryLocationMap() != '')
 	<a href="{!! $event->venue->getPrimaryLocationMap() !!}" target="_" title="Link to map." class="mx-1">
 		<i class="bi bi-geo-alt-fill"></i>
 	</a>
+	@endif
+
 	@endif
 		<a href="{!! $event->getGoogleCalendarLink() !!}" target="_" rel="nofollow" title="Add to Google Calendar">
 			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-plus-fill" viewBox="0 0 16 16">
