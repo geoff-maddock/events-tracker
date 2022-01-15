@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Filters\UserFilters;
-use App\Models\Activity;
-use App\Models\Group;
 use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
@@ -12,9 +10,10 @@ use App\Mail\UserActivation;
 use App\Mail\UserSuspended;
 use App\Mail\UserUpdate;
 use App\Mail\WeeklyUpdate;
+use App\Models\Activity;
+use App\Models\Group;
 use App\Models\Photo;
 use App\Models\Profile;
-use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Visibility;
@@ -27,12 +26,12 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Throwable;
-use Illuminate\Support\Facades\Log;
 
 class UsersController extends Controller
 {
@@ -94,7 +93,6 @@ class UsersController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
      */
     public function index(
         Request $request,
@@ -115,7 +113,7 @@ class UsersController extends Controller
         ->addSelect(['last_active' => Activity::select('created_at')
             ->whereColumn('user_id', 'users.id')
             ->latest()
-            ->take(1)
+            ->take(1),
         ])
         ->withCasts(['last_active' => 'created_at']);
 
@@ -146,7 +144,7 @@ class UsersController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -179,7 +177,7 @@ class UsersController extends Controller
         ->addSelect(['last_active' => Activity::select('created_at')
             ->whereColumn('user_id', 'users.id')
             ->latest()
-            ->take(1)
+            ->take(1),
         ])
         ->withCasts(['last_active' => 'created_at']);
 
@@ -210,7 +208,7 @@ class UsersController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -220,7 +218,7 @@ class UsersController extends Controller
     }
 
     /**
-     * Reset the limit, sort, order
+     * Reset the limit, sort, order.
      *
      * @throws \Throwable
      */
@@ -262,8 +260,6 @@ class UsersController extends Controller
 
     /**
      * Get the default filters array.
-     *
-     * @return array
      */
     public function getDefaultFilters(): array
     {
@@ -272,8 +268,6 @@ class UsersController extends Controller
 
     /**
      * Get the default tags array.
-     *
-     * @return array
      */
     public function getDefaultTabs(): array
     {
@@ -283,7 +277,6 @@ class UsersController extends Controller
     /**
      * Show a form to create a new user.
      *
-     * @return View
      **/
     public function create(): View
     {
@@ -293,13 +286,13 @@ class UsersController extends Controller
     public function setTabs(Request $request): void
     {
         if (null !== $request->input('tabs')) {
-            $request->session()->put($this->prefix . 'tabs', $request->input('tabs'));
+            $request->session()->put($this->prefix.'tabs', $request->input('tabs'));
         }
     }
 
     public function getTabs(Request $request): array
     {
-        return $request->session()->get($this->prefix . 'tabs', $this->getDefaultTabs());
+        return $request->session()->get($this->prefix.'tabs', $this->getDefaultTabs());
     }
 
     public function show(User $user, Request $request)
@@ -317,7 +310,7 @@ class UsersController extends Controller
 
             $profile->save();
 
-            return redirect('users/' . $user->id);
+            return redirect('users/'.$user->id);
         }
 
         $token = \Password::getRepository()->create($user);
@@ -329,7 +322,7 @@ class UsersController extends Controller
     {
         $this->middleware('auth');
 
-        return redirect('users/' . $this->user->id);
+        return redirect('users/'.$this->user->id);
     }
 
     public function store(UserRequest $request, User $user): void
@@ -399,8 +392,6 @@ class UsersController extends Controller
     /**
      * Add a photo to a user.
      *
-     * @param int $id
-     *
      * @throws ValidationException
      */
     public function addPhoto(int $id, Request $request): void
@@ -409,7 +400,7 @@ class UsersController extends Controller
             'file' => 'required|mimes:jpg,jpeg,png,gif',
         ]);
 
-        $fileName = time() . '_' . $request->file->getClientOriginalName();
+        $fileName = time().'_'.$request->file->getClientOriginalName();
         $filePath = $request->file('file')->storeAs('photos', $fileName, 'public');
 
         // attach to user
@@ -440,6 +431,7 @@ class UsersController extends Controller
 
     /**
      * Mark user as activated.
+     *
      * @return Response | RedirectResponse
      */
     public function activate(int $id, Request $request)
@@ -461,12 +453,12 @@ class UsersController extends Controller
         $user->user_status_id = UserStatus::ACTIVE;
         $user->save();
 
-        Log::info('User ' . $user->name . ' is activated.');
+        Log::info('User '.$user->name.' is activated.');
 
         // add to activity log
         Activity::log($user, $this->user, 10);
 
-        flash()->success('Success', 'User ' . $user->name . ' is now activated.');
+        flash()->success('Success', 'User '.$user->name.' is now activated.');
 
         $reply_email = config('app.noreplyemail');
         $admin_email = config('app.admin');
@@ -481,6 +473,7 @@ class UsersController extends Controller
     /**
      * Mark user as suspended.
 
+     *
      * @return Response | RedirectResponse
      */
     public function suspend(int $id, Request $request)
@@ -505,9 +498,9 @@ class UsersController extends Controller
         // add to activity log
         Activity::log($user, $this->user, 11);
 
-        Log::info('User ' . $user->name . ' is suspended.');
+        Log::info('User '.$user->name.' is suspended.');
 
-        flash()->success('Success', 'User ' . $user->name . ' is now suspended.');
+        flash()->success('Success', 'User '.$user->name.' is now suspended.');
 
         $reply_email = config('app.noreplyemail');
         $admin_email = config('app.admin');
@@ -521,6 +514,7 @@ class UsersController extends Controller
 
     /**
      * Send a site update reminder to the user.
+     *
      * @return Response | RedirectResponse
      */
     public function reminder(int $id, Request $request)
@@ -544,9 +538,9 @@ class UsersController extends Controller
         // add to activity log
         Activity::log($user, $this->user, 12);
 
-        Log::info('User ' . $user->name . ' was sent a reminder');
+        Log::info('User '.$user->name.' was sent a reminder');
 
-        flash()->success('Success', 'A reminder email was sent to  ' . $user->name . ' at ' . $user->email);
+        flash()->success('Success', 'A reminder email was sent to  '.$user->name.' at '.$user->email);
 
         return back();
     }
@@ -582,15 +576,16 @@ class UsersController extends Controller
         // add to activity log
         Activity::log($user, $this->user, 12);
 
-        Log::info('User ' . $user->name . ' was sent a weekly reminder');
+        Log::info('User '.$user->name.' was sent a weekly reminder');
 
-        flash()->success('Success', 'A weekly reminder email was sent to  ' . $user->name . ' at ' . $user->email);
+        flash()->success('Success', 'A weekly reminder email was sent to  '.$user->name.' at '.$user->email);
 
         return back();
     }
 
     /**
      * Mark user as deleted.
+     *
      * @return Response | RedirectResponse
      */
     public function delete(int $id, Request $request)
@@ -612,9 +607,9 @@ class UsersController extends Controller
         $user->user_status_id = 5;
         $user->save();
 
-        Log::info('User ' . $user->name . ' is deleted.');
+        Log::info('User '.$user->name.' is deleted.');
 
-        flash()->success('Success', 'User ' . $user->name . ' is now deleted.');
+        flash()->success('Success', 'User '.$user->name.' is now deleted.');
 
         // add to activity log
         Activity::log($user, $this->user, 3);
@@ -626,6 +621,7 @@ class UsersController extends Controller
 
     /**
      * Return the users events in iCal format.
+     *
      * @return Response | RedirectResponse
      */
     public function ical(int $id, Request $request)
@@ -645,7 +641,7 @@ class UsersController extends Controller
         define('ICAL_FORMAT', 'Ymd\THis\Z');
 
         // create a calendar object
-        $vCalendar = new Calendar($this->user->getFullNameAttribute() . ' Calendar');
+        $vCalendar = new Calendar($this->user->getFullNameAttribute().' Calendar');
 
         // add the following response
         // get the next x events they are attending
@@ -767,7 +763,7 @@ class UsersController extends Controller
 
         Mail::to($user->email)->send(new UserUpdate($url, $site, $admin_email, $reply_email, $user, $attendingEvents, $seriesList, $interests));
 
-        flash()->success('Success', 'A daily-style notification email was sent to  ' . $user->name . ' at ' . $user->email);
+        flash()->success('Success', 'A daily-style notification email was sent to  '.$user->name.' at '.$user->email);
 
         return back();
     }
@@ -851,14 +847,14 @@ class UsersController extends Controller
         return  [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
             'sortOptions' => ['users.name' => 'Name', 'user_statuses.name' => 'Status', 'users.created_at' => 'Created At', 'last_active' => 'Last Active'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
         ];
     }
 
     protected function getFilterOptions(): array
     {
         return  [
-            'userStatusOptions' => ['' => ''] + UserStatus::orderBy('name', 'ASC')->pluck('name', 'name')->all()
+            'userStatusOptions' => ['' => ''] + UserStatus::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
         ];
     }
 

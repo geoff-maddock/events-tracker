@@ -126,7 +126,8 @@
             <div class="col-lg-6">
                 <div class="card">
                     <div>
-                        @if (isset($tabs))
+                        @if (isset($tabs) && isset($tabs['events']))
+
                             @if ($tabs['events'] === 'created')
                             <div class="card-header bg-primary">
                                 <h5 class="my-0 fw-normal">Events  <span  class="badge rounded-pill bg-warning text-dark">{{ $user->eventCount }}</span></h3>
@@ -167,6 +168,7 @@
             <div class="col-lg-6">
                 <div class="card">
                     <div>
+                        @if (isset($tabs) && isset($tabs['following']))
                             @switch($tabs['following'])
                                 @case('tags')
                                     <div class="card-header bg-primary">
@@ -259,8 +261,8 @@
                                         @include('threads.list', ['threads' => $user->getThreadsFollowing()->take(20)])
                                     </div>
                                     @break
-
                             @endswitch
+                            @endif
                         </div>
                     </div>
                 </div>
