@@ -30,7 +30,7 @@
 				<span class="text-warning">{{ $event->visibility->name }}</span><br>
 			@endif
 			@if ($event->visibility->name == 'Cancelled')
-				<span class="text-warning">Cancelled on {{ $event->cancelled_at->format('l M jS Y') }}</span><br>
+				<span class="text-warning">Cancelled on {{ $event->cancelled_at ? $event->cancelled_at->format('l M jS Y') : null }}</span><br>
 			@endif
 	
 			<h3 class="listing">{!! $event->start_at->format('l M jS Y') !!}</h3>

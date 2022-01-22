@@ -35,8 +35,9 @@
 		</h3>
 		<p>
 		Founded {!! $series->founded_at ? $series->founded_at->format('l F jS Y') : 'unknown'!!}<br>
+
 		@if ($series->cancelled_at != NULL)
-		Cancelled {!! $series->cancelled_at ? $series->cancelled_at->format('l F jS Y') : 'unknown'!!}<br>
+		<span class="text-warning">Cancelled {!! $series->cancelled_at ? $series->cancelled_at->format('l F jS Y') : 'unknown'!!}</span>
 		@endif
 
 		@if ($series->occurrenceType->name != 'No Schedule')
