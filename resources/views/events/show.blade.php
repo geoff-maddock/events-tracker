@@ -295,7 +295,6 @@ $(document).ready(function(){
 	                location.reload();
 					});
 				});
-				console.log('dropzone init called');
 	        },
 		success: console.log('Upload successful')
 	};

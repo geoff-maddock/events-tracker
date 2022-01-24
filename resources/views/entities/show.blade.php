@@ -303,8 +303,9 @@ $(document).ready(function(){
    		dictDefaultMessage: "Drop a file here to add an entity profile picture (Max size 5MB)"
 	});
 
-	$('div.dz-default.dz-message > span').show(); // Show message span
-	$('div.dz-default.dz-message').css({'color': '#000000', 'opacity':1, 'background-image': 'none'});
+	console.log('loading dropzone code');
+
+    $('div.dz-default.dz-message').css({'color': '#000000', 'opacity': 1, 'background-image': 'none'});
 
 	myDropzone.options.addPhotosForm = {
 		maxFilesize: 5,
@@ -332,9 +333,8 @@ $(document).ready(function(){
 	                location.reload();
 					});
 				});
-				console.log('dropzone init called');
 	        },
-		success: console.log('Upload successful')
+		success: console.log('Add photos form success called')
 	};
 
 	myDropzone.options.addPhotosForm.init();
