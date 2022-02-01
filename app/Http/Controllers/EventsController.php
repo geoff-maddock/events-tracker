@@ -2,47 +2,47 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\EventCreated;
+use App\Events\EventUpdated;
+use App\Filters\EventFilters;
+use App\Http\Requests\EventRequest;
+use App\Http\ResultBuilder\ListEntityResultBuilder;
+use App\Mail\FollowingUpdate;
 use App\Models\Activity;
 use App\Models\Entity;
 use App\Models\Event;
 use App\Models\EventResponse;
 use App\Models\EventReview;
-use App\Events\EventCreated;
-use App\Events\EventUpdated;
-use App\Filters\EventFilters;
 use App\Models\EventType;
 use App\Models\Follow;
-use App\Http\Requests\EventRequest;
-use App\Http\ResultBuilder\ListEntityResultBuilder;
-use App\Mail\FollowingUpdate;
-use App\Notifications\EventPublished;
 use App\Models\OccurrenceDay;
 use App\Models\OccurrenceType;
 use App\Models\OccurrenceWeek;
 use App\Models\Photo;
 use App\Models\ResponseType;
 use App\Models\Series;
-use App\Services\RssFeed;
 use App\Models\Tag;
 use App\Models\Thread;
 use App\Models\User;
 use App\Models\Visibility;
+use App\Notifications\EventPublished;
+use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
 use Carbon\Carbon;
 use Exception;
-use Facebook\Facebook;
+use FacebookAds\Api as Api;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
+//use Facebook\Exceptions\FacebookSDKException;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
-use Facebook\Exceptions\FacebookSDKException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Collection;
 
 class EventsController extends Controller
 {
@@ -76,9 +76,9 @@ class EventsController extends Controller
 
     protected int $defaultWindow;
 
-    protected Facebook $facebook;
+    protected Api $facebook;
 
-    public function __construct(EventFilters $filter, Facebook $facebook)
+    public function __construct(EventFilters $filter)
     {
         $this->middleware('verified', ['only' => ['create', 'edit', 'store', 'update', 'indexAttending', 'calendarAttending']]);
         $this->filter = $filter;
@@ -101,7 +101,12 @@ class EventsController extends Controller
         $this->defaultSortCriteria = ['events.start_at' => 'desc'];
 
         // inject Facebook into class
-        $this->facebook = $facebook;
+        Api::init(config('app.app_id'),
+            config('app.app_secret'),
+            config('app.graph_version')
+        );
+
+        $this->facebook = Api::instance();
 
         $this->hasFilter = false;
         parent::__construct();
@@ -159,7 +164,7 @@ class EventsController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -169,10 +174,10 @@ class EventsController extends Controller
     }
 
     /**
-      * Display a listing of events by date
-      *
-      * @throws \Throwable
-      */
+     * Display a listing of events by date.
+     *
+     * @throws \Throwable
+     */
     public function indexByDate(
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
@@ -183,17 +188,17 @@ class EventsController extends Controller
     ): string {
         // set the start_at from and to dates based on the passed params
         if ($year && !$month && !$day) {
-            $start_at_from = $year . '0101';
-            $start_at_to = $year . '1231';
+            $start_at_from = $year.'0101';
+            $start_at_to = $year.'1231';
             $slug = $year;
         } elseif (!$day) {
-            $start_at_from = Carbon::parse($year . $month . '01');
+            $start_at_from = Carbon::parse($year.$month.'01');
             $start_at_to = Carbon::parse($start_at_from)->endOfMonth();
-            $slug = $year . ' - ' . $month;
+            $slug = $year.' - '.$month;
         } else {
-            $start_at_from = Carbon::parse($year . $month . $day);
+            $start_at_from = Carbon::parse($year.$month.$day);
             $start_at_to = Carbon::parse($start_at_from)->addDay();
-            $slug = $year . ' - ' . $month . ' - ' . $day;
+            $slug = $year.' - '.$month.' - '.$day;
         }
 
         // initialized listParamSessionStore with baseindex key
@@ -251,20 +256,20 @@ class EventsController extends Controller
 
     protected function getListControlOptions(): array
     {
-        return  [
+        return [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
             'sortOptions' => ['events.name' => 'Name', 'events.start_at' => 'Start At', 'event_types.name' => 'Event Type', 'events.updated_at' => 'Updated At'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
         ];
     }
 
     protected function getFilterOptions(): array
     {
-        return  [
+        return [
             'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
             'venueOptions' => ['' => ''] + Entity::getVenues()->pluck('name', 'name')->all(),
             'relatedOptions' => ['' => ''] + Entity::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'eventTypeOptions' => ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'name')->all()
+            'eventTypeOptions' => ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
         ];
     }
 
@@ -280,7 +285,7 @@ class EventsController extends Controller
             'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all()
+            'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
         ];
     }
 
@@ -347,7 +352,7 @@ class EventsController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -418,7 +423,7 @@ class EventsController extends Controller
                 'sort' => $listResultSet->getSort(),
                 'direction' => $listResultSet->getSortDirection(),
                 'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters()
+                'filters' => $listResultSet->getFilters(),
             ],
             $this->getFilterOptions(),
             $this->getListControlOptions()
@@ -489,7 +494,7 @@ class EventsController extends Controller
                 'sort' => $listResultSet->getSort(),
                 'direction' => $listResultSet->getSortDirection(),
                 'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters()
+                'filters' => $listResultSet->getFilters(),
             ],
             $this->getFilterOptions(),
             $this->getListControlOptions()
@@ -499,9 +504,9 @@ class EventsController extends Controller
     }
 
     /**
-     * Display a listing of only future events
+     * Display a listing of only future events.
      *
-     * @return Response | View
+     * @return Response|View
      */
     public function indexFuture(
         Request $request,
@@ -550,7 +555,7 @@ class EventsController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -597,7 +602,7 @@ class EventsController extends Controller
                         'next_day' => $next_day,
                         'next_day_window' => $next_day_window,
                         'prev_day' => $prev_day,
-                        'prev_day_window' => $prev_day_window
+                        'prev_day_window' => $prev_day_window,
                     ])
                     ->render();
         }
@@ -609,14 +614,14 @@ class EventsController extends Controller
             'next_day' => $next_day,
             'next_day_window' => $next_day_window,
             'prev_day' => $prev_day,
-            'prev_day_window' => $prev_day_window
+            'prev_day_window' => $prev_day_window,
         ]);
     }
 
     /**
      * Display a listing of today's events.
      *
-     * @return Response | View
+     * @return Response|View
      */
     public function indexToday(
         Request $request,
@@ -675,7 +680,7 @@ class EventsController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -684,9 +689,9 @@ class EventsController extends Controller
     }
 
     /**
-     * Display a listing of only past events
+     * Display a listing of only past events.
      *
-     * @return Response | View
+     * @return Response|View
      */
     public function indexPast(
         Request $request,
@@ -734,7 +739,7 @@ class EventsController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -745,7 +750,7 @@ class EventsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return Response | View
+     * @return Response|View
      */
     public function indexAttending(
         Request $request,
@@ -800,7 +805,7 @@ class EventsController extends Controller
                 'filters' => $listResultSet->getFilters(),
                 'filterRoute' => 'events.attending',
                 'key' => 'internal_event_attending',
-                'redirect' => 'events.attending'
+                'redirect' => 'events.attending',
             ],
             $this->getFilterOptions(),
             $this->getListControlOptions()
@@ -850,7 +855,7 @@ class EventsController extends Controller
     /**
      * Display a simple text feed of future events by tag.
      *
-     * @return Response | View
+     * @return Response|View
      */
     public function feedTags($tag)
     {
@@ -861,7 +866,7 @@ class EventsController extends Controller
     }
 
     /**
-     * Reset the limit, sort, order
+     * Reset the limit, sort, order.
      *
      * @throws \Throwable
      */
@@ -883,7 +888,7 @@ class EventsController extends Controller
     /**
      * Reset the filtering of entities.
      *
-     * @return RedirectResponse | View
+     * @return RedirectResponse|View
      */
     public function reset(
         Request $request,
@@ -922,11 +927,11 @@ class EventsController extends Controller
             $mail->send('emails.reminder', ['user' => $user, 'event' => $event], static function ($m) use ($user, $event) {
                 $m->from('admin@events.cutupsmethod.com', 'Event Repo');
 
-                $m->to($user->email, $user->name)->subject('Event Repo: ' . $event->start_at->format('D F jS') . ' ' . $event->name . ' REMINDER');
+                $m->to($user->email, $user->name)->subject('Event Repo: '.$event->start_at->format('D F jS').' '.$event->name.' REMINDER');
             });
         }
 
-        flash()->success('Success', 'You sent an email reminder to ' . count($event->eventResponses) . ' user about ' . $event->name);
+        flash()->success('Success', 'You sent an email reminder to '.count($event->eventResponses).' user about '.$event->name);
 
         return back();
     }
@@ -934,7 +939,7 @@ class EventsController extends Controller
     /**
      * Get the events for one passed day.
      *
-     * @return Response | string
+     * @return Response|string
      *
      * @throws \Throwable
      */
@@ -951,7 +956,7 @@ class EventsController extends Controller
             ->with([
                 'day' => $day,
                 'position' => 0,
-                'offset' => 0
+                'offset' => 0,
             ])
             ->render();
     }
@@ -959,7 +964,7 @@ class EventsController extends Controller
     /**
      * Send a reminder to all users about all events they are attending.
      *
-     * @return Response | RedirectResponse
+     * @return Response|RedirectResponse
      */
     public function daily()
     {
@@ -1007,7 +1012,7 @@ class EventsController extends Controller
             });
         }
 
-        flash()->success('Success', 'You sent an email reminder to ' . count($users) . ' users about events they are attending');
+        flash()->success('Success', 'You sent an email reminder to '.count($users).' users about events they are attending');
 
         return back();
     }
@@ -1044,11 +1049,11 @@ class EventsController extends Controller
         // adds events to event list
         foreach ($events as $event) {
             $eventList[] = [
-                'id' => 'event-' . $event->id,
+                'id' => 'event-'.$event->id,
                 'start' => $event->start_at->format('Y-m-d H:i'),
                 'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
                 'title' => $event->name,
-                'url' => '/events/' . $event->id,
+                'url' => '/events/'.$event->id,
                 'backgroundColor' => '#0a57ad',
                 'description' => $event->short,
             ];
@@ -1059,11 +1064,11 @@ class EventsController extends Controller
             if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
                 // add the next instance of each series to the calendar
                 $eventList[] = [
-                    'id' => 'series-' . $s->id,
+                    'id' => 'series-'.$s->id,
                     'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
                     'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
                     'title' => $s->name,
-                    'url' => '/series/' . $s->id,
+                    'url' => '/series/'.$s->id,
                     'backgroundColor' => '#99bcdb',
                     'description' => $s->short,
                 ];
@@ -1108,11 +1113,11 @@ class EventsController extends Controller
         // adds events to event list
         foreach ($events as $event) {
             $eventList[] = [
-                'id' => 'event-' . $event->id,
+                'id' => 'event-'.$event->id,
                 'start' => $event->start_at->format('Y-m-d H:i'),
                 'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
                 'title' => $event->name,
-                'url' => '/events/' . $event->id,
+                'url' => '/events/'.$event->id,
                 'backgroundColor' => '#0a57ad',
                 'description' => $event->short,
             ];
@@ -1123,11 +1128,11 @@ class EventsController extends Controller
             if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
                 // add the next instance of each series to the calendar
                 $eventList[] = [
-                    'id' => 'series-' . $s->id,
+                    'id' => 'series-'.$s->id,
                     'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
                     'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
                     'title' => $s->name,
-                    'url' => '/series/' . $s->id,
+                    'url' => '/series/'.$s->id,
                     'backgroundColor' => '#99bcdb',
                     'description' => $s->short,
                 ];
@@ -1165,11 +1170,11 @@ class EventsController extends Controller
         // adds events to event list
         foreach ($events as $event) {
             $eventList[] = [
-                'id' => 'event-' . $event->id,
+                'id' => 'event-'.$event->id,
                 'start' => $event->start_at->format('Y-m-d H:i'),
                 'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
                 'title' => $event->name,
-                'url' => '/events/' . $event->id,
+                'url' => '/events/'.$event->id,
                 'backgroundColor' => $event->eventType->backgroundColor(),
                 'description' => $event->short,
             ];
@@ -1180,11 +1185,11 @@ class EventsController extends Controller
             if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
                 // add the next instance of each series to the calendar
                 $eventList[] = [
-                    'id' => 'series-' . $s->id,
+                    'id' => 'series-'.$s->id,
                     'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
                     'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
                     'title' => $s->name,
-                    'url' => '/series/' . $s->id,
+                    'url' => '/series/'.$s->id,
                     'backgroundColor' => '#99bcdb',
                     'description' => $s->short,
                 ];
@@ -1199,9 +1204,8 @@ class EventsController extends Controller
     /**
      * Displays the calendar based on passed events and tag.
      *
-     * @param Collection $events
-     * @param array | null $series
-     * @param null         $tag
+     * @param array|null $series
+     * @param null       $tag
      *
      * @return view
      */
@@ -1212,7 +1216,7 @@ class EventsController extends Controller
     }
 
     /**
-     * API endpoint for calendar-events that collects events and series and returns json
+     * API endpoint for calendar-events that collects events and series and returns json.
      */
     public function calendarEventsApi()
     {
@@ -1235,11 +1239,11 @@ class EventsController extends Controller
         // adds events to event list
         foreach ($events as $event) {
             $eventList[] = [
-                'id' => 'event-' . $event->id,
+                'id' => 'event-'.$event->id,
                 'start' => $event->start_at->format('Y-m-d H:i'),
                 'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
                 'title' => $event->name,
-                'url' => '/events/' . $event->id,
+                'url' => '/events/'.$event->id,
                 'backgroundColor' => '#0a57ad',
                 'description' => $event->short,
             ];
@@ -1250,11 +1254,11 @@ class EventsController extends Controller
             if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
                 // add the next instance of each series to the calendar
                 $eventList[] = [
-                    'id' => 'series-' . $s->id,
+                    'id' => 'series-'.$s->id,
                     'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
                     'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
                     'title' => $s->name,
-                    'url' => '/series/' . $s->id,
+                    'url' => '/series/'.$s->id,
                     'backgroundColor' => '#99bcdb',
                     'description' => $s->short,
                 ];
@@ -1299,11 +1303,11 @@ class EventsController extends Controller
         // adds events to event list
         foreach ($events as $event) {
             $eventList[] = [
-                'id' => 'event-' . $event->id,
+                'id' => 'event-'.$event->id,
                 'start' => $event->start_at->format('Y-m-d H:i'),
                 'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
                 'title' => $event->name,
-                'url' => '/events/' . $event->id,
+                'url' => '/events/'.$event->id,
                 'backgroundColor' => '#0a57ad',
                 'description' => $event->short,
             ];
@@ -1314,11 +1318,11 @@ class EventsController extends Controller
             if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
                 // add the next instance of each series to the calendar
                 $eventList[] = [
-                    'id' => 'series-' . $s->id,
+                    'id' => 'series-'.$s->id,
                     'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
                     'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
                     'title' => $s->name,
-                    'url' => '/series/' . $s->id,
+                    'url' => '/series/'.$s->id,
                     'backgroundColor' => '#99bcdb',
                     'description' => $s->short,
                 ];
@@ -1362,11 +1366,11 @@ class EventsController extends Controller
         // adds events to event list
         foreach ($events as $event) {
             $eventList[] = [
-                'id' => 'event-' . $event->id,
+                'id' => 'event-'.$event->id,
                 'start' => $event->start_at->format('Y-m-d H:i'),
                 'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
                 'title' => $event->name,
-                'url' => '/events/' . $event->id,
+                'url' => '/events/'.$event->id,
                 'backgroundColor' => '#0a57ad',
                 'description' => $event->short,
             ];
@@ -1377,11 +1381,11 @@ class EventsController extends Controller
             if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
                 // add the next instance of each series to the calendar
                 $eventList[] = [
-                    'id' => 'series-' . $s->id,
+                    'id' => 'series-'.$s->id,
                     'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
                     'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
                     'title' => $s->name,
-                    'url' => '/series/' . $s->id,
+                    'url' => '/series/'.$s->id,
                     'backgroundColor' => '#99bcdb',
                     'description' => $s->short,
                 ];
@@ -1422,16 +1426,16 @@ class EventsController extends Controller
             return (('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
         });
 
-        $slug = 'Min Age ' . $age;
+        $slug = 'Min Age '.$age;
 
         // adds events to event list
         foreach ($events as $event) {
             $eventList[] = [
-                'id' => 'event-' . $event->id,
+                'id' => 'event-'.$event->id,
                 'start' => $event->start_at->format('Y-m-d H:i'),
                 'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
                 'title' => $event->name,
-                'url' => '/events/' . $event->id,
+                'url' => '/events/'.$event->id,
                 'backgroundColor' => '#0a57ad',
                 'description' => $event->short,
             ];
@@ -1442,11 +1446,11 @@ class EventsController extends Controller
             if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
                 // add the next instance of each series to the calendar
                 $eventList[] = [
-                    'id' => 'series-' . $s->id,
+                    'id' => 'series-'.$s->id,
                     'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
                     'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
                     'title' => $s->name,
-                    'url' => '/series/' . $s->id,
+                    'url' => '/series/'.$s->id,
                     'backgroundColor' => '#99bcdb',
                     'description' => $s->short,
                 ];
@@ -1490,11 +1494,11 @@ class EventsController extends Controller
         // adds events to event list
         foreach ($events as $event) {
             $eventList[] = [
-                'id' => 'event-' . $event->id,
+                'id' => 'event-'.$event->id,
                 'start' => $event->start_at->format('Y-m-d H:i'),
                 'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
                 'title' => $event->name,
-                'url' => '/events/' . $event->id,
+                'url' => '/events/'.$event->id,
                 'backgroundColor' => '#0a57ad',
                 'description' => $event->short,
             ];
@@ -1505,11 +1509,11 @@ class EventsController extends Controller
             if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
                 // add the next instance of each series to the calendar
                 $eventList[] = [
-                    'id' => 'series-' . $s->id,
+                    'id' => 'series-'.$s->id,
                     'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
                     'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
                     'title' => $s->name,
-                    'url' => '/series/' . $s->id,
+                    'url' => '/series/'.$s->id,
                     'backgroundColor' => '#99bcdb',
                     'description' => $s->short,
                 ];
@@ -1522,7 +1526,7 @@ class EventsController extends Controller
     }
 
     /**
-     * Show a form to create a new event
+     * Show a form to create a new event.
      *
      * @return view
      **/
@@ -1556,9 +1560,7 @@ class EventsController extends Controller
     }
 
     /**
-     * @param Event $event
-     *
-     * @return bool| RedirectResponse
+     * @return bool|RedirectResponse
      */
     protected function addFbPhoto(Event $event)
     {
@@ -1581,15 +1583,15 @@ class EventsController extends Controller
         try {
             // FB API new call
             $token = $this->facebook->getJavaScriptHelper()->getAccessToken();
-            $response = $this->facebook->get($event_id . '?fields=' . $fields, $token);
+            $response = $this->facebook->get($event_id.'?fields='.$fields, $token);
 
             if ($cover = $response->getGraphNode()->getField('cover')) {
                 $source = $cover->getField('source');
                 $content = file_get_contents($source);
 
-                $fileName = time() . '_temp.jpg';
-                file_put_contents(storage_path() . '/app/public/photos/' . $fileName, $content);
-                $file = new UploadedFile(storage_path() . '/app/public/photos/' . $fileName, 'temp.jpg', null, null, UPLOAD_ERR_OK);
+                $fileName = time().'_temp.jpg';
+                file_put_contents(storage_path().'/app/public/photos/'.$fileName, $content);
+                $file = new UploadedFile(storage_path().'/app/public/photos/'.$fileName, 'temp.jpg', null, null, UPLOAD_ERR_OK);
 
                 // make the photo object from the file in the request
                 if ($photo = $this->makePhoto($file)) {
@@ -1605,7 +1607,7 @@ class EventsController extends Controller
                 }
             }
         } catch (Exception $e) {
-            flash()->error('Error', 'You could not import the image.  Error: ' . $e->getMessage());
+            flash()->error('Error', 'You could not import the image.  Error: '.$e->getMessage());
 
             return false;
         }
@@ -1642,15 +1644,15 @@ class EventsController extends Controller
 
             // TODO change this to use a session variable to store the access token?
             $token = $this->facebook->getJavaScriptHelper()->getAccessToken();
-            $response = $this->facebook->get($event_id . '?fields=' . $fields, $token);
+            $response = $this->facebook->get($event_id.'?fields='.$fields, $token);
 
             // get the cover from FB
             if (($cover = $response->getGraphNode()->getField('cover')) && ($source = $cover->getField('source'))) {
                 $content = file_get_contents($source);
 
-                $fileName = time() . '_temp.jpg';
-                file_put_contents(storage_path() . '/app/public/photos/' . $fileName, $content);
-                $file = new UploadedFile(storage_path() . '/app/public/photos/' . $fileName, 'temp.jpg', null, null, UPLOAD_ERR_OK);
+                $fileName = time().'_temp.jpg';
+                file_put_contents(storage_path().'/app/public/photos/'.$fileName, $content);
+                $file = new UploadedFile(storage_path().'/app/public/photos/'.$fileName, 'temp.jpg', null, null, UPLOAD_ERR_OK);
 
                 // make the photo object from the file in the request
                 /** @var Photo $photo */
@@ -1674,7 +1676,7 @@ class EventsController extends Controller
         return back();
     }
 
-    public function show(Event $event):string
+    public function show(Event $event): string
     {
         if (empty((array) $event)) {
             abort(404);
@@ -1712,7 +1714,7 @@ class EventsController extends Controller
 
                 $syncArray[] = $newTag->id;
 
-                $msg .= ' Added tag ' . $tag . '.';
+                $msg .= ' Added tag '.$tag.'.';
             } else {
                 $syncArray[$key] = $tag;
             }
@@ -1776,7 +1778,7 @@ class EventsController extends Controller
                         ->send(new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $tag));
                     $users[$user->user_id] = $tag->name;
                 } else {
-                    $users[$user->user_id] = $users[$user->user_id] . ', ' . $tag->name;
+                    $users[$user->user_id] = $users[$user->user_id].', '.$tag->name;
                 }
             }
         }
@@ -1797,7 +1799,7 @@ class EventsController extends Controller
                         ->send(new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $entity));
                     $users[$user->user_id] = $entity->name;
                 } else {
-                    $users[$user->user_id] = $users[$user->user_id] . ', ' . $entity->name;
+                    $users[$user->user_id] = $users[$user->user_id].', '.$entity->name;
                 }
             }
         }
@@ -1839,7 +1841,7 @@ class EventsController extends Controller
 
                 $syncArray[strtolower($tag)] = $newTag->id;
 
-                $msg .= ' Added tag ' . $tag . '.';
+                $msg .= ' Added tag '.$tag.'.';
             } else {
                 $syncArray[$key] = $tag;
             }
@@ -1881,7 +1883,7 @@ class EventsController extends Controller
     }
 
     /**
-     * Tweet this event
+     * Tweet this event.
      *
      * @return Response
      *
@@ -1905,15 +1907,16 @@ class EventsController extends Controller
         // add a twitter notification
         $event->notify(new EventPublished());
 
-        Log::info('User ' . $id . ' tweeted ' . $event->name);
+        Log::info('User '.$id.' tweeted '.$event->name);
 
-        flash()->success('Success', 'You tweeted the event - ' . $event->name);
+        flash()->success('Success', 'You tweeted the event - '.$event->name);
 
         return back();
     }
 
     /**
      * Mark user as attending the event.
+     *
      * @throws \Throwable
      */
     public function attend(int $id, Request $request)
@@ -1944,14 +1947,14 @@ class EventsController extends Controller
         // handle the request if ajax
         if ($request->ajax()) {
             return [
-                'Message' => 'You are now attending the event - ' . $event->name,
+                'Message' => 'You are now attending the event - '.$event->name,
                 'Success' => view('events.single')
                     ->with(compact('event'))
                     ->with('month', '')
                     ->render(),
             ];
         }
-        flash()->success('Success', 'You are now attending the event - ' . $event->name);
+        flash()->success('Success', 'You are now attending the event - '.$event->name);
 
         return back();
     }
@@ -1986,14 +1989,14 @@ class EventsController extends Controller
         // handle the request if ajax
         if ($request->ajax()) {
             return [
-                'Message' => 'You are no longer attending the event - ' . $event->name,
+                'Message' => 'You are no longer attending the event - '.$event->name,
                 'Success' => view('events.single')
                     ->with(compact('event'))
                     ->with('month', '')
                     ->render(),
             ];
         }
-        flash()->success('Success', 'You are no longer attending the event - ' . $event->name);
+        flash()->success('Success', 'You are no longer attending the event - '.$event->name);
 
         return back();
     }
@@ -2028,7 +2031,7 @@ class EventsController extends Controller
         $review->review = $request->input('review', null);
         $review->save();
 
-        flash()->success('Success', 'You reviewed the event - ' . $event->name);
+        flash()->success('Success', 'You reviewed the event - '.$event->name);
 
         return back();
     }
@@ -2103,7 +2106,7 @@ class EventsController extends Controller
                         'sort' => $listResultSet->getSort(),
                         'direction' => $listResultSet->getSortDirection(),
                         'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters()
+                        'filters' => $listResultSet->getFilters(),
                     ],
                     $this->getFilterOptions(),
                     $this->getListControlOptions()
@@ -2181,7 +2184,7 @@ class EventsController extends Controller
                         'sort' => $listResultSet->getSort(),
                         'direction' => $listResultSet->getSortDirection(),
                         'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters()
+                        'filters' => $listResultSet->getFilters(),
                     ],
                     $this->getFilterOptions(),
                     $this->getListControlOptions()
@@ -2194,6 +2197,7 @@ class EventsController extends Controller
 
     /**
      * Display a listing of events that start on the specified day.
+     *
      * @return View
      */
     public function indexStarting(
@@ -2246,7 +2250,7 @@ class EventsController extends Controller
                         'sort' => $listResultSet->getSort(),
                         'direction' => $listResultSet->getSortDirection(),
                         'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters()
+                        'filters' => $listResultSet->getFilters(),
                     ],
                     $this->getFilterOptions(),
                     $this->getListControlOptions()
@@ -2316,7 +2320,7 @@ class EventsController extends Controller
                         'sort' => $listResultSet->getSort(),
                         'direction' => $listResultSet->getSortDirection(),
                         'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters()
+                        'filters' => $listResultSet->getFilters(),
                     ],
                     $this->getFilterOptions(),
                     $this->getListControlOptions()
@@ -2391,7 +2395,7 @@ class EventsController extends Controller
                         'sort' => $listResultSet->getSort(),
                         'direction' => $listResultSet->getSortDirection(),
                         'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters()
+                        'filters' => $listResultSet->getFilters(),
                     ],
                     $this->getFilterOptions(),
                     $this->getListControlOptions()
@@ -2468,7 +2472,7 @@ class EventsController extends Controller
                         'sort' => $listResultSet->getSort(),
                         'direction' => $listResultSet->getSortDirection(),
                         'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters()
+                        'filters' => $listResultSet->getFilters(),
                     ],
                     $this->getFilterOptions(),
                     $this->getListControlOptions()
@@ -2506,7 +2510,7 @@ class EventsController extends Controller
             'file' => 'required|mimes:jpg,jpeg,png,gif',
         ]);
 
-        $fileName = time() . '_' . $request->file->getClientOriginalName();
+        $fileName = time().'_'.$request->file->getClientOriginalName();
         $filePath = $request->file('file')->storeAs('photos', $fileName, 'public');
 
         // get the event
@@ -2548,9 +2552,9 @@ class EventsController extends Controller
         $follow->object_type = 'event';
         $follow->save();
 
-        Log::info('User ' . $id . ' is following ' . $event->name);
+        Log::info('User '.$id.' is following '.$event->name);
 
-        flash()->success('Success', 'You are now following the event - ' . $event->name);
+        flash()->success('Success', 'You are now following the event - '.$event->name);
 
         return back();
     }
@@ -2593,12 +2597,12 @@ class EventsController extends Controller
             'occurrenceTypeOptions' => ['' => ''] + OccurrenceType::pluck('name', 'id')->all(),
             'dayOptions' => ['' => ''] + OccurrenceDay::pluck('name', 'id')->all(),
             'weekOptions' => ['' => ''] + OccurrenceWeek::pluck('name', 'id')->all(),
-            'userOptions' => User::orderBy('name', 'ASC')->pluck('name', 'id')->all()
+            'userOptions' => User::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
         ];
     }
 
     /**
-     * @return string | View
+     * @return string|View
      */
     public function createSeries(Request $request)
     {
@@ -2625,7 +2629,7 @@ class EventsController extends Controller
                 'door_price' => $event->door_price,
                 'min_age' => $event->min_age,
                 'visibility_id' => $event->visibility_id,
-                'length' => null
+                'length' => null,
             ]
         );
 
@@ -2651,7 +2655,7 @@ class EventsController extends Controller
             'visibility_id' => $event->visibility_id,
             'event_id' => $event->id,
             'likes' => 0,
-            'tag'
+            'tag',
         ]);
 
         $thread->save();
