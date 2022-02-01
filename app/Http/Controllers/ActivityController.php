@@ -210,13 +210,11 @@ class ActivityController extends Controller
 
     /**
      * Reset the filtering of entities.
-     *
-     * @return Response
      */
     public function reset(
         Request $request,
         ListParameterSessionStore $listParamSessionStore
-    ) {
+    ): RedirectResponse {
         // set filters and list controls to default values
         $keyPrefix = $request->get('key') ?? 'internal_activity_index';
         $listParamSessionStore->setBaseIndex('internal_activity');
@@ -231,7 +229,7 @@ class ActivityController extends Controller
 
     protected function getListControlOptions(): array
     {
-        return  [
+        return [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
             'sortOptions' => ['activities.object_name' => 'Name', 'activities.object_table' => 'Table', 'activities.created_at' => 'Created At'],
             'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
@@ -240,7 +238,7 @@ class ActivityController extends Controller
 
     protected function getFilterOptions(): array
     {
-        return  [
+        return [
             'actionOptions' => ['' => '&nbsp;'] + Action::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
             'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
         ];
