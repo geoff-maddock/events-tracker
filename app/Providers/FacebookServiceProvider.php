@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use Facebook\Facebook;
 use Illuminate\Contracts\Support\DeferrableProvider;
+use Illuminate\Support\ServiceProvider;
 
 class FacebookServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -14,7 +14,7 @@ class FacebookServiceProvider extends ServiceProvider implements DeferrableProvi
             return new Facebook([
                 'app_id' => $this->app['config']['services.facebook.client_id'],
                 'app_secret' => $this->app['config']['services.facebook.client_secret'],
-                'default_graph_version' => $this->app['config']['services.facebook.graph_version']
+                'default_graph_version' => $this->app['config']['services.facebook.graph_version'],
             ]);
         });
     }

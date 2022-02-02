@@ -1,7 +1,5 @@
 <?php
 
-use App\Providers\FacebookServiceProvider;
-
 return [
     'env' => env('APP_ENV', 'production'),
 
@@ -189,7 +187,7 @@ return [
         NotificationChannels\Twitter\TwitterServiceProvider::class,
 
         // facebook service
-        App\Providers\FacebookServiceProvider::class
+        // App\Providers\FacebookServiceProvider::class
     ],
 
     /*
@@ -243,6 +241,6 @@ return [
         'Image' => \Intervention\Image\Facades\Image::class,
         // 'Calendar' => \MaddHatter\LaravelFullcalendar\Facades\Calendar::class,
         'Form' => Collective\Html\FormFacade::class,
-        'Html' => Collective\Html\HtmlFacade::class
+        'Html' => Collective\Html\HtmlFacade::class,
     ],
 ];
