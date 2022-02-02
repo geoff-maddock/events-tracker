@@ -25,13 +25,13 @@ class ForumFactory extends Factory
         $user = User::factory()->create();
 
         return [
-            'name' => $this->faker->sentence,
+            'name' => $this->faker->word,
             'slug' => $this->faker->sentence,
             'description' => $this->faker->sentence,
             'visibility_id' => 3,
             'sort_order' => 0,
             'is_active' => 1,
-            'created_by' => $user->id
+            'created_by' => $user->id,
         ];
     }
 }
