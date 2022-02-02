@@ -107,7 +107,8 @@ class PagesController extends Controller
     }
 
     /**
-     * Primary site searchbar action
+     * Primary site searchbar action.
+     *
      * @return View
      */
     public function search(Request $request)
@@ -125,7 +126,7 @@ class PagesController extends Controller
                     ->orWhereHas('series', function ($q) use ($slug) {
                         $q->where('name', '=', ucfirst($slug));
                     })
-                    ->orWhere('name', 'like', '%' . $slug . '%')
+                    ->orWhere('name', 'like', '%'.$slug.'%')
                     ->where(function ($query) {
                         $query->visible($this->user);
                     })
@@ -138,7 +139,7 @@ class PagesController extends Controller
                     ->orWhereHas('tags', function ($q) use ($slug) {
                         $q->where('name', '=', ucfirst($slug));
                     })
-                    ->orWhere('name', 'like', '%' . $slug . '%')
+                    ->orWhere('name', 'like', '%'.$slug.'%')
                     ->where(function ($query) {
                         $query->visible($this->user);
                     })
@@ -147,7 +148,7 @@ class PagesController extends Controller
                     ->paginate($this->limit);
 
         // find entities by name, tags or aliases
-        $entities = Entity::where('name', 'like', '%' . $slug . '%')
+        $entities = Entity::where('name', 'like', '%'.$slug.'%')
                 ->orWhereHas('tags', function ($q) use ($slug) {
                     $q->where('name', '=', ucfirst($slug));
                 })
@@ -159,17 +160,17 @@ class PagesController extends Controller
                 ->paginate($this->limit);
 
         // find tags by name
-        $tags = Tag::where('name', 'like', '%' . $slug . '%')
+        $tags = Tag::where('name', 'like', '%'.$slug.'%')
                 ->orderBy('name', 'ASC')
                 ->simplePaginate($this->limit);
 
         // find users by name
-        $users = User::where('name', 'like', '%' . $slug . '%')
+        $users = User::where('name', 'like', '%'.$slug.'%')
                 ->orderBy('name', 'ASC')
                 ->simplePaginate($this->limit);
 
         // find threads by name
-        $threads = Thread::where('name', 'like', '%' . $slug . '%')
+        $threads = Thread::where('name', 'like', '%'.$slug.'%')
             ->orWhereHas('tags', function ($q) use ($slug) {
                 $q->where('name', '=', ucfirst($slug));
             })
@@ -231,7 +232,7 @@ class PagesController extends Controller
                         'next_day' => $next_day,
                         'next_day_window' => $next_day_window,
                         'prev_day' => $prev_day,
-                        'prev_day_window' => $prev_day_window
+                        'prev_day_window' => $prev_day_window,
                     ])
                     ->render();
         }
@@ -244,7 +245,7 @@ class PagesController extends Controller
                             'next_day' => $next_day,
                             'next_day_window' => $next_day_window,
                             'prev_day' => $prev_day,
-                            'prev_day_window' => $prev_day_window
+                            'prev_day_window' => $prev_day_window,
                         ]
                     );
     }
@@ -256,7 +257,7 @@ class PagesController extends Controller
      */
     protected function getFilters(Request $request)
     {
-        return $this->getAttribute('filters', $this->getDefaultFilters(), $request);
+        return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
     }
 
     /**
@@ -267,10 +268,10 @@ class PagesController extends Controller
      *
      * @return mixed
      */
-    protected function getAttribute($attribute, $default = null, Request $request)
+    protected function getAttribute(Request $request, $attribute, $default = null)
     {
         return $request->session()
-            ->get($this->prefix . $attribute, $default);
+            ->get($this->prefix.$attribute, $default);
     }
 
     /**
@@ -288,7 +289,7 @@ class PagesController extends Controller
         return [
             'limit' => $this->defaultLimit,
             'sort' => $this->defaultSort,
-            'sortDirection' => $this->defaultSortDirection
+            'sortDirection' => $this->defaultSortDirection,
         ];
     }
 
@@ -311,7 +312,7 @@ class PagesController extends Controller
      */
     protected function setAttribute($attribute, $value, Request $request)
     {
-        $request->session()->put($this->prefix . $attribute, $value);
+        $request->session()->put($this->prefix.$attribute, $value);
     }
 
     public function tools(Request $request)
@@ -320,7 +321,7 @@ class PagesController extends Controller
 
         $user = $request->user();
         if (!$user->can('show_admin')) {
-            die('cannot show admin)');
+            exit('cannot show admin)');
         }
 
         // get all the events with a link but no photo
@@ -340,9 +341,9 @@ class PagesController extends Controller
         $email = $request->input('email');
 
         // check that a user with that email does not already exist.
-        $users = User::where('email', 'like', '%' . $email . '%')->orderBy('name', 'ASC')->count();
+        $users = User::where('email', 'like', '%'.$email.'%')->orderBy('name', 'ASC')->count();
         if ($users > 0) {
-            flash()->success('Error', 'No email sent - a user with the address - ' . $email . ' - already exists on the site.' . count($users));
+            flash()->success('Error', 'No email sent - a user with the address - '.$email.' - already exists on the site.'.count($users));
 
             return back();
         }
@@ -350,9 +351,9 @@ class PagesController extends Controller
         // email the user
         $this->inviteUser($email);
 
-        Log::info('Email ' . $email . ' was invited to join the site');
+        Log::info('Email '.$email.' was invited to join the site');
 
-        flash()->success('Success', 'An email was sent to ' . $email . ' inviting them to join the site');
+        flash()->success('Success', 'An email was sent to '.$email.' inviting them to join the site');
 
         return back();
     }
@@ -383,7 +384,7 @@ class PagesController extends Controller
                 $dt = Carbon::now();
                 $m->to($email, $email)
                     ->bcc($admin_email)
-                    ->subject($site . ': Event Tracker Invite - ' . $dt->format('l F jS Y'));
+                    ->subject($site.': Event Tracker Invite - '.$dt->format('l F jS Y'));
             }
         );
 

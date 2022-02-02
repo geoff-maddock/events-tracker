@@ -32,6 +32,8 @@ use App\Services\StringHelper;
 use Carbon\Carbon;
 use Exception;
 use FacebookAds\Api as Api;
+use FacebookAds\Object\Event as ObjectEvent;
+use FacebookAds\Object\Fields\EventFields;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -1581,11 +1583,15 @@ class EventsController extends Controller
         $event_id = $spl[4];
 
         try {
-            // FB API new call
-            $token = $this->facebook->getJavaScriptHelper()->getAccessToken();
-            $response = $this->facebook->get($event_id.'?fields='.$fields, $token);
+            // FB API new call - OLDER API
+            // $token = $this->facebook->getJavaScriptHelper()->getAccessToken();
+            // $response = $this->facebook->get($event_id.'?fields='.$fields, $token);
 
-            if ($cover = $response->getGraphNode()->getField('cover')) {
+            // FB facebook-php-business-sdk
+            $fbEventFields = [EventFields::COVER];
+            $fbEvent = (new ObjectEvent($event_id))->getSelf($fbEventFields);
+
+            if ($cover = $fbEvent->cover) {
                 $source = $cover->getField('source');
                 $content = file_get_contents($source);
 
@@ -1637,17 +1643,29 @@ class EventsController extends Controller
 
         $fields = 'attending_count,category,cover,interested_count,name,noreply_count,maybe_count';
 
+        // FB facebook-php-business-sdk
+        $fbEventFields = [
+            EventFields::ATTENDING_COUNT,
+            EventFields::CATEGORY,
+            EventFields::COVER,
+            EventFields::INTERESTED_COUNT,
+            EventFields::NAME,
+            EventFields::NOREPLY_COUNT,
+            EventFields::MAYBE_COUNT,
+        ];
+
         foreach ($events as $event) {
             $str = $event->primary_link;
             $spl = explode('/', $str);
             $event_id = $spl[4];
 
-            // TODO change this to use a session variable to store the access token?
-            $token = $this->facebook->getJavaScriptHelper()->getAccessToken();
-            $response = $this->facebook->get($event_id.'?fields='.$fields, $token);
+            // FB previous method
+            // $token = $this->facebook->getJavaScriptHelper()->getAccessToken();
+            // $response = $this->facebook->get($event_id.'?fields='.$fields, $token);
+            $fbEvent = (new ObjectEvent($event_id))->getSelf($fbEventFields);
 
             // get the cover from FB
-            if (($cover = $response->getGraphNode()->getField('cover')) && ($source = $cover->getField('source'))) {
+            if (($cover = $fbEvent->cover) && ($source = $cover->getField('source'))) {
                 $content = file_get_contents($source);
 
                 $fileName = time().'_temp.jpg';
