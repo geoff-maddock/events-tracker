@@ -203,6 +203,9 @@ Route::match(['get', 'post'], 'events/filter', ['as' => 'events.filter', 'uses' 
 Route::get('events/reset', ['as' => 'events.reset', 'uses' => 'EventsController@reset']);
 Route::get('events/rpp-reset', ['as' => 'events.rppReset', 'uses' => 'EventsController@rppReset']);
 
+// FB access token
+Route::get('fb-access', 'EventsController@fbAuthToken');
+
 Route::get('events/tag/{tag}', 'EventsController@indexTags')->name('events.tag');
 Route::get('events/venue/{slug}', 'EventsController@indexVenues')->name('events.venue');
 Route::get('events/related-to/{slug}', 'EventsController@indexRelatedTo')->name('events.relatedto');

@@ -37,12 +37,18 @@ $(document).ready(function(){
         FB.getLoginStatus(function(response) {
             if (response.status === 'connected') {
                 console.log('Facebook-event.js. Already Logged in.');
+                const accessToken = response.authResponse.accessToken;
+                // set the token in the session
+                document.cookie = "fb-token="+accessToken+"; path=/";
             }
             else {
                // FB.login();
                 console.log('FB.login - trying to get all scopes')
                 FB.login(function(response) {
                     // handle the response
+                    // set the token in the session
+                    const accessToken = response.authResponse.accessToken;
+                    document.cookie = "fb-token="+accessToken+"; path=/";
                 }, {
                     scope: 'public_profile,email,user_events',
                     return_scopes: true
