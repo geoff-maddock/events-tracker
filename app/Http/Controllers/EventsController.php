@@ -103,9 +103,10 @@ class EventsController extends Controller
         $this->defaultSortCriteria = ['events.start_at' => 'desc'];
 
         // inject Facebook into class
-        Api::init(config('app.app_id'),
-            config('app.app_secret'),
-            config('app.graph_version')
+        Api::init(
+            config('app.fb_app_id'),
+            config('app.fb_app_secret'),
+            config('app.fb_graph_version')
         );
 
         $this->facebook = Api::instance();
@@ -1561,16 +1562,85 @@ class EventsController extends Controller
         return back();
     }
 
+
+    private function getFacebookLoginUrl($permissions)
+    {
+        $fbGraphVersion = config('app.fb_graph_version');
+        $fbAppId = config('app.fb_app_id');
+        $endpoint = 'https://www.facebook.com/' . $fbGraphVersion . '/dialog/oauth';
+
+        $params = [
+            'client_id' => $fbAppId,
+            'redirect_uri' => '/',
+            'scope' => $permissions,
+            'auth_type' => 'rerequest'
+        ];
+
+        return $endpoint . '?' . http_build_query($params);
+    }
+
+    private function getAccessTokenWithCode($code) {
+
+        $endpoint = 'https://graph.facebook.com/' . config('app.fb_graph_version') . '/oauth/access_token';
+
+        $params = [
+            'client_id' => config('app.fb_app_id'),
+            'client_secret' => config('app.fb_app_secret'),
+            'redirect_url' => '/',
+            'code' => $code
+        ];
+
+        return $this->makeApiCall($endpoint, 'GET', $params);
+    }
+
+    private function makeApiCall($endpoint, $type, $params) {
+        $ch = curl_init();
+
+        // create endpoint with params
+        $apiEndpoint = $endpoint . '?' . http_build_query($params);
+
+        // set other curl options
+        curl_setopt($ch, CURLOPT_URL, $apiEndpoint);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        // get response
+        $response = curl_exec($ch);
+
+        curl_close($ch);
+
+        return [
+            'type' => $type,
+            'endpoint' => $endpoint,
+            'params' => $params,
+            'api_endpoint' => $apiEndpoint,
+            'data' => json_decode($response, true)
+        ];
+    }
+
+    // This is the callback from the login that will get and set an access token
+    public function fbAuthToken()
+    {
+        // build an ajax call to get an access token?
+
+        // check if there is an access token
+        if (isset($_COOKIE['fb-token'])) {
+            return $_COOKIE['fb-token'];
+        }
+
+        // if not, seet if we made the login
+        if (isset($_GET['code'])) {
+            $accessToken = $this->getAccessTokenWithCode($_GET['code']);
+            setcookie('fb-token', $accessToken['data'], time() + (86400 * 30), '/');
+            dump($accessToken);
+        }
+    }
+
     /**
      * @return bool|RedirectResponse
      */
     protected function addFbPhoto(Event $event)
     {
-        // some fields may have been deprecated - only need cover here
-
-        // $fields = 'attending_count,category,cover,interested_count,type,name,noreply_count,maybe_count,owner,place,roles';
-        $fields = 'cover';
-
+        // get the FB event id from the primary link
         $str = $event->primary_link;
         $spl = explode('/', $str);
 
@@ -1587,12 +1657,30 @@ class EventsController extends Controller
             // $token = $this->facebook->getJavaScriptHelper()->getAccessToken();
             // $response = $this->facebook->get($event_id.'?fields='.$fields, $token);
 
-            // FB facebook-php-business-sdk
+            // FB facebook-php-business-sdk - Get an auth token by logging in if there is no current token set
+            // make an ajax call using the facebook url
+
+            // check cookies for the token
+            $fbToken = null;
+            if (isset($_COOKIE['fb-token'])) {
+                $fbToken = $_COOKIE['fb-token'];
+            }
+
+            Api::init(
+                config('app.fb_app_id'),
+                config('app.fb_app_secret'),
+                $fbToken
+            );
+
+            // not sure why this needs to be set, but the docs show this
+            $facebook = Api::instance();
+
             $fbEventFields = [EventFields::COVER];
+
             $fbEvent = (new ObjectEvent($event_id))->getSelf($fbEventFields);
 
             if ($cover = $fbEvent->cover) {
-                $source = $cover->getField('source');
+                $source = $cover['source'];
                 $content = file_get_contents($source);
 
                 $fileName = time().'_temp.jpg';
@@ -1641,8 +1729,6 @@ class EventsController extends Controller
             ->where('primary_link', 'like', '%facebook%')
             ->get();
 
-        $fields = 'attending_count,category,cover,interested_count,name,noreply_count,maybe_count';
-
         // FB facebook-php-business-sdk
         $fbEventFields = [
             EventFields::ATTENDING_COUNT,
@@ -1659,9 +1745,6 @@ class EventsController extends Controller
             $spl = explode('/', $str);
             $event_id = $spl[4];
 
-            // FB previous method
-            // $token = $this->facebook->getJavaScriptHelper()->getAccessToken();
-            // $response = $this->facebook->get($event_id.'?fields='.$fields, $token);
             $fbEvent = (new ObjectEvent($event_id))->getSelf($fbEventFields);
 
             // get the cover from FB
@@ -1826,8 +1909,6 @@ class EventsController extends Controller
     public function edit(Event $event): View
     {
         $this->middleware('auth');
-
-        // moved necessary lists into AppServiceProvider
 
         return view('events.edit', compact('event'))->with($this->getFormOptions());
     }

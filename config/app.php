@@ -105,6 +105,10 @@ return [
     */
 
     'fb_app_id' => env('APP_FB_APP_ID'),
+    'fb_app_secret' => env('FACEBOOK_APP_SECRET'),
+    'fb_graph_version' => env('FACEBOOK_GRAPH_VERSION'),
+    'fb_default_access_token' => env('FACEBOOK_DEFAULT_ACCESS_TOKEN'),
+
     'app_name' => env('APP_NAME', 'Event Repo'),
     'name' => env('APP_NAME', 'Event Repo'),
     'tagline' => env('APP_TAGLINE', 'Event Repository'),
