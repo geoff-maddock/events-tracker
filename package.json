@@ -10,11 +10,11 @@
     "production": "mix --production"
   },
   "devDependencies": {
-    "axios": "^0.21.1",
-    "cross-env": "^5.2.1",
+    "axios": "^0.25",
+    "cross-env": "^7",
     "laravel-mix": "^6.0.19",
     "lodash": "^4.17.21",
-    "resolve-url-loader": "^3.1.2",
+    "resolve-url-loader": "^5.0",
     "sass": "^1.35.2",
     "sass-loader": "^12.1.0",
     "vue": "^2.6.11",
@@ -39,7 +39,7 @@
     "moment": "^2.24.0",
     "npm": "^7.0.7",
     "postcss-loader": "^6.1.1",
-    "pusher-js": "^5.0.3",
+    "pusher-js": "^7",
     "save-dev": "0.0.1-security",
     "select2": "^4.0.12",
     "select2-bootstrap-css": "^1.4.6",
