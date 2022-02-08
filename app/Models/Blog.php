@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Filters\QueryFilter;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
@@ -12,38 +13,39 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * App\Models\Blog
+ * App\Models\Blog.
  *
- * @property int $id
- * @property string $name
- * @property string $slug
- * @property string $body
- * @property int|null $menu_id
- * @property int|null $content_type_id
- * @property int|null $visibility_id
- * @property int $sort_order
- * @property int $is_active
- * @property int $is_admin
- * @property int $allow_html
- * @property int $created_by
- * @property int|null $updated_by
+ * @property int                             $id
+ * @property string                          $name
+ * @property string                          $slug
+ * @property string                          $body
+ * @property int|null                        $menu_id
+ * @property int|null                        $content_type_id
+ * @property int|null                        $visibility_id
+ * @property int                             $sort_order
+ * @property int                             $is_active
+ * @property int                             $is_admin
+ * @property int                             $allow_html
+ * @property int                             $created_by
+ * @property int|null                        $updated_by
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \App\Models\ContentType|null $contentType
- * @property-read \App\Models\User $creator
- * @property-read Collection|\App\Models\Entity[] $entities
- * @property-read int|null $entities_count
- * @property-read mixed $entity_list
- * @property-read mixed $tag_list
- * @property-read Collection|\App\Models\Like[] $likes
- * @property-read int|null $likes_count
- * @property-read \App\Models\Menu|null $menu
- * @property-read Collection|\App\Models\Photo[] $photos
- * @property-read int|null $photos_count
- * @property-read Collection|\App\Models\Tag[] $tags
- * @property-read int|null $tags_count
- * @property-read \App\Models\User $user
- * @property \App\Models\Visibility|null $visibility
+ * @property \App\Models\ContentType|null    $contentType
+ * @property \App\Models\User                $creator
+ * @property Collection|\App\Models\Entity[] $entities
+ * @property int|null                        $entities_count
+ * @property mixed                           $entity_list
+ * @property mixed                           $tag_list
+ * @property Collection|\App\Models\Like[]   $likes
+ * @property int|null                        $likes_count
+ * @property \App\Models\Menu|null           $menu
+ * @property Collection|\App\Models\Photo[]  $photos
+ * @property int|null                        $photos_count
+ * @property Collection|\App\Models\Tag[]    $tags
+ * @property int|null                        $tags_count
+ * @property \App\Models\User                $user
+ * @property \App\Models\Visibility|null     $visibility
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Blog filter(\App\Filters\QueryFilter $filters)
  * @method static \Illuminate\Database\Eloquent\Builder|Blog html($user)
  * @method static \Illuminate\Database\Eloquent\Builder|Blog newModelQuery()
@@ -122,7 +124,7 @@ class Blog extends Eloquent
 
     public function path()
     {
-        return '/blog/' . $this->id;
+        return '/blog/'.$this->id;
     }
 
     public function scopePast($query)
@@ -194,7 +196,7 @@ class Blog extends Eloquent
     }
 
     /**
-     * Get all of the blogs photos
+     * Get all of the blogs photos.
      */
     public function photos(): BelongsToMany
     {
@@ -252,10 +254,8 @@ class Blog extends Eloquent
     /**
      * Return a collection of blogs with the passed tag.
      *
-     * @return Collection $blogs
-     *
      **/
-    public static function getByTag($tag)
+    public static function getByTag($tag): Builder
     {
         // get a list of blogs that have the passed tag
         $blogs = self::whereHas('tags', function ($q) use ($tag) {
@@ -268,10 +268,8 @@ class Blog extends Eloquent
     /**
      * Return a collection of blogs with the passed entity.
      *
-     * @return Collection $blogs
-     *
      **/
-    public static function getByEntity($slug)
+    public static function getByEntity($slug): Builder
     {
         // get a list of blogs that have the passed entity
         $blogs = self::whereHas('entities', function ($q) use ($slug) {
@@ -289,10 +287,8 @@ class Blog extends Eloquent
     /**
      * Return the primary photo for this blog.
      *
-     * @return Photo $photo
-     *
      **/
-    public function getPrimaryPhoto()
+    public function getPrimaryPhoto(): ?Photo
     {
         // gets the first photo related to this blog
         $primary = $this->photos()->where('photos.is_primary', '=', '1')->first();

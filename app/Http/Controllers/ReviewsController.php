@@ -3,32 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Filters\ReviewFilters;
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\EventRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
-use App\Models\ReviewType;
-use App\Models\Thread;
-use App\Traits\Followable;
-use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
-use Facebook\Exceptions\FacebookSDKException;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use App\Models\EventReview;
-use App\Models\Event;
-use App\Models\Entity;
-use App\Models\Tag;
 use App\Models\Activity;
-use App\Models\TagType;
+use App\Models\Event;
+use App\Models\EventReview;
+use App\Models\ReviewType;
+use App\Models\Tag;
 use App\Models\User;
 use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\View\View;
 use Str;
 
 class ReviewsController extends Controller
@@ -80,12 +70,12 @@ class ReviewsController extends Controller
         $this->defaultSortCriteria = ['event_reviews.created_at', 'desc'];
         $this->hasFilter = false;
 
-        $this->hasFilter = 0;
+        $this->hasFilter = false;
         parent::__construct();
     }
 
     /**
-     * Get the default sort array
+     * Get the default sort array.
      *
      * @return array
      */
@@ -95,7 +85,7 @@ class ReviewsController extends Controller
     }
 
     /**
-     * Get the default filters array
+     * Get the default filters array.
      *
      * @return array
      */
@@ -107,15 +97,13 @@ class ReviewsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
-     * @return View
      * @throws \Throwable
      */
     public function index(
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ) {
+    ): string {
         $listParamSessionStore->setBaseIndex('internal_review');
         $listParamSessionStore->setKeyPrefix('internal_review_index');
 
@@ -151,7 +139,7 @@ class ReviewsController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -161,17 +149,15 @@ class ReviewsController extends Controller
     }
 
     /**
-     * Display filter
+     * Display filter.
      *
-     * @param Request $request
-     * @return View
      * @throws \Throwable
      */
     public function filter(
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ) {
+    ): string {
         $listParamSessionStore->setBaseIndex('internal_review');
         $listParamSessionStore->setKeyPrefix('internal_review_index');
 
@@ -207,7 +193,7 @@ class ReviewsController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -217,7 +203,7 @@ class ReviewsController extends Controller
     }
 
     /**
-     * Reset the rpp, sort, order
+     * Reset the rpp, sort, order.
      *
      * @throws \Throwable
      */
@@ -256,7 +242,7 @@ class ReviewsController extends Controller
     }
 
     /**
-     * Show a form to create a new review
+     * Show a form to create a new review.
      *
      * @return view
      **/
@@ -288,7 +274,7 @@ class ReviewsController extends Controller
         // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
             if (!Tag::find($tag)) {
-                $newTag = new Tag;
+                $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->slug = Str::slug($tag);
                 $newTag->tag_type_id = 1;
@@ -296,10 +282,10 @@ class ReviewsController extends Controller
 
                 $syncArray[] = $newTag->id;
 
-                $msg .= ' Added tag ' . $tag . '.';
+                $msg .= ' Added tag '.$tag.'.';
             } else {
                 $syncArray[$key] = $tag;
-            };
+            }
         }
 
         $event = $event->create($input);
@@ -319,7 +305,6 @@ class ReviewsController extends Controller
     }
 
     /**
-     * @param Event $event
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function notifyFollowing(Event $event)
@@ -340,12 +325,12 @@ class ReviewsController extends Controller
                     Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $event, $tag, $reply_email, $site) {
                         $m->from($reply_email, $site);
 
-                        $m->to($user->email, $user->name)->subject($site . ': ' . $tag->name . ' :: ' . $event->start_at->format('D F jS') . ' ' . $event->name);
+                        $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
                     });
                     $users[$user->id] = $tag->name;
-                };
-            };
-        };
+                }
+            }
+        }
 
         // notify users following any of the entities
         $entities = $event->entities()->get();
@@ -358,12 +343,12 @@ class ReviewsController extends Controller
                     Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $entity, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $event, $entity, $reply_email, $site) {
                         $m->from($reply_email, $site);
 
-                        $m->to($user->email, $user->name)->subject($site . ': ' . $entity->name . ' :: ' . $event->start_at->format('D F jS') . ' ' . $event->name);
+                        $m->to($user->email, $user->name)->subject($site.': '.$entity->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
                     });
                     $users[$user->id] = $entity->name;
-                };
-            };
-        };
+                }
+            }
+        }
 
         return back();
     }
@@ -396,7 +381,7 @@ class ReviewsController extends Controller
 
         if (!$event->ownedBy($this->user)) {
             $this->unauthorized($request);
-        };
+        }
 
         $tagArray = $request->input('tag_list', []);
         $syncArray = [];
@@ -404,19 +389,19 @@ class ReviewsController extends Controller
         // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
             if (!Tag::find($tag)) {
-                $newTag = new Tag;
+                $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->slug = Str::slug($tag);
-                ;
+
                 $newTag->tag_type_id = 1;
                 $newTag->save();
 
                 $syncArray[strtolower($tag)] = $newTag->id;
 
-                $msg .= ' Added tag ' . $tag . '.';
+                $msg .= ' Added tag '.$tag.'.';
             } else {
                 $syncArray[$key] = $tag;
-            };
+            }
         }
 
         $event->tags()->sync($syncArray);
@@ -444,16 +429,16 @@ class ReviewsController extends Controller
 
     protected function getListControlOptions(): array
     {
-        return  [
+        return [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
             'sortOptions' => ['review' => 'Review', 'created_at' => 'Created At', 'review_type_id' => 'Review Type', 'rating' => 'Rating'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
         ];
     }
 
     protected function getFilterOptions(): array
     {
-        return  [
+        return [
             'visibilityOptions' => ['' => '&nbsp;'] + Visibility::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
             'reviewTypeOptions' => ['' => ''] + ReviewType::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'userOptions' => ['' => '&nbsp;'] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
@@ -464,7 +449,7 @@ class ReviewsController extends Controller
     {
         return [
             'visibilityOptions' => ['' => ''] + Visibility::pluck('name', 'id')->all(),
-            'reviewTypeOptions' => ['' => ''] + ReviewType::orderBy('name', 'ASC')->pluck('name', 'id')->all()
+            'reviewTypeOptions' => ['' => ''] + ReviewType::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
         ];
     }
 }

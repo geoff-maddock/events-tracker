@@ -9,59 +9,60 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Notifications\Notifiable;
 use Str;
 
 /**
- * App\Models\Entity
+ * App\Models\Entity.
  *
- * @property int $id
- * @property string $name
- * @property string $slug
- * @property string $short
- * @property string $description
- * @property int|null $entity_type_id
- * @property int|null $entity_status_id
- * @property int $created_by
- * @property int|null $updated_by
- * @property \Illuminate\Support\Carbon $created_at
- * @property \Illuminate\Support\Carbon $updated_at
- * @property string|null $facebook_username
- * @property string|null $twitter_username
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Alias[] $aliases
- * @property-read int|null $aliases_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $comments
- * @property-read int|null $comments_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Contact[] $contacts
- * @property-read int|null $contacts_count
- * @property-read \App\Models\EntityStatus|null $entityStatus
- * @property-read \App\Models\EntityType|null $entityType
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Event[] $events
- * @property-read int|null $events_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Follow[] $follows
- * @property-read int|null $follows_count
- * @property-read mixed $alias_list
- * @property-read mixed $role_list
- * @property-read mixed $tag_list
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Like[] $likes
- * @property-read int|null $likes_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Link[] $links
- * @property-read int|null $links_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Location[] $locations
- * @property-read int|null $locations_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Photo[] $photos
- * @property-read int|null $photos_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Role[] $roles
- * @property-read int|null $roles_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Series[] $series
- * @property-read int|null $series_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
- * @property-read int|null $tags_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Thread[] $threads
- * @property-read int|null $threads_count
- * @property-read \App\Models\User $user
+ * @property int                                                             $id
+ * @property string                                                          $name
+ * @property string                                                          $slug
+ * @property string                                                          $short
+ * @property string                                                          $description
+ * @property int|null                                                        $entity_type_id
+ * @property int|null                                                        $entity_status_id
+ * @property int                                                             $created_by
+ * @property int|null                                                        $updated_by
+ * @property \Illuminate\Support\Carbon                                      $created_at
+ * @property \Illuminate\Support\Carbon                                      $updated_at
+ * @property string|null                                                     $facebook_username
+ * @property string|null                                                     $twitter_username
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Alias[]    $aliases
+ * @property int|null                                                        $aliases_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[]  $comments
+ * @property int|null                                                        $comments_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Contact[]  $contacts
+ * @property int|null                                                        $contacts_count
+ * @property \App\Models\EntityStatus|null                                   $entityStatus
+ * @property \App\Models\EntityType|null                                     $entityType
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Event[]    $events
+ * @property int|null                                                        $events_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Follow[]   $follows
+ * @property int|null                                                        $follows_count
+ * @property mixed                                                           $alias_list
+ * @property mixed                                                           $role_list
+ * @property mixed                                                           $tag_list
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Like[]     $likes
+ * @property int|null                                                        $likes_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Link[]     $links
+ * @property int|null                                                        $links_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Location[] $locations
+ * @property int|null                                                        $locations_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Photo[]    $photos
+ * @property int|null                                                        $photos_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Role[]     $roles
+ * @property int|null                                                        $roles_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Series[]   $series
+ * @property int|null                                                        $series_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[]      $tags
+ * @property int|null                                                        $tags_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Thread[]   $threads
+ * @property int|null                                                        $threads_count
+ * @property \App\Models\User                                                $user
+ *
  * @method static Builder|Entity active()
  * @method static Builder|Entity filter(\App\Filters\QueryFilter $filters)
  * @method static Builder|Entity newModelQuery()
@@ -188,12 +189,8 @@ class Entity extends Eloquent
     /**
      * Return an entity.
      *
-     * @pra
-     *
-     * @return Entity $entity
-     *
      **/
-    public static function getBySlug(string $slug)
+    public static function getBySlug(string $slug): Builder
     {
         // get a single entity by slug
         $entity = self::where('slug', $slug);
@@ -204,12 +201,8 @@ class Entity extends Eloquent
     /**
      * Return a collection of entities with the passed type.
      *
-     * @pra
-     *
-     * @return Collection $entities
-     *
      **/
-    public static function getByType(string $type)
+    public static function getByType(string $type): Builder
     {
         // get a list of entities that have the passed role
         $entities = self::whereHas('entity_type', function ($q) use ($type) {
@@ -332,8 +325,6 @@ class Entity extends Eloquent
 
     /**
      * An entity has one status.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function entityStatus(): BelongsTo
     {
@@ -342,8 +333,6 @@ class Entity extends Eloquent
 
     /**
      * The tags that belong to the entity.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function tags(): BelongsToMany
     {
@@ -524,10 +513,8 @@ class Entity extends Eloquent
     /**
      * Return the primary location address.
      *
-     * @return Location
-     *
      **/
-    public function getPrimaryLocationAddress($signedIn = null)
+    public function getPrimaryLocationAddress($signedIn = null): string
     {
         $address = '';
 
@@ -535,7 +522,7 @@ class Entity extends Eloquent
         $primary = $this->locations()->first();
 
         if ($primary && ('Guarded' != $primary->visibility->name || ('Guarded' == $primary->visibility->name) && $signedIn)) {
-            $address .= $primary->address_one . ' ';
+            $address .= $primary->address_one.' ';
             $address .= $primary->city;
         }
 
@@ -562,7 +549,6 @@ class Entity extends Eloquent
 
     /**
      * Checks if the entity is followed by the user.
-     *
      *
      **/
     public function followedBy($user)
@@ -663,7 +649,7 @@ class Entity extends Eloquent
         if (count($this->roles) > 0) {
             $format .= ' - ';
             foreach ($this->roles as $role) {
-                $format .= $role->name . ', ';
+                $format .= $role->name.', ';
             }
             $format = substr($format, 0, -2);
         }
@@ -678,7 +664,7 @@ class Entity extends Eloquent
         // URLs count as 23 chars
 
         // add name and type
-        $format = $this->name . ' | ' . $this->entityType->name . ' | ';
+        $format = $this->name.' | '.$this->entityType->name.' | ';
         $format .= $this->short;
 
         // Turn related tags into hashtags
@@ -688,18 +674,18 @@ class Entity extends Eloquent
                 if (strlen($format) + strlen($tag->name) > 244) {
                     continue;
                 }
-                $format .= ' #' . Str::studly($tag->name);
+                $format .= ' #'.Str::studly($tag->name);
             }
         }
 
         // if there are more than 12 chars remaining, add default hashtag
         if (strlen($format) < 246) {
-            $format .= ' #' . config('app.default_hashtag');
+            $format .= ' #'.config('app.default_hashtag');
         }
 
         // add the arcane city URL
         if (strlen($format) < 258) {
-            $format .= ' https://arcane.city/entities/' . $this->slug;
+            $format .= ' https://arcane.city/entities/'.$this->slug;
         }
 
         // add the primary link
@@ -707,7 +693,7 @@ class Entity extends Eloquent
             foreach ($this->links as $link) {
                 // if there are at least 23 chars remaining, add primary link
                 if (strlen($format) < 258) {
-                    $format .= ' ' . $link->url;
+                    $format .= ' '.$link->url;
                 }
             }
         }
@@ -716,7 +702,7 @@ class Entity extends Eloquent
         if (count($this->futureEvents()) > 0) {
             $event = $this->futureEvents()->first();
             $start = $event->start_at->format('m/d');
-            $format .= ' Next: ' . $start . ' ' . $event->name;
+            $format .= ' Next: '.$start.' '.$event->name;
         }
 
         // only return the first 280 chars
