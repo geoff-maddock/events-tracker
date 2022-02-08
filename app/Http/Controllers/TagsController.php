@@ -3,20 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Activity;
-use App\Http\Controllers\Controller;
+use App\Models\Entity;
+use App\Models\Event;
+use App\Models\Follow;
+use App\Models\Series;
+use App\Models\Tag;
+use App\Models\TagType;
+use App\Services\StringHelper;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use App\Models\Event;
-use App\Models\Entity;
-use App\Models\Series;
-use App\Models\Tag;
-use App\Models\Follow;
-use App\Models\TagType;
-use App\Services\StringHelper;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -74,12 +74,11 @@ class TagsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Tag $tag
-     * @return Response
      * @internal param int $id
+     *
      * @throws \Exception
      */
-    public function destroy(Tag $tag)
+    public function destroy(Tag $tag): RedirectResponse
     {
         $tag->delete();
 
@@ -88,10 +87,8 @@ class TagsController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @return Response
      */
-    public function index()
+    public function index(): View
     {
         // default to no tag
         $tag = null;
@@ -106,7 +103,7 @@ class TagsController extends Controller
             foreach ($userTags as $userTag) {
                 $tagNames[] = $userTag->name;
             }
-        };
+        }
 
         // get all series linked to the tag
         $series = Series::whereHas('tags', function ($q) use ($tagNames) {
@@ -142,10 +139,8 @@ class TagsController extends Controller
 
     /**
      * Show the application dataAjax.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function dataAjax(Request $request)
+    public function dataAjax(Request $request): JsonResponse
     {
         $data = [];
 
@@ -161,11 +156,9 @@ class TagsController extends Controller
     }
 
     /**
-     * Display a listing of events by tag
-     *
-     * @return Response
+     * Display a listing of events by tag.
      */
-    public function indexTags($tag)
+    public function indexTags($tag): View
     {
         $tag = urldecode($tag);
 
@@ -185,7 +178,7 @@ class TagsController extends Controller
                     ->simplePaginate($this->limit);
 
         $events->filter(function ($e) {
-            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+            return ($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id);
         });
 
         // get all entities linked to the tag
@@ -204,11 +197,9 @@ class TagsController extends Controller
     }
 
     /**
-     * Display a listing of events by tag
-     *
-     * @return Response
+     * Display a listing of events by tag.
      */
-    public function show($slug, StringHelper $stringHelper)
+    public function show($slug, StringHelper $stringHelper): View
     {
         // convert the slug to name?
         $tag = $stringHelper->SlugToName($slug);
@@ -229,7 +220,7 @@ class TagsController extends Controller
             ->simplePaginate($this->limit);
 
         $events->filter(function ($e) {
-            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+            return ($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id);
         });
 
         // get all entities linked to the tag
@@ -250,11 +241,9 @@ class TagsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param Tag $tag
-     * @return Response
      * @internal param int $id
      */
-    public function edit(Tag $tag)
+    public function edit(Tag $tag): View
     {
         $this->middleware('auth');
 
@@ -274,14 +263,11 @@ class TagsController extends Controller
     }
 
     /**
-     * Store a newly created resource
+     * Store a newly created resource.
      *
-     * @param Request $request
-     * @param Tag $tag
-     * @return \Illuminate\Http\Response
      * @internal param Request $request
      */
-    public function store(Request $request, Tag $tag)
+    public function store(Request $request, Tag $tag): RedirectResponse
     {
         $msg = '';
 
@@ -306,14 +292,11 @@ class TagsController extends Controller
     }
 
     /**
-     * Mark user as following the tag
+     * Mark user as following the tag.
      *
-     * @param int $id
-     * @param Request $request
-     * @return Response
      * @throws \Throwable
      */
-    public function follow(int $id, Request $request)
+    public function follow(int $id, Request $request): RedirectResponse | array
     {
         $type = 'tag';
 
@@ -322,25 +305,25 @@ class TagsController extends Controller
             flash()->error('Error', 'No user is logged in.');
 
             return back();
-        };
+        }
 
         // how can i derive this class from a string?
-        if (!$object = call_user_func('App\\Models\\' . ucfirst($type) . '::find', $id)) { // Tag::find($id))
-            flash()->error('Error', 'No such ' . $type);
+        if (!$object = call_user_func('App\\Models\\'.ucfirst($type).'::find', $id)) { // Tag::find($id))
+            flash()->error('Error', 'No such '.$type);
 
             return back();
-        };
+        }
 
         $tag = $object;
 
         // add the following response
-        $follow = new Follow;
+        $follow = new Follow();
         $follow->object_id = $id;
         $follow->user_id = $this->user->id;
         $follow->object_type = $type;
         $follow->save();
 
-        Log::info('User ' . $id . ' is following ' . $object->name);
+        Log::info('User '.$id.' is following '.$object->name);
 
         // add to activity log
         Activity::log($tag, $this->user, 6);
@@ -348,14 +331,14 @@ class TagsController extends Controller
         // handle the request if ajax
         if ($request->ajax()) {
             return [
-                'Message' => 'You are now following the tag - ' . $object->name,
+                'Message' => 'You are now following the tag - '.$object->name,
                 'Success' => view('tags.link')
                     ->with(compact('tag'))
-                    ->render()
+                    ->render(),
             ];
-        };
+        }
 
-        flash()->success('Success', 'You are now following the ' . $type . ' - ' . $object->name);
+        flash()->success('Success', 'You are now following the '.$type.' - '.$object->name);
 
         return back();
     }
@@ -363,12 +346,9 @@ class TagsController extends Controller
     /**
      * Mark user as unfollowing the tag.
      *
-     * @param int $id
-     * @param Request $request
-     * @return Response
      * @throws \Throwable
      */
-    public function unfollow(int $id, Request $request)
+    public function unfollow(int $id, Request $request): RedirectResponse | array
     {
         $type = 'tag';
 
@@ -377,13 +357,13 @@ class TagsController extends Controller
             flash()->error('Error', 'No user is logged in.');
 
             return back();
-        };
+        }
 
         if (!$tag = Tag::find($id)) {
-            flash()->error('Error', 'No such ' . $type);
+            flash()->error('Error', 'No such '.$type);
 
             return back();
-        };
+        }
 
         // add to activity log
         Activity::log($tag, $this->user, 7);
@@ -395,22 +375,22 @@ class TagsController extends Controller
         // handle the request if ajax
         if ($request->ajax()) {
             return [
-                'Message' => 'You are no longer following the tag - ' . $tag->name,
+                'Message' => 'You are no longer following the tag - '.$tag->name,
                 'Success' => view('tags.link')
                     ->with(compact('tag'))
-                    ->render()
+                    ->render(),
             ];
-        };
+        }
 
-        flash()->success('Success', 'You are no longer following the ' . $type . ' ' . $tag->name);
+        flash()->success('Success', 'You are no longer following the '.$type.' '.$tag->name);
 
         return back();
     }
 
     /**
-     * Returns true if the user has any filters outside of the default
+     * Returns true if the user has any filters outside of the default.
      *
-     * @return Boolean
+     * @return bool
      */
     protected function getIsFiltered(Request $request)
     {
@@ -418,27 +398,27 @@ class TagsController extends Controller
             return false;
         }
 
-        return (bool)count($filters);
+        return (bool) count($filters);
     }
 
     /**
-     * Get user session attribute
+     * Get user session attribute.
      *
-     * @param String $attribute
-     * @param Mixed $default
-     * @param Request $request
-     * @return Mixed
+     * @param string $attribute
+     * @param mixed  $default
+     *
+     * @return mixed
      */
     public function getAttribute(Request $request, $attribute, $default = null)
     {
         return $request->session()
-            ->get($this->prefix . $attribute, $default);
+            ->get($this->prefix.$attribute, $default);
     }
 
     /**
-     * Get session filters
+     * Get session filters.
      *
-     * @return Array
+     * @return array
      */
     public function getFilters(Request $request)
     {
@@ -446,9 +426,9 @@ class TagsController extends Controller
     }
 
     /**
-     * Get the current page for this module
+     * Get the current page for this module.
      *
-     * @return integer
+     * @return int
      */
     public function getPage(Request $request): ?int
     {
@@ -456,10 +436,9 @@ class TagsController extends Controller
     }
 
     /**
-     * Get the current results per page
+     * Get the current results per page.
      *
-     * @param Request $request
-     * @return integer
+     * @return int
      */
     public function getLimit(Request $request)
     {
@@ -467,7 +446,7 @@ class TagsController extends Controller
     }
 
     /**
-     * Get the sort order and column
+     * Get the sort order and column.
      *
      * @return array
      */
@@ -477,7 +456,7 @@ class TagsController extends Controller
     }
 
     /**
-     * Get the default sort array
+     * Get the default sort array.
      *
      * @return array
      */
@@ -487,7 +466,7 @@ class TagsController extends Controller
     }
 
     /**
-     * Get the default filters array
+     * Get the default filters array.
      *
      * @return array
      */
@@ -497,21 +476,18 @@ class TagsController extends Controller
     }
 
     /**
-     * Set user session attribute
+     * Set user session attribute.
      *
-     * @param String $attribute
-     * @param Mixed $value
-     * @param Request $request
+     * @param mixed $value
      */
     public function setAttribute(Request $request, string $attribute, $value)
     {
-        $request->session()->put($this->prefix . $attribute, $value);
+        $request->session()->put($this->prefix.$attribute, $value);
     }
 
     /**
-     * Set filters attribute
+     * Set filters attribute.
      *
-     * @param array $input
      * @return array
      */
     public function setFilters(Request $request, array $input)
@@ -520,10 +496,9 @@ class TagsController extends Controller
     }
 
     /**
-     * Set page attribute
+     * Set page attribute.
      *
-     * @param integer $input
-     * @return integer
+     * @return int
      */
     public function setPage(Request $request, int $input)
     {
@@ -531,10 +506,9 @@ class TagsController extends Controller
     }
 
     /**
-     * Set results per page attribute
+     * Set results per page attribute.
      *
-     * @param integer $input
-     * @return integer
+     * @return int
      */
     public function setLimit(Request $request, int $input)
     {
@@ -542,9 +516,8 @@ class TagsController extends Controller
     }
 
     /**
-     * Set sort order attribute
+     * Set sort order attribute.
      *
-     * @param array $input
      * @return array
      */
     public function setSort(Request $request, array $input)
@@ -553,9 +526,8 @@ class TagsController extends Controller
     }
 
     /**
-     * Builds the criteria from the session
+     * Builds the criteria from the session.
      *
-     * @param Request $request
      * @return \Illuminate\Database\Eloquent\Builder $query
      */
     public function buildCriteria(Request $request)
@@ -571,7 +543,7 @@ class TagsController extends Controller
         if (!empty($filters['filter_name'])) {
             // getting name from the request
             $name = $filters['filter_name'];
-            $query->where('name', 'like', '%' . $name . '%');
+            $query->where('name', 'like', '%'.$name.'%');
             $filters['filter_name'] = $name;
         }
 
@@ -585,6 +557,7 @@ class TagsController extends Controller
 
     /**
      * @param Tag $tag
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function notifyFollowing($tag)
@@ -602,23 +575,19 @@ class TagsController extends Controller
                 Mail::send('emails.following-thread', ['user' => $user, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $tag, $reply_email, $site) {
                     $m->from($reply_email, $site);
 
-                    $m->to($user->email, $user->name)->subject($site . ': ' . $tag->name . ' :: ' . $tag->created_at->format('D F jS'));
+                    $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$tag->created_at->format('D F jS'));
                 });
                 $users[$user->id] = $tag->name;
-            };
-        };
+            }
+        }
 
         return back();
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param Tag $tag
-     * @param Request $request
-     * @return RedirectResponse
      */
-    public function update(Tag $tag, Request $request) : RedirectResponse
+    public function update(Tag $tag, Request $request): RedirectResponse
     {
         $msg = '';
 

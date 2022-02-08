@@ -3,25 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Filters\SeriesFilters;
+use App\Http\Requests\SeriesRequest;
+use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Entity;
 use App\Models\Event;
 use App\Models\EventType;
 use App\Models\Follow;
-use App\Http\Requests\SeriesRequest;
-use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\OccurrenceDay;
 use App\Models\OccurrenceType;
 use App\Models\OccurrenceWeek;
 use App\Models\Photo;
 use App\Models\Series;
-use App\Services\RssFeed;
 use App\Models\Tag;
-use App\Models\TagType;
 use App\Models\User;
 use App\Models\Visibility;
+use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -29,7 +29,6 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Contracts\View\View;
 use Str;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -85,7 +84,7 @@ class SeriesController extends Controller
         $this->childLimit = 10;
         $this->page = 1;
         $this->defaultSortCriteria = ['series.created_at' => 'desc'];
-        $this->hasFilter = 0;
+        $this->hasFilter = false;
         parent::__construct();
     }
 
@@ -137,7 +136,7 @@ class SeriesController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -151,7 +150,7 @@ class SeriesController extends Controller
      */
     protected function baseQuery()
     {
-        return  Series::query()
+        return Series::query()
             ->leftJoin('event_types', 'series.event_type_id', '=', 'event_types.id')
             ->leftJoin('visibilities', 'series.visibility_id', '=', 'visibilities.id')
             ->leftJoin('occurrence_types', 'series.occurrence_type_id', '=', 'occurrence_types.id')
@@ -162,7 +161,7 @@ class SeriesController extends Controller
     }
 
     /**
-     * Reset the rpp, sort, order
+     * Reset the rpp, sort, order.
      *
      * @throws \Throwable
      */
@@ -184,7 +183,7 @@ class SeriesController extends Controller
     /**
      * Reset the filtering of entities.
      *
-     * @return RedirectResponse | View
+     * @return RedirectResponse|View
      */
     public function reset(
         Request $request,
@@ -203,8 +202,6 @@ class SeriesController extends Controller
     }
 
     /**
-     * @return string
-     *
      * @throws \Throwable
      */
     public function index(
@@ -249,7 +246,7 @@ class SeriesController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -260,16 +257,16 @@ class SeriesController extends Controller
 
     protected function getListControlOptions(): array
     {
-        return  [
+        return [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
             'sortOptions' => ['series.name' => 'Name', 'series.created_at' => 'Created At', 'event_types.name' => 'Event Type'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
         ];
     }
 
     protected function getFilterOptions(): array
     {
-        return  [
+        return [
             'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
             'venueOptions' => ['' => ''] + Entity::getVenues()->pluck('name', 'name')->all(),
             'relatedOptions' => ['' => ''] + Entity::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
@@ -282,8 +279,6 @@ class SeriesController extends Controller
     }
 
     /**
-     * @return string
-     *
      * @throws \Throwable
      */
     public function indexCancelled(
@@ -330,7 +325,7 @@ class SeriesController extends Controller
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
                     'filters' => $listResultSet->getFilters(),
-                    'slug' => 'Cancelled'
+                    'slug' => 'Cancelled',
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -401,8 +396,6 @@ class SeriesController extends Controller
     /**
      * Display a listing of series related to entity.
      *
-     * @param string $slug
-     *
      * @throws \Throwable
      */
     public function indexRelatedTo(
@@ -447,7 +440,7 @@ class SeriesController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -509,7 +502,7 @@ class SeriesController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -533,14 +526,14 @@ class SeriesController extends Controller
             'occurrenceTypeOptions' => ['' => ''] + OccurrenceType::pluck('name', 'id')->all(),
             'dayOptions' => ['' => ''] + OccurrenceDay::pluck('name', 'id')->all(),
             'weekOptions' => ['' => ''] + OccurrenceWeek::pluck('name', 'id')->all(),
-            'userOptions' => User::orderBy('name', 'ASC')->pluck('name', 'id')->all()
+            'userOptions' => User::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
         ];
     }
 
     /**
      * Show a form to create a new series.
      *
-     * @return View | string
+     * @return View|string
      **/
     public function create()
     {
@@ -581,7 +574,7 @@ class SeriesController extends Controller
                 Activity::log($newTag, $this->user, 1);
                 $syncArray[] = $newTag->id;
 
-                $msg .= ' Added tag ' . $tag . '.';
+                $msg .= ' Added tag '.$tag.'.';
             } else {
                 $syncArray[$key] = $tag;
             }
@@ -715,7 +708,7 @@ class SeriesController extends Controller
 
                 $syncArray[strtolower($tag)] = $newTag->id;
 
-                $msg .= ' Added tag ' . $tag . '.';
+                $msg .= ' Added tag '.$tag.'.';
             } else {
                 $syncArray[$key] = $tag;
             }
@@ -763,7 +756,7 @@ class SeriesController extends Controller
             'file' => 'required|mimes:jpg,jpeg,png,gif',
         ]);
 
-        $fileName = time() . '_' . $request->file->getClientOriginalName();
+        $fileName = time().'_'.$request->file->getClientOriginalName();
         $filePath = $request->file('file')->storeAs('photos', $fileName, 'public');
 
         // attach to series
@@ -791,7 +784,8 @@ class SeriesController extends Controller
 
     /**
      * Mark user as following the series.
-     * @return Response | RedirectResponse | array
+     *
+     * @return Response|RedirectResponse|array
      *
      * @throws \Throwable
      */
@@ -817,20 +811,20 @@ class SeriesController extends Controller
         $follow->object_type = 'series';
         $follow->save();
 
-        Log::info('User ' . $id . ' is following ' . $series->name);
+        Log::info('User '.$id.' is following '.$series->name);
 
         // add to activity log
         Activity::log($series, $this->user, 6);
 
         if ($request->ajax()) {
             return [
-                'Message' => 'You are now following the series - ' . $series->name,
+                'Message' => 'You are now following the series - '.$series->name,
                 'Success' => view('series.single')
                     ->with(compact('series'))
                     ->render(),
             ];
         }
-        flash()->success('Success', 'You are now following the series - ' . $series->name);
+        flash()->success('Success', 'You are now following the series - '.$series->name);
 
         return back();
     }
@@ -838,7 +832,7 @@ class SeriesController extends Controller
     /**
      * Mark user as unfollowing the series.
      *
-     * @return Response | RedirectResponse | array
+     * @return Response|RedirectResponse|array
      *
      * @throws \Throwable
      */
@@ -866,14 +860,14 @@ class SeriesController extends Controller
 
         if ($request->ajax()) {
             return [
-                'Message' => 'You are no longer following the series - ' . $series->name,
+                'Message' => 'You are no longer following the series - '.$series->name,
                 'Success' => view('series.single')
                     ->with(compact('series'))
                     ->render(),
             ];
         }
 
-        flash()->success('Success', 'You are no longer following the series - ' . $series->name);
+        flash()->success('Success', 'You are no longer following the series - '.$series->name);
 
         return back();
     }

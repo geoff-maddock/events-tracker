@@ -432,7 +432,7 @@ class UsersController extends Controller
     /**
      * Mark user as activated.
      *
-     * @return Response | RedirectResponse
+     * @return Response|RedirectResponse
      */
     public function activate(int $id, Request $request)
     {
@@ -474,7 +474,7 @@ class UsersController extends Controller
      * Mark user as suspended.
 
      *
-     * @return Response | RedirectResponse
+     * @return Response|RedirectResponse
      */
     public function suspend(int $id, Request $request)
     {
@@ -515,7 +515,7 @@ class UsersController extends Controller
     /**
      * Send a site update reminder to the user.
      *
-     * @return Response | RedirectResponse
+     * @return Response|RedirectResponse
      */
     public function reminder(int $id, Request $request)
     {
@@ -586,7 +586,7 @@ class UsersController extends Controller
     /**
      * Mark user as deleted.
      *
-     * @return Response | RedirectResponse
+     * @return Response|RedirectResponse
      */
     public function delete(int $id, Request $request)
     {
@@ -622,7 +622,7 @@ class UsersController extends Controller
     /**
      * Return the users events in iCal format.
      *
-     * @return Response | RedirectResponse
+     * @return Response|RedirectResponse|string
      */
     public function ical(int $id, Request $request)
     {
@@ -675,7 +675,7 @@ class UsersController extends Controller
     }
 
     /**
-     * @return RedirectResponse | Response
+     * @return RedirectResponse|Response
      */
     protected function notifyUser(int $id)
     {
@@ -844,7 +844,7 @@ class UsersController extends Controller
 
     protected function getListControlOptions(): array
     {
-        return  [
+        return [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
             'sortOptions' => ['users.name' => 'Name', 'user_statuses.name' => 'Status', 'users.created_at' => 'Created At', 'last_active' => 'Last Active'],
             'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
@@ -853,7 +853,7 @@ class UsersController extends Controller
 
     protected function getFilterOptions(): array
     {
-        return  [
+        return [
             'userStatusOptions' => ['' => ''] + UserStatus::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
         ];
     }
