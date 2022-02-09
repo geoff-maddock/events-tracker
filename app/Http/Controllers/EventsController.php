@@ -34,6 +34,7 @@ use Exception;
 use FacebookAds\Api as Api;
 use FacebookAds\Object\Event as ObjectEvent;
 use FacebookAds\Object\Fields\EventFields;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -1022,10 +1023,8 @@ class EventsController extends Controller
 
     /**
      * Display a listing of events related to entity.
-     *
-     * @return Response
      */
-    public function calendarRelatedTo(Request $request, string $slug)
+    public function calendarRelatedTo(Request $request, string $slug): View
     {
         // get the entity by the slug name
         $related = Entity::where('slug', '=', $slug)->firstOrFail();
@@ -1086,10 +1085,8 @@ class EventsController extends Controller
 
     /**
      * Display a listing of events by tag.
-     *
-     * @return Response
      */
-    public function calendarTags(string $slug)
+    public function calendarTags(string $slug): View
     {
         // get the tag by the slug name
         $tag = Tag::where('slug', '=', $slug)->firstOrFail();
@@ -1150,10 +1147,8 @@ class EventsController extends Controller
 
     /**
      * Display a calendar view of events.
-     *
-     * @return view
      **/
-    public function calendar()
+    public function calendar(): View
     {
         $eventList = [];
 
@@ -1209,10 +1204,8 @@ class EventsController extends Controller
      *
      * @param array|null $series
      * @param null       $tag
-     *
-     * @return view
      */
-    public function renderCalendar(Collection $events, $series = null, $tag = null)
+    public function renderCalendar(Collection $events, $series = null, $tag = null): View
     {
         // Change this to instead pass in the json EventsList directly here and render, that way I can just pass anything to this function to display the calendar
         return view('events.event-calendar');
@@ -1221,7 +1214,7 @@ class EventsController extends Controller
     /**
      * API endpoint for calendar-events that collects events and series and returns json.
      */
-    public function calendarEventsApi()
+    public function calendarEventsApi(): JsonResponse
     {
         // build the json results to return which include both series and events
         $eventList = [];
@@ -1467,10 +1460,8 @@ class EventsController extends Controller
 
     /**
      * Display a listing of events by event type.
-     *
-     * @return Response
      */
-    public function calendarEventTypes(string $type)
+    public function calendarEventTypes(string $type): View
     {
         // $tag = urldecode($type);
         $slug = Str::title(str_replace('-', ' ', $type));
@@ -1530,10 +1521,8 @@ class EventsController extends Controller
 
     /**
      * Show a form to create a new event.
-     *
-     * @return view
      **/
-    public function create()
+    public function create(): View
     {
         return view('events.create')->with($this->getFormOptions());
     }
@@ -1542,10 +1531,8 @@ class EventsController extends Controller
      * Makes a call to the FB API if there is a link present and downloads the event cover photo.
      *
      * @param int $id
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function importPhoto($id)
+    public function importPhoto($id): RedirectResponse
     {
         $event = Event::findOrFail($id);
 
@@ -1562,42 +1549,51 @@ class EventsController extends Controller
         return back();
     }
 
-
+    /**
+     * Call to Facebook to login the user and ask them to grant the app permission.
+     */
     private function getFacebookLoginUrl($permissions)
     {
         $fbGraphVersion = config('app.fb_graph_version');
         $fbAppId = config('app.fb_app_id');
-        $endpoint = 'https://www.facebook.com/' . $fbGraphVersion . '/dialog/oauth';
+        $endpoint = 'https://www.facebook.com/'.$fbGraphVersion.'/dialog/oauth';
 
         $params = [
             'client_id' => $fbAppId,
             'redirect_uri' => '/',
             'scope' => $permissions,
-            'auth_type' => 'rerequest'
+            'auth_type' => 'rerequest',
         ];
 
-        return $endpoint . '?' . http_build_query($params);
+        return $endpoint.'?'.http_build_query($params);
     }
 
-    private function getAccessTokenWithCode($code) {
-
-        $endpoint = 'https://graph.facebook.com/' . config('app.fb_graph_version') . '/oauth/access_token';
+    /**
+     * Call to Facebook after login to get an access token.
+     */
+    private function getAccessTokenWithCode($code)
+    {
+        $endpoint = 'https://graph.facebook.com/'.config('app.fb_graph_version').'/oauth/access_token';
 
         $params = [
             'client_id' => config('app.fb_app_id'),
             'client_secret' => config('app.fb_app_secret'),
             'redirect_url' => '/',
-            'code' => $code
+            'code' => $code,
         ];
 
         return $this->makeApiCall($endpoint, 'GET', $params);
     }
 
-    private function makeApiCall($endpoint, $type, $params) {
+    /**
+     * Curl API call.
+     */
+    private function makeApiCall($endpoint, $type, $params)
+    {
         $ch = curl_init();
 
         // create endpoint with params
-        $apiEndpoint = $endpoint . '?' . http_build_query($params);
+        $apiEndpoint = $endpoint.'?'.http_build_query($params);
 
         // set other curl options
         curl_setopt($ch, CURLOPT_URL, $apiEndpoint);
@@ -1613,11 +1609,13 @@ class EventsController extends Controller
             'endpoint' => $endpoint,
             'params' => $params,
             'api_endpoint' => $apiEndpoint,
-            'data' => json_decode($response, true)
+            'data' => json_decode($response, true),
         ];
     }
 
-    // This is the callback from the login that will get and set an access token
+    /**
+     * This is the callback from the login that will get and set an access token.
+     **/
     public function fbAuthToken()
     {
         // build an ajax call to get an access token?
@@ -1636,9 +1634,9 @@ class EventsController extends Controller
     }
 
     /**
-     * @return bool|RedirectResponse
+     * Add a FB photo to an event.
      */
-    protected function addFbPhoto(Event $event)
+    protected function addFbPhoto(Event $event): bool | RedirectResponse
     {
         // get the FB event id from the primary link
         $str = $event->primary_link;
@@ -1718,10 +1716,8 @@ class EventsController extends Controller
 
     /**
      * Makes a call to the FB API if there is a link present and downloads the event cover photo.
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function importPhotos()
+    public function importPhotos(): RedirectResponse
     {
         // get all the events with no photo, but a fb url
         $events = Event::has('photos', '<', 1)
@@ -1788,7 +1784,7 @@ class EventsController extends Controller
         return view('events.show', compact('event'))->with(['thread' => $thread ? $thread->first() : null])->render();
     }
 
-    public function store(EventRequest $request, Event $event)
+    public function store(EventRequest $request, Event $event): RedirectResponse
     {
         $msg = '';
 
@@ -1958,7 +1954,7 @@ class EventsController extends Controller
         return redirect()->route('events.show', compact('event'));
     }
 
-    protected function unauthorized(EventRequest $request): RedirectResponse
+    protected function unauthorized(EventRequest $request): RedirectResponse | Response
     {
         if ($request->ajax()) {
             return response(['message' => 'No way.'], 403);
@@ -1969,7 +1965,7 @@ class EventsController extends Controller
         return redirect('/');
     }
 
-    public function destroy(Event $event)
+    public function destroy(Event $event): RedirectResponse
     {
         // add to activity log
         Activity::log($event, $this->user, 3);
@@ -1984,11 +1980,9 @@ class EventsController extends Controller
     /**
      * Tweet this event.
      *
-     * @return Response
-     *
      * @throws \Throwable
      */
-    public function tweet(int $id)
+    public function tweet(int $id): RedirectResponse
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -2018,7 +2012,7 @@ class EventsController extends Controller
      *
      * @throws \Throwable
      */
-    public function attend(int $id, Request $request)
+    public function attend(int $id, Request $request): RedirectResponse | array
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -2137,8 +2131,6 @@ class EventsController extends Controller
 
     /**
      * Display a listing of events by tag.
-     *
-     * @return Response
      */
     public function indexTags(
         Request $request,
@@ -2146,7 +2138,7 @@ class EventsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         string $slug,
         StringHelper $stringHelper
-    ) {
+    ): View {
         // get the tag by the slug name
         $tag = Tag::where('slug', '=', $slug)->firstOrFail();
 
@@ -2603,11 +2595,14 @@ class EventsController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function addPhoto(int $id, Request $request)
+    public function addPhoto(int $id, Request $request): void
     {
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif',
         ]);
+
+        $fileName = time().'_'.$request->file->getClientOriginalName();
+        $filePath = $request->file('file')->storeAs('photos', $fileName, 'public');
 
         $fileName = time().'_'.$request->file->getClientOriginalName();
         $filePath = $request->file('file')->storeAs('photos', $fileName, 'public');

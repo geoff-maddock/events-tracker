@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use App\Models\Entity;
 use App\Models\Link;
 use App\Models\Visibility;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class LinksController extends Controller
 {
@@ -55,22 +55,16 @@ class LinksController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @param  Entity 		$entity
-     * @return Response
      */
-    public function index(Entity $entity)
+    public function index(Entity $entity): View
     {
         return view('links.index', compact('entity'));
     }
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @param  Entity 		$entity
-     * @return Response
      */
-    public function create(Entity $entity)
+    public function create(Entity $entity): View
     {
         return view('links.create', compact('entity'))
             ->with($this->getFormOptions());
@@ -78,12 +72,8 @@ class LinksController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  Request 			$request
-     * @param  Entity 		$entity
-     * @return Response
      */
-    public function store(Request $request, Entity $entity)
+    public function store(Request $request, Entity $entity): RedirectResponse
     {
         $msg = '';
 
@@ -104,24 +94,16 @@ class LinksController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  Entity 		$entity
-     * @param  Link     	$link
-     * @return Response
      */
-    public function show(Entity $entity, Link $link)
+    public function show(Entity $entity, Link $link): View
     {
         return view('links.show', compact('entity', 'link'));
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  Entity 		$entity
-     * @param  Link  	        $link
-     * @return Response
      */
-    public function edit(Entity $entity, Link $link)
+    public function edit(Entity $entity, Link $link): View
     {
         return view('links.edit', compact('entity', 'link'))
             ->with($this->getFormOptions());
@@ -129,13 +111,8 @@ class LinksController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  Request 		$request
-     * @param  Entity 		$entity
-     * @param  Link     	$link
-     * @return Response
      */
-    public function update(Request $request, Entity $entity, Link $link)
+    public function update(Request $request, Entity $entity, Link $link): RedirectResponse
     {
         $link->fill($request->input())->save();
 
@@ -147,12 +124,9 @@ class LinksController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  Entity $entity
-     * @param  Link $link
-     * @return Response
      * @throws \Exception
      */
-    public function destroy(Entity $entity, Link $link)
+    public function destroy(Entity $entity, Link $link): RedirectResponse
     {
         $link->delete();
 

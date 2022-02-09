@@ -8,7 +8,9 @@ use App\Models\ReviewType;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventReviewRequest;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class EventReviewsController extends Controller
 {
@@ -27,9 +29,8 @@ class EventReviewsController extends Controller
      * Display a listing of the resource.
      *
      * @param  Event 		$event
-     * @return Response
      */
-    public function index(Event $event)
+    public function index(Event $event): View
     {
         return view('reviews.index', compact('event'));
     }
@@ -38,9 +39,8 @@ class EventReviewsController extends Controller
      * Show the form for creating a new resource.
      *
      * @param  Event 		$event
-     * @return Response
      */
-    public function create(Event $event)
+    public function create(Event $event): View
     {
         return view('reviews.create', compact('event'))
             ->with($this->getFormOptions());
@@ -56,9 +56,8 @@ class EventReviewsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @return \Illuminate\Http\Response
      */
-    public function store(EventReviewRequest $request, Event $event)
+    public function store(EventReviewRequest $request, Event $event): RedirectResponse
     {
         $msg = '';
 
@@ -91,9 +90,8 @@ class EventReviewsController extends Controller
      *
      * @param  Event 		$event
      * @param  EventReview  	$eventReview
-     * @return Response
      */
-    public function show(Event $event, EventReview $eventReview)
+    public function show(Event $event, EventReview $eventReview): View
     {
         return view('events.show', compact('event', 'eventReview'));
     }
@@ -103,9 +101,8 @@ class EventReviewsController extends Controller
      *
      * @param  Event 		$event
      * @param  EventReview  	$eventReview
-     * @return Response
      */
-    public function edit(Event $event, EventReview $eventReview)
+    public function edit(Event $event, EventReview $eventReview): View
     {
         $reviewTypes = ['' => ''] + ReviewType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
@@ -118,9 +115,8 @@ class EventReviewsController extends Controller
      * @param  Request 			$request
      * @param  Event 		$event
      * @param  EventReview  	$eventReview
-     * @return Response
      */
-    public function update(Request $request, Event $event, EventReview $eventReview)
+    public function update(Request $request, Event $event, EventReview $eventReview): RedirectResponse
     {
         $msg = '';
 
@@ -150,10 +146,9 @@ class EventReviewsController extends Controller
      *
      * @param  Event $event
      * @param  EventReview $eventReview
-     * @return Response
      * @throws \Exception
      */
-    public function destroy(Event $event, EventReview $eventReview)
+    public function destroy(Event $event, EventReview $eventReview): RedirectResponse
     {
         $eventReview->delete();
 

@@ -9,6 +9,8 @@ use Illuminate\Http\Response;
 use App\Models\Entity;
 use App\Models\Contact;
 use App\Models\Visibility;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class ContactsController extends Controller
 {
@@ -26,10 +28,8 @@ class ContactsController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @return Response
      */
-    public function index()
+    public function index(): View
     {
         $contacts = Contact::all();
 
@@ -39,9 +39,8 @@ class ContactsController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return Response
      */
-    public function create(Entity $entity, Contact $contact)
+    public function create(Entity $entity, Contact $contact): View
     {
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
@@ -53,9 +52,8 @@ class ContactsController extends Controller
      *
      * @param  Request $request
      * @param  Entity $entity
-     * @return Response
      */
-    public function store(Request $request, Entity $entity)
+    public function store(Request $request, Entity $entity): RedirectResponse
     {
         $msg = '';
 
@@ -79,9 +77,8 @@ class ContactsController extends Controller
      *
      * @param  Entity $entity
      * @param  Contact $contact
-     * @return Response
      */
-    public function show(Entity $entity, Contact $contact)
+    public function show(Entity $entity, Contact $contact): View
     {
         return view('contacts.show', compact('entity', 'contact'));
     }
@@ -91,9 +88,8 @@ class ContactsController extends Controller
      *
      * @param  Entity $entity
      * @param  Contact $contact
-     * @return Response
      */
-    public function edit(Entity $entity, Contact $contact)
+    public function edit(Entity $entity, Contact $contact): View
     {
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
@@ -106,9 +102,8 @@ class ContactsController extends Controller
      * @param  ContactRequest $request
      * @param  Entity $entity
      * @param  Contact $contact
-     * @return Response
      */
-    public function update(ContactRequest $request, Entity $entity, Contact $contact)
+    public function update(ContactRequest $request, Entity $entity, Contact $contact): RedirectResponse
     {
         $msg = '';
 
@@ -124,10 +119,9 @@ class ContactsController extends Controller
      *
      * @param  Entity $entity
      * @param  Contact $contact
-     * @return Response
      * @throws \Exception
      */
-    public function destroy(Entity $entity, Contact $contact)
+    public function destroy(Entity $entity, Contact $contact): RedirectResponse
     {
         $contact->delete();
 

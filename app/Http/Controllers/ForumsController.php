@@ -3,22 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Filters\ForumFilters;
-use Illuminate\Support\Facades\Gate;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\ForumRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
-use Illuminate\Http\Request;
-use App\Models\Forum;
-use App\Models\Thread;
-use App\Models\Visibility;
 use App\Models\Activity;
+use App\Models\Forum;
 use App\Models\Tag;
+use App\Models\Thread;
 use App\Models\User;
+use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Session;
+use Illuminate\View\View as ViewView;
 
 class ForumsController extends Controller
 {
@@ -60,7 +60,7 @@ class ForumsController extends Controller
         $this->sortBy = 'created_at';
         $this->sortOrder = 'desc';
         $this->defaultCriteria = [];
-        $this->hasFilter = 1;
+        $this->hasFilter = false;
         $this->filter = $filter;
 
         parent::__construct();
@@ -124,7 +124,7 @@ class ForumsController extends Controller
                         'sort' => $listResultSet->getSort(),
                         'direction' => $listResultSet->getSortDirection(),
                         'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters()
+                        'filters' => $listResultSet->getFilters(),
                     ],
                     $this->getFilterOptions(),
                     $this->getListControlOptions()
@@ -191,7 +191,7 @@ class ForumsController extends Controller
                         'sort' => $listResultSet->getSort(),
                         'direction' => $listResultSet->getSortDirection(),
                         'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters()
+                        'filters' => $listResultSet->getFilters(),
                     ],
                     $this->getFilterOptions(),
                     $this->getListControlOptions()
@@ -258,7 +258,7 @@ class ForumsController extends Controller
                         'sort' => $listResultSet->getSort(),
                         'direction' => $listResultSet->getSortDirection(),
                         'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters()
+                        'filters' => $listResultSet->getFilters(),
                     ],
                     $this->getFilterOptions(),
                     $this->getListControlOptions()
@@ -269,10 +269,8 @@ class ForumsController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(): ViewView
     {
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
@@ -284,12 +282,8 @@ class ForumsController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param ForumRequest $request
-     * @param Forum $forum
-     * @return \Illuminate\Http\Response
      */
-    public function store(ForumRequest $request, Forum $forum)
+    public function store(ForumRequest $request, Forum $forum): RedirectResponse
     {
         $msg = '';
 
@@ -308,17 +302,13 @@ class ForumsController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param Forum $forum
-     * @param Request $request
-     * @return \Illuminate\Http\Response
      */
     public function show(
         Forum $forum,
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ) {
+    ): RedirectResponse | View {
         // if the gate does not allow this user to show a forum redirect to home
         if (Gate::denies('show_forum')) {
             flash()->error('Unauthorized', 'Your cannot view the forum');
@@ -359,7 +349,7 @@ class ForumsController extends Controller
 
         $threads = Thread::where('forum_id', $forum->id)->orderBy('created_at', 'desc')->paginate(1000000);
         $threads->filter(function ($e) {
-            return (($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id));
+            return ($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id);
         });
 
         // pass a slug for the forum
@@ -372,7 +362,7 @@ class ForumsController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -401,7 +391,7 @@ class ForumsController extends Controller
 
         if (!$forum->ownedBy($this->user)) {
             $this->unauthorized($request);
-        };
+        }
 
         // add to activity log
         Activity::log($forum, $this->user, 2);
@@ -411,7 +401,7 @@ class ForumsController extends Controller
         return redirect('forums');
     }
 
-    protected function unauthorized(ForumRequest $request): RedirectResponse
+    protected function unauthorized(ForumRequest $request): RedirectResponse | Response
     {
         if ($request->ajax()) {
             return response(['message' => 'No way.'], 403);
@@ -438,7 +428,7 @@ class ForumsController extends Controller
     }
 
     /**
-     * Reset the rpp, sort, order
+     * Reset the rpp, sort, order.
      *
      * @throws \Throwable
      */
@@ -460,7 +450,7 @@ class ForumsController extends Controller
     /**
      * Reset the filtering of entities.
      *
-     * @return RedirectResponse | View
+     * @return RedirectResponse|View
      */
     public function reset(
         Request $request,
@@ -480,8 +470,6 @@ class ForumsController extends Controller
 
     /**
      * Get the default filters array.
-     *
-     * @return array
      */
     public function getDefaultFilters(): array
     {
@@ -490,7 +478,7 @@ class ForumsController extends Controller
 
     protected function getFilterOptions(): array
     {
-        return  [
+        return [
             'userOptions' => ['' => '&nbsp;'] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
             'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
         ];
@@ -498,10 +486,10 @@ class ForumsController extends Controller
 
     protected function getListControlOptions(): array
     {
-        return  [
+        return [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
             'sortOptions' => ['forums.name' => 'Name', 'forums.created_at' => 'Created At'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
         ];
     }
 

@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\LocationRequest;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use App\Models\Entity;
-use App\Models\LocationType;
 use App\Models\Location;
+use App\Models\LocationType;
 use App\Models\Visibility;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class LocationsController extends Controller
 {
@@ -56,22 +55,16 @@ class LocationsController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @param  Entity 		$entity
-     * @return Response
      */
-    public function index(Entity $entity)
+    public function index(Entity $entity): View
     {
         return view('locations.index', compact('entity'));
     }
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @param  Entity 		$entity
-     * @return Response
      */
-    public function create(Entity $entity)
+    public function create(Entity $entity): View
     {
         $locationTypes = LocationType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
@@ -84,18 +77,14 @@ class LocationsController extends Controller
     {
         return [
             'locationTypeOptions' => ['' => ''] + LocationType::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all()
+            'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
         ];
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  Request 			$request
-     * @param  Entity 		$entity
-     * @return Response
      */
-    public function store(Request $request, Entity $entity)
+    public function store(Request $request, Entity $entity): RedirectResponse
     {
         $msg = '';
 
@@ -114,24 +103,16 @@ class LocationsController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  Entity 		$entity
-     * @param  Location  	$location
-     * @return Response
      */
-    public function show(Entity $entity, Location $location)
+    public function show(Entity $entity, Location $location): View
     {
         return view('locations.show', compact('entity', 'location'));
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  Entity 		$entity
-     * @param  Location  	$location
-     * @return Response
      */
-    public function edit(Entity $entity, Location $location)
+    public function edit(Entity $entity, Location $location): View
     {
         $locationTypes = ['' => ''] + LocationType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
@@ -141,13 +122,8 @@ class LocationsController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  Request 			$request
-     * @param  Entity 		$entity
-     * @param  Location  	$location
-     * @return Response
      */
-    public function update(Request $request, Entity $entity, Location $location)
+    public function update(Request $request, Entity $entity, Location $location): RedirectResponse
     {
         $msg = '';
 
@@ -161,12 +137,9 @@ class LocationsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  Entity $entity
-     * @param  Location $location
-     * @return Response
      * @throws \Exception
      */
-    public function destroy(Entity $entity, Location $location)
+    public function destroy(Entity $entity, Location $location): RedirectResponse
     {
         $location->delete();
 

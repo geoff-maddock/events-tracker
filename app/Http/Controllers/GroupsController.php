@@ -3,16 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Filters\GroupFilters;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use App\Models\Group;
 use App\Models\Permission;
 use App\Models\User;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class GroupsController extends Controller
 {
@@ -64,14 +63,12 @@ class GroupsController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @return Response
      */
     public function index(
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ) {
+    ): string {
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_group');
         $listParamSessionStore->setKeyPrefix('internal_group_index');
@@ -108,7 +105,7 @@ class GroupsController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -119,14 +116,12 @@ class GroupsController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @return Response
      */
     public function filter(
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ) {
+    ): string {
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_group');
         $listParamSessionStore->setKeyPrefix('internal_group_index');
@@ -163,7 +158,7 @@ class GroupsController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -173,7 +168,7 @@ class GroupsController extends Controller
     }
 
     /**
-     * Reset the limit, sort, order
+     * Reset the limit, sort, order.
      *
      * @throws \Throwable
      */
@@ -194,13 +189,11 @@ class GroupsController extends Controller
 
     /**
      * Reset the filtering of entities.
-     *
-     * @return Response
      */
     public function reset(
         Request $request,
         ListParameterSessionStore $listParamSessionStore
-    ) {
+    ): RedirectResponse {
         // set filters and list controls to default values
         $keyPrefix = $request->get('key') ?? 'internal_group_index';
         $listParamSessionStore->setBaseIndex('internal_group');
@@ -215,10 +208,8 @@ class GroupsController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return Response
      */
-    public function create()
+    public function create(): View
     {
         return view('groups.create')
             ->with($this->getFormOptions());
@@ -226,10 +217,8 @@ class GroupsController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @return Response
      */
-    public function store(GroupRequest $request, Group $group)
+    public function store(GroupRequest $request, Group $group): RedirectResponse
     {
         $msg = '';
 
@@ -247,22 +236,16 @@ class GroupsController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param Group $group
-     * @return Response
      */
-    public function show(Group $group)
+    public function show(Group $group): View
     {
         return view('groups.show', compact('group'));
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param Group $group
-     * @return Response
      */
-    public function edit(Group $group)
+    public function edit(Group $group): View
     {
         $this->middleware('auth');
 
@@ -272,12 +255,8 @@ class GroupsController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param Group $group
-     * @param Request $request
-     * @return Response
      */
-    public function update(Group $group, Request $request)
+    public function update(Group $group, Request $request): RedirectResponse
     {
         $msg = '';
 
@@ -293,11 +272,9 @@ class GroupsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Group $group
-     * @return Response
      * @throws \Exception
      */
-    public function destroy(Group $group)
+    public function destroy(Group $group): RedirectResponse
     {
         $group->delete();
 
@@ -306,16 +283,16 @@ class GroupsController extends Controller
 
     protected function getListControlOptions(): array
     {
-        return  [
+        return [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
             'sortOptions' => ['groups.name' => 'Name', 'groups.created_at' => 'Created At', 'groups.label' => 'Label', 'groups.level' => 'Level'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
         ];
     }
 
     protected function getFilterOptions(): array
     {
-        return  [
+        return [
         ];
     }
 
@@ -323,7 +300,7 @@ class GroupsController extends Controller
     {
         return [
             'permissionOptions' => Permission::orderBy('name')->pluck('name', 'id')->all(),
-            'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all()
+            'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
         ];
     }
 }

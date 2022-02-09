@@ -3,20 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Filters\PhotoFilters;
-use App\Http\Controllers\Controller;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\DB;
-use App\Models\Photo;
 use App\Models\Entity;
 use App\Models\EntityType;
-use App\Models\Visibility;
+use App\Models\Photo;
 use App\Models\Tag;
+use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
 class PhotosController extends Controller
@@ -140,7 +138,7 @@ class PhotosController extends Controller
                 'sort' => $listResultSet->getSort(),
                 'direction' => $listResultSet->getSortDirection(),
                 'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters()
+                'filters' => $listResultSet->getFilters(),
             ],
             $this->getFilterOptions(),
             $this->getListControlOptions()
@@ -151,8 +149,6 @@ class PhotosController extends Controller
 
     /**
      * Display a listing of photos ofevents by tag.
-     *
-     * @return Response
      */
     public function indexTags(
         Request $request,
@@ -160,7 +156,7 @@ class PhotosController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         string $slug,
         StringHelper $stringHelper
-    ) {
+    ): string {
         // get the tag by the slug name
         $tag = Tag::where('slug', '=', $slug)->firstOrFail();
 
@@ -179,7 +175,6 @@ class PhotosController extends Controller
             ->whereHas('events.tags', function ($q) use ($tag) {
                 $q->where('slug', '=', $tag->slug);
             });
-        ;
 
         $listEntityResultBuilder
         ->setFilter($this->filter)
@@ -209,7 +204,7 @@ class PhotosController extends Controller
                 'sort' => $listResultSet->getSort(),
                 'direction' => $listResultSet->getSortDirection(),
                 'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters()
+                'filters' => $listResultSet->getFilters(),
             ],
             $this->getFilterOptions(),
             $this->getListControlOptions()
@@ -269,7 +264,7 @@ class PhotosController extends Controller
                 'sort' => $listResultSet->getSort(),
                 'direction' => $listResultSet->getSortDirection(),
                 'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters()
+                'filters' => $listResultSet->getFilters(),
             ],
             $this->getFilterOptions(),
             $this->getListControlOptions()
@@ -351,32 +346,32 @@ class PhotosController extends Controller
             foreach ($user->photos as $p) {
                 $p->is_primary = 0;
                 $p->save();
-            };
-        };
+            }
+        }
 
         $entities = $photo->entities;
         foreach ($entities as $entity) {
             foreach ($entity->photos as $p) {
                 $p->is_primary = 0;
                 $p->save();
-            };
-        };
+            }
+        }
 
         $events = $photo->events;
         foreach ($events as $event) {
             foreach ($event->photos as $p) {
                 $p->is_primary = 0;
                 $p->save();
-            };
-        };
+            }
+        }
 
         $series = $photo->series;
         foreach ($series as $s) {
             foreach ($s->photos as $p) {
                 $p->is_primary = 0;
                 $p->save();
-            };
-        };
+            }
+        }
 
         $photo->is_primary = 1;
         $photo->save();
@@ -424,7 +419,7 @@ class PhotosController extends Controller
 
     protected function getFilterOptions(): array
     {
-        return  [
+        return [
             'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
             'relatedOptions' => ['' => ''] + Entity::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
         ];
@@ -432,17 +427,17 @@ class PhotosController extends Controller
 
     protected function getListControlOptions(): array
     {
-        return  [
+        return [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
             'sortOptions' => ['photos.name' => 'Name', 'photos.created_at' => 'Created At'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
         ];
     }
 
     /**
      * Reset the filtering of entities.
      *
-     * @return RedirectResponse | View
+     * @return RedirectResponse|View
      */
     public function reset(
         Request $request,
@@ -461,7 +456,7 @@ class PhotosController extends Controller
     }
 
     /**
-     * Reset the limit, sort, order
+     * Reset the limit, sort, order.
      *
      * @throws \Throwable
      */
