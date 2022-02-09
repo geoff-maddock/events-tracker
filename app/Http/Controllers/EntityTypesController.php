@@ -15,6 +15,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
+use Illuminate\View\View;
 
 class EntityTypesController extends Controller
 {
@@ -233,9 +234,8 @@ class EntityTypesController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return Response
      */
-    public function create()
+    public function create(): View
     {
         return view('entityTypes.create');
     }
@@ -243,9 +243,8 @@ class EntityTypesController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @return Response
      */
-    public function store(EntityTypeRequest $request, EntityType $entityType)
+    public function store(EntityTypeRequest $request, EntityType $entityType): RedirectResponse
     {
         $input = $request->all();
 
@@ -256,20 +255,16 @@ class EntityTypesController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @return Response
      */
-    public function show(EntityType $entityType)
+    public function show(EntityType $entityType): View
     {
         return view('entityTypes.show', compact('entityType'));
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @return Response
      */
-    public function edit(EntityType $entityType)
+    public function edit(EntityType $entityType): View
     {
         $this->middleware('auth');
 
@@ -279,9 +274,8 @@ class EntityTypesController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @return Response
      */
-    public function update(EntityType $entityType, EntityTypeRequest $request)
+    public function update(EntityType $entityType, EntityTypeRequest $request): RedirectResponse
     {
         $entityType->fill($request->input())->save();
 
@@ -290,10 +284,8 @@ class EntityTypesController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @return Response
      */
-    public function destroy(EntityType $entityType)
+    public function destroy(EntityType $entityType): RedirectResponse
     {
         $name = $entityType->name;
 

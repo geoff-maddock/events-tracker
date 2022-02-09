@@ -10,7 +10,8 @@ use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\View\View;
+use Redirect;
 
 class MenusController extends Controller
 {
@@ -105,7 +106,7 @@ class MenusController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -157,7 +158,7 @@ class MenusController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -167,7 +168,7 @@ class MenusController extends Controller
     }
 
     /**
-     * Reset the rpp, sort, order
+     * Reset the rpp, sort, order.
      *
      * @throws \Throwable
      */
@@ -188,13 +189,11 @@ class MenusController extends Controller
 
     /**
      * Reset the filtering of entities.
-     *
-     * @return Response
      */
     public function reset(
         Request $request,
         ListParameterSessionStore $listParamSessionStore
-    ) {
+    ): RedirectResponse {
         // set filters and list controls to default values
         $keyPrefix = $request->get('key') ?? 'internal_menu_index';
         $listParamSessionStore->setBaseIndex('internal_menu');
@@ -209,10 +208,8 @@ class MenusController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return Response
      */
-    public function create()
+    public function create(): View
     {
         $menu = new Menu();
 
@@ -223,10 +220,8 @@ class MenusController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @return Response
      */
-    public function store(MenuRequest $request, Menu $menu)
+    public function store(MenuRequest $request, Menu $menu): RedirectResponse
     {
         $msg = '';
 
@@ -241,20 +236,16 @@ class MenusController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @return Response
      */
-    public function show(Menu $menu)
+    public function show(Menu $menu): View
     {
         return view('menus.show', compact('menu'));
     }
 
     /**
      * Display the specified menu content.
-     *
-     * @return Response
      */
-    public function content(int $id, Request $request)
+    public function content(int $id, Request $request): View | RedirectResponse
     {
         // get the menu
         if (!$menu = Menu::find($id)) {
@@ -270,10 +261,8 @@ class MenusController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @return Response
      */
-    public function edit(Menu $menu)
+    public function edit(Menu $menu): View
     {
         $this->middleware('auth');
 
@@ -286,7 +275,7 @@ class MenusController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Menu $menu, MenuRequest $request)
+    public function update(Menu $menu, MenuRequest $request): RedirectResponse
     {
         $msg = '';
 
@@ -298,11 +287,9 @@ class MenusController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @return Response
-     *
      * @throws \Exception
      */
-    public function destroy(Menu $menu)
+    public function destroy(Menu $menu): RedirectResponse
     {
         $menu->delete();
 
@@ -311,16 +298,16 @@ class MenusController extends Controller
 
     protected function getListControlOptions(): array
     {
-        return  [
+        return [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
             'sortOptions' => ['menus.name' => 'Name', 'menus.created_at' => 'Created At'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
         ];
     }
 
     protected function getFilterOptions(): array
     {
-        return  [
+        return [
             'visibilityOptions' => ['' => '&nbsp;'] + Visibility::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
         ];
     }

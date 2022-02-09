@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Filters\PostFilters;
-use App\Models\Activity;
-use App\Models\Entity;
 use App\Http\Requests\PostRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Mail\FollowingPostUpdate;
+use App\Models\Activity;
+use App\Models\Entity;
 use App\Models\Like;
 use App\Models\Post;
 use App\Models\Tag;
@@ -22,7 +22,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\View;
+use Illuminate\View\View;
 use Str;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -80,7 +80,6 @@ class PostsController extends Controller
 
     /**
      * Display a listing of the resource.
-
      */
     public function index(
         Request $request,
@@ -137,7 +136,7 @@ class PostsController extends Controller
                 'sort' => $listResultSet->getSort(),
                 'direction' => $listResultSet->getSortDirection(),
                 'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters()
+                'filters' => $listResultSet->getFilters(),
             ],
             $this->getFilterOptions(),
             $this->getListControlOptions()
@@ -147,7 +146,7 @@ class PostsController extends Controller
     }
 
     /**
-     * Filter a list of posts
+     * Filter a list of posts.
      */
     public function filter(
         Request $request,
@@ -204,7 +203,7 @@ class PostsController extends Controller
                 'sort' => $listResultSet->getSort(),
                 'direction' => $listResultSet->getSortDirection(),
                 'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters()
+                'filters' => $listResultSet->getFilters(),
             ],
             $this->getFilterOptions(),
             $this->getListControlOptions()
@@ -214,7 +213,6 @@ class PostsController extends Controller
 
     /**
      * Display a listing of posts by tag.
-     * @return View
      */
     public function indexTags(
         Request $request,
@@ -222,7 +220,7 @@ class PostsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         string $slug,
         StringHelper $stringHelper
-    ) {
+    ): string {
         // convert the slug to name
         $tag = $stringHelper->SlugToName($slug);
 
@@ -243,7 +241,6 @@ class PostsController extends Controller
             ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['posts.created_at' => 'desc'])
             ->setParentFilter(['tag' => $slug]);
-        ;
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
@@ -272,7 +269,7 @@ class PostsController extends Controller
                 'sort' => $listResultSet->getSort(),
                 'direction' => $listResultSet->getSortDirection(),
                 'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters()
+                'filters' => $listResultSet->getFilters(),
             ],
             $this->getFilterOptions(),
             $this->getListControlOptions()
@@ -283,7 +280,7 @@ class PostsController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return Response | View | string
+     * @return Response|View|string
      */
     public function create()
     {
@@ -322,7 +319,7 @@ class PostsController extends Controller
 
                 $syncArray[] = $newTag->id;
 
-                $msg .= ' Added tag ' . $tag . '.';
+                $msg .= ' Added tag '.$tag.'.';
             } else {
                 $syncArray[$key] = $tag;
             }
@@ -405,11 +402,9 @@ class PostsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @return \Illuminate\Http\Response
-     *
      * @internal param int $id
      */
-    public function show(Post $post)
+    public function show(Post $post): RedirectResponse
     {
         // if the gate does not allow this user to show a forum redirect to home
         if (Gate::denies('show_forum')) {
@@ -422,17 +417,15 @@ class PostsController extends Controller
         ++$post->views;
         $post->save();
 
-        $route = route('threads.show', ['thread' => $post->thread_id]) . '#post-' . $post->id;
+        $route = route('threads.show', ['thread' => $post->thread_id]).'#post-'.$post->id;
 
         return redirect($route);
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function edit(Post $post)
+    public function edit(Post $post): View
     {
         $this->middleware('auth');
 
@@ -444,7 +437,7 @@ class PostsController extends Controller
         return [
             'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all()
+            'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
         ];
     }
 
@@ -477,7 +470,7 @@ class PostsController extends Controller
 
                 $syncArray[] = $newTag->id;
 
-                $msg .= ' Added tag ' . $tag . '.';
+                $msg .= ' Added tag '.$tag.'.';
             } else {
                 $syncArray[$key] = $tag;
             }
@@ -497,13 +490,11 @@ class PostsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @return \Illuminate\Http\Response
-     *
      * @throws \Exception
      *
      * @internal param int $id
      */
-    public function destroy(Post $post)
+    public function destroy(Post $post): RedirectResponse
     {
         $id = $post->thread_id;
         $thread = $post->thread;
@@ -555,7 +546,7 @@ class PostsController extends Controller
         ++$post->likes;
         $post->save();
 
-        Log::info('User ' . $id . ' is liking ' . $post->name);
+        Log::info('User '.$id.' is liking '.$post->name);
 
         flash()->success('Success', 'You are now liking the selected post.');
 
@@ -595,7 +586,7 @@ class PostsController extends Controller
         return back();
     }
 
-    protected function unauthorized(PostRequest $request): RedirectResponse
+    protected function unauthorized(PostRequest $request): RedirectResponse | Response
     {
         if ($request->ajax()) {
             return response(['message' => 'No way.'], 403);
@@ -607,7 +598,7 @@ class PostsController extends Controller
     }
 
     /**
-     * Reset the limit, sort, direction
+     * Reset the limit, sort, direction.
      *
      * @throws \Throwable
      */
@@ -629,7 +620,7 @@ class PostsController extends Controller
     /**
      * Reset the filtering of entities.
      *
-     * @return RedirectResponse | View
+     * @return RedirectResponse|View
      */
     public function reset(
         Request $request,
@@ -649,7 +640,7 @@ class PostsController extends Controller
 
     protected function getFilterOptions(): array
     {
-        return  [
+        return [
             'userOptions' => ['' => '&nbsp;'] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
             'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
         ];
@@ -657,10 +648,10 @@ class PostsController extends Controller
 
     protected function getListControlOptions(): array
     {
-        return  [
+        return [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
             'sortOptions' => ['posts.name' => 'Name', 'users.name' => 'User', 'posts.created_at' => 'Created At'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
         ];
     }
 }

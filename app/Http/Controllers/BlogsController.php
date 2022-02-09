@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use Illuminate\View\View;
 use Str;
 
 class BlogsController extends Controller
@@ -183,10 +184,8 @@ class BlogsController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(): View
     {
         $blog = new Blog();
         $blog->contentType = ContentType::find(ContentType::PLAIN_TEXT);
@@ -199,11 +198,9 @@ class BlogsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @return \Illuminate\Http\Response
-     *
      * @internal param Request $request
      */
-    public function store(BlogRequest $request, Blog $blog)
+    public function store(BlogRequest $request, Blog $blog): RedirectResponse
     {
         // TODO change this to use the trust_blog permission to allow html
         if (auth()->id() === config('app.superuser')) {
@@ -231,10 +228,8 @@ class BlogsController extends Controller
 
     /**
      * @param Blog $blog
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
-    protected function notifyFollowing($blog)
+    protected function notifyFollowing($blog): RedirectResponse
     {
         $reply_email = config('app.noreplyemail');
         $site = config('app.app_name');
@@ -266,21 +261,17 @@ class BlogsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @return \Illuminate\Http\Response
-     *
      * @internal param int $id
      */
-    public function show(Blog $blog)
+    public function show(Blog $blog): View
     {
         return view('blogs.show', compact('blog'));
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function edit(Blog $blog)
+    public function edit(Blog $blog): View
     {
         $this->middleware('auth');
 
@@ -335,13 +326,11 @@ class BlogsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @return \Illuminate\Http\Response
-     *
      * @throws \Exception
      *
      * @internal param int $id
      */
-    public function destroy(Blog $blog)
+    public function destroy(Blog $blog): RedirectResponse
     {
         if ($this->user->cannot('destroy', $blog)) {
             flash('Error', 'Your are not authorized to delete the blog.');
@@ -361,10 +350,8 @@ class BlogsController extends Controller
 
     /**
      * Mark user as liking the blog.
-     *
-     * @return Response
      */
-    public function like($id, Request $request)
+    public function like($id): RedirectResponse
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -400,7 +387,7 @@ class BlogsController extends Controller
     /**
      * Mark user as unliking the blog.
      */
-    public function unlike(int $id, Request $request): RedirectResponse
+    public function unlike(int $id): RedirectResponse
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -450,13 +437,11 @@ class BlogsController extends Controller
 
     /**
      * Reset the filtering of blogs.
-     *
-     * @return Response
      */
     public function reset(
         Request $request,
         ListParameterSessionStore $listParamSessionStore
-    ) {
+    ): RedirectResponse {
         // set filters and list controls to default values
         $keyPrefix = $request->get('key') ?? 'internal_blog_index';
         $listParamSessionStore->setBaseIndex('internal_blog');
@@ -469,7 +454,7 @@ class BlogsController extends Controller
         return redirect()->route($request->get('redirect') ?? 'blogs.index');
     }
 
-    protected function unauthorized(Request $request): RedirectResponse
+    protected function unauthorized(Request $request): RedirectResponse | Response
     {
         if ($request->ajax()) {
             return response(['message' => 'No way.'], 403);

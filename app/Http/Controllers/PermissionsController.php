@@ -3,15 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Filters\PermissionFilters;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\PermissionRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use App\Models\Permission;
 use App\Models\Group;
+use App\Models\Permission;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class PermissionsController extends Controller
 {
@@ -107,7 +106,7 @@ class PermissionsController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -160,7 +159,7 @@ class PermissionsController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -171,21 +170,21 @@ class PermissionsController extends Controller
 
     protected function getListControlOptions(): array
     {
-        return  [
+        return [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
             'sortOptions' => ['permissions.name' => 'Name', 'permissions.created_at' => 'Created At', 'permissions.label' => 'Label', 'permissions.level' => 'Level'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
         ];
     }
 
     protected function getFilterOptions(): array
     {
-        return  [
+        return [
         ];
     }
 
     /**
-     * Reset the limit, sort, direction
+     * Reset the limit, sort, direction.
      *
      * @throws \Throwable
      */
@@ -206,13 +205,11 @@ class PermissionsController extends Controller
 
     /**
      * Reset the filtering of entities.
-     *
-     * @return Response
      */
     public function reset(
         Request $request,
         ListParameterSessionStore $listParamSessionStore
-    ) {
+    ): RedirectResponse {
         // set filters and list controls to default values
         $keyPrefix = $request->get('key') ?? 'internal_permission_index';
         $listParamSessionStore->setBaseIndex('internal_permission');
@@ -227,10 +224,8 @@ class PermissionsController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return Response
      */
-    public function create()
+    public function create(): View
     {
         return view('permissions.create')
             ->with($this->getFormOptions());
@@ -238,12 +233,8 @@ class PermissionsController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * @param PermissionRequest $request
-     * @param Permission $permission
-     *
-     * @return Response
      */
-    public function store(PermissionRequest $request, Permission $permission)
+    public function store(PermissionRequest $request, Permission $permission): RedirectResponse
     {
         $msg = '';
 
@@ -260,22 +251,16 @@ class PermissionsController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  Permission $permission
-     * @return Response
      */
-    public function show(Permission $permission)
+    public function show(Permission $permission): View
     {
         return view('permissions.show', compact('permission'));
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  Permission $permission
-     * @return Response
      */
-    public function edit(Permission $permission)
+    public function edit(Permission $permission): View
     {
         $this->middleware('auth');
 
@@ -287,11 +272,8 @@ class PermissionsController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  Permission $permission
-     * @return Response
      */
-    public function update(Permission $permission, Request $request)
+    public function update(Permission $permission, Request $request): RedirectResponse
     {
         $msg = '';
 
@@ -305,11 +287,9 @@ class PermissionsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Permission $permission
-     * @return Response
      * @throws \Exception
      */
-    public function destroy(Permission $permission)
+    public function destroy(Permission $permission): RedirectResponse
     {
         $permission->delete();
 

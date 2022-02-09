@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use Illuminate\View\View;
+use Redirect;
 use Str;
 
 class CategoriesController extends Controller
@@ -178,10 +180,8 @@ class CategoriesController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(): View
     {
         $category = new ThreadCategory();
 
@@ -192,11 +192,9 @@ class CategoriesController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @return \Illuminate\Http\Response
-     *
      * @internal param Request $request
      */
-    public function store(ThreadCategoryRequest $request, ThreadCategory $category)
+    public function store(ThreadCategoryRequest $request, ThreadCategory $category): RedirectResponse
     {
         $msg = '';
 
@@ -215,21 +213,17 @@ class CategoriesController extends Controller
     /**
     * Display the specified resource.
     *
-    * @return \Illuminate\Http\Response
-    *
     * @internal param int $id
     */
-    public function show(ThreadCategory $category)
+    public function show(ThreadCategory $category): View
     {
         return view('categories.show', compact('category'));
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function edit(ThreadCategory $category)
+    public function edit(ThreadCategory $category): View
     {
         $this->middleware('auth');
 
@@ -257,13 +251,11 @@ class CategoriesController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @return \Illuminate\Http\Response
-     *
      * @throws \Exception
      *
      * @internal param int $id
      */
-    public function destroy(ThreadCategory $category)
+    public function destroy(ThreadCategory $category): RedirectResponse
     {
         if ($this->user->cannot('destroy', $category)) {
             flash('Error', 'Your are not authorized to delete the category.');
@@ -303,13 +295,11 @@ class CategoriesController extends Controller
 
     /**
      * Reset the filtering of category.
-     *
-     * @return Response
      */
     public function reset(
         Request $request,
         ListParameterSessionStore $listParamSessionStore
-    ) {
+    ): RedirectResponse {
         // set filters and list controls to default values
         $keyPrefix = $request->get('key') ?? 'internal_category_index';
         $listParamSessionStore->setBaseIndex('internal_category');
@@ -322,7 +312,7 @@ class CategoriesController extends Controller
         return redirect()->route($request->get('redirect') ?? 'categories.index');
     }
 
-    protected function unauthorized(Request $request): RedirectResponse
+    protected function unauthorized(Request $request): RedirectResponse | Response
     {
         if ($request->ajax()) {
             return response(['message' => 'No way.'], 403);

@@ -160,7 +160,7 @@ class ActivityController extends Controller
             ->render();
     }
 
-    protected function unauthorized(SeriesRequest $request)
+    protected function unauthorized(SeriesRequest $request): Response | RedirectResponse
     {
         if ($request->ajax()) {
             return response(['message' => 'No way.'], 403);
@@ -171,7 +171,7 @@ class ActivityController extends Controller
         return redirect('/');
     }
 
-    public function destroy(Activity $activity)
+    public function destroy(Activity $activity): RedirectResponse
     {
         $activity->delete();
 
@@ -180,10 +180,8 @@ class ActivityController extends Controller
 
     /**
      * Get the default filters array.
-     *
-     * @return array
      */
-    public function getDefaultFilters()
+    public function getDefaultFilters(): array
     {
         return [];
     }
@@ -210,13 +208,11 @@ class ActivityController extends Controller
 
     /**
      * Reset the filtering of entities.
-     *
-     * @return Response
      */
     public function reset(
         Request $request,
         ListParameterSessionStore $listParamSessionStore
-    ) {
+    ): RedirectResponse {
         // set filters and list controls to default values
         $keyPrefix = $request->get('key') ?? 'internal_activity_index';
         $listParamSessionStore->setBaseIndex('internal_activity');

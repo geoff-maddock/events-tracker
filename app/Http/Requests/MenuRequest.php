@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Requests\Request;
-
 class MenuRequest extends Request
 {
     /**
@@ -26,6 +24,7 @@ class MenuRequest extends Request
         return [
             'name' => 'required|min:3',
             'slug' => 'required|min:3',
+            'body' => 'required',
             'visibility_id' => 'required',
         ];
     }
