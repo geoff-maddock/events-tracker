@@ -124,7 +124,7 @@
     <div class="row small-gutter mx-2">
 
             <div class="col-lg-6">
-                <div class="card">
+                <div class="card surface">
                     <div>
                         @if (isset($tabs) && isset($tabs['events']))
 
@@ -166,7 +166,7 @@
             </div>
 
             <div class="col-lg-6">
-                <div class="card">
+                <div class="card surface">
                     <div>
                         @if (isset($tabs) && isset($tabs['following']))
                             @switch($tabs['following'])

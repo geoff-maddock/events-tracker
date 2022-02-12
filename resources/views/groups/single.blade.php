@@ -1,7 +1,7 @@
 <li class="
 @if ($group->groupStatus->name === "Inactive") mute-card @else card @endif" style="clear: both;">
 	@if ($primary = $group->getPrimaryPhoto())
-	<div class="card-thumb" style="float: left; padding: 5px;">
+	<div class="card-thumb float-start pe-3">
 		<img src="/{!! str_replace(' ','%20',$group->getPrimaryPhoto()->thumbnail) !!}" alt="{{ $group->name}}"  style="max-width: 100px; ">
 	</div>
 	@endif

@@ -1,12 +1,12 @@
-<li id="entity-{{ $entity->id }}" class="event-card @if ($entity->entityStatus->name === " Inactive") mute-card @else card @endif"	style="display: flow-root;">
+<li id="entity-{{ $entity->id }}" class="flow-root event-card @if ($entity->entityStatus->name === " Inactive") mute-card @else card @endif">
 	@if ($primary = $entity->getPrimaryPhoto())
-	<div class="card-thumb" style="float: left; padding: 5px;">
+	<div class="card-thumb  float-start pe-3"">
 			<a href="{{ $primary->getStoragePath() }}" data-lightbox="{{ $primary->getStoragePath() }}" data-bs-toggle="tooltip" title="Click to see enlarged image">
 				<img src="{{ $primary->getStorageThumbnail() }}" alt="{{ $entity->name}}" class="thumbnail-image">
 			</a>
 	</div>
 	@else
-	<div class="card-thumb" style="float: left; padding: 5px;">
+	<div class="card-thumb  float-start pe-3"">
 		<img src="/images/entity-placeholder.png" alt="{{ $entity->name}}" style="max-width: 100px; ">
 	</div>
 	@endif

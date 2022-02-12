@@ -1,0 +1,285 @@
+/* Layout */
+body {
+	font-family: 'Roboto', sans-serif !important;
+}
+
+.site-title {
+    font-size: 20px;
+    margin-top: 0;
+    text-shadow: 2px 3px 3px #292929;
+    -webkit-text-stroke: 1px white;
+}
+
+.site-title:after {
+    color: #dbdbdb;
+    content : attr(data-title);
+}
+
+/* Custom Layout CSS just for event-repo, bootstrap overrides that apply to all themes*/
+.week-text {
+  font-size: smaller;
+}
+
+.week-text img {
+    max-width: 50px !important;
+}
+
+/* Deprecated.  Max width for image in event card.  Replace with img-fluid */
+
+img.thumbnail-image {
+    max-width: 100px;
+}
+
+.load-spinner {
+    width: 40px;
+    height: 40px;
+
+    position: relative;
+    margin: 100px auto;
+}
+
+.double-bounce1, .double-bounce2 {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #333;
+    opacity: 0.6;
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+    animation: sk-bounce 2.0s infinite ease-in-out;
+}
+
+.double-bounce2 {
+    -webkit-animation-delay: -1.0s;
+    animation-delay: -1.0s;
+}
+
+@-webkit-keyframes sk-bounce {
+    0%, 100% { -webkit-transform: scale(0.0) }
+    50% { -webkit-transform: scale(1.0) }
+}
+
+@keyframes sk-bounce {
+    0%, 100% {
+        transform: scale(0.0);
+        -webkit-transform: scale(0.0);
+    } 50% {
+          transform: scale(1.0);
+          -webkit-transform: scale(1.0);
+      }
+}
+
+/* spacing classes for px rather than relative units - may be able to remove */
+.mt-2 {
+    margin-top: 5px;
+}
+
+.mr-2 {
+    margin-right: 5px;
+}
+
+.mr-2 {
+    margin-right: 5px;
+}
+
+.mb-2 {
+    margin-bottom: 5px;
+}
+
+.my-2 {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.mx-2 {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.image-md {
+    width: 150px;
+}
+
+.image-lg {
+    width: 200px;
+}
+
+.event-list-thumbnail {
+    float: left; 
+    padding: 5px; 
+    padding-right: 15px;
+}
+
+.card-thumb {
+	border-radius: 5px;
+}
+
+.card-thumb img {
+    max-width: 100px;
+}
+
+.card-actions {
+    float: right;
+    margin-left: .2rem;
+}
+
+
+/* front page event styling - theme agnostic */
+.event-date {
+	font-weight: 900;
+	font-size: 1rem;
+}
+
+.event-time {
+	font-size: .75rem;
+}
+
+.event-list, .list {
+	list-style-type: none;
+	padding-left: 0px;
+}
+
+/* additional css for bootstrap 5 */
+.nav-title {
+    margin-left: -15px;
+    margin-top: -5px;
+}
+
+/* light theme is using 1rem, overriding */
+.navbar {
+    padding-top: .5rem !important;
+    padding-bottom: .5rem !important;
+}
+
+.navbar .navbar-brand {
+	font-size: 1.8rem !important;
+}
+
+/* UI - General */
+.rounded-med {
+    border-radius: 20px !important;
+}
+
+#filter-list {
+	position: relative; 
+	padding: 5px;
+}
+
+/* disable the button on focus outline */
+.btn:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+.btn-primary:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+  /* specificly target the dropzone used for event photos */
+#myDropzone {
+    min-height: 114px;
+    padding: 10px;
+}
+
+.photo-grid {
+    display: grid; 
+    grid-template-columns:  repeat(auto-fill, minmax(200px, 1fr));
+}
+
+.no-button {
+	background: none;
+	border: none;
+	padding: 5px;
+	outline: none;
+}
+
+.no-button span:hover {
+	-moz-opacity: 0.6;
+	opacity: 0.6;
+}
+
+.flow-root {
+    display: flow-root !important;
+}
+
+#event-repo a {
+	text-decoration: none !important;
+}
+
+ul.list-click {
+	margin-left: -40px;
+}
+
+ul.list-click li {
+	list-style-type: none;
+	font-size: 1.3em;
+}
+
+.item-title {
+	font-weight: 600;
+}
+
+.slim-row {
+	height: 10 px;
+	padding: 2px;
+}
+
+.post-body {
+	padding: 10px;
+	padding-bottom: 50px;
+}
+
+#event-repo img.avatar {
+	max-width: 32px;
+}
+
+.hover-dim span:hover {
+	-moz-opacity: 0.6;
+	opacity: 0.6;
+}
+
+#event-repo h2, .h2 {
+    font-size: 32px;
+    font-weight: 600;
+    font-variant-caps: normal;
+    color: initial;
+}
+
+.no-gutter > [class*='col-'] {
+    padding-right:0;
+    padding-left:0;
+}
+
+.small-gutter > [class*='col-'] {
+    padding-right:10px;
+    padding-left:10px;
+}
+
+
+@media screen and ( max-width: 576px ){
+
+    li.page-item {
+
+        display: none;
+    }
+
+    .page-item:first-child,
+	.page-item:nth-child( 2 ),
+    .page-item:nth-last-child( 2 ),
+    .page-item:nth-child( 3 ),
+    .page-item:nth-last-child( 3 ),
+	.page-item:nth-child( 4 ),
+    .page-item:nth-last-child( 4 ),
+	.page-item:nth-child( 5 ),
+    .page-item:nth-last-child( 5 ),
+    .page-item:last-child,
+    .page-item.active,
+    .page-item.disabled {
+
+        display: block;
+    }
+}

@@ -7,8 +7,13 @@ $border-radius-pill:          50rem;
 @import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
 
 // Bootstrap
+// disable superhero - when removed, mostly back to a white layout
 @import "~bootswatch/dist/superhero/variables";
+// @import "~bootswatch/dist/flatly/variables";
 @import "~bootstrap/scss/bootstrap";
+
+// if this is included, it supercedes the dark theme
+// @import "~bootswatch/dist/flatly/bootswatch";
 
 // Dropzone
 @import "~dropzone/dist/dropzone.css";

@@ -9,7 +9,7 @@
 	@endif
 
 	@if ($review->rating)
-	<div style="float: left; padding: 5px;">
+	<div class="float-start pe-3">
 		<span style="font-size: 64px;">{!! $review->rating !!}</span>
 	</div>
 	@endif

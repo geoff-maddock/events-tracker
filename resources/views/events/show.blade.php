@@ -17,7 +17,7 @@
 
 <div class="row">
 <div class="col-lg-6">
-	<div class="event-card">
+	<div class="event-card surface">
 
 		@if ($photo = $event->getPrimaryPhoto())
 		<div id="event-image">

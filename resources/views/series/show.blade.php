@@ -197,7 +197,7 @@
 <div class="row">
 
 	<div class="col-xl-12">
-		<div class="card bg-dark">
+		<div class="card surface">
 
 			<h5 class="card-header bg-primary">Events</h5>
 			<div class="card-body">
