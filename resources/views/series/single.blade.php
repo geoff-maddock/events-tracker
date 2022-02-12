@@ -1,4 +1,4 @@
-<li id="series-{{ $series->id }}" class="series-card" style="clear: both;">
+<li id="series-{{ $series->id }}" class="series-card">
     @if ($primary = $series->getPrimaryPhoto())
     <div class="event-list-thumbnail">
 

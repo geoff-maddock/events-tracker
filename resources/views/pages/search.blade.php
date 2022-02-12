@@ -23,7 +23,7 @@
 	<div class="col-lg-6">
 
 		@if (isset($tags) && count($tags) > 0)
-			<div class="card bg-dark">
+			<div class="card surface">
 				<h5 class="card-header bg-primary">Tags
 					<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Tags that match this search term.">{{ count($tags)}}</span></a>
 				</h5>
@@ -37,7 +37,7 @@
 		@endif
 
 
-			<div class="card bg-dark my-2">
+			<div class="card surface my-2">
 
 				<h5 class="card-header bg-primary">Events
 						<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Events that match this search term.">{{ count($events)}}</span></a>
@@ -64,7 +64,7 @@
 	
 	<div class="row">
 	<div class="col-lg-6">
-		<div class="card bg-dark">
+		<div class="card surface">
 			<h5 class="card-header bg-primary">Series
 					<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Series that match this search term.">{{ count($series)}}</span></a>
 			</h5>
@@ -88,7 +88,7 @@
 	<div class="row">
 	@if (isset($entities) && count($entities) > 0)
 	<div class="col-lg-6">
-	<div class="card bg-dark my-2">
+	<div class="card surface my-2">
 
 		<h5 class="card-header bg-primary">Entities
 			<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Entities that match this search term.">{{ count($entities)}}</span></a>
@@ -110,7 +110,7 @@
 
 	<div class="col-lg-6">
 		@if (isset($users) && count($users) > 0)
-		<div class="card bg-dark my-2">
+		<div class="card surface my-2">
 
 			<h5 class="card-header bg-primary">Users
 						<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Users that match this search term.">{{ count($users)}}</span></a>
@@ -135,7 +135,7 @@
 
 
 		@if (isset($threads) && count($threads) > 0)
-		<div class="card bg-dark my-2">
+		<div class="card surface my-2">
 
 			<h5 class="card-header bg-primary">Threads
 				<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Threads that match this search term.">{{ count($threads)}}</span></a>

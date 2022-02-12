@@ -13,7 +13,7 @@
 
 	<div class="row">
 		<div class="col-lg-2">
-			<div class="card bg-dark">
+			<div class="card surface">
 				<h5 class="card-header bg-primary">Keywords
 					<a href="#" class="float-end"><i class="bi bi-question-octagon-fill" data-toggle="tooltip" data-placement="bottom"  title="Click on a keyword tag name in the left panel to find all related events or entites.  Click on the plus next to the tag to follow, minus to unfollow."></i></a>
 					<a href="#" class="float-end px-1" title="Show / Hide" ><i class="bi bi-eye-fill toggler" id="tag-list-close-box" data-bs-target="#tag-list" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tag-list" role="button"></i></a>
@@ -86,7 +86,7 @@
 
 	<div class="col-lg-10">
 	@if (!isset($tag))
-		<div class="card bg-dark my-2">
+		<div class="card surface my-2">
 				<h5 class="card-header bg-primary">Info</h5>
 				<div class="card-body">
 					Click on a <b>keyword</b> tag name in the left panel to find all related events or entites.
@@ -101,7 +101,7 @@
 
 	@if (!isset($match) && isset($userTags))
 
-		<div class="card bg-dark my-2">
+		<div class="card surface my-2">
 				<h5 class="card-header bg-primary">Tags
 					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-followed-close-box" data-bs-target="#tag-followed" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tag-followed" role="button"></i></a>
 				</h5>
@@ -110,7 +110,7 @@
 				</div>
 		</div>
 
-		<div class="card bg-dark my-2">
+		<div class="card surface my-2">
 				<h5 class="card-header bg-primary">Entities
 					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-entity-close-box" data-bs-target="#tag-entity" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tag-entity" role="button"></i></a>
 				</h5>
@@ -123,7 +123,7 @@
 
 
 	@if (isset($match) )
-		<div class="card bg-dark my-2">
+		<div class="card surface my-2">
 				<h5 class="card-header bg-primary">Tags
 					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-followed-close-box" data-bs-target="#tag-followed" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tag-followed" role="button"></i></a>
 				</h5>
@@ -136,7 +136,7 @@
 
 		</div>
 
-		<div class="card bg-dark my-2">
+		<div class="card surface my-2">
 			<h5 class="card-header bg-primary">Entities
 				<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-entity-close-box" data-bs-target="#tag-entity" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tag-entity" role="button"></i></a>
 			</h5>
@@ -149,7 +149,7 @@
 
 
 		@if (isset($series) && count($series) > 0)
-		<div class="card bg-dark my-2">
+		<div class="card surface my-2">
 			<h5 class="card-header bg-primary">Series
 				<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-series-close-box" data-bs-target="#tag-series" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tag-series" role="button"></i></a>				
 			</h5>
@@ -160,7 +160,7 @@
 		@endif
 
 		@if (isset($events) && count($events) > 0)
-		<div class="card bg-dark my-2">
+		<div class="card surface my-2">
 			<h5 class="card-header bg-primary">Events
 				<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-events-close-box" data-bs-target="#tag-events" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tag-events" role="button"></i></a>				
 				@if (isset($tag))

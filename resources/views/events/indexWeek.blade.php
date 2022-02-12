@@ -26,7 +26,7 @@
 
 	@for ($i = 0; $i < 6; $i++) <?php $day = \Carbon\Carbon::parse($today)->addDay($i); ?>
 		<div class="col">
-			<div class="card mb-2">
+			<div class="card surface mb-2">
 				<div class="card-header bg-primary">
 
 					<h5 class="my-0 fw-normal">

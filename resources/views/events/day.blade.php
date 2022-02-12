@@ -1,8 +1,9 @@
 <div class="col">
-    <div class="card mb-4">
+    <div class="card surface-container mb-4">
+
             <div class="card-header bg-primary">
                 <h5 class="my-0 fw-normal">
-                    @if (\Carbon\Carbon::now()->format('Y-m-d') == $day->format('Y-m-d'))
+                    @if (\Carbon\Carbon::now('America/New_York')->format('Y-m-d') == $day->format('Y-m-d'))
                     Today's Events
                     @else
                     {{ $day->format('l F jS Y') }}
