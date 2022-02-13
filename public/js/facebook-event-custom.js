@@ -9,7 +9,7 @@ function slugify(text)
 };
 
 // queries the primary link to get data - FB API only for now - and parses to set form inputs
-$('#import-event-link').click(function(e){
+$('#app-content').on("click", "#import-event-link", function(e){
 
     // get the id out of the link
     var str = $('#primary_link').val();
