@@ -563,7 +563,7 @@ class SeriesController extends Controller
 
         // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
-            if (!DB::table('tags')->where('id', $tag)->get()) {
+            if (count(DB::table('tags')->where('id', $tag)->get()) > 0) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->slug = Str::slug($tag);
@@ -765,7 +765,7 @@ class SeriesController extends Controller
             $photo = $this->makePhoto($request->file('file'));
 
             // count existing photos, and if zero, make this primary
-            if ($series->photos && 0 === count($series->photos)) {
+            if (isset($series->photos) && 0 === count($series->photos)) {
                 $photo->is_primary = 1;
             }
 

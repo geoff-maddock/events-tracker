@@ -14,11 +14,11 @@ class EventType extends Eloquent
     use HasFactory;
 
     /**
-     * @var Array
+     * @var array
      *
      **/
     protected $fillable = [
-        'name'
+        'name',
     ];
 
     /**
@@ -29,7 +29,7 @@ class EventType extends Eloquent
     protected $dates = [];
 
     /**
-     * An event type can have many events
+     * An event type can have many events.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -49,19 +49,15 @@ class EventType extends Eloquent
             case 'Art Opening':
                 // ORANGE
                 return '#F3722C';
-                break;
             case 'Benefit':
                 // LT GREEN
                 return '#90BE6D';
-                break;
             case 'Pop-up':
                 // GREEN BLUE
                 return '#43AA8B';
-                break;
             case 'Live Stream':
                 // RED
                 return '#F94144';
-                break;
              default:
                 // BLUE
                 return '#0a57ad';

@@ -2,74 +2,74 @@
 
 namespace App\Models;
 
-use App\Models\User;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 /**
- * App\Models\Series
+ * App\Models\Series.
  *
- * @property int $id
- * @property string $name
- * @property string $slug
- * @property string|null $short
- * @property string|null $description
- * @property int|null $visibility_id
- * @property int|null $event_type_id
- * @property int|null $occurrence_type_id
- * @property int|null $occurrence_week_id
- * @property int|null $occurrence_day_id
- * @property int $hold_date
- * @property \Illuminate\Support\Carbon $created_at
- * @property \Illuminate\Support\Carbon $updated_at
- * @property int $is_benefit
- * @property int|null $promoter_id
- * @property int|null $venue_id
- * @property int $attending
- * @property int $like
- * @property string|null $presale_price
- * @property string|null $door_price
- * @property string|null $primary_link
- * @property string|null $ticket_link
- * @property \Illuminate\Support\Carbon|null $founded_at
- * @property \Illuminate\Support\Carbon|null $cancelled_at
- * @property \Illuminate\Support\Carbon|null $soundcheck_at
- * @property \Illuminate\Support\Carbon|null $door_at
- * @property \Illuminate\Support\Carbon|null $start_at
- * @property \Illuminate\Support\Carbon|null $end_at
- * @property int|null $length
- * @property int|null $min_age
- * @property int|null $created_by
- * @property int|null $updated_by
- * @property-read User|null $creator
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Entity[] $entities
- * @property-read int|null $entities_count
- * @property-read \App\Models\EventType|null $eventType
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Event[] $events
- * @property-read int|null $events_count
- * @property-read mixed $end_time
- * @property-read mixed $entity_list
- * @property-read string $occurrence_repeat
- * @property-read mixed $tag_list
- * @property-read \App\Models\OccurrenceDay|null $occurrenceDay
- * @property-read \App\Models\OccurrenceType|null $occurrenceType
- * @property-read \App\Models\OccurrenceWeek|null $occurrenceWeek
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Photo[] $photos
- * @property-read int|null $photos_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
- * @property-read int|null $tags_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Thread[] $threads
- * @property-read int|null $threads_count
- * @property-read User|null $user
- * @property-read \App\Models\Entity|null $venue
- * @property-read \App\Models\Visibility|null $visibility
+ * @property int                                                           $id
+ * @property string                                                        $name
+ * @property string                                                        $slug
+ * @property string|null                                                   $short
+ * @property string|null                                                   $description
+ * @property int|null                                                      $visibility_id
+ * @property int|null                                                      $event_type_id
+ * @property int|null                                                      $occurrence_type_id
+ * @property int|null                                                      $occurrence_week_id
+ * @property int|null                                                      $occurrence_day_id
+ * @property int                                                           $hold_date
+ * @property \Illuminate\Support\Carbon                                    $created_at
+ * @property \Illuminate\Support\Carbon                                    $updated_at
+ * @property int                                                           $is_benefit
+ * @property int|null                                                      $promoter_id
+ * @property int|null                                                      $venue_id
+ * @property int                                                           $attending
+ * @property int                                                           $like
+ * @property string|null                                                   $presale_price
+ * @property string|null                                                   $door_price
+ * @property string|null                                                   $primary_link
+ * @property string|null                                                   $ticket_link
+ * @property \Illuminate\Support\Carbon|null                               $founded_at
+ * @property \Illuminate\Support\Carbon|null                               $cancelled_at
+ * @property \Illuminate\Support\Carbon|null                               $soundcheck_at
+ * @property \Illuminate\Support\Carbon|null                               $door_at
+ * @property \Illuminate\Support\Carbon|null                               $start_at
+ * @property \Illuminate\Support\Carbon|null                               $end_at
+ * @property int|null                                                      $length
+ * @property int|null                                                      $min_age
+ * @property int|null                                                      $created_by
+ * @property int|null                                                      $updated_by
+ * @property User|null                                                     $creator
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Entity[] $entities
+ * @property int|null                                                      $entities_count
+ * @property \App\Models\EventType|null                                    $eventType
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Event[]  $events
+ * @property int|null                                                      $events_count
+ * @property mixed                                                         $end_time
+ * @property mixed                                                         $entity_list
+ * @property string                                                        $occurrence_repeat
+ * @property mixed                                                         $tag_list
+ * @property \App\Models\OccurrenceDay|null                                $occurrenceDay
+ * @property \App\Models\OccurrenceType|null                               $occurrenceType
+ * @property \App\Models\OccurrenceWeek|null                               $occurrenceWeek
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Photo[]  $photos
+ * @property int|null                                                      $photos_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[]    $tags
+ * @property int|null                                                      $tags_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Thread[] $threads
+ * @property int|null                                                      $threads_count
+ * @property User|null                                                     $user
+ * @property \App\Models\Entity|null                                       $venue
+ * @property \App\Models\Visibility|null                                   $visibility
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Series active()
  * @method static \Illuminate\Database\Eloquent\Builder|Series future()
  * @method static \Illuminate\Database\Eloquent\Builder|Series newModelQuery()
@@ -117,7 +117,7 @@ class Series extends Eloquent
     use HasFactory;
 
     protected $attributes = [
-        'hold_date' => false
+        'hold_date' => false,
     ];
 
     public static function boot()
@@ -203,8 +203,8 @@ class Series extends Eloquent
         $cdate_yesterday = Carbon::parse($date)->subDay();
         $cdate_tomorrow = Carbon::parse($date)->addDay();
 
-        $query->where('start_at', '>', $cdate_yesterday->toDateString() . ' 23:59:59')
-                    ->where('start_at', '<', $cdate_tomorrow->toDateString() . ' 00:00:00');
+        $query->where('start_at', '>', $cdate_yesterday->toDateString().' 23:59:59')
+                    ->where('start_at', '<', $cdate_tomorrow->toDateString().' 00:00:00');
     }
 
     /**
@@ -365,7 +365,7 @@ class Series extends Eloquent
         if (isset($this->end_at)) {
             return $this->end_at;
         } else {
-            return  $this->start_at->addDay()->startOfDay();
+            return $this->start_at->addDay()->startOfDay();
         }
     }
 
@@ -553,12 +553,12 @@ class Series extends Eloquent
         $repeat = '';
 
         $week = $this->occurrenceWeek ? $this->occurrenceWeek->name : '';
-        $day = $this->occurrenceDay ? $this->occurrenceDay->name . 's' : '';
+        $day = $this->occurrenceDay ? $this->occurrenceDay->name.'s' : '';
 
         switch ($this->occurrenceType->name) {
             case 'Monthly':
             case 'Bimonthly':
-                $repeat = $week . ' ' . $day;
+                $repeat = $week.' '.$day;
                 break;
             case 'Weekly':
             case 'Biweekly':
@@ -586,6 +586,7 @@ class Series extends Eloquent
 
     /**
      * Get all series that would fall on the passed date.
+     *
      * @return mixed
      */
     public static function byNextDate(?string $date)
@@ -639,19 +640,15 @@ class Series extends Eloquent
     public function cycleFromFoundedAt()
     {
         // local founded at
-        $founded_at = $this->founded_at;
+        $next = $this->founded_at;
 
         // if no founded date, assume created at date
-        if (!$founded_at) {
-            $founded_at = $this->created_at;
+        if (!$next) {
+            $next = $this->created_at;
         }
 
-        $next = $founded_at;
-
-        if ($next) {  // 10PM
-            while ($next < Carbon::now('America/New_York')->startOfDay()) {
-                $next = $this->cycleForward($next);
-            }
+        while ($next < Carbon::now('America/New_York')->startOfDay()) {
+            $next = $this->cycleForward($next);
         }
 
         return $next;
@@ -692,7 +689,7 @@ class Series extends Eloquent
     /**
      * Returns the most recent event.
      *
-     * @return Event | null
+     * @return Event|null
      */
     public function lastEvent()
     {
@@ -803,11 +800,11 @@ class Series extends Eloquent
     }
 
     /**
-     * Returns the format for a calendar entry
+     * Returns the format for a calendar entry.
      */
     public function getCalendarFormat(): array
     {
-        /**
+        /*
          * [
          *  title,
          *  full day,
@@ -824,9 +821,9 @@ class Series extends Eloquent
             ($this->nextOccurrenceEndDate() ? $this->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
             $this->id,
             [
-                'url' => '/series/' . $this->id,
+                'url' => '/series/'.$this->id,
                 'color' => '#99bcdb',
-            ]
+            ],
         ];
     }
 
@@ -835,7 +832,7 @@ class Series extends Eloquent
         $format = $this->name;
 
         if ($this->occurrenceType != null) {
-            $format .= ' - ' . $this->occurrenceType->name . ' ' . $this->occurrence_repeat;
+            $format .= ' - '.$this->occurrenceType->name.' '.$this->occurrence_repeat;
         }
 
         // include the location of the event

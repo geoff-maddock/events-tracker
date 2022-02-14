@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Filters\BlogFilters;
+use App\Http\Requests\BlogRequest;
+use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Blog;
 use App\Models\ContentType;
 use App\Models\Entity;
-use App\Http\Requests\BlogRequest;
-use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Like;
 use App\Models\Menu;
 use App\Models\Tag;
@@ -119,7 +119,7 @@ class BlogsController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -173,7 +173,7 @@ class BlogsController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -248,7 +248,7 @@ class BlogsController extends Controller
                     Mail::send('emails.following-thread', ['user' => $user, 'blog' => $blog, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $blog, $tag, $reply_email, $site) {
                         $m->from($reply_email, $site);
 
-                        $m->to($user->email, $user->name)->subject($site . ': ' . $tag->name . ' :: ' . $blog->created_at->format('D F jS') . ' ' . $blog->name);
+                        $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$blog->created_at->format('D F jS').' '.$blog->name);
                     });
                     $users[$user->id] = $tag->name;
                 }
@@ -297,7 +297,7 @@ class BlogsController extends Controller
 
         // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
-            if (!DB::table('tags')->where('id', $tag)->get()) {
+            if (DB::table('tags')->where('id', $tag)->count() > 0) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->slug = Str::slug($tag);
@@ -306,7 +306,7 @@ class BlogsController extends Controller
 
                 $syncArray[] = $newTag->id;
 
-                $msg .= ' Added tag ' . $tag . '.';
+                $msg .= ' Added tag '.$tag.'.';
             } else {
                 $syncArray[$key] = $tag;
             }
@@ -377,7 +377,7 @@ class BlogsController extends Controller
         ++$blog->likes;
         $blog->save();
 
-        Log::info('User ' . $id . ' is liking ' . $blog->name);
+        Log::info('User '.$id.' is liking '.$blog->name);
 
         flash()->success('Success', 'You are now liking the selected blog.');
 
@@ -416,7 +416,7 @@ class BlogsController extends Controller
     }
 
     /**
-     * Reset the rpp, sort, order
+     * Reset the rpp, sort, order.
      *
      * @throws \Throwable
      */
@@ -467,16 +467,16 @@ class BlogsController extends Controller
 
     protected function getListControlOptions(): array
     {
-        return  [
+        return [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
             'sortOptions' => ['blogs.name' => 'Name', 'blogs.created_at' => 'Created At'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
         ];
     }
 
     protected function getFilterOptions(): array
     {
-        return  [
+        return [
             'userOptions' => ['' => '&nbsp;'] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
             'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
         ];
@@ -489,7 +489,7 @@ class BlogsController extends Controller
             'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'menuOptions' => ['' => ''] + Menu::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'contentTypeOptions' => ['' => ''] + ContentType::orderBy('name', 'ASC')->pluck('name', 'id')->all()
+            'contentTypeOptions' => ['' => ''] + ContentType::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
         ];
     }
 }

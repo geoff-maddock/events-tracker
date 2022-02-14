@@ -258,9 +258,9 @@ class Entity extends Eloquent
      *
      * @ param User $user
      */
-    public function scopeOwnedBy($query, User $user)
+    public function scopeOwnedBy(Builder $query, User $user)
     {
-        return $query->where('created_by', '=', $user ? $user->id : null);
+        return $query->where('created_by', '=', $user->id);
     }
 
     /**
