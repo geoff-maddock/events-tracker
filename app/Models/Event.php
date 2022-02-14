@@ -4,79 +4,80 @@ namespace App\Models;
 
 use App\Filters\QueryFilter;
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use DateTime;
 
 /**
- * App\Models\Event
+ * App\Models\Event.
  *
- * @property int $id
- * @property mixed $created_by
- * @property mixed $start_at
- * @property Collection $entities
- * @property Collection $tags
- * @property string $name
- * @property string $slug
- * @property string|null $short
- * @property string|null $description
- * @property int|null $visibility_id
- * @property int|null $event_status_id
- * @property int|null $event_type_id
- * @property int $is_benefit
- * @property int|null $promoter_id
- * @property int|null $venue_id
- * @property int $attending
- * @property int $like
- * @property string|null $presale_price
- * @property string|null $door_price
- * @property \Illuminate\Support\Carbon|null $soundcheck_at
- * @property \Illuminate\Support\Carbon|null $door_at
- * @property \Illuminate\Support\Carbon|null $end_at
- * @property int|null $min_age
- * @property int|null $series_id
- * @property string|null $primary_link
- * @property string|null $ticket_link
- * @property int|null $updated_by
- * @property \Illuminate\Support\Carbon $created_at
- * @property \Illuminate\Support\Carbon $updated_at
- * @property \Illuminate\Support\Carbon|null $cancelled_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $comments
- * @property-read int|null $comments_count
- * @property-read \App\Models\User $creator
- * @property-read int|null $entities_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EventResponse[] $eventResponses
- * @property-read int|null $event_responses_count
- * @property-read \App\Models\EventStatus|null $eventStatus
- * @property-read \App\Models\EventType|null $eventType
- * @property-read mixed $attending_count
- * @property-read float $avg_rating
- * @property-read int $count_attended
- * @property-read int $count_reviews
- * @property-read mixed $end_time
- * @property-read mixed $entity_list
- * @property-read mixed $length_in_hours
- * @property-read mixed $tag_list
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Like[] $likes
- * @property-read int|null $likes_count
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
- * @property-read int|null $notifications_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Photo[] $photos
- * @property-read int|null $photos_count
- * @property-read \App\Models\Series|null $series
- * @property-read int|null $tags_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Thread[] $threads
- * @property-read int|null $threads_count
- * @property-read \App\Models\User $user
- * @property-read \App\Models\Entity|null $venue
- * @property-read \App\Models\Visibility|null $visibility
+ * @property int                                                                                                       $id
+ * @property mixed                                                                                                     $created_by
+ * @property mixed                                                                                                     $start_at
+ * @property Collection                                                                                                $entities
+ * @property Collection                                                                                                $tags
+ * @property string                                                                                                    $name
+ * @property string                                                                                                    $slug
+ * @property string|null                                                                                               $short
+ * @property string|null                                                                                               $description
+ * @property int|null                                                                                                  $visibility_id
+ * @property int|null                                                                                                  $event_status_id
+ * @property int|null                                                                                                  $event_type_id
+ * @property int                                                                                                       $is_benefit
+ * @property int|null                                                                                                  $promoter_id
+ * @property int|null                                                                                                  $venue_id
+ * @property int                                                                                                       $attending
+ * @property int                                                                                                       $like
+ * @property string|null                                                                                               $presale_price
+ * @property string|null                                                                                               $door_price
+ * @property \Illuminate\Support\Carbon|null                                                                           $soundcheck_at
+ * @property \Illuminate\Support\Carbon|null                                                                           $door_at
+ * @property \Illuminate\Support\Carbon|null                                                                           $end_at
+ * @property int|null                                                                                                  $min_age
+ * @property int|null                                                                                                  $series_id
+ * @property string|null                                                                                               $primary_link
+ * @property string|null                                                                                               $ticket_link
+ * @property int|null                                                                                                  $updated_by
+ * @property \Illuminate\Support\Carbon                                                                                $created_at
+ * @property \Illuminate\Support\Carbon                                                                                $updated_at
+ * @property \Illuminate\Support\Carbon|null                                                                           $cancelled_at
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[]                                            $comments
+ * @property int|null                                                                                                  $comments_count
+ * @property \App\Models\User                                                                                          $creator
+ * @property int|null                                                                                                  $entities_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\EventResponse[]                                      $eventResponses
+ * @property int|null                                                                                                  $event_responses_count
+ * @property \App\Models\EventStatus|null                                                                              $eventStatus
+ * @property \App\Models\EventType|null                                                                                $eventType
+ * @property mixed                                                                                                     $attending_count
+ * @property float                                                                                                     $avg_rating
+ * @property int                                                                                                       $count_attended
+ * @property int                                                                                                       $count_reviews
+ * @property mixed                                                                                                     $end_time
+ * @property mixed                                                                                                     $entity_list
+ * @property mixed                                                                                                     $length_in_hours
+ * @property mixed                                                                                                     $tag_list
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Like[]                                               $likes
+ * @property int|null                                                                                                  $likes_count
+ * @property \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property int|null                                                                                                  $notifications_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Photo[]                                              $photos
+ * @property int|null                                                                                                  $photos_count
+ * @property \App\Models\Series|null                                                                                   $series
+ * @property int|null                                                                                                  $tags_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Thread[]                                             $threads
+ * @property int|null                                                                                                  $threads_count
+ * @property \App\Models\User                                                                                          $user
+ * @property \App\Models\Entity|null                                                                                   $venue
+ * @property \App\Models\Visibility|null                                                                               $visibility
+ *
  * @method static Builder|Event filter(\App\Filters\QueryFilter $filters)
  * @method static Builder|Event future()
  * @method static Builder|Event newModelQuery()
@@ -330,11 +331,8 @@ class Event extends Eloquent
 
     /**
      * Returns visible events.
-     *
-     * @param Builder $query
-     * @param User    $user
      */
-    public function scopeVisible($query, $user)
+    public function scopeVisible(Builder $query, ?User $user)
     {
         return $query->where(function ($query) use ($user) {
             $query->whereIn('visibility_id', [Visibility::VISIBILITY_PROPOSAL, Visibility::VISIBILITY_PRIVATE])
@@ -351,15 +349,14 @@ class Event extends Eloquent
 
     /**
      * Returns visible events.
-     *
      */
     public function scopeStarting(Builder $query, ?string $date)
     {
         $cdate_yesterday = Carbon::parse($date)->subDay();
         $cdate_tomorrow = Carbon::parse($date)->addDay();
 
-        $query->where('start_at', '>', $cdate_yesterday->toDateString() . ' 23:59:59')
-            ->where('start_at', '<', $cdate_tomorrow->toDateString() . ' 00:00:00')
+        $query->where('start_at', '>', $cdate_yesterday->toDateString().' 23:59:59')
+            ->where('start_at', '<', $cdate_tomorrow->toDateString().' 00:00:00')
             ->where(function ($query) {
                 return $query->where('visibility_id', '=', 3)
                     ->orWhere('created_by', '=', Auth::user() ? Auth::user()->id : null);
@@ -486,8 +483,6 @@ class Event extends Eloquent
 
     /**
      * The tags that belong to the event.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function tags(): BelongsToMany
     {
@@ -526,7 +521,7 @@ class Event extends Eloquent
     }
 
     /**
-     * Get past or future attribute
+     * Get past or future attribute.
      */
     public function getPastOrFutureAttribute()
     {
@@ -587,8 +582,6 @@ class Event extends Eloquent
 
     /**
      * Return a collection of events with the passed tag.
-     *
-     * @param string $tag
      */
     public static function getByTag(string $tag)
     {
@@ -600,8 +593,6 @@ class Event extends Eloquent
 
     /**
      * Return a collection of events with the passed venue.
-     *
-     * @param string $slug
      */
     public static function getByVenue(string $slug)
     {
@@ -789,7 +780,7 @@ class Event extends Eloquent
 
     public function getTitleFormat()
     {
-        $format = $this->start_at->format('l F jS Y') . ' ' . $this->name;
+        $format = $this->start_at->format('l F jS Y').' '.$this->name;
 
         // include the location of the event
         if ($this->venue) {
@@ -807,15 +798,15 @@ class Event extends Eloquent
         // URLs count as 23 chars
 
         // add the date and name - always include this
-        $format = $this->start_at->format('l F jS Y') . ' | ' . $this->name;
+        $format = $this->start_at->format('l F jS Y').' | '.$this->name;
 
         // if part of a series, include the series
         if (!empty($this->series_id)) {
-            $format .= ' ' . $this->series->name . ' series';
+            $format .= ' '.$this->series->name.' series';
         }
 
         // include the type of event
-        $format .= ' ' . $this->eventType->name;
+        $format .= ' '.$this->eventType->name;
 
         // include the location of the event
         if ($this->venue) {
@@ -825,12 +816,12 @@ class Event extends Eloquent
 
         // include the start time
         if ($this->start_at) {
-            $format .= ' at ' . $this->start_at->format('gA');
+            $format .= ' at '.$this->start_at->format('gA');
         }
 
         // include the door price
         if ($this->door_price) {
-            $format .= ' $' . number_format($this->door_price, 0);
+            $format .= ' $'.number_format($this->door_price, 0);
         }
 
         // include the related entities
@@ -843,7 +834,7 @@ class Event extends Eloquent
                     }
 
                     // this was using an @ mention, but changing to hashtag, see https://github.com/geoff-maddock/events-tracker/issues/555
-                    $format .= ' #' . $entity->twitter_username;
+                    $format .= ' #'.$entity->twitter_username;
                 } else {
                     // check the length of the tag and if there is enough room to add
                     if (strlen($format) + strlen($entity->slug) > 244) {
@@ -851,7 +842,7 @@ class Event extends Eloquent
                     }
 
                     // if the twitter username isn't set, then just add a hashtag
-                    $format .= ' #' . Str::studly($entity->slug);
+                    $format .= ' #'.Str::studly($entity->slug);
                 }
             }
         }
@@ -863,25 +854,25 @@ class Event extends Eloquent
                 if (strlen($format) + strlen($tag->name) > 244) {
                     continue;
                 }
-                $format .= ' #' . Str::studly($tag->name);
+                $format .= ' #'.Str::studly($tag->name);
             }
         }
 
         // if there are more than 12 chars remaining, add default hashtag
         if (strlen($format) < 246) {
-            $format .= ' #' . config('app.default_hashtag');
+            $format .= ' #'.config('app.default_hashtag');
         }
 
         // add the arcane city URL
         if (strlen($format) < 258) {
-            $format .= ' https://arcane.city/events/' . $this->id;
+            $format .= ' https://arcane.city/events/'.$this->id;
         }
 
         // add the primary link
         if ($this->primary_link) {
             // if there are at least 23 chars remaining, add primary link
             if (strlen($format) < 258) {
-                $format .= ' ' . $this->primary_link ?? '';
+                $format .= ' '.$this->primary_link ?? '';
             }
         }
 

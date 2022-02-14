@@ -10,10 +10,10 @@ use Illuminate\Database\Eloquent\Model;
 class Comment extends Model
 {
     /**
-       * The database table used by the model.
-       *
-       * @var string
-       */
+     * The database table used by the model.
+     *
+     * @var string
+     */
     protected $table = 'comments';
 
     /**
@@ -32,7 +32,7 @@ class Comment extends Model
     }
 
     /**
-     * Get the author of the comment
+     * Get the author of the comment.
      */
     public function author()
     {
@@ -40,13 +40,12 @@ class Comment extends Model
     }
 
     /**
-     * Returns entities created by the user
+     * Returns entities created by the user.
      *
      * @ param User $user
-     *
      */
     public function scopeCreatedBy($query, User $user)
     {
-        return $query->where('created_by', '=', $user ? $user->id : null);
+        return $query->where('created_by', '=', $user->id);
     }
 }

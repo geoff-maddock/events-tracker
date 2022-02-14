@@ -1686,7 +1686,8 @@ class EventsController extends Controller
                 $file = new UploadedFile(storage_path().'/app/public/photos/'.$fileName, 'temp.jpg', null, null, UPLOAD_ERR_OK);
 
                 // make the photo object from the file in the request
-                if ($photo = $this->makePhoto($file)) {
+                $photo = $this->makePhoto($file);
+                if ($photo !== null) {
                     // count existing photos, and if zero, make this primary
                     if (0 === count($event->photos)) {
                         $photo->is_primary = 1;
@@ -1753,7 +1754,8 @@ class EventsController extends Controller
 
                 // make the photo object from the file in the request
                 /** @var Photo $photo */
-                if ($photo = $this->makePhoto($file)) {
+                $photo = $this->makePhoto($file);
+                if ($photo !== null) {
                     // count existing photos, and if zero, make this primary
                     if (0 === count($event->photos)) {
                         $photo->is_primary = 1;
@@ -1779,9 +1781,9 @@ class EventsController extends Controller
             abort(404);
         }
 
-        $thread = Thread::where('event_id', '=', $event->id)->get();
+        $thread = Thread::where('event_id', '=', $event->id)->first();
 
-        return view('events.show', compact('event'))->with(['thread' => $thread ? $thread->first() : null])->render();
+        return view('events.show', compact('event'))->with(['thread' => $thread])->render();
     }
 
     public function store(EventRequest $request, Event $event): RedirectResponse
@@ -1842,7 +1844,8 @@ class EventsController extends Controller
         // add a twitter notification if the user is admin
         if ($this->user->hasGroup('super_admin') && config('app.twitter_consumer_key') !== '999') {
             // only tweet if there is a primary photo
-            if ($photo = $event->getPrimaryPhoto()) {
+            $photo = $event->getPrimaryPhoto();
+            if ($photo !== null) {
                 $event->notify(new EventPublished());
             }
         }
@@ -2613,7 +2616,7 @@ class EventsController extends Controller
             $photo = $this->makePhoto($request->file('file'));
 
             // count existing photos, and if zero, make this primary
-            if ($event->photos && 0 === count($event->photos)) {
+            if (isset($event->photos) && 0 === count($event->photos)) {
                 $photo->is_primary = 1;
             }
 

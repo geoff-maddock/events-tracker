@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Filters\EntityFilters;
+use App\Http\Requests\EntityRequest;
+use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Alias;
 use App\Models\Entity;
 use App\Models\EntityStatus;
 use App\Models\EntityType;
 use App\Models\Follow;
-use App\Http\Requests\EntityRequest;
-use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Photo;
 use App\Models\Role;
 use App\Models\Tag;
@@ -18,18 +18,18 @@ use App\Models\User;
 use App\Notifications\EventPublished;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Response;
 
 class EntitiesController extends Controller
 {
@@ -81,7 +81,6 @@ class EntitiesController extends Controller
     /**
      * Display a listing of the resource.
      *
-     *
      * @throws \Throwable
      */
     public function index(
@@ -126,7 +125,7 @@ class EntitiesController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -142,8 +141,6 @@ class EntitiesController extends Controller
 
     /**
      * Gets the base query.
-     *
-     * @return Builder
      */
     public function getBaseQuery(): Builder
     {
@@ -197,7 +194,7 @@ class EntitiesController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -256,7 +253,7 @@ class EntitiesController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -313,7 +310,7 @@ class EntitiesController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -323,7 +320,7 @@ class EntitiesController extends Controller
     }
 
     /**
-     * Reset the rpp, sort, order
+     * Reset the rpp, sort, order.
      *
      * @throws \Throwable
      */
@@ -344,8 +341,6 @@ class EntitiesController extends Controller
 
     /**
      * Reset the filtering of entities.
-     *
-     * @return Response
      *
      * @throws \Throwable
      */
@@ -416,7 +411,7 @@ class EntitiesController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -472,7 +467,7 @@ class EntitiesController extends Controller
                     'sort' => $listResultSet->getSort(),
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
+                    'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -485,7 +480,7 @@ class EntitiesController extends Controller
     /**
      * Display an entity when passed the slug.
      *
-     * @return Response | string
+     * @return Response|string
      *
      * @throws \Throwable
      */
@@ -501,7 +496,7 @@ class EntitiesController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return Response | string
+     * @return Response|string
      */
     public function create()
     {
@@ -526,7 +521,7 @@ class EntitiesController extends Controller
 
         // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
-            if (!DB::table('tags')->where('id', $tag)->get()) {
+            if (DB::table('tags')->where('id', $tag)->count() > 0) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->slug = Str::slug($tag);
@@ -538,7 +533,7 @@ class EntitiesController extends Controller
 
                 $syncArray[] = $newTag->id;
 
-                $msg .= ' Added tag ' . $tag . '.';
+                $msg .= ' Added tag '.$tag.'.';
             } else {
                 $syncArray[$key] = $tag;
             }
@@ -546,14 +541,14 @@ class EntitiesController extends Controller
 
         // check the elements in the alias list, and if any don't match, add the alias
         foreach ($aliasArray as $key => $alias) {
-            if (!DB::table('aliases')->where('id', $alias)->get()) {
+            if (DB::table('aliases')->where('id', $alias)->count() > 0) {
                 $newAlias = new Alias();
                 $newAlias->name = ucwords(strtolower($alias));
                 $newAlias->save();
 
                 $aliasSyncArray[] = $newAlias->id;
 
-                $msg .= ' Added alias ' . $alias . '.';
+                $msg .= ' Added alias '.$alias.'.';
             } else {
                 $aliasSyncArray[$key] = $alias;
             }
@@ -610,10 +605,6 @@ class EntitiesController extends Controller
 
         $entity->fill($input)->save();
 
-        if (!$entity->ownedBy(\Auth::user())) {
-            $this->unauthorized($request);
-        }
-
         // if we got this far, it worked
         $msg = 'Updated entity. ';
 
@@ -637,7 +628,7 @@ class EntitiesController extends Controller
 
                 $syncArray[strtolower($tag)] = $newTag->id;
 
-                $msg .= ' Added tag ' . $tag . '.';
+                $msg .= ' Added tag '.$tag.'.';
             } else {
                 $syncArray[$key] = $tag;
             }
@@ -652,7 +643,7 @@ class EntitiesController extends Controller
 
                 $aliasSyncArray[strtolower($alias)] = $newAlias->id;
 
-                $msg .= ' Added alias ' . $alias . '.';
+                $msg .= ' Added alias '.$alias.'.';
             } else {
                 $aliasSyncArray[$key] = $alias;
             }
@@ -673,6 +664,7 @@ class EntitiesController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
      * @throws \Exception
      */
     public function destroy(Entity $entity): RedirectResponse
@@ -694,7 +686,7 @@ class EntitiesController extends Controller
             'file' => 'required|mimes:jpg,jpeg,png,gif',
         ]);
 
-        $fileName = time() . '_' . $request->file->getClientOriginalName();
+        $fileName = time().'_'.$request->file->getClientOriginalName();
         $filePath = $request->file('file')->storeAs('photos', $fileName, 'public');
 
         // attach to entity
@@ -702,7 +694,7 @@ class EntitiesController extends Controller
             $photo = $this->makePhoto($request->file('file'));
 
             // count existing photos, and if zero, make this primary
-            if ($entity->photos && 0 === count($entity->photos)) {
+            if (isset($entity->photos) && 0 === count($entity->photos)) {
                 $photo->is_primary = 1;
             }
 
@@ -722,7 +714,7 @@ class EntitiesController extends Controller
     /**
      * Mark user as following the entity.
      *
-     * @return Response | array
+     * @return Response|array
      *
      * @throws \Throwable
      */
@@ -744,7 +736,7 @@ class EntitiesController extends Controller
 
         // check if the user already follows
         if ($entity->followedBy($this->user) !== null) {
-            flash()->error('Error', 'You are already following ' . $entity->name);
+            flash()->error('Error', 'You are already following '.$entity->name);
 
             return redirect()->route('entities.show', compact('entity'));
         }
@@ -756,7 +748,7 @@ class EntitiesController extends Controller
         $follow->object_type = 'entity'; // 1 = Attending, 2 = Interested, 3 = Uninterested, 4 = Cannot Attend
         $follow->save();
 
-        Log::info('User ' . $id . ' is following ' . $entity->name);
+        Log::info('User '.$id.' is following '.$entity->name);
 
         // add to activity log
         Activity::log($entity, $this->user, 6);
@@ -764,20 +756,21 @@ class EntitiesController extends Controller
         // handle the request if ajax
         if ($request->ajax()) {
             return [
-                'Message' => 'You are now following the entity - ' . $entity->name,
+                'Message' => 'You are now following the entity - '.$entity->name,
                 'Success' => view('entities.single')
                     ->with(compact('entity'))
                     ->render(),
             ];
         }
-        flash()->success('Success', 'You are now following the entity - ' . $entity->name);
+        flash()->success('Success', 'You are now following the entity - '.$entity->name);
 
-        return redirect()->intended('/entities/' . $entity->slug);
+        return redirect()->intended('/entities/'.$entity->slug);
     }
 
     /**
      * Mark user as unfollowing the entity.
-     * @return Response | array
+     *
+     * @return Response|array
      *
      * @throws \Throwable
      */
@@ -806,19 +799,19 @@ class EntitiesController extends Controller
         // handle the request if ajax
         if ($request->ajax()) {
             return [
-                'Message' => 'You are no longer following the entity - ' . $entity->name,
+                'Message' => 'You are no longer following the entity - '.$entity->name,
                 'Success' => view('entities.single')
                     ->with(compact('entity'))
                     ->render(),
             ];
         }
-        flash()->success('Success', 'You are no longer following the entity - ' . $entity->name);
+        flash()->success('Success', 'You are no longer following the entity - '.$entity->name);
 
         return back();
     }
 
     /**
-     * Tweet this event
+     * Tweet this event.
      *
      * @return Response
      *
@@ -842,9 +835,9 @@ class EntitiesController extends Controller
         // Add a twitter notification
         $entity->notify(new EventPublished());
 
-        Log::info('User ' . $id . ' tweeted ' . $entity->name);
+        Log::info('User '.$id.' tweeted '.$entity->name);
 
-        flash()->success('Success', 'You tweeted the entity - ' . $entity->name);
+        flash()->success('Success', 'You tweeted the entity - '.$entity->name);
 
         return back();
     }
@@ -870,19 +863,19 @@ class EntitiesController extends Controller
 
     protected function getListControlOptions(): array
     {
-        return  [
+        return [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
             'sortOptions' => ['entities.name' => 'Name', 'entity_types.name' => 'Entity Type', 'entities.created_at' => 'Created At'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
         ];
     }
 
     protected function getFilterOptions(): array
     {
-        return  [
+        return [
             'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
             'roleOptions' => ['' => ''] + Role::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'entityTypeOptions' => ['' => ''] + EntityType::orderBy('name', 'ASC')->pluck('name', 'name')->all()
+            'entityTypeOptions' => ['' => ''] + EntityType::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
         ];
     }
 
@@ -894,7 +887,7 @@ class EntitiesController extends Controller
             'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'aliasOptions' => Alias::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'roleOptions' => Role::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all()
+            'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
         ];
     }
 }

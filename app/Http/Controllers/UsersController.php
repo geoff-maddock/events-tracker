@@ -409,7 +409,7 @@ class UsersController extends Controller
             $photo = $this->makePhoto($request->file('file'));
 
             // count existing photos, and if zero, make this primary
-            if ($user->photos && 0 === count($user->photos)) {
+            if (isset($user->photos) && 0 === count($user->photos)) {
                 $photo->is_primary = 1;
             }
 
