@@ -54,14 +54,6 @@ class LocationsController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     */
-    public function index(Entity $entity): View
-    {
-        return view('locations.index', compact('entity'));
-    }
-
-    /**
      * Show the form for creating a new resource.
      */
     public function create(Entity $entity): View

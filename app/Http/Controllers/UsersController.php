@@ -677,14 +677,8 @@ class UsersController extends Controller
     /**
      * @return RedirectResponse|Response
      */
-    protected function notifyUser(int $id)
+    protected function notifyUser(User $user)
     {
-        if (!$user = User::find($id)) {
-            flash()->error('Error', 'No such user');
-
-            return back();
-        }
-
         // if the user does not have this setting, continue
         if ($user->profile->setting_daily_update !== 1) {
             flash()->error('Error', 'User has daily updates disabled');

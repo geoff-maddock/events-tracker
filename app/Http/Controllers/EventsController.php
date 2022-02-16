@@ -1400,8 +1400,6 @@ class EventsController extends Controller
      */
     public function calendarMinAge(int $age)
     {
-        $age = urldecode($age);
-
         $eventList = [];
 
         $events = Event::where('min_age', '<=', $age)
@@ -1683,7 +1681,7 @@ class EventsController extends Controller
 
                 $fileName = time().'_temp.jpg';
                 file_put_contents(storage_path().'/app/public/photos/'.$fileName, $content);
-                $file = new UploadedFile(storage_path().'/app/public/photos/'.$fileName, 'temp.jpg', null, null, UPLOAD_ERR_OK);
+                $file = new UploadedFile(storage_path().'/app/public/photos/'.$fileName, 'temp.jpg', null, null, false);
 
                 // make the photo object from the file in the request
                 $photo = $this->makePhoto($file);
@@ -1750,7 +1748,7 @@ class EventsController extends Controller
 
                 $fileName = time().'_temp.jpg';
                 file_put_contents(storage_path().'/app/public/photos/'.$fileName, $content);
-                $file = new UploadedFile(storage_path().'/app/public/photos/'.$fileName, 'temp.jpg', null, null, UPLOAD_ERR_OK);
+                $file = new UploadedFile(storage_path().'/app/public/photos/'.$fileName, 'temp.jpg', null, null, false);
 
                 // make the photo object from the file in the request
                 /** @var Photo $photo */
