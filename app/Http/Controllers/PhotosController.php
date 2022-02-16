@@ -5,15 +5,12 @@ namespace App\Http\Controllers;
 use App\Filters\PhotoFilters;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Entity;
-use App\Models\EntityType;
 use App\Models\Photo;
 use App\Models\Tag;
-use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
@@ -273,17 +270,6 @@ class PhotosController extends Controller
         ->render();
     }
 
-    /**
-     * Show a form to create a new Article.
-     **/
-    public function create()
-    {
-        $tags = Tag::pluck('name', 'id');
-        $entities = Entity::pluck('name', 'id');
-
-        return view('photos.create', compact('tags', 'entities'));
-    }
-
     public function show(Photo $photo)
     {
         return view('photos.show', compact('photo'));
@@ -300,19 +286,6 @@ class PhotosController extends Controller
         Session::flash('flash_message', 'Your photo has been created!');
 
         return redirect()->route('photos.index');
-    }
-
-    public function edit(Photo $photo)
-    {
-        $this->middleware('auth');
-
-        $type = EntityType::where('name', 'Venue')->first();
-        $venues = array_merge(['' => ''], DB::table('entities')->where('entity_type_id', $type->id)->orderBy('name', 'ASC')->pluck('name', 'id'));
-        $visibilities = array_merge(['' => ''], Visibility::pluck('name', 'id'));
-        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id');
-        $entities = Entity::orderBy('name', 'ASC')->pluck('name', 'id');
-
-        return view('photos.edit', compact('photo', 'venues', 'visibilities', 'tags', 'entities'));
     }
 
     public function update(Photo $photo, Request $request)

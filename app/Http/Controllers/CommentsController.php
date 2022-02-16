@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\ContactRequest;
-use Illuminate\Http\Request;
+use App\Models\Comment;
 use App\Models\Entity;
 use App\Models\Event;
-use App\Models\Comment;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class CommentsController extends Controller
 {
@@ -28,16 +27,7 @@ class CommentsController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     */
-    public function index(Entity $entity): View
-    {
-        return view('comments.index', compact('entity'));
-    }
-
-    /**
      * Show the form for creating a new resource.
-     *
      */
     public function create(Entity $entity, Event $event): View
     {
@@ -47,7 +37,7 @@ class CommentsController extends Controller
         if (isset($entity->id)) {
             $object = $entity;
             $type = 'entities';
-        };
+        }
 
         if (isset($event->id)) {
             $object = $event;
@@ -72,13 +62,13 @@ class CommentsController extends Controller
             $input['commentable_type'] = 'entity';
             $input['commentable_id'] = $entity->id;
             $type = 'entities';
-        };
+        }
 
         if (isset($event->id)) {
             $input['commentable_type'] = 'event';
             $input['commentable_id'] = $event->id;
             $type = 'events';
-        };
+        }
 
         $this->validate($request, $this->rules);
 
@@ -87,11 +77,11 @@ class CommentsController extends Controller
 
         flash()->success('Success', 'Your comment has been created');
 
-        return redirect()->route($type . '.show', $comment->commentable->getRouteKey());
+        return redirect()->route($type.'.show', $comment->commentable->getRouteKey());
     }
 
     /**
-     * Display the specified comment
+     * Display the specified comment.
      */
     public function show(Entity $entity, Comment $comment): View
     {
@@ -99,7 +89,7 @@ class CommentsController extends Controller
     }
 
     /**
-     * Show the form for editing the specified comment
+     * Show the form for editing the specified comment.
      */
     public function edit(Entity $entity, Comment $comment): View
     {
@@ -111,7 +101,7 @@ class CommentsController extends Controller
         if (get_class($object) == Entity::class) {
             $entity = $object;
             $type = 'entities';
-        };
+        }
 
         if (get_class($object) == Event::class) {
             $event = $object;
@@ -137,6 +127,7 @@ class CommentsController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
      * @throws \Exception
      */
     public function destroy(Entity $entity, Comment $comment): RedirectResponse

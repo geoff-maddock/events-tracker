@@ -54,14 +54,6 @@ class LinksController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     */
-    public function index(Entity $entity): View
-    {
-        return view('links.index', compact('entity'));
-    }
-
-    /**
      * Show the form for creating a new resource.
      */
     public function create(Entity $entity): View

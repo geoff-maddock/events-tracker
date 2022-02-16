@@ -2,21 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\ContactRequest;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use App\Models\Entity;
 use App\Models\Contact;
+use App\Models\Entity;
 use App\Models\Visibility;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class ContactsController extends Controller
 {
     protected $rules = [
         'name' => ['required', 'min:3'],
-        'visibility_id' => ['required']
+        'visibility_id' => ['required'],
     ];
 
     public function __construct()
@@ -27,18 +25,7 @@ class ContactsController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     */
-    public function index(): View
-    {
-        $contacts = Contact::all();
-
-        return view('contacts.index', compact('contacts'));
-    }
-
-    /**
      * Show the form for creating a new resource.
-     *
      */
     public function create(Entity $entity, Contact $contact): View
     {
@@ -49,9 +36,6 @@ class ContactsController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  Request $request
-     * @param  Entity $entity
      */
     public function store(Request $request, Entity $entity): RedirectResponse
     {
@@ -74,9 +58,6 @@ class ContactsController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  Entity $entity
-     * @param  Contact $contact
      */
     public function show(Entity $entity, Contact $contact): View
     {
@@ -85,9 +66,6 @@ class ContactsController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  Entity $entity
-     * @param  Contact $contact
      */
     public function edit(Entity $entity, Contact $contact): View
     {
@@ -98,10 +76,6 @@ class ContactsController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  ContactRequest $request
-     * @param  Entity $entity
-     * @param  Contact $contact
      */
     public function update(ContactRequest $request, Entity $entity, Contact $contact): RedirectResponse
     {
@@ -117,8 +91,6 @@ class ContactsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  Entity $entity
-     * @param  Contact $contact
      * @throws \Exception
      */
     public function destroy(Entity $entity, Contact $contact): RedirectResponse

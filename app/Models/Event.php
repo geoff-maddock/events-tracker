@@ -821,7 +821,7 @@ class Event extends Eloquent
 
         // include the door price
         if ($this->door_price) {
-            $format .= ' $'.number_format($this->door_price, 0);
+            $format .= ' $'.number_format(floatval($this->door_price), 0);
         }
 
         // include the related entities

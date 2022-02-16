@@ -200,11 +200,6 @@ class PagesController extends Controller
         return view('pages.tos');
     }
 
-    public function settings()
-    {
-        return view('pages.settings');
-    }
-
     public function home(
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
@@ -343,7 +338,7 @@ class PagesController extends Controller
         // check that a user with that email does not already exist.
         $users = User::where('email', 'like', '%'.$email.'%')->orderBy('name', 'ASC')->count();
         if ($users > 0) {
-            flash()->success('Error', 'No email sent - a user with the address - '.$email.' - already exists on the site.'.count($users));
+            flash()->success('Error', 'No email sent - a user with the address - '.$email.' - already exists on the site.');
 
             return back();
         }

@@ -11,7 +11,6 @@ use App\Models\Entity;
 use App\Models\Like;
 use App\Models\Post;
 use App\Models\Tag;
-use App\Models\TagType;
 use App\Models\Thread;
 use App\Models\User;
 use App\Models\Visibility;
@@ -278,16 +277,6 @@ class PostsController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response|View|string
-     */
-    public function create()
-    {
-        return view('posts.create')->with($this->getFormOptions());
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @return Response
@@ -314,7 +303,7 @@ class PostsController extends Controller
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->slug = Str::slug($tag);
-                $newTag->tagType->save(TagType::find(1));
+                $newTag->tag_type_id = 1;
                 $newTag->save();
 
                 $syncArray[] = $newTag->id;
@@ -465,7 +454,7 @@ class PostsController extends Controller
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->slug = Str::slug($tag);
-                $newTag->tagType->save(TagType::find(1));
+                $newTag->tag_type_id = 1;
                 $newTag->save();
 
                 $syncArray[] = $newTag->id;
