@@ -3,9 +3,9 @@
 namespace App\Providers;
 
 use App\Models\Event;
+use App\Models\Forum;
 use App\Models\Menu;
 use App\Models\Role;
-use App\Models\Forum;
 use Illuminate\Support\ServiceProvider;
 
 class ViewComposerServiceProvider extends ServiceProvider
@@ -30,9 +30,9 @@ class ViewComposerServiceProvider extends ServiceProvider
     }
 
     /**
-     * Compose navigation bar
+     * Compose navigation bar.
      */
-    private function composeNavigation()
+    private function composeNavigation(): void
     {
         view()->composer('partials.nav', function ($view) {
             $view->with('latest', Event::latest()->first());

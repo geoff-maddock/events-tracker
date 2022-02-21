@@ -7,25 +7,13 @@ namespace App\Services\SessionStore;
  */
 interface ListParameterStore
 {
-    /**
-     * @return mixed
-     */
-    public function setFilters(?array $filters);
+    public function setFilters(?array $filters): ListParameterStore;
 
-    /**
-     * @return mixed
-     */
-    public function setSortFieldName($sort);
+    public function setSortFieldName(?string $sort): ListParameterStore;
 
-    /**
-     * @return mixed
-     */
-    public function setSortDirection($sortDirection);
+    public function setSortDirection(?string $sortDirection): ListParameterStore;
 
-    /**
-     * @return mixed
-     */
-    public function setLimit($limit);
+    public function setLimit(?int $limit): ListParameterStore;
 
     /**
      * @return mixed

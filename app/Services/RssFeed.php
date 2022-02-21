@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Event;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 use Suin\RSSWriter\Channel;
 use Suin\RSSWriter\Feed;
@@ -14,7 +15,7 @@ class RssFeed
     /**
      * Return the content of the RSS feed.
      */
-    public function getEventExportRSS($events)
+    public function getEventExportRSS(Collection $events): string
     {
         if (Cache::has('event-export-rss-feed')) {
             return Cache::get('event-export-rss-feed');
@@ -29,7 +30,7 @@ class RssFeed
     /**
      * Return the content of the RSS feed.
      */
-    public function getRSS()
+    public function getRSS(): string
     {
         if (Cache::has('rss-feed')) {
             return Cache::get('rss-feed');
@@ -46,10 +47,10 @@ class RssFeed
     /**
      * Return the content of the RSS feed.
      */
-    public function getTagRSS($tag)
+    public function getTagRSS(string $tag): string
     {
-        if (Cache::has('rss-feed-' . $tag)) {
-            return Cache::get('rss-feed' . $tag);
+        if (Cache::has('rss-feed-'.$tag)) {
+            return Cache::get('rss-feed'.$tag);
         }
 
         $events = Event::getByTag(ucfirst($tag))
@@ -59,17 +60,15 @@ class RssFeed
         ->get();
 
         $rss = $this->buildRssData($events);
-        Cache::add('rss-feed' . $tag, $rss, 7200);
+        Cache::add('rss-feed'.$tag, $rss, 7200);
 
         return $rss;
     }
 
     /**
      * Return a string with the feed data.
-     *
-     * @return string
      */
-    protected function buildRssData($events)
+    protected function buildRssData(Collection $events): string
     {
         $now = Carbon::now();
         $feed = new Feed();
@@ -79,7 +78,7 @@ class RssFeed
       ->description(config('event.description'))
       ->url(url('/'))
       ->language('en')
-      ->copyright('Copyright (c) ' . config('event.author'))
+      ->copyright('Copyright (c) '.config('event.author'))
       ->lastBuildDate($now->timestamp)
       ->appendTo($feed);
 
@@ -87,8 +86,8 @@ class RssFeed
             $item = new Item();
             $item
         ->title($event->name)
-        ->description($event->start_at->format('l F jS Y') . '<br>' . $event->description)
-        ->contentEncoded('<div>' . $event->start_at->format('l F jS Y') . '<br>' . $event->description . '</div>')
+        ->description($event->start_at->format('l F jS Y').'<br>'.$event->description)
+        ->contentEncoded('<div>'.$event->start_at->format('l F jS Y').'<br>'.$event->description.'</div>')
         ->url(route('events.show', $event->id))
         ->pubDate($event->created_at->timestamp)
         ->guid($event->id, true)
@@ -107,7 +106,7 @@ class RssFeed
 
         $feed = str_replace(
             '<channel>',
-            '<channel>' . "\n" . '    <atom:link href="' . url('/rss') .
+            '<channel>'."\n".'    <atom:link href="'.url('/rss').
       '" rel="self" type="application/rss+xml" />',
             $feed
         );

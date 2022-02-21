@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\UserStatus;
-use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\MustVerifyEmail;
@@ -12,56 +10,61 @@ use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection as Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 
 /**
- * App\Models\User
+ * App\Models\User.
  *
- * @property mixed $id
- * @property string $name
- * @property string $email
- * @property string $password
- * @property string|null $remember_token
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property int|null $user_status_id
- * @property string|null $email_verified_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Activity[] $activity
- * @property-read int|null $activity_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $comments
- * @property-read int|null $comments_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EventResponse[] $eventResponses
- * @property-read int|null $event_responses_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Event[] $events
- * @property-read int|null $events_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Follow[] $follows
- * @property-read int|null $follows_count
- * @property-read mixed $attending_count
- * @property-read mixed $entities_following_count
- * @property-read mixed $event_count
- * @property-read mixed $full_name
- * @property-read mixed $group_list
- * @property-read mixed $is_active
- * @property-read mixed $series_following_count
- * @property-read mixed $tags_following_count
- * @property-read mixed $threads_following_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Group[] $groups
- * @property-read int|null $groups_count
- * @property-read \App\Models\Activity|null $lastActivity
- * @property-read \App\Models\Post|null $lastPost
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
- * @property-read int|null $notifications_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Photo[] $photos
- * @property-read int|null $photos_count
- * @property-read \App\Models\Profile|null $profile
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Series[] $series
- * @property-read int|null $series_count
- * @property-read UserStatus|null $status
+ * @property mixed                                                                                                     $id
+ * @property string                                                                                                    $name
+ * @property string                                                                                                    $email
+ * @property string                                                                                                    $password
+ * @property string|null                                                                                               $remember_token
+ * @property \Illuminate\Support\Carbon|null                                                                           $created_at
+ * @property \Illuminate\Support\Carbon|null                                                                           $updated_at
+ * @property int|null                                                                                                  $user_status_id
+ * @property string|null                                                                                               $email_verified_at
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Activity[]                                           $activity
+ * @property int|null                                                                                                  $activity_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[]                                            $comments
+ * @property int|null                                                                                                  $comments_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\EventResponse[]                                      $eventResponses
+ * @property int|null                                                                                                  $event_responses_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Event[]                                              $events
+ * @property int|null                                                                                                  $events_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Follow[]                                             $follows
+ * @property int|null                                                                                                  $follows_count
+ * @property mixed                                                                                                     $attending_count
+ * @property mixed                                                                                                     $entities_following_count
+ * @property mixed                                                                                                     $event_count
+ * @property mixed                                                                                                     $full_name
+ * @property mixed                                                                                                     $group_list
+ * @property mixed                                                                                                     $is_active
+ * @property mixed                                                                                                     $series_following_count
+ * @property mixed                                                                                                     $tags_following_count
+ * @property mixed                                                                                                     $threads_following_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Group[]                                              $groups
+ * @property int|null                                                                                                  $groups_count
+ * @property \App\Models\Activity|null                                                                                 $lastActivity
+ * @property \App\Models\Post|null                                                                                     $lastPost
+ * @property \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property int|null                                                                                                  $notifications_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Photo[]                                              $photos
+ * @property int|null                                                                                                  $photos_count
+ * @property \App\Models\Profile|null                                                                                  $profile
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Series[]                                             $series
+ * @property int|null                                                                                                  $series_count
+ * @property UserStatus|null                                                                                           $status
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User query()
@@ -109,7 +112,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * A how many events the user created.
      */
-    public function getEventCountAttribute()
+    public function getEventCountAttribute(): int
     {
         return $this->hasMany(Event::class, 'created_by')->count();
     }
@@ -117,7 +120,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * A user can have many series.
      */
-    public function series()
+    public function series(): HasMany
     {
         return $this->hasMany(Series::class);
     }
@@ -125,7 +128,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * A user can have much activity.
      */
-    public function activity()
+    public function activity(): HasMany
     {
         return $this->hasMany(Activity::class);
     }
@@ -133,7 +136,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * A user can have many comments.
      */
-    public function comments()
+    public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
     }
@@ -160,7 +163,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @return Photo $photo
      *
      **/
-    public function getPrimaryPhoto()
+    public function getPrimaryPhoto(): ?Photo
     {
         // get a list of events that start on the passed date
         $primary = $this->photos()->where('photos.is_primary', '=', '1')->first();
@@ -171,7 +174,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * Get all of the events photos.
      */
-    public function photos()
+    public function photos(): BelongsToMany
     {
         return $this->belongsToMany(Photo::class)->withTimestamps();
     }
@@ -179,7 +182,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * Return the count of events the user is attending.
      */
-    public function getAttendingCountAttribute()
+    public function getAttendingCountAttribute(): int
     {
         $responses = $this->eventResponses()->get();
         $responses->filter(function ($e) {
@@ -192,15 +195,15 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * A user can have many event responses.
      */
-    public function eventResponses()
+    public function eventResponses(): HasMany
     {
         return $this->hasMany(EventResponse::class);
     }
 
     /**
-     * Return the count of logins the user has made
+     * Return the count of logins the user has made.
      */
-    public function getLoginCountAttribute()
+    public function getLoginCountAttribute(): int
     {
         $logins = $this->activity()->get();
         $logins->filter(function ($e) {
@@ -211,10 +214,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     }
 
     /**
-     *
      * Return the count of entities the user is following.
      */
-    public function getEntitiesFollowingCountAttribute()
+    public function getEntitiesFollowingCountAttribute(): int
     {
         $responses = $this->follows()->get();
         $responses->filter(function ($e) {
@@ -227,7 +229,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * Return the count of tags the user is following.
      */
-    public function getTagsFollowingCountAttribute()
+    public function getTagsFollowingCountAttribute(): int
     {
         $responses = $this->follows()->get();
         $responses->filter(function ($e) {
@@ -240,7 +242,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * Return the count of series the user is following.
      */
-    public function getSeriesFollowingCountAttribute()
+    public function getSeriesFollowingCountAttribute(): int
     {
         $responses = $this->follows()->get();
         $responses->filter(function ($e) {
@@ -253,7 +255,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * Return the count of threads the user is following.
      */
-    public function getThreadsFollowingCountAttribute()
+    public function getThreadsFollowingCountAttribute(): int
     {
         $responses = $this->follows()->get();
         $responses->filter(function ($e) {
@@ -266,7 +268,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * A user can follow many objects.
      */
-    public function follows()
+    public function follows(): HasMany
     {
         return $this->hasMany(Follow::class);
     }
@@ -274,20 +276,18 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * A user can own many objects.
      */
-    public function owns($object)
+    public function owns(Event | Entity | Forum $object): bool
     {
-        return ($object->created_by == $this->id);
+        return $object->created_by == $this->id;
     }
 
     /**
      * An profile is owned by a user.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function getFullNameAttribute()
+    public function getFullNameAttribute(): ?string
     {
         if ($profile = $this->profile) {
-            $full = $profile->first_name . ' ' . $profile->last_name;
+            $full = $profile->first_name.' '.$profile->last_name;
 
             return strlen($full) > 1 ? $full : $this->name; //$profile->first_name.' '.$profile->last_name;
         }
@@ -298,7 +298,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * Return a list of events the user is attending in the future.
      */
-    public function getAttendingFuture()
+    public function getAttendingFuture(): Collection
     {
         $events = Event::join('event_responses', 'events.id', '=', 'event_responses.event_id')
             ->join('response_types', 'event_responses.response_type_id', '=', 'response_types.id')
@@ -315,7 +315,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * Return a list of events the user is attending in the future.
      */
-    public function getAttendingToday()
+    public function getAttendingToday(): Collection
     {
         $events = Event::join('event_responses', 'events.id', '=', 'event_responses.event_id')
             ->join('response_types', 'event_responses.response_type_id', '=', 'response_types.id')
@@ -333,13 +333,12 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * Return a list of events the user is attending.
      */
-    public function getAttending()
+    public function getAttending(): Builder
     {
         $events = Event::join('event_responses', 'events.id', '=', 'event_responses.event_id')
             ->join('response_types', 'event_responses.response_type_id', '=', 'response_types.id')
             ->where('response_types.name', '=', 'Attending')
             ->where('event_responses.user_id', '=', $this->id)
-          //  ->orderBy('events.start_at', 'desc')
             ->select('events.*');
 
         return $events;
@@ -348,7 +347,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * Return a list of entities the user is following.
      */
-    public function getEntitiesFollowing()
+    public function getEntitiesFollowing(): Collection
     {
         $entities = Entity::join('follows', 'entities.id', '=', 'follows.object_id')
             ->where('follows.object_type', '=', 'entity')
@@ -363,7 +362,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * Return a list of tags the user is following.
      */
-    public function getTagsFollowing()
+    public function getTagsFollowing(): Collection
     {
         $tags = Tag::join('follows', 'tags.id', '=', 'follows.object_id')
             ->where('follows.object_type', '=', 'tag')
@@ -378,7 +377,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * Return a list of series the user is following.
      */
-    public function getSeriesFollowing()
+    public function getSeriesFollowing(): Collection
     {
         $series = Series::join('follows', 'series.id', '=', 'follows.object_id')
             ->where('follows.object_type', '=', 'series')
@@ -393,7 +392,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * Return a list of threads the user is following.
      */
-    public function getThreadsFollowing()
+    public function getThreadsFollowing(): Collection
     {
         $threads = Thread::join('follows', 'threads.id', '=', 'follows.object_id')
             ->where('follows.object_type', '=', 'thread')
@@ -407,10 +406,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     /**
      * Events that were created by the user.
-     *
-     * @return BelongsToMany
      */
-    public function createdEvents()
+    public function createdEvents(): Collection
     {
         $events = $this->events()->where('created_at', '=', Auth::user())->orderBy('start_at', 'ASC')->get();
 
@@ -420,83 +417,65 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * A user can have many events.
      */
-    public function events()
+    public function events(): HasMany
     {
         return $this->hasMany(Event::class, 'created_by')->orderBy('start_at', 'DESC');
     }
 
-    public function addPhoto(Photo $photo)
+    public function addPhoto(Photo $photo): void
     {
-        return $this->photos()->attach($photo->id);
+        $this->photos()->attach($photo->id);
     }
 
-    public function hasGroup($group)
+    public function hasGroup(string $group): bool
     {
-        if (is_string($group)) {
-            return $this->groups->contains('name', $group);
-        }
-
-        return (bool) $group->intersect($this->groups)->count();
+        return $this->groups->contains('name', $group);
     }
 
-    public function assignGroup($group)
+    public function assignGroup(string $group): Model
     {
         return $this->groups()->save(
             Group::whereName($group)->firstOrFail()
         );
     }
 
-    /**
-     * @return BelongsToMany
-     */
-    public function groups()
+    public function groups(): BelongsToMany
     {
         return $this->belongsToMany(Group::class);
     }
 
     /**
      * Fetch the last published post for the user.
-     *
-     * @return HasOne
      */
-    public function lastPost()
+    public function lastPost(): HasOne
     {
         return $this->hasOne(Post::class, 'created_by')->latest();
     }
 
     /**
      * Fetch the login date for the user.
-     *
-     * @return HasOne
      */
-    public function lastActivity()
+    public function lastActivity(): HasOne
     {
         return $this->hasOne(Activity::class, 'user_id')->latest();
     }
 
     /**
      * Check that the user is active.
-     *
-     * @ return boolean
      */
-    public function getIsActiveAttribute()
+    public function getIsActiveAttribute(): bool
     {
         if ($this->status && 'Active' === $this->status->name) {
-            return 1;
+            return true;
         }
 
-        return 0;
+        return false;
     }
 
     /**
      * Return the feed of user activity.
-     *
-     * @param User $user
-     * @param int $take
-     *
-     * @return array
      */
-    public function feed($user, $take = 50)
+    public function feed(User $user, int $take = 50): Collection
     {
         return static::where('user_id', $user->id)
             ->latest()
@@ -510,10 +489,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     /**
      * Get a list of group ids associated with the user.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function getGroupListAttribute()
+    public function getGroupListAttribute(): array
     {
         return $this->groups->pluck('id')->all();
     }

@@ -4,17 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Role extends Eloquent
 {
     use HasFactory;
 
     /**
-     * @var Array
+     * @var array
      *
      **/
     protected $fillable = [
-        'name', 'slug', 'short'
+        'name', 'slug', 'short',
     ];
 
     protected $appends = ['plural'];
@@ -22,29 +23,25 @@ class Role extends Eloquent
     protected $dates = ['updated_at'];
 
     /**
-     * Get the entities that belong to the role
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * Get the entities that belong to the role.
      */
-    public function entities()
+    public function entities(): BelongsToMany
     {
         return $this->belongsToMany(Entity::class)->withTimestamps();
     }
 
     /**
-     * Get the plural version of the role
-     *
+     * Get the plural version of the role.
      */
-    public function getPluralAttribute()
+    public function getPluralAttribute(): string
     {
-        return ucfirst(strtolower($this->name . 's'));
+        return ucfirst(strtolower($this->name.'s'));
     }
 
     /**
-     * Convert all role names to ucfirst
-     *
+     * Convert all role names to ucfirst.
      */
-    public function getNameAttribute($value)
+    public function getNameAttribute(string $value): string
     {
         return ucfirst(strtolower($value));
     }
