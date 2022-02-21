@@ -3,19 +3,20 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
-use Illuminate\Support\Collection;
-use DateTime;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Collection;
 
 /**
- * @property int $id
+ * @property int      $id
  * @property int|null $user_id
- * @property string $name
- * @property string $slug
- * @property TagType $tagType
+ * @property string   $name
+ * @property string   $slug
+ * @property TagType  $tagType
  * @property int|null $tag_type_id
  * @property DateTime $created_at
  */
@@ -28,7 +29,7 @@ class Tag extends Eloquent
      *
      **/
     protected $fillable = [
-        'name', 'tag_type_id', 'slug'
+        'name', 'tag_type_id', 'slug',
     ];
 
     public function getRouteKeyName()
@@ -40,40 +41,32 @@ class Tag extends Eloquent
 
     /**
      * Get the threads that belong to the tag.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function threads()
+    public function threads(): BelongsToMany
     {
         return $this->belongsToMany(Thread::class)->withTimestamps();
     }
 
     /**
      * Get the series that belong to the tag.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function series()
+    public function series(): BelongsToMany
     {
         return $this->belongsToMany(Series::class)->withTimestamps();
     }
 
     /**
      * Get the events that belong to the tag.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function events()
+    public function events(): BelongsToMany
     {
         return $this->belongsToMany(Event::class)->withTimestamps();
     }
 
     /**
      * Get the entities that belong to the tag.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function entities()
+    public function entities(): BelongsToMany
     {
         return $this->belongsToMany(Entity::class)->withTimestamps();
     }
@@ -89,10 +82,8 @@ class Tag extends Eloquent
     /**
      * Checks if the tag is followed by the user.
      *
-     * @return Follow $follows
-     *
      **/
-    public function followedBy($user)
+    public function followedBy(User $user): Follow
     {
         $response = Follow::where('object_type', '=', 'tag')
         ->where('object_id', '=', $this->id)
@@ -105,10 +96,8 @@ class Tag extends Eloquent
     /**
      * Returns the users that follow the tag.
      *
-     * @return Collection $follows
-     *
      **/
-    public function followers()
+    public function followers(): Collection
     {
         $users = User::with('profile')->join('follows', 'users.id', '=', 'follows.user_id')
         ->where('follows.object_type', 'tag')
@@ -120,20 +109,16 @@ class Tag extends Eloquent
 
     /**
      * The follows that belong to the entity.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\Morph
      */
-    public function follows()
+    public function follows(): MorphMany
     {
         return $this->morphMany(Follow::class, 'object', 'object_type', 'object_id');
     }
 
     /**
      * If there is a future event, return it.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function futureEvents()
+    public function futureEvents(): Collection
     {
         $events = $this->events()->where('start_at', '>=', Carbon::now())->orderBy('start_at', 'ASC')->get();
 
@@ -142,10 +127,8 @@ class Tag extends Eloquent
 
     /**
      * Return any events that match today for the start date.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function todaysEvents()
+    public function todaysEvents(): Collection
     {
         $events = $this->events()->whereDate('start_at', '=', Carbon::today()->toDateString())->orderBy('start_at', 'ASC')->get();
 

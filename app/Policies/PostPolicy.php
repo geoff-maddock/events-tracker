@@ -10,18 +10,18 @@ class PostPolicy
 {
     use HandlesAuthorization;
 
-    public function update(User $user, Post $post)
+    public function update(User $user, Post $post): bool
     {
-        return ($post->created_by == $user->id);
+        return $post->created_by == $user->id;
     }
 
-    public function delete(User $user, Post $post)
+    public function delete(User $user, Post $post): bool
     {
-        return ($post->created_by == $user->id);
+        return $post->created_by == $user->id;
     }
 
-    public function destroy(User $user, Post $post)
+    public function destroy(User $user, Post $post): bool
     {
-        return ($post->created_by == $user->id && $post->isRecent());
+        return $post->created_by == $user->id && $post->isRecent();
     }
 }

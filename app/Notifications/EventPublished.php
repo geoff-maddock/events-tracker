@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use Eloquent;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -23,12 +24,8 @@ class EventPublished extends Notification
 
     /**
      * Get the notification's delivery channels.
-     *
-     * @param mixed $notifiable
-     *
-     * @return array
      */
-    public function via($notifiable)
+    public function via(Eloquent $notifiable): array
     {
         return [TwitterChannel::class];
     }
@@ -52,16 +49,18 @@ class EventPublished extends Notification
      * Get the array representation of the notification.
      *
      * @param mixed $notifiable
-     *
-     * @return array
      */
-    public function toArray($notifiable)
+    public function toArray($notifiable): array
     {
-        return [
-        ];
+        return [];
     }
 
-    public function toTwitter($notifiable)
+    /**
+     * @param Notifiable $notifiable
+     */
+
+    /** @phpstan-ignore-next-line */
+    public function toTwitter($notifiable): TwitterStatusUpdate
     {
         if ($photo = $notifiable->getPrimaryPhoto()) {
             return (new TwitterStatusUpdate($notifiable->getBriefFormat()))->withImage($photo->getTwitterPath());

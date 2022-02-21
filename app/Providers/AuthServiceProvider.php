@@ -3,11 +3,11 @@
 namespace App\Providers;
 
 use App\Models\Permission;
-use App\Policies\PostPolicy;
-use App\Policies\ThreadPolicy;
 use App\Models\Post;
 use App\Models\Thread;
-use Illuminate\Contracts\Auth\Access\Gate as GateContract;
+use App\Policies\PostPolicy;
+use App\Policies\ThreadPolicy;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Schema;
@@ -47,7 +47,7 @@ class AuthServiceProvider extends ServiceProvider
             Gate::define($permission->name, function ($user) use ($permission) {
                 return $user->hasGroup($permission->groups);
             });
-        };
+        }
 
         Gate::before(function ($user) {
             if ($user->hasGroup('admin')) {
@@ -56,13 +56,13 @@ class AuthServiceProvider extends ServiceProvider
         });
     }
 
-    protected function getPermissions()
+    protected function getPermissions(): Collection
     {
         // doing this check to make sure the table exists
         // since it's in a provider, it might be called by php artisan before the db is migrated
 
         if (!Schema::hasTable('permissions')) {
-            return [];
+            return new Collection([]);
         }
 
         return Permission::with('groups')->get();

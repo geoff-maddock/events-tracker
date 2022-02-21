@@ -7,10 +7,14 @@ use DateTime;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Date;
 
 /**
  * App\Models\Series.
@@ -177,40 +181,40 @@ class Series extends Eloquent
      */
     protected $dates = ['founded_at', 'cancelled_at', 'soundcheck_at', 'door_at', 'start_at', 'end_at'];
 
-    public function scopeFuture($query)
+    public function scopeFuture(Builder $query): Builder
     {
-        $query->where('start_at', '>=', Carbon::now())
+        return $query->where('start_at', '>=', Carbon::now())
                         ->orderBy('start_at', 'asc');
     }
 
-    public function scopePast($query)
+    public function scopePast(Builder $query): Builder
     {
-        $query->where('start_at', '<', Carbon::now())
+        return $query->where('start_at', '<', Carbon::now())
                         ->orderBy('start_at', 'desc');
     }
 
-    public function scopeActive($query)
+    public function scopeActive(Builder $query): Builder
     {
-        $query->whereNull('cancelled_at');
+        return $query->whereNull('cancelled_at');
     }
 
     /**
      * Returns event series that start on the specified date.
      */
-    public function scopeStarting($query, $date)
+    public function scopeStarting(Builder $query, string | Date $date): Builder
     {
         $cdate = Carbon::parse($date);
         $cdate_yesterday = Carbon::parse($date)->subDay();
         $cdate_tomorrow = Carbon::parse($date)->addDay();
 
-        $query->where('start_at', '>', $cdate_yesterday->toDateString().' 23:59:59')
+        return $query->where('start_at', '>', $cdate_yesterday->toDateString().' 23:59:59')
                     ->where('start_at', '<', $cdate_tomorrow->toDateString().' 00:00:00');
     }
 
     /**
      * Returns visible events.
      */
-    public function scopeVisible($query, $user)
+    public function scopeVisible(Builder $query, ?User $user): Builder
     {
         return $query->where(function ($query) use ($user) {
             $query->whereIn('visibility_id', [Visibility::VISIBILITY_PROPOSAL, Visibility::VISIBILITY_PRIVATE])
@@ -288,7 +292,7 @@ class Series extends Eloquent
     /**
      * Set the founded_at attribute.
      */
-    public function setFoundedAtAttribute(?string $date)
+    public function setFoundedAtAttribute(?string $date): void
     {
         if (!empty($date)) {
             $this->attributes['founded_at'] = Carbon::parse($date);
@@ -300,7 +304,7 @@ class Series extends Eloquent
     /**
      * Set the cancelled_at attribute.
      */
-    public function setCancelledAtAttribute(?string $date)
+    public function setCancelledAtAttribute(?string $date): void
     {
         if (!empty($date)) {
             $this->attributes['cancelled_at'] = Carbon::parse($date);
@@ -312,7 +316,7 @@ class Series extends Eloquent
     /**
      * Set the soundcheck_at attribute.
      */
-    public function setSoundcheckAtAttribute(?string $date)
+    public function setSoundcheckAtAttribute(?string $date): void
     {
         if (!empty($date)) {
             $this->attributes['soundcheck_at'] = Carbon::parse($date);
@@ -324,7 +328,7 @@ class Series extends Eloquent
     /**
      * Set the start_at attribute.
      */
-    public function setStartAtAttribute(?string $date)
+    public function setStartAtAttribute(?string $date): void
     {
         if (!empty($date)) {
             $this->attributes['start_at'] = Carbon::parse($date);
@@ -336,7 +340,7 @@ class Series extends Eloquent
     /**
      * Set the end_at attribute.
      */
-    public function setEndAtAttribute(?string $date)
+    public function setEndAtAttribute(?string $date): void
     {
         if (!empty($date)) {
             $this->attributes['end_at'] = Carbon::parse($date);
@@ -348,7 +352,7 @@ class Series extends Eloquent
     /**
      * Set the door_at attribute.
      */
-    public function setDoorAtAttribute(?string $date)
+    public function setDoorAtAttribute(?string $date): void
     {
         if (!empty($date)) {
             $this->attributes['door_at'] = Carbon::parse($date);
@@ -373,7 +377,7 @@ class Series extends Eloquent
      * Return a collection of series with the passed tag.
      *
      **/
-    public static function getByTag($tag): Builder
+    public static function getByTag(string $tag): Builder
     {
         // get a list of series that have the passed tag
         return self::whereHas('tags', function ($q) use ($tag) {
@@ -385,21 +389,19 @@ class Series extends Eloquent
      * Return a collection of series with the passed event type.
      *
      **/
-    public static function getByType($slug): Builder
+    public static function getByType(string $slug): Builder
     {
         // get a list of series that have the passed tag
-        $series = self::whereHas('eventType', function ($q) use ($slug) {
+        return self::whereHas('eventType', function ($q) use ($slug) {
             $q->where('name', '=', $slug);
         });
-
-        return $series;
     }
 
     /**
      * Return a collection of series with the passed venue.
      *
      **/
-    public static function getByVenue($slug): Builder
+    public static function getByVenue(string $slug): Builder
     {
         // get a list of series that have the passed tag
         return self::whereHas('venue', function ($q) use ($slug) {
@@ -410,65 +412,51 @@ class Series extends Eloquent
     /**
      * Return a collection of series with the passed entity.
      *
-     * @return Builder
-     *
      **/
-    public static function getByEntity(string $slug)
+    public static function getByEntity(string $slug): Builder
     {
         // get a list of events that have the passed entity
-        $series = self::whereHas('entities', function ($q) use ($slug) {
+        return self::whereHas('entities', function ($q) use ($slug) {
             $q->where('slug', '=', $slug);
         });
-
-        return $series;
     }
 
     /**
      * Get the threads that belong to the series.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function threads()
+    public function threads(): BelongsToMany
     {
         return $this->belongsToMany(Thread::class)->withTimestamps();
     }
 
     /**
      * An series can have many events.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function events()
+    public function events(): HasMany
     {
         return $this->hasMany(Event::class)->orderBy('start_at', 'DESC');
     }
 
     /**
      * An event is owned by a user.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
     /**
      * An event is created by one user.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function creator()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
     /**
      * Get length of the event in hours.
-     *
-     * @ return decimal
      */
-    public function length()
+    public function length(): float
     {
         if ($this->start_at) {
             return $this->start_at->diffInHours($this->end_time, false);
@@ -479,12 +467,8 @@ class Series extends Eloquent
 
     /**
      * An event is created by one user.
-     *
-     * @ param User $user
-     *
-     * @ return boolean
      */
-    public function ownedBy(User $user)
+    public function ownedBy(User $user): bool
     {
         return $this->created_by == $user->id;
     }
@@ -492,7 +476,7 @@ class Series extends Eloquent
     /**
      * Get all of the series photos.
      */
-    public function photos()
+    public function photos(): BelongsToMany
     {
         return $this->belongsToMany(Photo::class)->withTimestamps();
     }
@@ -508,7 +492,7 @@ class Series extends Eloquent
     /**
      * An event has one venue.
      */
-    public function venue()
+    public function venue(): HasOne
     {
         return $this->hasOne(Entity::class, 'id', 'venue_id');
     }
@@ -516,7 +500,7 @@ class Series extends Eloquent
     /**
      * An series  has one type.
      */
-    public function eventType()
+    public function eventType(): HasOne
     {
         return $this->hasOne(EventType::class, 'id', 'event_type_id');
     }
@@ -572,7 +556,7 @@ class Series extends Eloquent
     /**
      * Returns the date of the next occurrence of this event.
      */
-    public function nextEvent()
+    public function nextEvent(): ?Event
     {
         $event = null;
 
@@ -586,10 +570,8 @@ class Series extends Eloquent
 
     /**
      * Get all series that would fall on the passed date.
-     *
-     * @return mixed
      */
-    public static function byNextDate(?string $date)
+    public static function byNextDate(?string $date): array
     {
         $list = [];
 
@@ -621,7 +603,7 @@ class Series extends Eloquent
     /**
      * Returns the date of the next occurrence of this template.
      */
-    public function nextOccurrenceDate()
+    public function nextOccurrenceDate(): ?Carbon
     {
         return $this->cycleFromFoundedAt();
     }
@@ -629,7 +611,7 @@ class Series extends Eloquent
     /**
      * Returns the end date time of the next occurrence of this template.
      */
-    public function nextOccurrenceEndDate()
+    public function nextOccurrenceEndDate(): ?Carbon
     {
         return $this->nextOccurrenceDate()->addHours($this->length);
     }
@@ -637,7 +619,7 @@ class Series extends Eloquent
     /**
      * Cycles forward from the founding date to the most recent date.
      */
-    public function cycleFromFoundedAt()
+    public function cycleFromFoundedAt(): ?Carbon
     {
         // local founded at
         $next = $this->founded_at;
@@ -657,7 +639,7 @@ class Series extends Eloquent
     /**
      * Returns the date of the next occurrence of this template.
      */
-    public function cycleForward(?DateTime $date)
+    public function cycleForward(?DateTime $date): Carbon
     {
         $carbonDate = Carbon::parse($date);
 
@@ -688,10 +670,8 @@ class Series extends Eloquent
 
     /**
      * Returns the most recent event.
-     *
-     * @return Event|null
      */
-    public function lastEvent()
+    public function lastEvent(): ?Event
     {
         return $this->events()->past()->first();
     }
@@ -699,15 +679,13 @@ class Series extends Eloquent
     /**
      * An event has one visibility.
      */
-    public function visibility()
+    public function visibility(): HasOne
     {
         return $this->hasOne(Visibility::class, 'id', 'visibility_id');
     }
 
     /**
      * The tags that belong to the event.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function tags(): BelongsToMany
     {
@@ -716,8 +694,6 @@ class Series extends Eloquent
 
     /**
      * The entities that belong to the event.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function entities(): BelongsToMany
     {
@@ -726,36 +702,30 @@ class Series extends Eloquent
 
     /**
      * Get a list of tag ids associated with the event.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function getTagListAttribute()
+    public function getTagListAttribute(): array
     {
         return $this->tags->pluck('id')->all();
     }
 
     /**
      * Get a list of entity ids associated with the event.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function getEntityListAttribute()
+    public function getEntityListAttribute(): array
     {
         return $this->entities->pluck('id')->all();
     }
 
-    public function addPhoto(Photo $photo)
+    public function addPhoto(Photo $photo): void
     {
-        return $this->photos()->attach($photo->id);
+        $this->photos()->attach($photo->id);
     }
 
     /**
      * Return the primary photo for this event.
      *
-     * @return Photo $photo
-     *
      **/
-    public function getPrimaryPhoto()
+    public function getPrimaryPhoto(): ?Photo
     {
         // get a list of events that start on the passed date
         return $this->photos()->where('photos.is_primary', '=', '1')->first();
@@ -764,10 +734,8 @@ class Series extends Eloquent
     /**
      * Checks if the series is followed by the user.
      *
-     * @return Follow
-     *
      **/
-    public function followedBy($user)
+    public function followedBy(User $user): ?Follow
     {
         return Follow::where('object_type', '=', 'series')
         ->where('object_id', '=', $this->id)
@@ -778,10 +746,8 @@ class Series extends Eloquent
     /**
      * Returns the users that follow the series.
      *
-     * @return Collection $follows
-     *
      **/
-    public function followers()
+    public function followers(): Collection
     {
         return User::join('follows', 'users.id', '=', 'follows.user_id')
             ->where('follows.object_type', 'series')
@@ -791,10 +757,8 @@ class Series extends Eloquent
 
     /**
      * The follows that belong to the entity.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\Morph
      */
-    public function follows()
+    public function follows(): MorphMany
     {
         return $this->morphMany(Follow::class, 'object', 'object_type', 'object_id');
     }
@@ -827,7 +791,7 @@ class Series extends Eloquent
         ];
     }
 
-    public function getTitleFormat()
+    public function getTitleFormat(): string
     {
         $format = $this->name;
 

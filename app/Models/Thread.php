@@ -3,71 +3,72 @@
 namespace App\Models;
 
 use App\Filters\QueryFilter;
-use App\Models\Photo;
-use App\Models\Post;
-use App\Models\Tag;
 use Carbon\Carbon;
+use DateTime;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Collection;
-use DateTime;
 
 /**
- * App\Models\Thread
+ * App\Models\Thread.
  *
- * @property string $name
- * @property int $created_by
- * @property datetime $created_at
- * @property datetime $updated_at
- * @property int $id
- * @property int $forum_id
- * @property int|null $thread_category_id
- * @property string $slug
- * @property string|null $description
- * @property string $body
- * @property int $allow_html
- * @property int|null $visibility_id
- * @property int|null $recipient_id
- * @property int $sort_order
- * @property int $is_edittable
- * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Like[] $likes
- * @property int $views
- * @property int $is_active
- * @property int|null $updated_by
- * @property string|null $locked_at
- * @property int|null $locked_by
- * @property int|null $event_id
- * @property \Illuminate\Database\Eloquent\Collection $tags;
- * @property-read \Illuminate\Database\Eloquent\Collection|Tag[] $tags
- * @property-read \App\Models\User|null $creator
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Entity[] $entities
- * @property-read int|null $entities_count
- * @property-read \App\Models\Event|null $event
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Follow[] $follows
- * @property-read int|null $follows_count
- * @property-read \App\Models\Forum $forum
- * @property-read mixed $entity_list
- * @property-read mixed $is_locked
- * @property-read mixed $last_post_at
- * @property-read mixed $post_count
- * @property-read mixed $tag_list
- * @property-read int|null $likes_count
- * @property-read \App\Models\User|null $locker
- * @property-read \Illuminate\Database\Eloquent\Collection|Photo[] $photos
- * @property-read int|null $photos_count
- * @property-read \Illuminate\Database\Eloquent\Collection|Post[] $posts
- * @property-read int|null $posts_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Series[] $series
- * @property-read int|null $series_count
- * @property-read int|null $tags_count
- * @property-read \App\Models\ThreadCategory|null $threadCategory
- * @property-read \App\Models\User|null $user
- * @property-read \App\Models\Visibility|null $visibility
+ * @property string                                                        $name
+ * @property int                                                           $created_by
+ * @property datetime                                                      $created_at
+ * @property datetime                                                      $updated_at
+ * @property int                                                           $id
+ * @property int                                                           $forum_id
+ * @property int|null                                                      $thread_category_id
+ * @property string                                                        $slug
+ * @property string|null                                                   $description
+ * @property string                                                        $body
+ * @property int                                                           $allow_html
+ * @property int|null                                                      $visibility_id
+ * @property int|null                                                      $recipient_id
+ * @property int                                                           $sort_order
+ * @property int                                                           $is_edittable
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Like[]   $likes
+ * @property int                                                           $views
+ * @property int                                                           $is_active
+ * @property int|null                                                      $updated_by
+ * @property string|null                                                   $locked_at
+ * @property int|null                                                      $locked_by
+ * @property int|null                                                      $event_id
+ * @property \Illuminate\Database\Eloquent\Collection                      $tags;
+ * @property \Illuminate\Database\Eloquent\Collection|Tag[]                $tags
+ * @property \App\Models\User|null                                         $creator
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Entity[] $entities
+ * @property int|null                                                      $entities_count
+ * @property \App\Models\Event|null                                        $event
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Follow[] $follows
+ * @property int|null                                                      $follows_count
+ * @property \App\Models\Forum                                             $forum
+ * @property mixed                                                         $entity_list
+ * @property mixed                                                         $is_locked
+ * @property mixed                                                         $last_post_at
+ * @property mixed                                                         $post_count
+ * @property mixed                                                         $tag_list
+ * @property int|null                                                      $likes_count
+ * @property \App\Models\User|null                                         $locker
+ * @property \Illuminate\Database\Eloquent\Collection|Photo[]              $photos
+ * @property int|null                                                      $photos_count
+ * @property \Illuminate\Database\Eloquent\Collection|Post[]               $posts
+ * @property int|null                                                      $posts_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Series[] $series
+ * @property int|null                                                      $series_count
+ * @property int|null                                                      $tags_count
+ * @property \App\Models\ThreadCategory|null                               $threadCategory
+ * @property \App\Models\User|null                                         $user
+ * @property \App\Models\Visibility|null                                   $visibility
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Thread filter(\App\Filters\QueryFilter $filters)
  * @method static \Illuminate\Database\Eloquent\Builder|Thread newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Thread newQuery()
@@ -135,26 +136,26 @@ class Thread extends Eloquent
 
     protected $dates = ['created_at', 'updated_at'];
 
-    public function scopeFilter($query, QueryFilter $filters)
+    public function scopeFilter(Builder $query, QueryFilter $filters): Builder
     {
         return $filters->apply($query);
     }
 
-    public function path()
+    public function path(): string
     {
-        return '/threads/' . $this->id;
+        return '/threads/'.$this->id;
     }
 
-    public function scopePast($query)
+    public function scopePast(Builder $query): Builder
     {
-        $query->where('created_at', '<', Carbon::today()->startOfDay())
+        return $query->where('created_at', '<', Carbon::today()->startOfDay())
                         ->orderBy('start_at', 'desc');
     }
 
     /**
      * Returns visible threads.
      */
-    public function scopeVisible($query, $user)
+    public function scopeVisible(Builder $query, ?User $user): Builder
     {
         return $query->where(function ($query) use ($user) {
             $query->whereIn('visibility_id', [1, 2])
@@ -174,7 +175,7 @@ class Thread extends Eloquent
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function posts()
+    public function posts(): HasMany
     {
         return $this->hasMany(Post::class);
     }
@@ -182,15 +183,15 @@ class Thread extends Eloquent
     /**
      * Add a post to a thread.
      */
-    public function addPost($post)
+    public function addPost(array $post): Post
     {
-        $this->posts()->create($post);
+        return $this->posts()->create($post);
     }
 
     /**
      * Get the date of the last post.
      */
-    public function getLastPostAtAttribute()
+    public function getLastPostAtAttribute(): DateTime
     {
         $post = $this->posts()->orderBy('created_at', 'desc')->first();
 
@@ -203,10 +204,8 @@ class Thread extends Eloquent
 
     /**
      * An thread is owned by a user.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
@@ -216,7 +215,7 @@ class Thread extends Eloquent
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function creator()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
@@ -225,7 +224,7 @@ class Thread extends Eloquent
      * Checks if the thread is followed by the user.
      *
      **/
-    public function followedBy($user): ?Follow
+    public function followedBy(User $user): ?Follow
     {
         return Follow::where('object_type', '=', 'thread')
             ->where('object_id', '=', $this->id)
@@ -235,10 +234,8 @@ class Thread extends Eloquent
 
     /**
      * The follows that belong to the thread.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function follows()
+    public function follows(): BelongsToMany
     {
         return $this->belongsToMany(Follow::class)->withTimestamps();
     }
@@ -246,10 +243,8 @@ class Thread extends Eloquent
     /**
      * Returns the users that follow the entity.
      *
-     * @return Collection $follows
-     *
      **/
-    public function followers()
+    public function followers(): Collection
     {
         $users = User::join('follows', 'users.id', '=', 'follows.user_id')
         ->where('follows.object_type', 'thread')
@@ -263,7 +258,7 @@ class Thread extends Eloquent
      * Checks if the thread is liked by the user.
      *
      **/
-    public function likedBy($user): ?Like
+    public function likedBy(User $user): ?Like
     {
         return Like::where('object_type', '=', 'thread')
             ->where('object_id', '=', $this->id)
@@ -273,10 +268,8 @@ class Thread extends Eloquent
 
     /**
      * The likes that belong to the thread.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function likes()
+    public function likes(): MorphMany
     {
         return $this->morphMany(Like::class, 'object', 'object_type', 'object_id');
     }
@@ -299,32 +292,24 @@ class Thread extends Eloquent
 
     /**
      * An thread is owned by one forum.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function forum()
+    public function forum(): BelongsTo
     {
         return $this->belongsTo(Forum::class, 'forum_id');
     }
 
     /**
      * An thread is created by one user.
-     *
-     * @ param User $user
-     *
-     * @ return boolean
      */
-    public function ownedBy(User $user)
+    public function ownedBy(User $user): bool
     {
         return $this->created_by == $user->id;
     }
 
     /**
      * Checks if a thread was recent - thus edittable or deletable.
-     *
-     * @ return boolean
      */
-    public function isRecent()
+    public function isRecent(): bool
     {
         $recent_hours = 24;
 
@@ -355,13 +340,13 @@ class Thread extends Eloquent
     /**
      * A thread has one visibility.
      */
-    public function visibility()
+    public function visibility(): HasOne
     {
         return $this->hasOne(Visibility::class, 'id', 'visibility_id');
     }
 
     /**
-     * A thread has one or no locked by uses
+     * A thread has one or no locked by uses.
      */
     public function locker(): HasOne
     {
@@ -386,8 +371,6 @@ class Thread extends Eloquent
 
     /**
      * The entities that belong to the thread.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function entities(): BelongsToMany
     {
@@ -396,10 +379,8 @@ class Thread extends Eloquent
 
     /**
      * A thread has one event at most.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function event()
+    public function event(): HasOne
     {
         return $this->hasOne(Event::class, 'id', 'event_id');
     }
@@ -407,7 +388,7 @@ class Thread extends Eloquent
     /**
      * Get the count of users attending this thread.
      */
-    public function getPostCountAttribute()
+    public function getPostCountAttribute(): int
     {
         $posts = $this->posts()->get();
 
@@ -417,37 +398,31 @@ class Thread extends Eloquent
     /**
      * Get the locked status of the thread.
      */
-    public function getIsLockedAttribute()
+    public function getIsLockedAttribute(): bool
     {
         $posts = $this->posts()->get();
 
-        return (null == $this->locker) ? 0 : 1;
+        return (null == $this->locker) ? false : true;
     }
 
     /**
      * Get a list of tag ids associated with the thread.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function getTagListAttribute()
+    public function getTagListAttribute(): array
     {
         return $this->tags->pluck('id')->all();
     }
 
     /**
      * Get a list of entity ids associated with the thread.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function getEntityListAttribute()
+    public function getEntityListAttribute(): array
     {
         return $this->entities->pluck('id')->all();
     }
 
     /**
      * Set the event attribute.
-     *
-     * @param ?int $value
      */
     public function setEventIdAttribute(?int $value): void
     {
@@ -461,7 +436,7 @@ class Thread extends Eloquent
     /**
      * Create the slug from the name if none was passed.
      */
-    public function setSlugAttribute($value)
+    public function setSlugAttribute(?string $value): void
     {
         // grab the name and slugify it
         if (!empty($value)) {
@@ -474,21 +449,19 @@ class Thread extends Eloquent
     /**
      * Set the name and some other side effects.
      */
-    public function setNameAttribute(string $value)
+    public function setNameAttribute(string $value): void
     {
         // grab the name and slugify it
         if (!empty($value)) {
             $this->attributes['name'] = $value;
             $this->attributes['slug'] = Str::slug($value);
-        } else {
-            // do nothing?
         }
     }
 
     /**
      * Set the thread category.
      */
-    public function setThreadCategoryIdAttribute($value)
+    public function setThreadCategoryIdAttribute(?int $value): void
     {
         if (!empty($value)) {
             $this->attributes['thread_category_id'] = $value;
@@ -500,10 +473,8 @@ class Thread extends Eloquent
     /**
      * Return a collection of threads with the passed tag.
      *
-     * @return Builder
-     *
      **/
-    public static function getByTag($tag)
+    public static function getByTag(string $tag): Builder
     {
         // get a list of threads that have the passed tag
         return self::whereHas('tags', function ($q) use ($tag) {
@@ -514,24 +485,20 @@ class Thread extends Eloquent
     /**
      * Return a collection of threads with the passed series.
      *
-     * @return Builder
-     *
      **/
-    public static function getBySeries($tag)
+    public static function getBySeries(string $series): Builder
     {
         // get a list of threads that have the passed series
-        return  self::whereHas('series', function ($q) use ($tag) {
-            $q->where('slug', '=', ucfirst($tag));
+        return self::whereHas('series', function ($q) use ($series) {
+            $q->where('slug', '=', ucfirst($series));
         });
     }
 
     /**
      * Return a collection of threads with the passed thread category.
      *
-     * @return Builder
-     *
      **/
-    public static function getByCategory($slug)
+    public static function getByCategory(string $slug): Builder
     {
         // get a list of threads that have the passed category
         return self::whereHas('threadCategory', function ($q) use ($slug) {
@@ -542,10 +509,8 @@ class Thread extends Eloquent
     /**
      * Return a collection of threads with the passed entity.
      *
-     * @return Builder
-     *
      **/
-    public static function getByEntity($slug)
+    public static function getByEntity(string $slug): Builder
     {
         // get a list of threads that have the passed entity
         return self::whereHas('entities', function ($q) use ($slug) {
@@ -553,7 +518,7 @@ class Thread extends Eloquent
         });
     }
 
-    public function addPhoto(Photo $photo)
+    public function addPhoto(Photo $photo): void
     {
         $this->photos()->attach($photo->id);
     }
@@ -561,10 +526,8 @@ class Thread extends Eloquent
     /**
      * Return the flyer for this thread.
      *
-     * @return Photo $photo
-     *
      **/
-    public function getFlyer()
+    public function getFlyer(): ?Photo
     {
         // get a list of threads that start on the passed date
         return $this->photos()->first();
@@ -573,10 +536,8 @@ class Thread extends Eloquent
     /**
      * Return the primary photo for this thread.
      *
-     * @return Photo $photo
-     *
      **/
-    public function getPrimaryPhoto()
+    public function getPrimaryPhoto(): ?Photo
     {
         // gets the first photo related to this thread
         return $this->photos()->where('photos.is_primary', '=', '1')->first();

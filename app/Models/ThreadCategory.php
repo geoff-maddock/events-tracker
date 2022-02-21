@@ -5,18 +5,19 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ThreadCategory extends Eloquent
 {
     use HasFactory;
 
     /**
-     * @var Array
+     * @var array
      *
      **/
     protected $fillable = [
         'name',
-        'forum_id'
+        'forum_id',
     ];
 
     /**
@@ -27,7 +28,7 @@ class ThreadCategory extends Eloquent
     protected $dates = [];
 
     /**
-     * A thread category can have many threads
+     * A thread category can have many threads.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -38,10 +39,8 @@ class ThreadCategory extends Eloquent
 
     /**
      * An thread is owned by one forum.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function forum()
+    public function forum(): BelongsTo
     {
         return $this->belongsTo(Forum::class, 'forum_id');
     }
