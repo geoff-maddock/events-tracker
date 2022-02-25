@@ -3,27 +3,27 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Builder;
-
-//use App\Http\Controllers\UploadedFile;
+use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * App\Models\EventReview
+ * App\Models\EventReview.
  *
- * @property int $event_id
- * @property int $user_id
- * @property int $review_type_id
- * @property int $attended
- * @property int|null $confirmed
- * @property int $expectation
- * @property int $rating
- * @property string $review
+ * @property int                             $event_id
+ * @property int                             $user_id
+ * @property int                             $review_type_id
+ * @property int                             $attended
+ * @property int|null                        $confirmed
+ * @property int                             $expectation
+ * @property int                             $rating
+ * @property string                          $review
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Event $event
- * @property-read \App\Models\ReviewType $reviewType
- * @property-read \App\Models\User|null $user
+ * @property \App\Models\Event               $event
+ * @property \App\Models\ReviewType          $reviewType
+ * @property \App\Models\User|null           $user
+ *
  * @method static Builder|EventReview future()
  * @method static Builder|EventReview newModelQuery()
  * @method static Builder|EventReview newQuery()
@@ -43,62 +43,42 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class EventReview extends Eloquent
 {
-    /**
-     * The storage format of the model's date columns.
-     *
-     * @var string
-     */
-    //protected $dateFormat = 'Y-m-d\\TH:i';
-
-    /**
-     * @var Array
-     *
-     **/
     protected $fillable = [
-        'event_id', 'user_id', 'review_type_id', 'attended', 'confirmed', 'expectation', 'rating', 'review'
+        'event_id', 'user_id', 'review_type_id', 'attended', 'confirmed', 'expectation', 'rating', 'review',
     ];
 
     protected $dates = ['created_at', 'updated_at'];
 
     /**
-     * Get the event that the review belongs to
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * Get the event that the review belongs to.
      */
-    public function event()
+    public function event(): BelongsTo
     {
         return $this->belongsTo('App\Models\Event');
     }
 
     /**
-     * Get the user that the response belongs to
-     *
+     * Get the user that the response belongs to.
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo('App\Models\User');
     }
 
     /**
-     * An review is created by one user
-     *
-     * @ param User $user
-     *
-     * @ return boolean
+     * An review is created by one user.
      */
-    public function ownedBy(User $user)
+    public function ownedBy(User $user): bool
     {
         return $this->user_id == $user->id;
     }
 
     /**
-     * Get the response type that the response belongs to
-     *
+     * Get the response type that the response belongs to.
      */
-    public function reviewType()
+    public function reviewType(): BelongsTo
     {
         return $this->belongsTo('App\Models\ReviewType');
-        ;
     }
 
     public function scopeFuture(Builder $query): Builder

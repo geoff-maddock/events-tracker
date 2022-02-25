@@ -12,7 +12,7 @@ use Illuminate\View\View;
 
 class ContactsController extends Controller
 {
-    protected $rules = [
+    protected array $rules = [
         'name' => ['required', 'min:3'],
         'visibility_id' => ['required'],
     ];

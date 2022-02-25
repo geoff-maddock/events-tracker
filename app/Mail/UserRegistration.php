@@ -2,32 +2,33 @@
 
 namespace App\Mail;
 
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
 class UserRegistration extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
-    public $url;
+    public string $url;
 
-    public $site;
+    public string $site;
 
-    public $admin_email;
+    public string $admin_email;
 
-    public $reply_email;
+    public string $reply_email;
 
-    public $user;
+    public ?User $user;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($url, $site, $admin_email, $reply_email, $user)
+    public function __construct(string $url, string $site, string $admin_email, string $reply_email, ?User $user)
     {
         $this->url = $url;
         $this->site = $site;
@@ -38,16 +39,14 @@ class UserRegistration extends Mailable
 
     /**
      * Build the message.
-     *
-     * @return $this
      */
-    public function build()
+    public function build(): UserRegistration
     {
         $dt = Carbon::now();
 
         return $this->markdown('emails.user-registration-markdown')
             ->from($this->reply_email, $this->site)
-            ->subject($this->site . ':  New User Registered - ' . $this->user->name . ' - ' . $dt->format('l F jS Y'))
+            ->subject($this->site.':  New User Registered - '.$this->user->name.' - '.$dt->format('l F jS Y'))
             ->bcc($this->admin_email);
     }
 }

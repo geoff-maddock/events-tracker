@@ -23,12 +23,8 @@ class UserStatus extends Eloquent
 
     const DELETED = 5;
 
-    /**
-     * @var Array
-     *
-     **/
     protected $fillable = [
-        'name'
+        'name',
     ];
 
     /**
@@ -39,7 +35,7 @@ class UserStatus extends Eloquent
     protected $dates = [];
 
     /**
-     * A status can have many users
+     * A status can have many users.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */

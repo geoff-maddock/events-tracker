@@ -11,10 +11,6 @@ class ThreadCategory extends Eloquent
 {
     use HasFactory;
 
-    /**
-     * @var array
-     *
-     **/
     protected $fillable = [
         'name',
         'forum_id',

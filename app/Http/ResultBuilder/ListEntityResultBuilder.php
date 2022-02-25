@@ -12,35 +12,31 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class ListEntityResultBuilder implements ListResultBuilderInterface
 {
-    private $queryBuilder;
+    private Builder $queryBuilder;
 
-    private $filter;
+    private QueryFilter $filter;
 
-    private $paginator;
+    private ListQueryParameters $listQueryParameters;
 
-    private $filterOptions = [];
+    private array $defaultFilters = [];
 
-    private $listQueryParameters;
+    private array $fixedFilters = [];
 
-    private $defaultFilters = [];
+    private array $parentFilter = [];
 
-    private $fixedFilters = [];
+    private array $defaultSort;
 
-    private $parentFilter = [];
+    private ?int $defaultLimit = null;
 
-    private $defaultSort;
+    private array $multiSort;
 
-    private $defaultLimit = null;
+    private ?string $appliedSortField;
 
-    private $multiSort;
+    private ?string $appliedSortDirection;
 
-    private $appliedSortField;
+    private array $userFilters = [];
 
-    private $appliedSortDirection;
-
-    private $userFilters = [];
-
-    private $isEmptyFilter = false;
+    private bool $isEmptyFilter = false;
 
     public function __construct(ListQueryParameters $listQueryParameters)
     {
@@ -57,13 +53,6 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
     public function setParentFilter(array $parentFilter): ListEntityResultBuilder
     {
         $this->parentFilter = $parentFilter;
-
-        return $this;
-    }
-
-    public function setFilterOptions(array $filterOptions): ListEntityResultBuilder
-    {
-        $this->filterOptions = $filterOptions;
 
         return $this;
     }
@@ -103,7 +92,7 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
         return $this;
     }
 
-    private function addFiltering()
+    private function addFiltering(): void
     {
         // Apply parent filter - should apply and not display, cannot be overriden
         if (!empty($this->parentFilter)) {
@@ -127,7 +116,7 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
         }
     }
 
-    private function getQueryResult()
+    private function getQueryResult(): Builder
     {
         $this->addFiltering();
         $this->addSort();
@@ -141,30 +130,30 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
         return $this->queryBuilder;
     }
 
-    private function countQueryResult()
+    private function countQueryResult(): mixed
     {
         $this->addFiltering();
         $this->addSort();
 
-        return $this->queryBuilder->getQuery()->getSingleScalarResult();
+        return $this->queryBuilder->getQuery()->count();
     }
 
     /**
      * Add the specified multi-sort order to the query builder but do not override selected sort.
      */
-    private function addMultiSort()
+    private function addMultiSort(): void
     {
         if (!empty($this->multiSort)) {
             foreach ($this->multiSort as $sortOpts) {
                 // only add if the applied sort does not contradict
                 if ($this->appliedSortField !== $sortOpts[0]) {
-                    $this->queryBuilder->addOrderBy($sortOpts[0], $sortOpts[1]);
+                    $this->queryBuilder->orderBy($sortOpts[0], $sortOpts[1]);
                 }
             }
         }
     }
 
-    private function addSort()
+    private function addSort(): void
     {
         $this->appliedSortField = $this->listQueryParameters->getSortFieldName();
         $this->appliedSortDirection = $this->listQueryParameters->getSortDirection();
@@ -177,7 +166,7 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
         $this->queryBuilder->orderBy($this->appliedSortField, $this->appliedSortDirection);
     }
 
-    public function setMultiSort($multiSort)
+    public function setMultiSort(array $multiSort): void
     {
         $this->multiSort = $multiSort;
     }

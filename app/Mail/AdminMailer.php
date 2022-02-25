@@ -4,28 +4,28 @@ namespace App\Mail;
 
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
 class AdminMailer extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
-    public $url;
+    public string $url;
 
-    public $site;
+    public string $site;
 
-    public $admin_email;
+    public string $admin_email;
 
-    public $reply_email;
+    public string $reply_email;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($url, $site, $admin_email, $reply_email)
+    public function __construct(string $url, string $site, string $admin_email, string $reply_email)
     {
         $this->url = $url;
         $this->site = $site;
@@ -51,7 +51,7 @@ class AdminMailer extends Mailable
         // markdown
         return $this->markdown('emails.admin-test-markdown')
             ->from($this->reply_email, $this->site)
-             ->subject($this->site . ': Admin Mailer Test - ' . $dt->format('l F jS Y'))
+             ->subject($this->site.': Admin Mailer Test - '.$dt->format('l F jS Y'))
              ->bcc($this->admin_email);
     }
 }

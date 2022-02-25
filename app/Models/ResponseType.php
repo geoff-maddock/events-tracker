@@ -9,12 +9,8 @@ class ResponseType extends Eloquent
 {
     use HasFactory;
 
-    /**
-     * @var Array
-     *
-     **/
     protected $fillable = [
-        'name', 'description'
+        'name', 'description',
     ];
 
     /**
@@ -25,7 +21,7 @@ class ResponseType extends Eloquent
     protected $dates = [];
 
     /**
-     * A response type can have many event responses
+     * A response type can have many event responses.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

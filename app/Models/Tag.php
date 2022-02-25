@@ -24,10 +24,6 @@ class Tag extends Eloquent
 {
     use HasFactory;
 
-    /**
-     * @var array
-     *
-     **/
     protected $fillable = [
         'name', 'tag_type_id', 'slug',
     ];
@@ -83,7 +79,7 @@ class Tag extends Eloquent
      * Checks if the tag is followed by the user.
      *
      **/
-    public function followedBy(User $user): Follow
+    public function followedBy(User $user): ?Follow
     {
         $response = Follow::where('object_type', '=', 'tag')
         ->where('object_id', '=', $this->id)

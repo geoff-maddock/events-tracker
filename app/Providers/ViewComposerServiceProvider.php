@@ -38,7 +38,7 @@ class ViewComposerServiceProvider extends ServiceProvider
             $view->with('latest', Event::latest()->first());
             $view->with('roles', Role::orderBy('name', 'ASC')->get());
             $view->with('hasForum', Forum::latest()->first());
-            $view->with('menus', Menu::orderBy('name', 'ASC')->visible(auth()->user())->get());
+            $view->with('menus', Menu::orderBy('name', 'ASC')->visible()->get());
         });
     }
 }

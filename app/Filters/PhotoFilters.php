@@ -2,20 +2,22 @@
 
 namespace App\Filters;
 
+use Illuminate\Database\Eloquent\Builder;
+
 class PhotoFilters extends QueryFilter
 {
-    public function name($value = null)
+    public function name(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder
 
-            ->where('events.name', 'like', '%' . $value . '%');
+            ->where('events.name', 'like', '%'.$value.'%');
         } else {
             return $this->builder;
         }
     }
 
-    public function is_primary($value = null)
+    public function is_primary(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->where('photos.is_primary', '=', $value);
@@ -24,7 +26,7 @@ class PhotoFilters extends QueryFilter
         }
     }
 
-    public function is_event($value = null)
+    public function is_event(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->where('photos.is_event', '=', $value);
@@ -33,7 +35,7 @@ class PhotoFilters extends QueryFilter
         }
     }
 
-    public function tag($value = null)
+    public function tag(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder
@@ -45,7 +47,7 @@ class PhotoFilters extends QueryFilter
         }
     }
 
-    public function related($value = null)
+    public function related(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder
@@ -57,7 +59,7 @@ class PhotoFilters extends QueryFilter
         }
     }
 
-    public function created_at($value = null)
+    public function created_at(array | string | null $value = null): Builder
     {
         // if not an array, do not process
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Str;
 
 /**
@@ -13,10 +14,6 @@ class EventType extends Eloquent
 {
     use HasFactory;
 
-    /**
-     * @var array
-     *
-     **/
     protected $fillable = [
         'name',
     ];
@@ -30,20 +27,18 @@ class EventType extends Eloquent
 
     /**
      * An event type can have many events.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function events()
+    public function events(): HasMany
     {
         return $this->hasMany('App\Models\Event');
     }
 
-    public function getSlugAttribute()
+    public function getSlugAttribute(): string
     {
         return Str::slug($this->name, '-');
     }
 
-    public function backgroundColor()
+    public function backgroundColor(): string
     {
         switch ($this->name) {
             case 'Art Opening':

@@ -105,6 +105,7 @@ class BlogsController extends Controller
         $query = $listResultSet->getList();
 
         // query and paginate the blogs
+        /* @phpstan-ignore-next-line */
         $blogs = $query->visible($this->user)->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -159,6 +160,7 @@ class BlogsController extends Controller
         $query = $listResultSet->getList();
 
         // query and paginate the blogs
+        /* @phpstan-ignore-next-line */
         $blogs = $query->visible($this->user)->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -351,7 +353,7 @@ class BlogsController extends Controller
     /**
      * Mark user as liking the blog.
      */
-    public function like($id): RedirectResponse
+    public function like(int $id): RedirectResponse
     {
         // check if there is a logged in user
         if (!$this->user) {

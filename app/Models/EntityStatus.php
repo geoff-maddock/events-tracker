@@ -6,14 +6,15 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
- * App\Models\EntityStatus
+ * App\Models\EntityStatus.
  *
- * @property int $id
- * @property string $name
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Entity[] $entities
- * @property-read int|null $entities_count
+ * @property int                                                           $id
+ * @property string                                                        $name
+ * @property \Illuminate\Support\Carbon|null                               $created_at
+ * @property \Illuminate\Support\Carbon|null                               $updated_at
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Entity[] $entities
+ * @property int|null                                                      $entities_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EntityStatus newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EntityStatus newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EntityStatus query()
@@ -25,12 +26,8 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
  */
 class EntityStatus extends Eloquent
 {
-    /**
-     * @var Array
-     *
-     **/
     protected $fillable = [
-        'name'
+        'name',
     ];
 
     /**
@@ -41,7 +38,7 @@ class EntityStatus extends Eloquent
     protected $dates = [];
 
     /**
-     * An event status can have many events
+     * An event status can have many events.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -51,10 +48,9 @@ class EntityStatus extends Eloquent
     }
 
     /**
-     * Returns the display class related to the status
-     *
+     * Returns the display class related to the status.
      */
-    public function getDisplayClass()
+    public function getDisplayClass(): string
     {
         $class = '';
         switch ($this->name) {

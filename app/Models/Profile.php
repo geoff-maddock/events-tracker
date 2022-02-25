@@ -60,10 +60,6 @@ class Profile extends Eloquent
         parent::boot();
     }
 
-    /**
-     * @var array
-     *
-     **/
     protected $fillable = [
         'first_name', 'last_name', 'bio', 'alias', 'location', 'facebook_username', 'twitter_username', 'default_theme', 'setting_weekly_update', 'setting_daily_update', 'setting_instant_update',
     ];
@@ -75,9 +71,7 @@ class Profile extends Eloquent
      */
     public function getFullNameAttribute(): string
     {
-        $user = $this->user();
-
-        return $user->first_name.' '.$user->last_name;
+        return $this->first_name.' '.$this->last_name;
     }
 
     /**

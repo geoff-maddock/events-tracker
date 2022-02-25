@@ -148,7 +148,7 @@ class SeriesController extends Controller
     /**
      * Get the base criteria.
      */
-    protected function baseQuery()
+    protected function baseQuery(): Builder
     {
         return Series::query()
             ->leftJoin('event_types', 'series.event_type_id', '=', 'event_types.id')
@@ -353,6 +353,7 @@ class SeriesController extends Controller
 
         // this is more complex because we want to show weeklies that fall on the days, plus monthlies that fall on the days
         // may be an iterative process that is called from the template to the series model that checks against each criteria and builds a list that way
+        // @phpstan-ignore-next-line
         $baseQuery = $this->baseQuery()->future();
 
         $listEntityResultBuilder
@@ -426,6 +427,7 @@ class SeriesController extends Controller
         $query = $listResultSet->getList();
 
         // get the events
+        // @phpstan-ignore-next-line
         $series = $query->visible($this->user)
             ->with('occurrenceType', 'visibility', 'tags')
             ->paginate($listResultSet->getLimit());
@@ -512,7 +514,7 @@ class SeriesController extends Controller
             ->render();
     }
 
-    protected function getSeriesFormOptions()
+    protected function getSeriesFormOptions(): array
     {
         return [
             'venueOptions' => ['' => ''] + Entity::getVenues()->pluck('name', 'id')->all(),
@@ -532,10 +534,8 @@ class SeriesController extends Controller
 
     /**
      * Show a form to create a new series.
-     *
-     * @return View|string
      **/
-    public function create()
+    public function create(): View
     {
         // initialize a series and pass in
         $series = new Series();
@@ -553,7 +553,7 @@ class SeriesController extends Controller
         return view('series.show', compact('series', 'events', 'threads'));
     }
 
-    public function store(SeriesRequest $request, Series $series)
+    public function store(SeriesRequest $request, Series $series): RedirectResponse
     {
         $msg = '';
         $input = $request->all();
@@ -601,7 +601,7 @@ class SeriesController extends Controller
         return redirect()->route('series.show', compact('series'));
     }
 
-    public function edit(Series $series)
+    public function edit(Series $series): View
     {
         return view('series.edit', compact('series'))
             ->with($this->getSeriesFormOptions());
@@ -612,7 +612,7 @@ class SeriesController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder,
         RssFeed $feed
-    ) {
+    ): View {
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_series');
         $listParamSessionStore->setKeyPrefix('internal_series_index');
@@ -644,7 +644,7 @@ class SeriesController extends Controller
         return view('series.feed', compact('series'));
     }
 
-    public function createOccurrence(Request $request)
+    public function createOccurrence(Request $request): View
     {
         // create an event occurrence based on the series template
 
@@ -682,7 +682,7 @@ class SeriesController extends Controller
         ->with(['series' => $series]);
     }
 
-    public function update(Series $series, SeriesRequest $request)
+    public function update(Series $series, SeriesRequest $request): RedirectResponse
     {
         $msg = '';
 
@@ -726,7 +726,7 @@ class SeriesController extends Controller
         return redirect()->route('series.show', compact('series'));
     }
 
-    protected function unauthorized(SeriesRequest $request)
+    protected function unauthorized(SeriesRequest $request): RedirectResponse | Response
     {
         if ($request->ajax()) {
             return response(['message' => 'No way.'], 403);
@@ -737,7 +737,7 @@ class SeriesController extends Controller
         return redirect('/');
     }
 
-    public function destroy(Series $series)
+    public function destroy(Series $series): RedirectResponse
     {
         // add to activity log
         Activity::log($series, $this->user, 3);
@@ -750,7 +750,7 @@ class SeriesController extends Controller
     /**
      * Add a photo to a series.
      */
-    public function addPhoto(int $id, Request $request)
+    public function addPhoto(int $id, Request $request): void
     {
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif',
@@ -776,7 +776,7 @@ class SeriesController extends Controller
         }
     }
 
-    protected function makePhoto(UploadedFile $file)
+    protected function makePhoto(UploadedFile $file): ?Photo
     {
         return Photo::named($file->getClientOriginalName())
             ->makeThumbnail();
@@ -785,11 +785,9 @@ class SeriesController extends Controller
     /**
      * Mark user as following the series.
      *
-     * @return Response|RedirectResponse|array
-     *
      * @throws \Throwable
      */
-    public function follow(int $id, Request $request)
+    public function follow(int $id, Request $request): Response|RedirectResponse|array
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -832,11 +830,9 @@ class SeriesController extends Controller
     /**
      * Mark user as unfollowing the series.
      *
-     * @return Response|RedirectResponse|array
-     *
      * @throws \Throwable
      */
-    public function unfollow(int $id, Request $request)
+    public function unfollow(int $id, Request $request): Response|RedirectResponse|array
     {
         // check if there is a logged in user
         if (!$this->user) {

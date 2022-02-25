@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Http\Request;
-use App\Models\User;
-use App\Models\Profile;
 use App\Models\Activity;
+use App\Models\Profile;
+use App\Models\User;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -26,11 +26,10 @@ class AuthController extends Controller
 
     //	use AuthenticatesAndRegistersUsers;
 
-    protected $redirectTo = '/';
+    protected string $redirectTo = '/';
 
     /**
      * Create a new authentication controller instance.
-     *
      */
     public function __construct()
     {
@@ -42,7 +41,6 @@ class AuthController extends Controller
     /**
      * Get a validator for an incoming registration request.
      *
-     * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
     public function validator(array $data)
@@ -57,7 +55,6 @@ class AuthController extends Controller
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param  array  $data
      * @return User
      */
     public function create(array $data)
@@ -77,21 +74,21 @@ class AuthController extends Controller
         return $user;
     }
 
-    protected function redirectTo()
+    protected function redirectTo(): string
     {
         Activity::log(Auth::user(), Auth::user(), 4);
 
         return '/home';
     }
 
-    public function authenticated(Request $request, $user)
+    public function authenticated(User $user): RedirectResponse
     {
         Activity::log($user, $user, 4);
 
         return redirect()->intended($this->redirectPath());
     }
 
-    public function redirectPath()
+    public function redirectPath(): RedirectResponse | string
     {
         if (method_exists($this, 'redirectTo')) {
             return $this->redirectTo();

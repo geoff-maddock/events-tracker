@@ -24,9 +24,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
@@ -157,7 +154,7 @@ class EntitiesController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder,
         string $type
-    ) {
+    ): string {
         $listParamSessionStore->setBaseIndex('internal_entity');
         $listParamSessionStore->setKeyPrefix('internal_entity_roles');
         // set the index tab in the session
@@ -213,7 +210,7 @@ class EntitiesController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder,
-        $role
+        ?string $role
     ): string {
         // initialized listParamSessionStore with baseindex key
         // list entity result builder
@@ -850,7 +847,7 @@ class EntitiesController extends Controller
         return ['id' => 'desc'];
     }
 
-    protected function unauthorized(EntityRequest $request)
+    protected function unauthorized(EntityRequest $request): RedirectResponse | Response
     {
         if ($request->ajax()) {
             return response(['message' => 'No way.'], 403);

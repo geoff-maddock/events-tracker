@@ -114,6 +114,7 @@ class PostsController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
+        /* @phpstan-ignore-next-line */
         $posts = $query->visible($this->user)
             ->with('visibility')
             ->paginate($listResultSet->getLimit());
@@ -181,6 +182,7 @@ class PostsController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
+        /* @phpstan-ignore-next-line */
         $posts = $query->visible($this->user)
         ->with('visibility')
         ->paginate($listResultSet->getLimit());
@@ -247,6 +249,7 @@ class PostsController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
+        /* @phpstan-ignore-next-line */
         $posts = $query->visible($this->user)
         ->with('visibility')
         ->paginate($listResultSet->getLimit());
@@ -435,7 +438,7 @@ class PostsController extends Controller
      *
      * @internal param int $id
      */
-    public function update(Post $post, PostRequest $request)
+    public function update(Post $post, PostRequest $request): RedirectResponse
     {
         $msg = '';
 
@@ -506,10 +509,8 @@ class PostsController extends Controller
 
     /**
      * Mark user as liking the post.
-     *
-     * @return Response
      */
-    public function like($id, Request $request)
+    public function like(int $id, Request $request): RedirectResponse
     {
         // check if there is a logged in user
         if (!$this->user) {

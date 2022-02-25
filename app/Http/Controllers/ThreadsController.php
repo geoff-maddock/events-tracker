@@ -3,22 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Filters\ThreadFilters;
+use App\Http\Requests\ThreadRequest;
+use App\Http\ResultBuilder\ListEntityResultBuilder;
+use App\Mail\FollowingThreadUpdate;
 use App\Models\Activity;
 use App\Models\Entity;
 use App\Models\Event;
 use App\Models\Follow;
-use App\Http\Requests\ThreadRequest;
-use App\Http\ResultBuilder\ListEntityResultBuilder;
-use App\Mail\FollowingThreadUpdate;
+use App\Models\Forum;
 use App\Models\Like;
 use App\Models\Series;
 use App\Models\Tag;
 use App\Models\TagType;
 use App\Models\Thread;
 use App\Models\ThreadCategory;
-use App\Models\Visibility;
-use App\Models\Forum;
 use App\Models\User;
+use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Illuminate\Http\Response;
 
 class ThreadsController extends Controller
 {
@@ -104,8 +105,8 @@ class ThreadsController extends Controller
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = Thread::query()
-        ->leftJoin('users', 'threads.created_by', '=', 'users.id')
-        ->select('threads.*');
+            ->leftJoin('users', 'threads.created_by', '=', 'users.id')
+            ->select('threads.*');
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -118,6 +119,7 @@ class ThreadsController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
+        /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
             ->with('visibility')
             ->paginate($listResultSet->getLimit());
@@ -139,7 +141,7 @@ class ThreadsController extends Controller
                         'sort' => $listResultSet->getSort(),
                         'direction' => $listResultSet->getSortDirection(),
                         'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters()
+                        'filters' => $listResultSet->getFilters(),
                     ],
                     $this->getFilterOptions(),
                     $this->getListControlOptions()
@@ -181,6 +183,7 @@ class ThreadsController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
+        /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
             ->with('visibility')
             ->paginate($listResultSet->getLimit());
@@ -202,7 +205,7 @@ class ThreadsController extends Controller
                 'sort' => $listResultSet->getSort(),
                 'direction' => $listResultSet->getSortDirection(),
                 'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters()
+                'filters' => $listResultSet->getFilters(),
             ],
             $this->getFilterOptions(),
             $this->getListControlOptions()
@@ -212,7 +215,7 @@ class ThreadsController extends Controller
     }
 
     /**
-     * Reset the limit, sort, order
+     * Reset the limit, sort, order.
      *
      * @throws \Throwable
      */
@@ -234,7 +237,7 @@ class ThreadsController extends Controller
     /**
      * Reset the filtering of entities.
      *
-     * @return RedirectResponse | View
+     * @return RedirectResponse|View
      */
     public function reset(
         Request $request,
@@ -254,7 +257,6 @@ class ThreadsController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
      */
     public function indexAll(
         Request $request,
@@ -283,6 +285,7 @@ class ThreadsController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
+        /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
             ->with('visibility')
             ->paginate(1000000000);
@@ -304,7 +307,7 @@ class ThreadsController extends Controller
                 'sort' => $listResultSet->getSort(),
                 'direction' => $listResultSet->getSortDirection(),
                 'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters()
+                'filters' => $listResultSet->getFilters(),
             ],
             $this->getFilterOptions(),
             $this->getListControlOptions()
@@ -321,7 +324,7 @@ class ThreadsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder,
         string $tag
-    ) {
+    ): string {
         $tag = urldecode($tag);
         // initialized listParamSessionStore with baseindex key
         // list entity result builder
@@ -340,7 +343,6 @@ class ThreadsController extends Controller
             ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['threads.created_at' => 'desc'])
             ->setParentFilter(['tag' => ucfirst($tag)]);
-        ;
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
@@ -348,65 +350,7 @@ class ThreadsController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
-        $threads = $query->visible($this->user)
-            ->with('visibility')
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('threads.index')
-        ->with(array_merge(
-            [
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters()
-            ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions()
-        ))
-        ->with(compact('threads'))
-        ->render();
-    }
-
-    /**
-     * Display a listing of threads by category
-     */
-    public function indexCategories(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore,
-        ListEntityResultBuilder $listEntityResultBuilder,
-        string $category
-    ) {
-        // initialized listParamSessionStore with baseindex key
-        // list entity result builder
-        $listParamSessionStore->setBaseIndex('internal_thread');
-        $listParamSessionStore->setKeyPrefix('internal_thread_category');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Thread::query()->select('threads.*');
-
-        // configure the list entity results builder
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['threads.created_at' => 'desc'])
-            ->setParentFilter(['category' => strtolower($category)]);
-        ;
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
+        /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
             ->with('visibility')
             ->paginate($listResultSet->getLimit());
@@ -424,7 +368,6 @@ class ThreadsController extends Controller
                 'direction' => $listResultSet->getSortDirection(),
                 'hasFilter' => $this->hasFilter,
                 'filters' => $listResultSet->getFilters(),
-                'tag' => $category
             ],
             $this->getFilterOptions(),
             $this->getListControlOptions()
@@ -434,14 +377,74 @@ class ThreadsController extends Controller
     }
 
     /**
-     * Display a listing of threads by series
+     * Display a listing of threads by category.
+     */
+    public function indexCategories(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $category
+    ): string {
+        // initialized listParamSessionStore with baseindex key
+        // list entity result builder
+        $listParamSessionStore->setBaseIndex('internal_thread');
+        $listParamSessionStore->setKeyPrefix('internal_thread_category');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Thread::query()->select('threads.*');
+
+        // configure the list entity results builder
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['threads.created_at' => 'desc'])
+            ->setParentFilter(['category' => strtolower($category)]);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        /* @phpstan-ignore-next-line */
+        $threads = $query->visible($this->user)
+            ->with('visibility')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        return view('threads.index')
+        ->with(array_merge(
+            [
+                'limit' => $listResultSet->getLimit(),
+                'sort' => $listResultSet->getSort(),
+                'direction' => $listResultSet->getSortDirection(),
+                'hasFilter' => $this->hasFilter,
+                'filters' => $listResultSet->getFilters(),
+                'tag' => $category,
+            ],
+            $this->getFilterOptions(),
+            $this->getListControlOptions()
+        ))
+        ->with(compact('threads'))
+        ->render();
+    }
+
+    /**
+     * Display a listing of threads by series.
      */
     public function indexSeries(
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder,
         string $series
-    ) {
+    ): string {
         $series = urldecode($series);
         // initialized listParamSessionStore with baseindex key
         // list entity result builder
@@ -460,7 +463,6 @@ class ThreadsController extends Controller
             ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['threads.created_at' => 'desc'])
             ->setParentFilter(['series' => ucfirst($series)]);
-        ;
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
@@ -468,6 +470,7 @@ class ThreadsController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
+        /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
             ->with('visibility')
             ->paginate($listResultSet->getLimit());
@@ -485,7 +488,7 @@ class ThreadsController extends Controller
                 'direction' => $listResultSet->getSortDirection(),
                 'hasFilter' => $this->hasFilter,
                 'filters' => $listResultSet->getFilters(),
-                'tag' => $series
+                'tag' => $series,
             ],
             $this->getFilterOptions(),
             $this->getListControlOptions()
@@ -502,7 +505,7 @@ class ThreadsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder,
         string $relatedTo
-    ) {
+    ): string {
         $relatedTo = Str::title(str_replace('-', ' ', $relatedTo));
 
         // list entity result builder
@@ -528,6 +531,7 @@ class ThreadsController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
+        /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
             ->with('visibility')
             ->paginate($listResultSet->getLimit());
@@ -545,7 +549,7 @@ class ThreadsController extends Controller
                 'direction' => $listResultSet->getSortDirection(),
                 'hasFilter' => $this->hasFilter,
                 'filters' => $listResultSet->getFilters(),
-                'tag' => $relatedTo
+                'tag' => $relatedTo,
             ],
             $this->getFilterOptions(),
             $this->getListControlOptions()
@@ -598,11 +602,11 @@ class ThreadsController extends Controller
 
                 $syncArray[strtolower($tag)] = $newTag->id;
 
-                $msg .= ' Added tag ' . $tag . '.';
+                $msg .= ' Added tag '.$tag.'.';
             } else {
                 $syncArray[$key] = $tag;
 
-                $msg .= ' Linked tag ' . $tag . '.';
+                $msg .= ' Linked tag '.$tag.'.';
             }
         }
 
@@ -618,7 +622,7 @@ class ThreadsController extends Controller
         // add to activity log
         Activity::log($thread, $this->user, 1);
 
-        flash()->success('Success', 'Your thread has been created. ' . $msg);
+        flash()->success('Success', 'Your thread has been created. '.$msg);
 
         return redirect()->route('threads.show', compact('thread'));
     }
@@ -655,7 +659,7 @@ class ThreadsController extends Controller
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
                     Mail::to($user->email)
-                        ->send(new FollowingThreadUpdate($url, $site, $admin_email, $reply_email, $user, $thread, $series));
+                        ->send(new FollowingThreadUpdate($url, $site, $admin_email, $reply_email, $user, $thread));
                     $users[$user->id] = $s->name;
                 }
             }
@@ -762,7 +766,7 @@ class ThreadsController extends Controller
 
                 $syncArray[strtolower($tag)] = $newTag->id;
 
-                $msg .= ' Added tag ' . $tag . '.';
+                $msg .= ' Added tag '.$tag.'.';
             } else {
                 $syncArray[$key] = $tag;
             }
@@ -780,7 +784,7 @@ class ThreadsController extends Controller
         return redirect('threads');
     }
 
-    protected function unauthorized(ThreadRequest $request)
+    protected function unauthorized(ThreadRequest $request): RedirectResponse | Response
     {
         if ($request->ajax()) {
             return response(['message' => 'No way.'], 403);
@@ -847,9 +851,9 @@ class ThreadsController extends Controller
         $follow->object_type = 'thread'; // 1 = Attending, 2 = Interested, 3 = Uninterested, 4 = Cannot Attend
         $follow->save();
 
-        Log::info('User ' . $id . ' is following ' . $thread->name);
+        Log::info('User '.$id.' is following '.$thread->name);
 
-        flash()->success('Success', 'You are now following the thread - ' . $thread->name);
+        flash()->success('Success', 'You are now following the thread - '.$thread->name);
 
         return back();
     }
@@ -904,17 +908,15 @@ class ThreadsController extends Controller
         ++$thread->likes;
         $thread->save();
 
-        Log::info('User ' . $id . ' is liking ' . $thread->name);
+        Log::info('User '.$id.' is liking '.$thread->name);
 
-        flash()->success('Success', 'You are now liking the thread - ' . $thread->name);
+        flash()->success('Success', 'You are now liking the thread - '.$thread->name);
 
         return back();
     }
 
     /**
      * Mark user as unliking the thread.
-     *
-     * @param int $id
      *
      * @throws \Exception
      */
@@ -948,8 +950,6 @@ class ThreadsController extends Controller
 
     /**
      * Get the default filters array.
-     *
-     * @return array
      */
     public function getDefaultFilters(): array
     {
@@ -961,13 +961,13 @@ class ThreadsController extends Controller
         return [
             'limit' => $this->defaultLimit,
             'sort' => $this->defaultSort,
-            'sortDirection' => $this->defaultSortDirection
+            'sortDirection' => $this->defaultSortDirection,
         ];
     }
 
     protected function getFilterOptions(): array
     {
-        return  [
+        return [
             'userOptions' => ['' => '&nbsp;'] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
             'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
         ];
@@ -975,10 +975,10 @@ class ThreadsController extends Controller
 
     protected function getListControlOptions(): array
     {
-        return  [
+        return [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
             'sortOptions' => ['threads.name' => 'Name', 'users.name' => 'User', 'threads.created_at' => 'Created At'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
         ];
     }
 }

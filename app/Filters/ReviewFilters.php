@@ -2,9 +2,11 @@
 
 namespace App\Filters;
 
+use Illuminate\Database\Eloquent\Builder;
+
 class ReviewFilters extends QueryFilter
 {
-    public function review($value = null)
+    public function review(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->where('review', $value);
@@ -13,7 +15,7 @@ class ReviewFilters extends QueryFilter
         }
     }
 
-    public function user($value = null)
+    public function user(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('user', function ($q) use ($value) {
@@ -24,7 +26,7 @@ class ReviewFilters extends QueryFilter
         }
     }
 
-    public function review_type($value = null)
+    public function review_type(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('reviewType', function ($q) use ($value) {

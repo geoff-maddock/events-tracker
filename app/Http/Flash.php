@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Session;
 
 class Flash
 {
-    public function message($title, $message)
+    public function message(string $title, string $message): void
     {
         Session::flash('flash_message', [
             'title' => $title,
@@ -15,7 +15,7 @@ class Flash
         ]);
     }
 
-    public function create($title, $message, $level)
+    public function create(string $title, string $message, int $level): void
     {
         Session::flash('flash_message', [
             'title' => $title,
@@ -24,7 +24,7 @@ class Flash
         ]);
     }
 
-    public function error($title, $message)
+    public function error(string $title, string $message): void
     {
         Session::flash('flash_message', [
             'title' => $title,
@@ -33,7 +33,7 @@ class Flash
         ]);
     }
 
-    public function success($title, $message)
+    public function success(string $title, string $message): void
     {
         Session::flash('flash_message', [
             'title' => $title,

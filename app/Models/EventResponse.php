@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use Image;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -19,19 +17,14 @@ class EventResponse extends Eloquent
      */
     protected $dateFormat = 'Y-m-d\\TH:i';
 
-    /**
-     * @var Array
-     *
-     **/
     protected $fillable = [
-        'event_id', 'user_id', 'response_type_id'
+        'event_id', 'user_id', 'response_type_id',
     ];
 
     protected $dates = ['created_at', 'updated_at'];
 
     /**
-     * Get the event that the response belongs to
-     *
+     * Get the event that the response belongs to.
      */
     public function event(): BelongsTo
     {
@@ -39,8 +32,7 @@ class EventResponse extends Eloquent
     }
 
     /**
-     * Get the user that the response belongs to
-     *
+     * Get the user that the response belongs to.
      */
     public function user(): BelongsTo
     {
@@ -48,12 +40,10 @@ class EventResponse extends Eloquent
     }
 
     /**
-     * Get the response type that the response belongs to
-     *
+     * Get the response type that the response belongs to.
      */
-    public function responseType()
+    public function responseType(): BelongsTo
     {
         return $this->belongsTo('App\Models\ResponseType');
-        ;
     }
 }

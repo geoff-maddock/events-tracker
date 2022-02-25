@@ -17,12 +17,8 @@ class EntityType extends Eloquent
 
     const INTEREST = 4;
 
-    /**
-     * @var Array
-     *
-     **/
     protected $fillable = [
-        'name', 'slug', 'short'
+        'name', 'slug', 'short',
     ];
 
     protected $dates = ['updated_at'];

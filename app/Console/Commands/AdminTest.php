@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Mail\AdminMailer;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -27,7 +26,7 @@ class AdminTest extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $reply_email = config('app.noreplyemail');
         $admin_email = config('app.admin');
@@ -39,6 +38,6 @@ class AdminTest extends Command
             ->send(new AdminMailer($url, $site, $admin_email, $reply_email));
 
         // log that the weekly email was sent
-        Log::info('Admin test email was sent to ' . $admin_email);
+        Log::info('Admin test email was sent to '.$admin_email);
     }
 }

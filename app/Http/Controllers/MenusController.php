@@ -92,6 +92,7 @@ class MenusController extends Controller
         $query = $listResultSet->getList();
 
         // query and paginate the menus
+        // @phpstan-ignore-next-line
         $menus = $query->visible($this->user)->paginate($listResultSet->getLimit());
 
         // saves the updated session

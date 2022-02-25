@@ -5,15 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
- * @property int $id
+ * @property int    $id
  * @property string $name
  */
 class OccurrenceDay extends Eloquent
 {
-    /**
-     * @var Array
-     *
-     **/
     protected $fillable = [
         'name',
     ];
@@ -26,7 +22,7 @@ class OccurrenceDay extends Eloquent
     protected $dates = [];
 
     /**
-     * An occurence type can have many event templates
+     * An occurence type can have many event templates.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */

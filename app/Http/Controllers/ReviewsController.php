@@ -15,10 +15,12 @@ use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
+use Redirect;
 use Str;
 
 class ReviewsController extends Controller
@@ -228,7 +230,7 @@ class ReviewsController extends Controller
     public function reset(
         Request $request,
         ListParameterSessionStore $listParamSessionStore
-    ) {
+    ): RedirectResponse {
         // set filters and list controls to default values
         $keyPrefix = $request->get('key') ?? 'internal_review_index';
         $listParamSessionStore->setBaseIndex('internal_review');
@@ -243,10 +245,8 @@ class ReviewsController extends Controller
 
     /**
      * Show a form to create a new review.
-     *
-     * @return view
      **/
-    public function create()
+    public function create(): View
     {
         $events = Event::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
@@ -254,12 +254,12 @@ class ReviewsController extends Controller
             ->with($this->getFormOptions());
     }
 
-    public function show(EventReview $review)
+    public function show(EventReview $review): View
     {
         return view('reviews.show', compact('review'));
     }
 
-    public function store(EventRequest $request, Event $event)
+    public function store(EventRequest $request, Event $event): RedirectResponse
     {
         $msg = '';
 
@@ -353,7 +353,7 @@ class ReviewsController extends Controller
         return back();
     }
 
-    protected function unauthorized(EventRequest $request)
+    protected function unauthorized(EventRequest $request): RedirectResponse | Response
     {
         if ($request->ajax()) {
             return response(['message' => 'No way.'], 403);
@@ -364,7 +364,7 @@ class ReviewsController extends Controller
         return redirect('/');
     }
 
-    public function edit(EventReview $review)
+    public function edit(EventReview $review): View
     {
         $this->middleware('auth');
 
@@ -373,7 +373,7 @@ class ReviewsController extends Controller
             ->with($this->getFormOptions());
     }
 
-    public function update(Event $event, EventRequest $request)
+    public function update(Event $event, EventRequest $request): RedirectResponse
     {
         $msg = '';
 
@@ -415,7 +415,7 @@ class ReviewsController extends Controller
         return redirect('events');
     }
 
-    public function destroy(Event $event)
+    public function destroy(Event $event): RedirectResponse
     {
         // add to activity log
         Activity::log($event, $this->user, 3);

@@ -116,10 +116,6 @@ class Thread extends Eloquent
         });
     }
 
-    /**
-     * @var array
-     *
-     **/
     protected $fillable = [
         'name',
         'description',

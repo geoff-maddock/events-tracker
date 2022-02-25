@@ -2,94 +2,96 @@
 
 namespace App\Http\Response\ResultSet;
 
+use Illuminate\Database\Eloquent\Builder;
+
 /**
  * Contains the result of a list and describes the criteria used.
  */
 class ListResultSet
 {
-    private $sort;
+    private string $sort;
 
-    private $defaultFilters;
+    private array $defaultFilters;
 
-    private $filters;
+    private array $filters;
 
-    private $fixedFilters;
+    private array $fixedFilters;
 
-    private $parentFilters;
+    private array $parentFilters;
 
-    private $isEmptyFilter;
+    private bool $isEmptyFilter;
 
-    private $limit;
+    private ?int $limit;
 
-    private $listResult;
+    private Builder $listResult;
 
-    private $page;
+    private int $page;
 
-    private $sortDirection;
+    private string $sortDirection;
 
-    private $totalItems;
+    private int $totalItems;
 
-    public function setSort($sort): void
+    public function setSort(string $sort): void
     {
         $this->sort = $sort;
     }
 
-    public function setSortDirection($sortDirection): void
+    public function setSortDirection(string $sortDirection): void
     {
         $this->sortDirection = $sortDirection;
     }
 
-    public function setFilters($filters): void
+    public function setFilters(array $filters): void
     {
         $this->filters = $filters;
     }
 
-    public function setDefaultFilters($defaultFilters): void
+    public function setDefaultFilters(array $defaultFilters): void
     {
         $this->defaultFilters = $defaultFilters;
     }
 
-    public function setParentFilters($parentFilters): void
+    public function setParentFilters(array $parentFilters): void
     {
         $this->parentFilters = $parentFilters;
     }
 
-    public function setFixedFilters($fixedFilters): void
+    public function setFixedFilters(array $fixedFilters): void
     {
         $this->fixedFilters = $fixedFilters;
     }
 
-    public function setLimit($limit): void
+    public function setLimit(?int $limit): void
     {
         $this->limit = $limit;
     }
 
-    public function setList($listResult): void
+    public function setList(Builder $listResult): void
     {
         $this->listResult = $listResult;
     }
 
-    public function setPage($page): void
+    public function setPage(int $page): void
     {
         $this->page = $page;
     }
 
-    public function setTotalItems($totalItems): void
+    public function setTotalItems(int $totalItems): void
     {
         $this->totalItems = $totalItems;
     }
 
-    public function setIsEmptyFilter(bool $isEmptyFilter)
+    public function setIsEmptyFilter(bool $isEmptyFilter): void
     {
         $this->isEmptyFilter = $isEmptyFilter;
     }
 
-    public function getList()
+    public function getList(): Builder
     {
         return $this->listResult;
     }
 
-    public function getLimit()
+    public function getLimit(): ?int
     {
         return $this->limit;
     }
@@ -124,17 +126,17 @@ class ListResultSet
         return $this->totalItems;
     }
 
-    public function getSort()
+    public function getSort(): string
     {
         return $this->sort;
     }
 
-    public function getSortDirection()
+    public function getSortDirection(): string
     {
         return $this->sortDirection;
     }
 
-    public function getIsEmptyFilter()
+    public function getIsEmptyFilter(): bool
     {
         return $this->isEmptyFilter;
     }
