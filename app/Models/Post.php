@@ -3,52 +3,54 @@
 namespace App\Models;
 
 use App\Filters\QueryFilter;
-use App\Models\Visibility;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
- * App\Models\Post
+ * App\Models\Post.
  *
- * @property int $id
- * @property int $thread_id
- * @property string|null $name
- * @property string|null $slug
- * @property string|null $description
- * @property string $body
- * @property int $allow_html
- * @property int|null $content_type_id
- * @property int|null $visibility_id
- * @property int|null $recipient_id
- * @property int|null $reply_to
- * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Like[] $likes
- * @property int $views
- * @property int $is_active
- * @property int|null $created_by
- * @property int|null $updated_by
- * @property \Illuminate\Support\Carbon $created_at
- * @property \Illuminate\Support\Carbon $updated_at
- * @property-read \App\Models\User|null $creator
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Entity[] $entities
- * @property-read int|null $entities_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Event[] $events
- * @property-read int|null $events_count
- * @property-read mixed $entity_list
- * @property-read mixed $tag_list
- * @property-read int|null $likes_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Photo[] $photos
- * @property-read int|null $photos_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
- * @property-read int|null $tags_count
- * @property-read \App\Models\Thread $thread
- * @property-read \App\Models\User|null $user
- * @property-read Visibility|null $visibility
+ * @property int                                                           $id
+ * @property int                                                           $thread_id
+ * @property string|null                                                   $name
+ * @property string|null                                                   $slug
+ * @property string|null                                                   $description
+ * @property string                                                        $body
+ * @property int                                                           $allow_html
+ * @property int|null                                                      $content_type_id
+ * @property int|null                                                      $visibility_id
+ * @property int|null                                                      $recipient_id
+ * @property int|null                                                      $reply_to
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Like[]   $likes
+ * @property int                                                           $views
+ * @property int                                                           $is_active
+ * @property int|null                                                      $created_by
+ * @property int|null                                                      $updated_by
+ * @property \Illuminate\Support\Carbon                                    $created_at
+ * @property \Illuminate\Support\Carbon                                    $updated_at
+ * @property \App\Models\User|null                                         $creator
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Entity[] $entities
+ * @property int|null                                                      $entities_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Event[]  $events
+ * @property int|null                                                      $events_count
+ * @property mixed                                                         $entity_list
+ * @property mixed                                                         $tag_list
+ * @property int|null                                                      $likes_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Photo[]  $photos
+ * @property int|null                                                      $photos_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[]    $tags
+ * @property int|null                                                      $tags_count
+ * @property \App\Models\Thread                                            $thread
+ * @property \App\Models\User|null                                         $user
+ * @property Visibility|null                                               $visibility
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Post filter(\App\Filters\QueryFilter $filters)
  * @method static \Illuminate\Database\Eloquent\Builder|Post newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Post newQuery()
@@ -93,10 +95,6 @@ class Post extends Eloquent
         });
     }
 
-    /**
-     * @var array
-     *
-     **/
     protected $fillable = [
         'name',
         'slug',
@@ -116,47 +114,42 @@ class Post extends Eloquent
         return (string) $this->body;
     }
 
-    // building filter
-    public function scopeFilter($query, QueryFilter $filters)
+    public function scopeFilter(Builder $query, QueryFilter $filters): Builder
     {
         return $filters->apply($query);
     }
 
-    public function path()
+    public function path(): string
     {
-        return '/post/' . $this->id;
+        return '/post/'.$this->id;
     }
 
-    public function scopePast($query)
+    public function scopePast(Builder $query): Builder
     {
-        $query->where('created_at', '<', Carbon::today()->startOfDay())
+        return $query->where('created_at', '<', Carbon::today()->startOfDay())
                         ->orderBy('start_at', 'desc');
     }
 
     /**
      * Returns visible posts.
      */
-    public function scopeVisible($query, $user)
+    public function scopeVisible(Builder $query, ?User $user): Builder
     {
         $public = Visibility::where('name', '=', 'Public')->first();
 
-        $query->where('visibility_id', '=', $public ? $public->id : null)->orWhere('created_by', '=', ($user ? $user->id : null));
+        return $query->where('visibility_id', '=', $public ? $public->id : null)->orWhere('created_by', '=', ($user ? $user->id : null));
     }
 
     /**
      * An post is owned by a user.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
     /**
      * The likes that belong to the post.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function likes(): MorphMany
     {
@@ -165,32 +158,24 @@ class Post extends Eloquent
 
     /**
      * An post is owned by a thread.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function thread()
+    public function thread(): BelongsTo
     {
         return $this->belongsTo(Thread::class, 'thread_id');
     }
 
     /**
      * An post is created by one user.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function creator()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
     /**
      * An post is created by one user.
-     *
-     * @ param User $user
-     *
-     * @ return boolean
      */
-    public function ownedBy(User $user)
+    public function ownedBy(User $user): bool
     {
         return $this->created_by == $user->id;
     }
@@ -198,7 +183,7 @@ class Post extends Eloquent
     /**
      * Get all of the posts photos.
      */
-    public function photos()
+    public function photos(): BelongsToMany
     {
         return $this->belongsToMany(Photo::class)->withTimestamps();
     }
@@ -206,15 +191,13 @@ class Post extends Eloquent
     /**
      * An post has one visibility.
      */
-    public function visibility()
+    public function visibility(): HasOne
     {
         return $this->hasOne(Visibility::class, 'id', 'visibility_id');
     }
 
     /**
      * The tags that belong to the post.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function tags(): BelongsToMany
     {
@@ -223,8 +206,6 @@ class Post extends Eloquent
 
     /**
      * The entities that belong to the post.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function entities(): BelongsToMany
     {
@@ -233,8 +214,6 @@ class Post extends Eloquent
 
     /**
      * The events that belong to the post.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function events(): BelongsToMany
     {
@@ -243,20 +222,16 @@ class Post extends Eloquent
 
     /**
      * Get a list of tag ids associated with the post.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function getTagListAttribute()
+    public function getTagListAttribute(): array
     {
         return $this->tags->pluck('id')->all();
     }
 
     /**
      * Get a list of entity ids associated with the post.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function getEntityListAttribute()
+    public function getEntityListAttribute(): array
     {
         return $this->entities->pluck('id')->all();
     }
@@ -265,7 +240,7 @@ class Post extends Eloquent
      * Return a collection of posts with the passed tag.
      *
      **/
-    public static function getByTag($tag): Builder
+    public static function getByTag(string $tag): Builder
     {
         // get a list of posts that have the passed tag
         return self::whereHas('tags', function ($q) use ($tag) {
@@ -277,7 +252,7 @@ class Post extends Eloquent
      * Return a collection of posts with the passed entity.
      *
      **/
-    public static function getByEntity($slug): Builder
+    public static function getByEntity(string $slug): Builder
     {
         // get a list of posts that have the passed entity
         return self::whereHas('entities', function ($q) use ($slug) {
@@ -285,18 +260,16 @@ class Post extends Eloquent
         });
     }
 
-    public function addPhoto(Photo $photo)
+    public function addPhoto(Photo $photo): void
     {
-        return $this->photos()->attach($photo->id);
+        $this->photos()->attach($photo->id);
     }
 
     /**
      * Return the primary photo for this post.
      *
-     * @return Photo $photo
-     *
      **/
-    public function getPrimaryPhoto()
+    public function getPrimaryPhoto(): Photo
     {
         // gets the first photo related to this post
         return $this->photos()->where('photos.is_primary', '=', '1')->first();
@@ -304,10 +277,8 @@ class Post extends Eloquent
 
     /**
      * Checks if a post was recent - thus edittable or deletable.
-     *
-     * @ return boolean
      */
-    public function isRecent()
+    public function isRecent(): bool
     {
         $recent_hours = 24;
 
@@ -321,20 +292,16 @@ class Post extends Eloquent
 
     /**
      * Determine if the post was just published a moment ago.
-     *
-     * @return bool
      */
-    public function wasJustPublished()
+    public function wasJustPublished(): bool
     {
         return $this->created_at->gt(Carbon::now()->subMinute());
     }
 
     /**
      * Fetch all mentioned users within the post's body.
-     *
-     * @return array
      */
-    public function mentionedUsers()
+    public function mentionedUsers(): array
     {
         preg_match_all('/@([\w\-]+)/', $this->body, $matches);
 
@@ -345,7 +312,7 @@ class Post extends Eloquent
      * Checks if the post is liked by the user.
      *
      **/
-    public function likedBy($user): ?Like
+    public function likedBy(User $user): ?Like
     {
         return Like::where('object_type', '=', 'post')
             ->where('object_id', '=', $this->id)
@@ -356,10 +323,8 @@ class Post extends Eloquent
     /**
      * Returns the users that like the post.
      *
-     * @return Collection $likes
-     *
      **/
-    public function likers()
+    public function likers(): Collection
     {
         return User::join('likes', 'users.id', '=', 'likes.user_id')
             ->where('likes.object_type', 'post')

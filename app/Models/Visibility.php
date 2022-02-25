@@ -19,12 +19,8 @@ class Visibility extends Eloquent
 
     const VISIBILITY_CANCELLED = 5;
 
-    /**
-     * @var Array
-     *
-     **/
     protected $fillable = [
-        'name'
+        'name',
     ];
 
     /**
@@ -35,7 +31,7 @@ class Visibility extends Eloquent
     protected $dates = [];
 
     /**
-     * A visibility can have many events
+     * A visibility can have many events.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -45,7 +41,7 @@ class Visibility extends Eloquent
     }
 
     /**
-     * A visibility can have many menus
+     * A visibility can have many menus.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */

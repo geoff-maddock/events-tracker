@@ -7,16 +7,16 @@ use Illuminate\Http\Request;
 
 abstract class QueryFilter
 {
-    protected $request;
+    protected Request $request;
 
-    protected $builder;
+    protected Builder $builder;
 
     public function __construct(Request $request)
     {
         $this->request = $request;
     }
 
-    public function apply(Builder $builder)
+    public function apply(Builder $builder): Builder
     {
         $this->builder = $builder;
 
@@ -29,7 +29,7 @@ abstract class QueryFilter
         return $this->builder;
     }
 
-    public function applyFilters(Builder $builder, array $filters)
+    public function applyFilters(Builder $builder, array $filters): Builder
     {
         $this->builder = $builder;
 
@@ -42,7 +42,7 @@ abstract class QueryFilter
         return $this->builder;
     }
 
-    public function filters()
+    public function filters(): array
     {
         return $this->request->all();
     }

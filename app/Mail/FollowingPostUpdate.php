@@ -2,39 +2,51 @@
 
 namespace App\Mail;
 
+use App\Models\Post;
+use App\Models\Tag;
+use App\Models\Thread;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
 class FollowingPostUpdate extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
-    public $url;
+    public string $url;
 
-    public $site;
+    public string $site;
 
-    public $admin_email;
+    public string $admin_email;
 
-    public $reply_email;
+    public string $reply_email;
 
-    public $user;
+    public ?User $user;
 
-    public $thread;
+    public ?Thread $thread;
 
-    public $post;
+    public ?Post $post;
 
-    public $tag;
+    public ?Tag $tag;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($url, $site, $admin_email, $reply_email, $user, $thread, $post, $tag = null)
-    {
+    public function __construct(
+        string $url,
+        string $site,
+        string $admin_email,
+        string $reply_email,
+        ?User $user,
+        ?Thread $thread,
+        ?Post $post,
+        ?Tag $tag = null
+    ) {
         $this->url = $url;
         $this->site = $site;
         $this->admin_email = $admin_email;
@@ -56,7 +68,7 @@ class FollowingPostUpdate extends Mailable
 
         return $this->markdown('emails.following-post-update-markdown')
             ->from($this->reply_email, $this->site)
-            ->subject($this->site . ': New post by ' . $this->post->user->name . ' in thread "' . $this->thread->name . '"')
+            ->subject($this->site.': New post by '.$this->post->user->name.' in thread "'.$this->thread->name.'"')
             ->bcc($this->admin_email);
     }
 }

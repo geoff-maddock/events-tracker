@@ -103,6 +103,7 @@ class ForumsController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
+        /* @phpstan-ignore-next-line */
         $forums = $query->visible($this->user)
             ->with('visibility')
             ->paginate($listResultSet->getLimit());
@@ -170,6 +171,7 @@ class ForumsController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
+        /* @phpstan-ignore-next-line */
         $forums = $query->visible($this->user)
             ->with('visibility')
             ->paginate(1000000);
@@ -237,6 +239,7 @@ class ForumsController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
+        /* @phpstan-ignore-next-line */
         $forums = $query->visible($this->user)
             ->with('visibility')
             ->paginate($listResultSet->getLimit());
@@ -338,6 +341,7 @@ class ForumsController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
+        /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
             ->with('visibility')
             ->paginate(10000000);

@@ -76,7 +76,7 @@ class ListQueryParameters
         return $sortDirection;
     }
 
-    public function getLimit($defaultLimit): int
+    public function getLimit(?int $defaultLimit): int
     {
         // use the passed in default or the overall default limit
         $limit = $defaultLimit ?? $this->defaultLimit;
@@ -158,7 +158,7 @@ class ListQueryParameters
         return $result;
     }
 
-    private function stripIsEmptyField($requestFilters): array
+    private function stripIsEmptyField(array $requestFilters): array
     {
         if (array_key_exists(ListRequest::IS_EMPTY_FIELD_NAME, $requestFilters)) {
             unset($requestFilters[ListRequest::IS_EMPTY_FIELD_NAME]);

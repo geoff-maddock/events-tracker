@@ -2,26 +2,26 @@
 
 namespace App\Http\Forms;
 
-use App\Http\Requests\Request;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class Form
 {
     use ValidatesRequests;
 
-    protected $request;
+    protected Request $request;
 
-    protected $errors;
+    protected mixed $errors;
 
-    protected $rules = [];
+    protected array $rules = [];
 
     public function __construct(Request $request = null)
     {
         $this->request = $request ?: request();
     }
 
-    public function isValid()
+    public function isValid(): bool
     {
         try {
             $this->validate($this->request, $this->rules);
@@ -31,27 +31,4 @@ class Form
 
         return true;
     }
-
-    public function fields()
-    {
-    }
-
-//    public function __get($property)
-//    {
-//        return $this->request->input($property);
-//    }
-
-//
-//    abstract public function persist();
-
-//    public function save()
-//    {
-//        if ($this->isValid()) {
-//            $this->persist();
-//
-//            return true;
-//        }
-//
-//        return false;
-//    }
 }

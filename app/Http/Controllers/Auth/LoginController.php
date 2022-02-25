@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\JsonResponse;
 use Redirect;
 use Illuminate\Http\Request;
+use Response;
 
 class LoginController extends Controller
 {
@@ -41,7 +42,7 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request): Response | JsonResponse
     {
         $prev = url()->previous();
 

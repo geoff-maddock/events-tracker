@@ -2,27 +2,29 @@
 
 namespace App\Filters;
 
+use Illuminate\Database\Eloquent\Builder;
+
 class GroupFilters extends QueryFilter
 {
-    public function name($value = null)
+    public function name(?string $value = null): Builder
     {
         if (isset($value)) {
-            return $this->builder->where('groups.name', 'like', '%' . $value . '%');
+            return $this->builder->where('groups.name', 'like', '%'.$value.'%');
         } else {
             return $this->builder;
         }
     }
 
-    public function label($value = null)
+    public function label(?string $value = null): Builder
     {
         if (isset($value)) {
-            return $this->builder->where('groups.label', 'like', '%' . $value . '%');
+            return $this->builder->where('groups.label', 'like', '%'.$value.'%');
         } else {
             return $this->builder;
         }
     }
 
-    public function level($value = null)
+    public function level(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->where('groups.level', '=', $value);

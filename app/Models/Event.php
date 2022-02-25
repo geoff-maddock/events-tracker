@@ -8,8 +8,11 @@ use DateTime;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -137,10 +140,6 @@ class Event extends Eloquent
         });
     }
 
-    /**
-     * @var array
-     *
-     **/
     protected $fillable = [
         'name',
         'slug',
@@ -175,10 +174,8 @@ class Event extends Eloquent
 
     /**
      * Set the soundcheck_at attribute.
-     *
-     * @param ?string $date
      */
-    public function setSoundcheckAtAttribute(?string $date)
+    public function setSoundcheckAtAttribute(?string $date): void
     {
         if (!empty($date)) {
             $this->attributes['soundcheck_at'] = Carbon::parse($date);
@@ -189,10 +186,8 @@ class Event extends Eloquent
 
     /**
      * Set the start_at attribute.
-     *
-     * @param ?string $date
      */
-    public function setStartAtAttribute(?string $date)
+    public function setStartAtAttribute(?string $date): void
     {
         if (!empty($date)) {
             $this->attributes['start_at'] = Carbon::parse($date);
@@ -203,10 +198,8 @@ class Event extends Eloquent
 
     /**
      * Set the end_at attribute.
-     *
-     * @param ?string $date
      */
-    public function setEndAtAttribute(?string $date)
+    public function setEndAtAttribute(?string $date): void
     {
         if (!empty($date)) {
             $this->attributes['end_at'] = Carbon::parse($date);
@@ -217,10 +210,8 @@ class Event extends Eloquent
 
     /**
      * Set the cancelled at attribute.
-     *
-     * @param ?string $date
      */
-    public function setCancelledAtAttribute(?string $date)
+    public function setCancelledAtAttribute(?string $date): void
     {
         if (!empty($date)) {
             $this->attributes['cancelled_at'] = Carbon::parse($date);
@@ -231,10 +222,8 @@ class Event extends Eloquent
 
     /**
      * Set the door_at attribute.
-     *
-     * @param ?string $date
      */
-    public function setDoorAtAttribute(?string $date)
+    public function setDoorAtAttribute(?string $date): void
     {
         if (!empty($date)) {
             $this->attributes['door_at'] = Carbon::parse($date);
@@ -245,10 +234,8 @@ class Event extends Eloquent
 
     /**
      * Set the door_price attribute.
-     *
-     * @param ?string $price
      */
-    public function setDoorPriceAttribute(?string $price)
+    public function setDoorPriceAttribute(?string $price): void
     {
         if (!empty($price)) {
             $this->attributes['door_price'] = $price;
@@ -259,8 +246,6 @@ class Event extends Eloquent
 
     /**
      * Set the promoter attribute.
-     *
-     * @param ?int $value
      */
     public function setPromoterIdAttribute(?int $value): void
     {
@@ -273,8 +258,6 @@ class Event extends Eloquent
 
     /**
      * Set the series attribute.
-     *
-     * @param ?int $value
      */
     public function setSeriesIdAttribute(?int $value): void
     {
@@ -302,7 +285,7 @@ class Event extends Eloquent
     /**
      * Create the slug from the name if none was passed.
      */
-    public function setPresalePriceAttribute(?float $value)
+    public function setPresalePriceAttribute(?float $value): void
     {
         if (!empty($value)) {
             $this->attributes['presale_price'] = $value;
@@ -332,7 +315,7 @@ class Event extends Eloquent
     /**
      * Returns visible events.
      */
-    public function scopeVisible(Builder $query, ?User $user)
+    public function scopeVisible(Builder $query, ?User $user): Builder
     {
         return $query->where(function ($query) use ($user) {
             $query->whereIn('visibility_id', [Visibility::VISIBILITY_PROPOSAL, Visibility::VISIBILITY_PRIVATE])
@@ -350,12 +333,12 @@ class Event extends Eloquent
     /**
      * Returns visible events.
      */
-    public function scopeStarting(Builder $query, ?string $date)
+    public function scopeStarting(Builder $query, ?string $date): Builder
     {
         $cdate_yesterday = Carbon::parse($date)->subDay();
         $cdate_tomorrow = Carbon::parse($date)->addDay();
 
-        $query->where('start_at', '>', $cdate_yesterday->toDateString().' 23:59:59')
+        return $query->where('start_at', '>', $cdate_yesterday->toDateString().' 23:59:59')
             ->where('start_at', '<', $cdate_tomorrow->toDateString().' 00:00:00')
             ->where(function ($query) {
                 return $query->where('visibility_id', '=', 3)
@@ -368,47 +351,37 @@ class Event extends Eloquent
     /**
      * Get all of the events comments.
      */
-    public function comments()
+    public function comments(): MorphMany
     {
         return $this->morphMany('App\Models\Comment', 'commentable')->orderBy('created_at', 'DESC');
     }
 
     /**
      * The likes that belong to the event.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function likes()
+    public function likes(): BelongsToMany
     {
         return $this->belongsToMany('App\Models\Like')->withTimestamps();
     }
 
     /**
      * An event is owned by a user.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo('App\Models\User', 'created_by');
     }
 
     /**
      * An event is created by one user.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function creator()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo('App\Models\User', 'created_by');
     }
 
     /**
      * An event is created by one user.
-     *
-     * @ param User $user
-     *
-     * @ return boolean
      */
     public function ownedBy(User $user): bool
     {
@@ -450,17 +423,15 @@ class Event extends Eloquent
     /**
      * Get all of the events photos.
      */
-    public function photos()
+    public function photos(): BelongsToMany
     {
         return $this->belongsToMany('App\Models\Photo')->withTimestamps();
     }
 
     /**
      * An event can belong to many threads.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function threads()
+    public function threads(): HasMany
     {
         return $this->hasMany('App\Models\Thread');
     }
@@ -491,10 +462,8 @@ class Event extends Eloquent
 
     /**
      * The entities that belong to the event.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function entities()
+    public function entities(): BelongsToMany
     {
         return $this->belongsToMany('App\Models\Entity')->withTimestamps();
     }
@@ -502,7 +471,7 @@ class Event extends Eloquent
     /**
      * A user can have many event responses.
      */
-    public function eventResponses()
+    public function eventResponses(): HasMany
     {
         return $this->hasMany('App\Models\EventResponse');
     }
@@ -510,7 +479,7 @@ class Event extends Eloquent
     /**
      * Get the count of users attending this event.
      */
-    public function getAttendingCountAttribute()
+    public function getAttendingCountAttribute(): int
     {
         $responses = $this->eventResponses()->get();
         $responses->filter(function ($e) {
@@ -523,7 +492,7 @@ class Event extends Eloquent
     /**
      * Get past or future attribute.
      */
-    public function getPastOrFutureAttribute()
+    public function getPastOrFutureAttribute(): string
     {
         if ($this->start_at < Carbon::now()) {
             return 'event-past';
@@ -534,10 +503,8 @@ class Event extends Eloquent
 
     /**
      * Get the length of the event in hours.
-     *
-     * @ return decimal
      */
-    public function getLengthInHoursAttribute()
+    public function getLengthInHoursAttribute(): float
     {
         if ($this->start_at) {
             return $this->start_at->diffInHours($this->end_time, false);
@@ -548,10 +515,8 @@ class Event extends Eloquent
 
     /**
      * Get the end time of the event.
-     *
-     * @ return
      */
-    public function getEndTimeAttribute()
+    public function getEndTimeAttribute(): Carbon
     {
         if (isset($this->end_at)) {
             return $this->end_at;
@@ -562,20 +527,16 @@ class Event extends Eloquent
 
     /**
      * Get a list of tag ids associated with the event.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function getTagListAttribute()
+    public function getTagListAttribute(): array
     {
         return $this->tags->pluck('id')->all();
     }
 
     /**
      * Get a list of entity ids associated with the event.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function getEntityListAttribute()
+    public function getEntityListAttribute(): array
     {
         return $this->entities->pluck('id')->all();
     }
@@ -583,7 +544,7 @@ class Event extends Eloquent
     /**
      * Return a collection of events with the passed tag.
      */
-    public static function getByTag(string $tag)
+    public static function getByTag(string $tag): Builder
     {
         // get a list of events that have the passed tag
         return self::whereHas('tags', function (Builder $q) use ($tag) {
@@ -594,7 +555,7 @@ class Event extends Eloquent
     /**
      * Return a collection of events with the passed venue.
      */
-    public static function getByVenue(string $slug)
+    public static function getByVenue(string $slug): Builder
     {
         // get a list of events that have the passed tag
         return self::whereHas('venue', function (Builder $q) use ($slug) {
@@ -720,18 +681,16 @@ class Event extends Eloquent
             ->orderBy('name', 'ASC');
     }
 
-    public function addPhoto(Photo $photo)
+    public function addPhoto(Photo $photo): void
     {
-        return $this->photos()->attach($photo->id);
+        $this->photos()->attach($photo->id);
     }
 
     /**
      * Return the flyer for this event.
      *
-     * @return Photo $photo
-     *
      **/
-    public function getFlyer()
+    public function getFlyer(): ?Photo
     {
         // get a list of events that start on the passed date
         return $this->photos()->first();
@@ -740,10 +699,8 @@ class Event extends Eloquent
     /**
      * Return the primary photo for this event.
      *
-     * @return Photo $photo
-     *
      **/
-    public function getPrimaryPhoto()
+    public function getPrimaryPhoto(): ?Photo
     {
         // gets the first photo related to this event
         return $this->photos()->where('photos.is_primary', '=', '1')->first();
@@ -752,7 +709,7 @@ class Event extends Eloquent
     /**
      * Create the slug from the name if none was passed.
      */
-    public function setSlugAttribute(?string $value)
+    public function setSlugAttribute(?string $value): void
     {
         // grab the title and slugify it
         if ('' === $value) {
@@ -762,7 +719,7 @@ class Event extends Eloquent
         }
     }
 
-    public function getGoogleCalendarLink()
+    public function getGoogleCalendarLink(): ?string
     {
         $action = 'TEMPLATE';
         $text = $this->name;
@@ -778,7 +735,7 @@ class Event extends Eloquent
         return $url;
     }
 
-    public function getTitleFormat()
+    public function getTitleFormat(): ?string
     {
         $format = $this->start_at->format('l F jS Y').' '.$this->name;
 
@@ -792,7 +749,7 @@ class Event extends Eloquent
     }
 
     // Format the event to post as a tweet
-    public function getBriefFormat()
+    public function getBriefFormat(): ?string
     {
         // max length 280 chars
         // URLs count as 23 chars
@@ -872,7 +829,7 @@ class Event extends Eloquent
         if ($this->primary_link) {
             // if there are at least 23 chars remaining, add primary link
             if (strlen($format) < 258) {
-                $format .= ' '.$this->primary_link ?? '';
+                $format .= ' '.$this->primary_link;
             }
         }
 

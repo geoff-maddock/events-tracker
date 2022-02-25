@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -97,8 +98,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array
      */
     protected $fillable = ['name', 'email', 'password', 'user_status_id'];
 
@@ -475,7 +474,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * Return the feed of user activity.
      */
-    public function feed(User $user, int $take = 50): Collection
+    public function feed(User $user, int $take = 50): SupportCollection
     {
         return static::where('user_id', $user->id)
             ->latest()

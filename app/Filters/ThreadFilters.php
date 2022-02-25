@@ -2,18 +2,20 @@
 
 namespace App\Filters;
 
+use Illuminate\Database\Eloquent\Builder;
+
 class ThreadFilters extends QueryFilter
 {
-    public function name($value = null)
+    public function name(?string $value = null): Builder
     {
         if (isset($value)) {
-            return $this->builder->where('threads.name', 'like', '%' . $value . '%');
+            return $this->builder->where('threads.name', 'like', '%'.$value.'%');
         } else {
             return $this->builder;
         }
     }
 
-    public function thread_category($value = null)
+    public function thread_category(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('threadCategory', function ($q) use ($value) {
@@ -24,7 +26,7 @@ class ThreadFilters extends QueryFilter
         }
     }
 
-    public function tag($value = null)
+    public function tag(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('tags', function ($q) use ($value) {
@@ -35,14 +37,14 @@ class ThreadFilters extends QueryFilter
         }
     }
 
-    protected function popular()
+    protected function popular(): Builder
     {
         $this->builder->getQuery()->orders = [];
 
         return $this->builder->orderBy('posts_count', 'desc');
     }
 
-    public function series($value = null)
+    public function series(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('series', function ($q) use ($value) {
@@ -53,7 +55,7 @@ class ThreadFilters extends QueryFilter
         }
     }
 
-    public function user($value = null)
+    public function user(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('user', function ($q) use ($value) {
@@ -64,7 +66,7 @@ class ThreadFilters extends QueryFilter
         }
     }
 
-    public function category($value = null)
+    public function category(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('threadCategory', function ($q) use ($value) {
@@ -75,7 +77,7 @@ class ThreadFilters extends QueryFilter
         }
     }
 
-    public function related($value = null)
+    public function related(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('entities', function ($q) use ($value) {

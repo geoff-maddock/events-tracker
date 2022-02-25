@@ -2,36 +2,39 @@
 
 namespace App\Mail;
 
+use App\Models\Tag;
+use App\Models\Thread;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
 class FollowingThreadUpdate extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
-    public $url;
+    public string $url;
 
-    public $site;
+    public string $site;
 
-    public $admin_email;
+    public string $admin_email;
 
-    public $reply_email;
+    public string $reply_email;
 
-    public $user;
+    public ?User $user;
 
-    public $thread;
+    public ?Thread $thread;
 
-    public $tag;
+    public ?Tag $tag;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($url, $site, $admin_email, $reply_email, $user, $thread, $tag)
+    public function __construct(string $url, string $site, string $admin_email, string $reply_email, ?User $user, ?Thread $thread, ?Tag $tag = null)
     {
         $this->url = $url;
         $this->site = $site;
@@ -53,7 +56,7 @@ class FollowingThreadUpdate extends Mailable
 
         return $this->markdown('emails.following-thread-update-markdown')
             ->from($this->reply_email, $this->site)
-            ->subject($this->site . ': ' . $this->tag->name . ' :: ' . $this->thread->created_at->format('D F jS') . ' ' . $this->thread->name)
+            ->subject($this->site.': '.$this->tag->name.' :: '.$this->thread->created_at->format('D F jS').' '.$this->thread->name)
             ->bcc($this->admin_email);
     }
 }

@@ -15,7 +15,7 @@ class EventCreated implements ShouldBroadcast
     use InteractsWithSockets;
     use SerializesModels;
 
-    public $event;
+    public Event $event;
 
     /**
      * Create a new event instance.

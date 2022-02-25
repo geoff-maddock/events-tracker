@@ -4,11 +4,15 @@ namespace App\Models;
 
 use App\Filters\QueryFilter;
 use Carbon\Carbon;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -148,7 +152,7 @@ class Entity extends Eloquent
     /**
      * Return a collection of entities with the passed role.
      **/
-    public static function getByRole($role): Builder
+    public static function getByRole(string $role): Builder
     {
         // get a list of entities that have the passed role
         $entities = self::whereHas('roles', function ($q) use ($role) {
@@ -162,7 +166,7 @@ class Entity extends Eloquent
      * Return a collection of entities with the passed tag.
      *
      **/
-    public static function getByTag($tag): Builder
+    public static function getByTag(string $tag): Builder
     {
         // get a list of entities that have the passed tag
         $entities = self::whereHas('tags', function ($q) use ($tag) {
@@ -212,7 +216,7 @@ class Entity extends Eloquent
         return $entities;
     }
 
-    public function getRouteKeyName()
+    public function getRouteKeyName(): string
     {
         return 'slug';
     }
@@ -220,7 +224,7 @@ class Entity extends Eloquent
     /**
      * Get all of the entities comments.
      */
-    public function comments()
+    public function comments(): MorphMany
     {
         return $this->morphMany(Comment::class, 'commentable')->orderBy('created_at', 'DESC');
     }
@@ -246,7 +250,7 @@ class Entity extends Eloquent
     /**
      * Returns active entities.
      */
-    public function scopeActive($query): Builder
+    public function scopeActive(Builder $query): Builder
     {
         $status = EntityStatus::where('name', '=', 'Active')->first();
 
@@ -258,7 +262,7 @@ class Entity extends Eloquent
      *
      * @ param User $user
      */
-    public function scopeOwnedBy(Builder $query, User $user)
+    public function scopeOwnedBy(Builder $query, User $user): Builder
     {
         return $query->where('created_by', '=', $user->id);
     }
@@ -266,7 +270,7 @@ class Entity extends Eloquent
     /**
      * Returns entities that are promoters.
      */
-    public function scopePromoter($query, string $type)
+    public function scopePromoter(Builder $query, string $type): Builder
     {
         $type = EntityType::where('name', '=', $type)->first();
 
@@ -285,40 +289,32 @@ class Entity extends Eloquent
 
     /**
      * The contacts that belong to the entity.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function contacts()
+    public function contacts(): BelongsToMany
     {
         return $this->belongsToMany(Contact::class);
     }
 
     /**
      * The contacts that belong to the entity.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function series()
+    public function series(): BelongsToMany
     {
         return $this->belongsToMany(Series::class);
     }
 
     /**
      * The links that belong to the entity.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function links()
+    public function links(): BelongsToMany
     {
         return $this->belongsToMany(Link::class);
     }
 
     /**
      * An entity has one entity type.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function entityType()
+    public function entityType(): BelongsTo
     {
         return $this->belongsTo(EntityType::class);
     }
@@ -341,8 +337,6 @@ class Entity extends Eloquent
 
     /**
      * The aliases that belong to the entity.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function aliases(): BelongsToMany
     {
@@ -351,64 +345,48 @@ class Entity extends Eloquent
 
     /**
      * The follows that belong to the entity.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\Morph
      */
-    public function follows()
+    public function follows(): MorphMany
     {
         return $this->morphMany(Follow::class, 'object', 'object_type', 'object_id');
     }
 
     /**
      * The likes that belong to the entity.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\Morph
      */
-    public function likes()
+    public function likes(): MorphMany
     {
         return $this->morphMany(Like::class, 'object', 'object_type', 'object_id');
     }
 
     /**
      * If there is a future event, return it.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function futureEvents($rpp = null)
+    public function futureEvents(?int $rpp = null): LengthAwarePaginator
     {
-        $events = $this->events()->where('start_at', '>=', Carbon::now())->orderBy('start_at', 'ASC')->paginate($rpp);
-
-        return $events;
+        return $this->events()->where('start_at', '>=', Carbon::now())->orderBy('start_at', 'ASC')->paginate($rpp);
     }
 
     /**
      * The events that belong to the entity.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function events()
+    public function events(): BelongsToMany
     {
         return $this->belongsToMany(Event::class)->with('visibility', 'venue')->withTimestamps();
     }
 
     /**
      * Return any events that match today for the start date.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function todaysEvents()
+    public function todaysEvents(): Collection
     {
-        $events = $this->events()->whereDate('start_at', '=', Carbon::today()->toDateString())->orderBy('start_at', 'ASC')->get();
-
-        return $events;
+        return $this->events()->whereDate('start_at', '=', Carbon::today()->toDateString())->orderBy('start_at', 'ASC')->get();
     }
 
     /**
      * If there is a future event, return it.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function pastEvents($rpp = null)
+    public function pastEvents(int $rpp = null): LengthAwarePaginator
     {
         $events = $this->events()
             ->where('start_at', '<', Carbon::now())
@@ -419,55 +397,45 @@ class Entity extends Eloquent
 
     /**
      * Events that occurred at this venue.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function eventsAtVenue()
+    public function eventsAtVenue(): Collection
     {
-        $events = Event::where('venue_id', $this->id)->orderBy('start_at', 'ASC')->get();
-
-        return $events;
+        return Event::where('venue_id', $this->id)->orderBy('start_at', 'ASC')->get();
     }
 
     /**
      * Get a list of tag ids associated with the entity.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function getTagListAttribute()
+    public function getTagListAttribute(): array
     {
         return $this->tags->pluck('id')->all();
     }
 
     /**
      * Get a list of alias ids associated with the entity.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function getAliasListAttribute()
+    public function getAliasListAttribute(): array
     {
         return $this->aliases->pluck('id')->all();
     }
 
     /**
      * Get a list of role ids associated with the entity.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function getRoleListAttribute()
+    public function getRoleListAttribute(): array
     {
         return $this->roles->pluck('id')->all();
     }
 
-    public function addPhoto(Photo $photo)
+    public function addPhoto(Photo $photo): void
     {
-        return $this->photos()->attach($photo->id);
+        $this->photos()->attach($photo->id);
     }
 
     /**
      * Get all of the entities photos.
      */
-    public function photos()
+    public function photos(): BelongsToMany
     {
         return $this->belongsToMany(Photo::class)->withTimestamps();
     }
@@ -475,10 +443,8 @@ class Entity extends Eloquent
     /**
      * Return the primary photo for this entity.
      *
-     * @return Photo $photo
-     *
      **/
-    public function getPrimaryPhoto()
+    public function getPrimaryPhoto(): ?Photo
     {
         // get a list of events that start on the passed date
         $primary = $this->photos()->where('photos.is_primary', '=', '1')->first();
@@ -489,10 +455,8 @@ class Entity extends Eloquent
     /**
      * Return the primary location for this entity.
      *
-     * @return Location
-     *
      **/
-    public function getPrimaryLocation()
+    public function getPrimaryLocation(): ?Model
     {
         // get a list of events that start on the passed date
         $primary = $this->locations()->first();
@@ -503,9 +467,9 @@ class Entity extends Eloquent
     /**
      * The locations that belong to the entity.
      *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @phpstan-return HasMany<Location>
      */
-    public function locations()
+    public function locations(): ?HasMany
     {
         return $this->hasMany(Location::class)->with('visibility');
     }
@@ -514,15 +478,18 @@ class Entity extends Eloquent
      * Return the primary location address.
      *
      **/
-    public function getPrimaryLocationAddress($signedIn = null): string
+    public function getPrimaryLocationAddress(bool $signedIn = null): string
     {
         $address = '';
 
         // get a list of events that start on the passed date
         $primary = $this->locations()->first();
 
+        // @phpstan-ignore-next-line
         if ($primary && ('Guarded' != $primary->visibility->name || ('Guarded' == $primary->visibility->name) && $signedIn)) {
+            // @phpstan-ignore-next-line
             $address .= $primary->address_one.' ';
+            // @phpstan-ignore-next-line
             $address .= $primary->city;
         }
 
@@ -532,10 +499,8 @@ class Entity extends Eloquent
     /**
      * Return the primary location address.
      *
-     * @return string
-     *
      **/
-    public function getPrimaryLocationMap()
+    public function getPrimaryLocationMap(): ?string
     {
         // get a list of events that start on the passed date
         $primary = $this->locations()->first();
@@ -551,19 +516,16 @@ class Entity extends Eloquent
      * Checks if the entity is followed by the user.
      *
      **/
-    public function followedBy($user)
+    public function followedBy(?User $user): ?Follow
     {
         if (!$user) {
             return null;
         }
 
-        $response = Follow::where('object_type', '=', 'entity')
+        return Follow::where('object_type', '=', 'entity')
             ->where('object_id', '=', $this->id)
             ->where('user_id', '=', $user->id)
             ->first();
-        // return any follow instances
-
-        return $response;
     }
 
     /**
@@ -572,60 +534,45 @@ class Entity extends Eloquent
      * @return Collection $follows
      *
      **/
-    public function followers()
+    public function followers(): Collection
     {
-        $users = User::with('profile')->join('follows', 'users.id', '=', 'follows.user_id')
+        return User::with('profile')->join('follows', 'users.id', '=', 'follows.user_id')
             ->where('follows.object_type', 'entity')
             ->where('follows.object_id', $this->id)
             ->get();
-
-        return $users;
     }
 
     /**
      * Checks if the entity is liked by the user.
      *
-     * @return Collection $likes
-     *
      **/
-    public function likedBy($user)
+    public function likedBy(User $user): Like
     {
-        $response = Like::where('object_type', '=', 'entity')
+        return Like::where('object_type', '=', 'entity')
             ->where('object_id', '=', $this->id)
             ->where('user_id', '=', $user->id)
             ->first();
-        // return any like instances
-
-        return $response;
     }
 
     /**
      * Returns the users that like the entity.
      *
-     * @return Collection $likes
-     *
      **/
-    public function likers()
+    public function likers(): Collection
     {
-        $users = User::join('likes', 'users.id', '=', 'follows.user_id')
+        return User::join('likes', 'users.id', '=', 'follows.user_id')
             ->where('likes.object_type', 'entity')
             ->where('likes.object_id', $this->id)
             ->get();
-
-        return $users;
     }
 
-    public function hasRole($role)
+    public function hasRole(string $role): int
     {
-        $role = $this->roles()->where('name', $role)->count();
-
-        return $role;
+        return $this->roles()->where('name', $role)->count();
     }
 
     /**
      * The roles that belong to the entity.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function roles(): BelongsToMany
     {
@@ -634,15 +581,13 @@ class Entity extends Eloquent
 
     /**
      * Get the threads that belong to the series.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function threads()
+    public function threads(): BelongsToMany
     {
         return $this->belongsToMany(Thread::class)->withTimestamps();
     }
 
-    public function getTitleFormat()
+    public function getTitleFormat(): string
     {
         $format = $this->name;
 
@@ -658,7 +603,7 @@ class Entity extends Eloquent
     }
 
     // Format the entity to post as a tweet
-    public function getBriefFormat()
+    public function getBriefFormat(): string
     {
         // max length 280 chars
         // URLs count as 23 chars
@@ -699,7 +644,7 @@ class Entity extends Eloquent
         }
 
         // add the primary link
-        if (count($this->futureEvents()) > 0) {
+        if ($this->futureEvents()->count() > 0) {
             $event = $this->futureEvents()->first();
             $start = $event->start_at->format('m/d');
             $format .= ' Next: '.$start.' '.$event->name;

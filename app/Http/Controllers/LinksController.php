@@ -29,7 +29,7 @@ class LinksController extends Controller
 
     protected bool $hasFilter;
 
-    protected $rules = [
+    protected array $rules = [
         'text' => ['required', 'min:3'],
         'url' => ['required', 'min:3'],
     ];

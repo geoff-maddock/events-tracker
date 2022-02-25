@@ -7,12 +7,8 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 
 class TagType extends Eloquent
 {
-    /**
-     * @var Array
-     *
-     **/
     protected $fillable = [
-        'name'
+        'name',
     ];
 
     /**
@@ -23,7 +19,7 @@ class TagType extends Eloquent
     protected $dates = [];
 
     /**
-     * An tag type can have many tags
+     * An tag type can have many tags.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */

@@ -2,36 +2,39 @@
 
 namespace App\Mail;
 
+use App\Models\Event;
+use App\Models\Tag;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
 class FollowingUpdate extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
-    public $url;
+    public string $url;
 
-    public $site;
+    public string $site;
 
-    public $admin_email;
+    public string $admin_email;
 
-    public $reply_email;
+    public string $reply_email;
 
-    public $user;
+    public ?User $user;
 
-    public $event;
+    public ?Event $event;
 
-    public $tag;
+    public ?Tag $tag;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($url, $site, $admin_email, $reply_email, $user, $event, $tag)
+    public function __construct(string $url, string $site, string $admin_email, string $reply_email, ?User $user, ?Event $event, ?Tag $tag = null)
     {
         $this->url = $url;
         $this->site = $site;
@@ -44,16 +47,14 @@ class FollowingUpdate extends Mailable
 
     /**
      * Build the message.
-     *
-     * @return $this
      */
-    public function build()
+    public function build(): FollowingUpdate
     {
         $dt = Carbon::now();
 
         return $this->markdown('emails.following-update-markdown')
             ->from($this->reply_email, $this->site)
-            ->subject($this->site . ': ' . $this->tag->name . ' :: ' . $this->event->start_at->format('D F jS') . ' ' . $this->event->name)
+            ->subject($this->site.': '.$this->tag->name.' :: '.$this->event->start_at->format('D F jS').' '.$this->event->name)
             ->bcc($this->admin_email);
     }
 }

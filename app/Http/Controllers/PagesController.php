@@ -19,7 +19,7 @@ use Illuminate\View\View;
 
 class PagesController extends Controller
 {
-    protected $prefix;
+    protected string $prefix;
 
     protected int $defaultLimit;
 
@@ -45,7 +45,7 @@ class PagesController extends Controller
 
     protected array $filters;
 
-    protected $hasFilter;
+    protected bool $hasFilter;
 
     public function __construct()
     {
@@ -77,7 +77,7 @@ class PagesController extends Controller
     /**
      * Update the page list parameters from the request.
      */
-    protected function updatePaging($request)
+    protected function updatePaging(Request $request): void
     {
         // set starting day offset
         if ($request->input('day_offset')) {
@@ -90,10 +90,7 @@ class PagesController extends Controller
         }
     }
 
-    /**
-     * @return View
-     */
-    public function index()
+    public function index(): View
     {
         $future_events = Event::where('start_at', '>=', Carbon::now())
                         ->orderBy('start_at', 'asc')
@@ -108,10 +105,8 @@ class PagesController extends Controller
 
     /**
      * Primary site searchbar action.
-     *
-     * @return View
      */
-    public function search(Request $request)
+    public function search(Request $request): View
     {
         $slug = $request->input('keyword');
 
@@ -180,22 +175,22 @@ class PagesController extends Controller
         return view('pages.search', compact('events', 'entities', 'series', 'users', 'threads', 'tags', 'slug'));
     }
 
-    public function help()
+    public function help(): View
     {
         return view('pages.help');
     }
 
-    public function about()
+    public function about(): View
     {
         return view('pages.about');
     }
 
-    public function privacy()
+    public function privacy(): View
     {
         return view('pages.privacy');
     }
 
-    public function tos()
+    public function tos(): View
     {
         return view('pages.tos');
     }
@@ -205,7 +200,7 @@ class PagesController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder,
         string $date = ''
-    ) {
+    ): View | string {
         $listParamSessionStore->setBaseIndex('internal_page');
         $listParamSessionStore->setKeyPrefix('internal_page_home');
 
@@ -247,23 +242,16 @@ class PagesController extends Controller
 
     /**
      * Get session filters.
-     *
-     * @return array
      */
-    protected function getFilters(Request $request)
+    protected function getFilters(Request $request): array
     {
         return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
     }
 
     /**
      * Get user session attribute.
-     *
-     * @param string $attribute
-     * @param mixed  $default
-     *
-     * @return mixed
      */
-    protected function getAttribute(Request $request, $attribute, $default = null)
+    protected function getAttribute(Request $request, string $attribute, mixed $default = null): mixed
     {
         return $request->session()
             ->get($this->prefix.$attribute, $default);
@@ -271,10 +259,8 @@ class PagesController extends Controller
 
     /**
      * Get the default filters array.
-     *
-     * @return array
      */
-    protected function getDefaultFilters()
+    protected function getDefaultFilters(): array
     {
         return [];
     }
@@ -293,7 +279,6 @@ class PagesController extends Controller
      */
     protected function setFilters(Request $request, array $input): void
     {
-        // example: $input = array('filter_tag' => 'role', 'filter_name' => 'xano');
         $this->setAttribute('filters', $input, $request);
     }
 
@@ -310,7 +295,7 @@ class PagesController extends Controller
         $request->session()->put($this->prefix.$attribute, $value);
     }
 
-    public function tools(Request $request)
+    public function tools(Request $request): View
     {
         $this->middleware('auth');
 

@@ -13,12 +13,8 @@ class ContentType extends Eloquent
 
     const HTML = 2;
 
-    /**
-     * @var Array
-     *
-     **/
     protected $fillable = [
-        'name'
+        'name',
     ];
 
     /**

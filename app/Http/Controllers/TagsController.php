@@ -10,6 +10,7 @@ use App\Models\Series;
 use App\Models\Tag;
 use App\Models\TagType;
 use App\Services\StringHelper;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -158,13 +159,14 @@ class TagsController extends Controller
     /**
      * Display a listing of events by tag.
      */
-    public function indexTags($tag): View
+    public function indexTags(string $tag): View
     {
         $tag = urldecode($tag);
 
         // get all series linked to the tag
         $series = Series::getByTag(ucfirst($tag))
                     ->where(function ($query) {
+                        /* @phpstan-ignore-next-line */
                         $query->visible($this->user);
                     })
                     ->orderBy('start_at', 'ASC')
@@ -199,7 +201,7 @@ class TagsController extends Controller
     /**
      * Display a listing of events by tag.
      */
-    public function show($slug, StringHelper $stringHelper): View
+    public function show(string $slug, StringHelper $stringHelper): View
     {
         // convert the slug to name?
         $tag = $stringHelper->SlugToName($slug);
@@ -207,6 +209,7 @@ class TagsController extends Controller
         // get all series linked to the tag
         $series = Series::getByTag($slug)
             ->where(function ($query) {
+                /* @phpstan-ignore-next-line */
                 $query->visible($this->user);
             })
             ->orderBy('start_at', 'ASC')
@@ -477,60 +480,48 @@ class TagsController extends Controller
 
     /**
      * Set user session attribute.
-     *
-     * @param mixed $value
      */
-    public function setAttribute(Request $request, string $attribute, $value)
+    public function setAttribute(Request $request, string $attribute, mixed $value): void
     {
         $request->session()->put($this->prefix.$attribute, $value);
     }
 
     /**
      * Set filters attribute.
-     *
-     * @return array
      */
-    public function setFilters(Request $request, array $input)
+    public function setFilters(Request $request, array $input): void
     {
-        return $this->setAttribute($request, 'filters', $input);
+        $this->setAttribute($request, 'filters', $input);
     }
 
     /**
      * Set page attribute.
-     *
-     * @return int
      */
-    public function setPage(Request $request, int $input)
+    public function setPage(Request $request, int $input): void
     {
-        return $this->setAttribute($request, 'page', $input);
+        $this->setAttribute($request, 'page', $input);
     }
 
     /**
      * Set results per page attribute.
-     *
-     * @return int
      */
-    public function setLimit(Request $request, int $input)
+    public function setLimit(Request $request, int $input): void
     {
-        return $this->setAttribute($request, 'limit', 5);
+        $this->setAttribute($request, 'limit', 5);
     }
 
     /**
      * Set sort order attribute.
-     *
-     * @return array
      */
-    public function setSort(Request $request, array $input)
+    public function setSort(Request $request, array $input): void
     {
-        return $this->setAttribute($request, 'sort', $input);
+        $this->setAttribute($request, 'sort', $input);
     }
 
     /**
      * Builds the criteria from the session.
-     *
-     * @return \Illuminate\Database\Eloquent\Builder $query
      */
-    public function buildCriteria(Request $request)
+    public function buildCriteria(Request $request): Builder
     {
         // get all the filters from the session
         $filters = $this->getFilters($request);
@@ -555,12 +546,7 @@ class TagsController extends Controller
         return $query;
     }
 
-    /**
-     * @param Tag $tag
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    protected function notifyFollowing($tag)
+    protected function notifyFollowing(?Tag $tag): RedirectResponse
     {
         $reply_email = config('app.noreplyemail');
         $site = config('app.app_name');

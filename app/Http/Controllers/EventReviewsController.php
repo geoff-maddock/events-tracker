@@ -14,7 +14,7 @@ use Illuminate\View\View;
 
 class EventReviewsController extends Controller
 {
-    protected $rules = [
+    protected array $rules = [
         'review' => ['required', 'min:3'],
     ];
 

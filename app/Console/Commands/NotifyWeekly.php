@@ -66,7 +66,8 @@ class NotifyWeekly extends Command
             }
 
             // build an array of events that are upcoming based on what the user follows
-            if ($entities = $user->getEntitiesFollowing()) {
+            $entities = $user->getEntitiesFollowing();
+            if (count($entities) > 0) {
                 foreach ($entities as $entity) {
                     $entityEvents = [];
                     // get the future events for each followed entity
@@ -84,7 +85,8 @@ class NotifyWeekly extends Command
                 }
             }
             // build an array of future events based on tags the user follows
-            if ($tags = $user->getTagsFollowing()) {
+            $tags = $user->getTagsFollowing();
+            if (count($tags) > 0) {
                 foreach ($tags as $tag) {
                     $tagEvents = [];
                     // get the future events for each followed tag
@@ -103,7 +105,8 @@ class NotifyWeekly extends Command
             }
 
             // build an array of series that the user is following
-            if ($series = $user->getSeriesFollowing()) {
+            $series = $user->getSeriesFollowing();
+            if (count($series) > 0) {
                 foreach ($series as $s) {
                     // if the series does not have NO SCHEDULE AND CANCELLED AT IS NULL
                     if ($s->occurrenceType->name !== 'No Schedule' && (null === $s->cancelled_at)) {

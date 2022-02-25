@@ -2,9 +2,11 @@
 
 namespace App\Filters;
 
+use Illuminate\Database\Eloquent\Builder;
+
 class MenuFilters extends QueryFilter
 {
-    public function name($value = null)
+    public function name(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->where('name', $value);
@@ -13,7 +15,7 @@ class MenuFilters extends QueryFilter
         }
     }
 
-    public function slug($value = null)
+    public function slug(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->where('slug', $value);

@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Class ListRequestAdapter.
@@ -14,15 +13,10 @@ class ListRequest
 {
     const IS_EMPTY_FIELD_NAME = '_is_empty';
 
-    private $requestStack;
-
-    private $request;
+    private Request $request;
 
     public function __construct(Request $request)
     {
-        // copied over from cadence, but removing
-        //$this->requestStack = $requestStack;
-
         $this->request = $request;
     }
 
@@ -54,7 +48,7 @@ class ListRequest
     {
         $direction = $this->request->get('direction');
 
-        return  $direction ? $direction : null;
+        return $direction ? $direction : null;
     }
 
     public function getLimit(): ?int

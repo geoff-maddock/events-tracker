@@ -1,6 +1,8 @@
 <?php
 
-function delete_form($routeParams, $label = 'Delete')
+use App\Http\Flash;
+
+function delete_form(array $routeParams, string $label = 'Delete'): string
 {
     $form = Form::open(['method' => 'DELETE', 'route' => $routeParams, 'id' => 'deleteForm', 'style' => 'display: inline;']);
 
@@ -11,7 +13,7 @@ function delete_form($routeParams, $label = 'Delete')
     return $form;
 }
 
-function getTableFromModelClass($class)
+function getTableFromModelClass(string $class): string
 {
     // convert entity class into table
     $split = explode('\\', $class);
@@ -19,7 +21,7 @@ function getTableFromModelClass($class)
     return isset($split[2]) ? $split[2] : $class;
 }
 
-function flash($title = null, $message = null)
+function flash(?string $title = null, ?string $message = null): ?Flash
 {
     $flash = app('App\Http\Flash');
 
@@ -27,18 +29,20 @@ function flash($title = null, $message = null)
         return $flash;
     }
 
-    return $flash->message($title, $message);
+    $flash->message($title, $message);
+
+    return null;
 }
 
-function link_form($body, $path, $type)
+function link_form(string $body, mixed $path, string $type): string
 {
     $csrf = csrf_token();
 
     if (is_object($path)) {
-        $action = '/' . $path->getTable(); // photos
+        $action = '/'.$path->getTable(); // photos
 
         if (in_array($type, ['PUT', 'PATCH', 'DELETE'])) {
-            $action .= '/' . $path->getKey(); // photos/1
+            $action .= '/'.$path->getKey(); // photos/1
         }
     } else {
         $action = $path;
@@ -53,18 +57,25 @@ function link_form($body, $path, $type)
 EOT;
 }
 
-function link_form_icon($icon, $path, $type, $title = '', $label = '', $class = '', $confirm = 'confirm')
-{
+function link_form_icon(
+    string $icon,
+    mixed $path,
+    string $type,
+    ?string $title = '',
+    ?string $label = '',
+    ?string $class = '',
+    ?string $confirm = 'confirm'
+    ): string {
     $csrf = csrf_token();
     $object = 'object';
 
     if (is_object($path)) {
         $object = get_class_name(get_class($path));
 
-        $action = '/' . str_replace('_', '-', $path->getTable());
+        $action = '/'.str_replace('_', '-', $path->getTable());
 
         if (in_array($type, ['PUT', 'PATCH', 'DELETE'])) {
-            $action .= '/' . $path->getKey();
+            $action .= '/'.$path->getKey();
         }
     } else {
         $action = $path;
@@ -79,7 +90,7 @@ function link_form_icon($icon, $path, $type, $title = '', $label = '', $class = 
 EOT;
 }
 
-function link_form_bootstrap_icon($icon, $path, $type, $title = '', $label = '', $class = '', $confirm = 'confirm')
+function link_form_bootstrap_icon(string $icon, mixed $path, string $type, ?string $title = '', ?string $label = '', ?string $class = '', ?string $confirm = 'confirm'): string
 {
     $csrf = csrf_token();
     $object = 'object';
@@ -87,10 +98,10 @@ function link_form_bootstrap_icon($icon, $path, $type, $title = '', $label = '',
     if (is_object($path)) {
         $object = get_class_name(get_class($path));
 
-        $action = '/' . str_replace('_', '-', $path->getTable());
+        $action = '/'.str_replace('_', '-', $path->getTable());
 
         if (in_array($type, ['PUT', 'PATCH', 'DELETE'])) {
-            $action .= '/' . $path->getKey();
+            $action .= '/'.$path->getKey();
         }
     } else {
         $action = $path;
@@ -105,16 +116,16 @@ function link_form_bootstrap_icon($icon, $path, $type, $title = '', $label = '',
 EOT;
 }
 
-function get_class_name($classname)
+function get_class_name(string $classname): string
 {
     if ($pos = strrpos($classname, '\\')) {
         return substr($classname, $pos + 1);
     }
 
-    return $pos;
+    return '';
 }
 
-function split_name($name)
+function split_name(string $name): array
 {
     $name = trim($name);
     if (false === strpos($name, ' ')) {

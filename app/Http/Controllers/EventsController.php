@@ -152,6 +152,7 @@ class EventsController extends Controller
         $query = $listResultSet->getList();
 
         // get the events
+        // @phpstan-ignore-next-line
         $events = $query->visible($this->user)
             ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
@@ -229,6 +230,7 @@ class EventsController extends Controller
         $events = Event::where('start_at', '>', $start_at_from)
             ->where('start_at', '<', $start_at_to)
             ->where(function ($query) {
+                /* @phpstan-ignore-next-line */
                 $query->visible($this->user);
             })
             ->orderBy('start_at', 'ASC')
@@ -541,6 +543,7 @@ class EventsController extends Controller
         // get the events
         $future_events = $query
             ->where(function ($query) {
+                /* @phpstan-ignore-next-line */
                 $query->visible($this->user);
             })
             ->with('visibility', 'venue')
@@ -567,14 +570,16 @@ class EventsController extends Controller
             ->with(compact('future_events'));
     }
 
-    // Same as the 4-day window except uses the passed in date for the start date
-
+    /*
+     * Same as the 4-day window except uses the passed in date for the start date
+     * @phpstan-param view-string $view
+    */
     public function indexUpcoming(
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder,
         string $date = ''
-    ) {
+    ): string {
         $listParamSessionStore->setBaseIndex('internal_event');
         $listParamSessionStore->setKeyPrefix('internal_event_upcoming');
 
@@ -726,6 +731,7 @@ class EventsController extends Controller
         // get the events
         $past_events = $query
             ->where(function ($query) {
+                /* @phpstan-ignore-next-line */
                 $query->visible($this->user);
             })
             ->with('visibility', 'venue')
@@ -849,6 +855,7 @@ class EventsController extends Controller
         $query = $listResultSet->getList();
 
         // get the events
+        // @phpstan-ignore-next-line
         $events = $query->visible($this->user)
             ->with('visibility', 'venue')
             ->paginate(1000);
@@ -858,10 +865,8 @@ class EventsController extends Controller
 
     /**
      * Display a simple text feed of future events by tag.
-     *
-     * @return Response|View
      */
-    public function feedTags($tag)
+    public function feedTags(string $tag): View
     {
         // set number of results per page
         $events = Event::getByTag(ucfirst($tag))->future()->simplePaginate(10000);
@@ -986,7 +991,8 @@ class EventsController extends Controller
             $events = $user->getAttendingFuture()->take(100);
 
             // build an array of future events based on tags the user follows
-            if ($tags = $user->getTagsFollowing()) {
+            $tags = $user->getTagsFollowing();
+            if (count($tags) > 0) {
                 foreach ($tags as $tag) {
                     if (count($tag->todaysEvents()) > 0) {
                         $interests[$tag->name] = $tag->todaysEvents();
@@ -995,7 +1001,8 @@ class EventsController extends Controller
             }
 
             // build an array of series that the user is following
-            if ($series = $user->getSeriesFollowing()) {
+            $series = $user->getSeriesFollowing();
+            if (count($series) > 0) {
                 foreach ($series as $s) {
                     // if the series does not have NO SCHEDULE AND CANCELLED AT IS NULL
                     if ($s->occurrenceType->name !== 'No Schedule' && (null === $s->cancelled_at)) {
@@ -1053,7 +1060,7 @@ class EventsController extends Controller
             $eventList[] = [
                 'id' => 'event-'.$event->id,
                 'start' => $event->start_at->format('Y-m-d H:i'),
-                'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
+                'end' => ($event->end_time !== null) ? $event->end_time->format('Y-m-d H:i') : null,
                 'title' => $event->name,
                 'url' => '/events/'.$event->id,
                 'backgroundColor' => '#0a57ad',
@@ -1115,7 +1122,7 @@ class EventsController extends Controller
             $eventList[] = [
                 'id' => 'event-'.$event->id,
                 'start' => $event->start_at->format('Y-m-d H:i'),
-                'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
+                'end' => ($event->end_time !== null) ? $event->end_time->format('Y-m-d H:i') : null,
                 'title' => $event->name,
                 'url' => '/events/'.$event->id,
                 'backgroundColor' => '#0a57ad',
@@ -1154,6 +1161,7 @@ class EventsController extends Controller
 
         // get all public events
         $events = Event::where(function ($query) {
+            /* @phpstan-ignore-next-line */
             $query->visible($this->user);
         })->get();
 
@@ -1170,7 +1178,7 @@ class EventsController extends Controller
             $eventList[] = [
                 'id' => 'event-'.$event->id,
                 'start' => $event->start_at->format('Y-m-d H:i'),
-                'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
+                'end' => ($event->end_time !== null) ? $event->end_time->format('Y-m-d H:i') : null,
                 'title' => $event->name,
                 'url' => '/events/'.$event->id,
                 'backgroundColor' => $event->eventType->backgroundColor(),
@@ -1221,6 +1229,7 @@ class EventsController extends Controller
 
         // get all public events
         $events = Event::where(function ($query) {
+            /* @phpstan-ignore-next-line */
             $query->visible($this->user);
         })->get();
 
@@ -1237,7 +1246,7 @@ class EventsController extends Controller
             $eventList[] = [
                 'id' => 'event-'.$event->id,
                 'start' => $event->start_at->format('Y-m-d H:i'),
-                'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
+                'end' => ($event->end_time !== null) ? $event->end_time->format('Y-m-d H:i') : null,
                 'title' => $event->name,
                 'url' => '/events/'.$event->id,
                 'backgroundColor' => '#0a57ad',
@@ -1298,13 +1307,20 @@ class EventsController extends Controller
 
         // adds events to event list
         foreach ($events as $event) {
+            // @phpstan-ignore-next-line
             $eventList[] = [
+            // @phpstan-ignore-next-line
                 'id' => 'event-'.$event->id,
+            // @phpstan-ignore-next-line
                 'start' => $event->start_at->format('Y-m-d H:i'),
-                'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
+            // @phpstan-ignore-next-line
+                'end' => ($event->end_time !== null) ? $event->end_time->format('Y-m-d H:i') : null,
+            // @phpstan-ignore-next-line
                 'title' => $event->name,
+            // @phpstan-ignore-next-line
                 'url' => '/events/'.$event->id,
                 'backgroundColor' => '#0a57ad',
+            // @phpstan-ignore-next-line
                 'description' => $event->short,
             ];
         }
@@ -1364,7 +1380,7 @@ class EventsController extends Controller
             $eventList[] = [
                 'id' => 'event-'.$event->id,
                 'start' => $event->start_at->format('Y-m-d H:i'),
-                'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
+                'end' => ($event->end_time !== null) ? $event->end_time->format('Y-m-d H:i') : null,
                 'title' => $event->name,
                 'url' => '/events/'.$event->id,
                 'backgroundColor' => '#0a57ad',
@@ -1427,7 +1443,7 @@ class EventsController extends Controller
             $eventList[] = [
                 'id' => 'event-'.$event->id,
                 'start' => $event->start_at->format('Y-m-d H:i'),
-                'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
+                'end' => ($event->end_time !== null) ? $event->end_time->format('Y-m-d H:i') : null,
                 'title' => $event->name,
                 'url' => '/events/'.$event->id,
                 'backgroundColor' => '#0a57ad',
@@ -1488,7 +1504,7 @@ class EventsController extends Controller
             $eventList[] = [
                 'id' => 'event-'.$event->id,
                 'start' => $event->start_at->format('Y-m-d H:i'),
-                'end' => ($event->end_time ? $event->end_time->format('Y-m-d H:i') : null),
+                'end' => ($event->end_time !== null) ? $event->end_time->format('Y-m-d H:i') : null,
                 'title' => $event->name,
                 'url' => '/events/'.$event->id,
                 'backgroundColor' => '#0a57ad',
@@ -1550,7 +1566,7 @@ class EventsController extends Controller
     /**
      * Call to Facebook to login the user and ask them to grant the app permission.
      */
-    private function getFacebookLoginUrl($permissions)
+    private function getFacebookLoginUrl(string $permissions): string
     {
         $fbGraphVersion = config('app.fb_graph_version');
         $fbAppId = config('app.fb_app_id');
@@ -1569,7 +1585,7 @@ class EventsController extends Controller
     /**
      * Call to Facebook after login to get an access token.
      */
-    private function getAccessTokenWithCode($code)
+    private function getAccessTokenWithCode(string $code): array
     {
         $endpoint = 'https://graph.facebook.com/'.config('app.fb_graph_version').'/oauth/access_token';
 
@@ -1586,7 +1602,7 @@ class EventsController extends Controller
     /**
      * Curl API call.
      */
-    private function makeApiCall($endpoint, $type, $params)
+    private function makeApiCall(string $endpoint, string $type, array $params): array
     {
         $ch = curl_init();
 
@@ -1614,7 +1630,7 @@ class EventsController extends Controller
     /**
      * This is the callback from the login that will get and set an access token.
      **/
-    public function fbAuthToken()
+    public function fbAuthToken(): mixed
     {
         // build an ajax call to get an access token?
 
@@ -1629,6 +1645,7 @@ class EventsController extends Controller
             setcookie('fb-token', $accessToken['data'], time() + (86400 * 30), '/');
             dump($accessToken);
         }
+        return null;
     }
 
     /**
@@ -1773,9 +1790,9 @@ class EventsController extends Controller
         return back();
     }
 
-    public function show(Event $event): string
+    public function show(?Event $event): string
     {
-        if (empty((array) $event)) {
+        if (!$event) {
             abort(404);
         }
 
@@ -1894,7 +1911,7 @@ class EventsController extends Controller
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->user_id, $users)) {
                     Mail::to($user->email)
-                        ->send(new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $entity));
+                        ->send(new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, null));
                     $users[$user->user_id] = $entity->name;
                 } else {
                     $users[$user->user_id] = $users[$user->user_id].', '.$entity->name;
@@ -2058,7 +2075,7 @@ class EventsController extends Controller
      *
      * @throws \Throwable
      */
-    public function unattend(int $id, Request $request)
+    public function unattend(int $id, Request $request): RedirectResponse | array
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -2164,6 +2181,7 @@ class EventsController extends Controller
         $pastQuery = $listResultSet->getList();
         $futureQuery = clone $pastQuery;
 
+        // @phpstan-ignore-next-line
         $future_events = $futureQuery
             ->future()
             ->orderBy('events.start_at', 'ASC')
@@ -2174,7 +2192,9 @@ class EventsController extends Controller
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
+        // @phpstan-ignore-next-line
         $past_events = $pastQuery
+        // @phpstan-ignore-next-line
             ->past()
             ->orderBy('events.start_at', 'ASC')
             ->orderBy('events.name', 'ASC')
@@ -2242,6 +2262,7 @@ class EventsController extends Controller
         $pastQuery = $listResultSet->getList();
         $futureQuery = clone $pastQuery;
 
+        // @phpstan-ignore-next-line
         $future_events = $futureQuery
             ->future()
             ->orderBy('events.start_at', 'ASC')
@@ -2252,6 +2273,7 @@ class EventsController extends Controller
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
+        // @phpstan-ignore-next-line
         $past_events = $pastQuery
             ->past()
             ->orderBy('events.start_at', 'ASC')
@@ -2323,6 +2345,7 @@ class EventsController extends Controller
         $future_events = Event::where('events.start_at', '>', $cdate_yesterday->toDateString())
             ->where('events.start_at', '<', $cdate_tomorrow->toDateString())
             ->where(function ($query) {
+                /* @phpstan-ignore-next-line */
                 $query->visible($this->user);
             })
             ->orderBy('events.start_at', 'ASC')
@@ -2384,6 +2407,7 @@ class EventsController extends Controller
         $future_events = Event::getByVenue(strtolower($slug))
             ->future()
             ->where(function ($query) {
+                /* @phpstan-ignore-next-line */
                 $query->visible($this->user);
             })
             ->orderBy('events.start_at', 'ASC')
@@ -2393,6 +2417,7 @@ class EventsController extends Controller
         $past_events = Event::getByVenue(strtolower($slug))
             ->past()
             ->where(function ($query) {
+                /* @phpstan-ignore-next-line */
                 $query->visible($this->user);
             })
             ->orderBy('events.start_at', 'ASC')
@@ -2453,6 +2478,7 @@ class EventsController extends Controller
         $pastQuery = $listResultSet->getList();
         $futureQuery = clone $pastQuery;
 
+        // @phpstan-ignore-next-line
         $future_events = $futureQuery
             ->future()
             ->orderBy('events.start_at', 'ASC')
@@ -2463,6 +2489,7 @@ class EventsController extends Controller
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
+        // @phpstan-ignore-next-line
         $past_events = $pastQuery
             ->past()
             ->orderBy('events.start_at', 'ASC')
@@ -2530,6 +2557,7 @@ class EventsController extends Controller
         $pastQuery = $listResultSet->getList();
         $futureQuery = clone $pastQuery;
 
+        // @phpstan-ignore-next-line
         $future_events = $futureQuery
             ->future()
             ->orderBy('events.start_at', 'ASC')
@@ -2540,6 +2568,7 @@ class EventsController extends Controller
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
+        // @phpstan-ignore-next-line
         $past_events = $pastQuery
             ->past()
             ->orderBy('events.start_at', 'ASC')
@@ -2678,7 +2707,7 @@ class EventsController extends Controller
         return back();
     }
 
-    protected function getSeriesFormOptions()
+    protected function getSeriesFormOptions(): array
     {
         return [
             'venueOptions' => ['' => ''] + Entity::getVenues()->pluck('name', 'id')->all(),
@@ -2766,7 +2795,7 @@ class EventsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder,
         RssFeed $feed
-    ) {
+    ): View {
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_event');
         $listParamSessionStore->setKeyPrefix('internal_event_index');
@@ -2789,6 +2818,7 @@ class EventsController extends Controller
         $query = $listResultSet->getList();
 
         // get the events
+        /* @phpstan-ignore-next-line */
         $events = $query->visible($this->user)
             ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
@@ -2796,7 +2826,7 @@ class EventsController extends Controller
         return view('events.feed', compact('events'));
     }
 
-    public function rss(RssFeed $feed)
+    public function rss(RssFeed $feed): Response
     {
         $rss = $feed->getRSS();
 

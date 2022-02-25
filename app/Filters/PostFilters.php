@@ -2,18 +2,20 @@
 
 namespace App\Filters;
 
+use Illuminate\Database\Eloquent\Builder;
+
 class PostFilters extends QueryFilter
 {
-    public function body($value = null)
+    public function body(?string $value = null): Builder
     {
         if (isset($value)) {
-            return $this->builder->where('posts.body', 'like', '%' . $value . '%');
+            return $this->builder->where('posts.body', 'like', '%'.$value.'%');
         } else {
             return $this->builder;
         }
     }
 
-    public function tag($value = null)
+    public function tag(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('tags', function ($q) use ($value) {
@@ -24,7 +26,7 @@ class PostFilters extends QueryFilter
         }
     }
 
-    public function series($value = null)
+    public function series(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('series', function ($q) use ($value) {
@@ -35,7 +37,7 @@ class PostFilters extends QueryFilter
         }
     }
 
-    public function user($value = null)
+    public function user(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('user', function ($q) use ($value) {
@@ -46,7 +48,7 @@ class PostFilters extends QueryFilter
         }
     }
 
-    public function related($value = null)
+    public function related(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('entities', function ($q) use ($value) {

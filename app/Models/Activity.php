@@ -3,37 +3,39 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
-use DateTime;
 
 /**
- * App\Models\Activity
+ * App\Models\Activity.
  *
- * @property int $object_id
- * @property string $object_table
- * @property datetime $created_at
- * @property int $id
- * @property int|null $user_id
- * @property string|null $object_name
- * @property string|null $child_object_table
- * @property string|null $child_object_name
- * @property int|null $child_object_id
- * @property string|null $message
- * @property string|null $changes
- * @property int|null $action_id
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property string|null $ip_address
- * @property-read \App\Models\Action|null $action
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Entity[] $entities
- * @property-read int|null $entities_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Event[] $events
- * @property-read int|null $events_count
- * @property-read mixed $age
- * @property-read mixed $style
- * @property-read mixed $user_name
- * @property-read \App\Models\User|null $user
+ * @property int                                                           $object_id
+ * @property string                                                        $object_table
+ * @property datetime                                                      $created_at
+ * @property int                                                           $id
+ * @property int|null                                                      $user_id
+ * @property string|null                                                   $object_name
+ * @property string|null                                                   $child_object_table
+ * @property string|null                                                   $child_object_name
+ * @property int|null                                                      $child_object_id
+ * @property string|null                                                   $message
+ * @property string|null                                                   $changes
+ * @property int|null                                                      $action_id
+ * @property \Illuminate\Support\Carbon|null                               $updated_at
+ * @property string|null                                                   $ip_address
+ * @property \App\Models\Action|null                                       $action
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Entity[] $entities
+ * @property int|null                                                      $entities_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Event[]  $events
+ * @property int|null                                                      $events_count
+ * @property mixed                                                         $age
+ * @property mixed                                                         $style
+ * @property mixed                                                         $user_name
+ * @property \App\Models\User|null                                         $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Activity newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Activity newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Activity query()
@@ -64,10 +66,6 @@ class Activity extends Eloquent
      */
     protected $dateFormat = 'Y-m-d H:i:s';
 
-    /**
-     * @var array
-     *
-     **/
     protected $fillable = [
         'object_table', 'object_name', 'object_id',
     ];
@@ -76,38 +74,30 @@ class Activity extends Eloquent
 
     /**
      * Get the events that belong to the activity.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function events()
+    public function events(): BelongsToMany
     {
         return $this->belongsToMany('App\Models\Event')->withTimestamps();
     }
 
     /**
      * Get the entities that belong to the activity.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function entities()
+    public function entities(): BelongsToMany
     {
         return $this->belongsToMany('App\Models\Entity')->withTimestamps();
     }
 
     /**
      * An activity is owned by a user.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo('App\Models\User', 'user_id');
     }
 
     /**
      * An activity has one action.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function action(): BelongsTo
     {
@@ -117,7 +107,7 @@ class Activity extends Eloquent
     /**
      * Get the style of an activity.
      */
-    public function getStyleAttribute()
+    public function getStyleAttribute(): string
     {
         if (null !== $this->action && $this->action->name === 'Delete') {
             return 'list-group-item-warning';
@@ -129,22 +119,22 @@ class Activity extends Eloquent
     /**
      * Get a link to show the activity.
      */
-    public function getShowLink()
+    public function getShowLink(): string
     {
         if ('Tag' === $this->object_table) {
             if ($tag = Tag::find($this->object_id)) {
-                return '/' . Str::plural($this->object_table) . '/' . $tag->name;
+                return '/'.Str::plural($this->object_table).'/'.$tag->name;
             }
         }
 
         if ('Entity' === $this->object_table) {
             if ($entity = Entity::find($this->object_id)) {
-                return '/' . Str::plural($this->object_table) . '/' . $entity->slug;
+                return '/'.Str::plural($this->object_table).'/'.$entity->slug;
             }
         }
 
         if ($this->object_table) {
-            return '/' . Str::plural($this->object_table) . '/' . $this->object_id;
+            return '/'.Str::plural($this->object_table).'/'.$this->object_id;
         }
 
         return '/';
@@ -153,7 +143,7 @@ class Activity extends Eloquent
     /**
      * Get the age of the activity.
      */
-    public function getAgeAttribute()
+    public function getAgeAttribute(): string
     {
         return Carbon::parse($this->created_at)->diffForHumans();
     }
@@ -161,12 +151,12 @@ class Activity extends Eloquent
     /**
      * Get the name of the user.
      */
-    public function getUserNameAttribute()
+    public function getUserNameAttribute(): string
     {
         return $this->user ? $this->user->name : 'unknown';
     }
 
-    public static function log($object, $user, $action, $message = null)
+    public static function log(mixed $object, ?User $user, mixed $action, string $message = null): void
     {
         $class = get_class($object);
 
@@ -198,7 +188,7 @@ class Activity extends Eloquent
             $activity->message = sprintf($message);
         } else {
             // otherwise build message
-            $m = $act->name . ' ' . strtolower($table) . ' ' . $object->name;
+            $m = $act->name.' '.strtolower($table).' '.$object->name;
             $activity->message = $m;
         }
 

@@ -11,6 +11,7 @@ use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
@@ -74,7 +75,7 @@ class PhotosController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function indexSimple()
+    public function indexSimple(): View
     {
         $photos = Photo::get();
 
@@ -270,12 +271,12 @@ class PhotosController extends Controller
         ->render();
     }
 
-    public function show(Photo $photo)
+    public function show(Photo $photo): View
     {
         return view('photos.show', compact('photo'));
     }
 
-    public function store(Request $request, Photo $photo)
+    public function store(Request $request, Photo $photo): RedirectResponse
     {
         $input = $request->all();
 
@@ -288,7 +289,7 @@ class PhotosController extends Controller
         return redirect()->route('photos.index');
     }
 
-    public function update(Photo $photo, Request $request)
+    public function update(Photo $photo, Request $request): RedirectResponse
     {
         $photo->fill($request->input())->save();
 
@@ -299,7 +300,7 @@ class PhotosController extends Controller
         return redirect('photos');
     }
 
-    public function destroy($id)
+    public function destroy(int $id): RedirectResponse
     {
         $photo = Photo::findOrFail($id)->delete();
 
@@ -308,7 +309,7 @@ class PhotosController extends Controller
         return back();
     }
 
-    public function setPrimary($id)
+    public function setPrimary(int $id): RedirectResponse
     {
         $photo = Photo::findOrFail($id);
 
@@ -354,7 +355,7 @@ class PhotosController extends Controller
         return back();
     }
 
-    public function unsetPrimary($id)
+    public function unsetPrimary(int $id): RedirectResponse
     {
         $photo = Photo::findOrFail($id);
 
@@ -366,7 +367,7 @@ class PhotosController extends Controller
         return back();
     }
 
-    public function setEvent($id)
+    public function setEvent(int $id): RedirectResponse
     {
         $photo = Photo::findOrFail($id);
 
@@ -378,7 +379,7 @@ class PhotosController extends Controller
         return back();
     }
 
-    public function unsetEvent($id)
+    public function unsetEvent(int $id): RedirectResponse
     {
         $photo = Photo::findOrFail($id);
 

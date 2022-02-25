@@ -14,7 +14,7 @@ class CommentsController extends Controller
 {
     protected Entity $entity;
 
-    protected $rules = [
+    protected array $rules = [
         'message' => ['required', 'min:3'],
     ];
 

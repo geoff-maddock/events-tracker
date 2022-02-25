@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * @property Model $commentable
@@ -18,15 +21,13 @@ class Comment extends Model
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array
      */
     protected $fillable = ['message', 'commentable_id', 'commentable_type'];
 
     /**
      * Get all of the owning commentable models.
      */
-    public function commentable()
+    public function commentable(): MorphTo
     {
         return $this->morphTo();
     }
@@ -34,17 +35,15 @@ class Comment extends Model
     /**
      * Get the author of the comment.
      */
-    public function author()
+    public function author(): BelongsTo
     {
         return $this->belongsTo('App\Models\User', 'created_by');
     }
 
     /**
      * Returns entities created by the user.
-     *
-     * @ param User $user
      */
-    public function scopeCreatedBy($query, User $user)
+    public function scopeCreatedBy(Builder $query, User $user): Builder
     {
         return $query->where('created_by', '=', $user->id);
     }

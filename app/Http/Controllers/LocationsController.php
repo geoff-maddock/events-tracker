@@ -28,7 +28,7 @@ class LocationsController extends Controller
 
     protected array $filters;
 
-    protected $rules = [
+    protected array $rules = [
         'name' => ['required', 'min:3'],
         'slug' => ['required', 'min:3'],
         'city' => ['required', 'min:3'],

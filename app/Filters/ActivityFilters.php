@@ -2,27 +2,29 @@
 
 namespace App\Filters;
 
+use Illuminate\Database\Eloquent\Builder;
+
 class ActivityFilters extends QueryFilter
 {
-    public function message($value = null)
+    public function message(?string $value = null): Builder
     {
         if (isset($value)) {
-            return $this->builder->where('activities.message', 'like', '%' . $value . '%');
+            return $this->builder->where('activities.message', 'like', '%'.$value.'%');
         } else {
             return $this->builder;
         }
     }
 
-    public function object_table($value = null)
+    public function object_table(?string $value = null): Builder
     {
         if (isset($value)) {
-            return $this->builder->where('activities.object_table', 'like', '%' . $value . '%');
+            return $this->builder->where('activities.object_table', 'like', '%'.$value.'%');
         } else {
             return $this->builder;
         }
     }
 
-    public function action($value = null)
+    public function action(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('action', function ($q) use ($value) {
@@ -33,7 +35,7 @@ class ActivityFilters extends QueryFilter
         }
     }
 
-    public function user($value = null)
+    public function user(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('user', function ($q) use ($value) {
@@ -44,7 +46,7 @@ class ActivityFilters extends QueryFilter
         }
     }
 
-    public function level($value = null)
+    public function level(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->where('permissions.level', '=', $value);

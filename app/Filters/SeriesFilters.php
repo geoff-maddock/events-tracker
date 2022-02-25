@@ -2,18 +2,20 @@
 
 namespace App\Filters;
 
+use Illuminate\Database\Eloquent\Builder;
+
 class SeriesFilters extends QueryFilter
 {
-    public function name($value = null)
+    public function name(?string $value = null): Builder
     {
         if (isset($value)) {
-            return $this->builder->where('series.name', 'like', '%' . $value . '%');
+            return $this->builder->where('series.name', 'like', '%'.$value.'%');
         } else {
             return $this->builder;
         }
     }
 
-    public function venue($value = null)
+    public function venue(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('venue', function ($q) use ($value) {
@@ -24,7 +26,7 @@ class SeriesFilters extends QueryFilter
         }
     }
 
-    public function tag($value = null)
+    public function tag(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('tags', function ($q) use ($value) {
@@ -35,7 +37,7 @@ class SeriesFilters extends QueryFilter
         }
     }
 
-    public function related($value = null)
+    public function related(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('entities', function ($q) use ($value) {
@@ -46,7 +48,7 @@ class SeriesFilters extends QueryFilter
         }
     }
 
-    public function series($value = null)
+    public function series(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('series', function ($q) use ($value) {
@@ -57,7 +59,7 @@ class SeriesFilters extends QueryFilter
         }
     }
 
-    public function event_type($value = null)
+    public function event_type(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('eventType', function ($q) use ($value) {
@@ -68,7 +70,7 @@ class SeriesFilters extends QueryFilter
         }
     }
 
-    public function occurrence_type($value = null)
+    public function occurrence_type(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('occurrenceType', function ($q) use ($value) {
@@ -79,7 +81,7 @@ class SeriesFilters extends QueryFilter
         }
     }
 
-    public function start_at($value = null)
+    public function start_at(array | string $value = null): Builder
     {
         // if not an array, do not process
 
@@ -102,12 +104,12 @@ class SeriesFilters extends QueryFilter
         }
     }
 
-    public function ages($order = 'desc') // example.com/events?ages
+    public function ages(?string $order = 'desc'): Builder
     {
         return $this->builder->orderBy('ages_id', $order);
     }
 
-    public function visibility($value = null)
+    public function visibility(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('visibility', function ($q) use ($value) {

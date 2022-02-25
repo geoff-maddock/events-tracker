@@ -10,10 +10,6 @@ class Role extends Eloquent
 {
     use HasFactory;
 
-    /**
-     * @var array
-     *
-     **/
     protected $fillable = [
         'name', 'slug', 'short',
     ];

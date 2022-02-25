@@ -2,27 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Permission extends Model
 {
     protected $fillable = ['name', 'label', 'description', 'level'];
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function groups()
+    public function groups(): BelongsToMany
     {
         return $this->belongsToMany(Group::class);
     }
 
     /**
-     * Get a list of group ids associated with the permission
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * Get a list of group ids associated with the permission.
      */
-    public function getGroupListAttribute()
+    public function getGroupListAttribute(): array
     {
         return $this->groups->pluck('id')->all();
     }
@@ -31,13 +27,11 @@ class Permission extends Model
      * Return a collection of permissions related to the group.
      *
      **/
-    public static function getByGroup($group)
+    public static function getByGroup(string $group): Builder
     {
         // get a list of blogs that have the passed tag
-        $permissions = self::whereHas('group', function ($q) use ($group) {
+        return self::whereHas('group', function ($q) use ($group) {
             $q->where('name', '=', ucfirst($group));
         });
-
-        return $permissions;
     }
 }

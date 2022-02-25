@@ -2,9 +2,11 @@
 
 namespace App\Filters;
 
+use Illuminate\Database\Eloquent\Builder;
+
 class BlogFilters extends QueryFilter
 {
-    public function name($value = null)
+    public function name(string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->where('name', $value);
@@ -13,7 +15,7 @@ class BlogFilters extends QueryFilter
         }
     }
 
-    public function body($value = null)
+    public function body(string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->where('body', $value);
@@ -22,7 +24,7 @@ class BlogFilters extends QueryFilter
         }
     }
 
-    public function user($value = null)
+    public function user(string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('user', function ($q) use ($value) {
@@ -33,7 +35,7 @@ class BlogFilters extends QueryFilter
         }
     }
 
-    public function tag($value = null)
+    public function tag(string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('tags', function ($q) use ($value) {

@@ -9,12 +9,8 @@ class LocationType extends Eloquent
 {
     use HasFactory;
 
-    /**
-     * @var Array
-     *
-     **/
     protected $fillable = [
-        'name'
+        'name',
     ];
 
     /**
@@ -25,7 +21,7 @@ class LocationType extends Eloquent
     protected $dates = [];
 
     /**
-     * An location type can have many locations
+     * An location type can have many locations.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */

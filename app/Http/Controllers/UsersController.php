@@ -25,7 +25,6 @@ use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
@@ -58,9 +57,9 @@ class UsersController extends Controller
 
     protected bool $hasFilter;
 
-    protected $filters;
+    protected array $filters;
 
-    protected $tabs;
+    protected array $tabs;
 
     protected array $defaultTabs;
 
@@ -115,7 +114,7 @@ class UsersController extends Controller
             ->latest()
             ->take(1),
         ])
-        ->withCasts(['last_active' => 'created_at']);
+        ->withCasts(['last_active' => 'datetime']);
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -295,7 +294,7 @@ class UsersController extends Controller
         return $request->session()->get($this->prefix.'tabs', $this->getDefaultTabs());
     }
 
-    public function show(User $user, Request $request)
+    public function show(User $user, Request $request): RedirectResponse | View
     {
         // if tabs were passed in the request, store them
         $this->setTabs($request);
@@ -318,7 +317,7 @@ class UsersController extends Controller
         return view('users.show', compact('user', 'tabs', 'token'));
     }
 
-    public function profile(User $user, Request $request)
+    public function profile(User $user, Request $request): RedirectResponse
     {
         $this->middleware('auth');
 
@@ -375,11 +374,9 @@ class UsersController extends Controller
     }
 
     /**
-     * @return RedirectResponse|Redirector
-     *
      * @throws Exception
      */
-    public function destroy(User $user)
+    public function destroy(User $user): RedirectResponse
     {
         // add to activity log
         Activity::log($user, $this->user, 3);
@@ -420,10 +417,7 @@ class UsersController extends Controller
         }
     }
 
-    /**
-     * @return mixed
-     */
-    protected function makePhoto(UploadedFile $file)
+    protected function makePhoto(UploadedFile $file): ?Photo
     {
         return Photo::named($file->getClientOriginalName())
             ->makeThumbnail();
@@ -431,10 +425,8 @@ class UsersController extends Controller
 
     /**
      * Mark user as activated.
-     *
-     * @return Response|RedirectResponse
      */
-    public function activate(int $id, Request $request)
+    public function activate(int $id, Request $request): Response|RedirectResponse
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -472,11 +464,8 @@ class UsersController extends Controller
 
     /**
      * Mark user as suspended.
-
-     *
-     * @return Response|RedirectResponse
      */
-    public function suspend(int $id, Request $request)
+    public function suspend(int $id, Request $request): Response | RedirectResponse
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -514,10 +503,8 @@ class UsersController extends Controller
 
     /**
      * Send a site update reminder to the user.
-     *
-     * @return Response|RedirectResponse
      */
-    public function reminder(int $id, Request $request)
+    public function reminder(int $id, Request $request): RedirectResponse
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -548,7 +535,7 @@ class UsersController extends Controller
     /**
      * Send a weekly site update reminder to the user.
      */
-    public function weekly(int $id, Request $request)
+    public function weekly(int $id, Request $request): RedirectResponse
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -705,7 +692,8 @@ class UsersController extends Controller
         }
 
         // build an array of events that are today based on what the user follows
-        if ($entities = $user->getEntitiesFollowing()) {
+        $entities = $user->getEntitiesFollowing();
+        if (count($entities) > 0) {
             foreach ($entities as $entity) {
                 $entityEvents = [];
                 if (count($entity->todaysEvents()) > 0) {
@@ -722,7 +710,8 @@ class UsersController extends Controller
             }
         }
         // build an array of future events based on tags the user follows
-        if ($tags = $user->getTagsFollowing()) {
+        $tags = $user->getTagsFollowing();
+        if (count($tags) > 0) {
             foreach ($tags as $tag) {
                 $tagEvents = [];
                 if (count($tag->todaysEvents()) > 0) {
@@ -740,7 +729,8 @@ class UsersController extends Controller
         }
 
         // build an array of series that the user is following
-        if ($series = $user->getSeriesFollowing()) {
+        $series = $user->getSeriesFollowing();
+        if (count($series) > 0) {
             foreach ($series as $s) {
                 // if the series does not have NO SCHEDULE AND CANCELLED AT IS NULL
                 if ($s->occurrenceType->name !== 'No Schedule' && (null === $s->cancelled_at)) {
@@ -783,7 +773,8 @@ class UsersController extends Controller
         }
 
         // build an array of events that are upcoming based on what the user follows
-        if ($entities = $user->getEntitiesFollowing()) {
+        $entities = $user->getEntitiesFollowing();
+        if (count($entities) > 0) {
             foreach ($entities as $entity) {
                 $entityEvents = [];
                 if (count($entity->futureEvents()) > 0) {
@@ -799,7 +790,8 @@ class UsersController extends Controller
             }
         }
         // build an array of future events based on tags the user follows
-        if ($tags = $user->getTagsFollowing()) {
+        $tags = $user->getTagsFollowing();
+        if (count($tags) > 0) {
             foreach ($tags as $tag) {
                 $tagEvents = [];
                 if (count($tag->futureEvents()) > 0) {
@@ -816,7 +808,8 @@ class UsersController extends Controller
         }
 
         // build an array of series that the user is following
-        if ($series = $user->getSeriesFollowing()) {
+        $series = $user->getSeriesFollowing();
+        if (count($series) > 0) {
             foreach ($series as $s) {
                 // if the series does not have NO SCHEDULE AND CANCELLED AT IS NULL
                 if ($s->occurrenceType->name !== 'No Schedule' && (null === $s->cancelled_at)) {

@@ -2,38 +2,40 @@
 
 namespace App\Mail;
 
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
 class UserUpdate extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
-    public $url;
+    public string $url;
 
-    public $site;
+    public string $site;
 
-    public $admin_email;
+    public string $admin_email;
 
-    public $reply_email;
+    public string $reply_email;
 
-    public $user;
+    public ?User $user;
 
-    public $events;
+    public Collection $events;
 
-    public $seriesList;
+    public array $seriesList;
 
-    public $interests;
+    public array $interests;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($url, $site, $admin_email, $reply_email, $user, $events, $seriesList, $interests)
+    public function __construct(string $url, string $site, string $admin_email, string $reply_email, ?User $user, Collection $events, array $seriesList, array $interests)
     {
         $this->url = $url;
         $this->site = $site;
@@ -50,13 +52,13 @@ class UserUpdate extends Mailable
      *
      * @return $this
      */
-    public function build()
+    public function build(): UserUpdate
     {
         $dt = Carbon::now();
 
         return $this->markdown('emails.user-update-markdown')
             ->from($this->reply_email, $this->site)
-            ->subject($this->site . ': Site updates for ' . $this->user->name . ' - ' . $dt->format('l F jS Y'))
+            ->subject($this->site.': Site updates for '.$this->user->name.' - '.$dt->format('l F jS Y'))
             ->bcc($this->admin_email);
     }
 }
