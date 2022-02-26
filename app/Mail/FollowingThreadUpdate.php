@@ -56,7 +56,7 @@ class FollowingThreadUpdate extends Mailable
 
         return $this->markdown('emails.following-thread-update-markdown')
             ->from($this->reply_email, $this->site)
-            ->subject($this->site.': '.$this->tag->name.' :: '.$this->thread->created_at->format('D F jS').' '.$this->thread->name)
+            ->subject($this->site.': '.$this->tag?->name.' :: '.$this->thread?->created_at->format('D F jS').' '.$this->thread?->name)
             ->bcc($this->admin_email);
     }
 }

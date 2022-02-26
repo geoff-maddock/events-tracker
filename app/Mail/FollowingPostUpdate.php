@@ -68,7 +68,7 @@ class FollowingPostUpdate extends Mailable
 
         return $this->markdown('emails.following-post-update-markdown')
             ->from($this->reply_email, $this->site)
-            ->subject($this->site.': New post by '.$this->post->user->name.' in thread "'.$this->thread->name.'"')
+            ->subject($this->site.': New post by '.$this->post?->user?->name.' in thread "'.$this->thread?->name.'"')
             ->bcc($this->admin_email);
     }
 }

@@ -58,7 +58,7 @@ class UserUpdate extends Mailable
 
         return $this->markdown('emails.user-update-markdown')
             ->from($this->reply_email, $this->site)
-            ->subject($this->site.': Site updates for '.$this->user->name.' - '.$dt->format('l F jS Y'))
+            ->subject($this->site.': Site updates for '.$this->user?->name.' - '.$dt->format('l F jS Y'))
             ->bcc($this->admin_email);
     }
 }

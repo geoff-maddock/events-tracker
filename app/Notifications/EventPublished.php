@@ -2,7 +2,6 @@
 
 namespace App\Notifications;
 
-use Eloquent;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -25,7 +24,7 @@ class EventPublished extends Notification
     /**
      * Get the notification's delivery channels.
      */
-    public function via(Eloquent $notifiable): array
+    public function via(mixed $notifiable): array
     {
         return [TwitterChannel::class];
     }

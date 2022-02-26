@@ -240,7 +240,8 @@ li.select2-results__option {
 
 /* sets the default link style   */
 a {
-    /* color: #df691a; */
+    /* color: #df691a; // orange */
+	color: #5bc0de; // blue
     text-decoration: none;
 }
 
