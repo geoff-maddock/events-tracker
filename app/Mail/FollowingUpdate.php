@@ -54,7 +54,7 @@ class FollowingUpdate extends Mailable
 
         return $this->markdown('emails.following-update-markdown')
             ->from($this->reply_email, $this->site)
-            ->subject($this->site.': '.$this->tag->name.' :: '.$this->event->start_at->format('D F jS').' '.$this->event->name)
+            ->subject($this->site.': '.$this->tag?->name.' :: '.$this->event?->start_at->format('D F jS').' '.$this->event?->name)
             ->bcc($this->admin_email);
     }
 }
