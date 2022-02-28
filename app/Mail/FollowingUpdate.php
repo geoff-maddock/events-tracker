@@ -34,7 +34,7 @@ class FollowingUpdate extends Mailable
      *
      * @return void
      */
-    public function __construct(string $url, string $site, string $admin_email, string $reply_email, ?User $user, ?Event $event, ?Tag $tag = null)
+    public function __construct(string $url, string $site, string $admin_email, string $reply_email, ?User $user, ?Event $event, mixed $tag = null)
     {
         $this->url = $url;
         $this->site = $site;

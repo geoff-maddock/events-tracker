@@ -1911,7 +1911,7 @@ class EventsController extends Controller
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->user_id, $users)) {
                     Mail::to($user->email)
-                        ->send(new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, null));
+                        ->send(new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $entity));
                     $users[$user->user_id] = $entity->name;
                 } else {
                     $users[$user->user_id] = $users[$user->user_id].', '.$entity->name;
