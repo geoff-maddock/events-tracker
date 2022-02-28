@@ -89,11 +89,19 @@
 
 		@if ($event->venue)
 		at <a href="/entities/{{$event->venue->slug }}">{{ $event->venue->name}}</a>
-		@if ($event->venue->getPrimaryLocationAddress() )
-		{{ $event->venue->getPrimaryLocationAddress() }}
+		@if ($event->venue?->getPrimaryLocationAddress() )
+			@if ($event->venue->getPrimaryLocationMap() != '')
+			<a href="{!! $event->venue->getPrimaryLocationMap() !!}" target="_" title="{{ $event->venue?->getPrimaryLocationAddress()}}" class="mx-1">
+				<i class="bi bi-geo-alt-fill"></i>
+			</a>
+			@else
+			<a href="#" title="{{ $event->venue?->getPrimaryLocationAddress()}}" class="mx-1">
+				<i class="bi bi-geo-alt-fill"></i>
+			</a>
+			@endif
 		@endif
 		@else
-		no venue specified
+			no venue specified
 		@endif
 
 

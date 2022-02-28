@@ -80,12 +80,22 @@
 
     @if ($venue = $series->venue)
     <br>
-    <a href="/entities/{{urlencode($series->venue->slug)}}">{{ $series->venue->name }}</a>
-        @if ($series->venue->getPrimaryLocationAddress() != "")
-        at {{ $series->venue->getPrimaryLocationAddress() }}
-        @endif 
-    @endunless
+        <a href="/entities/{{urlencode($series->venue->slug)}}">{{ $series->venue?->name }}</a>
+        @if ($series->venue?->getPrimaryLocationAddress() )
+        @if ($series->venue?->getPrimaryLocationMap() != '')
+        <a href="{!! $series->venue->getPrimaryLocationMap() !!}" target="_" title="{{ $series->venue?->getPrimaryLocationAddress()}}" class="mx-1">
+            <i class="bi bi-geo-alt-fill"></i>
+        </a>
+        @else
+        <a href="#" title="{{ $series->venue?->getPrimaryLocationAddress()}}" class="mx-1">
+            <i class="bi bi-geo-alt-fill"></i>
+        </a>
+        @endif
+        @endif
+    @endif
 
+
+    
     @if ($event = $series->nextEvent())
     <br>Next Event is {!! link_to_route('events.show', $event->name, [$event->id], ['class' =>'butt']) !!}
     @endif
