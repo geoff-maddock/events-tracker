@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use App\Models\Event;
-use App\Models\Tag;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -27,7 +26,7 @@ class FollowingUpdate extends Mailable
 
     public ?Event $event;
 
-    public ?Tag $tag;
+    public mixed $tag;
 
     /**
      * Create a new message instance.
