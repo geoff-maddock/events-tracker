@@ -1,4 +1,4 @@
-<li class="event-card" style="clear: both;">
+<li class="event-card flow-root">
 	<h1>{!! link_to_route('tags.show', $tag->name, [$tag->slug], ['class' => 'item-title']) !!}
 		@if ($signedIn)
 			@if ($follow = $tag->followedBy($user))

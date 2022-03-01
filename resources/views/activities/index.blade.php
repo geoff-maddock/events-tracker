@@ -103,8 +103,6 @@
 
 </div>
 
-<br style="clear: left;" />
-
 <!-- LIST OF ALL RECENT ACTIVITY -->
 {!! $activities->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->render() !!}
 <ul class="list">

@@ -31,7 +31,7 @@
 </tbody>
 </table>
 @else
-	<ul class='forum-list'><li style='clear:both;'><i>No forums listed</i></li></ul>
+	<ul class='forum-list'><li class="flow-root"><i>No forums listed</i></li></ul>
 @endif
 
 @section('scripts.footer')

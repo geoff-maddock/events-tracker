@@ -30,14 +30,12 @@
         </form>
         @endif
 
-        <br style="clear: left;" />
-
         @foreach ($series->photos->chunk(4) as $set)
         <div class="row">
             @foreach ($set as $photo)
             <div class="col-md-2">
                 <a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->getStoragePath() }}"><img
-                        src="{{ $photo->getStorageThumbnail() }}" alt="{{ $series->name}}" style="max-width: 100%;"></a>
+                        src="{{ $photo->getStorageThumbnail() }}" alt="{{ $series->name}}" class="mw-100"></a>
                 @if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser') ) )
                 @if ($signedIn || $user->id == Config::get('app.superuser'))
                 {!! link_form_bootstrap_icon('bi bi-trash-fill text-warning', $photo, 'DELETE', 'Delete the photo') !!}

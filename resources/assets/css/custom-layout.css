@@ -26,8 +26,18 @@ body {
 
 /* Deprecated.  Max width for image in event card.  Replace with img-fluid */
 
+.card-body img.thumbnail-image {
+    max-width: 100px !important;
+}
+
 img.thumbnail-image {
-    max-width: 100px;
+    max-width: 100px !important;
+}
+
+.event-list-thumbnail {
+    float: left; 
+    padding: 5px; 
+    padding-right: 15px;
 }
 
 .load-spinner {
@@ -90,12 +100,6 @@ img.thumbnail-image {
 
 .image-lg {
     width: 200px;
-}
-
-.event-list-thumbnail {
-    float: left; 
-    padding: 5px; 
-    padding-right: 15px;
 }
 
 .card-thumb {
@@ -267,4 +271,12 @@ ul.list-click li {
 
         display: block;
     }
+}
+
+.card-body img {
+    max-width: 100%;
+}
+
+.terms-height {
+    min-height: 600px;
 }

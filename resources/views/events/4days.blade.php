@@ -19,7 +19,6 @@
 	</ul>
 	</div>
 	</div>
-	<br style="clear: left;"/>
 	<!-- DISPLAY THE NEXT FOUR DAYS OF EVENTS -->
 	
 	<div class="row small-gutter">

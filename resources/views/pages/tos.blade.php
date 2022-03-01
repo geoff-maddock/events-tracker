@@ -4,24 +4,24 @@
 
 	<h1>{{ config('app.app_name')}} - Terms of Service</h1>
 
-	<div style="min-height:600px">
-		<table style="margin:0; padding:0">
+	<div class="terms-height">
+		<table class="m-0 p-0">
 			<tbody><tr>
-				<td style="margin:0; padding:0">
+				<td  class="m-0 p-0">
 					<div id="toc">
 						<div class="title">Table of Contents</div>
 						<div id="toc-list">
-							<div style="margin-left: 2em;"><a href="#toc0">Legal Notices</a></div>
-							<div style="margin-left: 2em;"><a href="#toc1">Permitted and Prohibited Uses</a></div>
-							<div style="margin-left: 2em;"><a href="#toc2">User Submissions</a></div>
-							<div style="margin-left: 2em;"><a href="#toc3">User Discussion Lists and Forums</a></div>
-							<div style="margin-left: 2em;"><a href="#toc4">Use of Personally Identifiable Information</a></div>
-							<div style="margin-left: 2em;"><a href="#toc5">Indemnification</a></div>
-							<div style="margin-left: 2em;"><a href="#toc6">Termination</a></div>
-							<div style="margin-left: 2em;"><a href="#toc7">WARRANTY DISCLAIMER</a></div>
-							<div style="margin-left: 2em;"><a href="#toc8">General</a></div>
-							<div style="margin-left: 2em;"><a href="#toc9">Links to Other Materials</a></div>
-							<div style="margin-left: 2em;"><a href="#toc10">Notification Of Possible Copyright Infringement</a></div>
+							<div class="ms-5"><a href="#toc0">Legal Notices</a></div>
+							<div class="ms-5"><a href="#toc1">Permitted and Prohibited Uses</a></div>
+							<div class="ms-5"><a href="#toc2">User Submissions</a></div>
+							<div class="ms-5"><a href="#toc3">User Discussion Lists and Forums</a></div>
+							<div class="ms-5"><a href="#toc4">Use of Personally Identifiable Information</a></div>
+							<div class="ms-5"><a href="#toc5">Indemnification</a></div>
+							<div class="ms-5"><a href="#toc6">Termination</a></div>
+							<div class="ms-5"><a href="#toc7">WARRANTY DISCLAIMER</a></div>
+							<div class="ms-5"><a href="#toc8">General</a></div>
+							<div class="ms-5"><a href="#toc9">Links to Other Materials</a></div>
+							<div class="ms-5"><a href="#toc10">Notification Of Possible Copyright Infringement</a></div>
 						</div>
 					</div>
 				</td>

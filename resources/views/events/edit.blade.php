@@ -31,33 +31,32 @@
 
   <div class="col-md-4">
     <div class="row">
-    @foreach ($event->photos->chunk(4) as $set)
-      @foreach ($set as $photo)
-        <div class="col-md-2">
-        <a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->getStoragePath() }}"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $event->name}}"  style="max-width: 100%;"></a>
-        @if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser')))
-        @if ($signedIn || $user->id === Config::get('app.superuser'))
-          {!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $photo, 'DELETE', 'Delete the photo') !!}
-          @if ($photo->is_primary)
-          {!! link_form_bootstrap_icon('bi bi-star-fill text-primary icon', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
-          @else
-          {!! link_form_bootstrap_icon('bi bi-star text-info icon', '/photos/'.$photo->id.'/setPrimary', 'POST', 'Set as primary photo') !!}
+      @foreach ($event->photos->chunk(4) as $set)
+        @foreach ($set as $photo)
+          <div class="col-md-2">
+          <a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->getStoragePath() }}"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $event->name}}" class="maw-100"></a>
+          @if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser')))
+          @if ($signedIn || $user->id === Config::get('app.superuser'))
+            {!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $photo, 'DELETE', 'Delete the photo') !!}
+            @if ($photo->is_primary)
+            {!! link_form_bootstrap_icon('bi bi-star-fill text-primary icon', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
+            @else
+            {!! link_form_bootstrap_icon('bi bi-star text-info icon', '/photos/'.$photo->id.'/setPrimary', 'POST', 'Set as primary photo') !!}
+            @endif
           @endif
-        @endif
-        @endif
-        </div>
+          @endif
+          </div>
+        @endforeach
       @endforeach
-    @endforeach
 
-      <div class="col" style="padding-bottom: 10px;">
+      <div class="col mb-2">
       @if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser') || $event->canUserPostPhoto($user)) )
       <form action="/events/{{ $event->id }}/photos" class="dropzone" id="myDropzone" method="POST">
         <input type="hidden" name="_token" value="{{ csrf_token() }}">
       </form>
       @endif
-    </div>
+      </div>
 
-    <br style="clear: left;"/>
       <div id="api-show"></div>
     </div>
   </div>

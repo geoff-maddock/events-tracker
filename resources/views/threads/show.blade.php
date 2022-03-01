@@ -14,8 +14,6 @@
 	<a href="{!! URL::route('threads.create') !!}" class="btn btn-primary">Add an thread</a>
 	</div>
 
-	<br style="clear: left;"/>
-
 	<div class="row">
 
 	<div class="col-lg-12">

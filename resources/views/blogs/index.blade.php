@@ -117,7 +117,7 @@
 			</div>
 		</div>
 
-		<div class='col-lg-6'>
+		<div class='col-xl-6'>
 		{!! $blogs->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links() !!}
 			@include('blogs.list', ['blogs' => $blogs])
 		{!! $blogs->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links() !!}

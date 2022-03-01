@@ -86,8 +86,6 @@
 	
 	</div>
 	
-	<br style="clear: left;"/>
-
 	<div class="row">
 
 	@if (isset($forums) && count($forums) > 0)

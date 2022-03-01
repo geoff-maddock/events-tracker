@@ -1,6 +1,6 @@
 @foreach ($event->photos as $primary)
 @if (!$primary->is_primary)
-<div style="padding: 5px;">
+<div class="p-2">
     <a href="{{ $primary->getStoragePath() }}" data-lightbox="grid"
         data-title="{!! $event->start_at->format('l F jS Y') !!} <a href='/events/{{ $event->id }}'>{{ $event->name }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ $event->venue ? $event->venue->name : '' }}</a>"
         data-lightbox="{{ $primary->path }}"

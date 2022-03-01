@@ -181,7 +181,7 @@
 				@foreach ($set as $photo)
 					<div class="col-md-2">
 					<a href="{{ $photo->getStoragePath() }}" data-lightbox="grid" title="Click to see enlarged image"  data-toggle="tooltip" data-placement="bottom">
-						<img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $event->name}}"  style="max-width: 100%;">
+						<img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $event->name}}"  class="mw-100">
 					</a>
 					@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )
 						@if ($signedIn || $user->id == Config::get('app.superuser'))

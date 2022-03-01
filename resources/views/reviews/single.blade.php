@@ -1,4 +1,4 @@
-<li class="event-card" style="clear: both;">
+<li class="event-card flow-root">
 
 	@if ($primary = $review->event->getPrimaryPhoto())
 		<div class="event-list-thumbnail">
@@ -10,7 +10,7 @@
 
 	@if ($review->rating)
 	<div class="float-start pe-3">
-		<span style="font-size: 64px;">{!! $review->rating !!}</span>
+		<span class="fs-6">{!! $review->rating !!}</span>
 	</div>
 	@endif
 

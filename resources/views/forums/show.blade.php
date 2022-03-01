@@ -14,8 +14,6 @@
 	<a href="{!! URL::route('threads.create') !!}" class="btn btn-primary">Add an thread</a>
 	</p>
 
-	<br style="clear: left;"/>
-
 	<div class="row">
 
 	@if (isset($thread) && count($thread) > 0)
@@ -70,7 +68,7 @@
     </tr>
     <tr>
     <td colspan="6">
-    	<div style="padding-left: 5px;">
+    	<div class="ps-3">
     		{{ $thread->body }}
     		<br>
     		@if ($signedIn && $thread->ownedBy($user))

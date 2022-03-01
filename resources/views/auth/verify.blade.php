@@ -19,7 +19,7 @@
                         {{ __('Before proceeding, please check your email for a verification link.') }}<br>
                         {{ __('If you did not receive the email') }}, 
                         <a  onclick="event.preventDefault(); document.getElementById('email-form').submit();">{{ __('click here to request another') }}</a>.
-                        <form id="email-form" action="{{ route('verification.resend') }}" method="POST" style="display: none;">@csrf</form>
+                        <form id="email-form" action="{{ route('verification.resend') }}" method="POST" class="d-none">@csrf</form>
                         
                     </div>
                 </div>

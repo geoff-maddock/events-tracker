@@ -17,8 +17,7 @@
 			</span>
 				{!! Form::open(['route' => [$filterRoute ?? 'activity.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
 
-			<div id="filter-list" class="row @if (!$hasFilter) d-block d-xs-none @endif"
-					style="@if (!$hasFilter) display: none; @endif">
+				<div id="filter-list" class="px-2 @if (!$hasFilter)d-none @endif">
 
 			<!-- BEGIN: FILTERS -->
 			<div class="form-group col-sm-2">
@@ -86,8 +85,6 @@
 	</div>
 
 </div>
-
-<br style="clear: left;" />
 
 <!-- LIST OF ALL RECENT ACTIVITY -->
 <ul class="list-group">
