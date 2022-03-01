@@ -34,7 +34,7 @@
       @foreach ($event->photos->chunk(4) as $set)
         @foreach ($set as $photo)
           <div class="col-md-2">
-          <a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->getStoragePath() }}"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $event->name}}" class="maw-100"></a>
+          <a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->getStoragePath() }}"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $event->name}}" class="mw-100"></a>
           @if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser')))
           @if ($signedIn || $user->id === Config::get('app.superuser'))
             {!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $photo, 'DELETE', 'Delete the photo') !!}

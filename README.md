@@ -1,3 +1,5 @@
+ [![Build](https://github.com/geoff-maddock/events-tracker/workflows/php.yaml/badge.svg)](https://github.com/geoff-maddock/events-tracker/workflows/php.yml)
+
 # Events Tracker
 > A web based event calendar and tracking tool for music and arts communities.
 
