@@ -76,7 +76,7 @@
 		</main>
 	</div>
 	<script src="{{ asset('/js/app.js') }}"></script>
-	<script src="{{ asset('/js/jquery-3.6.0.min.js') }}"></script>
+	<script src="{{ asset('/js/jquery-3.5.1.min.js') }}"></script>
 	<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox.min.js"></script>
     <script src="{{ asset('/js/jquery.ba-throttle-debounce.min.js') }}"></script>
