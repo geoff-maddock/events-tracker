@@ -47,7 +47,7 @@
 	@if (config('app.google_tags') !== "")
 	<!-- Google Tag Manager (noscript) -->
 	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ config('app.google_tags')}}"
-	height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+	height="0" width="0" class="d-none"></iframe></noscript>
 	<!-- End Google Tag Manager (noscript) -->
 	@endif
 	<script src="{{ asset('/js/global-config.js') }}"></script>
@@ -68,12 +68,12 @@
 			</form>
 		</div>
 
-		<div id="app-content" class="container-fluid mt-2">
+		<main id="app-content" class="container-fluid mt-2">
 
 				@yield('content')
 
             <event-list></event-list>
-		</div>
+		</main>
 	</div>
 	<script src="{{ asset('/js/app.js') }}"></script>
 	<script src="{{ asset('/js/jquery-3.6.0.min.js') }}"></script>

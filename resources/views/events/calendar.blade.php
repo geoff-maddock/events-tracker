@@ -11,7 +11,7 @@
 @stop
 
 @section('footer')
-	<div style='margin: 10px;'>
+	<div class="m-2">
 		{!! $calendar->calendar() !!}
 		{!! $calendar->script() !!}
     </div>

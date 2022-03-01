@@ -19,7 +19,6 @@
 	</ul>
 	</div>
 	</div>
-	<br style="clear: left;"/>
 	<!-- DISPLAY THE NEXT FOUR DAYS OF EVENTS -->
 	<?php $today = \Carbon\Carbon::now('America/New_York'); ?>
 	

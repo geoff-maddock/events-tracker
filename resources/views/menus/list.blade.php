@@ -8,7 +8,7 @@
 		<th><a href="?sort=slug&direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">Slug</a></th>
         <th><a href="?sort=menu_parent_id&direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">Parent</a></th>
         <th><a href="?sort=visibility_id&direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">Visibility</a></th>
-		<th style="width: 60px"></th>
+		<th class="col-1"></th>
 	</tr>
 	</thead>
 @if (isset($menus) && count($menus) > 0)

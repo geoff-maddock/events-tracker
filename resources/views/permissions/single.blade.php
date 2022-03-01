@@ -1,7 +1,7 @@
-<li class="@if ($permission->permissionStatus->name === "Inactive") mute-card @else card @endif" style="clear: both;">
+<li class="@if ($permission->permissionStatus->name === "Inactive") mute-card @else card @endif float-root">
 	@if ($primary = $permission->getPrimaryPhoto())
 	<div class="card-thumb float-start pe-3">
-			<img src="/{!! str_replace(' ','%20',$permission->getPrimaryPhoto()->thumbnail) !!}" alt="{{ $permission->name}}"  style="max-width: 100px; ">
+			<img src="/{!! str_replace(' ','%20',$permission->getPrimaryPhoto()->thumbnail) !!}" alt="{{ $permission->name}}"  class="thumbnail-image">
 	</div>
 	@endif
 

@@ -1,8 +1,8 @@
 <li class="
-@if ($group->groupStatus->name === "Inactive") mute-card @else card @endif" style="clear: both;">
+@if ($group->groupStatus->name === "Inactive") mute-card @else card @endif flow-root">
 	@if ($primary = $group->getPrimaryPhoto())
 	<div class="card-thumb float-start pe-3">
-		<img src="/{!! str_replace(' ','%20',$group->getPrimaryPhoto()->thumbnail) !!}" alt="{{ $group->name}}"  style="max-width: 100px; ">
+		<img src="/{!! str_replace(' ','%20', $group->getPrimaryPhoto()->thumbnail) !!}" alt="{{ $group->name}}" class="thumbnail-image">
 	</div>
 	@endif
 

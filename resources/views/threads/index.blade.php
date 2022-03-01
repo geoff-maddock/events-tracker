@@ -104,8 +104,6 @@
 	</div>
 </div>
 
-<br style="clear: left;" />
-
 <div id="list-container" class="row">
 
     <div class="col-lg-12">

@@ -7,7 +7,7 @@
 	</div>
 	@else
 	<div class="card-thumb  float-start pe-3"">
-		<img src="/images/entity-placeholder.png" alt="{{ $entity->name}}" style="max-width: 100px; ">
+		<img src="/images/entity-placeholder.png" alt="{{ $entity->name}}" class="thumbnail-image">
 	</div>
 	@endif
 

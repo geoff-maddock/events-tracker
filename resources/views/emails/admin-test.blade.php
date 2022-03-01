@@ -1,7 +1,7 @@
 @extends('email')
 @section('content')
 
-<div style="margin: auto; width:75%; padding: 10px;background-color: #fff;">
+<div class="bg-light m-auto w-75 p-2">
 Hello Admin User!
 <br>
 <br>

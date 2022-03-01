@@ -88,7 +88,7 @@
 		        <li class="mx-2 d-none d-sm-none d-md-block">
 				  <form class="navbar-form navbar-left" role="search" action="/search">
 					<div class="form-group">
-					  <input type="text" class="form-control form-background" placeholder="Search" name="keyword" style="width: 150px;" value="{{ isset($slug) ? $slug : '' }}">
+					  <input type="text" class="form-control form-background" placeholder="Search" name="keyword" value="{{ isset($slug) ? $slug : '' }}">
 					</div>
 				  </form>
 		     	</li>
@@ -165,7 +165,7 @@
 							<li role="separator" class="divider"></li>
 							<li>
 								<a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="dropdown-item">Logout</a>
-								<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">{{ csrf_field() }}</form>
+								<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">{{ csrf_field() }}</form>
 							</li>
 						</ul>
 					</li>

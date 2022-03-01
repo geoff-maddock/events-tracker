@@ -95,15 +95,13 @@
                     </form>
                 @endif
 
-                <br style="clear: left;"/>
-
                 @foreach ($user->photos->chunk(4) as $set)
                     <div class="row">
                         @foreach ($set as $photo)
                             <div class="col-md-2">
                                 <a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->getStoragePath() }}"><img
                                             src="{{ $photo->getStorageThumbnail() }}" alt="{{ $user->name}}"
-                                            style="max-width: 100%;"></a>
+                                            class="mw-100"></a>
                                 @if ($signedIn || $user->id == Config::get('app.superuser'))
                                         {!! link_form_bootstrap_icon('bi bi-trash-fill text-warning', $photo, 'DELETE', 'Delete the photo') !!}
                                     @if ($photo->is_primary)

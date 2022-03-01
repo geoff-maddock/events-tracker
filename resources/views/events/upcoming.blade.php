@@ -4,13 +4,7 @@
 
 @section('content')
 
-	<div id="home-jumbotron" class="bg-light p-5 rounded-lg m-3"
-		@if ($theme == config('app.default_theme'))
-			style="background-color: #FF3CAC;background-image: linear-gradient(225deg, #FF3CAC 0%, #784BA0 50%, #2B86C5 100%);"
-		 @else
-			style="background-color: #F4D03F;background-image: linear-gradient(132deg, #F4D03F 0%, #16A085 100%);"
-		@endif
-		>
+	<div id="home-jumbotron" class="bg-light p-5 rounded-lg m-3 primary-gradient">
 		{{--https://www.grabient.com/--}}
 
 		<h3 class="font-weight-bold">{{ config('app.tagline')}} <a href="#" id="event-close-box" data-toggle="collapse" data-target="#jumbo-container"  aria-expanded="false" aria-controls="jumbo-container">...</a></h3>

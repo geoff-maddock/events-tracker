@@ -82,6 +82,6 @@
 </tbody>
 </table>
 @else
-	<ul class='event-list'><li style='clear:both;'><i>No threads listed</i></li></ul>
+	<ul class='event-list'><li class="flow-root"><i>No threads listed</i></li></ul>
 @endif
 

@@ -7,5 +7,5 @@
 </ul>
 
 @else
-	<ul class='review-list'><li style='clear:both;'><i>No reviews listed</i></li></ul> 
+	<ul class='review-list'><li class="flow-root"><i>No reviews listed</i></li></ul> 
 @endif

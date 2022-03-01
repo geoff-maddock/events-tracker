@@ -172,7 +172,7 @@
 		@foreach ($series->photos->chunk(4) as $set)
 			@foreach ($set as $photo)
 			<div class="col-2">
-				<a href="{{ $photo->getStoragePath() }}" data-lightbox="grid" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $series->name}}"  style="max-width: 100%;"></a>
+				<a href="{{ $photo->getStoragePath() }}" data-lightbox="grid" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $series->name}}" class="mw-100"></a>
 				@if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser')))
 					{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning', $photo, 'DELETE', 'Delete the photo') !!}
 					@if ($photo->is_primary)

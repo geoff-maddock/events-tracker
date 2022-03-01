@@ -241,7 +241,7 @@ li.select2-results__option {
 /* sets the default link style   */
 a {
     /* color: #df691a; // orange */
-	color: #5bc0de; // blue
+	color: #5bc0de; /* blue */
     text-decoration: none;
 }
 
@@ -381,4 +381,18 @@ a.fc-col-header-cell-cushion {
 
     -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
     animation: sk-bounce 2.0s infinite ease-in-out;
+}
+
+.table th a {
+	color: #eeeeee;
+}
+
+.table th a:focus, .table th a:hover, table th a:active {
+	color: #dddddd;
+}
+
+/* https://www.grabient.com/ */
+.dark #jumbotron {
+	background-color: #FF3CAC;
+	background-image: linear-gradient(225deg, #FF3CAC 0%, #784BA0 50%, #2B86C5 100%);
 }

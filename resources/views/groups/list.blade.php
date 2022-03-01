@@ -7,7 +7,7 @@
 		<th><a href="?sort=name&direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">Name</a></th>
 		<th><a href="?sort=label&direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">Label</a></th>
 		<th><a href="?sort=level&direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">Level</a></th>
-		<th style="width: 60px"></th>
+		<th class="col-1"></th>
 	</tr>
 	</thead>
 @if (isset($groups) && count($groups) > 0)

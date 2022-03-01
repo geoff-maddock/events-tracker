@@ -125,8 +125,6 @@
 
 </div>
 
-<br style="clear: left;" />
-
 <div id="list-container" class="row">
     <div class="col-md-12 col-lg-6">
 

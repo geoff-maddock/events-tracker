@@ -28,14 +28,12 @@
 		</form>
 		@endif
 
-		<br style="clear: left;"/>
-
 		@foreach ($entity->photos->chunk(4) as $set)
 		<div class="row">
 		@foreach ($set as $photo)
 			<div class="col-md-2">
 
-			<a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->getStoragePath() }}"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $entity->name}}"  style="max-width: 100%;"></a>
+			<a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->getStoragePath() }}"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $entity->name}}"  class="mw-100"></a>
 			@if ($user && (Auth::user()->id === $entity->user ? $entity->user->id : null || $user->id === Config::get('app.superuser')))
 				{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $photo, 'DELETE', 'Delete the photo') !!}
 				@if ($photo->is_primary)

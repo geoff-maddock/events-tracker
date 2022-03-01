@@ -6,7 +6,7 @@
 
 <h1 class="display-6 text-primary">Photos @include('photos.crumbs')</h4>
 
-<div id="action-menu" style="margin-bottom: 5px;">
+<div id="action-menu" class="mb-2">
 	<a href="{!! URL::route('photos.index') !!}" class="btn btn-info">Show photo index</a>
 </div>
 

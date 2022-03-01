@@ -20,8 +20,8 @@
 				</h5>
 
 				<div class="card-body collapsible collapse show" id="tag-list">
-					<div class="row" style="align-items: flex-start;">
-					<div class="col-1" style="top: 1em; position: sticky;">
+					<div class="row d-flex align-items-start">
+					<div class="col-1 sticky-top pt-3 ps-3">
 						<ul class="list-click">
 							<li><a href="#A">A</a></li>
 							<li><a href="#B">B</a></li>

@@ -1,4 +1,4 @@
-<li class="card event-card" style="display: flow-root;">
+<li class="card event-card flow-root">
 	@if ($primary = $user->getPrimaryPhoto())
 	<div class="event-list-thumbnail">
 			<img src="{!! str_replace(' ','%20', $primary->getStorageThumbnail()) !!}" alt="{{ $user->name}}"  class="thumbnail-image">
@@ -47,7 +47,7 @@
 		@endcan
 	@endif
 
-	<ul class="list" style="display:inline;">
+	<ul class="list d-inline">
         <small><br>
 
             <b>Joined:</b> {{ $user->created_at->format('m.d.y') }}<br>

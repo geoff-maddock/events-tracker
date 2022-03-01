@@ -3,8 +3,8 @@
 <ul class='event-list'>
 	@foreach ($tags as $tag)
 
-	<li class="event-card" style="clear: both;">
-		<span style="font-size: 26px;">{!! link_to_route('tags.show', $tag->name, [$tag->slug], ['class' => 'item-title']) !!}</span>
+	<li class="event-card flow-root">
+		<span class="fs-2">{!! link_to_route('tags.show', $tag->name, [$tag->slug], ['class' => 'item-title']) !!}</span>
 			@if ($signedIn)
 				@if ($follow = $tag->followedBy($user))
 				<a href="{!! route('tags.unfollow', ['id' => $tag->id]) !!}" title="You are following this tag.  Click to unfollow"><i class="bi bi-check-circle-fill text-info icon"></i></a>
@@ -29,5 +29,5 @@
 </ul>
 
 @else
-	<ul class='event-list'><li style='clear:both;'><i>No tags listed</i></li></ul>
+	<ul class='event-list'><li class="flow-root"><i>No tags listed</i></li></ul>
 @endif

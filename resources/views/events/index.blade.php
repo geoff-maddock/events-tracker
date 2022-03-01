@@ -166,8 +166,6 @@
 	</div>
 </div>
 
-<br style="clear: left;" />
-
 <div id="list-container" class="row">
 
 	@if (isset($events))

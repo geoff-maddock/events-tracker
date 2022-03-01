@@ -6,7 +6,7 @@
 		<th><a href="?sort=name&direction={{ $direction = 'desc' ? 'asc' : 'desc' }}">Name</a></th>
 		<th><a href="?sort=slug&direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">Slug</a></th>
         <th><a href="?sort=short&direction={{ $direction == 'desc' ? 'asc' : 'desc' }}">Short</a></th>
-		<th style="width: 60px"></th>
+		<th class="col-1"></th>
 	</tr>
 	</thead>
 @if (isset($entityTypes) && count($entityTypes) > 0)

@@ -6,7 +6,7 @@
 
 <h1 class="display-6 text-primary">Events @include('events.crumbs')</h4>
 
-<div id="action-menu" style="margin-bottom: 5px;">
+<div id="action-menu" class="mb-2">
 	<a href="{!! URL::route('events.index') !!}" class="btn btn-info">Show event index</a>
 	<a href="{!! URL::route('calendar') !!}" class="btn btn-info">Show calendar</a>
 	<a href="{!! URL::route('events.week') !!}" class="btn btn-info">Show week's events</a>
@@ -168,8 +168,6 @@
 	</div>
 </div>
 
-<br style="clear: left;" />
-
 <div id="grid-container" class="row">
 
 	@if (isset($events) && count($events) > 0)
@@ -178,7 +176,7 @@
 			<div class="panel panel-info">
 
 				<div class="panel-body">
-					<div style="display: grid; grid-template-columns:  repeat(auto-fill, minmax(200px, 1fr));">
+					<div class="photo-grid">
 						@foreach ($events as $event)
 						@include('events.cell', ['event' => $event])
 						@endforeach
