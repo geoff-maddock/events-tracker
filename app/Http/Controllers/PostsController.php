@@ -357,6 +357,10 @@ class PostsController extends Controller
 
         // notify users who are following this thread
         foreach ($thread->followers() as $user) {
+            // if the user does not have this setting, continue
+            if ($user?->profile?->setting_forum_update !== 1) {
+                continue;
+            }
             // if the user hasn't already been notified, then email them
             if (!array_key_exists($user->id, $users)) {
                 Mail::to($user->email)->send(new FollowingPostUpdate($url, $site, $admin_email, $reply_email, $user, $thread, $post));
@@ -367,6 +371,10 @@ class PostsController extends Controller
         // notify users following any tags related to the thread
         foreach ($tags as $tag) {
             foreach ($tag->followers() as $user) {
+                // if the user does not have this setting, continue
+                if ($user?->profile?->setting_forum_update !== 1) {
+                    continue;
+                }
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
                     Mail::to($user->email)->send(new FollowingPostUpdate($url, $site, $admin_email, $reply_email, $user, $thread, $post, $tag));
@@ -380,6 +388,10 @@ class PostsController extends Controller
 
         foreach ($seriess as $series) {
             foreach ($series->followers() as $user) {
+                // if the user does not have this setting, continue
+                if ($user?->profile?->setting_forum_update !== 1) {
+                    continue;
+                }
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
                     Mail::to($user->email)->send(new FollowingPostUpdate($url, $site, $admin_email, $reply_email, $user, $thread, $post));

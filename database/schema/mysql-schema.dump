@@ -1064,6 +1064,7 @@ CREATE TABLE `profiles` (
   `setting_weekly_update` tinyint(1) NOT NULL DEFAULT '1',
   `setting_daily_update` tinyint(1) NOT NULL DEFAULT '1',
   `setting_instant_update` tinyint(1) NOT NULL DEFAULT '1',
+  `setting_forum_update` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `profiles_user_fk` (`user_id`),
   KEY `profiles_visibility_fi` (`visibility_id`) USING BTREE,
