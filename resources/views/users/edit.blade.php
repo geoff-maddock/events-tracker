@@ -18,7 +18,7 @@
 
 	{!! Form::close() !!}
 
-	{!! delete_form(['users.destroy', $user->id]) !!}
+	<P>{!! delete_form(['users.destroy', $user->id]) !!}</P>
 
 @stop
 

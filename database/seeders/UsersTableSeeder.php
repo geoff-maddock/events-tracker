@@ -30,7 +30,7 @@ class UsersTableSeeder extends Seeder
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
             'email_verified_at' => Carbon::now(),
-            'user_status_id' => UserStatus::ACTIVE
+            'user_status_id' => UserStatus::ACTIVE,
         ]);
 
         Profile::create([
@@ -41,7 +41,8 @@ class UsersTableSeeder extends Seeder
             'default_theme' => 'dark-theme',
             'setting_weekly_update' => 1,
             'setting_daily_update' => 1,
-            'setting_instant_update' => 1
+            'setting_instant_update' => 1,
+            'setting_forum_update' => 1,
         ]);
 
         // To Do: Add default groups or permissions for admin

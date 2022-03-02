@@ -69,6 +69,12 @@
     {!! Form::checkbox('setting_instant_update', (isset($user->profile->setting_instant_update) ? $user->profile->setting_instant_update : NULL)) !!}
     {!! $errors->first('setting_instant_update','<span class="help-block">:message</span>') !!}
 </div>
+
+<div class="form-group col-md-2  {{$errors->has('setting_forum_update') ? 'has-error' : '' }}">
+    {!! Form::label('setting_forum_update','Setting: Receive Forum Updates') !!}
+    {!! Form::checkbox('setting_forum_update', (isset($user->profile->setting_forum_update) ? $user->profile->setting_forum_update : NULL)) !!}
+    {!! $errors->first('setting_forum_update','<span class="help-block">:message</span>') !!}
+</div>
 </div>
 
 <div class="form-group">
