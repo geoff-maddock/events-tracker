@@ -39,14 +39,14 @@ ${{ number_format($event->door_price,0) }}
 <br>
 Related:
 @foreach ($event->entities as $entity)
-{{ $entity->name }},
+{{ $entity->name }}@if (!$loop->last), @endif
 @endforeach
 @endunless
 
 @unless ($event->tags->isEmpty())
 Tags:
 @foreach ($event->tags as $tag)
-{{ $tag->name }},
+{{ $tag->name }}@if (!$loop->last), @endif
 @endforeach
 @endunless
 
