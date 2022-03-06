@@ -185,13 +185,13 @@ li.selected:hover {
 	font-size: 28px;
 	font-weight: 600;
 	font-variant-caps: normal;
-	color: chocolate;
+    color: #5bc0de;
 }
 
 #event-repo h4.listing {
 	font-size: 18px;
 	font-weight: 400;
-	color: chocolate;
+    color: #5bc0de;
 	margin-top: -10px;
 }
 
@@ -398,5 +398,5 @@ a.fc-col-header-cell-cushion {
 }
 
 .item-title {
-    color: #7be0ee;
+    color: #7be0ee !important;
 }

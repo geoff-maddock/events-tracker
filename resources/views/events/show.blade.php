@@ -37,7 +37,7 @@
 			<h4 class="listing">{!! $event->start_at->format('g:i A') !!} {!! $event->end_time ? 'until '.$event->end_time->format('h:i A') : '' !!}</h4>
 		</div>
 	
-		<h2>{{ $event->name }}</h2>
+		<h2 class="item-title">{{ $event->name }}</h2>
 
 		<i>{{ $event->short }}</i><br>
 
