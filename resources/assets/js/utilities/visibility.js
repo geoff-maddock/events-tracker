@@ -9,26 +9,22 @@ const Visibility = {
         // find all the collapsible items
         const items = $(target).find('.collapsible');
 
+        // check storage for any collapsible items to see if they are collapsed
         $.each(items, function(key, value) {
-            console.log('value: '+ value.id);
 
             // check the localstorage
-            let stored = localStorage.getItem('#' + value.id);
-            console.log('stored: ' + stored)
+            const stored = localStorage.getItem('#' + value.id);
             
             if (stored !== null) {
                 // if there is a stored state, then the item is closed
                 $('#' + value.id).removeClass('show');
                 $('#' + value.id).addClass('hide');
-                console.log('starts closed');
             }
         });
 
-        // on click - change the stored visibility state
+        // when a toggler is clicked - change the stored visibility state of the data-bs-target
         $(target).find('.toggler').on('click', (event) => { 
-            console.log(event.target);
-            let target = event.target.getAttribute("data-bs-target")
-            console.log('click target: ' + target);
+            const target = event.target.getAttribute("data-bs-target")
 
             let state = '';
             // if the stored value is not close, then set to close
@@ -36,6 +32,7 @@ const Visibility = {
                 localStorage.setItem(target, 'closed');
                 state = 'closed';
             } else {
+                state = 'open';
                 // if the stored value was closed, then remove it
                 localStorage.removeItem(target);
             }
