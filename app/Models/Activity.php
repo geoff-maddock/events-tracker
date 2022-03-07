@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use DateTime;
+use Illuminate\Auth\Events\Failed;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -158,7 +159,12 @@ class Activity extends Eloquent
 
     public static function log(mixed $object, ?User $user, mixed $action, string $message = null): void
     {
+        // if an object was passed, set the class and table
         $class = get_class($object);
+
+        // convert entity class into table
+        $split = explode('\\', $class);
+        $table = isset($split[2]) ? $split[2] : $class;
 
         // get the action id if it's not an integer
         if (!is_int($action)) {
@@ -170,15 +176,11 @@ class Activity extends Eloquent
             $a = $action;
         }
 
-        // convert entity class into table
-        $split = explode('\\', $class);
-        $table = isset($split[2]) ? $split[2] : $class;
-
         // log the activity here
         $activity = new Activity();
         $activity->user_id = $user ? $user->id : 1;
         $activity->object_table = $table;
-        $activity->object_id = $object->id;
+        $activity->object_id = $object?->id;
         $activity->action_id = $a;
         $activity->object_name = $object->name;
         $activity->changes = $object;
@@ -190,6 +192,26 @@ class Activity extends Eloquent
             // otherwise build message
             $m = $act->name.' '.strtolower($table).' '.$object->name;
             $activity->message = $m;
+        }
+
+        $activity->save();
+    }
+
+    public static function logFailure(Failed $event, string $message = null): void
+    {
+        /** @var \App\Models\User $user */
+        $user = $event->user;
+
+        // log the activity here
+        $activity = new Activity();
+        $activity->user_id = $user->id;
+        $activity->object_table = 'User';
+        $activity->object_id = $user->id;
+        $activity->action_id = 14;
+        $activity->object_name = $event->credentials['email'];
+        $activity->ip_address = \Request::ip();
+        if ($message === null) {
+            $activity->message = 'Login failed';
         }
 
         $activity->save();
