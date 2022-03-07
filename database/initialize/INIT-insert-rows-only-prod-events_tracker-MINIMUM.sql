@@ -35,6 +35,7 @@ INSERT INTO `actions` VALUES (10, 'Activate', 'User', NULL, 'Activate user', NUL
 INSERT INTO `actions` VALUES (11, 'Suspend', 'User', NULL, 'Suspend user', NULL, 0, 1, '0000-00-00 00:00:00', '0000-00-00 00:00:00');
 INSERT INTO `actions` VALUES (12, 'Reminder', 'User', NULL, 'Email reminder', NULL, 0, 1, '0000-00-00 00:00:00', '0000-00-00 00:00:00');
 INSERT INTO `actions` VALUES (13, 'Impersonate', NULL, NULL, NULL, NULL, 0, 1, '0000-00-00 00:00:00', '0000-00-00 00:00:00');
+INSERT INTO `actions` VALUES (14, 'Failed Login', NULL, NULL, NULL, NULL, 0, 1, '0000-00-00 00:00:00', '0000-00-00 00:00:00');
 
 -- ----------------------------
 -- Records of content_types - ENHANCED

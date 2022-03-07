@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Listeners\ActivateVerifiedUserListener;
+use App\Listeners\LogFailedLogin;
 use App\Listeners\LogSuccessfulLogin;
 use App\Listeners\RouterMatchedListener;
+use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
@@ -20,14 +22,14 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        // 'event.name' => [
-        //     'EventListener',
-        // ],
         RouteMatched::class => [
             RouterMatchedListener::class,
         ],
         Login::class => [
             LogSuccessfulLogin::class,
+        ],
+        Failed::class => [
+            LogFailedLogin::class,
         ],
         Registered::class => [
             SendEmailVerificationNotification::class,
