@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title', $event->getTitleFormat())
+@section('title', $event->getDateLastTitleFormat())
 @section('og-description', $event->short)
 
 @section('og-image')

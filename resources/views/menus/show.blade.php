@@ -1,6 +1,8 @@
 @extends('app')
 
-@section('title','Menu View')
+@section('title')
+{{ $menu->label }}
+@endsection 
 
 @section('content')
 

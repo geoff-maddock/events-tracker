@@ -14,7 +14,7 @@
 	@yield('facebook.meta')
 	<meta name="theme-color" content="#636b6f"/>
 	<meta name="csrf-token" content="{{ csrf_token() }}">
-	<title>{{ config('app.app_name')}} - Event + Club Guide - @yield('title')</title>
+	<title>@yield('title','Event Guide') • {{ config('app.app_name')}}</title>
 	
 	<link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/apple-icon-180x180.png">

@@ -1,6 +1,8 @@
 @extends('app')
 
-@section('title', 'Events')
+@section('title')
+Events @include('events.title-crumbs')
+@endsection
 
 @section('content')
 

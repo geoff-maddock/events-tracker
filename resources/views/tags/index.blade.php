@@ -1,6 +1,12 @@
 @extends('app')
 
-@section('title', isset($tag) ? 'Tags - '.$tag : 'Tags')
+@section('title')
+@if (isset($tag))
+Keyword Tag • {{ $tag }}
+@else
+Keyword Tags
+@endif
+@endsection
 
 @section('content')
 

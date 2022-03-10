@@ -1,6 +1,8 @@
 @extends('app')
 
-@section('title','Forum')
+@section('title')
+Forum Thread "{{ $thread->name }}"
+@endsection 
 
 @section('content')
 
