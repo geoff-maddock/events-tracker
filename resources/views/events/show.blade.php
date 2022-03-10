@@ -1,5 +1,9 @@
 @extends('app')
 
+@section('google.event.json')
+@include('events.google-event-json')
+@endsection
+
 @section('title', $event->getDateLastTitleFormat())
 @section('og-description', $event->short)
 
