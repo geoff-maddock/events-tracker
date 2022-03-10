@@ -1,6 +1,8 @@
 @extends('app')
 
-@section('title', 'Entities')
+@section('title')
+Entities @include('entities.title-crumbs')
+@endsection
 
 @section('content')
 

@@ -735,6 +735,38 @@ class Event extends Eloquent
         return $url;
     }
 
+    public function getDateLastTitleFormat(): ?string
+    {
+        $format = $this->name;
+
+        // include the location of the event
+        if ($this->venue) {
+            $format .= ' at ';
+            $format .= $this->venue->name ?? 'No venue specified';
+        }
+
+        $format .= ' on '.$this->start_at->format('D F jS');
+
+        $format .= ' • ';
+
+        return $format;
+    }
+
+    public function getDateFirstTitleFormat(): ?string
+    {
+        $format = $this->start_at->format('D F jS').' '.$this->name;
+
+        // include the location of the event
+        if ($this->venue) {
+            $format .= ' at ';
+            $format .= $this->venue->name ?? 'No venue specified';
+        }
+
+        $format .= ' • ';
+
+        return $format;
+    }
+
     public function getTitleFormat(): ?string
     {
         $format = $this->start_at->format('l F jS Y').' '.$this->name;
