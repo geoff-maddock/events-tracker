@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Filters\QueryFilter;
 use Carbon\Carbon;
 use DateTime;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
@@ -594,6 +595,16 @@ class Event extends Eloquent
         return self::whereHas('entities', function ($q) use ($slug) {
             $q->where('slug', '=', $slug);
         });
+    }
+
+    /**
+     * Get any related performer type entities.
+     */
+    public function performerEntities(?int $rpp = null): LengthAwarePaginator
+    {
+        return $this->entities()->whereHas('roles', function ($q) {
+            $q->whereIn('slug', ['dj', 'band', 'producer']);
+        })->orderBy('name', 'ASC')->paginate($rpp);
     }
 
     /**
