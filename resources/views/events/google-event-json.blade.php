@@ -44,22 +44,22 @@
         "price": "{{ $event->door_price}}",
         "priceCurrency": "USD",
         "availability": "https://schema.org/InStock"
-    },
+    }
     @php
         $performers = $event->performerEntities(10);
     @endphp
     @if (count($performers) > 0)
-    "performer": [
+    ,"performer": [
     @foreach ($performers as $performer)
     {
         "@type": "PerformingGroup",
         "name": "{{ $performer->name }}"
     }@if (!$loop->last), @endif
     @endforeach
-    ],
+    ]
     @endif
     @if (!empty($event->promoter_id))
-    "organizer": {
+    ,"organizer": {
         "@type": "Organization",
         "name": "{{ $event->promoter->name}}"
     }			
