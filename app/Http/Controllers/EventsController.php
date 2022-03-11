@@ -1550,7 +1550,7 @@ class EventsController extends Controller
     {
         $event = Event::findOrFail($id);
 
-        if (!$event->primary_link || '' == $event->primary_link) {
+        if (empty($event->primary_link)) {
             flash()->error('Error', 'You must have a valid Facebook event linked to import the photo.  To add from your desktop, drop an image file to the right.');
 
             return back();
@@ -1645,6 +1645,7 @@ class EventsController extends Controller
             setcookie('fb-token', $accessToken['data'], time() + (86400 * 30), '/');
             dump($accessToken);
         }
+
         return null;
     }
 
