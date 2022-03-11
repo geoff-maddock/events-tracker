@@ -1,5 +1,5 @@
 @if (isset($tag))
-. {!! link_to_route('tags.show', ucfirst($tag->name), [$tag->name], ['class' => 'item-title']) !!}
+. {!! link_to_route('tags.show', ucfirst($tag->name), [$tag->slug], ['class' => 'item-title']) !!}
     @if ($signedIn)
         @if ($follow = $tag->followedBy($user))
         <a href="{!! route('tags.unfollow', ['id' => $tag->id]) !!}" title="You are following this tag.  Click to unfollow">
@@ -11,7 +11,7 @@
     @endif
 @endif
 @if (isset($related))
-. {!! link_to_route('entities.show', ucfirst($related->name), [$related->name], ['class' => 'item-title']) !!}
+. {!! link_to_route('entities.show', ucfirst($related->name), [$related->slug], ['class' => 'item-title']) !!}
     @if ($signedIn)
     @if ($follow = $related->followedBy($user))
     <a href="{!! route('entities.unfollow', ['id' => $related->id]) !!}"  title="Click to unfollow">
