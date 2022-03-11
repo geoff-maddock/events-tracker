@@ -54,6 +54,9 @@
     {
         "@type": "PerformingGroup",
         "name": "{{ $performer->name }}"
+        @if ($performer->primaryLink() !== null)
+        ,"url": "{{ $performer->primaryLink()->url}}"
+        @endif
     }@if (!$loop->last), @endif
     @endforeach
     ]
@@ -62,6 +65,9 @@
     ,"organizer": {
         "@type": "Organization",
         "name": "{{ $event->promoter->name}}"
+        @if ($event->promoter->primaryLink() !== null)
+        ,"url": "{{ $event->promoter->primaryLink()->url}}"
+        @endif
     }			
     @endif
 }

@@ -384,6 +384,16 @@ class Entity extends Eloquent
     }
 
     /**
+     * Return the first primary link.
+     */
+    public function primaryLink(): ?Link
+    {
+        //dd($this->links()->get());
+
+        return $this->links()->where('is_primary', '=', 1)->orderBy('created_at', 'ASC')->first();
+    }
+
+    /**
      * If there is a future event, return it.
      */
     public function pastEvents(int $rpp = null): LengthAwarePaginator
@@ -644,7 +654,7 @@ class Entity extends Eloquent
         }
 
         // add the primary link
-        if ($this->futureEvents()->count() > 0) {
+        if ($this->futureEvents()->total() > 0) {
             $event = $this->futureEvents()->first();
             $start = $event->start_at->format('m/d');
             $format .= ' Next: '.$start.' '.$event->name;

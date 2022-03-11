@@ -72,6 +72,7 @@ class LinksController extends Controller
         // get the request
         $input = $request->all();
         $input['entity_id'] = $entity->id;
+        $input['is_primary'] = isset($input['is_primary']) ? 1 : 0;
 
         $this->validate($request, $this->rules);
 
@@ -106,7 +107,10 @@ class LinksController extends Controller
      */
     public function update(Request $request, Entity $entity, Link $link): RedirectResponse
     {
-        $link->fill($request->input())->save();
+        $input = $request->all();
+        $input['is_primary'] = isset($input['is_primary']) ? 1 : 0;
+
+        $link->fill($input)->save();
 
         flash()->success('Success', 'Your link has been updated!');
 
