@@ -28,3 +28,4 @@ php-latest
 workspace.code-workspace
 .vscode
 phpstan.neon
+/public/sitemap*.xml
