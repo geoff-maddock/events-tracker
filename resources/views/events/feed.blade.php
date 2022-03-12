@@ -1,3 +1,9 @@
+@extends('minimal')
+
+
+@section('title', 'Event Feed')
+
+@section('content')
 @if (count($events) > 0)
 
 <?php $month = ''; ?>
@@ -60,3 +66,4 @@ Tags:
 @else
 No events listed
 @endif
+@stop
