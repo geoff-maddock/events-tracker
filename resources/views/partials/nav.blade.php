@@ -58,6 +58,7 @@
 					<li class="{{ Request::is('calendar/type/concert') ? 'active' : '' }}"><a href="{!! url('/calendar/type/concert') !!}"  class="dropdown-item">Live Concert</a></li>
 					<li class="{{ Request::is('calendar/type/live stream') ? 'active' : '' }}"><a href="{!! url('/calendar/type/live stream') !!}"  class="dropdown-item">LiveStream</a></li>
 					<li class="{{ Request::is('calendar/attending') ? 'active' : '' }}"><a href="{!! url('/calendar/attending') !!}"  class="dropdown-item">Attending</a></li>
+					<li class="{{ Request::is('tag-calendar') ? 'active' : '' }}"><a href="{!! url('/tag-calendar') !!}"  class="dropdown-item">Keyword Tags</a></li>
 		          </ul>
 		        </li>
                 <!-- MORE only shown when collapsed down to medium desktops or smaller -->

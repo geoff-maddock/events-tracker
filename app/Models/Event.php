@@ -535,6 +535,14 @@ class Event extends Eloquent
     }
 
     /**
+     * Get a list of tag names associated with the event.
+     */
+    public function getTagNamesAttribute(): ?string
+    {
+        return implode(', ', $this->tags->pluck('name')->all());
+    }
+
+    /**
      * Get a list of entity ids associated with the event.
      */
     public function getEntityListAttribute(): array
