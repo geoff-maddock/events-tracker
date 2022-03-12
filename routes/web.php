@@ -12,9 +12,6 @@
 */
 
 // what is this  for?
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use App\Events\EventCreated;
 use App\Events\EventUpdated;
 use App\Models\Blog;
 use App\Models\Comment;
@@ -34,6 +31,8 @@ use App\Models\Series;
 use App\Models\Thread;
 use App\Models\ThreadCategory;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Spatie\Honeypot\ProtectAgainstSpam;
 
 Auth::routes(['verify' => true]);
@@ -67,6 +66,7 @@ Route::get('help', 'PagesController@help');
 
 Route::get('calendar', 'EventsController@calendar')->name('calendar');
 Route::get('calendar/tag/{tag}', 'EventsController@calendarTags')->name('calendar.tag');
+Route::get('tag-calendar', 'EventsController@calendarTagOnly')->name('tag-calendar');
 Route::get('calendar/related-to/{slug}', 'EventsController@calendarRelatedTo');
 Route::get('calendar/free', 'EventsController@calendarFree')->name('calendar.free');
 Route::get('calendar/attending', 'EventsController@calendarAttending')->name('calendar.attending');
@@ -85,7 +85,7 @@ Route::post('invite', 'PagesController@invite')->name('pages.invite');
 
 Route::get('events/importPhotos', [
     'as' => 'events.importPhotos',
-    'uses' => 'EventsController@importPhotos'
+    'uses' => 'EventsController@importPhotos',
 ]);
 
 Route::bind('users', function ($id) {
@@ -103,37 +103,37 @@ Route::delete('users/{id}/photos/{photo_id}', 'UsersController@deletePhoto');
 
 Route::get('users/{id}/notify', [
     'as' => 'users.notify',
-    'uses' => 'UsersController@notifyUser'
+    'uses' => 'UsersController@notifyUser',
 ]);
 
 Route::get('users/{id}/activate', [
     'as' => 'users.activate',
-    'uses' => 'UsersController@activate'
+    'uses' => 'UsersController@activate',
 ]);
 
 Route::get('users/{id}/reminder', [
     'as' => 'users.reminder',
-    'uses' => 'UsersController@reminder'
+    'uses' => 'UsersController@reminder',
 ]);
 
 Route::get('users/{id}/weekly', [
     'as' => 'users.weekly',
-    'uses' => 'UsersController@weekly'
+    'uses' => 'UsersController@weekly',
 ]);
 
 Route::get('users/{id}/suspend', [
     'as' => 'users.suspend',
-    'uses' => 'UsersController@suspend'
+    'uses' => 'UsersController@suspend',
 ]);
 
 Route::get('users/{id}/ical', [
     'as' => 'users.ical',
-    'uses' => 'UsersController@ical'
+    'uses' => 'UsersController@ical',
 ]);
 
 Route::get('users/{id}/delete', [
     'as' => 'users.delete',
-    'uses' => 'UsersController@delete'
+    'uses' => 'UsersController@delete',
 ]);
 
 Route::match(['get', 'post'], 'users/filter', ['as' => 'users.filter', 'uses' => 'UsersController@filter']);
@@ -165,11 +165,11 @@ Route::resource('photos', 'PhotosController');
 // EVENTS
 Route::get('events/createSeries', [
     'as' => 'events.createSeries',
-    'uses' => 'EventsController@createSeries'
+    'uses' => 'EventsController@createSeries',
 ]);
 Route::get('events/createThread', [
     'as' => 'events.createThread',
-    'uses' => 'EventsController@createThread'
+    'uses' => 'EventsController@createThread',
 ]);
 
 Route::get('events/dispatch', function () {
@@ -217,33 +217,33 @@ Route::get(
     'events/export',
     [
         'as' => 'events.export',
-        'uses' => 'EventsController@export'
+        'uses' => 'EventsController@export',
     ]
 );
 
 Route::get('events/{id}/importPhoto', [
     'as' => 'events.importPhoto',
-    'uses' => 'EventsController@importPhoto'
+    'uses' => 'EventsController@importPhoto',
 ]);
 
 Route::get('events/{id}/remind', [
     'as' => 'events.remind',
-    'uses' => 'EventsController@remind'
+    'uses' => 'EventsController@remind',
 ]);
 
 Route::get('events/{id}/tweet', [
     'as' => 'events.tweet',
-    'uses' => 'EventsController@tweet'
+    'uses' => 'EventsController@tweet',
 ]);
 
 Route::get('events/{id}/attend', [
     'as' => 'events.attend',
-    'uses' => 'EventsController@attend'
+    'uses' => 'EventsController@attend',
 ]);
 
 Route::get('events/{id}/unattend', [
     'as' => 'events.unattend',
-    'uses' => 'EventsController@unattend'
+    'uses' => 'EventsController@unattend',
 ]);
 
 Route::post('events/{id}/photos', 'EventsController@addPhoto');
@@ -286,22 +286,22 @@ Route::get('threads/rpp-reset', ['as' => 'threads.rppReset', 'uses' => 'ThreadsC
 
 Route::get('threads/{id}/like', [
     'as' => 'threads.like',
-    'uses' => 'ThreadsController@like'
+    'uses' => 'ThreadsController@like',
 ]);
 
 Route::get('threads/{id}/unlike', [
     'as' => 'threads.unlike',
-    'uses' => 'ThreadsController@unlike'
+    'uses' => 'ThreadsController@unlike',
 ]);
 
 Route::get('threads/{id}/follow', [
     'as' => 'threads.follow',
-    'uses' => 'ThreadsController@follow'
+    'uses' => 'ThreadsController@follow',
 ]);
 
 Route::get('threads/{id}/unfollow', [
     'as' => 'threads.unfollow',
-    'uses' => 'ThreadsController@unfollow'
+    'uses' => 'ThreadsController@unfollow',
 ]);
 
 Route::resource('threads', 'ThreadsController');
@@ -319,12 +319,12 @@ Route::bind('posts', function ($id) {
 
 Route::get('posts/{id}/like', [
     'as' => 'posts.like',
-    'uses' => 'PostsController@like'
+    'uses' => 'PostsController@like',
 ]);
 
 Route::get('posts/{id}/unlike', [
     'as' => 'posts.unlike',
-    'uses' => 'PostsController@unlike'
+    'uses' => 'PostsController@unlike',
 ]);
 
 Route::resource('posts', 'PostsController');
@@ -420,17 +420,17 @@ Route::get('entities/slug/{slug}', 'EntitiesController@indexSlug')->name('entiti
 
 Route::get('entities/{id}/tweet', [
     'as' => 'entities.tweet',
-    'uses' => 'EntitiesController@tweet'
+    'uses' => 'EntitiesController@tweet',
 ]);
 
 Route::match(['get', 'post'], 'entities/{id}/follow', [
     'as' => 'entities.follow',
-    'uses' => 'EntitiesController@follow'
+    'uses' => 'EntitiesController@follow',
 ]);
 
 Route::get('entities/{id}/unfollow', [
     'as' => 'entities.unfollow',
-    'uses' => 'EntitiesController@unfollow'
+    'uses' => 'EntitiesController@unfollow',
 ]);
 
 Route::bind('entities', function ($id) {
@@ -482,7 +482,7 @@ Route::resource('reviews', 'ReviewsController');
 // SERIES
 Route::get('series/createOccurrence', [
     'as' => 'series.createOccurrence',
-    'uses' => 'SeriesController@createOccurrence'
+    'uses' => 'SeriesController@createOccurrence',
 ]);
 
 Route::get('series/type/{type}', 'SeriesController@indexTypes');
@@ -496,7 +496,7 @@ Route::get(
     'series/export',
     [
         'as' => 'series.export',
-        'uses' => 'SeriesController@export'
+        'uses' => 'SeriesController@export',
     ]
 );
 Route::match(['get', 'post'], 'series/filter', ['as' => 'series.filter', 'uses' => 'SeriesController@filter']);
@@ -505,12 +505,12 @@ Route::get('series/rpp-reset', ['as' => 'series.rppReset', 'uses' => 'SeriesCont
 
 Route::get('series/{id}/follow', [
     'as' => 'series.follow',
-    'uses' => 'SeriesController@follow'
+    'uses' => 'SeriesController@follow',
 ]);
 
 Route::get('series/{id}/unfollow', [
     'as' => 'series.unfollow',
-    'uses' => 'SeriesController@unfollow'
+    'uses' => 'SeriesController@unfollow',
 ]);
 
 Route::bind('series', function ($id) {
@@ -525,12 +525,12 @@ Route::get('tags/{tag}/edit', 'TagsController@edit')->name('tags.edit');
 
 Route::get('tags/{id}/follow', [
     'as' => 'tags.follow',
-    'uses' => 'TagsController@follow'
+    'uses' => 'TagsController@follow',
 ]);
 
 Route::get('tags/{id}/unfollow', [
     'as' => 'tags.unfollow',
-    'uses' => 'TagsController@unfollow'
+    'uses' => 'TagsController@unfollow',
 ]);
 
 Route::resource('tags', 'TagsController');
