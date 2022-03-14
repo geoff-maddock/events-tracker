@@ -10,6 +10,7 @@ use App\Models\Series;
 use App\Models\Tag;
 use App\Models\TagType;
 use App\Services\StringHelper;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -91,6 +92,13 @@ class TagsController extends Controller
      */
     public function index(): View
     {
+        // count the most common tags in the recent past
+        $latestTags = Tag::withCount(['events' => function (Builder $query) {
+            $query->where('events.start_at', '>', Carbon::now()->subMonths(3));
+        }])
+        ->orderBy('events_count', 'desc')
+        ->paginate(5);
+
         // default to no tag
         $tag = null;
 
@@ -135,7 +143,7 @@ class TagsController extends Controller
         // get a list of all tags
         $tags = Tag::orderBy('name', 'ASC')->get();
 
-        return view('tags.index', compact('series', 'entities', 'events', 'tag', 'tags', 'userTags'));
+        return view('tags.index', compact('series', 'entities', 'events', 'tag', 'tags', 'userTags', 'latestTags'));
     }
 
     /**
@@ -199,12 +207,14 @@ class TagsController extends Controller
     }
 
     /**
-     * Display a listing of events by tag.
+     * Return all relevant data related to a tag.
      */
     public function show(string $slug, StringHelper $stringHelper): View
     {
         // convert the slug to name?
         $tag = $stringHelper->SlugToName($slug);
+
+        $tagObject = Tag::where('name', '=', $tag)->first();
 
         // get all series linked to the tag
         $series = Series::getByTag($slug)
@@ -238,7 +248,7 @@ class TagsController extends Controller
 
         $tags = Tag::orderBy('name', 'ASC')->get();
 
-        return view('tags.index', compact('series', 'entities', 'events', 'slug', 'tag', 'tags'));
+        return view('tags.index', compact('series', 'entities', 'events', 'slug', 'tag', 'tagObject', 'tags'));
     }
 
     /**

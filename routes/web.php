@@ -520,7 +520,7 @@ Route::bind('series', function ($id) {
 Route::resource('series', 'SeriesController');
 
 Route::get('tags/create', 'TagsController@create')->name('tags.create');
-Route::get('tags/{tag}', 'TagsController@indexTags')->name('tags.show');
+Route::get('tags/{tag}', 'TagsController@show')->name('tags.show');
 Route::get('tags/{tag}/edit', 'TagsController@edit')->name('tags.edit');
 
 Route::get('tags/{id}/follow', [
