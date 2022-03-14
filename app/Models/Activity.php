@@ -204,9 +204,9 @@ class Activity extends Eloquent
 
         // log the activity here
         $activity = new Activity();
-        $activity->user_id = $user->id;
+        $activity->user_id = $user ? $user->id : null;
         $activity->object_table = 'User';
-        $activity->object_id = $user->id;
+        $activity->object_id = $user ? $user->id : 1;
         $activity->action_id = 14;
         $activity->object_name = $event->credentials['email'];
         $activity->ip_address = \Request::ip();
