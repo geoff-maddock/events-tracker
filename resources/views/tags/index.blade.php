@@ -105,10 +105,22 @@ Keyword Tags
 		</div>
 	@endif
 
+	@if (isset($latestTags) )
+
+		<div class="card surface my-2">
+				<h5 class="card-header bg-primary">Recently Popular Tags
+					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#tag-popular" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tag-popular" role="button"></i></a>
+				</h5>
+				<div class="card-body collapsible collapse show" id="tag-popular">
+					@include('tags.list', ['tags' => $latestTags])
+				</div>
+		</div>
+	@endif
+
 	@if (!isset($match) && isset($userTags))
 
 		<div class="card surface my-2">
-				<h5 class="card-header bg-primary">Tags
+				<h5 class="card-header bg-primary">Tags You Follow
 					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-followed-close-box" data-bs-target="#tag-followed" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tag-followed" role="button"></i></a>
 				</h5>
 				<div class="card-body collapsible collapse show" id="tag-followed">

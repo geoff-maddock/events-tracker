@@ -130,4 +130,27 @@ class Tag extends Eloquent
 
         return $events;
     }
+
+    /**
+     * Get all the other tags on events that use this tag.
+     */
+    public function relatedTags(): array
+    {
+        $total = [];
+
+        $events = $this->events()->get();
+        foreach ($events as $event) {
+            $tags = $event->tags()->where('name', '!=', $this->name)->get();
+            foreach ($tags as $tag) {
+                if (isset($total[$tag->name])) {
+                    ++$total[$tag->name];
+                } else {
+                    $total[$tag->name] = 1;
+                }
+            }
+        }
+        arsort($total);
+
+        return array_slice($total, 0, 5);
+    }
 }
