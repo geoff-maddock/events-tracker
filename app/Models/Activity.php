@@ -199,7 +199,7 @@ class Activity extends Eloquent
 
     public static function logFailure(Failed $event, string $message = null): void
     {
-        /** @var \App\Models\User $user */
+        /** @var ?User $user */
         $user = $event->user;
 
         // log the activity here
