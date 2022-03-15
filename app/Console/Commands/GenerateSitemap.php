@@ -40,8 +40,8 @@ class GenerateSitemap extends Command
 
                 return strpos($url->getPath(), '/storage') === false;
             })
-            ->maxTagsPerSitemap(2000)
-            ->setMaximumCrawlCount(2000)
+            ->maxTagsPerSitemap(10000)
+            ->setMaximumCrawlCount(10000)
             ->writeToFile(public_path('sitemap.xml'));
     }
 }
