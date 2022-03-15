@@ -34,9 +34,11 @@ class GenerateSitemap extends Command
         // modify this to your own needs
         SitemapGenerator::create(config('app.url'))
             ->shouldCrawl(function (UriInterface $url) {
-                // All pages will be crawled, except the contact page.
                 // Links present on the contact page won't be added to the
                 // sitemap unless they are present on a crawlable page.
+                if (strpos($url->getPath(), '/photos') !== false) {
+                    return false;
+                }
 
                 return strpos($url->getPath(), '/storage') === false;
             })
