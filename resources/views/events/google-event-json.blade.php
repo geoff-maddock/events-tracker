@@ -4,8 +4,8 @@
     "@type": "Event",
     "name": "{{ $event->name}}",
     "startDate": "{!! $event->start_at->format(DateTimeInterface::ISO8601) !!}",
-@if (isset($event->end_at))
-    "endDate": "{!! $event->end_at->format(DateTimeInterface::ISO8601) !!}",
+@if (isset($event->end_time))
+    "endDate": "{!! $event->end_time->format(DateTimeInterface::ISO8601) !!}",
 @endif
     "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
     "eventStatus": "https://schema.org/EventScheduled",
@@ -40,10 +40,17 @@
     "description": "{{ $event->description }}",
     "offers": {
         "@type": "Offer",
-        "url": "{{ $event->ticket_link}}",
-        "price": "{{ $event->door_price}}",
+        @if ($event->ticket_link !== null)
+        ,"url": "{{ $event->ticket_link}}"
+        @else 
+        "url": "{{ $event->primary_link}}",
+        @endif
+        "price": "{{ $event->door_price ? $event->door_price : 0}}",
         "priceCurrency": "USD",
         "availability": "https://schema.org/InStock"
+        @if ($event->created_at !== null)
+        ,"validFrom": "{{ $event->created_at->format(DateTimeInterface::ISO8601) }}"
+        @endif
     }
     @php
         $performers = $event->performerEntities(10);
@@ -60,6 +67,16 @@
     }@if (!$loop->last), @endif
     @endforeach
     ]
+    @else
+    ,"performer": [
+        {
+            "@type": "PerformingGroup",
+            "name": "{{ $event->name }}"
+            @if ($event->primary_link !== null)
+            ,"url": "{{ $event->primary_link }}"
+            @endif
+        }
+        ]
     @endif
     @if (!empty($event->promoter_id))
     ,"organizer": {
@@ -68,7 +85,17 @@
         @if ($event->promoter->primaryLink() !== null)
         ,"url": "{{ $event->promoter->primaryLink()->url}}"
         @endif
-    }			
+    }
+    @else		
+    @if (!empty($event->venue_id))
+    ,"organizer": {
+        "@type": "Organization",
+        "name": "{{ $event->venue->name}}"
+        @if ($event->venue->primaryLink() !== null)
+        ,"url": "{{ $event->venue->primaryLink()->url}}"
+        @endif
+    }	
+    @endif
     @endif
 }
 </script>
