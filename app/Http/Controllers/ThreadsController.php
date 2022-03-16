@@ -23,12 +23,12 @@ use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
-use Illuminate\Http\Response;
 
 class ThreadsController extends Controller
 {
@@ -641,6 +641,10 @@ class ThreadsController extends Controller
         // notify users following any tags related to the thread
         foreach ($tags as $tag) {
             foreach ($tag->followers() as $user) {
+                // if the user does not have this setting, continue
+                if ($user?->profile?->setting_forum_update !== 1) {
+                    continue;
+                }
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
                     Mail::to($user->email)
@@ -656,6 +660,10 @@ class ThreadsController extends Controller
 
         foreach ($series as $s) {
             foreach ($s->followers() as $user) {
+                // if the user does not have this setting, continue
+                if ($user?->profile?->setting_forum_update !== 1) {
+                    continue;
+                }
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
                     Mail::to($user->email)
