@@ -549,7 +549,7 @@ class Entity extends Eloquent
         return User::with('profile')->join('follows', 'users.id', '=', 'follows.user_id')
             ->where('follows.object_type', 'entity')
             ->where('follows.object_id', $this->id)
-            ->get();
+            ->get('users.*');
     }
 
     /**

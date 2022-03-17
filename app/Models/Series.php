@@ -756,7 +756,7 @@ class Series extends Eloquent
         return User::join('follows', 'users.id', '=', 'follows.user_id')
             ->where('follows.object_type', 'series')
             ->where('follows.object_id', $this->id)
-            ->get();
+            ->get('users.*');
     }
 
     /**

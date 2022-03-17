@@ -95,12 +95,10 @@ class Tag extends Eloquent
      **/
     public function followers(): Collection
     {
-        $users = User::with('profile')->join('follows', 'users.id', '=', 'follows.user_id')
+        return User::leftJoin('follows', 'users.id', '=', 'follows.user_id')
         ->where('follows.object_type', 'tag')
         ->where('follows.object_id', $this->id)
-        ->get();
-
-        return $users;
+        ->get('users.*');
     }
 
     /**
