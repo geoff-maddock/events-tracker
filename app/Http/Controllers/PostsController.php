@@ -392,6 +392,7 @@ class PostsController extends Controller
                 if ($user?->profile?->setting_forum_update !== 1) {
                     continue;
                 }
+
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
                     Mail::to($user->email)->send(new FollowingPostUpdate($url, $site, $admin_email, $reply_email, $user, $thread, $post));
