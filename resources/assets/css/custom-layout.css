@@ -280,3 +280,7 @@ ul.list-click li {
 .terms-height {
     min-height: 600px;
 }
+
+.date-input {
+    padding: 8px 16px;
+}
