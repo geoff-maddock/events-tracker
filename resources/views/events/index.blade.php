@@ -100,10 +100,9 @@ Events @include('events.title-crumbs')
 					{!! Form::date('start_at',
 					(isset($filters['start_at']['start']) ? $filters['start_at']['start'] : NULL),
 					[
-						'style' => 'padding: 8px 16px;',
 						'name' => 'filters[start_at][start]',
 						'data-theme' => 'bootstrap-5',
-						'class' => 'form-control form-background'
+						'class' => 'form-control form-background  date-input'
 					])
 					!!}
 				</div>
@@ -112,10 +111,9 @@ Events @include('events.title-crumbs')
 					{!! Form::date('start_at',
 					(isset($filters['start_at']['end']) ? $filters['start_at']['end'] : NULL),
 					[
-						'style' => 'padding: 8px 16px;',
 						'name' => 'filters[start_at][end]',
 						'data-theme' => 'bootstrap-5',
-						'class' => 'form-control form-background my-2'
+						'class' => 'form-control form-background my-2  date-input'
 					])
 					!!}
 				</div>
