@@ -25,10 +25,11 @@
 		@if (isset($tags) && count($tags) > 0)
 			<div class="card surface">
 				<h5 class="card-header bg-primary">Tags
-					<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Tags that match this search term.">{{ count($tags)}}</span></a>
+					<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom" title="# of Tags that match this search term.">{{ count($tags)}}</span></a>
+					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#search-tags" data-bs-toggle="collapse" aria-expanded="false" aria-controls="search-tags" role="button"></i></a>
 				</h5>
 
-				<div class="card-body">
+				<div class="card-body collapsible collapse show" id="search-tags">
 				@include('tags.list', ['tags' => $tags])
 				{!! $tags->appends(['keyword' => $slug])->render() !!}
 				</div>
@@ -40,10 +41,11 @@
 			<div class="card surface my-2">
 
 				<h5 class="card-header bg-primary">Events
-						<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Events that match this search term.">{{ count($events)}}</span></a>
+					<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Events that match this search term.">{{ count($events)}}</span></a>
+					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#search-events" data-bs-toggle="collapse" aria-expanded="false" aria-controls="search-events" role="button"></i></a>
 				</h5>
 
-				<div class="card-body">
+				<div class="card-body collapsible collapse show" id="search-events">
 				@include('events.list', ['events' => $events])
 				{!! $events->appends(['keyword' => $slug])->links() !!}
 				</div>
@@ -67,9 +69,10 @@
 		<div class="card surface">
 			<h5 class="card-header bg-primary">Series
 					<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Series that match this search term.">{{ count($series)}}</span></a>
+					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#search-series" data-bs-toggle="collapse" aria-expanded="false" aria-controls="search-series" role="button"></i></a>
 			</h5>
 			
-			<div class="card-body">
+			<div class="card-body collapsible collapse show" id="search-series">
 			@include('series.list', ['series' => $series])
 			{!! $series->appends(['keyword' => $slug])->render() !!}
 			</div>
@@ -92,9 +95,10 @@
 
 		<h5 class="card-header bg-primary">Entities
 			<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Entities that match this search term.">{{ count($entities)}}</span></a>
+			<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#search-entities" data-bs-toggle="collapse" aria-expanded="false" aria-controls="search-entities" role="button"></i></a>
 		</h5>
 
-		<div class="card-body">
+		<div class="card-body collapsible collapse show" id="search-entities">
 				@include('entities.list', ['entities' => $entities])
 				{!! $entities->appends(['keyword' => $slug])->render() !!}
 		</div>
@@ -113,10 +117,11 @@
 		<div class="card surface my-2">
 
 			<h5 class="card-header bg-primary">Users
-						<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Users that match this search term.">{{ count($users)}}</span></a>
+				<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Users that match this search term.">{{ count($users)}}</span></a>
+				<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#search-users" data-bs-toggle="collapse" aria-expanded="false" aria-controls="search-users" role="button"></i></a>
 			</h5>
 
-			<div class="card-body">
+			<div class="card-body collapsible collapse show" id="search-users">
 			@include('users.list', ['users' => $users])
 			{!! $users->appends(['keyword' => $slug])->links() !!}
 			</div>
@@ -139,9 +144,10 @@
 
 			<h5 class="card-header bg-primary">Threads
 				<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Threads that match this search term.">{{ count($threads)}}</span></a>
+				<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#search-threads" data-bs-toggle="collapse" aria-expanded="false" aria-controls="search-threads" role="button"></i></a>
 			</h5>
 
-			<div class="card-body">
+			<div class="card-body collapsible collapse show" id="search-threads">
 				@include('threads.list', ['threads' => $threads])
 				{!! $threads->appends(['keyword' => $slug])->render() !!}
 			</div>
