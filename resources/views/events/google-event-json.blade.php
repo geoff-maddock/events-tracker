@@ -41,7 +41,7 @@
     "offers": {
         "@type": "Offer",
         @if ($event->ticket_link !== null)
-        "url": "{{ $event->ticket_link}}"
+        "url": "{{ $event->ticket_link}}",
         @else 
         "url": "{{ $event->primary_link}}",
         @endif
