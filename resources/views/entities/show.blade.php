@@ -172,7 +172,7 @@
 			@unless ($entity->links->isEmpty())
 					<P><b>Links</b><br>
 					@foreach ($entity->links as $link)
-					<span><B>{!! $link->tag !!}</B>
+					<span><B>{!! $link->tag !!}</B> @if ($link->is_primary === 1) <span title="Primary link">*</span>@endif
 									@if ($signedIn && $entity->ownedBy($user))
 									<a href="{!! route('entities.links.edit', ['entity' => $entity->slug, 'link' => $link->id]) !!}">
 										<i class="bi bi-pencil"></i>

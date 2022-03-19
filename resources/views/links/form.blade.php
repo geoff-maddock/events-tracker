@@ -27,7 +27,7 @@
 <div class="row">
 	<div class="form-group col-md-2 {{$errors->has('is_primary') ? 'has-error' : '' }}">
 	{!! Form::label('is_primary','Is Primary:') !!}
-	{!! Form::checkbox('is_primary', isset($link->is_primary) ? $link->is_primary : 0, ['class' => 'form-control form-background']) !!}
+	{!! Form::checkbox('is_primary', (isset($link->is_primary) ? $link->is_primary : null)) !!}
 	{!! $errors->first('is_primary','<span class="help-block">:message</span>') !!}
 	</div>
 </div
