@@ -17,6 +17,30 @@
 	<a href="{!! URL::route('threads.create') !!}" class="btn btn-primary">Add a thread</a>
 </div>
 
+<div class="row">
+	@if (isset($entities) && count($entities) > 0)
+	<div class="col-lg-6">
+	<div class="card surface my-2">
+
+		<h5 class="card-header bg-primary">Entities
+			<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Entities that match this search term.">{{ count($entities)}}</span></a>
+			<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#search-entities" data-bs-toggle="collapse" aria-expanded="false" aria-controls="search-entities" role="button"></i></a>
+		</h5>
+
+		<div class="card-body collapsible collapse show" id="search-entities">
+				@include('entities.list', ['entities' => $entities])
+				{!! $entities->appends(['keyword' => $slug])->render() !!}
+		</div>
+	</div>
+	</div>
+	@else
+
+	<div class="bs-component">
+		No matching entities found.
+	</div>
+	@endif
+	</div>
+
 	<div class="row">
 
 	@if (isset($events) && count($events) > 0)
@@ -88,29 +112,7 @@
 	</div>
 	@endif
 
-	<div class="row">
-	@if (isset($entities) && count($entities) > 0)
-	<div class="col-lg-6">
-	<div class="card surface my-2">
 
-		<h5 class="card-header bg-primary">Entities
-			<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Entities that match this search term.">{{ count($entities)}}</span></a>
-			<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#search-entities" data-bs-toggle="collapse" aria-expanded="false" aria-controls="search-entities" role="button"></i></a>
-		</h5>
-
-		<div class="card-body collapsible collapse show" id="search-entities">
-				@include('entities.list', ['entities' => $entities])
-				{!! $entities->appends(['keyword' => $slug])->render() !!}
-		</div>
-	</div>
-	</div>
-	@else
-
-	<div class="bs-component">
-		No matching entities found.
-	</div>
-	@endif
-</div>
 
 	<div class="col-lg-6">
 		@if (isset($users) && count($users) > 0)
