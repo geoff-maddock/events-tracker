@@ -518,7 +518,7 @@ class EntitiesController extends Controller
 
         // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
-            if (DB::table('tags')->where('id', $tag)->count() > 0) {
+            if (!Tag::find($tag)) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->slug = Str::slug($tag);
