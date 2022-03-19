@@ -657,7 +657,7 @@ class Entity extends Eloquent
         if ($this->futureEvents()->total() > 0) {
             $event = $this->futureEvents()->first();
             $start = $event->start_at->format('m/d');
-            $format .= ' Next: '.$start.' '.$event->name.' at '.$event->location->name;
+            $format .= ' Next: '.$start.' '.$event->name.' at '.$event->venue->name;
         }
 
         // only return the first 280 chars
