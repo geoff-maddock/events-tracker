@@ -1,5 +1,5 @@
 @if (isset($tag))
-• {{ ucfirst($tag)}}
+• {{ ucfirst($tag->name)}}
 @endif
 @if (isset($role))
 • {{ ucfirst($role) }}
