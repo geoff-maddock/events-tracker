@@ -59,8 +59,8 @@ class NotifyWeekly extends Command
             $tagEvents = [];
             $attendingIdList = [];
 
-            // get the next x events they are attending
-            $attendingEvents = $user->getAttendingFuture()->take($show_count);
+            // get the events they are attending in the next two weeks
+            $attendingEvents = $user->getAttendingFuture()->where('start_at', '<=', Carbon::now()->addDays(14));
             foreach ($attendingEvents as $event) {
                 $attendingIdList[] = $event->id;
             }
@@ -123,10 +123,10 @@ class NotifyWeekly extends Command
                     ->send(new WeeklyUpdate($url, $site, $admin_email, $reply_email, $user, $attendingEvents, $seriesList, $interests));
 
                 // log that the weekly email was sent
-                Log::info('Weekly update email was sent to ' . $user->name . ' at ' . $user->email . '.');
+                Log::info('Weekly update email was sent to '.$user->name.' at '.$user->email.'.');
             } else {
                 // log that no email was sent
-                Log::info('No weekly update email was sent to ' . $user->name . ' at ' . $user->email . '.');
+                Log::info('No weekly update email was sent to '.$user->name.' at '.$user->email.'.');
             }
         }
     }
