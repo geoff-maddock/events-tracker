@@ -1976,8 +1976,10 @@ class EventsController extends Controller
             $this->addFbPhoto($event);
         }
 
-        // make a call to notify all users who are following any of the tags/keywords
-        $this->notifyFollowing($event);
+        // make a call to notify all users who are following any of the tags/keywords if the event starts in the future
+        if ($event->start_at >= Carbon::now()) {
+            $this->notifyFollowing($event);
+        }
 
         // add a twitter notification if the user is admin
         if ($this->user->hasGroup('super_admin') && config('app.twitter_consumer_key') !== '999') {
