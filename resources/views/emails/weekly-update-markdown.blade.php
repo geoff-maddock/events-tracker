@@ -19,7 +19,7 @@ This is your weekly update on upcoming events related to artists, venues, promot
 @endif
 
 @if (count($seriesList) > 0)
-Here are the event series you follow that happen today.
+Here are the event series you follow that are forthcoming.
 
 ### Summary of series:
 @foreach ($seriesList as $series)
