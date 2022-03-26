@@ -60,7 +60,7 @@ Keyword Tags
 					<div class="col">
 						<ul>
 						@foreach ($tags as $t)
-							@if (isset($tag) && (strtolower($tag) === strtolower($t->name)))
+							@if (isset($tag) && (strtolower($slug) === strtolower($t->slug)))
 								<?php $match = $t;?>
 								<li class='list selected'><a href="/tags/{{ $t->slug }}" title="Click to show all related events and entities." name="{{ $t->name[0] }}">{{ $t->name }}</a>
 									@if ($signedIn)

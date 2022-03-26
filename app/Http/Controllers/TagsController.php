@@ -211,10 +211,10 @@ class TagsController extends Controller
      */
     public function show(string $slug, StringHelper $stringHelper): View
     {
+        $tagObject = Tag::where('slug', '=', $slug)->first();
+
         // convert the slug to name?
         $tag = $stringHelper->SlugToName($slug);
-
-        $tagObject = Tag::where('name', '=', $tag)->first();
 
         // get all series linked to the tag
         $series = Series::getByTag($slug)
