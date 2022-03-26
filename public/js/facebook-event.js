@@ -57,7 +57,7 @@ $(function(){
         });
 
         // let fields =  'description,end_time,id,name,place,start_time,cover,attending_count,interested_count,maybe_count,noreply_count';
-        let fields = 'description,name,end_time,start_time,interested_count,ticket_uri';
+        let fields = 'description,place,name,end_time,start_time,interested_count,ticket_uri';
 
         // try to pull info from the fb object
         FB.api('/'+event_id+'?fields='+fields, function(response) {
