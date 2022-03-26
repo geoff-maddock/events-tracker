@@ -111,7 +111,7 @@
 	@foreach ($activities as $activity)
 	<li class="list-group-item {{ $activity->style }} ">
 		{{ $activity->id }}
-		<a href="{{ strtolower($activity->getShowLink()) }}">{{ $activity->message }}</a>
+		<a href="{{ strtolower($activity->getShowLink()) }}">{{ $activity->message }}</a> <small>{{ $activity->object_name}}</small>
 
 		<br>
 
