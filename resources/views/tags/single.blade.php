@@ -16,10 +16,18 @@
 		@endif
 	</h1>
 
-	<span class="badge rounded-pill bg-dark">{!! link_to_route('events.tag', 'Events', [$tag->slug], ['class' => 'item-title']) !!} @if (is_array($tag->events)){{ count($tag->events) }}@endif</span>
-	<span class="badge rounded-pill bg-dark">{!! link_to_route('series.tag', 'Series', [$tag->slug], ['class' => 'item-title']) !!}  @if (is_array($tag->series)){{ count($tag->series) }}@endif</span>
-	<span class="badge rounded-pill bg-dark">{!! link_to_route('entities.tag', 'Entities', [$tag->slug], ['class' => 'item-title']) !!}  @if (is_array($tag->entities)){{ count($tag->entities) }}@endif</span>
-	<span class="badge rounded-pill bg-dark">{!! link_to_route('threads.tag', 'Threads', [$tag->slug], ['class' => 'item-title']) !!} @if (is_array($tag->threads)){{ count($tag->threads) }}@endif</span>
+	@if (count($tag->events) > 0)
+	<span class="badge rounded-pill bg-dark">{!! link_to_route('events.tag', 'Events', [$tag->slug], ['class' => 'item-title']) !!} {{ $tag->events ? count($tag->events) : 0 }}</span>
+	@endif
+	@if (count($tag->series) > 0)
+		<span class="badge rounded-pill bg-dark">{!! link_to_route('series.tag', 'Series', [$tag->slug], ['class' => 'item-title']) !!}  {{ $tag->series ? count($tag->series) : 0 }}</span>
+	@endif
+	@if (count($tag->entities) > 0)
+	<span class="badge rounded-pill bg-dark">{!! link_to_route('entities.tag', 'Entities', [$tag->slug], ['class' => 'item-title']) !!} {{ $tag->entities ? count($tag->entities) : 0}}</span>
+	@endif
+	@if (count($tag->threads) > 0)
+	<span class="badge rounded-pill bg-dark">{!! link_to_route('threads.tag', 'Threads', [$tag->slug], ['class' => 'item-title']) !!} {{ $tag->threads ? count($tag->threads) : 0 }}</span>
+	@endif
 	Related Tags:
 	@foreach ($tagObject->relatedTags() as $key => $value)
 	<span class="badge rounded-pill bg-dark">{!! link_to_route('tags.show', $key, [strtolower($key)], ['class' => 'item-title']) !!}</span>
