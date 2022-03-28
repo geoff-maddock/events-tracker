@@ -7,13 +7,13 @@
 <h1 class="display-6 text-primary">Series . Edit . {{ $series->name }}</h1>
 
 <div id="action-menu" class="mb-2">
-<a href="{!! route('series.show', ['series' => $series->id]) !!}" class="btn btn-primary">Show Series</a> <a href="{!! URL::route('series.index') !!}" class="btn btn-info">Return to list</a>
+    <a href="{!! route('series.show', ['series' => $series->id]) !!}" class="btn btn-primary">Show Series</a> <a href="{!! URL::route('series.index') !!}" class="btn btn-info">Return to list</a>
 </div>
 
 <i>{{ $series->start_at ? $series->start_at->format('l F jS Y \\a\\t h:i A') : ''}} </i>
 <div class="row">
     <div class="col-md-8">
-        {!! Form::model($series, ['route' => ['series.update', $series->id], 'method' => 'PATCH']) !!}
+        {!! Form::model($series, ['route' => ['series.update', $series->id], 'method' => 'PATCH', 'class' => 'form-container']) !!}
 
         @include('series.form', ['action' => 'update'])
 
