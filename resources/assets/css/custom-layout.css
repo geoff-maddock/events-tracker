@@ -284,3 +284,9 @@ ul.list-click li {
 .date-input {
     padding: 8px 16px;
 }
+
+.form-container {
+    max-width: 1400px;
+    margin: 0;
+    padding: 0;
+}

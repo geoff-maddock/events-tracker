@@ -6,7 +6,7 @@
 
 <h1 class="display-6 text-primary">Add a New Event Series</h1>
 
-	{!! Form::open(['route' => 'series.store']) !!}
+	{!! Form::open(['route' => 'series.store', 'class' => 'form-container']) !!}
 
 		@include('series.form')
 

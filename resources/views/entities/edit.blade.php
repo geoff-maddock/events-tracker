@@ -12,7 +12,7 @@
 <div class="row">
 	<div class="col-md-6">
 
-	{!! Form::model($entity, ['route' => ['entities.update', $entity->slug], 'method' => 'PATCH']) !!}
+	{!! Form::model($entity, ['route' => ['entities.update', $entity->slug], 'method' => 'PATCH', 'class' => 'form-container']) !!}
 
 		@include('entities.form', ['action' => 'update'])
 

@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row mb-1">
 	<div class="form-group {{$errors->has('name') ? 'has-error' : '' }} col-md-12">
 	{!! Form::label('name','Name') !!}
 	{!! Form::text('name', null, ['class' => 'form-control form-background', 'autofocus' => '']) !!}
@@ -6,7 +6,7 @@
 	</div>
 </div>
 
-<div class="row">
+<div class="row mb-1">
 	<div class="form-group col-md-12">
 	{!! Form::label('slug','Slug') !!}
 	{!! Form::text('slug', null, ['placeholder' => 'Unique name for this entity (will validate)', 'class' => 'form-control form-background']) !!}
@@ -14,7 +14,7 @@
 	</div>
 </div>
 
-<div class="row">
+<div class="row mb-1">
 	<div class="form-group col-md-12">
 	{!! Form::label('short','Short description') !!}
 	{!! Form::text('short', null, ['placeholder' => 'Add a brief description of this entity.','class' => 'form-control form-background']) !!}
@@ -23,7 +23,7 @@
 </div>
 
 
-<div class="row">
+<div class="row mb-2">
 	<div class="form-group col-md-12">
 	{!! Form::label('description','In Depth') !!}
 	{!! Form::textarea('description', null, ['placeholder' => 'Add a more in depth description here.','class' => 'form-control form-background']) !!}
@@ -31,7 +31,7 @@
 	</div>
 </div>
 
-<div class="row">
+<div class="row mb-2">
 	<div class="form-group col-md-6">
 	{!! Form::label('entity_type_id','Type') !!}
 	{!! Form::select('entity_type_id', $entityTypeOptions, (isset($entity->entity_type_id) ? $entity->entity_type_id : NULL), ['class' => 'form-select form-background']) !!}
@@ -47,7 +47,7 @@
 </div>
 
 
-<div class="row">
+<div class="row mb-1">
 	<div class="form-group col-md-6">
 		{!! Form::label('facebook_username','FB Username') !!}
 		{!! Form::text('facebook_username', null, ['placeholder' => 'Add the related facebook username if there is one.','class' => 'form-control form-background']) !!}
@@ -61,7 +61,7 @@
 	</div>
 </div>
 
-<div class="row">
+<div class="row mb-1">
 	<div class="form-group col-md-6">
 	{!! Form::label('role_list','Roles:') !!}
 	{!! Form::select('role_list[]', $roleOptions, null, ['id' => 'role_list',	'class' => 'form-control select2 form-background',
@@ -72,7 +72,7 @@
 	</div>
 </div>
 
-<div class="row">
+<div class="row mb-1">
 	<div class="form-group col-md-6">
 	{!! Form::label('tag_list','Tags:') !!}
 	{!! Form::select('tag_list[]', $tagOptions, null, ['id' => 'tag_list', 'class' =>'form-control select2 form-background',
@@ -83,7 +83,7 @@
 	</div>
 </div>
 
-<div class="row">
+<div class="row mb-1">
 	<div class="form-group col-md-6">
 	{!! Form::label('alias_list','Aliases:') !!}
 	{!! Form::select('alias_list[]', $aliasOptions, null, ['id' => 'alias_list',
@@ -96,7 +96,7 @@
 	</div>
 </div>
 
-<div class="row">
+<div class="row mb-1">
 	<div class="form-group col-md-3">
 		{!! Form::label('created_by','Owner:') !!}
 		{!! Form::select('created_by', $userOptions, (isset($event->created_by) ? $event->created_by : NULL), ['class' =>'form-control select2' , 'data-placeholder' => '']) !!}

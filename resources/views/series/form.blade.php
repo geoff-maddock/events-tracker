@@ -1,29 +1,38 @@
-<div class="form-group {{$errors->has('name') ? 'has-error' : '' }}">
-	{!! Form::label('name','Name') !!}
-	{!! Form::text('name', null, ['class' => 'form-control form-background', 'autofocus' => '']) !!}
-	{!! $errors->first('name','<span class="help-block">:message</span>') !!}
+<div class="row mb-1">
+	<div class="form-group {{$errors->has('name') ? 'has-error' : '' }}">
+		{!! Form::label('name','Name') !!}
+		{!! Form::text('name', null, ['class' => 'form-control form-background', 'placeholder' => 'Use a clear, simple and descriptive series title', 'autofocus' => '']) !!}
+		{!! $errors->first('name','<span class="help-block">:message</span>') !!}
+	</div>
+</div>	
+
+<div class="row mb-1">
+	<div class="form-group {{$errors->has('slug') ? 'has-error' : '' }}">
+		{!! Form::label('slug','Slug') !!}
+		{!! Form::text('slug', null, ['placeholder' => 'Unique name for this series (will validate)', 
+		'class'	=> 'form-control form-background form-control-sm']) !!}
+		{!! $errors->first('slug','<span class="help-block">:message</span>') !!}
+	</div>
 </div>
 
-<div class="form-group {{$errors->has('slug') ? 'has-error' : '' }}">
-	{!! Form::label('slug','Slug') !!}
-	{!! Form::text('slug', null, ['placeholder' => 'Unique name for this series (will validate)', 
-	'class'	=> 'form-control form-background']) !!}
-	{!! $errors->first('slug','<span class="help-block">:message</span>') !!}
+<div class="row mb-1">
+
+	<div class="form-group {{$errors->has('short') ? 'has-error' : '' }}">
+		{!! Form::label('short','Short Description') !!}
+		{!! Form::text('short', null, ['class' => 'form-control form-background', 'placeholder' => 'A concise one-sentence description of the series.']) !!}
+		{!! $errors->first('short','<span class="help-block">:message</span>') !!}
+	</div>
 </div>
 
-<div class="form-group {{$errors->has('short') ? 'has-error' : '' }}">
-	{!! Form::label('short','Short Description') !!}
-	{!! Form::text('short', null, ['class' => 'form-control form-background']) !!}
-	{!! $errors->first('short','<span class="help-block">:message</span>') !!}
+<div class="row mb-2">
+	<div class="form-group {{$errors->has('description') ? 'has-error' : '' }}">
+		{!! Form::label('description','Description') !!}
+		{!! Form::textarea('description', null, ['class' => 'form-control form-background', 'placeholder' => 'Detailed description of the series including all relevant info not in other fields']) !!}
+		{!! $errors->first('description','<span class="help-block">:message</span>') !!}
+	</div>
 </div>
 
-<div class="form-group {{$errors->has('description') ? 'has-error' : '' }}">
-	{!! Form::label('description','Description') !!}
-	{!! Form::textarea('description', null, ['class' => 'form-control form-background']) !!}
-	{!! $errors->first('description','<span class="help-block">:message</span>') !!}
-</div>
-
-<div class="row">
+<div class="row  mb-1">
 
 	<div class="form-group col-md-2">
 		{!! Form::label('founded_at','Founded At:') !!}
@@ -41,7 +50,7 @@
 
 </div>
 
-<div class="row">
+<div class="row  mb-1">
 
 	<div class="form-group col-md-2 {{$errors->has('occurrence_type_id') ? 'has-error' : '' }}">
 		{!! Form::label('occurrence_type_id','Occurrence type:') !!}
@@ -71,7 +80,7 @@
 	</div>
 </div>
 
-<div class="row">
+<div class="row  mb-2">
 
 	<div class="form-group col-md-2 {{$errors->has('event_type_id') ? 'has-error' : '' }}">
 		{!! Form::label('event_type_id','Event type:') !!}
@@ -94,7 +103,7 @@
 	</div>
 </div>
 
-<div class="row">
+<div class="row mb-1 collapsible collapse @if (isset($event->soundcheck_at) || isset($event->door_at)) show @else hide @endif" id="form-time">
 	<div class="form-group col-md-2">
 		{!! Form::label('soundcheck_at','Soundcheck At:') !!}
 		{!! Form::dateTimeLocal('soundcheck_at', (isset($series->soundcheck_at)) ?
@@ -110,9 +119,9 @@
 	</div>
 </div>
 
-<div class="row">
+<div class="row mb-2">
 	<div class="form-group col-md-2 {{$errors->has('start_at') ? 'has-error' : '' }}">
-		{!! Form::label('start_at','Start At:') !!}
+		{!! Form::label('start_at','Start At:') !!} <a href="#" class="float-end px-1"  title="Show additional time options"><i class="bi bi-clock-fill toggler" id="form-time-close-box" data-bs-target="#form-time" data-bs-toggle="collapse" aria-expanded="false" aria-controls="form-time" role="button"></i></a>
 		{!! Form::dateTimeLocal('start_at', (isset($action) && isset($series->start_at)) ? $series->start_at->format('Y-m-d\\TH:i') : NULL, ['class' =>'form-control form-background']) !!}
 		{!! $errors->first('start_at','<span class="help-block">:message</span>') !!}
 	</div>
@@ -131,8 +140,7 @@
 	</div>
 </div>
 
-<div class="row">
-
+<div class="row mb-1">
 
 	<div class="form-group col-md-2">
 		{!! Form::label('presale_price','Presale Price:') !!}
@@ -153,7 +161,7 @@
 	</div>
 </div>
 
-<div class="row">
+<div class="row mb-2">
 	<div class="form-group col-md-4">
 		{!! Form::label('primary_link','Primary Link:') !!}
 		{!! Form::text('primary_link', null, ['class' => 'form-control form-background']) !!}
@@ -167,17 +175,8 @@
 	</div>
 </div>
 
-<div class="row">
-	<div class="form-group col-md-2 {{$errors->has('visibility_id') ? 'has-error' : '' }}">
-		{!! Form::label('visibility_id','Visibility:') !!}
-		{!! Form::select('visibility_id', $visibilityOptions, (isset($series->visibility_id) ? $series->visibility_id :
-		NULL),
-		['class' => 'form-select form-background']) !!}
-		{!! $errors->first('visibility_id','<span class="help-block">:message</span>') !!}
-	</div>
-</div>
 
-<div class="row">
+<div class="row mb-1">
 	<div class="form-group col-md-6">
 		{!! Form::label('entity_list','Related Entities:') !!}
 		{!! Form::select('entity_list[]', $entityOptions, null, ['id' => 'entity_list', 'class' =>'form-control
@@ -187,7 +186,7 @@
 </div>
 
 
-<div class="row">
+<div class="row mb-1">
 	<div class="form-group col-md-6">
 		{!! Form::label('tag_list','Tags:') !!}
 		{!! Form::select('tag_list[]', $tagOptions, old('tag_list'), ['id' => 'tag_list',
@@ -199,7 +198,15 @@
 	</div>
 </div>
 
-<div class="row">
+<div class="row mb-1">
+	<div class="form-group col-md-2 {{$errors->has('visibility_id') ? 'has-error' : '' }}">
+		{!! Form::label('visibility_id','Visibility:') !!}
+		{!! Form::select('visibility_id', $visibilityOptions, (isset($series->visibility_id) ? $series->visibility_id :
+		NULL),
+		['class' => 'form-select form-background']) !!}
+		{!! $errors->first('visibility_id','<span class="help-block">:message</span>') !!}
+	</div>
+	
 	<div class="form-group col-md-3">
 		{!! Form::label('created_by','Owner:') !!}
 		{!! Form::select('created_by', $userOptions, (isset($series->created_by) ? $series->created_by : NULL), ['class'

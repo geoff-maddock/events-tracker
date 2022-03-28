@@ -8,7 +8,7 @@
 
 <h1 class="display-6 text-primary">Add a New Event</h1>
 
-{!! Form::open(['route' => 'events.store']) !!}
+{!! Form::open(['route' => 'events.store', 'class' => 'form-container']) !!}
 
 @include('events.form')
 
