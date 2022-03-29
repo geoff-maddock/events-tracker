@@ -1,0 +1,21 @@
+name: Build Prod
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Prod
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: |
+          cd /var/www/events-tracker
+          git checkout master
+          git remote update
+          npm run prod
