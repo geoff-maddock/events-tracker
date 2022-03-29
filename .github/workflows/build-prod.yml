@@ -13,7 +13,7 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
+        port: 22
         script: |
           cd /var/www/events-tracker
           git checkout master
