@@ -43,15 +43,15 @@
 			<b>{{ $entity->entityType ? $entity->entityType->name : ''}}</b><br>
 			
 			@if ($entity->short)
-				<i>{{ $entity->short }} </i><br><br>
+				<i>{{ $entity->short }}</i><br><br>
 			@endif
 
 			@if ($entity->description)
 				<b>Description</b><br>
-				<i>{{ $entity->description }} </i><br>
+				<i>{{ $entity->description }}</i><br><br>
 			@endif
 
-				<br>
+			
 				{{ count($entity->follows) }} Follows |
 				@if ($follow = $entity->followedBy($user))
 				<b>You Are Following</b> 
