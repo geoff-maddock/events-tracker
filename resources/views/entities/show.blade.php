@@ -40,12 +40,10 @@
 
 			@endunless
 
-			<P>
-			<b>{{ $entity->entityType ? $entity->entityType->name : ''}}</b>
-			</P>
-			<p>
+			<b>{{ $entity->entityType ? $entity->entityType->name : ''}}</b><br>
+			
 			@if ($entity->short)
-				<i>{{ $entity->short }} </i><br>
+				<i>{{ $entity->short }} </i><br><br>
 			@endif
 
 			@if ($entity->description)
@@ -172,7 +170,7 @@
 			@unless ($entity->links->isEmpty())
 					<P><b>Links</b><br>
 					@foreach ($entity->links as $link)
-					<span><B>{!! $link->tag !!}</B> @if ($link->is_primary === 1) <span title="Primary link">*</span>@endif
+					<span><B>{!! $link->tag !!}</B> @if ($link->is_primary === 1) <i class="bi bi-link" title="Primary link"></i></span>@endif
 									@if ($signedIn && $entity->ownedBy($user))
 									<a href="{!! route('entities.links.edit', ['entity' => $entity->slug, 'link' => $link->id]) !!}">
 										<i class="bi bi-pencil"></i>
@@ -180,7 +178,6 @@
 									@endif
 					</span><br>
 					@endforeach
-
 			@endunless
 
 			@if ($user && Auth::user()->id == ($entity->user ? $entity->user->id : null))
