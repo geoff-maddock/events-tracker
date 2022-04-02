@@ -148,7 +148,7 @@ Events @include('events.title-crumbs')
 		<form action="{{ url()->current() }}" method="GET" class="form-inline">
 			<div class="form-group row gx-1 justify-content-end">
 				<div class="col-auto">
-					<a href="{{ url()->action('EventsController@rppReset') }}?key={!! $key  ?? '' !!}" class="btn btn-primary">
+					<a href="{{ url()->action('EventsController@rppReset') }}?key={!! $key  ?? '' !!}" class="btn btn-primary" alt="Reset" aria-label="Reset">
 						<i class="bi bi-arrow-clockwise"></i>
 					</a>
 				</div>

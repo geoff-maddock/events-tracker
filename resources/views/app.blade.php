@@ -4,7 +4,6 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta http-equiv="refresh" content="{{ config('session.lifetime') * 60 }}">
 	<meta property="og:url" content="{{ Request::url() }}">
 	<meta property="og:type" content="website">
 	<meta property="og:title" content="@yield('title', config('app.app_name'))">
@@ -65,7 +64,7 @@
 		<div id="app-mobile-search" class="container-fluid d-block d-md-none my-2">
 			<form class="col-sm-12" role="search" action="/search">
 				<div class="form-group">
-					<input type="text" class="form-control form-background" placeholder="Search" name="keyword"  value="{{ isset($slug) ? $slug : '' }}">
+					<input type="text" class="form-control form-background" placeholder="Search" name="keyword" title="Search" aria-label="Search" value="{{ isset($slug) ? $slug : '' }}">
 				</div>
 			</form>
 		</div>

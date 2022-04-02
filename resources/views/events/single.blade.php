@@ -1,16 +1,23 @@
 <li id="event-{{ $event->id }}" class="event-card {{ $event->pastOrFuture }} flow-root">
 	@if ($primary = $event->getPrimaryPhoto())
 	<div class="event-list-thumbnail">
-		<a href="{{ $primary->getStoragePath() }}" data-lightbox="{{ $primary->getStoragePath() }}" data-bs-toggle="tooltip" title="Click to see enlarged image">
-			<img src="{{ $primary->getStorageThumbnail() }}" alt="{{ $event->name}}" class="thumbnail-image">
+		<a href="{{ $primary->getStoragePath() }}" 
+			data-title="{!! $event->start_at->format('l F jS Y') !!} <a href='/events/{{ $event->id }}'>{{ $event->name }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ $event->venue ? $event->venue->name : '' }}</a>"
+			data-lightbox="{{ $primary->path }}"
+			data-toggle="tooltip" data-placement="bottom"
+			title="Click to see enlarged image.">
+			<img src="{{ $primary->getStorageThumbnail() }}" alt="{{ $event->name }}" class="thumbnail-image">
 		</a>
 	</div>
 	@else
 	<div class="event-list-thumbnail">
-		<a href="/images/event-placeholder.png" data-lightbox="/images/event-placeholder.png"
-			title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom">
-			<img src="/images/event-placeholder.png" alt="{{ $event->name}}" class="thumbnail-image">
-		</a>
+		<a href="/images/event-placeholder.png" 
+        data-title="{!! $event->start_at->format('l F jS Y') !!} <a href='/events/{{ $event->id }}'>{{ $event->name }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ $event->venue ? $event->venue->name : '' }}</a>"
+        data-lightbox="/images/event-placeholder.png"
+        data-toggle="tooltip" data-placement="bottom"
+		title="Click to see enlarged image.">
+        <img src="/images/event-placeholder.png" alt="{{ $event->name }}" class="thumbnail-image">
+    </a>
 	</div>
 	@endif
 
