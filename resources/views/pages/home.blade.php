@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title', 'Event + Club Guide')
+@section('title'){{ config('app.tagline')}}@endsection
 
 @section('content')
 
