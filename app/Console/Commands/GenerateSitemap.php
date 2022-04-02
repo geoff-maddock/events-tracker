@@ -33,8 +33,25 @@ class GenerateSitemap extends Command
         $this->line('<fg=white;bg=green>Output to '.public_path('sitemap.xml').'</>');
         // modify this to your own needs
         SitemapGenerator::create(config('app.url'))
+            ->hasCrawled(function (UriInterface $url) {
+                if (strpos($url->getPath(), '/email/verify') !== false) {
+                    return;
+                }
+
+                // skip the redirect page
+                if (strpos($url->getPath(), '/redirect') !== false) {
+                    return;
+                }
+
+                // skip user tabs
+                if (strpos($url->getPath(), '?tab') !== false) {
+                    return;
+                }
+
+                return $url;
+            })
             ->shouldCrawl(function (UriInterface $url) {
-                // Links present on the contact page won't be added to the
+                // Links present on the photos page won't be added to the
                 // sitemap unless they are present on a crawlable page.
                 if (strpos($url->getPath(), '/photos') !== false) {
                     return false;
