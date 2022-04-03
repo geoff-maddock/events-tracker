@@ -17,7 +17,7 @@
 
 	<tr>
 	<td>
-    {!! link_to_route('threads.show', $thread->name, [$thread->id], ['id' => 'thread-name', 'title' => 'Thread topic.', 'class' => 'forum-link']) !!}
+    {!! link_to_route('threads.show', $thread->name, [$thread->id], ['id' => 'thread-'.$thread->id, 'title' => 'Topic: '.$thread->name, 'class' => 'forum-link']) !!}
 
     @if ($event = $thread->event)
         <a href="{!! route('events.show', ['event' => $event->id]) !!}" title="Show event."><span class='glyphicon glyphicon-calendar'></span></a>
@@ -65,7 +65,7 @@
     General
     @endif
     </td>
-    <td class="cell-stat d-none d-md-table-cell">
+    <td class="cell-stat d-none d-md-table-cell text-nowrap">
       @if (isset($thread->user))
         @include('users.avatar', ['user' => $thread->user])
       {!! link_to_route('users.show', $thread->user->name, [$thread->user->id], ['class' => 'forum-link']) !!}

@@ -17,7 +17,7 @@
 	@endif
 
 	@if ($signedIn && $entity->ownedBy($user))
-	<a href="{!! route('entities.edit', ['entity' => $entity->slug]) !!}">
+	<a href="{!! route('entities.edit', ['entity' => $entity->slug]) !!}" alt="Edit {{ $entity->name }}" aria-label="Edit {{ $entity->name }}">
 		<i class="bi bi-pencil-fill card-actions"></i>
 	</a>
 	@endif

@@ -29,8 +29,8 @@
 	<!-- ACTIONS -->
 	<span>
 		@if ($signedIn && ($event->ownedBy($user) || $user->hasGroup('super_admin')))
-		<a href="{!! route('events.edit', ['event' => $event->id],  ['alt' => 'Edit '.$event->name, 'aria-label' => 'Edit '.$event->name]) !!}"
-			title="Edit this event.">
+		<a href="{!! route('events.edit', ['event' => $event->id]) !!}"
+			title="Edit this event." alt="Edit {{ $event->name }}"  aria-label="Edit {{ $event->name}}">
 			<i class="bi bi-pencil-fill card-actions"></i>
 		</a>
 		@endif

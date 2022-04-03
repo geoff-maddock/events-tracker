@@ -21,8 +21,8 @@ Keyword Tags
 		<div class="col-lg-2">
 			<div class="card surface">
 				<h5 class="card-header bg-primary">Keywords
-					<a href="#" class="float-end"><i class="bi bi-question-octagon-fill" data-toggle="tooltip" data-placement="bottom"  title="Click on a keyword tag name in the left panel to find all related events or entites.  Click on the plus next to the tag to follow, minus to unfollow."></i></a>
-					<a href="#" class="float-end px-1" title="Show / Hide" ><i class="bi bi-eye-fill toggler" id="tag-list-close-box" data-bs-target="#tag-list" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tag-list" role="button"></i></a>
+					<a href="#" class="float-end"><i class="bi bi-question-octagon-fill" data-toggle="tooltip" data-placement="bottom" role="tooltip" title="Click on a keyword tag name in the left panel to find all related events or entites.  Click on the plus next to the tag to follow, minus to unfollow."></i></a>
+					<a href="#" class="float-end px-1" title="Show / Hide" ><i class="bi bi-eye-fill toggler" id="tag-list-close-box" data-bs-target="#tag-list" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tag-list" aria-label="Tag list toggle" role="button"></i></a>
 				</h5>
 
 				<div class="card-body collapsible collapse show" id="tag-list">
@@ -65,9 +65,9 @@ Keyword Tags
 								<li class='list selected'><a href="/tags/{{ $t->slug }}" title="Click to show all related events and entities." name="{{ $t->name[0] }}">{{ $t->name }}</a>
 									@if ($signedIn)
 										@if ($follow = $t->followedBy($user))
-										<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to unfollow"><i class="bi bi-check-circle-fill  text-info"></i></a>
+										<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" title="Click to unfollow"><i class="bi bi-check-circle-fill  text-info"></i></a>
 										@else
-										<a href="{!! route('tags.follow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to follow"><i class="bi bi-plus-circle text-warning"></i></a>
+										<a href="{!! route('tags.follow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" title="Click to follow"><i class="bi bi-plus-circle text-warning"></i></a>
 										@endif
 									@endif
 								</li>
@@ -75,9 +75,9 @@ Keyword Tags
 								<li class='list'><a href="/tags/{{ $t->slug }}"  name="{{ $t->name[0] }}">{{ $t->name }}</a>
 									@if ($signedIn)
 										@if ($follow = $t->followedBy($user))
-										<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to unfollow"><i class="bi bi-check-circle-fill text-info"></i></a>
+										<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" title="Click to unfollow"><i class="bi bi-check-circle-fill text-info"></i></a>
 										@else
-										<a href="{!! route('tags.follow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}"  title="Click to follow"><i class="bi bi-plus-circle text-warning"></i></a>
+										<a href="{!! route('tags.follow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" title="Click to follow"><i class="bi bi-plus-circle text-warning"></i></a>
 										@endif
 									@endif
 								</li>
@@ -109,7 +109,7 @@ Keyword Tags
 
 		<div class="card surface my-2">
 				<h5 class="card-header bg-primary">Recently Popular Tags
-					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#tag-popular" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tag-popular" role="button"></i></a>
+					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#tag-popular" data-bs-toggle="collapse" aria-label="Popular tag toggle" aria-expanded="false" aria-controls="tag-popular" role="button"></i></a>
 				</h5>
 				<div class="card-body collapsible collapse show" id="tag-popular">
 					@include('tags.list', ['tags' => $latestTags])
@@ -121,7 +121,7 @@ Keyword Tags
 
 		<div class="card surface my-2">
 				<h5 class="card-header bg-primary">Tags You Follow
-					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-followed-close-box" data-bs-target="#tag-followed" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tag-followed" role="button"></i></a>
+					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-followed-close-box" data-bs-target="#tag-followed" data-bs-toggle="collapse" aria-label="Followed tag toggle" aria-expanded="false" aria-controls="tag-followed" role="button"></i></a>
 				</h5>
 				<div class="card-body collapsible collapse show" id="tag-followed">
 					@include('tags.list', ['tags' => $userTags])
@@ -130,7 +130,7 @@ Keyword Tags
 
 		<div class="card surface my-2">
 				<h5 class="card-header bg-primary">Entities
-					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-entity-close-box" data-bs-target="#tag-entity" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tag-entity" role="button"></i></a>
+					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-entity-close-box" data-bs-target="#tag-entity" data-bs-toggle="collapse" aria-label="Entity tag toggle" aria-expanded="false" aria-controls="tag-entity" role="button"></i></a>
 				</h5>
 				<div class="card-body collapsible collapse show" id="tag-entity">
 					@include('entities.list', ['entities' => $entities])
@@ -143,7 +143,7 @@ Keyword Tags
 	@if (isset($match) )
 		<div class="card surface my-2">
 				<h5 class="card-header bg-primary">Tags
-					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-followed-close-box" data-bs-target="#tag-followed" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tag-followed" role="button"></i></a>
+					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-followed-close-box" data-bs-target="#tag-followed" data-bs-toggle="collapse" aria-label="Followed tag toggle" aria-expanded="false" aria-controls="tag-followed" role="button"></i></a>
 				</h5>
 
 				<div class="card-body collapsible collapse show" id="tag-followed">
@@ -156,7 +156,7 @@ Keyword Tags
 
 		<div class="card surface my-2">
 			<h5 class="card-header bg-primary">Entities
-				<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-entity-close-box" data-bs-target="#tag-entity" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tag-entity" role="button"></i></a>
+				<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-entity-close-box" data-bs-target="#tag-entity" data-bs-toggle="collapse" aria-label="Entity tag toggle" aria-expanded="false" aria-controls="tag-entity" role="button"></i></a>
 			</h5>
 			<div class="card-body collapsible collapse show" id="tag-entity">
 					@include('entities.list', ['entities' => $entities])
@@ -169,7 +169,7 @@ Keyword Tags
 		@if (isset($series) && count($series) > 0)
 		<div class="card surface my-2">
 			<h5 class="card-header bg-primary">Series
-				<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-series-close-box" data-bs-target="#tag-series" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tag-series" role="button"></i></a>				
+				<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-series-close-box" data-bs-target="#tag-series" data-bs-toggle="collapse" aria-label="Series tag toggle" aria-expanded="false" aria-controls="tag-series" role="button"></i></a>				
 			</h5>
 			<div class="card-body collapsible collapse show" id="tag-series">
 				@include('series.list', ['series' => $series])
@@ -180,7 +180,7 @@ Keyword Tags
 		@if (isset($events) && count($events) > 0)
 		<div class="card surface my-2">
 			<h5 class="card-header bg-primary">Events
-				<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-events-close-box" data-bs-target="#tag-events" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tag-events" role="button"></i></a>				
+				<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-events-close-box" data-bs-target="#tag-events" data-bs-toggle="collapse" aria-label="Events tag toggle" aria-expanded="false" aria-controls="tag-events" role="button"></i></a>				
 				@if (isset($tag))
 					<a href="{!! route('calendar.tag', ['tag' => $tag]) !!}" title="{{ $tag.' Calendar' }}"><i class='bi bi-calendar-plus text-warning float-end'></i></a>
 				@endif
