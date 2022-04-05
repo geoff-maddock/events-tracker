@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-md navbar-background navbar-dark">
-	<div class="container-fluid">
+	<div class="container-fluid max-viewport">
 		<div class="navbar-header nav-title">
 			<span class="{{ Request::is('/') ? 'active' : '' }} site-title">
 				<a class="navbar-brand p-3" data-toggle="tooltip"  data-placement="bottom"  data-delay='{"show":"500", "hide":"100"}' title="" href="{{ url('/') }}">{{ config('app.app_name')}} </a>

@@ -290,3 +290,7 @@ ul.list-click li {
     margin: 0;
     padding: 0;
 }
+
+.max-viewport {
+    max-width: 1920px;
+}

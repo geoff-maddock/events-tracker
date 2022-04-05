@@ -14,7 +14,7 @@
 
 <div id="action-menu" class="mb-2">
 @if ($user && Auth::user()->id === ($entity->user ? $entity->user->id : null))
-	<a href="{!! route('entities.edit', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Edit Entity</a>
+	<a href="{!! route('entities.edit', ['entity' => $entity->slug]) !!}" class="btn btn-primary"  title="Edit this entity">Edit Entity</a>
 @endif
 	<a href="{!! URL::route('entities.index') !!}" class="btn btn-info">Return to list</a>
 </div>
@@ -25,7 +25,7 @@
 
 			@if ($photo = $entity->getPrimaryPhoto())
 			<div id="event-image">
-				<img src="{{ $photo->getStoragePath() }}" class="img-fluid">
+				<img src="{{ $photo->getStoragePath() }}" class="img-fluid" alt="{{ $entity->name}}">
 			</div>
 			@endif
 
@@ -143,7 +143,7 @@
 				@foreach ($entity->contacts as $contact)
 				<span><B>{{ $contact->name }}</B>  {{ $contact->email ?? '' }} {{ $contact->phone ?? '' }}
 						@if ($signedIn && $entity->ownedBy($user))
-						<a href="{!! route('entities.contacts.edit', ['entity' => $entity->slug, 'contact' => $contact->id]) !!}">
+						<a href="{!! route('entities.contacts.edit', ['entity' => $entity->slug, 'contact' => $contact->id]) !!}"  title="Edit this contact.">
 							<i class="bi bi-pencil"></i>
 						</a>
 						@endif
@@ -172,7 +172,7 @@
 					@foreach ($entity->links as $link)
 					<span><B>{!! $link->tag !!}</B> @if ($link->is_primary === 1) <i class="bi bi-link" title="Primary link"></i></span>@endif
 									@if ($signedIn && $entity->ownedBy($user))
-									<a href="{!! route('entities.links.edit', ['entity' => $entity->slug, 'link' => $link->id]) !!}">
+									<a href="{!! route('entities.links.edit', ['entity' => $entity->slug, 'link' => $link->id]) !!}"  title="Edit this link.">
 										<i class="bi bi-pencil"></i>
 									</a>
 									@endif
@@ -205,7 +205,7 @@
 					<small class="text-muted">{{ $comment->created_at->diffForHumans() }} </small>
 
 					@if ($signedIn && $comment->createdBy($user))
-					<a href="{!! route('entities.comments.edit', ['entity' => $entity->slug, 'comment' => $comment->id]) !!}">
+					<a href="{!! route('entities.comments.edit', ['entity' => $entity->slug, 'comment' => $comment->id]) !!}"  title="Edit this comment.">
 						<i class="bi bi-pencil"></i>
 					</a>
 					{!! Form::open(['route' => ['entities.comments.destroy', 'entity' => $entity->slug, 'comment' => $comment->id], 'method' => 'delete']) !!}

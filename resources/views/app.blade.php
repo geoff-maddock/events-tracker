@@ -69,7 +69,7 @@
 			</form>
 		</div>
 
-		<main id="app-content" class="container-fluid mt-2">
+		<main id="app-content" class="container-fluid mt-2 max-viewport">
 
 				@yield('content')
 
