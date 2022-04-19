@@ -182,7 +182,7 @@ Keyword Tags
 			<h5 class="card-header bg-primary">Events
 				<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-events-close-box" data-bs-target="#tag-events" data-bs-toggle="collapse" aria-label="Events tag toggle" aria-expanded="false" aria-controls="tag-events" role="button"></i></a>				
 				@if (isset($tag))
-					<a href="{!! route('calendar.tag', ['tag' => $tag]) !!}" title="{{ $tag.' Calendar' }}"><i class='bi bi-calendar-plus text-warning float-end'></i></a>
+					<a href="{!! route('calendar.tag', ['tag' => $slug]) !!}" title="{{ $tag.' Calendar' }}"><i class='bi bi-calendar-plus text-warning float-end'></i></a>
 				@endif
 			</h5>
 

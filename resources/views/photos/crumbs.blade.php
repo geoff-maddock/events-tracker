@@ -2,7 +2,7 @@
 . @include('photos.slug', ['photo' => $photo])
 @endif 
 @if (isset($tag))
-. {!! link_to_route('tags.show', ucfirst($tag->name), [$tag->name], ['class' => 'item-title']) !!}
+. {!! link_to_route('tags.show', ucfirst($tag->name), [$tag->slug], ['class' => 'item-title']) !!}
     @auth
         @if ($follow = $tag->followedBy($user))
         <a href="{!! route('tags.unfollow', ['id' => $tag->id]) !!}" title="You are following this tag.  Click to unfollow">

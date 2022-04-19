@@ -30,6 +30,6 @@
 	@endif
 	Related Tags:
 	@foreach ($tagObject->relatedTags() as $key => $value)
-	<span class="badge rounded-pill bg-dark">{!! link_to_route('tags.show', $key, [strtolower($key)], ['class' => 'item-title']) !!}</span>
+	<span class="badge rounded-pill bg-dark">{!! link_to_route('tags.show', $key, [Str::slug(strtolower($key),'-')], ['class' => 'item-title']) !!}</span>
 	@endforeach 
 </li>
