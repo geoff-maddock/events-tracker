@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Psr\Http\Message\UriInterface;
 use Spatie\Sitemap\SitemapGenerator;
+use Spatie\Sitemap\Tags\Url;
 
 class GenerateSitemap extends Command
 {
@@ -33,23 +34,23 @@ class GenerateSitemap extends Command
         $this->line('<fg=white;bg=green>Output to '.public_path('sitemap.xml').'</>');
         // modify this to your own needs
         SitemapGenerator::create(config('app.url'))
-            ->hasCrawled(function (UriInterface $url) {
-                if (strpos($url->getPath(), '/email/verify') !== false) {
+            ->hasCrawled(function (Url $url) {
+                if (strpos($url->segment(1), 'email') !== false) {
                     return;
                 }
 
                 // skip the redirect page
-                if (strpos($url->getPath(), '/redirect') !== false) {
+                if (strpos($url->segment(1), 'redirect') !== false) {
                     return;
                 }
 
                 // skip user tabs
-                if (strpos($url->getPath(), '?tab') !== false) {
+                if (strpos($url->segment(1), '?tab') !== false) {
                     return;
                 }
 
                 // skip day_offset urls
-                if (strpos($url->getPath(), '?day_offset') !== false) {
+                if (strpos($url->segment(1), '?day_offset') !== false) {
                     return;
                 }
 
