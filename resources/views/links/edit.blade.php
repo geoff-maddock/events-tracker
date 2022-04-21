@@ -8,13 +8,13 @@
 
 	<h4>Edit Link: <i>{{ $link->text }}</i> </h4> 
 
+	<div class="row">
 	{!! Form::model($link, ['route' => ['entities.links.update', $entity->slug, $link->id], 'method' => 'PATCH']) !!}
 
 		@include('links.form', ['action' => 'update'])
 
 	{!! Form::close() !!}
 
-	<div class="col-md-3 mx-2">
 	{!! delete_form(['entities.links.destroy', $entity->slug,  $link->id]) !!}
 	</div>
 
