@@ -29,3 +29,4 @@ workspace.code-workspace
 .vscode
 phpstan.neon
 /public/sitemap*.xml
+*.code-workspace

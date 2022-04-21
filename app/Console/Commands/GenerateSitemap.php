@@ -48,6 +48,11 @@ class GenerateSitemap extends Command
                     return;
                 }
 
+                // skip day_offset urls
+                if (strpos($url->getPath(), '?day_offset') !== false) {
+                    return;
+                }
+
                 return $url;
             })
             ->shouldCrawl(function (UriInterface $url) {
