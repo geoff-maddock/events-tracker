@@ -45,7 +45,7 @@ class GenerateSitemap extends Command
                 }
 
                 // skip user tabs
-                if (strpos($url->segment(1), '?tab') !== false) {
+                if (strpos($url->path(), '?tab') !== false) {
                     return;
                 }
 
