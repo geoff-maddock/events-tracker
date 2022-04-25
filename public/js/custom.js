@@ -231,6 +231,7 @@ var Home = (function()
     {
         this.loadDays();
         this.setupPagination();
+        this.setupAddEvents();
 
         window.addEventListener('popstate', function(event) {
             console.log('popstate fired');
@@ -275,7 +276,21 @@ var Home = (function()
         });
     };
 
+    // when the add events link is clicked, append the events to the bottom
+    var setupAddEvents = function() {
+        console.log('setup add events');
+        $('body').on('click', '#add-event', function(e) {
+            e.preventDefault();
+            console.log('add event');
+            var url = $(this).attr('href');
+            var target = '#home';
 
+            addEvents(url, target);
+
+            console.log('url: ' + url)
+            history.pushState(null, null, window.location.pathname);
+        });
+    };
 
     // load a day's events
     var getDayEvents = function(url, num) {
@@ -300,12 +315,25 @@ var Home = (function()
         });
     };
 
+    // load a whole block of events and append
+    var addEvents = function addEvents(url, target) {
+        $.ajax({
+            url : url
+        }).done(function (data) {
+            $(target).append(data);
+        }).fail(function () {
+            console.log('No events could be loaded.');
+        });
+    };
+
     return {
         init: init,
         loadDays: loadDays,
         setupPagination: setupPagination,
         getDayEvents: getDayEvents,
-        getEvents: getEvents
+        getEvents: getEvents,
+        setupAddEvents: setupAddEvents,
+        addEvents: addEvents
     };
 })();
 
