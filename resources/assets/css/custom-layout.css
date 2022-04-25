@@ -294,3 +294,7 @@ ul.list-click li {
 .max-viewport {
     max-width: 1920px;
 }
+
+.list-style-none {
+    list-style: none;
+}

@@ -23,7 +23,7 @@
 	<!-- DISPLAY THE NEXT FOUR DAYS OF EVENTS -->
 	<?php $today = \Carbon\Carbon::now('America/New_York'); ?>
 	
-	<div class="row small-gutter row-cols-lg-4">
+	<div class="row small-gutter row-cols-lg-4" id="home">
 		@for ($offset = 0; $offset < 4; $offset++)
 		<?php $day = \Carbon\Carbon::parse($date)->addDay($offset); ?>
 			<section class="day" data-num="{{ $offset }}" id="day-position-{{ $offset }}" href="/events/day/{{ $day->format('Y-m-d') }}">
@@ -31,3 +31,12 @@
 			</section>
 		@endfor
 	</div>
+
+	<div class="row d-block d-sm-none">
+		<div class="col-sm-12">
+			<ul class="list-style-none"  class="mt-0">
+				<li>{!! link_to_route('events.upcoming', 'Next Events', ['date' => $next_day_window->format('Ymd')], ['id' => 'add-event', 'class' => 'page-link text-nowrap']) !!}</li>
+			</ul>
+		</div>
+	</div>
+	
