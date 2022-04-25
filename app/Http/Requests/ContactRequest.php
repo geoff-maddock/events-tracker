@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Requests\Request;
-
 class ContactRequest extends Request
 {
     /**
@@ -25,9 +23,6 @@ class ContactRequest extends Request
     {
         return [
             'name' => 'required|min:3',
-            'email' => 'required|min:3',
-            'phone' => 'required|min:3',
-            'other' => 'required|min:3',
             'type' => 'required|min:3',
             'visibility_id' => 'required',
         ];
