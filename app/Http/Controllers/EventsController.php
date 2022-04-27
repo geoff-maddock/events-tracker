@@ -627,6 +627,63 @@ class EventsController extends Controller
         ]);
     }
 
+    /*
+     * Returns a list of four additional events to append to page
+     * @phpstan-param view-string $view
+    */
+    public function indexAdd(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $date = ''
+    ): string {
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_add');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
+
+        // use the window to get the last date and set the criteria between
+        $next_day = Carbon::parse($date)->addDays(1);
+        $next_day_window = Carbon::parse($date)->addDays($this->defaultWindow);
+        $prev_day = Carbon::parse($date)->subDays(1);
+        $prev_day_window = Carbon::parse($date)->subDays($this->defaultWindow);
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['events.start_at' => 'desc']);
+
+        // NOTE normally a query would be created, a list entity result builder configured and events retrieved, but this uses ajax calls
+
+        // handle the request if ajax
+        if ($request->ajax()) {
+            return view('events.addDays')
+                    ->with([
+                        'date' => $date,
+                        'window' => $this->defaultWindow,
+                        'next_day' => $next_day,
+                        'next_day_window' => $next_day_window,
+                        'prev_day' => $prev_day,
+                        'prev_day_window' => $prev_day_window,
+                    ])
+                    ->render();
+        }
+
+        return view('events.upcoming')
+        ->with([
+            'date' => $date,
+            'window' => $this->defaultWindow,
+            'next_day' => $next_day,
+            'next_day_window' => $next_day_window,
+            'prev_day' => $prev_day,
+            'prev_day_window' => $prev_day_window,
+        ]);
+    }
+
     /**
      * Display a listing of today's events.
      *

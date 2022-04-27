@@ -297,4 +297,6 @@ ul.list-click li {
 
 .list-style-none {
     list-style: none;
+    padding-left: 0px;
+    text-align: center;
 }
