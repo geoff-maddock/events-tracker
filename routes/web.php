@@ -186,6 +186,7 @@ Route::match(['get', 'post'], 'events/grid', 'EventsController@indexGrid')->name
 Route::match(['get', 'post'], 'events/photos', 'EventsController@indexPhoto')->name('events.photo');
 Route::get('events/future', 'EventsController@indexFuture')->name('events.future');
 Route::get('events/upcoming/{date?}', 'EventsController@indexUpcoming')->name('events.upcoming');
+Route::get('events/add/{date?}', 'EventsController@indexAdd')->name('events.add');
 Route::get('events/past', 'EventsController@indexPast');
 Route::get('events/week', 'EventsController@indexWeek')->name('events.week');
 Route::get('events/starting/{date}', 'EventsController@indexStarting');

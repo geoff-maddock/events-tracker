@@ -317,9 +317,11 @@ var Home = (function()
 
     // load a whole block of events and append
     var addEvents = function addEvents(url, target) {
+        console.log('add events: '+url)
         $.ajax({
             url : url
         }).done(function (data) {
+            $('.next-events').remove();
             $(target).append(data);
         }).fail(function () {
             console.log('No events could be loaded.');
