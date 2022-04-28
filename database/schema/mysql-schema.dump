@@ -240,6 +240,7 @@ CREATE TABLE `entities` (
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `facebook_username` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `twitter_username` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `started_at` timestamp DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `entities_entity_type_id_index` (`entity_type_id`) USING BTREE,
   KEY `entities_entity_status_id_index` (`entity_status_id`) USING BTREE

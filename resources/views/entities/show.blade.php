@@ -51,7 +51,6 @@
 				<i>{{ $entity->description }}</i><br><br>
 			@endif
 
-			
 				{{ count($entity->follows) }} Follows |
 				@if ($follow = $entity->followedBy($user))
 				<b>You Are Following</b> 
@@ -221,7 +220,10 @@
 				</span>
 			@endif
 			
-
+			@if ($entity->started_at)
+			<small class="text-muted">Started {{ $entity->started_at->format('F Y')  }}</small><br>
+			@endif
+			
 			<div><small class="text-muted">Added by {{ $entity->user->name ?? '' }}</small></div>
 
 			<br>

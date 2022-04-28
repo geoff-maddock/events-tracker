@@ -70,6 +70,12 @@
 	'multiple']) !!}
 	{!! $errors->first('roles','<span class="help-block">:message</span>') !!}
 	</div>
+	<div class="form-group col-md-6">
+		{!! Form::label('started_at','Started At:') !!}
+		{!! Form::dateTimeLocal('started_at', (isset($event->started_at)) ?
+		$event->started_at->format('Y-m-d\\TH:i') : NULL, ['class' => 'form-control form-background']) !!}
+		{!! $errors->first('started_at','<span class="help-block">:message</span>') !!}
+	</div>
 </div>
 
 <div class="row mb-1">
