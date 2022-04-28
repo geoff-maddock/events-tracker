@@ -30,6 +30,7 @@ use Str;
  * @property int|null                                                        $entity_status_id
  * @property int                                                             $created_by
  * @property int|null                                                        $updated_by
+ * @property \Illuminate\Support\Carbon                                      $started_at
  * @property \Illuminate\Support\Carbon                                      $created_at
  * @property \Illuminate\Support\Carbon                                      $updated_at
  * @property string|null                                                     $facebook_username
@@ -96,10 +97,10 @@ class Entity extends Eloquent
     use Notifiable;
 
     protected $fillable = [
-        'name', 'slug', 'short', 'description', 'entity_type_id', 'entity_status_id', 'entity_address_id', 'facebook_username', 'twitter_username', 'created_by',
+        'name', 'slug', 'short', 'description', 'entity_type_id', 'entity_status_id', 'entity_address_id', 'facebook_username', 'twitter_username', 'created_by', 'started_at',
     ];
 
-    protected $dates = ['updated_at'];
+    protected $dates = ['updated_at', 'started_at'];
 
     protected $attributes = [
         'description' => '',
