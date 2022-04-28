@@ -221,7 +221,7 @@
 			@endif
 			
 			@if ($entity->started_at)
-			<small class="text-muted">Started {{ $entity->started_at->format('F Y')  }}</small><br>
+			<br><small class="text-muted">Started {{ $entity->started_at->format('F Y')  }}</small><br>
 			@endif
 			
 			<div><small class="text-muted">Added by {{ $entity->user->name ?? '' }}</small></div>
