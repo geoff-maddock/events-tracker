@@ -49,6 +49,16 @@ class GenerateSitemap extends Command
                     return;
                 }
 
+                // skip edit links
+                if (strpos($url->path(), '/edit') !== false) {
+                    return;
+                }
+
+                // skip follow links
+                if (strpos($url->path(), '/follow') !== false) {
+                    return;
+                }
+
                 // skip day_offset urls
                 if (strpos($url->segment(1), '?day_offset') !== false) {
                     return;
