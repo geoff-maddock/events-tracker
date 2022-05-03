@@ -52,7 +52,7 @@
 
 		<p>
 			@if ($series->eventType)
-				<a href="/events/type/{{ $series->eventType->name }}">{{ $series->eventType->name }}</a> series
+				<a href="/events/type/{{ $series->eventType->slug }}">{{ $series->eventType->name }}</a> series
 				
 				@if (!empty($series->promoter_id))
 					by <a href="/entities/{{$series->promoter->slug }}">{!! $series->promoter->name !!}</a>				
