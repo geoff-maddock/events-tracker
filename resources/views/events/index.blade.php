@@ -4,6 +4,30 @@
 Events @include('events.title-crumbs')
 @endsection
 
+@if (isset($past_events) && count($past_events) > 0)
+@php
+	$first = $past_events[0];
+	if ($primary = $first->getPrimaryPhoto()) {
+		$ogImage = $primary->getStorageThumbnail();
+	}
+@endphp
+@endif 
+
+@if (isset($future_events) && count($future_events) > 0)
+@php
+	$first = $future_events[0];
+	if ($primary = $first->getPrimaryPhoto()) {
+		$ogImage = $primary->getStorageThumbnail();
+	}
+@endphp
+@endif 
+
+@if (isset($ogImage))
+@section('og-image')
+{!! url('/').$ogImage !!}
+@endsection
+@endif
+
 @section('content')
 
 <h1 class="display-6 text-primary">Events @include('events.crumbs')</h1>
