@@ -2,6 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Entity;
+use App\Models\Event;
+use App\Models\Series;
 use Illuminate\Console\Command;
 use Psr\Http\Message\UriInterface;
 use Spatie\Sitemap\SitemapGenerator;
@@ -62,6 +65,26 @@ class GenerateSitemap extends Command
                 // skip day_offset urls
                 if (strpos($url->segment(1), '?day_offset') !== false) {
                     return;
+                }
+
+                // if an event, get the event's updated at time and use
+                if ($url->segment(1) === 'events' && is_numeric($url->segment(2))) {
+                    $event = Event::find($url->segment(2));
+                    $url->setLastModificationDate($event->updated_at);
+                }
+
+                // if a series, get the event's updated at time and use
+                if ($url->segment(1) === 'series' && is_numeric($url->segment(2))) {
+                    $series = Series::find($url->segment(2));
+                    $url->setLastModificationDate($series->updated_at);
+                }
+
+                // if an entity, get the entities's updated at time and use
+                if ($url->segment(1) === 'entities' && gettype($url->segment(2)) === 'string') {
+                    $entity = Entity::where('slug', '=', $url->segment(2))->firstOrFail();
+                    if ($entity !== null) {
+                        $url->setLastModificationDate($entity->updated_at);
+                    }
                 }
 
                 return $url;
