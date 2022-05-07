@@ -7,19 +7,21 @@
 import 'bootstrap';
 import Visibility from './utilities/visibility';
 
-console.log('loaded: /resources/assets/js/app.js');
+// used for dates
+// window.moment = require('moment');
 
-window.moment = require('moment');
+// sweet alert used for flash messages / alerts 
 window.Swal = require('sweetalert2');
+
+// dropzone used for file uploading 
 const { Dropzone } = require("dropzone");
 window.Dropzone = Dropzone;
-
-// add any other dependencies
-window.Vue = require('vue');
 
 // init visibility
 Visibility.init('#event-repo');
 
+// add vue - not currently using
+// window.Vue = require('vue');
 //
 // /**
 //  * Next, we will create a fresh Vue application instance and attach it to

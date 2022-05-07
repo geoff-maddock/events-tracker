@@ -6,7 +6,7 @@
 			data-lightbox="{{ $primary->path }}"
 			data-toggle="tooltip" data-placement="bottom"
 			title="Click to see enlarged image.">
-			<img src="{{ $primary->getStorageThumbnail() }}" alt="{{ $event->name }}" class="thumbnail-image">
+			<img src="{{ $primary->getStorageThumbnail() }}" alt="{{ $event->name }}" class="thumbnail-image"  width="100" height="100">
 		</a>
 	</div>
 	@else
@@ -16,7 +16,7 @@
         data-lightbox="/images/event-placeholder.png"
         data-toggle="tooltip" data-placement="bottom"
 		title="Click to see enlarged image.">
-        <img src="/images/event-placeholder.png" alt="{{ $event->name }}" class="thumbnail-image">
+        <img src="/images/event-placeholder.png" alt="{{ $event->name }}" class="thumbnail-image" width="100" height="100">
     </a>
 	</div>
 	@endif
