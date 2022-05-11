@@ -359,6 +359,21 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     }
 
     /**
+     * Return a count of entities the user is following.
+     */
+    public function countEntitiesFollowing(): int
+    {
+        $entities = Entity::join('follows', 'entities.id', '=', 'follows.object_id')
+            ->where('follows.object_type', '=', 'entity')
+            ->where('follows.user_id', '=', $this->id)
+            ->orderBy('follows.created_at', 'desc')
+            ->select('entities.*')
+            ->count();
+
+        return $entities;
+    }
+
+    /**
      * Return a list of tags the user is following.
      */
     public function getTagsFollowing(): Collection
@@ -369,6 +384,21 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
             ->orderBy('tags.name', 'asc')
             ->select('tags.*')
             ->get();
+
+        return $tags;
+    }
+
+    /**
+     * Return a count of tags the user is following.
+     */
+    public function countTagsFollowing(): int
+    {
+        $tags = Tag::join('follows', 'tags.id', '=', 'follows.object_id')
+            ->where('follows.object_type', '=', 'tag')
+            ->where('follows.user_id', '=', $this->id)
+            ->orderBy('tags.name', 'asc')
+            ->select('tags.*')
+            ->count();
 
         return $tags;
     }
@@ -389,6 +419,21 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     }
 
     /**
+     * Return a count of series the user is following.
+     */
+    public function countSeriesFollowing(): int
+    {
+        $series = Series::join('follows', 'series.id', '=', 'follows.object_id')
+            ->where('follows.object_type', '=', 'series')
+            ->where('follows.user_id', '=', $this->id)
+            ->orderBy('follows.created_at', 'desc')
+            ->select('series.*')
+            ->count();
+
+        return $series;
+    }
+
+    /**
      * Return a list of threads the user is following.
      */
     public function getThreadsFollowing(): Collection
@@ -399,6 +444,21 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
             ->orderBy('follows.created_at', 'desc')
             ->select('threads.*')
             ->get();
+
+        return $threads;
+    }
+
+    /**
+     * Return a count of threads the user is following.
+     */
+    public function countThreadsFollowing(): int
+    {
+        $threads = Thread::join('follows', 'threads.id', '=', 'follows.object_id')
+            ->where('follows.object_type', '=', 'thread')
+            ->where('follows.user_id', '=', $this->id)
+            ->orderBy('follows.created_at', 'desc')
+            ->select('threads.*')
+            ->count();
 
         return $threads;
     }
