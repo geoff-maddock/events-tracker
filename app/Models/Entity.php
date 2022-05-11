@@ -6,6 +6,7 @@ use App\Filters\QueryFilter;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Model as Eloquent;
@@ -14,7 +15,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Str;
 
@@ -286,6 +286,11 @@ class Entity extends Eloquent
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public static function allOrdered(): Collection
+    {
+        return static::orderBy('name', 'ASC')->get();
     }
 
     /**

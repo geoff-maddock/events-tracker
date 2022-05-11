@@ -171,7 +171,7 @@
                             @switch($tabs['following'])
                                 @case('tags')
                                     <div class="card-header bg-primary">
-                                        <h5 class="my-0 fw-normal">Following <span class="badge rounded-pill bg-warning text-dark">{{ $user->tagsFollowingCount }}</span></h3>
+                                        <h5 class="my-0 fw-normal">Following <span class="badge rounded-pill bg-warning text-dark">{{ $user->countTagsFollowing() }}</span></h3>
                                     </div>
                                     <ul  class="nav nav-pills m-2">
                                         <li role="presentation" class="nav-item">
@@ -188,13 +188,13 @@
                                         </li>
                                     </ul>
                                     <div class="card-body">
-                                    @include('tags.list', ['tags' => $user->getTagsFollowing()->take(20)])
+                                    @include('tags.list', ['tags' => $user->getTagsFollowing()])
                                     </div>
                                     @break
 
                                 @case('entities')
                                     <div class="card-header bg-primary">
-                                        <h5 class="my-0 fw-normal">Following <span class="badge rounded-pill bg-warning text-dark">{{ $user->entitiesFollowingCount }}</span></h3>
+                                        <h5 class="my-0 fw-normal">Following <span class="badge rounded-pill bg-warning text-dark">{{ $user->countEntitiesFollowing() }}</span></h3>
                                     </div>
                                     <ul  class="nav nav-pills m-2">
                                         <li role="presentation" class="nav-item">
@@ -217,7 +217,7 @@
 
                                 @case('series')
                                     <div class="card-header bg-primary">
-                                        <h5 class="my-0 fw-normal">Following <span class="badge rounded-pill bg-warning text-dark">{{ $user->seriesFollowingCount }}</span></h3>
+                                        <h5 class="my-0 fw-normal">Following <span class="badge rounded-pill bg-warning text-dark">{{ $user->countSeriesFollowing() }}</span></h3>
                                     </div>
                                     <ul class="nav nav-pills m-2">
                                         <li role="presentation" class="nav-item">
@@ -240,7 +240,7 @@
 
                                 @case('threads')
                                     <div class="card-header bg-primary">
-                                        <h5 class="my-0 fw-normal">Following <span class="badge rounded-pill bg-warning text-dark">{{ $user->threadsFollowingCount }}</span></h3>
+                                        <h5 class="my-0 fw-normal">Following <span class="badge rounded-pill bg-warning text-dark">{{ $user->countThreadsFollowing() }}</span></h3>
                                     </div>
                                     <ul class="nav nav-pills m-2">
                                         <li role="presentation" class="nav-item">

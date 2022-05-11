@@ -20,7 +20,7 @@ Route::get('events/{id}', function ($id) {
 });
 
 Route::get('entities', function () {
-    return Entity::all();
+    return Entity::allOrdered();
 });
 
 Route::get('entities/{id}', function ($id) {
