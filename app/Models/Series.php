@@ -629,6 +629,9 @@ class Series extends Eloquent
             $next = $this->cycleForward($next);
         }
 
+        $next->setHour($this->founded_at->hour);
+        $next->setMinute($this->founded_at->minute);
+
         return $next;
     }
 
