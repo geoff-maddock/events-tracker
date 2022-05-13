@@ -2022,7 +2022,7 @@ class EventsController extends Controller
         // add to activity log
         Activity::log($event, $this->user, 1);
 
-        // Dispatch notifications that the event was created
+        // dispatch notifications that the event was created
         EventCreated::dispatch($event);
 
         flash()->success('Success', 'Your event has been created');
@@ -2033,15 +2033,19 @@ class EventsController extends Controller
             $this->addFbPhoto($event);
         }
 
+        $photo = $event->getPrimaryPhoto();
+
         // make a call to notify all users who are following any of the tags/keywords if the event starts in the future
         if ($event->start_at >= Carbon::now()) {
-            $this->notifyFollowing($event);
+            // only do the notification if there is a photo
+            if ($photo !== null) {
+                $this->notifyFollowing($event);
+            }
         }
 
         // add a twitter notification if the user is admin
         if ($this->user->hasGroup('super_admin') && config('app.twitter_consumer_key') !== '999') {
             // only tweet if there is a primary photo
-            $photo = $event->getPrimaryPhoto();
             if ($photo !== null) {
                 $event->notify(new EventPublished());
             }
@@ -2816,9 +2820,6 @@ class EventsController extends Controller
         $fileName = time().'_'.$request->file->getClientOriginalName();
         $filePath = $request->file('file')->storeAs('photos', $fileName, 'public');
 
-        $fileName = time().'_'.$request->file->getClientOriginalName();
-        $filePath = $request->file('file')->storeAs('photos', $fileName, 'public');
-
         // get the event
         if ($event = Event::find($id)) {
             // make the photo object from the file in the request
@@ -2833,6 +2834,14 @@ class EventsController extends Controller
 
             // attach to event
             $event->addPhoto($photo);
+
+            // make a call to notify all users who are following any of the tags/keywords if the event starts in the future
+            if ($event->start_at >= Carbon::now()) {
+                // only do the notification if there is exactly one photo
+                if (1 === count($event->photos)) {
+                    $this->notifyFollowing($event);
+                }
+            }
         }
     }
 
