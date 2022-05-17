@@ -31,6 +31,9 @@
 					<li class="{{ Request::is('photos') ? 'active' : '' }}"><a href="{{ url('/photos') }}" class="dropdown-item">Photos</a></li>
 					<li role="separator" class="divider"><hr class="dropdown-divider"></li>
                     <li class="{{ Request::is('series') ? 'active' : '' }}"><a href="{{ url('/series') }}" class="dropdown-item">Event Series</a></li>
+					<li class="{{ Request::is('series/following') ? 'active' : '' }}">
+						<a href="{{ url('/series/following') }}" class="dropdown-item">Series Following</a>
+					</li>
 		            <li class="{{ Request::is('series/create') ? 'active' : '' }}"><a href="{!! url('/series/create') !!}" title="Add a reoccurring event series." class="dropdown-item">Add Series</a></li>
 		          </ul>
 		        </li>
@@ -44,8 +47,12 @@
 		          	<li class="{{ Request::is(strtolower('entities/role/'.$role->name)) ? 'active' : '' }}">
 						<a href="{{ url('/entities/role/'.strtolower($role->name)) }}" class="dropdown-item">{{ $role->name }}</a></li>
 		          @endforeach
+					<li class="{{ Request::is('entities/following') ? 'active' : '' }}">
+						<a href="{{ url('/entities/following') }}" class="dropdown-item">Entities Following</a>
+					</li>
 		            <li class="{{ Request::is('entities/create') ? 'active' : '' }}">
-						<a href="{!! url('/entities/create') !!}" class="dropdown-item">Add Entity</a></li>
+						<a href="{!! url('/entities/create') !!}" class="dropdown-item">Add Entity</a>
+					</li>
 		          </ul>
 		        </li>
 				<li class="nav-item dropdown {{ Request::is('calendar') ? 'active' : '' }}">

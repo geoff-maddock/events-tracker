@@ -268,6 +268,8 @@ Route::get('forums/rpp-reset', ['as' => 'forums.rppReset', 'uses' => 'ForumsCont
 Route::resource('forums', 'ForumsController');
 
 // THREADS
+Route::match(['get', 'post'], 'threads/following', 'ThreadsController@indexFollowing')->name('threads.following')->middleware('auth');
+
 Route::bind('threads', function ($id) {
     return Thread::whereId($id)->firstOrFail();
 });
@@ -405,6 +407,8 @@ Route::bind('groups', function ($id) {
 Route::resource('groups', 'GroupsController');
 
 // ENTITIES
+Route::match(['get', 'post'], 'entities/following', 'EntitiesController@indexFollowing')->name('entities.following')->middleware('auth');
+
 Route::post('entities/{id}/photos', 'EntitiesController@addPhoto');
 
 Route::get('entities/type/{type}', 'EntitiesController@indexTypes');
@@ -481,6 +485,9 @@ Route::get('reviews/rpp-reset', ['as' => 'reviews.rppReset', 'uses' => 'ReviewsC
 Route::resource('reviews', 'ReviewsController');
 
 // SERIES
+
+Route::match(['get', 'post'], 'series/following', 'SeriesController@indexFollowing')->name('series.following')->middleware('auth');
+
 Route::get('series/createOccurrence', [
     'as' => 'series.createOccurrence',
     'uses' => 'SeriesController@createOccurrence',

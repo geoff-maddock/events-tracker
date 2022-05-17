@@ -255,6 +255,67 @@ class SeriesController extends Controller
             ->render();
     }
 
+    /**
+     * @throws \Throwable
+     */
+    public function indexFollowing(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_series');
+        $listParamSessionStore->setKeyPrefix('internal_series_index');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([SeriesController::class, 'index']));
+
+        $baseQuery = Series::join('follows', 'series.id', '=', 'follows.object_id')
+            ->where('follows.object_type', '=', 'series')
+            ->where('follows.user_id', '=', $this->user->id)
+            ->orderBy('follows.created_at', 'desc')
+            ->select('series.*');
+
+        // create the base query including any required joins; needs select to make sure only series entities are returned
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['series.created_at' => 'desc'])
+            ->setDefaultFilters(['visibility' => Visibility::VISIBILITY_PUBLIC]);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the events
+        $series = $query
+            ->with('occurrenceType', 'visibility', 'tags')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        return view('series.index')
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters(),
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
+            ->with(['type' => 'Following'])
+            ->with(compact('series'))
+            ->render();
+    }
+
     protected function getListControlOptions(): array
     {
         return [
