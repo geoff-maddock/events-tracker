@@ -283,7 +283,7 @@ var Home = (function()
             e.preventDefault();
             console.log('add event');
             var url = $(this).attr('href');
-            var target = '#home';
+            var target = '.home';
 
             addEvents(url, target);
 
@@ -322,7 +322,8 @@ var Home = (function()
             url : url
         }).done(function (data) {
             $('.next-events').remove();
-            $(target).append(data);
+            $(target).last().after(data);
+            console.log('last targetted '+target);
         }).fail(function () {
             console.log('No events could be loaded.');
         });
