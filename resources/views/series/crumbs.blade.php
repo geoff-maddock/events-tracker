@@ -33,4 +33,4 @@
 @endif 
 @if (isset($cdate))
 	. {{ $cdate->toDateString() }}
-@endif 
+@endif

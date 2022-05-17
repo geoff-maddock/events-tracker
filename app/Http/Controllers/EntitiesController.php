@@ -131,6 +131,70 @@ class EntitiesController extends Controller
             ->render();
     }
 
+    /**
+     * Display a listing of the resource that the user is following.
+     *
+     * @throws \Throwable
+     */
+    public function indexFollowing(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        $this->middleware('auth');
+
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_entity');
+        $listParamSessionStore->setKeyPrefix('internal_entity_index');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        //$baseQuery = Entity::query()->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')->select('entities.*');
+
+        $baseQuery = Entity::join('follows', 'entities.id', '=', 'follows.object_id')
+        ->where('follows.object_type', '=', 'entity')
+        ->where('follows.user_id', '=', $this->user->id)
+        ->select('entities.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort($this->defaultSortCriteria);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the entities
+        $entities = $query
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        return view('entities.index')
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters(),
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
+            ->with(compact('entities'))
+            ->with(['type' => 'Following'])
+            ->render();
+    }
+
     protected function getDefaultFilters(): array
     {
         return [];

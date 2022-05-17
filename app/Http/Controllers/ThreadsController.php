@@ -151,6 +151,73 @@ class ThreadsController extends Controller
     }
 
     /**
+     * Display a listing of the resource that the user is following.
+     *
+     * @throws \Throwable
+     */
+    public function indexFollowing(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with base index key
+        $listParamSessionStore->setBaseIndex('internal_thread');
+        $listParamSessionStore->setKeyPrefix('internal_thread_index');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Thread::join('follows', 'threads.id', '=', 'follows.object_id')
+        ->where('follows.object_type', '=', 'thread')
+        ->where('follows.user_id', '=', $this->user->id)
+        ->orderBy('follows.created_at', 'desc')
+        ->select('threads.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['threads.created_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        /* @phpstan-ignore-next-line */
+        $threads = $query->visible($this->user)
+            ->with('visibility')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        // return json only
+        if (request()->wantsJson()) {
+            return $threads;
+        }
+
+        return view('threads.index')
+                ->with(array_merge(
+                    [
+                        'limit' => $listResultSet->getLimit(),
+                        'sort' => $listResultSet->getSort(),
+                        'direction' => $listResultSet->getSortDirection(),
+                        'hasFilter' => $this->hasFilter,
+                        'filters' => $listResultSet->getFilters(),
+                    ],
+                    $this->getFilterOptions(),
+                    $this->getListControlOptions()
+                ))
+                ->with(compact('threads'))
+                ->with(['type' => 'Followed Threads'])
+                ->render();
+    }
+
+    /**
      * Filter the list of events.
      *
      * @internal param $Request

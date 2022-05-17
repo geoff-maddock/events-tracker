@@ -140,7 +140,16 @@
                                     </li>
                                 </ul>
                                 <div class="card-body">
-                                @include('events.list', ['events' => $user->events ? $user->events->take(20) : null])
+                                    @include('events.list', ['events' => $user->events ? $user->events->take(20) : null])
+
+                                    <div class="d-block" id="created-events">
+                                        <div class="col-sm-12">
+                                            <ul class="list-style-none"  class="mt-0">
+                                                <li>{!! link_to_route('events.index', 'All Events', [], ['id' => 'add-event', 'class' => 'page-link text-nowrap']) !!}</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
                                 </div>
                             @else
                             <div class="card-header bg-primary">
@@ -155,7 +164,15 @@
                                     </li>
                                 </ul>
                                 <div class="card-body">
-                                @include('events.list', ['events' => $user->getAttending()->get()->take(20)])
+                                    @include('events.list', ['events' => $user->getAttending()->get()->take(20)])
+
+                                    <div class="d-block" id="attending-events">
+                                        <div class="col-sm-12">
+                                            <ul class="list-style-none"  class="mt-0">
+                                                <li>{!! link_to_route('events.attending', 'All Events Attending', ['filters[start_at][start]'=> ''], ['id' => 'add-event', 'class' => 'page-link text-nowrap']) !!}</li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
                             @endif
                         @endif
@@ -212,6 +229,13 @@
                                     </ul>
                                     <div class="card-body">
                                         @include('entities.list', ['entities' => $user->getEntitiesFollowing()->take(20)])
+                                        <div class="d-block" id="following-entities">
+                                            <div class="col-sm-12">
+                                                <ul class="list-style-none"  class="mt-0">
+                                                    <li>{!! link_to_route('entities.following', 'All Entities Followed', [], ['id' => 'following-entites', 'class' => 'page-link text-nowrap']) !!}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
                                     </div>
                                     @break
 
@@ -235,6 +259,14 @@
                                     </ul>
                                     <div class="card-body">
                                         @include('series.list', ['series' => $user->getSeriesFollowing()->take(20)])
+
+                                        <div class="d-block" id="following-series">
+                                            <div class="col-sm-12">
+                                                <ul class="list-style-none"  class="mt-0">
+                                                    <li>{!! link_to_route('series.following', 'All Series Followed', [], ['id' => 'following-series', 'class' => 'page-link text-nowrap']) !!}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
                                     </div>
                                     @break
 
@@ -258,6 +290,13 @@
                                     </ul>
                                     <div class="card-body">
                                         @include('threads.list', ['threads' => $user->getThreadsFollowing()->take(20)])
+                                        <div class="d-block" id="following-threads">
+                                            <div class="col-sm-12">
+                                                <ul class="list-style-none"  class="mt-0">
+                                                    <li>{!! link_to_route('threads.following', 'All Followed Threads', [], ['id' => 'following-threads', 'class' => 'page-link text-nowrap']) !!}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
                                     </div>
                                     @break
                             @endswitch
