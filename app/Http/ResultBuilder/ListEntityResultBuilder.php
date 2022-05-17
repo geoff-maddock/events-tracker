@@ -191,8 +191,6 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
         $listResult->setLimit($this->listQueryParameters->getLimit($this->defaultLimit));
         $listResult->setPage($this->listQueryParameters->getPage());
 
-        // dump($listResult);
-
         return $listResult;
     }
 
