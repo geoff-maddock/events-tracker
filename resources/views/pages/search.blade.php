@@ -18,12 +18,12 @@
 </div>
 
 <div class="row">
-	@if (isset($entities) && count($entities) > 0)
-	<div class="col-lg-6">
+	@if (isset($entities) && $entitiesCount > 0)
+	<div class="col-xl-6">
 	<div class="card surface my-2">
 
 		<h5 class="card-header bg-primary">Entities
-			<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Entities that match this search term.">{{ count($entities)}}</span></a>
+			<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Entities that match this search term.">{{ $entitiesCount}}</span></a>
 			<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#search-entities" data-bs-toggle="collapse" aria-expanded="false" aria-controls="search-entities" role="button"></i></a>
 		</h5>
 
@@ -39,17 +39,15 @@
 		No matching entities found.
 	</div>
 	@endif
-	</div>
+</div>
 
-	<div class="row">
-
-	@if (isset($events) && count($events) > 0)
-	<div class="col-lg-6">
-
-		@if (isset($tags) && count($tags) > 0)
+<div class="row">
+	@if (isset($events) && $eventsCount > 0)
+	<div class="col-xl-6">
+		@if (isset($tags) && $tagsCount > 0)
 			<div class="card surface">
 				<h5 class="card-header bg-primary">Tags
-					<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom" title="# of Tags that match this search term.">{{ count($tags)}}</span></a>
+					<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom" title="# of Tags that match this search term.">{{ $tagsCount }}</span></a>
 					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#search-tags" data-bs-toggle="collapse" aria-expanded="false" aria-controls="search-tags" role="button"></i></a>
 				</h5>
 
@@ -61,11 +59,10 @@
 			</div>
 		@endif
 
-
 			<div class="card surface my-2">
 
 				<h5 class="card-header bg-primary">Events
-					<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Events that match this search term.">{{ count($events)}}</span></a>
+					<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Events that match this search term.">{{ $eventsCount}}</span></a>
 					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#search-events" data-bs-toggle="collapse" aria-expanded="false" aria-controls="search-events" role="button"></i></a>
 				</h5>
 
@@ -79,20 +76,18 @@
 	@else
 		<div class="col-lg-12">
 			<div class="bs-component">
-
 					No matching events found.
-
 			</div>
 		</div>
 	@endif
+	</div>
 
-	@if (isset($series) && count($series) > 0)
-	
-	<div class="row">
-	<div class="col-lg-6">
+<div class="row">
+	@if (isset($series) && $seriesCount > 0)
+	<div class="col-xl-6">
 		<div class="card surface">
 			<h5 class="card-header bg-primary">Series
-					<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Series that match this search term.">{{ count($series)}}</span></a>
+					<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Series that match this search term.">{{ $seriesCount}}</span></a>
 					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#search-series" data-bs-toggle="collapse" aria-expanded="false" aria-controls="search-series" role="button"></i></a>
 			</h5>
 			
@@ -103,23 +98,20 @@
 
 		</div>
 	</div>
-</div>
+
 	@else
 	<div class="bs-component">
-
 		No matching series found.
-
 	</div>
 	@endif
+</div>
 
-
-
-	<div class="col-lg-6">
-		@if (isset($users) && count($users) > 0)
+	<div class="col-xl-6">
+		@if (isset($users) && $usersCount > 0)
 		<div class="card surface my-2">
 
 			<h5 class="card-header bg-primary">Users
-				<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Users that match this search term.">{{ count($users)}}</span></a>
+				<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Users that match this search term.">{{ $usersCount}}</span></a>
 				<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#search-users" data-bs-toggle="collapse" aria-expanded="false" aria-controls="search-users" role="button"></i></a>
 			</h5>
 
@@ -138,14 +130,14 @@
 				</div>
 
 		@endif
-	
+	</div>
 
-
-		@if (isset($threads) && count($threads) > 0)
+	<div class="col-xl-6">
+		@if (isset($threads) && $threadsCount > 0)
 		<div class="card surface my-2">
 
 			<h5 class="card-header bg-primary">Threads
-				<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Threads that match this search term.">{{ count($threads)}}</span></a>
+				<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Threads that match this search term.">{{ $threadsCount}}</span></a>
 				<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#search-threads" data-bs-toggle="collapse" aria-expanded="false" aria-controls="search-threads" role="button"></i></a>
 			</h5>
 

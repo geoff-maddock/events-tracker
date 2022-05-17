@@ -114,7 +114,7 @@ class PagesController extends Controller
         $this->limit = 20;
 
         // find matching events by entity, tag or series or name
-        $events = Event::getByEntity(strtolower($slug))
+        $eventQuery = Event::getByEntity(strtolower($slug))
                     ->orWhereHas('tags', function ($q) use ($slug) {
                         $q->where('name', '=', ucfirst($slug));
                     })
@@ -126,11 +126,13 @@ class PagesController extends Controller
                         $query->visible($this->user);
                     })
                     ->orderBy('start_at', 'DESC')
-                    ->orderBy('name', 'ASC')
-                    ->paginate($this->limit);
+                    ->orderBy('name', 'ASC');
+
+        $events = $eventQuery->paginate($this->limit);
+        $eventsCount = $eventQuery->count();
 
         // find matching series by entity, tag or name
-        $series = Series::getByEntity(strtolower($slug))
+        $seriesQuery = Series::getByEntity(strtolower($slug))
                     ->orWhereHas('tags', function ($q) use ($slug) {
                         $q->where('name', '=', ucfirst($slug));
                     })
@@ -139,11 +141,12 @@ class PagesController extends Controller
                         $query->visible($this->user);
                     })
                     ->orderBy('start_at', 'DESC')
-                    ->orderBy('name', 'ASC')
-                    ->paginate($this->limit);
+                    ->orderBy('name', 'ASC');
+        $seriesCount = $seriesQuery->count();
+        $series = $seriesQuery->paginate($this->limit);
 
         // find entities by name, tags or aliases
-        $entities = Entity::where('name', 'like', '%'.$slug.'%')
+        $entitiesQuery = Entity::where('name', 'like', '%'.$slug.'%')
                 ->orWhereHas('tags', function ($q) use ($slug) {
                     $q->where('name', '=', ucfirst($slug));
                 })
@@ -151,28 +154,32 @@ class PagesController extends Controller
                     $q->where('name', '=', ucfirst($slug));
                 })
                 ->orderBy('entity_type_id', 'ASC')
-                ->orderBy('name', 'ASC')
-                ->paginate($this->limit);
+                ->orderBy('name', 'ASC');
+        $entitiesCount = $entitiesQuery->count();
+        $entities = $entitiesQuery->paginate($this->limit);
 
         // find tags by name
-        $tags = Tag::where('name', 'like', '%'.$slug.'%')
-                ->orderBy('name', 'ASC')
-                ->simplePaginate($this->limit);
+        $tagsQuery = Tag::where('name', 'like', '%'.$slug.'%')
+                ->orderBy('name', 'ASC');
+        $tagsCount = $tagsQuery->count();
+        $tags = $tagsQuery->simplePaginate($this->limit);
 
         // find users by name
-        $users = User::where('name', 'like', '%'.$slug.'%')
-                ->orderBy('name', 'ASC')
-                ->simplePaginate($this->limit);
+        $usersQuery = User::where('name', 'like', '%'.$slug.'%')
+                ->orderBy('name', 'ASC');
+        $usersCount = $usersQuery->count();
+        $users = $usersQuery->simplePaginate($this->limit);
 
         // find threads by name
-        $threads = Thread::where('name', 'like', '%'.$slug.'%')
+        $threadsQuery = Thread::where('name', 'like', '%'.$slug.'%')
             ->orWhereHas('tags', function ($q) use ($slug) {
                 $q->where('name', '=', ucfirst($slug));
             })
-            ->orderBy('name', 'ASC')
-            ->paginate($this->limit);
+            ->orderBy('name', 'ASC');
+        $threadsCount = $threadsQuery->count();
+        $threads = $threadsQuery->paginate($this->limit);
 
-        return view('pages.search', compact('events', 'entities', 'series', 'users', 'threads', 'tags', 'slug'));
+        return view('pages.search', compact('events', 'eventsCount', 'entities', 'entitiesCount', 'series', 'seriesCount', 'users', 'usersCount', 'threads', 'threadsCount', 'tags', 'tagsCount', 'slug'));
     }
 
     public function help(): View
