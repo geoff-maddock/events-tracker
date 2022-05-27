@@ -76,7 +76,7 @@ class ThreadsController extends Controller
         $this->sortDirection = $this->defaultSortDirection;
         $this->limit = $this->defaultLimit;
 
-        $this->defaultSortCriteria = ['thread.created_at' => 'desc'];
+        $this->defaultSortCriteria = ['thread.updated_at' => 'desc'];
 
         $this->page = 1;
         $this->hasFilter = false;
@@ -1052,7 +1052,7 @@ class ThreadsController extends Controller
     {
         return [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
-            'sortOptions' => ['threads.name' => 'Name', 'users.name' => 'User', 'threads.created_at' => 'Created At'],
+            'sortOptions' => ['threads.name' => 'Name', 'users.name' => 'User', 'threads.created_at' => 'Created At', 'threads.updated_at' => 'Updated At'],
             'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
         ];
     }
