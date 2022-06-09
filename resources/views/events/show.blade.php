@@ -1,7 +1,9 @@
 @extends('app')
 
 @section('google.event.json')
+@if ($blacklist == false)
 @include('events.google-event-json')
+@endif
 @endsection
 
 @section('title', $event->getDateLastTitleFormat())
