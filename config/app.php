@@ -109,6 +109,8 @@ return [
     'fb_graph_version' => env('FACEBOOK_GRAPH_VERSION'),
     'fb_default_access_token' => env('FACEBOOK_DEFAULT_ACCESS_TOKEN'),
 
+    'spider_blacklist' => env('SPIDER_BLACKLIST'),
+
     'app_name' => env('APP_NAME', 'Event Repo'),
     'name' => env('APP_NAME', 'Event Repo'),
     'tagline' => env('APP_TAGLINE', 'Event Repository'),

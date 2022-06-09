@@ -67,6 +67,16 @@ class GenerateSitemap extends Command
                     return;
                 }
 
+                // blacklist entities in the config
+                if ($blacklist = config('app.spider_blacklist')) {
+                    $blacklistArray = explode(',', $blacklist);
+                    foreach ($blacklistArray as $item) {
+                        if ($url->path() === '/entities/'.$item) {
+                            return;
+                        }
+                    }
+                }
+
                 // if an event, get the event's updated at time and use
                 if ($url->segment(1) === 'events' && is_numeric($url->segment(2))) {
                     $event = Event::find($url->segment(2));
@@ -94,6 +104,16 @@ class GenerateSitemap extends Command
                 // sitemap unless they are present on a crawlable page.
                 if (strpos($url->getPath(), '/photos') !== false) {
                     return false;
+                }
+
+                // blacklist entities in the config
+                if ($blacklist = config('app.spider_blacklist')) {
+                    $blacklistArray = explode(',', $blacklist);
+                    foreach ($blacklistArray as $item) {
+                        if ($url->getPath() === '/entities/'.$item) {
+                            return;
+                        }
+                    }
                 }
 
                 return strpos($url->getPath(), '/storage') === false;

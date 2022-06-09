@@ -1970,6 +1970,24 @@ class EventsController extends Controller
         return back();
     }
 
+    protected function checkBlackList(?Event $event): bool
+    {
+        $blacklist = false;
+
+        // blacklist events that have venues in the blacklist
+        if (!empty($event->venue_id)) {
+            if ($blacklistConfig = config('app.spider_blacklist')) {
+                $blacklistArray = explode(',', $blacklistConfig);
+                foreach ($blacklistArray as $item) {
+                    if (strtolower($item) == strtolower($event->venue->name)) {
+                        $blacklist = true;
+                    }
+                }
+            }
+        };
+        return $blacklist;
+    }
+
     public function show(?Event $event): string
     {
         if (!$event) {
@@ -1977,8 +1995,11 @@ class EventsController extends Controller
         }
 
         $thread = Thread::where('event_id', '=', $event->id)->first();
+        
+        // check blacklist status
+        $blacklist = $this->checkBlackList($event);
 
-        return view('events.show', compact('event'))->with(['thread' => $thread])->render();
+        return view('events.show', compact('event'))->with(['thread' => $thread, 'blacklist' => $blacklist])->render();
     }
 
     public function store(EventRequest $request, Event $event): RedirectResponse
