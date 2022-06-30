@@ -57,6 +57,11 @@ class GenerateSitemap extends Command
                     return;
                 }
 
+                // skip user links
+                if (strpos($url->path(), '/users') !== false) {
+                    return;
+                }
+
                 // skip follow links
                 if (strpos($url->path(), '/follow') !== false) {
                     return;
