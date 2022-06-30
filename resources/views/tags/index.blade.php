@@ -10,7 +10,7 @@ Keyword Tags
 
 @section('content')
 
-<h1 class="display-6 text-primary">Keywords	@include('tags.crumbs')</h1>
+<h1 class="display-crumbs text-primary">Keywords	@include('tags.crumbs')</h1>
 
 <div id="action-menu" class="mb-2">
 	<a href="{{ url('/tags') }}" class="btn btn-info">Show all tags</a>

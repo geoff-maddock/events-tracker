@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h1 class="display-6 text-primary">Forum @include('forums.crumbs')</h4>
+<h1 class="display-crumbs text-primary">Forum @include('forums.crumbs')</h4>
 
 <div id="action-menu" class="mb-2">
 	<a href="{{ url('/forums/all') }}" class="btn btn-info">Show all forums</a>

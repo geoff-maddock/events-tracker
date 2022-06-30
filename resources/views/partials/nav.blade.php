@@ -23,7 +23,6 @@
 					</li>
 					<li class="{{ Request::is('events/grid') ? 'active' : '' }}"><a href="{{ url('/events/grid') }}" class="dropdown-item">Event Grid</a></li>
 					<li class="{{ Request::is('events/week') ? 'active' : '' }}"><a href="{{ url('/events/week') }}" class="dropdown-item">Week's Events</a></li>
-                    <li class="{{ Request::is('events/upcoming') ? 'active' : '' }}"><a href="{{ url('/events/upcoming') }}" class="dropdown-item">Events Upcoming</a></li>
                     <li class="{{ Request::is('events/attending') ? 'active' : '' }}"><a href="{{ url('/events/attending') }}" class="dropdown-item">Events Attending</a></li>
 		            <li class="{{ Request::is('events/feed') ? 'active' : '' }}"><a href="{{ url('/events/feed') }}" target="_blank" rel="noopener" class="dropdown-item">Events Text Only</a></li>
 		            <li class="{{ Request::is('events/create') ? 'active' : '' }}"><a href="{!! url('/events/create') !!}" class="dropdown-item">Add Event</a></li>

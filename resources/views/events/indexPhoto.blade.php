@@ -1,10 +1,10 @@
 @extends('app')
 
-@section('title', 'Events - Grid')
+@section('title', 'Events - Photos')
 
 @section('content')
 
-<h1 class="display-6 text-primary">Event Photos @include('events.crumbs')</h4>
+<h1 class="display-crumbs text-primary">Event Photos @include('events.crumbs')</h4>
 
 <div id="action-menu" class="mb-2">
 	<a href="{!! URL::route('events.index') !!}" class="btn btn-info">Show event index</a>

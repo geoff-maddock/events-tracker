@@ -202,3 +202,7 @@
     display: grid; 
     grid-template-columns:  repeat(auto-fill, minmax(200px, 1fr));
 }
+
+.display-crumbs {
+    line-height: 1.5rem;
+}

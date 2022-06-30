@@ -10,7 +10,7 @@
 
 @section('content')
 
-<h1 class="display-6 text-primary">Entity	@include('entities.crumbs', ['slug' => $entity->name])</h1>
+<h1 class="display-crumbs text-primary">Entity	@include('entities.crumbs', ['slug' => $entity->name])</h1>
 
 <div id="action-menu" class="mb-2">
 @if ($user && Auth::user()->id === ($entity->user ? $entity->user->id : null))

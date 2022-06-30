@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h1 class="display-6 text-primary">Users</h1>
+<h1 class="display-crumbs text-primary">Users</h1>
 <small class="text-muted">public user directory</small>
 
 <div id="filters-container" class="row">

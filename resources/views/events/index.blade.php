@@ -30,7 +30,7 @@ Events @include('events.title-crumbs')
 
 @section('content')
 
-<h1 class="display-6 text-primary">Events @include('events.crumbs')</h1>
+<h1 class="display-crumbs text-primary">Events @include('events.crumbs')</h1>
 
 <div id="action-menu" class="mb-2">
 	<a href="{!! URL::route('events.index') !!}" class="btn btn-info my-1">Show event index</a>

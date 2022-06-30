@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h1 class="display-6 text-primary">Week's Events
+<h1 class="display-crumbs text-primary">Week's Events
 	@include('events.crumbs')
 </h1>
 

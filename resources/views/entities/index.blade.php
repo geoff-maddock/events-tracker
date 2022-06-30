@@ -6,7 +6,7 @@ Entities @include('entities.title-crumbs')
 
 @section('content')
 
-<h1 class="display-6 text-primary">Entities  @include('entities.crumbs')</h1>
+<h1 class="display-crumbs text-primary">Entities  @include('entities.crumbs')</h1>
 
 <div id="action-menu" class="mb-2">
     <a href="{!! URL::route('entities.create') !!}" class="btn btn-primary my-1">Add an entity</a>

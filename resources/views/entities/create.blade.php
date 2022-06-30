@@ -4,7 +4,7 @@
 
 @section('content')
 
-	<h1 class="display-6 text-primary">Add a New Entity</h1>
+	<h1 class="display-crumbs text-primary">Add a New Entity</h1>
 
 	{!! Form::open(['route' => 'entities.store', 'class' => 'form-container']) !!}
 

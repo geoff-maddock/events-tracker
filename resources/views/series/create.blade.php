@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h1 class="display-6 text-primary">Add a New Event Series</h1>
+<h1 class="display-crumbs text-primary">Add a New Event Series</h1>
 
 	{!! Form::open(['route' => 'series.store', 'class' => 'form-container']) !!}
 

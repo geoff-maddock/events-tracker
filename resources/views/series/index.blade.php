@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h1 class="display-6 text-primary">Event Series @include('series.crumbs')</h1>
+<h1 class="display-crumbs text-primary">Event Series @include('series.crumbs')</h1>
 
 <div id="action-menu" class="mb-2">
     <a href="{!! URL::route('series.create') !!}" class="btn btn-primary my-1">Add an event series</a>

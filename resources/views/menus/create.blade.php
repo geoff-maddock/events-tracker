@@ -2,7 +2,7 @@
 
 @section('content')
 
-<h1 class="display-6 text-primary">Add a New Menu</h1>
+<h1 class="display-crumbs text-primary">Add a New Menu</h1>
 
 	{!! Form::open(['route' => 'menus.store']) !!}
 

@@ -4,7 +4,7 @@
 
 @section('content')
 
-	<h1 class="display-6 text-primary">Events Calendar	@include('events.crumbs')</h1>
+	<h1 class="display-crumbs text-primary">Events Calendar	@include('events.crumbs')</h1>
 
 		<div id='calendar'></div>
 @stop

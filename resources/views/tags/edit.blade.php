@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h1 class="display-6 text-primary">Tag . EDIT . {{ $tag->name }}</h1>
+<h1 class="display-crumbs text-primary">Tag . EDIT . {{ $tag->name }}</h1>
 <div id="action-menu" class="mb-2">
 	<a href="{!! route('tags.show', ['tag' => $tag->slug]) !!}" class="btn btn-primary">Show Tag</a>
 	<a href="{!! URL::route('tags.index') !!}" class="btn btn-info">Return to list</a>

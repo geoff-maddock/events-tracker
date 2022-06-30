@@ -6,7 +6,7 @@ Forum Thread "{{ $thread->name }}"
 
 @section('content')
 
-	<h1 class="display-6 text-primary">Forum
+	<h1 class="display-crumbs text-primary">Forum
 		@include('threads.crumbs')
 	</h4>
 
