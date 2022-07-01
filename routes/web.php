@@ -33,7 +33,6 @@ use App\Models\ThreadCategory;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Spatie\Honeypot\ProtectAgainstSpam;
 
 Auth::routes(['verify' => true]);
 

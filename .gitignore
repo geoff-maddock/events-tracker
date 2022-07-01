@@ -1,4 +1,5 @@
 /bootstrap/compiled.php
+/bootstrap/cache/*
 /html/photos
 /html/js/global-config.js
 /node_modules

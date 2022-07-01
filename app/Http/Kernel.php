@@ -7,6 +7,7 @@ use App\Http\Middleware\CheckBanned;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\VerifyCsrfToken;
+use Bepsvpt\SecureHeaders\SecureHeadersMiddleware;
 use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
 use Illuminate\Auth\Middleware\Authorize;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
@@ -21,8 +22,6 @@ use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Routing\Middleware\ValidateSignature;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Bepsvpt\SecureHeaders\SecureHeadersMiddleware;
-use Spatie\Honeypot\ProtectAgainstSpam;
 
 class Kernel extends HttpKernel
 {
@@ -40,9 +39,8 @@ class Kernel extends HttpKernel
         VerifyCsrfToken::class,
         TrimStrings::class,
         ConvertEmptyStringsToNull::class,
-        ProtectAgainstSpam::class,
         CheckBanned::class,
-        SecureHeadersMiddleware::class
+        SecureHeadersMiddleware::class,
     ];
 
     /**
