@@ -29,7 +29,6 @@
 		
 		 <h4>Register</h4>
 		  <form role="form" method="POST" action="{{ url('/register') }}">
-			<x-honeypot />
 			{{ csrf_field() }}
 
 			<div class="form-outline mb-4 {{ $errors->has('name') ? ' has-error' : '' }}">
