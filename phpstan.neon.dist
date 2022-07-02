@@ -8,6 +8,7 @@ parameters:
       - '#Unsafe usage of new static#'
 
   checkMissingIterableValueType: false
+  checkGenericClassInNonGenericObjectType: false
 
 includes:
   - ./vendor/nunomaduro/larastan/extension.neon

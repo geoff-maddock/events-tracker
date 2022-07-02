@@ -1471,6 +1471,7 @@ class EventsController extends Controller
 
         // filter events that are public or created by the logged in user
         $events = $events->filter(function ($e) {
+            /** @var Event $e **/
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
@@ -1984,7 +1985,8 @@ class EventsController extends Controller
                     }
                 }
             }
-        };
+        }
+
         return $blacklist;
     }
 
@@ -1995,7 +1997,7 @@ class EventsController extends Controller
         }
 
         $thread = Thread::where('event_id', '=', $event->id)->first();
-        
+
         // check blacklist status
         $blacklist = $this->checkBlackList($event);
 

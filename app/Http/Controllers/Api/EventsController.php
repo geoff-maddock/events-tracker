@@ -156,7 +156,7 @@ class EventsController extends Controller
         // @phpstan-ignore-next-line
         $events = $query->visible($this->user)
             ->with('visibility', 'venue')
-            ->paginate($listResultSet->getLimit());            
+            ->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();
@@ -1459,6 +1459,7 @@ class EventsController extends Controller
 
         // filter events that are public or created by the logged in user
         $events = $events->filter(function ($e) {
+            /* @var Event $e **/
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 

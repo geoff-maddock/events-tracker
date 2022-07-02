@@ -5,6 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
+/**
+ * App\Models\Visibility.
+ *
+ * @property int    $id
+ * @property string $name
+ **/
 class Visibility extends Eloquent
 {
     use HasFactory;
