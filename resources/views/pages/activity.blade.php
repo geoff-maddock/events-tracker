@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h1 class="display-6 text-primary">Activity</h1>
+<h1 class="display-crumbs text-primary">Activity</h1>
 
 <!-- NAV / FILTER -->
 <div id="filters-container" class="row">

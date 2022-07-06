@@ -1471,7 +1471,7 @@ class EventsController extends Controller
 
         // filter events that are public or created by the logged in user
         $events = $events->filter(function ($e) {
-            /** @var Event $e **/
+            /* @var Event $e */
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 

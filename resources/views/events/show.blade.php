@@ -15,7 +15,7 @@
 
 @section('content')
 
-<h1 class="display-6 text-primary">Events	@include('events.crumbs', ['slug' => $event->name])</h1>
+<h1 class="display-crumbs text-primary">Events	@include('events.crumbs', ['slug' => $event->name])</h1>
 
 <div id="action-menu" class="mb-2">
 	@include('events.show.actions', ['event' => $event, 'user' => $user])
