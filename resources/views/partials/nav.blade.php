@@ -151,7 +151,7 @@
 							<li class="nav-item"><a href="{{ url('/activity')}}" class="dropdown-item">Activity</a></li>
 							@endcan
 							@can('show_admin')
-								<li role="separator" class="divider"><hr class="dropdown-divider"></li>
+								<li role="separator" class="divider dropdown-divider"></li>
 								<li class="nav-item"><a href="#" class="dropdown-item"><b>Admin</b></a></li>
 								<li class="nav-item"><a href="{{ url('/blogs')}}" class="dropdown-item">Blogs</a></li>
 								<li class="nav-item"><a href="{{ url('/categories')}}" title="Show thread categories" class="dropdown-item">Categories</a></li>
@@ -163,13 +163,7 @@
 								<li class="nav-item"><a href="{{ url('/tools')}}" class="dropdown-item">Tools</a></li>
 							@endcan
 
-							<li class="nav-item" role="separator" class="divider visible-xs-block visible-sm-block"><hr class="dropdown-divider"></li>
-							<li class="nav-item"><a href="{{ url('/help')}}" class="visible-xs-block visible-sm-block dropdown-item">Help</a></li>
-							<li class="nav-item"><a href="{{ url('/privacy')}}" class="visible-xs-block visible-sm-block dropdown-item">Privacy</a></li>
-
-							<li><a href="mailto:{{ config('app.feedback') }}" title="Send email to {{ config('app.feedback') }}" class="visible-xs-block visible-sm-block dropdown-item">Feedback</a></li>
-
-							<li role="separator" class="divider"></li>
+							<li role="separator" class="divider dropdown-divider"></li>
 							<li>
 								<a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="dropdown-item">Logout</a>
 								<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">{{ csrf_field() }}</form>
