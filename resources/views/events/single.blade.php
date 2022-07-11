@@ -1,12 +1,12 @@
 <li id="event-{{ $event->id }}" class="event-card {{ $event->pastOrFuture }} flow-root">
 	@if ($primary = $event->getPrimaryPhoto())
 	<div class="event-list-thumbnail">
-		<a href="{{ $primary->getStoragePath() }}" 
+		<a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}" 
 			data-title="{!! $event->start_at->format('l F jS Y') !!} <a href='/events/{{ $event->id }}'>{{ $event->name }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ $event->venue ? $event->venue->name : '' }}</a>"
 			data-lightbox="{{ $primary->path }}"
 			data-toggle="tooltip" data-placement="bottom"
 			title="Click to see enlarged image.">
-			<img src="{{ $primary->getStorageThumbnail() }}" alt="{{ $event->name }}" class="thumbnail-image"  width="100" height="100">
+			<img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}" alt="{{ $event->name }}" class="thumbnail-image"  width="100" height="100">
 		</a>
 	</div>
 	@else

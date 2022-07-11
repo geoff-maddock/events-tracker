@@ -10,7 +10,7 @@
 @section('og-description', $event->short)
 
 @section('og-image')
-@if ($photo = $event->getPrimaryPhoto()){{ URL::to('/').$photo->getStoragePath() }}@endif
+@if ($photo = $event->getPrimaryPhoto()){{ Storage::disk('external')->url($photo->getStoragePath()) }}@endif
 @endsection
 
 @section('content')
@@ -27,7 +27,7 @@
 
 		@if ($photo = $event->getPrimaryPhoto())
 		<div id="event-image">
-			<img src="{{ $photo->getStoragePath() }}" class="img-fluid">
+			<img src="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" class="img-fluid">
 		</div>
 		@endif
 
@@ -186,8 +186,8 @@
 			@foreach ($event->photos->chunk(4) as $set)
 				@foreach ($set as $photo)
 					<div class="col-md-2">
-					<a href="{{ $photo->getStoragePath() }}" data-lightbox="grid" title="Click to see enlarged image"  data-toggle="tooltip" data-placement="bottom">
-						<img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $event->name}}"  class="mw-100">
+					<a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" data-lightbox="grid" title="Click to see enlarged image"  data-toggle="tooltip" data-placement="bottom">
+						<img src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}" alt="{{ $event->name}}"  class="mw-100">
 					</a>
 					@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )
 						@if ($signedIn || $user->id == Config::get('app.superuser'))
@@ -289,9 +289,10 @@ $(document).ready(function(){
 	                location.reload();
 	            });
 				myDropzone.on("error", function (file, message) {
+					console.log(message)
 					Swal.fire({
 						title: "Are you sure?",
-						text: "You cannot upload a file that large.",
+						text: "Error: "+message.message,
 						type: "warning",
 						showCancelButton: true,
 						confirmButtonColor: "#DD6B55",

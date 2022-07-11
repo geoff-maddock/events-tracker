@@ -2,9 +2,9 @@
 
 	@if ($primary = $review->event->getPrimaryPhoto())
 		<div class="event-list-thumbnail">
-			<a href="{{ $primary->getStoragePath() }}" data-lightbox="{{ $primary->getStoragePath() }}"
+			<a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}" data-lightbox="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
 				title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom">
-				<img src="{{ $primary->getStorageThumbnail() }}" alt="{{ $review->event->name}}"  class="thumbnail-image"></a>
+				<img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}" alt="{{ $review->event->name}}"  class="thumbnail-image"></a>
 		</div>
 	@endif
 

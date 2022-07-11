@@ -8,7 +8,7 @@ Events @include('events.title-crumbs')
 @php
 	$first = $past_events[0];
 	if ($primary = $first->getPrimaryPhoto()) {
-		$ogImage = $primary->getStorageThumbnail();
+		$ogImage = Storage::disk('external')->url($primary->getStorageThumbnail());
 	}
 @endphp
 @endif 
@@ -17,7 +17,7 @@ Events @include('events.title-crumbs')
 @php
 	$first = $future_events[0];
 	if ($primary = $first->getPrimaryPhoto()) {
-		$ogImage = $primary->getStorageThumbnail();
+		$ogImage = Storage::disk('external')->url($primary->getStorageThumbnail());
 	}
 @endphp
 @endif 

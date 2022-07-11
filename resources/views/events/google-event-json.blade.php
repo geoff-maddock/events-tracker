@@ -11,7 +11,7 @@
     "eventStatus": "https://schema.org/EventScheduled",
     @if ($photo = $event->getPrimaryPhoto())
     @php
-        $image = substr(config('app.url'),0,-1).$photo->getStoragePath();
+        $image = Storage::disk('external')->url($photo->getStoragePath());
     @endphp
     "image": [
         "{{ $image }}"

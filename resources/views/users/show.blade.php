@@ -100,8 +100,8 @@
                     <div class="row">
                         @foreach ($set as $photo)
                             <div class="col-md-2">
-                                <a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->getStoragePath() }}"><img
-                                            src="{{ $photo->getStorageThumbnail() }}" alt="{{ $user->name}}"
+                                <a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" data-lightbox="{{ Storage::disk('external')->url($photo->getStoragePath()) }}"><img
+                                            src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}" alt="{{ $user->name}}"
                                             class="mw-100"></a>
                                 @if ($signedIn || $user->id == Config::get('app.superuser'))
                                         {!! link_form_bootstrap_icon('bi bi-trash-fill text-warning', $photo, 'DELETE', 'Delete the photo') !!}

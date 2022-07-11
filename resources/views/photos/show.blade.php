@@ -9,7 +9,7 @@
 
 
 @section('og-image')
-{{ URL::to('/').$photo->getStoragePath() }}
+{{ Storage::disk('external')->url($photo->getStoragePath()) }}
 @endsection
 
 @section('content')
@@ -26,7 +26,7 @@
 <div class="row">
 <div class="col-lg-12">
 	<div class="event-card">
-			<img src="{{ $photo->getStoragePath() }}" class="img-fluid">
+			<img src="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" class="img-fluid">
 	</div>
 </div>
 </div>

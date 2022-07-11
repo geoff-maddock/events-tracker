@@ -1,6 +1,6 @@
 # {!! $event->start_at->format('l F jS Y') !!}
 @if ($photo = $event->getPrimaryPhoto())
-<img src="{{ asset($photo->getStoragePath()) }}">  
+<img src="{{ Storage::disk('external')->url($photo->getStoragePath()) }}">  
 
 @endif
 ## {{ $event->name }}  

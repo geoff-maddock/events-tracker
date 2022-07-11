@@ -1,8 +1,11 @@
 <li id="entity-{{ $entity->id }}" class="flow-root event-card @if ($entity->entityStatus->name === " Inactive") mute-card @else card @endif">
 	@if ($primary = $entity->getPrimaryPhoto())
 	<div class="card-thumb  float-start pe-3"">
-			<a href="{{ $primary->getStoragePath() }}" data-lightbox="{{ $primary->getStoragePath() }}" data-bs-toggle="tooltip" title="Click to see enlarged image">
-				<img src="{{ $primary->getStorageThumbnail() }}" alt="{{ $entity->name}}" class="thumbnail-image">
+			<a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
+				data-lightbox="{{ Storage::disk('external')->url($primary->getStoragePath()) }}" 
+				data-bs-toggle="tooltip" 
+				title="Click to see enlarged image">
+				<img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}" alt="{{ $entity->name}}" class="thumbnail-image">
 			</a>
 	</div>
 	@else

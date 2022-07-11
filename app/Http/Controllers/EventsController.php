@@ -45,6 +45,7 @@ use Illuminate\Support\Facades\Session;
 //use Facebook\Exceptions\FacebookSDKException;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Storage;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class EventsController extends Controller
@@ -2841,7 +2842,9 @@ class EventsController extends Controller
         ]);
 
         $fileName = time().'_'.$request->file->getClientOriginalName();
-        $filePath = $request->file('file')->storeAs('photos', $fileName, 'public');
+        $filePath = $request->file('file')->storePubliclyAs('photos', $fileName, 'external');
+
+        // $filePath = Storage::putFile('photos', $fileName, 'public');
 
         // get the event
         if ($event = Event::find($id)) {
@@ -2858,13 +2861,13 @@ class EventsController extends Controller
             // attach to event
             $event->addPhoto($photo);
 
-            // make a call to notify all users who are following any of the tags/keywords if the event starts in the future
-            if ($event->start_at >= Carbon::now()) {
-                // only do the notification if there is exactly one photo
-                if (1 === count($event->photos)) {
-                    $this->notifyFollowing($event);
-                }
-            }
+            // // make a call to notify all users who are following any of the tags/keywords if the event starts in the future
+            // if ($event->start_at >= Carbon::now()) {
+            //     // only do the notification if there is exactly one photo
+            //     if (1 === count($event->photos)) {
+            //         $this->notifyFollowing($event);
+            //     }
+            // }
         }
     }
 

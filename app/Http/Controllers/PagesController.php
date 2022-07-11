@@ -15,7 +15,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use League\Flysystem\FilesystemException;
 
 class PagesController extends Controller
 {
@@ -210,6 +212,14 @@ class PagesController extends Controller
     ): View | string {
         $listParamSessionStore->setBaseIndex('internal_page');
         $listParamSessionStore->setKeyPrefix('internal_page_home');
+
+        // // test writing a simple file to digitalocean
+        // try {
+        //     Storage::disk('external')->write('path.txt', 'contents');
+        //     // it is ok!
+        // } catch (FilesystemException $exception) {
+        //     // it failed!
+        // }
 
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([PagesController::class, 'home']));
