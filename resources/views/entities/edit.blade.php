@@ -33,7 +33,8 @@
 		@foreach ($set as $photo)
 			<div class="col-md-2">
 
-			<a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->getStoragePath() }}"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $entity->name}}"  class="mw-100"></a>
+			<a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" data-lightbox="{{ Storage::disk('external')->url($photo->getStoragePath()) }}">
+				<img src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}" alt="{{ $entity->name}}"  class="mw-100"></a>
 			@if ($user && (Auth::user()->id === $entity->user ? $entity->user->id : null || $user->id === Config::get('app.superuser')))
 				{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $photo, 'DELETE', 'Delete the photo') !!}
 				@if ($photo->is_primary)

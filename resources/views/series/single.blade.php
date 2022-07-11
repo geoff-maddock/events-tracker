@@ -1,12 +1,12 @@
 <li id="series-{{ $series->id }}" class="series-card">
     @if ($primary = $series->getPrimaryPhoto())
     <div class="event-list-thumbnail">
-		<a href="{{ $primary->getStoragePath() }}" 
+		<a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}" 
 			data-title="{{ $series->occurrenceType->name }}  {{ $series->occurrence_repeat }}  <a href='/series/{{ $series->id }}'>{{ $series->name }}</a> @ <a href='/entities/{{ $series->venue ? $series->venue->slug : '' }}'>{{ $series->venue ? $series->venue->name : '' }}</a>"
 			data-lightbox="{{ $primary->path }}"
             title="Click to see enlarged image."
 			data-toggle="tooltip" data-placement="bottom">
-			<img src="{{ $primary->getStorageThumbnail() }}" alt="{{ $series->name }}" class="thumbnail-image">
+			<img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}" alt="{{ $series->name }}" class="thumbnail-image">
 		</a>
 
     </div>

@@ -36,7 +36,8 @@
       @foreach ($event->photos->chunk(4) as $set)
         @foreach ($set as $photo)
           <div class="col-md-2">
-          <a href="{{ $photo->getStoragePath() }}" data-lightbox="{{ $photo->getStoragePath() }}"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $event->name}}" class="mw-100"></a>
+          <a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" data-lightbox="{{ Storage::disk('external')->url($photo->getStoragePath()) }}">
+            <img src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}" alt="{{ $event->name}}" class="mw-100"></a>
           @if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser')))
           @if ($signedIn || $user->id === Config::get('app.superuser'))
             {!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $photo, 'DELETE', 'Delete the photo') !!}
@@ -87,14 +88,14 @@
 	                location.href = 'events/{{ $event->id }}';
 	                location.reload();
 	            });
-	            myDropzone.on("successmultiple", function (file) {
-	                location.href = 'events/{{ $event->id }}';
-	                location.reload();
-	            });
+        myDropzone.on("successmultiple", function (file) {
+            location.href = 'events/{{ $event->id }}';
+            location.reload();
+        });
 				myDropzone.on("error", function (file, message) {
 					Swal.fire({
 						title: "Are you sure?",
-						text: "You cannot upload a file that large.",
+						text: "You cannot upload a file that large. Or can you? "+message,
 						type: "warning",
 						showCancelButton: true,
 						confirmButtonColor: "#DD6B55",

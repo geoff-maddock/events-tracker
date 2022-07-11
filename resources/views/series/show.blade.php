@@ -4,7 +4,7 @@
 @section('og-description', $series->short)
 
 @section('og-image')
-@if ($photo = $series->getPrimaryPhoto()){{ URL::to('/').$photo->getStoragePath() }}@endif
+@if ($photo = $series->getPrimaryPhoto()){{ Storage::disk('external')->url($photo->getStoragePath()) }}@endif
 @endsection
 
 @section('content')
@@ -25,7 +25,7 @@
 
 		@if ($photo = $series->getPrimaryPhoto())
 		<div>
-			<img src="{{ $photo->getStoragePath() }}" class="img-fluid">
+			<img src={{ Storage::disk('external')->url($photo->getStoragePath()) }} class="img-fluid">
 		</div>
 		@endif
 
@@ -172,7 +172,8 @@
 		@foreach ($series->photos->chunk(4) as $set)
 			@foreach ($set as $photo)
 			<div class="col-2">
-				<a href="{{ $photo->getStoragePath() }}" data-lightbox="grid" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $series->name}}" class="mw-100"></a>
+				<a href={{ Storage::disk('external')->url($photo->getStoragePath()) }} data-lightbox="grid" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom">
+					<img src={{ Storage::disk('external')->url($photo->getStorageThumbnail()) }} alt="{{ $series->name}}" class="mw-100"></a>
 				@if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser')))
 					{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning', $photo, 'DELETE', 'Delete the photo') !!}
 					@if ($photo->is_primary)

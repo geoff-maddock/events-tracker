@@ -1,7 +1,7 @@
 <li class="card event-card flow-root">
 	@if ($primary = $user->getPrimaryPhoto())
 	<div class="event-list-thumbnail">
-			<img src="{!! str_replace(' ','%20', $primary->getStorageThumbnail()) !!}" alt="{{ $user->name}}"  class="thumbnail-image">
+			<img src="{!! str_replace(' ','%20', Storage::disk('external')->url($primary->getStoragePath())) !!}" alt="{{ $user->name}}"  class="thumbnail-image">
 	</div>
 	@else
 	<div class="event-list-thumbnail">

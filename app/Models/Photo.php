@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\File;
+use Illuminate\Http\File as HttpFile;
 use Intervention\Image\Facades\Image;
+use Storage;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -60,6 +62,8 @@ class Photo extends Eloquent
 
     const STORAGEDIR = 'storage';
 
+    private $thumbName = '';
+
     protected $fillable = [
         'name', 'path', 'thumbnail', 'caption',
     ];
@@ -102,7 +106,7 @@ class Photo extends Eloquent
 
     public static function fromForm(UploadedFile $file): Photo
     {
-        $name = time().$file->getClientOriginalName(); //12131241filename
+        $name = time().$file->getClientOriginalName();
 
         $photo = new static();
         $photo->name = $name;
@@ -127,6 +131,7 @@ class Photo extends Eloquent
         $this->name = sprintf('%s_%s', time(), $name);
         $this->path = sprintf('%s/%s', $this->baseDir, $this->name);
         $this->thumbnail = sprintf('%s/tn-%s', $this->baseDir, $this->name);
+        $this->thumbName = sprintf('tn-%s', $this->name);
         $this->caption = $name;
 
         return $this;
@@ -147,9 +152,17 @@ class Photo extends Eloquent
 
     public function makeThumbnail(): Photo
     {
-        Image::make('storage/'.$this->path)
+        // builds an image given the path of the file on the external disk, then creates a version
+        $image = Image::make(Storage::disk('external')->url($this->path))
             ->fit(200)
             ->save('storage/'.$this->thumbnail);
+
+        $saved_image_uri = $image->basePath();
+
+        $path = Storage::disk('external')->putFileAs('photos', new HttpFile($saved_image_uri), $this->thumbName, 'public');
+        
+        $image->destroy();
+        unlink($saved_image_uri);
 
         return $this;
     }
@@ -171,11 +184,15 @@ class Photo extends Eloquent
 
     public function getStoragePath(): string
     {
-        return '/storage/'.$this->path;
+        // changed for external / s3 storage
+        return $this->path;
+        //return '/storage/'.$this->path;
     }
 
     public function getStorageThumbnail(): string
     {
-        return '/storage/'.$this->thumbnail;
+        // changed for external / s3 storage
+        return $this->thumbnail;
+        //return '/storage/'.$this->thumbnail;
     }
 }

@@ -5,7 +5,7 @@
 @section('og-description', $entity->short)
 
 @section('og-image')
-@if ($photo = $entity->getPrimaryPhoto()){{ URL::to('/').$photo->getStoragePath() }}@endif
+@if ($photo = $entity->getPrimaryPhoto()){{ Storage::disk('external')->url($photo->getStoragePath()) }}@endif
 @endsection
 
 @section('content')
@@ -25,7 +25,7 @@
 
 			@if ($photo = $entity->getPrimaryPhoto())
 			<div id="event-image">
-				<img src="{{ $photo->getStoragePath() }}" class="img-fluid" alt="{{ $entity->name}}">
+				<img src="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" class="img-fluid" alt="{{ $entity->name}}">
 			</div>
 			@endif
 
@@ -241,7 +241,8 @@
 			@foreach ($entity->photos->chunk(4) as $set)
 				@foreach ($set as $photo)
 				<div class="col-2">
-					<a href="{{ $photo->getStoragePath() }}" data-lightbox="grid" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom"><img src="{{ $photo->getStorageThumbnail() }}" alt="{{ $entity->name}}"  class="mw-100"></a>
+					<a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" data-lightbox="grid" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom">
+						<img src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}" alt="{{ $entity->name}}"  class="mw-100"></a>
 					@if ($user && (Auth::user()->id == ($entity->user ? $entity->user->id : null) || $user->id == Config::get('app.superuser')))
 						{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning', $photo, 'DELETE', 'Delete the photo') !!}
 						@if ($photo->is_primary)
