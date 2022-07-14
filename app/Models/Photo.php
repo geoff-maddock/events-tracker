@@ -62,7 +62,7 @@ class Photo extends Eloquent
 
     const STORAGEDIR = 'storage';
 
-    private $thumbName = '';
+    private string $thumbName = '';
 
     protected $fillable = [
         'name', 'path', 'thumbnail', 'caption',
@@ -160,7 +160,8 @@ class Photo extends Eloquent
         $saved_image_uri = $image->basePath();
 
         $path = Storage::disk('external')->putFileAs('photos', new HttpFile($saved_image_uri), $this->thumbName, 'public');
-        
+
+        // clean up local files
         $image->destroy();
         unlink($saved_image_uri);
 
@@ -169,10 +170,7 @@ class Photo extends Eloquent
 
     public function delete()
     {
-        File::delete([
-            $this->path,
-            $this->thumbnail,
-        ]);
+        Storage::disk('external')->delete([$this->path, $this->thumbnail]);
 
         return parent::delete();
     }

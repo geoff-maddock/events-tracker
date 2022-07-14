@@ -42,8 +42,7 @@ use Illuminate\Support\Str;
  * @property string|null                                                   $locked_at
  * @property int|null                                                      $locked_by
  * @property int|null                                                      $event_id
- * @property \Illuminate\Database\Eloquent\Collection                      $tags;
- * @property \Illuminate\Database\Eloquent\Collection|Tag[]                $tags
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[]    $tags;
  * @property \App\Models\User|null                                         $creator
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Entity[] $entities
  * @property int|null                                                      $entities_count

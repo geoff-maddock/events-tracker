@@ -13,7 +13,7 @@
 		"suin/php-rss-writer": "^1.5",
 		"laravel/tinker": "^2.5",
 		"predis/predis": "^1.1",
-		"pusher/pusher-php-server": "^4.1",
+		"pusher/pusher-php-server": "^7.0",
 		"eluceo/ical": "^0.16.0",
         "laravel/ui": "^3.3",
 		"orangehill/iseed": "^3.0",

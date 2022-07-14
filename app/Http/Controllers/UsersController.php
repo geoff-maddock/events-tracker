@@ -399,7 +399,7 @@ class UsersController extends Controller
         ]);
 
         $fileName = time().'_'.$request->file->getClientOriginalName();
-        $filePath = $request->file('file')->storeAs('photos', $fileName, 'public');
+        $filePath = $request->file('file')->storePubliclyAs('photos', $fileName, 'external');
 
         // attach to user
         if ($user = User::find($id)) {
