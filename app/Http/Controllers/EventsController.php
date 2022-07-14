@@ -42,7 +42,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
-//use Facebook\Exceptions\FacebookSDKException;
+
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Storage;
@@ -1876,11 +1876,15 @@ class EventsController extends Controller
 
             if ($cover = $fbEvent->cover) {
                 $source = $cover['source'];
+                
+                // temporarily store the file
                 $content = file_get_contents($source);
-
                 $fileName = time().'_temp.jpg';
                 file_put_contents(storage_path().'/app/public/photos/'.$fileName, $content);
                 $file = new UploadedFile(storage_path().'/app/public/photos/'.$fileName, 'temp.jpg', null, null, false);
+
+                // store the file externally
+                $stored = Storage::disk('external')->putFileAs('photos', $file, $fileName, 'public');
 
                 // make the photo object from the file in the request
                 $photo = $this->makePhoto($file);
@@ -1895,6 +1899,9 @@ class EventsController extends Controller
                     // attach to event
                     $event->addPhoto($photo);
                 }
+                
+                // remove the original file
+                unlink($file->getPathname());
             }
         } catch (Exception $e) {
             flash()->error('Error', 'You could not import the image.  Error: '.$e->getMessage());
@@ -1943,11 +1950,15 @@ class EventsController extends Controller
 
             // get the cover from FB
             if (($cover = $fbEvent->cover) && ($source = $cover->getField('source'))) {
-                $content = file_get_contents($source);
 
+                // temporarily store the file
+                $content = file_get_contents($source);
                 $fileName = time().'_temp.jpg';
                 file_put_contents(storage_path().'/app/public/photos/'.$fileName, $content);
                 $file = new UploadedFile(storage_path().'/app/public/photos/'.$fileName, 'temp.jpg', null, null, false);
+
+                // store the file externally
+                $stored = Storage::disk('external')->putFileAs('photos', $file, $fileName, 'public');
 
                 // make the photo object from the file in the request
                 /** @var Photo $photo */
@@ -1964,6 +1975,9 @@ class EventsController extends Controller
                     /* @var Event $event */
                     $event->addPhoto($photo);
                 }
+
+                // remove the original file
+                unlink($file->getPathname());
             }
         }
 
@@ -2046,6 +2060,7 @@ class EventsController extends Controller
         // add to activity log
         Activity::log($event, $this->user, 1);
 
+        // TODO figure out why this is failing after Laravel 9 upgrade - doesnt seem to be doing anything, so no big deal..
         // dispatch notifications that the event was created
         EventCreated::dispatch($event);
 
@@ -2844,8 +2859,6 @@ class EventsController extends Controller
         $fileName = time().'_'.$request->file->getClientOriginalName();
         $filePath = $request->file('file')->storePubliclyAs('photos', $fileName, 'external');
 
-        // $filePath = Storage::putFile('photos', $fileName, 'public');
-
         // get the event
         if ($event = Event::find($id)) {
             // make the photo object from the file in the request
@@ -2861,13 +2874,13 @@ class EventsController extends Controller
             // attach to event
             $event->addPhoto($photo);
 
-            // // make a call to notify all users who are following any of the tags/keywords if the event starts in the future
-            // if ($event->start_at >= Carbon::now()) {
-            //     // only do the notification if there is exactly one photo
-            //     if (1 === count($event->photos)) {
-            //         $this->notifyFollowing($event);
-            //     }
-            // }
+            // make a call to notify all users who are following any of the tags/keywords if the event starts in the future
+            if ($event->start_at >= Carbon::now()) {
+                // only do the notification if there is exactly one photo
+                if (1 === count($event->photos)) {
+                    $this->notifyFollowing($event);
+                }
+            }
         }
     }
 

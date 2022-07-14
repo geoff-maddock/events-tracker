@@ -748,7 +748,7 @@ class EntitiesController extends Controller
         ]);
 
         $fileName = time().'_'.$request->file->getClientOriginalName();
-        $filePath = $request->file('file')->storeAs('photos', $fileName, 'public');
+        $filePath = $request->file('file')->storePubliclyAs('photos', $fileName, 'external');
 
         // attach to entity
         if ($entity = Entity::find($id)) {
@@ -768,8 +768,7 @@ class EntitiesController extends Controller
 
     protected function makePhoto(UploadedFile $file): Photo
     {
-        return Photo::named($file->getClientOriginalName())
-            ->makeThumbnail();
+        return Photo::named($file->getClientOriginalName())->makeThumbnail();
     }
 
     /**
