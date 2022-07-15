@@ -7,6 +7,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\Twitter\TwitterChannel;
 use NotificationChannels\Twitter\TwitterStatusUpdate;
+use Storage;
 
 class EventPublished extends Notification
 {
@@ -62,7 +63,10 @@ class EventPublished extends Notification
     public function toTwitter($notifiable): TwitterStatusUpdate
     {
         if ($photo = $notifiable->getPrimaryPhoto()) {
-            return (new TwitterStatusUpdate($notifiable->getBriefFormat()))->withImage($photo->getTwitterPath());
+            // copy the file to local
+            $path = Storage::disk('local')->put($photo->name, Storage::disk('external')->get($photo->getTwitterPath()));
+
+            return (new TwitterStatusUpdate($notifiable->getBriefFormat()))->withImage($path);
         }
 
         return new TwitterStatusUpdate($notifiable->getBriefFormat());

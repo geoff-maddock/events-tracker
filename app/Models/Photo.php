@@ -177,7 +177,8 @@ class Photo extends Eloquent
 
     public function getTwitterPath(): string
     {
-        return 'storage/'.$this->path;
+        // return 'storage/'.$this->path;
+        return $this->path;
     }
 
     public function getStoragePath(): string
