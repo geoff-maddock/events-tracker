@@ -2239,10 +2239,12 @@ class EventsController extends Controller
 
             return back();
         }
-        // $photo = $event->getPrimaryPhoto();
+        $photo = $event->getPrimaryPhoto();
         // die($photo->name);
         // die($photo->getTwitterPath());
         // die(Storage::disk('external')->url($photo->getTwitterPath()));
+        // $path = Storage::disk('local')->put($photo->name, Storage::disk('external')->get($photo->getTwitterPath()));
+        // die($path);
 
         // add a twitter notification
         $event->notify(new EventPublished());
