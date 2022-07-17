@@ -64,9 +64,11 @@ class EventPublished extends Notification
     {
         if ($photo = $notifiable->getPrimaryPhoto()) {
             // copy the file to local
-            $path = Storage::disk('public')->put($photo->name, Storage::disk('external')->get($photo->getTwitterPath()));
+            $temp = Storage::disk('external')->get($photo->getTwitterPath());
+            $public = Storage::disk('public');
+            $public->put('./photos/temp/'.$photo->name, $temp);
 
-            return (new TwitterStatusUpdate($notifiable->getBriefFormat()))->withImage($photo->path);
+            return (new TwitterStatusUpdate($notifiable->getBriefFormat()))->withImage('storage/photos/temp/'.$photo->name);
         }
 
         return new TwitterStatusUpdate($notifiable->getBriefFormat());
