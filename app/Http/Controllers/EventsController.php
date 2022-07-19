@@ -2245,7 +2245,7 @@ class EventsController extends Controller
 
         // unlink the temp file
         if ($photo = $event->getPrimaryPhoto()) {
-            unlink('storage/photos/temp/'.$photo->name);
+            unlink(storage_path().'/app/public/photos/temp/'.$photo->name);
         };
 
         Log::info('User '.$id.' tweeted '.$event->name);
