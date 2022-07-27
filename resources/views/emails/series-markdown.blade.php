@@ -1,7 +1,7 @@
 # {{ $series->occurrenceType->name }}  {{ $series->occurrence_repeat }}  
 
 @if ($photo = $series->getPrimaryPhoto())
-<img src=""{{ Storage::disk('external')->url($photo->getStoragePath()) }}"">  
+<img src="{{ Storage::disk('external')->url($photo->getStoragePath()) }}">  
 
 @endif
 ## {{ $series->name }}  
