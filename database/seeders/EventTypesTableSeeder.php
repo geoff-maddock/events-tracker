@@ -128,6 +128,13 @@ class EventTypesTableSeeder extends Seeder
                 'created_at' => '2016-03-28 18:20:54',
                 'updated_at' => '2016-03-28 18:20:54',
             ],
+            16 => [
+                'id' => 17,
+                'name' => 'Comedy',
+                'slug' => 'Comedy',
+                'created_at' => '2016-03-28 18:20:54',
+                'updated_at' => '2016-03-28 18:20:54',
+            ],
         ]);
     }
 }
