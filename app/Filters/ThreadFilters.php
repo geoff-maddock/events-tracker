@@ -48,7 +48,7 @@ class ThreadFilters extends QueryFilter
     {
         if (isset($value)) {
             return $this->builder->whereHas('series', function ($q) use ($value) {
-                $q->where('name', '=', ucfirst($value));
+                $q->where('slug', '=', $value);
             });
         } else {
             return $this->builder;
