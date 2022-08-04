@@ -33,7 +33,8 @@
                     {!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
                     [
                         'class' =>'form-control form-background',
-                        'name' => 'filters[name]'
+                        'name' => 'filters[name]',
+                        'data-theme' => 'bootstrap-5',
                     ]
                     ) !!}
                 </div>
@@ -60,6 +61,19 @@
                         'class' => 'form-select select2 form-background',
                         'data-placeholder' => 'Select a tag',
                         'name' => 'filters[tag]'
+                    ]
+                    ) !!}
+                </div>
+
+                <div class="col-sm">
+                    {!! Form::label('filter_series','Filter By Series') !!}
+                    {!! Form::select('filter_series', $seriesOptions, (isset($filters['series']) ? $filters['series'] : NULL),
+                    [
+                        'data-theme' => 'bootstrap-5',
+                        'data-width' => '100%',
+                        'class' => 'form-select select2 form-background',
+                        'data-placeholder' => 'Select a series',
+                        'name' => 'filters[series]'
                     ]
                     ) !!}
                 </div>
