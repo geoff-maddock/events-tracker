@@ -220,6 +220,13 @@ Route::get(
         'uses' => 'EventsController@export',
     ]
 );
+Route::get(
+    'events/export-attending',
+    [
+        'as' => 'events.export.attending',
+        'uses' => 'EventsController@exportAttending',
+    ]
+);
 
 Route::get('events/{id}/importPhoto', [
     'as' => 'events.importPhoto',
