@@ -400,3 +400,8 @@ a.fc-col-header-cell-cushion {
 .item-title {
     color: #7be0ee !important;
 }
+
+
+.item-title:hover {
+    color: #5bc0dc !important;
+}
