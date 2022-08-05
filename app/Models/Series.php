@@ -422,7 +422,7 @@ class Series extends Eloquent
      */
     public function threads(): BelongsToMany
     {
-        return $this->belongsToMany(Thread::class)->withTimestamps();
+        return $this->belongsToMany(Thread::class)->orderBy('created_at', 'DESC')->withTimestamps();
     }
 
     /**

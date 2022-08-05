@@ -276,7 +276,7 @@ Route::bind('threads', function ($id) {
 Route::get('threads/all', 'ThreadsController@indexAll');
 Route::get('threads/category/{slug}', 'ThreadsController@indexCategories');
 Route::get('threads/tag/{tag}', 'ThreadsController@indexTags')->name('threads.tag');
-Route::get('threads/series/{tag}', 'ThreadsController@indexSeries');
+Route::get('threads/series/{tag}', 'ThreadsController@indexSeries')->name('threads.series');
 Route::get('threads/related-to/{slug}', 'ThreadsController@indexRelatedTo');
 Route::post('threads/{thread}/posts', 'PostsController@store');
 Route::get('threads/{id}/lock', 'ThreadsController@lock')->name('threads.lock');

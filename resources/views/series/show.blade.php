@@ -129,8 +129,8 @@
 				<div class="card bg-dark">
 
 					<h5 class="card-header bg-primary">
-						Posts
-							<a href="#" ><span class='badge rounded-pill bg-dark float-end' data-toggle="tooltip" data-placement="bottom"  title="# of Threads that match this search term.">{{ count($threads)}}</span></a>
+						Latest Thread
+							<a href="{!! route('threads.series', ['tag' => $series->slug]) !!}"><span class='badge rounded-pill bg-dark float-end' data-toggle="tooltip" data-placement="bottom"  title="# of Threads that match this search term.">{{ count($threads)}}</span></a>
 					</h5>
 
 					<div class="card-body">
