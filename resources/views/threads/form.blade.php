@@ -85,9 +85,9 @@
 <div class="row">
 	<div class="form-group col-md-2">
 	{!! Form::label('series_list','Related Series:') !!}
-	{!! Form::select('series_list[]', $seriesOptions, isset($thread) ? $thread->series->pluck('id', 'id')->all() : NULL, ['id' => 'series_list', 'class' =>'form-control select2',
-	 'data-placeholder' => 'Choose a related event series',
-	 'data-tags' => 'false',
+	{!! Form::select('series_list[]', $seriesOptions, null, ['id' => 'series_list', 'class' =>'form-control select2',
+	 'data-placeholder' => 'Choose a related series',
+	 'data-tags' => 'true',
 	  'multiple']) !!}
 	{!! $errors->first('series','<span class="help-block">:message</span>') !!}
 	</div>

@@ -638,7 +638,7 @@ class ThreadsController extends Controller
             'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'eventOptions' => ['' => ''] + Event::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'seriesOptions' => ['' => ''] + Series::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'seriesOptions' => Series::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'forumOptions' => ['' => ''] + Forum::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
         ];
     }
