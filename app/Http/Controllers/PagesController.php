@@ -121,9 +121,6 @@ class PagesController extends Controller
                     ->orWhereHas('series', function ($q) use ($search) {
                         $q->where('name', '=', ucfirst($search));
                     })
-                    ->orWhereHas('entities', function ($q) use ($search) {
-                        $q->where('name', '=', ucfirst($search));
-                    })
                     ->orWhere('name', 'like', '%'.$search.'%')
                     ->where(function ($query) {
                         $query->visible($this->user);
