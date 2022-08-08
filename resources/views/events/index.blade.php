@@ -40,7 +40,7 @@ Events @include('events.title-crumbs')
 	<a href="{!! URL::route('series.create') !!}" class="btn btn-primary my-1">Add an event series</a>
 	@if (isset($slug) && $slug == 'Attending')
 	<a href="{!! URL::route('events.export.attending') !!}" class="btn btn-primary my-1" target="_blank">Export</a>
-    @else
+    @elseif (!isset($slug))
 	<a href="{!! URL::route('events.export') !!}" class="btn btn-primary my-1" target="_blank">Export</a>
 	@endif
 </div>
