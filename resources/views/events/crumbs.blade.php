@@ -34,3 +34,6 @@
 @if (isset($cdate))
 . {{ $cdate->toDateString() }}
 @endif
+@if (isset($search))
+. {{ ucfirst($search) }}
+@endif

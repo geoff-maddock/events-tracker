@@ -29,7 +29,7 @@
 
 		<div class="card-body collapsible collapse show" id="search-entities">
 				@include('entities.list', ['entities' => $entities])
-				{!! $entities->appends(['keyword' => $slug])->render() !!}
+				{!! $entities->appends(['keyword' => $search])->render() !!}
 		</div>
 	</div>
 	</div>
@@ -53,7 +53,7 @@
 
 				<div class="card-body collapsible collapse show" id="search-tags">
 				@include('tags.list', ['tags' => $tags])
-				{!! $tags->appends(['keyword' => $slug])->render() !!}
+				{!! $tags->appends(['keyword' => $search])->render() !!}
 				</div>
 
 			</div>
@@ -68,7 +68,7 @@
 
 				<div class="card-body collapsible collapse show" id="search-events">
 				@include('events.list', ['events' => $events])
-				{!! $events->appends(['keyword' => $slug])->links() !!}
+				{!! $events->appends(['keyword' => $search])->links() !!}
 				</div>
 
 			</div>
@@ -93,7 +93,7 @@
 			
 			<div class="card-body collapsible collapse show" id="search-series">
 			@include('series.list', ['series' => $series])
-			{!! $series->appends(['keyword' => $slug])->render() !!}
+			{!! $series->appends(['keyword' => $search])->render() !!}
 			</div>
 
 		</div>
@@ -117,7 +117,7 @@
 
 			<div class="card-body collapsible collapse show" id="search-users">
 			@include('users.list', ['users' => $users])
-			{!! $users->appends(['keyword' => $slug])->links() !!}
+			{!! $users->appends(['keyword' => $search])->links() !!}
 			</div>
 
 		</div>
@@ -143,7 +143,7 @@
 
 			<div class="card-body collapsible collapse show" id="search-threads">
 				@include('threads.list', ['threads' => $threads])
-				{!! $threads->appends(['keyword' => $slug])->render() !!}
+				{!! $threads->appends(['keyword' => $search])->render() !!}
 			</div>
 		</div>
 		@else
