@@ -4,6 +4,7 @@
 
 @section('content')
 
+	<!-- Break this out into it's own template partial -->
 	<div id="home-jumbotron" class="bg-light p-5 rounded-lg m-3 primary-gradient">
 		{{--https://www.grabient.com/--}}
 
@@ -23,7 +24,6 @@
 			@endif
 			</p>
 		</div>
-
 	</div>
 
 	<section id="4days" class="container-fluid">
