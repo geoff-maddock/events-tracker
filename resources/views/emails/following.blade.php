@@ -48,9 +48,6 @@ You might be interested in this new event because you are following <b>{!! $obje
 	</a>
 	@endif
 
-
-	{{ $event->attendingCount }} users attending
-
  	<br><br>
 
 	<p>

@@ -52,8 +52,6 @@ Good morning!
 		</a>
 		@endif
 
-		{{ $event->attendingCount }} users attending
-
 		<br><br>
 
 		<p>

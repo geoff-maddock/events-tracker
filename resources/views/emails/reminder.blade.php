@@ -49,9 +49,6 @@ Here is a reminder about this event that you are attending.
 	</a>
 	@endif
 
-
-	{{ $event->attendingCount }} users attending
-
  	<br><br>
 
 	<p>
