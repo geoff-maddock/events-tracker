@@ -1,7 +1,11 @@
 @extends('app')
 
 @section('google.event.json')
-@if (config('app.spider_blacklist') == false)
+@if (config('app.spider_blacklist') !== null )
+@if (strtolower($event->venue->name) !== strtolower(config('app.spider_blacklist')))
+@include('events.google-event-json')
+@endif
+@else
 @include('events.google-event-json')
 @endif
 @endsection
