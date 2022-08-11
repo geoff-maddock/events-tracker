@@ -64,7 +64,7 @@ class EntitiesController extends Controller
         $this->defaultLimit = 5;
         $this->defaultSort = 'name';
         $this->defaultSortDirection = 'asc';
-        $this->defaultSortCriteria = ['entities.name' => 'asc'];
+        $this->defaultSortCriteria = ['entities.created_at' => 'desc'];
 
         $this->limit = $this->defaultLimit;
         $this->sort = $this->defaultSort;
