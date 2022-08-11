@@ -766,8 +766,6 @@ class Event extends Eloquent
 
         $format .= ' on '.$this->start_at->format('D F jS');
 
-        $format .= ' • ';
-
         return $format;
     }
 
@@ -780,8 +778,6 @@ class Event extends Eloquent
             $format .= ' at ';
             $format .= $this->venue->name ?? 'No venue specified';
         }
-
-        $format .= ' • ';
 
         return $format;
     }
