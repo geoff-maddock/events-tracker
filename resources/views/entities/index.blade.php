@@ -128,7 +128,7 @@ Entities @include('entities.title-crumbs')
 </div>
 
 <div id="list-container" class="row">
-    <div class="col-md-12 col-lg-6">
+    <div>
 
         {!! $entities->onEachSide(2)->links() !!}
 

@@ -43,7 +43,7 @@
 .event-card {
 	padding: 10px;
     background-color: rgba(55,80,100,1) !important;
-	margin-bottom: 15px;
+	/* margin-bottom: 15px; */
 	border-radius: 5px;
 	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
 	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);

@@ -126,9 +126,27 @@ img.thumbnail-image {
 	font-size: .75rem;
 }
 
+.day-list {
+	list-style-type: none;
+	padding-left: 0px;
+}
+
 .event-list, .list {
 	list-style-type: none;
 	padding-left: 0px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 10px;
+}
+
+@media only screen and (max-width: 600px) {
+    .event-list, .list {
+        list-style-type: none;
+        padding-left: 0px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 10px;
+    }
 }
 
 /* additional css for bootstrap 5 */

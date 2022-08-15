@@ -198,7 +198,7 @@ Events @include('events.title-crumbs')
 
 	@if (isset($events))
 		@if (count($events) > 0)
-		<div id="all-events-list" class="col-lg-6">
+		<div id="all-events-list">
 			<div class="bs-component">
 				<div class="panel panel-info">
 
