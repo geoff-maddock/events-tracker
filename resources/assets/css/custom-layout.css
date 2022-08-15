@@ -131,6 +131,10 @@ img.thumbnail-image {
 	padding-left: 0px;
 }
 
+.day-list li {
+    margin-bottom: 10px;
+}
+
 .event-list, .list {
 	list-style-type: none;
 	padding-left: 0px;
