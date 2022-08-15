@@ -37,11 +37,39 @@
 				</div>
 				<div class="card-body week-text">
 					<?php $events = App\Models\Event::starting($day->format('Y-m-d'))->get(); ?>
-					@include('events.list', ['events' => $events])
+					@if (count($events) > 0)
+
+					<ul class='day-list'>
+						<?php $month = '';?>
+						@foreach ($events as $event)
+									@include('events.single', ['event' => $event])
+						@endforeach
+					</ul>
+					
+					@else
+						<div><small>No events listed today.</small></div>
+					@endif
 
 					<!-- find all series that would fall on this date -->
 					<?php $series = App\Models\Series::byNextDate($day->format('Y-m-d')); ?>
-					@include('series.list', ['series' => $series])
+					@if (count($series) > 0)
+					<ul class='day-list'>
+					
+						@php $type = NULL @endphp
+					
+						@foreach ($series as $s)
+							@if ($type !== $s->occurrence_type_id)
+								<li>
+									<h4>{{ $s->occurrenceType->name }}</h3>
+									<?php $type = $s->occurrence_type_id; ?>
+								</li>
+							@endif
+							@include('series.single', ['series' => $s])
+						@endforeach
+					</ul>
+					@else
+					<div><small>No series listed today.</small></div>
+					@endif
 				</div>
 			</div>
 		</div>

@@ -57,6 +57,7 @@ body {
 	-webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2);
 	box-shadow: 3px 3px 3px 0 rgba(0,0,0,.2); 
 	min-height: 130px;
+	min-width: 500px;
 }
 
 .series-card {
@@ -74,9 +75,11 @@ body {
 }
 
 .event-list, .list {
-	list-style-type:none;
-	margin:.5em;
+	list-style-type: none;
+	margin: .5em;
 	padding-left: 0px;
+	display: flex;
+    flex-wrap: wrap
 }
 
 .label-tag {
