@@ -1094,7 +1094,7 @@ class EventsController extends Controller
         });
 
         // get all the upcoming series events
-        $series = Series::getByEntity(ucfirst($slug))->active()->get();
+        $series = Series::getByEntity(strtolower($slug))->active()->get();
 
         $series = $series->filter(function ($e) {
             return (('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;

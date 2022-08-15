@@ -590,7 +590,7 @@ class Event extends Eloquent
     {
         // get a list of events that have the passed tag
         return self::whereHas('series', function ($q) use ($slug) {
-            $q->where('name', '=', $slug);
+            $q->where('slug', '=', $slug);
         });
     }
 

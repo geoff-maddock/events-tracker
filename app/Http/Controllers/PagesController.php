@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
+use Str;
 
 class PagesController extends Controller
 {
@@ -109,12 +110,13 @@ class PagesController extends Controller
     public function search(Request $request): View
     {
         $search = $request->input('keyword');
+        $searchSlug = Str::slug($search, '-');
 
         // override limit, while not breaking template that tries to render
         $this->limit = 20;
 
         // find matching events by entity, tag or series or name
-        $eventQuery = Event::getByEntity(strtolower($search))
+        $eventQuery = Event::getByEntity(strtolower($searchSlug))
                     ->orWhereHas('tags', function ($q) use ($search) {
                         $q->where('name', '=', ucfirst($search));
                     })
@@ -132,7 +134,7 @@ class PagesController extends Controller
         $eventsCount = $eventQuery->count();
 
         // find matching series by entity, tag or name
-        $seriesQuery = Series::getByEntity(strtolower($search))
+        $seriesQuery = Series::getByEntity(strtolower($searchSlug))
                     ->orWhereHas('tags', function ($q) use ($search) {
                         $q->where('name', '=', ucfirst($search));
                     })
