@@ -7,6 +7,7 @@ use App\Http\Requests\ForumRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Forum;
+use App\Models\Series;
 use App\Models\Tag;
 use App\Models\Thread;
 use App\Models\User;
@@ -485,6 +486,7 @@ class ForumsController extends Controller
         return [
             'userOptions' => ['' => '&nbsp;'] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
             'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+            'seriesOptions' => ['' => ''] + Series::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
         ];
     }
 
