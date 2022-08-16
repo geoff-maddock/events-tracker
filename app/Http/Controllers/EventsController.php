@@ -3009,7 +3009,7 @@ class EventsController extends Controller
             'name' => $event->name,
             'slug' => $event->slug,
             'description' => $event->short,
-            'body' => $event->short,
+            'body' => $event->short ? $event->short : $event->name,
             'thread_category_id' => null,
             'visibility_id' => $event->visibility_id,
             'event_id' => $event->id,
