@@ -126,6 +126,17 @@ Entities @include('entities.title-crumbs')
     </div>
 
 </div>
+@if (isset($latestEntities) )
+
+<div class="card surface my-2">
+        <h5 class="card-header bg-primary">Recently Popular Entities
+            <a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#entity-popular" data-bs-toggle="collapse" aria-label="Popular entity toggle" aria-expanded="false" aria-controls="entity-popular" role="button"></i></a>
+        </h5>
+        <div class="card-body collapsible collapse show" id="entity-popular">
+            @include('entities.list', ['entities' => $latestEntities])
+        </div>
+</div>
+@endif
 
 <div id="list-container" class="row">
     <div>

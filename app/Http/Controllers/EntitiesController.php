@@ -18,6 +18,7 @@ use App\Models\User;
 use App\Notifications\EventPublished;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -115,6 +116,13 @@ class EntitiesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
+        // count the most common entities in the recent past
+        $latestEntities = Entity::withCount(['events' => function (Builder $query) {
+            $query->where('events.start_at', '>', Carbon::now()->subMonths(3));
+        }])
+        ->orderBy('events_count', 'desc')
+        ->paginate(6);
+
         return view('entities.index')
             ->with(array_merge(
                 [
@@ -127,7 +135,7 @@ class EntitiesController extends Controller
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
             ))
-            ->with(compact('entities'))
+            ->with(compact('entities', 'latestEntities'))
             ->render();
     }
 

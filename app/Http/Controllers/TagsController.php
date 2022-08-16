@@ -97,7 +97,7 @@ class TagsController extends Controller
             $query->where('events.start_at', '>', Carbon::now()->subMonths(3));
         }])
         ->orderBy('events_count', 'desc')
-        ->paginate(5);
+        ->paginate(6);
 
         // default to no tag
         $tag = null;

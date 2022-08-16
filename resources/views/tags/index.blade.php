@@ -72,7 +72,7 @@ Keyword Tags
 									@endif
 								</li>
 							@else
-								<li class='list'><a href="/tags/{{ $t->slug }}"  name="{{ $t->name[0] }}">{{ $t->name }}</a>
+								<li class='vertical-list'><a href="/tags/{{ $t->slug }}"  name="{{ $t->name[0] }}">{{ $t->name }}</a>
 									@if ($signedIn)
 										@if ($follow = $t->followedBy($user))
 										<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" title="Click to unfollow"><i class="bi bi-check-circle-fill text-info"></i></a>
@@ -172,7 +172,7 @@ Keyword Tags
 				<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-series-close-box" data-bs-target="#tag-series" data-bs-toggle="collapse" aria-label="Series tag toggle" aria-expanded="false" aria-controls="tag-series" role="button"></i></a>				
 			</h5>
 			<div class="card-body collapsible collapse show" id="tag-series">
-				@include('series.list', ['series' => $series])
+				@include('series.vertical-list', ['series' => $series])
 			</div>
 		</div>
 		@endif
