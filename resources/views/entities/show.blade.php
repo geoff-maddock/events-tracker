@@ -255,7 +255,7 @@
 				@endforeach
 			@endforeach
 			<div class="col">
-				@if ($user && (Auth::user()->id == ($entity->user ? $entity->user->id : null) || $user->id == Config::get('app.superuser')))
+				@if ($user && (Auth::user()->id == ($entity->user ? $entity->user->id : null) || $user->hasGroup('super_admin') ))
 				<form action="/entities/{{ $entity->id }}/photos" class="dropzone h-auto" id="myDropzone" method="POST">
 					<input type="hidden" name="_token" value="{{ csrf_token() }}">
 				</form>

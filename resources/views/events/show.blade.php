@@ -213,7 +213,7 @@
 				</div>
 				@endforeach
 			@endforeach
-			@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )
+			@if ($user && (Auth::user()->id == $event->user->id || $user->hasGroup('super_admin') ))
 			<div class="col">
 				<form action="/events/{{ $event->id }}/photos" class="dropzone" id="myDropzone" method="POST">
 					<input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -268,7 +268,7 @@
 
 @section('scripts.footer')
 
-@if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser') ) )
+@if ($user && (Auth::user()->id === $event->user->id || $user->hasGroup('super_admin') ))
 <script>
 window.Dropzone.autoDiscover = true;
 $(document).ready(function(){

@@ -186,7 +186,7 @@
 			@endforeach
 		@endforeach
 		<div class="col">
-			@if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser')))
+			@if ($user && (Auth::user()->id == $series->user->id || $user->hasGroup('super_admin') ))
 			<form action="/series/{{ $series->id }}/photos" class="dropzone h-auto" id="myDropzone" method="POST">
 				<input type="hidden" name="_token" value="{{ csrf_token() }}">
 			</form>
