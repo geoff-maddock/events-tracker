@@ -105,7 +105,7 @@
 
 <!-- LIST OF ALL RECENT ACTIVITY -->
 {!! $activities->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->render() !!}
-<ul class="list">
+<ul class="vertical-list">
 	@if (count($activities) > 0)
 
 	@foreach ($activities as $activity)

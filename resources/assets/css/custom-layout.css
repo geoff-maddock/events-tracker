@@ -126,6 +126,16 @@ img.thumbnail-image {
 	font-size: .75rem;
 }
 
+.vertical-list {
+	list-style-type: none;
+	padding-left: 0px;
+}
+
+.vertical-list li {
+    margin-bottom: 10px;
+}
+
+
 .day-list {
 	list-style-type: none;
 	padding-left: 0px;

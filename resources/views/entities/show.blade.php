@@ -100,7 +100,7 @@
 			@unless ($entity->locations->isEmpty())
 
 				<P>
-					<b>Location</b><br>
+				<b>Location</b><br>
 				@foreach ($entity->locations as $location)
 				@if (isset($location->visibility) && ($location->visibility->name != 'Guarded' || ($location->visibility->name == 'Guarded' && $signedIn)))
 
@@ -270,10 +270,9 @@
 							<h5 class="card-header bg-primary">Past Events <span class="badge rounded-pill bg-dark float-end"><a href="{{ url('events/related-to/'.$entity->slug) }}">{{ $entity->pastEvents()->total() }}</a></span></h5>
 
 							<div class="card-body">
-							@include('events.list', ['events' => $entity->pastEvents()])
+								@include('events.vertical-list', ['events' => $entity->pastEvents()])
 								{!! $entity->pastEvents()->render() !!}
 							</div>
-
 
 					</div>
 				</div>
@@ -284,7 +283,8 @@
 						<h5 class="card-header bg-primary">Future Events <span class="badge rounded-pill bg-dark float-end"><a href="{{ url('events/related-to/'.$entity->slug) }}">{{ $entity->futureEvents()->total() }}</a></span></h5>
 
 							<div class="card-body">
-								@include('events.list', ['events' => $entity->futureEvents()])
+								@include('events.vertical-list', ['events' => $entity->futureEvents()])
+								{!! $entity->futureEvents()->render() !!}
 							</div>
 						</div>
 					</div>

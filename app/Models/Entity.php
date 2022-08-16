@@ -394,9 +394,23 @@ class Entity extends Eloquent
      */
     public function primaryLink(): ?Link
     {
-        //dd($this->links()->get());
-
         return $this->links()->where('is_primary', '=', 1)->orderBy('created_at', 'ASC')->first();
+    }
+
+    /**
+     * Return the first bandcamp link.
+     */
+    public function getBandcampLinkAttribute(): ?Link
+    {
+        return $this->links()->where('url', 'LIKE', '%bandcamp%')->orderBy('created_at', 'ASC')->first();
+    }
+
+    /**
+     * Return the first soundcloud link.
+     */
+    public function getSoundcloudLinkAttribute(): ?Link
+    {
+        return $this->links()->where('url', 'LIKE', '%soundcloud%')->orderBy('created_at', 'ASC')->first();
     }
 
     /**
