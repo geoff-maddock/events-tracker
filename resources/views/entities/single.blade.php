@@ -40,6 +40,34 @@
 	@endif
 
 
+	<a href="/events/related-to/{{ urlencode($entity->slug) }}"	title="Related events." alt="Related events"  aria-label="Related Events">
+		<i class="bi bi-calendar-fill card-actions"></i>
+	</a>
+
+	@if ($entity->facebook_username)
+	<a href="https://facebook.com/{{ $entity->facebook_username }}" target="_">	
+			<i class="bi bi-facebook card-actions"></i>
+	</a>
+	@endif
+
+	@if ($entity->twitter_username)
+	<a href="https://twitter.com/{{ $entity->twitter_username }}" target="_">	
+			<i class="bi bi-twitter card-actions"></i>
+	</a>
+	@endif
+
+	@if ($entity->soundcloudLink !== null)
+	<a href="{{ $entity->soundcloudLink->url}}" target="_">	
+			<i class="bi bi-music-note-beamed card-actions"></i>
+	</a>
+	@elseif ($entity->bandcampLink !== null)
+	<a href="{{ $entity->bandcampLink->url}}" target="_">	
+		<i class="bi bi-music-note-beamed card-actions"></i>
+	</a>
+	@endif
+
+	@include('entities.map')
+
 	@if ($type = $entity->entityType)
 	<br><b>{{ $entity->entityType->name }}</b>
 	@endif
@@ -55,20 +83,18 @@
 		@include('tags.single_entity_label')
 	@endforeach
 	<br>
-	<ul class="list">
+	<ul class="vertical-list">
 		@if ($events = $entity->futureEvents()->take(1))
 		@foreach ($events as $event)
 		<li>Next Event:
-			<b>{{ $event->start_at->format('m.d.y') }}</b> {!! link_to_route('events.show', $event->name, [$event->id],
-			['class' =>'butt']) !!}
+			<b>{{ $event->start_at->format('m.d.y') }}</b> {!! link_to_route('events.show', $event->name, [$event->id]) !!}
 		</li>
 		@endforeach
 		@endif
 		@if ($events = $entity->pastEvents()->take(1))
 		@foreach ($events as $event)
 		<li>Past Event:
-			<b>{{ $event->start_at->format('m.d.y') }}</b> {!! link_to_route('events.show', $event->name, [$event->id],
-			['class' =>'butt']) !!}
+			<b>{{ $event->start_at->format('m.d.y') }}</b> {!! link_to_route('events.show', $event->name, [$event->id]) !!}
 		</li>
 		@endforeach
 		@endif
