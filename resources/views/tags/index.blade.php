@@ -62,7 +62,7 @@ Keyword Tags
 						@foreach ($tags as $t)
 							@if (isset($tag) && (strtolower($slug) === strtolower($t->slug)))
 								<?php $match = $t;?>
-								<li class='list selected'><a href="/tags/{{ $t->slug }}" title="Click to show all related events and entities." name="{{ $t->name[0] }}">{{ $t->name }}</a>
+								<li class='vertical-list selected'><a href="/tags/{{ $t->slug }}" title="Click to show all related events and entities." name="{{ $t->name[0] }}">{{ $t->name }}</a>
 									@if ($signedIn)
 										@if ($follow = $t->followedBy($user))
 										<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" title="Click to unfollow"><i class="bi bi-check-circle-fill  text-info"></i></a>
