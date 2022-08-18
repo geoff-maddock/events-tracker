@@ -57,7 +57,7 @@ Keyword Tags
 							<li><a href="#Z">Z</a></li>
 						</ul>
 					</div>
-					<div class="col">
+					<div class="col-10">
 						<ul>
 						@foreach ($tags as $t)
 							@if (isset($tag) && (strtolower($slug) === strtolower($t->slug)))
