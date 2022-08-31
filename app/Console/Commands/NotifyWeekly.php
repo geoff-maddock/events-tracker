@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Mail\WeeklyUpdate;
+use App\Models\Activity;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -121,6 +122,10 @@ class NotifyWeekly extends Command
                 // send an email containing that list
                 Mail::to($user->email)
                     ->send(new WeeklyUpdate($url, $site, $admin_email, $reply_email, $user, $attendingEvents, $seriesList, $interests));
+
+                                    
+                // add login to log
+                Activity::log($user, $user, 15, "Sent weekly notification email");
 
                 // log that the weekly email was sent
                 Log::info('Weekly update email was sent to '.$user->name.' at '.$user->email.'.');

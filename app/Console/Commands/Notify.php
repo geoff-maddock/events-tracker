@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Mail\DailyReminder;
+use App\Models\Activity;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
