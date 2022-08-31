@@ -325,27 +325,13 @@ class EventsController extends Controller
         // nothing really happens until here in cadence
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
+        // get the query builder
         $query = $listResultSet->getList();
 
-        // modify the query
-        $query
-            // public or where created by
-            ->where(function ($query) {
-                $query->whereIn('visibility_id', [1, 2])
-                    ->where('created_by', '=', $this->user ? $this->user->id : null);
-                // if logged in, can see guarded
-                if ($this->user) {
-                    $query->orWhere('visibility_id', '=', 4);
-                }
-                $query->orWhere('visibility_id', '=', 3);
-
-                return $query;
-            });
-
         // get the events
-        $events = $query
+        $events = $query->visible($this->user)
             ->with('visibility', 'venue')
-            ->paginate($this->limit);
+            ->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();
@@ -1950,7 +1936,6 @@ class EventsController extends Controller
 
             // get the cover from FB
             if (($cover = $fbEvent->cover) && ($source = $cover->getField('source'))) {
-
                 // temporarily store the file
                 $content = file_get_contents($source);
                 $fileName = time().'_temp.jpg';
