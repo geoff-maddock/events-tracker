@@ -19,7 +19,6 @@
 
 <div class="row">
 	@if (isset($entities) && $entitiesCount > 0)
-	<div class="col-xl-6">
 	<div class="card surface my-2">
 
 		<h5 class="card-header bg-primary">Entities
@@ -32,7 +31,7 @@
 				{!! $entities->appends(['keyword' => $search])->render() !!}
 		</div>
 	</div>
-	</div>
+
 	@else
 
 	<div class="bs-component">
@@ -43,7 +42,6 @@
 
 <div class="row">
 	@if (isset($events) && $eventsCount > 0)
-	<div class="col-xl-6">
 		@if (isset($tags) && $tagsCount > 0)
 			<div class="card surface">
 				<h5 class="card-header bg-primary">Tags
@@ -72,7 +70,6 @@
 				</div>
 
 			</div>
-	</div>
 	@else
 		<div class="col-lg-12">
 			<div class="bs-component">
@@ -106,7 +103,6 @@
 	@endif
 </div>
 
-	<div class="col-xl-6">
 		@if (isset($users) && $usersCount > 0)
 		<div class="card surface my-2">
 
@@ -130,9 +126,8 @@
 				</div>
 
 		@endif
-	</div>
 
-	<div class="col-xl-6">
+
 		@if (isset($threads) && $threadsCount > 0)
 		<div class="card surface my-2">
 
@@ -153,7 +148,6 @@
 		</div>
 
 		@endif
-	</div>
 </div>
 
 @stop
