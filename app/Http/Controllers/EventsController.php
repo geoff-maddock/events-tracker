@@ -329,6 +329,7 @@ class EventsController extends Controller
         $query = $listResultSet->getList();
 
         // get the events
+        // @phpstan-ignore-next-line
         $events = $query->visible($this->user)
             ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
