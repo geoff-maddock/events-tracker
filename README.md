@@ -20,19 +20,19 @@ Run an instance to create your own community where events, event series, entitie
 * Threaded events forum where posts can be linked to events, entities or topics.
 * Photos module to display images from events.
 * Default dark layout with light option.
+* Added enhanced data to the headers to improve search results and return site events on google.
 
 ### Built On
-* PHP 7.4
-* Laravel 8
+* PHP 8
+* Laravel 9
 * MySQL 8 (can be database agnostic)
 * Bootstrap 5
 * Optional Integrations: Facebook, Twitter
 
 ### Roadmap
-* Release a stable v1.0 version with clear deployment notes and all basic features in place.
-* Add more integrations with external services.
-* Add theming and UI improvements
-* Add tools for event planning, crowd sourcing and funding.
+* Integration with external audio widgets to add previews and playlists for artists and events dynamically.
+* Adding to the site API to facilitate external embedding of event and entity data.
+* Building a more lightweight frontend that connects to the API
 
 ## Installing / Getting started
 
