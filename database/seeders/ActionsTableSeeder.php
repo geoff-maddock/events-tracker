@@ -172,7 +172,7 @@ class ActionsTableSeeder extends Seeder
                 'created_at' => null,
                 'updated_at' => null,
             ],
-            12 => [
+            13 => [
                 'id' => 14,
                 'name' => 'Failed Login',
                 'object_table' => null,
@@ -184,7 +184,7 @@ class ActionsTableSeeder extends Seeder
                 'created_at' => null,
                 'updated_at' => null,
             ],
-            12 => [
+            14 => [
                 'id' => 15,
                 'name' => 'Notification',
                 'object_table' => null,
