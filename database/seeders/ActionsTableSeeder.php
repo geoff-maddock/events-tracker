@@ -172,6 +172,30 @@ class ActionsTableSeeder extends Seeder
                 'created_at' => null,
                 'updated_at' => null,
             ],
+            12 => [
+                'id' => 14,
+                'name' => 'Failed Login',
+                'object_table' => null,
+                'child_object_table' => null,
+                'description' => null,
+                'changes' => null,
+                'order' => 0,
+                'is_active' => 1,
+                'created_at' => null,
+                'updated_at' => null,
+            ],
+            12 => [
+                'id' => 15,
+                'name' => 'Notification',
+                'object_table' => null,
+                'child_object_table' => null,
+                'description' => 'Email notification',
+                'changes' => null,
+                'order' => 0,
+                'is_active' => 1,
+                'created_at' => null,
+                'updated_at' => null,
+            ],
         ]);
     }
 }
