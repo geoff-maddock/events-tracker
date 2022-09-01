@@ -15,6 +15,17 @@ class EntityFilters extends QueryFilter
         }
     }
 
+    public function entity_status(?string $value = null): Builder
+    {
+        if (isset($value)) {
+            return $this->builder->whereHas('entityStatus', function ($q) use ($value) {
+                $q->where('name', '=', ucfirst($value));
+            });
+        } else {
+            return $this->builder;
+        }
+    }
+
     public function entity_type(?string $value = null): Builder
     {
         if (isset($value)) {

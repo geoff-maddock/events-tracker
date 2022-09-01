@@ -96,9 +96,13 @@ class EntitiesController extends Controller
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = Entity::query()->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')->select('entities.*');
 
+        // set the default filter to active
+        $defaultFilter = ['entity_status' => 'Active'];
+
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
+            ->setDefaultFilters($defaultFilter)
             ->setDefaultSort($this->defaultSortCriteria);
 
         // get the result set from the builder
@@ -349,8 +353,11 @@ class EntitiesController extends Controller
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
 
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Entity::query()->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')->select('entities.*');
+        // create the base query including any required joins; needs select to make sure only entities are returned
+        $baseQuery = Entity::query()
+                        ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
+                        ->leftJoin('entity_statuses', 'entities.entity_status_id', '=', 'entity_statuses.id')
+                        ->select('entities.*');
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -363,7 +370,7 @@ class EntitiesController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
-        // get the threads
+        // get the entities
         $entities = $query
             ->paginate($listResultSet->getLimit());
 
@@ -944,6 +951,7 @@ class EntitiesController extends Controller
             'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
             'roleOptions' => ['' => ''] + Role::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
             'entityTypeOptions' => ['' => ''] + EntityType::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+            'entityStatusOptions' => ['' => ''] +  EntityStatus::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
         ];
     }
 

@@ -83,6 +83,19 @@ Entities @include('entities.title-crumbs')
                     'name' => 'filters[entity_type]'
 				]) !!}
 			</div>
+
+            <div class="col-sm">
+				{!! Form::label('filter_entity_status','Status') !!}
+				{!! Form::select('filter_entity_status', $entityStatusOptions, (isset($filters['entity_status'])
+				? $filters['entity_status'] : NULL),
+				[
+                    'data-theme' => 'bootstrap-5',
+                    'data-width' => '100%',
+                    'class' => 'form-control select2 form-background',
+                    'data-placeholder' => 'Select a status',
+                    'name' => 'filters[entity_status]'
+				]) !!}
+			</div>
         </div>
         <div class="row">
 			<div class="col-sm-2">
