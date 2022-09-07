@@ -201,7 +201,7 @@ class Blog extends Eloquent
      */
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany('App\Models\Tag')->withTimestamps();
+        return $this->belongsToMany(Tag::class)->withTimestamps();
     }
 
     /**
@@ -340,5 +340,10 @@ class Blog extends Eloquent
     public function contentType(): HasOne
     {
         return $this->hasOne('App\Models\ContentType', 'id', 'content_type_id');
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
     }
 }
