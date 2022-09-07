@@ -12,10 +12,10 @@
 </h2>
 
 
-<div class="row">
+<div class="row me-2">
 
     @forelse ($menu->blogs as $blog)
-        <div class="profile-card col-md-8 mx-2">
+        <div class="profile-card col-md-12 mx-2">
             @if ($blog->contentType->name === "HTML")
                 {!! $blog->body !!}
             @else
@@ -29,11 +29,12 @@
         <p>No blog posts</p>
     @endforelse
 
+    @include('partials.social-footer')
 
 @stop
  
 @section('scripts.footer')
-@include('partials.social-footer')
+
 <script type="text/javascript">
 $('button.delete').on('click', function(e){
   e.preventDefault();

@@ -14,13 +14,12 @@
 @foreach ($blogs as $blog)
 	<tr>
 		<td>{!! $blog->id !!}</td>
-		<td>{!! link_to_route('blogs.show', $blog->name, [$blog->id], ['class' => 'item-title']) !!}</td>
+		<td>{!! link_to_route('blogs.show', $blog->name, [$blog->slug], ['class' => 'item-title']) !!}</td>
 		<td>{!! $blog->slug !!}</td>
 		<td>{!! $blog->created_at !!}</td>
 		<td>
 			@can('edit_blog')
-			<a href="{!! route('blogs.edit', ['blog' => $blog->id]) !!}"><i class="bi bi-pencil-fill icon"></i></a>
-      		{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $blog, 'DELETE', 'Delete the blog') !!}
+			<a href="{!! route('blogs.edit', ['blog' => $blog->slug]) !!}"><i class="bi bi-pencil-fill icon"></i></a>
 			@endcan
 		</td>
 

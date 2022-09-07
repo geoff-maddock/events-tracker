@@ -9,7 +9,7 @@ class BlogFilters extends QueryFilter
     public function name(string $value = null): Builder
     {
         if (isset($value)) {
-            return $this->builder->where('name', $value);
+            return $this->builder->where('name', 'like', '%'.$value.'%');
         } else {
             return $this->builder;
         }
@@ -18,7 +18,7 @@ class BlogFilters extends QueryFilter
     public function body(string $value = null): Builder
     {
         if (isset($value)) {
-            return $this->builder->where('body', $value);
+            return $this->builder->where('body', 'like', '%'.$value.'%');
         } else {
             return $this->builder;
         }
