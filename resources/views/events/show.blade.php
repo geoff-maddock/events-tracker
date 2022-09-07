@@ -70,17 +70,33 @@
 				{{ $event->venue->getPrimaryLocationAddress() }}
 			@endif
 
+			@if ($event->venue)
+	
+			@if ($event->venue->getPrimaryLocationMap() != '')
+			<a href="{!! $event->venue->getPrimaryLocationMap() !!}" target="_" title="Link to map." class="mx-1">
+				<i class="bi bi-geo-alt-fill"></i>
+			</a>
+			@endif
+	
+			@endif
 		@else
 		no venue specified
 		@endif
 	</b>
+	<br>
+	@if (isset($event->min_age))
 
-	@if ($event->door_price)
-	${{ number_format($event->door_price,0) }}
+		@if ($event->min_age == 0) 
+			All Ages
+		@else 
+		{{ is_int($event->min_age) ? $event->min_age.'+' :  $event->min_age  }}
+		@endif
 	@endif
 
- 	@if ($event->min_age)
-	{{ is_int($event->min_age) ? $event->min_age.'+' :  $event->min_age  }}
+	@if (isset($event->door_price))
+		@if ($event->door_price == 0)
+			${{ number_format($event->door_price, 0) }}
+		@endif
 	@endif
 
 	<br>
@@ -100,15 +116,7 @@
 		  </svg>
 	</a>
 	@endif
-	@if ($event->venue)
-	
-	@if ($event->venue->getPrimaryLocationMap() != '')
-	<a href="{!! $event->venue->getPrimaryLocationMap() !!}" target="_" title="Link to map." class="mx-1">
-		<i class="bi bi-geo-alt-fill"></i>
-	</a>
-	@endif
 
-	@endif
 		<a href="{!! $event->getGoogleCalendarLink() !!}" target="_" rel="nofollow" title="Add to Google Calendar">
 			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-plus-fill" viewBox="0 0 16 16">
 				<path d="M4 .5a.5.5 0 0 0-1 0V1H2a2 2 0 0 0-2 2v1h16V3a2 2 0 0 0-2-2h-1V.5a.5.5 0 0 0-1 0V1H4V.5zM16 14V5H0v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2zM8.5 8.5V10H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V11H6a.5.5 0 0 1 0-1h1.5V8.5a.5.5 0 0 1 1 0z"/>

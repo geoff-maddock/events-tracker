@@ -111,10 +111,19 @@
 			no venue specified
 		@endif
 
+		@if (isset($event->min_age))
 
+		@if ($event->min_age == 0) 
+			All Ages
+		@else 
+		{{ is_int($event->min_age) ? $event->min_age.'+' :  $event->min_age  }}
+		@endif
+		@endif
 
-		@if ($event->door_price)
-		${{ number_format($event->door_price,0) }}
+		@if (isset($event->door_price))
+			@if ($event->door_price == 0)
+				${{ number_format($event->door_price, 0) }}
+			@endif
 		@endif
 
 		<P>
