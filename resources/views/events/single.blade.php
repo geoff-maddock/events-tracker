@@ -121,8 +121,10 @@
 		@endif
 
 		@if (isset($event->door_price))
-			@if ($event->door_price == 0)
+			@if (floor($event->door_price) == $event->door_price)
 				${{ number_format($event->door_price, 0) }}
+			@else 
+			${{ number_format($event->door_price, 2) }}
 			@endif
 		@endif
 

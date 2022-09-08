@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h1 class="display-6 text-primary">Privacy</h1>
+<h1 class="display-crumbs text-primary">Privacy</h1>
 
 	<ol>
 		<li>General Policy</li>
