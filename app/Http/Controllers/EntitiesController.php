@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
+use Jamband\Ripple\Ripple;
 
 class EntitiesController extends Controller
 {
@@ -654,7 +655,29 @@ class EntitiesController extends Controller
 
         $threads = $entity->threads()->paginate($this->limit);
 
-        return view('entities.show', compact('entity', 'threads'));
+        // get some data about the entities bandcamp links
+        $links = $entity->links;
+
+        // ripply extracts data from audio provider links
+        $ripple = new Ripple;
+
+        // LARGE - Set up a large bandcamp player
+        // $ripple->options(['curl' => [], 'embed' => ['Bandcamp' => 'size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/transparent=true/'], 'response' => []]);
+
+        // MEDIUM - Set up a medium bandcamp player
+        $ripple->options(['curl' => [], 'embed' => ['Bandcamp' => '/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/transparent=true/'], 'response' => []]);
+       
+        // SMALL - Set up a small bandcamp player
+        //$ripple->options(['curl' => [], 'embed' => ['Bandcamp' => '/size=small/bgcol=333333/linkcol=0687f5/transparent=true/'], 'response' => []]);
+
+        foreach ($links as $link) {
+            if (strpos($link->url, "bandcamp.com") && (strpos($link->url, "album") || strpos($link->url, "track"))) {
+                // it's a bandcamp link, so request info
+                $ripple->request($link->url);
+            }
+        }
+
+        return view('entities.show', compact('entity', 'threads', 'ripple'));
     }
 
     /**
