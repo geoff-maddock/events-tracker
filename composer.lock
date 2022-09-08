@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "84247516e3b256d612a8d128d16711fe",
+    "content-hash": "dc311708620291f857f82b02be795adc",
     "packages": [
         {
             "name": "abraham/twitteroauth",
@@ -1812,6 +1812,60 @@
                 }
             ],
             "time": "2022-05-21T17:30:32+00:00"
+        },
+        {
+            "name": "jamband/ripple",
+            "version": "v0.10.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jamband/ripple.git",
+                "reference": "71320992990c0412f18ff72fac01ef1ef6ff432b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jamband/ripple/zipball/71320992990c0412f18ff72fac01ef1ef6ff432b",
+                "reference": "71320992990c0412f18ff72fac01ef1ef6ff432b",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4|^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Jamband\\Ripple\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tomoki Morita",
+                    "email": "tmsongbooks215@gmail.com",
+                    "homepage": "https://jamband.github.io/"
+                }
+            ],
+            "description": "Get a track/album information from the URL.",
+            "homepage": "https://github.com/jamband/ripple",
+            "keywords": [
+                "bandcamp",
+                "embed",
+                "oembed",
+                "scraping",
+                "soundcloud",
+                "vimeo",
+                "youtube"
+            ],
+            "support": {
+                "issues": "https://github.com/jamband/ripple/issues",
+                "source": "https://github.com/jamband/ripple/tree/v0.10.3"
+            },
+            "time": "2022-05-02T10:13:22+00:00"
         },
         {
             "name": "jean85/pretty-package-versions",

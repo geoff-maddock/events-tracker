@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h1 class="display-6 text-primary">Search
+<h1 class="display-crumbs text-primary">Search
 		@include('events.crumbs')
 </h1>
 

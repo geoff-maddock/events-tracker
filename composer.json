@@ -29,7 +29,8 @@
 		"symfony/mailgun-mailer": "^6.0",
 		"symfony/http-client": "^6.0",
 		"league/flysystem": "^3.0",
-		"league/flysystem-aws-s3-v3": "^3.0"
+		"league/flysystem-aws-s3-v3": "^3.0",
+		"jamband/ripple": "^0.10.3"
     },
 	"require-dev": {
 		"mockery/mockery": "^1.0",

@@ -151,6 +151,8 @@
 				@endforeach
 			@endunless
 
+
+
 			@if ($user && Auth::user()->id == ($entity->user ? $entity->user->id : null))
 				<div class="my-2"><a href="{!! route('entities.contacts.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Contact</a></div>
 			@endif
@@ -163,8 +165,6 @@
 			@if ($entity->twitter_username)
 					<b>Twitter:</b> <a href="https://twitter.com/{{ $entity->twitter_username }}" target="_">{{ '@' }}{{  $entity->twitter_username }}</a>
 			@endif
-
-
 
 			@unless ($entity->links->isEmpty())
 					<P><b>Links</b><br>
@@ -183,6 +183,10 @@
 					<div>
 							<a href="{!! route('entities.links.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Link</a>
 					</div>
+			@endif
+			
+			@if ($ripple->embed() !== null)
+			<iframe  style="border: 0; width: 100%; height: 120px;"  src="{!! $ripple->embed() !!}" allowfullscreen seamless></iframe>
 			@endif
 
 			<P>
