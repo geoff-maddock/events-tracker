@@ -174,7 +174,7 @@
 	</event>
 	@endif
 
-	<br>
+	<br><br>
 	@unless ($event->entities->isEmpty())
 	Related Entities:
 		@foreach ($event->entities as $entity)
