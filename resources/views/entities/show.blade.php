@@ -182,12 +182,10 @@
 			@if ($user && Auth::user()->id == ($entity->user ? $entity->user->id : null))
 					<div>
 							<a href="{!! route('entities.links.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Link</a>
-					</div>
+					</div><br>
 			@endif
 			
-			@if ($ripple->embed() !== null)
-			<iframe  style="border: 0; width: 100%; height: 120px;"  src="{!! $ripple->embed() !!}" allowfullscreen seamless></iframe>
-			@endif
+			@include('entities.playlist', ['embeds' => $embeds])
 
 			<P>
 			@if ($user && Auth::user()->id === $entity->user ? $entity->user->id : null)
