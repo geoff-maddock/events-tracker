@@ -19,6 +19,8 @@ use App\Notifications\EventPublished;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
 use Carbon\Carbon;
+use DOMDocument;
+use DOMXPath;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -657,7 +659,10 @@ class EntitiesController extends Controller
 
         $embeds = $this->getEmbedsForEntity($entity);
 
-        return view('entities.show', compact('entity', 'threads', 'embeds'));
+        // get all the tracks as streamable URLs
+        // $tracks = $this->getTracksFromUrl('https://0h85.bandcamp.com/');
+
+        return view('entities.show', compact('entity', 'threads', 'embeds', 'tracks'));
     }
 
     /**
@@ -715,9 +720,108 @@ class EntitiesController extends Controller
             // }
         }
 
-        // now collect tracks from all root bandcamp links
-
         return $embeds;
+    }
+
+    
+    /**
+     * Returns an array of tracks for an entity - call this with ajax so it's not blocking
+     */
+    public function getTracksFromUrl($url): array
+    {
+        // now collect tracks from all root bandcamp links
+        // $url = https://0h85.bandcamp.com/;
+        $trackUrls = [];
+
+        $httpClient = new \GuzzleHttp\Client();
+
+        $response = $httpClient->get($url);
+        $htmlString = (string) $response->getBody();
+
+        libxml_use_internal_errors(true);
+
+        $doc = new DOMDocument();
+        $doc->loadHTML($htmlString);
+        $xpath = new DOMXPath($doc);
+
+        $albumLinks = $xpath->evaluate("//a[contains(@href,'album')]");
+
+        // build a list of links
+        $albumUrls = [];
+        foreach ($albumLinks as $albumLink) {
+            if (strpos($albumLink->getAttribute("href"), 'https') === 0) {
+                if (!in_array($albumLink->getAttribute("href"), $albumUrls)) {
+                    $albumUrls[] = $albumLink->getAttribute("href");
+                }
+            }
+        }
+
+        $trackLinks = $xpath->evaluate("//a[contains(@href,'track')]");
+
+        // build a list of links
+        $trackUrls = [];
+        foreach ($trackLinks as $trackLink) {
+            if (strpos($trackLink->getAttribute("href"), 'https') === 0) {
+                if (!in_array($trackLink->getAttribute("href"), $trackUrls)) {
+                    $trackUrls[] = $trackLink->getAttribute("href");
+                }
+            }
+        }
+
+        // spider the album urls to get the rest of the tracks
+
+        // dump($albumUrls);
+        foreach ($albumUrls as $albumUrl) {
+            $parsedUrl = parse_url($albumUrl);
+            $baseUrl = $parsedUrl["scheme"]."://".$parsedUrl["host"];
+
+            $trackResponse = $httpClient->get($albumUrl);
+            $htmlString = (string) $trackResponse->getBody();
+
+            // may instead be able to use header meta data on album pages
+            $doc = new DOMDocument();
+            $doc->loadHTML($htmlString);
+            $xpath = new DOMXPath($doc);
+    
+            $trackLinks = $xpath->evaluate("//a[contains(@href,'track')]");
+
+            foreach ($trackLinks as $trackLink) {
+                $trackFullUrl = $baseUrl.$trackLink->getAttribute("href");
+                if (!strpos($trackLink->getAttribute("href"), '?')) {
+                    if (!in_array($trackFullUrl, $trackUrls)) {
+                        $trackUrls[] = $trackFullUrl;
+                    }
+                }
+            }
+        }
+
+        // dump($trackUrls);
+
+        $embedUrls = $this->getEmbedsFromTracks($trackUrls);
+
+        return $embedUrls;
+    }
+
+
+    /**
+     * Get the embed URLs by querying buymusic API
+     */
+    public function getEmbedsFromTracks(array $trackUrls): array
+    {
+        $baseUrl = "https://buymusic.club/api/bandcamp/";
+        $embedUrls = [];
+
+        $httpClient = new \GuzzleHttp\Client();
+
+        foreach ($trackUrls as $trackUrl) {
+            $url = sprintf("%s?url=%s", $baseUrl, $trackUrl);
+            $response = $httpClient->get($url);
+            $jsonString = (string) $response->getBody();
+            $obj = json_decode($jsonString);
+            $embedUrls[] = $obj->streamURL;
+        }
+
+        return $embedUrls;
     }
 
     /**
