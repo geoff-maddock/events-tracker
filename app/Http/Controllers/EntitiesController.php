@@ -710,14 +710,6 @@ class EntitiesController extends Controller
                 $ripple->request($link->url);
                 $embeds[] = sprintf('<iframe style="border: 0; width: 100%%; height: 120px;"  src="%s" allowfullscreen seamless></iframe>', $ripple->embed());
             }
-            // youtube - disabled for now as any copywritten videos won't work
-            // if (strpos($link->url, "youtube.com")) {
-            //     // it's a youtube link, so request info
-
-            //     $ripple->request($link->url);
-            //     var_dump($ripple->embed());
-            //     $embeds[] = sprintf('<iframe style="border: 0; width: 300px; height: 300px;"  src="%s" allowfullscreen seamless></iframe>', $ripple->embed());
-            // }
         }
 
         return $embeds;
@@ -730,7 +722,6 @@ class EntitiesController extends Controller
     public function getTracksFromUrl($url): array
     {
         // now collect tracks from all root bandcamp links
-        // $url = https://0h85.bandcamp.com/;
         $trackUrls = [];
 
         $httpClient = new \GuzzleHttp\Client();
@@ -769,8 +760,6 @@ class EntitiesController extends Controller
         }
 
         // spider the album urls to get the rest of the tracks
-
-        // dump($albumUrls);
         foreach ($albumUrls as $albumUrl) {
             $parsedUrl = parse_url($albumUrl);
             $baseUrl = $parsedUrl["scheme"]."://".$parsedUrl["host"];
@@ -794,8 +783,6 @@ class EntitiesController extends Controller
                 }
             }
         }
-
-        // dump($trackUrls);
 
         $embedUrls = $this->getEmbedsFromTracks($trackUrls);
 
