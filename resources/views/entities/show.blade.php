@@ -152,7 +152,6 @@
 			@endunless
 
 
-
 			@if ($user && Auth::user()->id == ($entity->user ? $entity->user->id : null))
 				<div class="my-2"><a href="{!! route('entities.contacts.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Contact</a></div>
 			@endif
@@ -186,6 +185,9 @@
 			@endif
 			
 			@include('entities.playlist', ['embeds' => $embeds])
+
+			{{-- Embeds a player based in an array of embed stream links --}}
+			{{-- @include('entities.tracks', ['tracks' => $tracks]) --}}
 
 			<P>
 			@if ($user && Auth::user()->id === $entity->user ? $entity->user->id : null)
@@ -297,6 +299,7 @@
 @stop
 
 @section('scripts.footer')
+
 <script>
 window.Dropzone.autoDiscover = true;
 $(document).ready(function(){
