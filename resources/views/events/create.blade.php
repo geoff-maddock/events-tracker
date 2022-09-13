@@ -6,7 +6,7 @@
 <script src="{{ asset('/js/facebook-sdk.js') }}"></script>
 <script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
 
-<h1 class="display-6 text-primary">Add a New Event</h1>
+<h1 class="display-crumbs text-primary">Add a New Event</h1>
 
 {!! Form::open(['route' => 'events.store', 'class' => 'form-container']) !!}
 
