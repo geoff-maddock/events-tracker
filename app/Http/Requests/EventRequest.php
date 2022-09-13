@@ -33,6 +33,8 @@ class EventRequest extends Request
             'visibility_id' => 'required',
             'presale_price' => 'nullable|numeric|between:0,999.99',
             'door_price' => 'nullable|numeric|between:0,999.99',
+            'ticket_link' => 'max:255',
+            'primary_link' => 'max:255',
         ];
     }
 }
