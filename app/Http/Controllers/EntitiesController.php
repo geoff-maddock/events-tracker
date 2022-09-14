@@ -719,7 +719,7 @@ class EntitiesController extends Controller
     /**
      * Returns an array of tracks for an entity - call this with ajax so it's not blocking
      */
-    public function getTracksFromUrl($url): array
+    public function getTracksFromUrl(string $url): array
     {
         // now collect tracks from all root bandcamp links
         $trackUrls = [];
