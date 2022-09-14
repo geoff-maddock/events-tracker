@@ -26,6 +26,7 @@ use App\Models\Thread;
 use App\Models\User;
 use App\Models\Visibility;
 use App\Notifications\EventPublished;
+use App\Services\EmbedExtractor;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
@@ -1991,7 +1992,7 @@ class EventsController extends Controller
         return $blacklist;
     }
 
-    public function show(?Event $event): string
+    public function show(?Event $event, EmbedExtractor $embedExtractor): string
     {
         if (!$event) {
             abort(404);
@@ -2002,7 +2003,9 @@ class EventsController extends Controller
         // check blacklist status
         $blacklist = $this->checkBlackList($event);
 
-        return view('events.show', compact('event'))->with(['thread' => $thread, 'blacklist' => $blacklist])->render();
+        $embeds = $embedExtractor->getEmbedsForEvent($event);
+
+        return view('events.show', compact('event', 'embeds'))->with(['thread' => $thread, 'blacklist' => $blacklist])->render();
     }
 
     public function store(EventRequest $request, Event $event): RedirectResponse

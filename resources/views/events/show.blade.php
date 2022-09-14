@@ -230,6 +230,10 @@
 			@endif
 		</div>
 		<div class="row">
+			@include('embeds.playlist', ['embeds' => $embeds])
+		</div>
+
+		<div class="row">
 		@if (isset($thread))
 			<div class="col-lg-12">
 				<div class="card bg-dark">

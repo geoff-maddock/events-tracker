@@ -184,7 +184,7 @@
 					</div><br>
 			@endif
 			
-			@include('entities.playlist', ['embeds' => $embeds])
+			@include('embeds.playlist', ['embeds' => $embeds])
 
 			{{-- Embeds a player based in an array of embed stream links --}}
 			{{-- @include('entities.tracks', ['tracks' => $tracks]) --}}
