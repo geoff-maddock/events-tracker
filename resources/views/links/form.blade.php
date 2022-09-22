@@ -6,8 +6,6 @@
 	</div>
 </div>
 
-
-
 <div class="row">
 	<div class="form-group {{$errors->has('url') ? 'has-error' : '' }} col-md-4">
 	{!! Form::label('url','URL') !!}
