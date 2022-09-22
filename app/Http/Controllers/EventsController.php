@@ -26,7 +26,7 @@ use App\Models\Thread;
 use App\Models\User;
 use App\Models\Visibility;
 use App\Notifications\EventPublished;
-use App\Services\EmbedExtractor;
+use App\Services\Embeds\EmbedExtractor;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
@@ -2003,6 +2003,7 @@ class EventsController extends Controller
         // check blacklist status
         $blacklist = $this->checkBlackList($event);
 
+        // extract all the links from the event body and convert into embeds
         $embeds = $embedExtractor->getEmbedsForEvent($event);
 
         return view('events.show', compact('event', 'embeds'))->with(['thread' => $thread, 'blacklist' => $blacklist])->render();

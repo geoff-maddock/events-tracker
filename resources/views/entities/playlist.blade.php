@@ -1,7 +1,17 @@
 @if (count($embeds) > 0)
-<P><b>Audio</b><br>
-	@foreach ($embeds as $embed)
-    {!! $embed !!}
-    @endforeach
-</p>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card bg-dark">
+
+            <h5 class="card-header bg-primary">Audio</h5>
+        
+            @foreach ($embeds as $embed)
+            <div class="p-2">    
+            {!! $embed !!}
+            </div>
+            @endforeach
+
+        </div>
+    </div>
+</div>
 @endif

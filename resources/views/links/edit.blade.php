@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h1 class="display-6 text-primary">Entity . {!! link_to_route('entities.show', $entity->name, [$entity->slug], ['class' => 'text-'.$entity->entityStatus->getDisplayClass()]) !!}</h1>
+<h1 class="display-crumbs text-primary">Entity . {!! link_to_route('entities.show', $entity->name, [$entity->slug], ['class' => 'text-'.$entity->entityStatus->getDisplayClass()]) !!}</h1>
 
 	<h4>Edit Link: <i>{{ $link->text }}</i> </h4> 
 
