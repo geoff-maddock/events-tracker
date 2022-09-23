@@ -231,9 +231,8 @@
 			</div>
 			@endif
 		</div>
-		<div class="row">
-			@include('embeds.playlist', ['embeds' => $embeds])
-		</div>
+
+		@include('embeds.playlist', ['embeds' => $embeds])
 
 		<div class="row">
 		@if (isset($thread))

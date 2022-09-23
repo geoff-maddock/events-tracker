@@ -6,7 +6,7 @@
             <h5 class="card-header bg-primary">Audio</h5>
         
             @foreach ($embeds as $embed)
-            <div class="p-2">    
+            <div class="p-1">    
             {!! $embed !!}
             </div>
             @endforeach

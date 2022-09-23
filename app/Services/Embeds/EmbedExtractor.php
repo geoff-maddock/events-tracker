@@ -119,7 +119,8 @@ class EmbedExtractor
         foreach ($urls as $url) {
             // if it's a bandcamp link
             if (strpos($url, "bandcamp.com")) {
-                $embeds = array_merge($embeds, $this->getEmbedsFromBandcampUrl($url));
+                $temp =  $this->getEmbedsFromBandcampUrl($url);
+                $embeds = array_merge($embeds, $temp);
             } else {
                 $links[] = $url;
             }
@@ -197,24 +198,40 @@ class EmbedExtractor
         $doc->loadHTML($htmlString);
         $xpath = new DOMXPath($doc);
 
+        $basePath = $containerUrl;
+
+        if (substr($containerUrl, -1) == '/') {
+            $basePath = substr($containerUrl, 0, -1);
+        }
+
         $albumLinks = $xpath->evaluate("//a[contains(@href,'album')]");
 
-        // build a list of links
+        // add album links to the url array
         foreach ($albumLinks as $albumLink) {
             if (strpos($albumLink->getAttribute("href"), 'https') === 0) {
                 if (!in_array($albumLink->getAttribute("href"), $urls)) {
                     $urls[] = $albumLink->getAttribute("href");
+                }
+            } else {
+                // handle the case where the links are just partial
+                if (substr($albumLink->getAttribute("href"), 4) !== 'http') {
+                    $urls[] = $basePath.$albumLink->getAttribute("href");
                 }
             }
         }
 
         $trackLinks = $xpath->evaluate("//a[contains(@href,'track')]");
 
-        // build a list of links
+        // add track links to the url array
         foreach ($trackLinks as $trackLink) {
             if (strpos($trackLink->getAttribute("href"), 'https') === 0) {
                 if (!in_array($trackLink->getAttribute("href"), $urls)) {
                     $urls[] = $trackLink->getAttribute("href");
+                }
+            } else {
+                // handle the case where the links are just partial
+                if (substr($trackLink->getAttribute("href"), 4) !== 'http') {
+                    $urls[] = $basePath.$trackLink->getAttribute("href");
                 }
             }
         }
