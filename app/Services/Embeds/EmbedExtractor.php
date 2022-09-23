@@ -156,8 +156,6 @@ class EmbedExtractor
                 
             // if there is a matching meta tag on the page
             if (null !== $content) {
-                // get all the albums or tracks on the page
-                //preg_match('#(track|album)=(?<id>[0-9]+)#', $content, $matches);
                 $embeds[] = sprintf('<iframe style="border: 0; width: 100%%; height: 120px;"  src="%s" allowfullscreen seamless></iframe>', $content);
             } else {
                 // no embed in meta, so might be container
@@ -198,11 +196,9 @@ class EmbedExtractor
         $doc->loadHTML($htmlString);
         $xpath = new DOMXPath($doc);
 
-        $basePath = $containerUrl;
-
-        if (substr($containerUrl, -1) == '/') {
-            $basePath = substr($containerUrl, 0, -1);
-        }
+        // parse the url to get the base
+        $parsedUrl = parse_url($containerUrl);
+        $baseUrl = $parsedUrl["scheme"]."://".$parsedUrl["host"];
 
         $albumLinks = $xpath->evaluate("//a[contains(@href,'album')]");
 
@@ -215,7 +211,7 @@ class EmbedExtractor
             } else {
                 // handle the case where the links are just partial
                 if (substr($albumLink->getAttribute("href"), 4) !== 'http') {
-                    $urls[] = $basePath.$albumLink->getAttribute("href");
+                    $urls[] = $baseUrl.$albumLink->getAttribute("href");
                 }
             }
         }
@@ -231,7 +227,7 @@ class EmbedExtractor
             } else {
                 // handle the case where the links are just partial
                 if (substr($trackLink->getAttribute("href"), 4) !== 'http') {
-                    $urls[] = $basePath.$trackLink->getAttribute("href");
+                    $urls[] = $baseUrl.$trackLink->getAttribute("href");
                 }
             }
         }
