@@ -60,7 +60,8 @@ class EmbedExtractor
 
             // if it's a bandcamp link
             if (strpos($url, "bandcamp.com")) {
-                $embeds = array_merge($embeds, $this->getEmbedsFromBandcampUrl($url));
+                $temp =  $this->getEmbedsFromBandcampUrl($url);
+                $embeds = array_merge($embeds, $temp);
             } else {
                 $links[] = $url;
             }
@@ -140,8 +141,12 @@ class EmbedExtractor
     }
 
 
-    protected function getEmbedsFromBandcampUrl(string $url): ?array
+    protected function getEmbedsFromBandcampUrl(string $url, int $depth = 0): ?array
     {
+        // prevent an infinite loop
+        if ($depth > 2) {
+            return [];
+        }
         // reset the response
         $this->provider->setResponse(null);
 
@@ -167,7 +172,7 @@ class EmbedExtractor
                         break;
                     }
                     // if there is an embed, add it to the array
-                    $temp = $this->getEmbedsFromBandcampUrl($containerUrl);
+                    $temp = $this->getEmbedsFromBandcampUrl($containerUrl, $depth + 1);
                     if (count($temp) > 0) {
                         $embeds = array_merge($embeds, $temp);
                         $containerCount++;
@@ -177,7 +182,7 @@ class EmbedExtractor
             // reset the response
             $this->provider->setResponse(null);
         }
-        return $embeds;
+        return array_unique($embeds);
     }
 
 
@@ -200,12 +205,12 @@ class EmbedExtractor
         $parsedUrl = parse_url($containerUrl);
         $baseUrl = $parsedUrl["scheme"]."://".$parsedUrl["host"];
 
-        $albumLinks = $xpath->evaluate("//a[contains(@href,'album')]");
+        $albumLinks = $xpath->evaluate("//a[contains(@href,'/album')]");
 
         // add album links to the url array
         foreach ($albumLinks as $albumLink) {
             if (strpos($albumLink->getAttribute("href"), 'https') === 0) {
-                if (!in_array($albumLink->getAttribute("href"), $urls)) {
+                if (!in_array($albumLink->getAttribute("href"), $urls) && strpos($parsedUrl["host"], $albumLink->getAttribute("href"))) {
                     $urls[] = $albumLink->getAttribute("href");
                 }
             } else {
@@ -216,12 +221,12 @@ class EmbedExtractor
             }
         }
 
-        $trackLinks = $xpath->evaluate("//a[contains(@href,'track')]");
+        $trackLinks = $xpath->evaluate("//a[contains(@href,'/track')]");
 
         // add track links to the url array
         foreach ($trackLinks as $trackLink) {
             if (strpos($trackLink->getAttribute("href"), 'https') === 0) {
-                if (!in_array($trackLink->getAttribute("href"), $urls)) {
+                if (!in_array($trackLink->getAttribute("href"), $urls) && strpos($parsedUrl["host"], $trackLink->getAttribute("href"))) {
                     $urls[] = $trackLink->getAttribute("href");
                 }
             } else {
@@ -232,7 +237,7 @@ class EmbedExtractor
             }
         }
 
-        return $urls;
+        return array_unique($urls);
     }
 
     /**
