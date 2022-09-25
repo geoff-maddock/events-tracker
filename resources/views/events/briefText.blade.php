@@ -17,14 +17,13 @@
 
 
 @if ($event->venue)
-{{ $event->venue->name  }}
+at {{ $event->venue->name  }}
 @endif
 
 
 @if ($event->door_price)
 ${{ number_format($event->door_price,0) }}
 @endif
-
 
 @unless ($event->tags->isEmpty())
 @php 
