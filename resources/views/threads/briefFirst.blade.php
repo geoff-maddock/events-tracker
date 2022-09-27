@@ -31,7 +31,8 @@
 
         @if ($event = $thread->event)
             Event:
-            <span class="badge rounded-pill bg-dark"><a href="{!! route('events.show', ['event' => $event->id]) !!}">{{ $event->name }}</a></span>
+            
+            <span class="badge rounded-pill bg-dark"><a href="{!! route('events.show', ['event' => $event->id]) !!}">{{ Str::limit($event->name,30,' ...') }}</a></span>
         @endif
 
         @unless ($thread->series->isEmpty())
