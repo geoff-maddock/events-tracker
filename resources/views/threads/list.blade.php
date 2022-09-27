@@ -6,7 +6,7 @@
           Threads
         </th>
         <th class="cell-stat">Category</th>
-        <th class="cell-stat d-none d-md-table-cell">Users</th>
+        <th class="cell-stat d-none d-md-table-cell">User</th>
         <th class="cell-stat text-center d-none d-lg-table-cell">Posts</th>
         <th class="cell-stat text-center d-none d-lg-table-cell">Views</th>
         <th class="cell-stat ">Last Post</th>

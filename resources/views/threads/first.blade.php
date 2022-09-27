@@ -60,18 +60,20 @@
         @endunless
 
     </td>
-    <td class="cell-stat hidden-xs hidden-sm">{{ $thread->thread_category ?? 'General'}}</td>
+    <td class="cell-stat d-none d-md-table-cell">{{ $thread->thread_category ?? 'General'}}</td>
     <td class="cell-stat">
         @if (isset($thread->user))
             @include('users.avatar', ['user' => $thread->user])
+            <span class="d-none d-md-table-cell">
             {!! link_to_route('users.show', $thread->user->name, [$thread->user->id], ['class' => 'forum-link']) !!}
+            </span>
         @else
             User deleted
         @endif
     </td>
-    <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->postCount }}</td>
-    <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->views }}</td>
-    <td class="cell-stat text-center hidden-xs hidden-sm">{{ $thread->likes }}</td>
+    <td class="cell-stat text-center d-none d-md-table-cell">{{ $thread->postCount }}</td>
+    <td class="cell-stat text-center d-none d-md-table-cell">{{ $thread->views }}</td>
+    <td class="cell-stat text-center d-none d-md-table-cell">{{ $thread->likes }}</td>
     <td class="cell-stat-2x hidden-xs">{{ $thread->lastPostAt->diffForHumans() }}</td>
 </tr>
 <tr>

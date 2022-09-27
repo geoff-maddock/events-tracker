@@ -4,18 +4,20 @@
 	<tbody class='thread-post'>
 	<tr id='post-{{ $post->id }}'>
 		<td></td>
-		<td class="hidden-xs hidden-sm"></td>
+		<td class="d-none d-md-table-cell"></td>
 		<td>
 		    @if (isset($post->user))
 		      @include('users.avatar', ['user' => $post->user])
+			  <span class="d-none d-md-table-cell">
 		      {!! link_to_route('users.show', $post->user->name, [$post->user->id], ['class' => 'forum-link']) !!}
+			  </span>
 		    @else
 		    User deleted
 		    @endif
 		</td>
-		<td class="hidden-xs hidden-sm"></td>
-		<td class="hidden-xs hidden-sm"></td>
-        <td class="cell-stat text-center hidden-xs hidden-sm">{{ $post->likes }}</td>
+		<td class="d-none d-md-table-cell"></td>
+		<td class="d-none d-md-table-cell"></td>
+        <td class="cell-stat text-center d-none d-md-table-cell">{{ $post->likes }}</td>
 		<td class="hidden-xs">{{ $post->created_at->diffForHumans() }}</td>
 	</tr>
 	<tr>
