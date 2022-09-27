@@ -831,7 +831,7 @@ class Event extends Eloquent
         // include the related entities
         if (!$this->entities->isEmpty()) {
             foreach ($this->entities as $entity) {
-                if ('' !== $entity->twitter_username) {
+                if (!empty($entity->twitter_username)) {
                     // check the length of the tag and if there is enough room to add
                     if (strlen($format) + strlen($entity->twitter_username) > 244) {
                         continue;
