@@ -23,11 +23,11 @@ Forum Thread "{{ $thread->name }}"
 	    <thead>
 	      <tr>
 	        <th>Thread</th>
-	        <th class="cell-stat hidden-xs hidden-sm">Category</th>
-	        <th class="cell-stat">Author</th>
-	        <th class="cell-stat text-center hidden-xs hidden-sm">Posts</th>
-	        <th class="cell-stat text-center hidden-xs hidden-sm">Views</th>
-            <th class="cell-stat text-center hidden-xs hidden-sm">Likes</th>
+	        <th class="cell-stat d-none d-md-table-cell">Category</th>
+	        <th class="cell-stat">User</th>
+	        <th class="cell-stat text-center d-none d-md-table-cell">Posts</th>
+	        <th class="cell-stat text-center d-none d-md-table-cell">Views</th>
+            <th class="cell-stat text-center d-none d-md-table-cell">Likes</th>
 	        <th class="cell-stat-2x hidden-xs">Last Post</th>
 	      </tr>
 	    </thead>
