@@ -27,6 +27,7 @@
 				// 	}
 				// ],
 				height: 820,
+				initialDate: '{{ $initialDate }}',
 			  });
 			  calendar.render();
 			});

@@ -1243,6 +1243,9 @@ class EventsController extends Controller
      **/
     public function calendar(): View
     {
+        // set the initial date of the calendar that is displayed
+        $initialDate = Carbon::now()->format('Y-m-d');
+
         $eventList = [];
 
         // get all public events
@@ -1290,7 +1293,71 @@ class EventsController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList'));
+        return view('events.event-calendar', compact('eventList', 'initialDate'));
+    }
+
+    /**
+     * Display a calendar view of events by date
+     **/
+    public function calendarByDate(
+        ?string $year = null,
+        ?string $month = null): View
+    {
+        // set the initial date of the calendar that is displayed
+        $year = isset($year) ? $year : Carbon::now()->year;
+        $month = isset($month) ? $month : Carbon::now()->format('m');
+        $day = '01';
+
+        $initialDate = $year.'-'.$month.'-'.$day;
+
+        $eventList = [];
+
+        // get all public events
+        $events = Event::where(function ($query) {
+            /* @phpstan-ignore-next-line */
+            $query->visible($this->user);
+        })->get();
+
+        // get all the upcoming series events
+        $series = Series::active()->get();
+
+        // filter for only events that are public or that were created by the current user and are not "no schedule"
+        $series = $series->filter(function ($e) {
+            return (('Public' == $e->visibility->name) || ($this->user && $e->created_by === $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
+        });
+
+        // adds events to event list
+        foreach ($events as $event) {
+            $eventList[] = [
+                'id' => 'event-'.$event->id,
+                'start' => $event->start_at->format('Y-m-d H:i'),
+                'end' => ($event->end_time !== null) ? $event->end_time->format('Y-m-d H:i') : null,
+                'title' => $event->name,
+                'url' => '/events/'.$event->id,
+                'backgroundColor' => $event->eventType->backgroundColor(),
+                'description' => $event->short,
+            ];
+        }
+
+        // adds series to events list
+        foreach ($series as $s) {
+            if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
+                // add the next instance of each series to the calendar
+                $eventList[] = [
+                    'id' => 'series-'.$s->id,
+                    'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
+                    'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
+                    'title' => $s->name,
+                    'url' => '/series/'.$s->id,
+                    'backgroundColor' => '#99bcdb',
+                    'description' => $s->short,
+                ];
+            }
+        }
+
+        $eventList = json_encode($eventList);
+
+        return view('events.event-calendar', compact('eventList', 'initialDate'));
     }
 
     /**
