@@ -1121,6 +1121,7 @@ class EventsController extends Controller
     {
         // get the entity by the slug name
         $related = Entity::where('slug', '=', $slug)->firstOrFail();
+        $initialDate = Carbon::now()->format('Y-m-d');
 
         $eventList = [];
 
@@ -1173,7 +1174,7 @@ class EventsController extends Controller
         // converts array of events into json event list
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'related'));
+        return view('events.event-calendar', compact('eventList', 'related', 'initialDate'));
     }
 
     /**
@@ -1183,6 +1184,8 @@ class EventsController extends Controller
     {
         // get the tag by the slug name
         $tag = Tag::where('slug', '=', $slug)->firstOrFail();
+
+        $initialDate = Carbon::now()->format('Y-m-d');
 
         $eventList = [];
 
@@ -1235,7 +1238,7 @@ class EventsController extends Controller
         // converts array of events into json event list
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'tag'));
+        return view('events.event-calendar', compact('eventList', 'tag', 'initialDate'));
     }
 
     /**
@@ -1557,6 +1560,7 @@ class EventsController extends Controller
     public function calendarAttending()
     {
         $this->middleware('auth');
+        $initialDate = Carbon::now()->format('Y-m-d');
 
         $eventList = [];
 
@@ -1619,7 +1623,7 @@ class EventsController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'slug'));
+        return view('events.event-calendar', compact('eventList', 'slug', 'initialDate'));
     }
 
     /**
@@ -1630,6 +1634,8 @@ class EventsController extends Controller
     public function calendarFree()
     {
         $eventList = [];
+
+        $initialDate = Carbon::now()->format('Y-m-d');
 
         $events = Event::where('door_price', 0)
             ->orderBy('start_at', 'ASC')
@@ -1682,7 +1688,7 @@ class EventsController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'slug'));
+        return view('events.event-calendar', compact('eventList', 'slug','initialDate'));
     }
 
     /**
@@ -1693,6 +1699,7 @@ class EventsController extends Controller
     public function calendarMinAge(int $age)
     {
         $eventList = [];
+        $initialDate = Carbon::now()->format('Y-m-d');
 
         $events = Event::where('min_age', '<=', $age)
             ->orderBy('start_at', 'ASC')
@@ -1745,7 +1752,7 @@ class EventsController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'slug'));
+        return view('events.event-calendar', compact('eventList', 'slug','initialDate'));
     }
 
     /**
@@ -1757,6 +1764,8 @@ class EventsController extends Controller
         $slug = Str::title(str_replace('-', ' ', $type));
 
         $eventList = [];
+
+        $initialDate = Carbon::now()->format('Y-m-d');
 
         $events = Event::getByType($slug)
             ->orderBy('start_at', 'ASC')
@@ -1806,7 +1815,7 @@ class EventsController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'slug'));
+        return view('events.event-calendar', compact('eventList', 'slug','initialDate'));
     }
 
     /**
