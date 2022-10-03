@@ -6,6 +6,7 @@ use App\Models\Entity;
 use App\Models\Event;
 use DOMDocument;
 use DOMXPath;
+use Exception;
 use Jamband\Ripple\Ripple;
 
 /**
@@ -14,6 +15,7 @@ use Jamband\Ripple\Ripple;
 class EmbedExtractor
 {
     const CONTAINER_LIMIT = 4;
+
     protected Provider $provider;
 
     /**
@@ -54,6 +56,7 @@ class EmbedExtractor
         
         // get some data about the entities bandcamp links
         $collectionLinks = $entity->links;
+
         // handle any URLs that are only containers
         foreach ($collectionLinks as $collectionLink) {
             $url = $collectionLink->url;
@@ -192,7 +195,13 @@ class EmbedExtractor
 
         $httpClient = new \GuzzleHttp\Client();
 
-        $response = $httpClient->get($containerUrl);
+        try {
+            $response = $httpClient->get($containerUrl);
+        } catch (Exception $e) {
+            // if there was an exception, don't process further
+            return [];
+        }
+
         $htmlString = (string) $response->getBody();
 
         libxml_use_internal_errors(true);
@@ -250,7 +259,12 @@ class EmbedExtractor
 
         $httpClient = new \GuzzleHttp\Client();
 
-        $response = $httpClient->get($url);
+        try {
+            $response = $httpClient->get($url);
+        } catch (Exception $e) {
+            // if there was an exception, don't process further
+            return [];
+        }
         $htmlString = (string) $response->getBody();
 
         libxml_use_internal_errors(true);
