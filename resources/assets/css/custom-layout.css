@@ -342,6 +342,5 @@ ul.list-click li {
 @container (inline-size < 570px) {
 	.thread-columns {
 		display: none;
-        background-color: red;
 	}
 }
