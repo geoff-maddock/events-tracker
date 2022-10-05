@@ -21,7 +21,7 @@
 
 <div class="row">
 	<div class="col-lg-6">
-		<div class="profile-card">
+		<div class="profile-card thread-container">
 
 			@if ($photo = $entity->getPrimaryPhoto())
 			<div id="event-image">
