@@ -332,3 +332,16 @@ ul.list-click li {
     padding-left: 0px;
     text-align: center;
 }
+
+/* adds a container query to handle displaying threads inside of other containers and prevent from overflowing */
+
+.thread-container {
+    container-type: inline-size;
+}
+
+@container (inline-size < 570px) {
+	.thread-columns {
+		display: none;
+        background-color: red;
+	}
+}

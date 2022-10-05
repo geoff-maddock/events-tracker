@@ -7,9 +7,9 @@
         </th>
         <th class="cell-stat">Category</th>
         <th class="cell-stat d-none d-md-table-cell">User</th>
-        <th class="cell-stat text-center d-none d-lg-table-cell">Posts</th>
-        <th class="cell-stat text-center d-none d-lg-table-cell">Views</th>
-        <th class="cell-stat ">Last Post</th>
+        <th class="cell-stat text-center thread-columns">Posts</th>
+        <th class="cell-stat text-center thread-columns">Views</th>
+        <th class="cell-stat thread-columns">Last Post</th>
       </tr>
     </thead>
 <tbody>
@@ -32,7 +32,7 @@
     <span class="d-none d-md-inline">
     @if ($event = $thread->event)
       Event:
-      <span class="badge rounded-pill bg-dark"><a href="{!! route('events.show', ['event' => $event->id]) !!}">{{ $event->name }}</a></span>
+      <span class="badge rounded-pill bg-dark"><a href="{!! route('events.show', ['event' => $event->id]) !!}">{{ Str::limit($event->name,30,' ...') }}</a></span>
     @endif
 
     @unless ($thread->series->isEmpty())
@@ -73,9 +73,9 @@
       User deleted
       @endif
     </td>
-    <td class="cell-stat text-center d-none d-lg-table-cell">{{ $thread->postCount }}</td>
-    <td class="cell-stat text-center d-none d-lg-table-cell">{{ $thread->views }}</td>
-    <td>{{ $thread->lastPostAt->diffForHumans() }}</td>
+    <td class="cell-stat text-center thread-columns">{{ $thread->postCount }}</td>
+    <td class="cell-stat text-center thread-columns">{{ $thread->views }}</td>
+    <td class="thread-columns">{{ $thread->lastPostAt->diffForHumans() }}</td>
     </tr>
 
 	@endforeach
