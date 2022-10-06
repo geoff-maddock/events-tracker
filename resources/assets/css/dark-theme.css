@@ -1,3 +1,7 @@
+.geoff {
+	background-color: #666666;
+}
+
 .primary-gradient {
 	background-color: #FF3CAC;
 	background-image: linear-gradient(225deg, #FF3CAC 0%, #784BA0 50%, #2B86C5 100%) !important;
@@ -220,10 +224,10 @@ li.selected:hover {
     font-weight: 600;
 }
 
-
 li.select2-results__option {
 	color: #989898;
 }
+
 .invalid-feedback {
     display: none;
     width: 100%;
@@ -392,7 +396,6 @@ a.fc-col-header-cell-cushion {
 	color: #dddddd;
 }
 
-/* https://www.grabient.com/ */
 .dark #jumbotron {
 	background-color: #FF3CAC;
 	background-image: linear-gradient(225deg, #FF3CAC 0%, #784BA0 50%, #2B86C5 100%);

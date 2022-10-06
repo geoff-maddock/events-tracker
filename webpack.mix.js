@@ -1,8 +1,5 @@
 let mix = require('laravel-mix');
 
-// purgecss is intended to remove any css that is not used by the project
-require('laravel-mix-purgecss');
-
 // base app js and css
 // this builds public/css/app.css
 mix.js('resources/assets/js/app.js', 'public/js')
@@ -18,7 +15,6 @@ mix.styles([
     'public/css/app.css',
     'resources/assets/css/custom-layout.css',
     'resources/assets/css/dark-theme.css',
-    // 'resources/assets/css/superhero-bootstrap.min.css', // no need to add this here 
     'resources/assets/css/sweetalert.css'
 ], 'public/css/dark.css')
 // .purgeCss()
