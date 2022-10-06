@@ -87,8 +87,8 @@
 						<span class="badge rounded-pill bg-dark">
 							<a href="/series/{{ $series->id }}" 
 								
-							@if (!$series->active) 
-							title="Inactive"> <strike>{{ $series->name }}</strike>
+							@if ($series->visibility->name == 'Cancelled') 
+							title="Cancelled"> <strike>{{ $series->name }}</strike>
 							@else
 							title="Active">{{ $series->name}}
 							@endif
