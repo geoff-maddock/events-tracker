@@ -21,8 +21,7 @@
 }
 
 .site-title a:hover {
-    color: #185a50;
-    background: linear-gradient(225deg, #FF3CACd1 0%, #784BA0d1 50%, #2B86C5d1 100%);
+	color: #cccccc;
 }
 
 .profile-card {
