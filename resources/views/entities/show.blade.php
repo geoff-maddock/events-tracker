@@ -84,7 +84,17 @@
 				<P>
 				<b>Series:</b>
 				@foreach ($entity->series as $series)
-						<span class="badge rounded-pill bg-dark"><a href="/series/{{ $series->id }}">{{ $series->name }}</a></span>
+						<span class="badge rounded-pill bg-dark">
+							<a href="/series/{{ $series->id }}" 
+								
+							@if (!$series->active) 
+							title="Inactive"> <strike>{{ $series->name }}</strike>
+							@else
+							title="Active">{{ $series->name}}
+							@endif
+							
+						</a></span>
+		
 				@endforeach
 			@endunless
 
