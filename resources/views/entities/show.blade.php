@@ -10,7 +10,7 @@
 
 @section('content')
 
-<h1 class="display-crumbs text-primary">Entity	@include('entities.crumbs', ['slug' => $entity->name]) {{Str::studly($entity->slug)}}</h1>
+<h1 class="display-crumbs text-primary">Entity	@include('entities.crumbs', ['slug' => $entity->name], ['class' => 'item-title'])</h1>
 
 <div id="action-menu" class="mb-2">
 @if ($user && Auth::user()->id === ($entity->user ? $entity->user->id : null))
@@ -266,9 +266,9 @@
 				@endif
 			</div>
 		</div>
-		<div class="row">
+		<div class="row event-container">
 
-				<div class="col-xl-6">
+				<div class="event-columns">
 					<div class="card bg-dark">
 
 							<h5 class="card-header bg-primary">Past Events <span class="badge rounded-pill bg-dark float-end"><a href="{{ url('events/related-to/'.$entity->slug) }}">{{ $entity->pastEvents()->total() }}</a></span></h5>
@@ -281,7 +281,7 @@
 					</div>
 				</div>
 
-				<div class="col-xl-6">
+				<div class="event-columns">
 					<div class="card bg-dark">
 
 						<h5 class="card-header bg-primary">Future Events <span class="badge rounded-pill bg-dark float-end"><a href="{{ url('events/related-to/'.$entity->slug) }}">{{ $entity->futureEvents()->total() }}</a></span></h5>

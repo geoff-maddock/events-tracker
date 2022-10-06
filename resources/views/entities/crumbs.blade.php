@@ -17,5 +17,5 @@
 	. {{ ucfirst($type) }}
 @endif
 @if (isset($slug))
-	. {{ strtoupper($slug) }}
+	. {{ Str::studly($slug) }}
 @endif 

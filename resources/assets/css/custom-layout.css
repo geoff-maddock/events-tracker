@@ -339,8 +339,19 @@ ul.list-click li {
     container-type: inline-size;
 }
 
-@container (inline-size < 580px) {
+@container (inline-size < 600px) {
 	.thread-columns {
 		display: none;
+	}
+}
+
+.event-container {
+    container-type: inline-size;
+}
+
+@container (inline-size > 800px) {
+	.event-columns {
+		flex: 0 0 auto;
+        width: 50%;
 	}
 }

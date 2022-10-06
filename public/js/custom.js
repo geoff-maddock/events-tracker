@@ -321,7 +321,7 @@ var Home = (function()
         $.ajax({
             url : url
         }).done(function (data) {
-            $('.next-events').remove();
+            $('.next-events').parent().remove();
             $(target).last().after(data);
             console.log('last targetted '+target);
         }).fail(function () {
