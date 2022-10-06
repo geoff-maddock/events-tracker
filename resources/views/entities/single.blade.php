@@ -73,7 +73,10 @@
 	@endif
 
 	@if ($entity->getPrimaryLocationAddress() )
-	{{ $entity->getPrimaryLocationAddress() }} - {{ $entity->getPrimaryLocation()->neighborhood }}
+	{{ $entity->getPrimaryLocationAddress() }}
+		@if($entity->getPrimaryLocation()->neighborhood) 
+			- {{ $entity->getPrimaryLocation()->neighborhood }}
+		@endif
 	@endif
 	<br>
 	@foreach ($entity->roles as $role)
