@@ -64,7 +64,7 @@ Route::get('tos', 'PagesController@tos');
 Route::get('help', 'PagesController@help');
 
 Route::get('calendar', 'EventsController@calendar')->name('calendar');
-Route::get('calendar/by-date/{year?}/{month?}/{day?}', 'EventsController@calendarByDate')->name('calendar.byDate')
+Route::get('calendar/{year?}/{month?}/{day?}', 'EventsController@calendarByDate')->name('calendar.byDate')
     ->where('year', '[1-9][0-9][0-9][0-9]')
     ->where('month', '(0?[1-9]|1[012])$');
 Route::get('calendar/tag/{tag}', 'EventsController@calendarTags')->name('calendar.tag');
