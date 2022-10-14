@@ -1,5 +1,24 @@
+/* Vars that were missing, adding here - split up? */
+:root {
+	--bs-list-group-color: var(--bs-primary-rgb);
+	--bs-list-group-item-padding-y: .5rem;
+	--bs-list-group-item-padding-x: .5rem;
+	--bs-list-group-border-width: .5rem;
+	--bs-list-group-bg:  rgba(55,80,100,1);
+}
+
 .geoff {
 	background-color: #666666;
+}
+
+.list-group-item-compact {
+    background-color:  rgba(55,80,100,1) !important;
+    border: 1rem solid 1rem;
+    color: #ffffff;
+    display: block;
+    padding: 1rem;
+    position: relative;
+    text-decoration: none;
 }
 
 .primary-gradient {
@@ -408,3 +427,4 @@ a.fc-col-header-cell-cushion {
 .item-title:hover {
     color: #5bc0dc !important;
 }
+

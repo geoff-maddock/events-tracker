@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h1 class="display-6 text-primary">Categories @include('categories.crumbs')</h1>
+<h1 class="display-crumbs text-primary">Categories @include('categories.crumbs')</h1>
 		<div id="action-menu" class="mb-2">
 			<a href="{!! URL::route('categories.create') !!}" class="btn btn-primary">Add a category</a>
 		</div>
