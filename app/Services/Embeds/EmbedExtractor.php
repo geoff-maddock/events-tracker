@@ -119,6 +119,16 @@ class EmbedExtractor
         preg_match_all($regex, $body, $result, PREG_PATTERN_ORDER);
         $urls = $result[0];
 
+        // collect any URLs from related entities
+        foreach ($event->entities as $entity) {
+            foreach ($entity->links as $link) {
+                if (in_array($link->url, $urls)) {
+                    continue;
+                };
+                $urls[] = $link->url;
+            }
+        };
+
         // handle any URLs
         foreach ($urls as $url) {
             // if it's a bandcamp link
@@ -130,7 +140,7 @@ class EmbedExtractor
             }
         }
 
-        // convert the entity's links into embeds when they contain embeddable audio
+        // convert the event's links into embeds when they contain embeddable audio
         foreach ($links as $link) {
             // soundcloud
             if (strpos($link, "soundcloud.com") && substr_count($link, '/') > 3) {
