@@ -210,9 +210,15 @@ class EmbedExtractor
         $doc->loadHTML($htmlString);
         $xpath = new DOMXPath($doc);
 
+
         // parse the url to get the base
         $parsedUrl = parse_url($containerUrl);
-        $baseUrl = $parsedUrl["scheme"]."://".$parsedUrl["host"];
+
+        // if there is no scheme, default to https
+        $scheme = isset($parsedUrl["scheme"]) ? $parsedUrl["scheme"] : 'https';
+        $host = isset($parsedUrl["host"]) ? $parsedUrl["host"] : '';
+
+        $baseUrl = $scheme."://".$host;
 
         $albumLinks = $xpath->evaluate("//a[contains(@href,'/album')]");
 
