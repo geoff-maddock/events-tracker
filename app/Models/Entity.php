@@ -106,6 +106,7 @@ class Entity extends Eloquent
         'description' => '',
     ];
 
+
     public static function boot()
     {
         parent::boot();

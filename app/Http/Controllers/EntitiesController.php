@@ -98,7 +98,14 @@ class EntitiesController extends Controller
         $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Entity::query()->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')->select('entities.*');
+        $baseQuery = Entity::query()
+        ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
+        ->select('entities.*')
+        ->withCount('follows')
+        //->orderBy('follows_count', 'desc')
+        ;
+
+        // dd($baseQuery->toSql());
 
         // set the default filter to active
         $defaultFilter = ['entity_status' => 'Active'];
@@ -950,7 +957,7 @@ class EntitiesController extends Controller
     {
         return [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
-            'sortOptions' => ['entities.name' => 'Name', 'entity_types.name' => 'Entity Type', 'entities.created_at' => 'Created At'],
+            'sortOptions' => ['entities.name' => 'Name', 'entity_types.name' => 'Entity Type', 'entities.created_at' => 'Created At', 'follows_count' => 'Popularity'],
             'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
         ];
     }
