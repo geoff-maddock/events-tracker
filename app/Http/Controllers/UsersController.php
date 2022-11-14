@@ -444,6 +444,7 @@ class UsersController extends Controller
 
         // add the following response
         $user->user_status_id = UserStatus::ACTIVE;
+        $user->email_verified_at = Carbon::now();
         $user->save();
 
         Log::info('User '.$user->name.' is activated.');
