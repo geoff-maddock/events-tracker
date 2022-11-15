@@ -136,7 +136,13 @@ class EventsController extends Controller
         $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
+        $baseQuery = Event::query()
+            ->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')
+            ->select('events.*')
+            // ->withCount('eventResponses')
+        ;
+
+        // dd($baseQuery->toSql());
 
         // set the default filter to starting today, can override
         $defaultFilter = ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]];
@@ -145,7 +151,8 @@ class EventsController extends Controller
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
             ->setDefaultFilters($defaultFilter)
-            ->setDefaultSort(['events.start_at' => 'asc']);
+            ->setDefaultSort(['events.start_at' => 'asc'])
+        ;
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();

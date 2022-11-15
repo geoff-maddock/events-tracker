@@ -676,7 +676,7 @@ class Entity extends Eloquent
 
         // add the primary link
         if ($this->futureEvents()->total() > 0) {
-            $event = $this->futureEvents()->first();
+            $event = $this->futureEvents()->items()[0];
             $start = $event->start_at->format('m/d');
             $format .= ' Next: '.$start.' '.$event->name.' at '.$event->venue->name;
         }
