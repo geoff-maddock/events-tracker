@@ -27,6 +27,7 @@ use App\Models\Thread;
 use App\Models\User;
 use App\Models\Visibility;
 use App\Notifications\EventPublished;
+use App\Services\Embeds\EmbedExtractor;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
@@ -126,7 +127,7 @@ class EventsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
+    ): JsonResponse {
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_event');
         $listParamSessionStore->setKeyPrefix('internal_event_index');
@@ -158,12 +159,13 @@ class EventsController extends Controller
             ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
 
+
         // saves the updated session
         $listParamSessionStore->save();
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return response()->json($events)->getContent();
+        return response()->json($events);
     }
 
     /**
@@ -1959,7 +1961,7 @@ class EventsController extends Controller
         return back();
     }
 
-    public function show(?Event $event): string
+    public function show(?Event $event, EmbedExtractor $embedExtractor): JsonResponse
     {
         if (!$event) {
             abort(404);
@@ -1967,7 +1969,14 @@ class EventsController extends Controller
 
         $thread = Thread::where('event_id', '=', $event->id)->first();
 
-        return view('events.show', compact('event'))->with(['thread' => $thread])->render();
+        // check blacklist status
+        $blacklist = $this->checkBlackList($event);
+
+        // extract all the links from the event body and convert into embeds
+        $embeds = $embedExtractor->getEmbedsForEvent($event);
+
+        return response()->json($event);
+        // return view('events.show', compact('event', 'embeds'))->with(['thread' => $thread, 'blacklist' => $blacklist])->render();
     }
 
     public function store(EventRequest $request, Event $event): RedirectResponse
@@ -2964,7 +2973,7 @@ class EventsController extends Controller
 
         $thread->save();
 
-        $thread->tags()->attach($event->tags()->pluck('tags.id')->toArray());
+        $thread->tags()->attach($event->tags()->pluck('tags.id')->toArray()); 
         $thread->entities()->attach($event->entities()->pluck('entities.id')->toArray());
 
         return redirect()->route('events.show', ['event' => $event->id]);
@@ -3020,5 +3029,24 @@ class EventsController extends Controller
 
         return response($rss)
             ->header('Content-type', 'application/rss+xml');
+    }
+
+    protected function checkBlackList(?Event $event): bool
+    {
+        $blacklist = false;
+
+        // blacklist events that have venues in the blacklist
+        if (!empty($event->venue_id)) {
+            if ($blacklistConfig = config('app.spider_blacklist')) {
+                $blacklistArray = explode(',', $blacklistConfig);
+                foreach ($blacklistArray as $item) {
+                    if (strtolower($item) == strtolower($event->venue->name)) {
+                        $blacklist = true;
+                    }
+                }
+            }
+        }
+
+        return $blacklist;
     }
 }
