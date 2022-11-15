@@ -102,10 +102,7 @@ class EntitiesController extends Controller
         ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
         ->select('entities.*')
         ->withCount('follows')
-        //->orderBy('follows_count', 'desc')
         ;
-
-        // dd($baseQuery->toSql());
 
         // set the default filter to active
         $defaultFilter = ['entity_status' => 'Active'];
