@@ -232,6 +232,7 @@ var Home = (function()
         this.loadDays();
         this.setupPagination();
         this.setupAddEvents();
+        this.setupLoadScroll();
 
         window.addEventListener('popstate', function(event) {
             console.log('popstate fired');
@@ -292,6 +293,32 @@ var Home = (function()
         });
     };
 
+    // set up javascript that fires when the page scrolls
+    var setupLoadScroll = function() {
+        console.log('setup load scroll');
+
+        var scrollTimeout;
+        var throttle = 300;
+
+        $(window).on('scroll', function(e) {
+            if (!scrollTimeout) {
+                if($(window).scrollTop() == $(document).height() - $(window).height()) {
+
+                        scrollTimeout = setTimeout(function () {
+
+                                var url = $('#add-event').attr('href');
+                                var target = '.home';
+                    
+                                addEvents(url, target);
+                    
+                                history.pushState(null, null, window.location.pathname);
+                                scrollTimeout = null;
+                            }, throttle);
+                }
+            }
+        });
+    };
+
     // load a day's events
     var getDayEvents = function(url, num) {
         $.ajax({
@@ -329,6 +356,8 @@ var Home = (function()
         });
     };
 
+
+
     return {
         init: init,
         loadDays: loadDays,
@@ -336,6 +365,7 @@ var Home = (function()
         getDayEvents: getDayEvents,
         getEvents: getEvents,
         setupAddEvents: setupAddEvents,
+        setupLoadScroll: setupLoadScroll,
         addEvents: addEvents
     };
 })();
