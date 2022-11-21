@@ -1,0 +1,1543 @@
+{
+	"info": {
+		"_postman_id": "092158c1-cb0d-4a6a-8550-b18d12016273",
+		"name": "Arcane City",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "21955993-092158c1-cb0d-4a6a-8550-b18d12016273"
+	},
+	"item": [
+		{
+			"name": "events",
+			"item": [
+				{
+					"name": "Create Event",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "de9161f3-c987-455f-9ada-15f800bc08ef",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Billing system name is correct\", function () {\r",
+									"    pm.expect(jsonData.data.name).to.eql('test system');\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"billing_system_id\", jsonData.data.id);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "9d6bce68-fec1-4bf6-ba9c-4e32cbbfaabe",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"test system\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/events",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Event",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a08825a5-28c6-47b7-8451-a7b65e9f70c8",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Billing system name is correct\", function () {\r",
+									"    pm.expect(jsonData.data.name).to.eql('test system');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "69a576e1-317d-4d7d-bb1a-334e26d8cef0",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "exampleId",
+								"value": "1",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "text/javascript",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/events/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Events",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d405797e-1ad5-45b0-933b-141175709673",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "525128fe-5edc-4a72-b748-9dca5fcc787e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{content_type}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/events",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"events"
+							]
+						},
+						"description": "Get a paginated list of events"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Events filtered by Venue",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7c0d1ce2-aef0-42a7-8413-66792ea89591",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "9cfc1073-7c87-4b12-ad1c-f5ba6087562b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/events?venue_id=1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"events"
+							],
+							"query": [
+								{
+									"key": "venue_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Events",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "791074d0-ec29-4f7c-9783-43a44f6ea158",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Billing system name is updated\", function () {\r",
+									"    pm.expect(jsonData.data.name).to.eql('update test system');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "6593b988-ee49-4ea5-9dc4-19af4997dc62",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"update test system\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/events/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Event",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "20a930bd-09ba-4c76-bbae-d0cabf649a5d",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "8fd7ddcf-80e4-442f-8eaf-6ce593505e8c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/events/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "d37e9256-e3d3-43b1-8f5b-83895f011216"
+		},
+		{
+			"name": "event statuses",
+			"item": [
+				{
+					"name": "Create Event Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "de9161f3-c987-455f-9ada-15f800bc08ef",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Billing system name is correct\", function () {\r",
+									"    pm.expect(jsonData.data.name).to.eql('test system');\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"billing_system_id\", jsonData.data.id);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "25223908-6261-404b-bb1e-33063b7de0e2",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"test system\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/event-statuses",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"event-statuses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Event Statuses",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a08825a5-28c6-47b7-8451-a7b65e9f70c8",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Billing system name is correct\", function () {\r",
+									"    pm.expect(jsonData.data.name).to.eql('test system');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "41557e11-fcea-4aa7-aa14-38105c592def",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "exampleId",
+								"value": "1",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "text/javascript",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/event-statuses/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"event-statuses",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Event Statuses",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d405797e-1ad5-45b0-933b-141175709673",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "0fa286d2-f8e3-4421-a5da-9c7acffe43fd",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{content_type}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/event-statuses",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"event-statuses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Event Statuses",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "791074d0-ec29-4f7c-9783-43a44f6ea158",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Billing system name is updated\", function () {\r",
+									"    pm.expect(jsonData.data.name).to.eql('update test system');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "a3851759-b410-4305-9d67-8fae41b27f15",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"update test system\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/event-statuses/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"event-statuses",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Event",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "20a930bd-09ba-4c76-bbae-d0cabf649a5d",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "2c88cc25-9f2b-483f-84fc-efdceef428db",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/event-statuses/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"event-statuses",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "578d0693-2393-4c9f-a122-adb36d721449"
+		},
+		{
+			"name": "entities",
+			"item": [
+				{
+					"name": "Create Entity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d57b5429-2739-4afb-8e3e-a2532cc81461",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Account code is correct\", function () {\r",
+									"    pm.expect(jsonData.data.account_code).to.eql('123456');\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"account_id\", jsonData.data.id);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "f4f69d9f-2fcc-4704-837d-ccd0203093fc",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"customer_id\": 48,\r\n   \"billing_system_id\": 5,\r\n   \"account_code\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/entities",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"entities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Entities",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cf89d4eb-9048-4d46-a19d-22975b189db2",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "c768895f-98f0-49d8-bdb0-c75d0df049ba",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "text/javascript",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/entities",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"entities"
+							],
+							"query": [
+								{
+									"key": "Content-Type",
+									"value": "text/jason",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Entity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "207767b0-cf4e-4162-9f51-000fbf57bf65",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Account code is correct\", function () {\r",
+									"    pm.expect(jsonData.data.account_code).to.eql('123456');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "1235dc58-6d76-4fc3-ae2d-9dbe55d8c172",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/entities/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"entities",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Entities by Entity Type Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6137f445-8c46-4b20-b91e-4a4e951b0980",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json()\r",
+									"\r",
+									"pm.test(\"Ensure reponse has data\", function () {\r",
+									"    pm.expect(jsonData.data.length).to.not.eql(0);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure reponse includes all keys\", function () {\r",
+									"    pm.expect(jsonData.data[0]).to.have.all.keys(\r",
+									"        `id`,\r",
+									"        `account_code`,\r",
+									"        'bill_date',\r",
+									"        'bill_number',\r",
+									"        'invoice_total',\r",
+									"        'total_due',\r",
+									"        );\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure reponse values are valid types\", function () {\r",
+									"    pm.expect(jsonData.data[0].id).to.be.a(\"Number\")\r",
+									"    pm.expect(jsonData.data[0].account_code).to.be.a(\"String\")\r",
+									"    pm.expect(jsonData.data[0].bill_date).to.be.a(\"String\")\r",
+									"    pm.expect(jsonData.data[0].bill_number).to.be.a(\"String\")\r",
+									"    pm.expect(jsonData.data[0].invoice_total).to.be.a(\"Number\")\r",
+									"    pm.expect(jsonData.data[0].total_due).to.be.a(\"Number\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "3e09dced-e1de-49e3-aa75-245272918824",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/entities?entity_type_id=1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"entities"
+							],
+							"query": [
+								{
+									"key": "entity_type_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Entity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f66205e3-c913-41d0-9ea4-5b87222b05a7",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Account code is updated\", function () {\r",
+									"    pm.expect(jsonData.data.account_code).to.eql('987654');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "e2d1ff7f-7bc6-4d9d-9c72-68ef45c3309e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"customer_id\": 48,\r\n \"billing_system_id\": 5,\r\n  \"account_code\": \"987654\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/entities/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"entities",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Entity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3518135e-89af-4dc0-a83d-dbc340bacb90",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "3d49cc41-bca1-4385-ae38-f6839d5a6326",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/entities/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"entities",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "f39ea8b6-91cb-41a8-ab1e-d6a2b0c93efb"
+		},
+		{
+			"name": "series",
+			"item": [
+				{
+					"name": "Create Series",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d57b5429-2739-4afb-8e3e-a2532cc81461",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Account code is correct\", function () {\r",
+									"    pm.expect(jsonData.data.account_code).to.eql('123456');\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"account_id\", jsonData.data.id);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "a6e337e2-ca4c-4b8d-b04b-d755fd1e3a77",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"customer_id\": 48,\r\n   \"billing_system_id\": 5,\r\n   \"account_code\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/series",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"series"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all Series",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cf89d4eb-9048-4d46-a19d-22975b189db2",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "daa1ea57-a4b8-41c1-bfb1-3ffa565291a8",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/series",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"series"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get one Series",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "207767b0-cf4e-4162-9f51-000fbf57bf65",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Account code is correct\", function () {\r",
+									"    pm.expect(jsonData.data.account_code).to.eql('123456');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "f75c6969-12f5-4902-871b-26e05b9f92dd",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/series/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"series",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Series by Event Type Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6137f445-8c46-4b20-b91e-4a4e951b0980",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json()\r",
+									"\r",
+									"pm.test(\"Ensure reponse has data\", function () {\r",
+									"    pm.expect(jsonData.data.length).to.not.eql(0);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure reponse includes all keys\", function () {\r",
+									"    pm.expect(jsonData.data[0]).to.have.all.keys(\r",
+									"        `id`,\r",
+									"        `account_code`,\r",
+									"        'bill_date',\r",
+									"        'bill_number',\r",
+									"        'invoice_total',\r",
+									"        'total_due',\r",
+									"        );\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure reponse values are valid types\", function () {\r",
+									"    pm.expect(jsonData.data[0].id).to.be.a(\"Number\")\r",
+									"    pm.expect(jsonData.data[0].account_code).to.be.a(\"String\")\r",
+									"    pm.expect(jsonData.data[0].bill_date).to.be.a(\"String\")\r",
+									"    pm.expect(jsonData.data[0].bill_number).to.be.a(\"String\")\r",
+									"    pm.expect(jsonData.data[0].invoice_total).to.be.a(\"Number\")\r",
+									"    pm.expect(jsonData.data[0].total_due).to.be.a(\"Number\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "1039f977-b9d8-459e-80a4-463660c17701",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/series?event_type_id=1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"series"
+							],
+							"query": [
+								{
+									"key": "event_type_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Series",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f66205e3-c913-41d0-9ea4-5b87222b05a7",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Account code is updated\", function () {\r",
+									"    pm.expect(jsonData.data.account_code).to.eql('987654');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "e433ce7b-8dac-450e-96ad-e44ff41cb3b1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"customer_id\": 48,\r\n \"billing_system_id\": 5,\r\n  \"account_code\": \"987654\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/series/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"series",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Series",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3518135e-89af-4dc0-a83d-dbc340bacb90",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "65d088c0-058e-43db-b6c3-d41c782cc0c5",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/series/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"series",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "4d6f9aff-46b9-43b0-8a41-120208562d37"
+		},
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "Create User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d57b5429-2739-4afb-8e3e-a2532cc81461",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Account code is correct\", function () {\r",
+									"    pm.expect(jsonData.data.account_code).to.eql('123456');\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"account_id\", jsonData.data.id);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "4a1bc347-ad3f-42dc-809b-f897654554d8",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"customer_id\": 48,\r\n   \"billing_system_id\": 5,\r\n   \"account_code\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cf89d4eb-9048-4d46-a19d-22975b189db2",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "72177647-ab3d-409e-8f1a-ed9074547466",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get one User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "207767b0-cf4e-4162-9f51-000fbf57bf65",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Account code is correct\", function () {\r",
+									"    pm.expect(jsonData.data.account_code).to.eql('123456');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "5111ca21-d17c-449b-8819-097d37437c55",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Users by User Status Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6137f445-8c46-4b20-b91e-4a4e951b0980",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json()\r",
+									"\r",
+									"pm.test(\"Ensure reponse has data\", function () {\r",
+									"    pm.expect(jsonData.data.length).to.not.eql(0);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure reponse includes all keys\", function () {\r",
+									"    pm.expect(jsonData.data[0]).to.have.all.keys(\r",
+									"        `id`,\r",
+									"        `account_code`,\r",
+									"        'bill_date',\r",
+									"        'bill_number',\r",
+									"        'invoice_total',\r",
+									"        'total_due',\r",
+									"        );\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure reponse values are valid types\", function () {\r",
+									"    pm.expect(jsonData.data[0].id).to.be.a(\"Number\")\r",
+									"    pm.expect(jsonData.data[0].account_code).to.be.a(\"String\")\r",
+									"    pm.expect(jsonData.data[0].bill_date).to.be.a(\"String\")\r",
+									"    pm.expect(jsonData.data[0].bill_number).to.be.a(\"String\")\r",
+									"    pm.expect(jsonData.data[0].invoice_total).to.be.a(\"Number\")\r",
+									"    pm.expect(jsonData.data[0].total_due).to.be.a(\"Number\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "bed02382-0c58-45e3-9216-c9fbd9653047",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users?user_status_id=1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users"
+							],
+							"query": [
+								{
+									"key": "user_status_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f66205e3-c913-41d0-9ea4-5b87222b05a7",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Account code is updated\", function () {\r",
+									"    pm.expect(jsonData.data.account_code).to.eql('987654');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "befd00a4-976f-4063-8507-2260587d15ca",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"customer_id\": 48,\r\n \"billing_system_id\": 5,\r\n  \"account_code\": \"987654\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3518135e-89af-4dc0-a83d-dbc340bacb90",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "99cc411b-7664-4e2e-861e-395c5b0a5165",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "0e21df2f-733e-4146-8a0d-487667d9adec"
+		},
+		{
+			"name": "Get Docs",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"id": "d239c5a3-c125-4100-8a8d-e18995606090"
+					}
+				}
+			],
+			"id": "8c6e9604-d13f-4ed7-b263-68ff4dad93c6",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "exampleId",
+						"value": "1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/docs",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"docs"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "expedient",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "{{authUsername}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "85e5d9b6-8d60-45e0-aab9-460f230d0f28",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "a279f092-f993-4815-8b8e-da13aa3137aa",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
