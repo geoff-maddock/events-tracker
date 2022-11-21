@@ -7,19 +7,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::name('api.')->group(function () {
     Route::resource('events', 'Api\EventsController');
+    Route::resource('entities', 'Api\EntitiesController');
+    Route::resource('tags', 'Api\TagsController');
+    Route::resource('series', 'Api\SeriesController');
 
     // This endpoint collects series and events and returns them as JSON
     // Route::get('calendar-events', 'EventsController@calendarEventsApi')->name('calendarEvents.api')->middleware('auth.basic');
     Route::get('calendar-events', 'EventsController@calendarEventsApi')->name('calendarEvents.api');
     Route::get('tag-calendar-events', 'EventsController@tagCalendarEventsApi')->name('tagCalendarEvents.api');
-
-    Route::get('entities', function () {
-        return Entity::allOrdered();
-    });
-
-    Route::get('entities/{id}', function ($id) {
-        return Entity::find($id);
-    });
 
     Route::get('series', function () {
         return Series::all();
