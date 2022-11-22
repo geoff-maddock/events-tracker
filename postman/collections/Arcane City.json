@@ -1,434 +1,2629 @@
 {
 	"info": {
-		"_postman_id": "092158c1-cb0d-4a6a-8550-b18d12016273",
+		"_postman_id": "23b73459-7872-4002-b615-5e46fd7dc521",
 		"name": "Arcane City",
+		"description": "REST API for working with Arcane City data\n\nContact Support:\n Name: Geoff Maddock\n Email: geoff.maddock@gmail.com",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_uid": "21955993-092158c1-cb0d-4a6a-8550-b18d12016273"
+		"_uid": "21955993-23b73459-7872-4002-b615-5e46fd7dc521"
 	},
 	"item": [
 		{
-			"name": "events",
+			"name": "api",
 			"item": [
 				{
-					"name": "Create Event",
-					"event": [
+					"name": "events",
+					"item": [
 						{
-							"listen": "test",
-							"script": {
-								"id": "de9161f3-c987-455f-9ada-15f800bc08ef",
-								"exec": [
-									"pm.test(\"Status code is 201\", function () {\r",
-									"    pm.response.to.have.status(201);\r",
-									"});\r",
-									"\r",
-									"var jsonData = pm.response.json();\r",
-									"\r",
-									"pm.test(\"Billing system name is correct\", function () {\r",
-									"    pm.expect(jsonData.data.name).to.eql('test system');\r",
-									"});\r",
-									"\r",
-									"pm.environment.set(\"billing_system_id\", jsonData.data.id);\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "9d6bce68-fec1-4bf6-ba9c-4e32cbbfaabe",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"test system\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/events",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"events"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Event",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "a08825a5-28c6-47b7-8451-a7b65e9f70c8",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"var jsonData = pm.response.json();\r",
-									"\r",
-									"pm.test(\"Billing system name is correct\", function () {\r",
-									"    pm.expect(jsonData.data.name).to.eql('test system');\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "69a576e1-317d-4d7d-bb1a-334e26d8cef0",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "exampleId",
-								"value": "1",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "text/javascript",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/api/events/1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"events",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get All Events",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "d405797e-1ad5-45b0-933b-141175709673",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "525128fe-5edc-4a72-b748-9dca5fcc787e",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "{{content_type}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/api/events",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"events"
-							]
-						},
-						"description": "Get a paginated list of events"
-					},
-					"response": []
-				},
-				{
-					"name": "Get Events filtered by Venue",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "7c0d1ce2-aef0-42a7-8413-66792ea89591",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "9cfc1073-7c87-4b12-ad1c-f5ba6087562b",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/events?venue_id=1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"events"
-							],
-							"query": [
+							"name": "{event Id}",
+							"item": [
 								{
-									"key": "venue_id",
-									"value": "1"
+									"name": "Get Event",
+									"id": "e9eacc86-3621-4d4e-bd36-2f30c4dffb14",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/events/:eventId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"events",
+												":eventId"
+											],
+											"variable": [
+												{
+													"key": "eventId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the event"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "89855065-4d56-4ef8-8eb5-ad5796cce9bd",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/events/:eventId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"events",
+														":eventId"
+													],
+													"variable": [
+														{
+															"key": "eventId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the event"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"id\": 1,\n  \"name\": \"October's Lazercrunk at the Brillobox\",\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"a really fun dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_status_id\": 1,\n  \"event_type_id\": 1,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"/8358-40/i\",\n  \"door_at\": \"/8719/i\",\n  \"start_at\": \"/5525-39-81T20:79/i\",\n  \"end_at\": \"/7702-42-82/i\",\n  \"series_id\": 1,\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"/1845/i\",\n  \"updated_at\": \"/7912/i\",\n  \"cancelled_at\": \"/8160/i\",\n  \"created_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  },\n  \"updated_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  }\n}"
+										}
+									]
+								},
+								{
+									"name": "Update Events",
+									"id": "edf6cce2-2a03-4aad-b7de-7d044cd0e4d7",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"update test system\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/events/:eventId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"events",
+												":eventId"
+											],
+											"variable": [
+												{
+													"key": "eventId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the event"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "e13f34a6-5b7e-4fbd-90a5-12f827a7713a",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"name\": \"update test system\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/events/:eventId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"events",
+														":eventId"
+													],
+													"variable": [
+														{
+															"key": "eventId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the event"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "\"\""
+										}
+									]
+								},
+								{
+									"name": "Delete Event",
+									"id": "52c7f0ec-630f-4570-b6d9-87792a90f2e2",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/events/:eventId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"events",
+												":eventId"
+											],
+											"variable": [
+												{
+													"key": "eventId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the event"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "59f9fe61-1d48-4136-8bc8-866e2ac97836",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/events/:eventId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"events",
+														":eventId"
+													],
+													"variable": [
+														{
+															"key": "eventId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the event"
+														}
+													]
+												}
+											},
+											"status": "No Content",
+											"code": 204,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "\"\""
+										}
+									]
 								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Events",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "791074d0-ec29-4f7c-9783-43a44f6ea158",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"var jsonData = pm.response.json();\r",
-									"\r",
-									"pm.test(\"Billing system name is updated\", function () {\r",
-									"    pm.expect(jsonData.data.name).to.eql('update test system');\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "6593b988-ee49-4ea5-9dc4-19af4997dc62",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"update test system\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							],
+							"id": "6bdb58cf-00d2-4494-89ef-be63f5d3e5bc"
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/events/1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"events",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Event",
-					"event": [
 						{
-							"listen": "test",
-							"script": {
-								"id": "20a930bd-09ba-4c76-bbae-d0cabf649a5d",
-								"exec": [
-									"pm.test(\"Status code is 204\", function () {\r",
-									"    pm.response.to.have.status(204);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "8fd7ddcf-80e4-442f-8eaf-6ce593505e8c",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/events/1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"events",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"id": "d37e9256-e3d3-43b1-8f5b-83895f011216"
-		},
-		{
-			"name": "event statuses",
-			"item": [
-				{
-					"name": "Create Event Status",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "de9161f3-c987-455f-9ada-15f800bc08ef",
-								"exec": [
-									"pm.test(\"Status code is 201\", function () {\r",
-									"    pm.response.to.have.status(201);\r",
-									"});\r",
-									"\r",
-									"var jsonData = pm.response.json();\r",
-									"\r",
-									"pm.test(\"Billing system name is correct\", function () {\r",
-									"    pm.expect(jsonData.data.name).to.eql('test system');\r",
-									"});\r",
-									"\r",
-									"pm.environment.set(\"billing_system_id\", jsonData.data.id);\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "25223908-6261-404b-bb1e-33063b7de0e2",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"test system\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/event-statuses",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"event-statuses"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Event Statuses",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "a08825a5-28c6-47b7-8451-a7b65e9f70c8",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"var jsonData = pm.response.json();\r",
-									"\r",
-									"pm.test(\"Billing system name is correct\", function () {\r",
-									"    pm.expect(jsonData.data.name).to.eql('test system');\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "41557e11-fcea-4aa7-aa14-38105c592def",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "exampleId",
-								"value": "1",
-								"type": "text"
+							"name": "Create Event",
+							"id": "c39930e6-ef94-459d-95b9-539a1368dcf6",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
 							},
-							{
-								"key": "Content-Type",
-								"value": "text/javascript",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/api/event-statuses/1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"event-statuses",
-								"1"
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"id\": 1,\n  \"name\": \"October's Lazercrunk at the Brillobox\",\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"a really fun dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_status_id\": 1,\n  \"event_type_id\": 1,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"/5357-22-87/i\",\n  \"door_at\": \"/6273/i\",\n  \"start_at\": \"/8375/i\",\n  \"end_at\": \"/2441/i\",\n  \"series_id\": 1,\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"/7423/i\",\n  \"updated_at\": \"/3418/i\",\n  \"cancelled_at\": \"/4092/i\",\n  \"created_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  },\n  \"updated_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/events",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"events"
+									]
+								}
+							},
+							"response": [
+								{
+									"id": "73ce516e-55d4-46f9-8a2a-8cb834a89a2e",
+									"name": "Successful response",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"description": "Added as a part of security scheme: basic",
+												"key": "Authorization",
+												"value": "Basic <credentials>"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"id\": 1,\n  \"name\": \"October's Lazercrunk at the Brillobox\",\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"a really fun dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_status_id\": 1,\n  \"event_type_id\": 1,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"/5357-22-87/i\",\n  \"door_at\": \"/6273/i\",\n  \"start_at\": \"/8375/i\",\n  \"end_at\": \"/2441/i\",\n  \"series_id\": 1,\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"/7423/i\",\n  \"updated_at\": \"/3418/i\",\n  \"cancelled_at\": \"/4092/i\",\n  \"created_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  },\n  \"updated_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/events",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"events"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"id\": 1,\n  \"name\": \"October's Lazercrunk at the Brillobox\",\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"a really fun dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_status_id\": 1,\n  \"event_type_id\": 1,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"/5357-22-87/i\",\n  \"door_at\": \"/6273/i\",\n  \"start_at\": \"/8375/i\",\n  \"end_at\": \"/2441/i\",\n  \"series_id\": 1,\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"/7423/i\",\n  \"updated_at\": \"/3418/i\",\n  \"cancelled_at\": \"/4092/i\",\n  \"created_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  },\n  \"updated_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  }\n}"
+								},
+								{
+									"id": "bafe0332-4af2-4871-974f-3b940266c3b1",
+									"name": "Successful response",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"description": "Added as a part of security scheme: basic",
+												"key": "Authorization",
+												"value": "Basic <credentials>"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"id\": 1,\n  \"name\": \"October's Lazercrunk at the Brillobox\",\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"a really fun dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_status_id\": 1,\n  \"event_type_id\": 1,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"/5357-22-87/i\",\n  \"door_at\": \"/6273/i\",\n  \"start_at\": \"/8375/i\",\n  \"end_at\": \"/2441/i\",\n  \"series_id\": 1,\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"/7423/i\",\n  \"updated_at\": \"/3418/i\",\n  \"cancelled_at\": \"/4092/i\",\n  \"created_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  },\n  \"updated_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/events",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"events"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"id\": 1,\n  \"name\": \"October's Lazercrunk at the Brillobox\",\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"a really fun dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_status_id\": 1,\n  \"event_type_id\": 1,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"/5357-22-87/i\",\n  \"door_at\": \"/6273/i\",\n  \"start_at\": \"/8375/i\",\n  \"end_at\": \"/2441/i\",\n  \"series_id\": 1,\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"/7423/i\",\n  \"updated_at\": \"/3418/i\",\n  \"cancelled_at\": \"/4092/i\",\n  \"created_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  },\n  \"updated_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  }\n}"
+								},
+								{
+									"id": "a95814d5-54d8-4038-8258-ec1726c1618c",
+									"name": "Unexpected error",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"description": "Added as a part of security scheme: basic",
+												"key": "Authorization",
+												"value": "Basic <credentials>"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"id\": 1,\n  \"name\": \"October's Lazercrunk at the Brillobox\",\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"a really fun dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_status_id\": 1,\n  \"event_type_id\": 1,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"/5357-22-87/i\",\n  \"door_at\": \"/6273/i\",\n  \"start_at\": \"/8375/i\",\n  \"end_at\": \"/2441/i\",\n  \"series_id\": 1,\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"/7423/i\",\n  \"updated_at\": \"/3418/i\",\n  \"cancelled_at\": \"/4092/i\",\n  \"created_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  },\n  \"updated_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/events",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"events"
+											]
+										}
+									},
+									"status": "Internal Server Error",
+									"code": 500,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"message\": \"laboris\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Get Events",
+							"id": "ed50bc3e-b4ad-44f9-86f2-5c283440c1e0",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/events?venue_id=1&promoter_id=1&event_type_id=1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"events"
+									],
+									"query": [
+										{
+											"key": "venue_id",
+											"value": "1"
+										},
+										{
+											"key": "promoter_id",
+											"value": "1"
+										},
+										{
+											"key": "event_type_id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"id": "9eb32037-522a-4cf7-a4da-7ba289dd49ce",
+									"name": "Successful response",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"description": "Added as a part of security scheme: basic",
+												"key": "Authorization",
+												"value": "Basic <credentials>"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/events?venue_id=1&promoter_id=1&event_type_id=1",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"events"
+											],
+											"query": [
+												{
+													"key": "venue_id",
+													"value": "1"
+												},
+												{
+													"key": "promoter_id",
+													"value": "1"
+												},
+												{
+													"key": "event_type_id",
+													"value": "1"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"current_page\": 47183744,\n  \"first_page_url\": \"https://dev.arcane.city/api/events?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/events?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/events?page=2\",\n  \"path\": \"https://dev.arcane.city/api/event\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/events?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
+								}
 							]
 						}
-					},
-					"response": []
+					],
+					"id": "03e98abd-869a-48a2-a24f-51824cde2362"
 				},
 				{
-					"name": "Get All Event Statuses",
-					"event": [
+					"name": "entities",
+					"item": [
 						{
-							"listen": "test",
-							"script": {
-								"id": "d405797e-1ad5-45b0-933b-141175709673",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									""
+							"name": "{entity Id}",
+							"item": [
+								{
+									"name": "Get Entity",
+									"id": "7124c4ac-daed-4afa-af33-5e66f2bfa88a",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/entities/:entityId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"entities",
+												":entityId"
+											],
+											"variable": [
+												{
+													"key": "entityId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the entity"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "c18a5157-f93e-455f-8704-4ccec33cd532",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/entities/:entityId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"entities",
+														":entityId"
+													],
+													"variable": [
+														{
+															"key": "entityId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the entity"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"id\": 1,\n  \"name\": \"Brillobox\",\n  \"slug\": \"brillobox-bar\",\n  \"short\": \"A two level bar and venue\",\n  \"visibility_id\": 1,\n  \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n  \"entity_type_id\": 1,\n  \"entity_status_id\": 1,\n  \"created_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  },\n  \"updated_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  },\n  \"created_at\": \"/9015/i\",\n  \"updated_at\": \"/3297/i\",\n  \"started_at\": \"/5613/i\",\n  \"facebook_username\": \"johnsmith\",\n  \"twitter_username\": \"johnsmith\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Update Entity",
+									"id": "544770e4-1924-41b0-9d1c-f176f0a5c4a1",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"id\": 1,\n  \"name\": \"Brillobox\",\n  \"slug\": \"brillobox-bar\",\n  \"short\": \"A two level bar and venue\",\n  \"visibility_id\": 1,\n  \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n  \"entity_type_id\": 1,\n  \"entity_status_id\": 1,\n  \"created_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  },\n  \"updated_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  },\n  \"created_at\": \"/9015/i\",\n  \"updated_at\": \"/3297/i\",\n  \"started_at\": \"/5613/i\",\n  \"facebook_username\": \"johnsmith\",\n  \"twitter_username\": \"johnsmith\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/entities/:entityId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"entities",
+												":entityId"
+											],
+											"variable": [
+												{
+													"key": "entityId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the entity"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "7aee47b4-fbe4-4889-a20e-13413a6daf74",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"id\": 1,\n  \"name\": \"Brillobox\",\n  \"slug\": \"brillobox-bar\",\n  \"short\": \"A two level bar and venue\",\n  \"visibility_id\": 1,\n  \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n  \"entity_type_id\": 1,\n  \"entity_status_id\": 1,\n  \"created_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  },\n  \"updated_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  },\n  \"created_at\": \"/9015/i\",\n  \"updated_at\": \"/3297/i\",\n  \"started_at\": \"/5613/i\",\n  \"facebook_username\": \"johnsmith\",\n  \"twitter_username\": \"johnsmith\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/entities/:entityId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"entities",
+														":entityId"
+													],
+													"variable": [
+														{
+															"key": "entityId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the entity"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"id\": 1,\n  \"name\": \"Brillobox\",\n  \"slug\": \"brillobox-bar\",\n  \"short\": \"A two level bar and venue\",\n  \"visibility_id\": 1,\n  \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n  \"entity_type_id\": 1,\n  \"entity_status_id\": 1,\n  \"created_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  },\n  \"updated_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  },\n  \"created_at\": \"/9015/i\",\n  \"updated_at\": \"/3297/i\",\n  \"started_at\": \"/5613/i\",\n  \"facebook_username\": \"johnsmith\",\n  \"twitter_username\": \"johnsmith\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Delete Entity",
+									"id": "bfc657f0-6f7d-4bb1-a3b1-9f8552df04bf",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/entities/:entityId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"entities",
+												":entityId"
+											],
+											"variable": [
+												{
+													"key": "entityId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the entity"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "ef7e786b-b2ee-4f61-992c-45fb636ce259",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/entities/:entityId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"entities",
+														":entityId"
+													],
+													"variable": [
+														{
+															"key": "entityId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the entity"
+														}
+													]
+												}
+											},
+											"status": "No Content",
+											"code": 204,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "\"\""
+										}
+									]
+								}
+							],
+							"id": "4a76dd11-3657-42d3-9efb-1c103d3d7453"
+						},
+						{
+							"name": "Create Entity",
+							"id": "569b2f02-d50a-4101-99c8-34429a1ea26f",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
 								],
-								"type": "text/javascript"
-							}
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Brillobox\",\n  \"slug\": \"brillobox-bar\",\n  \"short\": \"A two level bar venue\",\n  \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n  \"entity_status_id\": 1,\n  \"entity_type_id\": 1,\n  \"facebook_username\": \"brillobox-fb\",\n  \"twitter_username\": \"brillonow-twitter\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/entities",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"entities"
+									]
+								}
+							},
+							"response": [
+								{
+									"id": "95c6218e-370e-48e4-9287-39c21b2fa39f",
+									"name": "Successful response",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"description": "Added as a part of security scheme: basic",
+												"key": "Authorization",
+												"value": "Basic <credentials>"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"Brillobox\",\n  \"slug\": \"brillobox-bar\",\n  \"short\": \"A two level bar venue\",\n  \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n  \"entity_status_id\": 1,\n  \"entity_type_id\": 1,\n  \"facebook_username\": \"brillobox-fb\",\n  \"twitter_username\": \"brillonow-twitter\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/entities",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"entities"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "\"\""
+								}
+							]
+						},
+						{
+							"name": "Get Entities by Entity Type Id",
+							"id": "0cacac9e-6800-4b35-9af7-9f93fe017ecc",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/entities?entity_type_id=35483455",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"entities"
+									],
+									"query": [
+										{
+											"key": "entity_type_id",
+											"value": "35483455"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"id": "f1557d17-4f10-42c1-a787-0a37e00d761e",
+									"name": "Successful response",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"description": "Added as a part of security scheme: basic",
+												"key": "Authorization",
+												"value": "Basic <credentials>"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/entities?entity_type_id=35483455",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"entities"
+											],
+											"query": [
+												{
+													"key": "entity_type_id",
+													"value": "35483455"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{}"
+								}
+							]
 						}
 					],
-					"id": "0fa286d2-f8e3-4421-a5da-9c7acffe43fd",
+					"id": "f625c32d-e73c-4c49-ab97-7f994aa47aa1"
+				},
+				{
+					"name": "entity-types",
+					"item": [
+						{
+							"name": "{entity Type Id}",
+							"item": [
+								{
+									"name": "Get Entity Type",
+									"id": "c4431e3e-f6a1-4bb2-9a18-4bf68bbe9951",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/entity-types/:entityTypeId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"entity-types",
+												":entityTypeId"
+											],
+											"variable": [
+												{
+													"key": "entityTypeId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the entity"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "6d40779e-d4b8-49f5-9434-09fa17e4cf98",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/entity-types/:entityTypeId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"entity-types",
+														":entityTypeId"
+													],
+													"variable": [
+														{
+															"key": "entityTypeId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the entity"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"value\": \"reference #/components/schemas/EntityType not found in the OpenAPI spec\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Update Entity Type",
+									"id": "68740605-3fb0-40da-8ddb-0f7eda57b46c",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"value\": \"reference #/components/schemas/EntityType not found in the OpenAPI spec\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/entity-types/:entityTypeId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"entity-types",
+												":entityTypeId"
+											],
+											"variable": [
+												{
+													"key": "entityTypeId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the entity"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "a75b3ae8-208a-4db6-a25f-49e889702b0e",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"value\": \"reference #/components/schemas/EntityType not found in the OpenAPI spec\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/entity-types/:entityTypeId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"entity-types",
+														":entityTypeId"
+													],
+													"variable": [
+														{
+															"key": "entityTypeId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the entity"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"value\": \"reference #/components/schemas/EntityType not found in the OpenAPI spec\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Delete Entity Type",
+									"id": "2ef908fc-8c79-4cad-a0e5-c853a0b9e0d3",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/entity-types/:entityTypeId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"entity-types",
+												":entityTypeId"
+											],
+											"variable": [
+												{
+													"key": "entityTypeId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the entity"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "1bd3e1ab-7514-462b-ba44-4c570438a2d0",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/entity-types/:entityTypeId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"entity-types",
+														":entityTypeId"
+													],
+													"variable": [
+														{
+															"key": "entityTypeId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the entity"
+														}
+													]
+												}
+											},
+											"status": "No Content",
+											"code": 204,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "\"\""
+										}
+									]
+								}
+							],
+							"id": "439eaaee-b1b5-4697-9e0a-1a9d614b5a74"
+						},
+						{
+							"name": "Create Entity Type",
+							"id": "42afcc6b-5d05-4257-aded-87823f703654",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Space\",\n  \"slug\": \"space\",\n  \"short\": \"Space for events\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/entity-types",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"entity-types"
+									]
+								}
+							},
+							"response": [
+								{
+									"id": "81210ab6-3961-469a-a135-bda17ea777bb",
+									"name": "Successful response",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"description": "Added as a part of security scheme: basic",
+												"key": "Authorization",
+												"value": "Basic <credentials>"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"Space\",\n  \"slug\": \"space\",\n  \"short\": \"Space for events\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/entity-types",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"entity-types"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "\"\""
+								}
+							]
+						},
+						{
+							"name": "Get Entities types",
+							"id": "e95f764d-e12f-4b0d-9aab-87ace4740e19",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/entity-types?name=Space",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"entity-types"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "Space"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"id": "256c1286-2f2c-464e-83a0-21d3ebafa6b1",
+									"name": "Successful response",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"description": "Added as a part of security scheme: basic",
+												"key": "Authorization",
+												"value": "Basic <credentials>"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/entity-types?name=Space",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"entity-types"
+											],
+											"query": [
+												{
+													"key": "name",
+													"value": "Space"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"value\": \"reference #/components/schemas/EntityType not found in the OpenAPI spec\"\n}"
+								}
+							]
+						}
+					],
+					"id": "82ef1336-f6d6-4aca-85de-6f6e3f913644"
+				},
+				{
+					"name": "series",
+					"item": [
+						{
+							"name": "{series Id}",
+							"item": [
+								{
+									"name": "Get one Series",
+									"id": "1cd87cf9-f2ab-4505-b7d7-2e17e135b143",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/series/:seriesId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"series",
+												":seriesId"
+											],
+											"variable": [
+												{
+													"key": "seriesId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the series"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "60691d8e-6ca0-448c-a152-de9e50879a6e",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/series/:seriesId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"series",
+														":seriesId"
+													],
+													"variable": [
+														{
+															"key": "seriesId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the series"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"id\": 1,\n  \"name\": \"Lazercrunk, First Fridays of the Month\",\n  \"slug\": \"lazercrunk-first-fridays-of-the-month\",\n  \"short\": \"a really fun monthly dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun monthly dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_type_id\": 1,\n  \"occurrence_type_id\": {\n    \"value\": \"reference #/components/schemas/OccurrenceTypeId not found in the OpenAPI spec\"\n  },\n  \"occurrence_week_id\": {\n    \"value\": \"reference #/components/schemas/OccurrenceWeekId not found in the OpenAPI spec\"\n  },\n  \"occurrence_day_id\": {\n    \"value\": \"reference #/components/schemas/OccurrenceDayId not found in the OpenAPI spec\"\n  },\n  \"hold_date\": true,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"/0177-46/i\",\n  \"door_at\": \"/1137/i\",\n  \"start_at\": \"/3031-49/i\",\n  \"end_at\": \"/6957-54/i\",\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"/6179-03/i\",\n  \"updated_at\": \"/9221-01/i\",\n  \"cancelled_at\": \"/0928/i\",\n  \"created_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  },\n  \"updated_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  }\n}"
+										}
+									]
+								},
+								{
+									"name": "Update Series",
+									"id": "b6c7fee7-7341-4819-b999-ac163be34529",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"FUZZ\",\n  \"slug\": \"fuzz-412dnb\",\n  \"short\": \"A weekly night for drum and bass\",\n  \"description\": \"A weeknight wednesday night event for drum and bass at the bloomfield bridge tavern\",\n  \"visibility_id\": 1,\n  \"event_type_id\": 5,\n  \"occurrence_type_id\": 4,\n  \"occurrence_week_id\": 2,\n  \"occurrence_day_id\": 6,\n  \"is_benefit\": 0,\n  \"promoter_id\": 18,\n  \"venue_id\": 1,\n  \"door_price\": 5,\n  \"primary_link\": \"https://412dnb.com\",\n  \"founded_at\": \"2008-06-06T22:00:00.000Z\",\n  \"start_at\": \"2008-06-06T22:00:00.000Z\",\n  \"min_age\": 21\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/series/:seriesId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"series",
+												":seriesId"
+											],
+											"variable": [
+												{
+													"key": "seriesId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the series"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "212ab1ee-db1e-4f03-b3ee-7bd844be720a",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"name\": \"FUZZ\",\n  \"slug\": \"fuzz-412dnb\",\n  \"short\": \"A weekly night for drum and bass\",\n  \"description\": \"A weeknight wednesday night event for drum and bass at the bloomfield bridge tavern\",\n  \"visibility_id\": 1,\n  \"event_type_id\": 5,\n  \"occurrence_type_id\": 4,\n  \"occurrence_week_id\": 2,\n  \"occurrence_day_id\": 6,\n  \"is_benefit\": 0,\n  \"promoter_id\": 18,\n  \"venue_id\": 1,\n  \"door_price\": 5,\n  \"primary_link\": \"https://412dnb.com\",\n  \"founded_at\": \"2008-06-06T22:00:00.000Z\",\n  \"start_at\": \"2008-06-06T22:00:00.000Z\",\n  \"min_age\": 21\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/series/:seriesId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"series",
+														":seriesId"
+													],
+													"variable": [
+														{
+															"key": "seriesId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the series"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "\"\""
+										}
+									]
+								},
+								{
+									"name": "Delete Series",
+									"id": "886b41ba-a704-4867-996c-aaa1489d4ade",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/series/:seriesId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"series",
+												":seriesId"
+											],
+											"variable": [
+												{
+													"key": "seriesId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the series"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "2cf42b7e-403b-49fb-9bbc-de856339329c",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/series/:seriesId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"series",
+														":seriesId"
+													],
+													"variable": [
+														{
+															"key": "seriesId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the series"
+														}
+													]
+												}
+											},
+											"status": "No Content",
+											"code": 204,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "\"\""
+										}
+									]
+								}
+							],
+							"id": "af364f64-1674-470b-b08f-18d8e1730455"
+						},
+						{
+							"name": "Create Series",
+							"id": "a8950155-c2ef-492f-af65-0e4064b54eea",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"FUZZ\",\n  \"slug\": \"fuzz-412dnb\",\n  \"short\": \"A weekly night for drum and bass\",\n  \"description\": \"A weeknight wednesday night event for drum and bass at the bloomfield bridge tavern\",\n  \"visibility_id\": 1,\n  \"event_type_id\": 5,\n  \"occurrence_type_id\": 4,\n  \"occurrence_week_id\": 2,\n  \"occurrence_day_id\": 6,\n  \"is_benefit\": 0,\n  \"promoter_id\": 18,\n  \"venue_id\": 1,\n  \"door_price\": 5,\n  \"primary_link\": \"https://412dnb.com\",\n  \"founded_at\": \"2008-06-06T22:00:00.000Z\",\n  \"start_at\": \"2008-06-06T22:00:00.000Z\",\n  \"min_age\": 21\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/series",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"series"
+									]
+								}
+							},
+							"response": [
+								{
+									"id": "096e97c3-486e-4476-b406-ee137d8cc0c4",
+									"name": "Successful response",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"description": "Added as a part of security scheme: basic",
+												"key": "Authorization",
+												"value": "Basic <credentials>"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"FUZZ\",\n  \"slug\": \"fuzz-412dnb\",\n  \"short\": \"A weekly night for drum and bass\",\n  \"description\": \"A weeknight wednesday night event for drum and bass at the bloomfield bridge tavern\",\n  \"visibility_id\": 1,\n  \"event_type_id\": 5,\n  \"occurrence_type_id\": 4,\n  \"occurrence_week_id\": 2,\n  \"occurrence_day_id\": 6,\n  \"is_benefit\": 0,\n  \"promoter_id\": 18,\n  \"venue_id\": 1,\n  \"door_price\": 5,\n  \"primary_link\": \"https://412dnb.com\",\n  \"founded_at\": \"2008-06-06T22:00:00.000Z\",\n  \"start_at\": \"2008-06-06T22:00:00.000Z\",\n  \"min_age\": 21\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/series",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"series"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "\"\""
+								}
+							]
+						},
+						{
+							"name": "Get Series by Event Type Id",
+							"id": "36ab2496-b23a-42a5-a842-b8b15d9862c4",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/series?event_type_id=35483455",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"series"
+									],
+									"query": [
+										{
+											"key": "event_type_id",
+											"value": "35483455"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"id": "1d939bc1-a137-41b3-8809-f4df38b79b00",
+									"name": "Successful response",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"description": "Added as a part of security scheme: basic",
+												"key": "Authorization",
+												"value": "Basic <credentials>"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/series?event_type_id=35483455",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"series"
+											],
+											"query": [
+												{
+													"key": "event_type_id",
+													"value": "35483455"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"id\": 1,\n  \"name\": \"Lazercrunk, First Fridays of the Month\",\n  \"slug\": \"lazercrunk-first-fridays-of-the-month\",\n  \"short\": \"a really fun monthly dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun monthly dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_type_id\": 1,\n  \"occurrence_type_id\": {\n    \"value\": \"reference #/components/schemas/OccurrenceTypeId not found in the OpenAPI spec\"\n  },\n  \"occurrence_week_id\": {\n    \"value\": \"reference #/components/schemas/OccurrenceWeekId not found in the OpenAPI spec\"\n  },\n  \"occurrence_day_id\": {\n    \"value\": \"reference #/components/schemas/OccurrenceDayId not found in the OpenAPI spec\"\n  },\n  \"hold_date\": true,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"/0836-28-10/i\",\n  \"door_at\": \"/4009-29-83T83:09.0+10:32/i\",\n  \"start_at\": \"/9416-19/i\",\n  \"end_at\": \"/5742/i\",\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"/3305-98-79/i\",\n  \"updated_at\": \"/6579-80/i\",\n  \"cancelled_at\": \"/2242-23-58/i\",\n  \"created_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  },\n  \"updated_by\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  }\n}"
+								}
+							]
+						}
+					],
+					"id": "21ea0e34-8f8c-4a39-8b16-307a52176358"
+				},
+				{
+					"name": "tags",
+					"item": [
+						{
+							"name": "{tag Id}",
+							"item": [
+								{
+									"name": "Get one tag",
+									"id": "14332b86-2a63-4961-bb51-eef627f026a2",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/tags/:tagId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"tags",
+												":tagId"
+											],
+											"variable": [
+												{
+													"key": "tagId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the tag"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "e26201c2-1b81-4184-83a5-c70a491f7a37",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/tags/:tagId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"tags",
+														":tagId"
+													],
+													"variable": [
+														{
+															"key": "tagId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the tag"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"name\": \"post punk\",\n  \"id\": 1,\n  \"slug\": \"post-punk\",\n  \"tag_stype_id\": 1,\n  \"created_at\": \"/6748/i\",\n  \"updated_at\": \"/0690/i\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Update User",
+									"id": "3244100f-df37-4a4d-854d-70a68d63e5c7",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"John Smith\",\n  \"email\": \"john.smith@gmail.com\",\n  \"password\": \"abcdeg123!\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/tags/:tagId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"tags",
+												":tagId"
+											],
+											"variable": [
+												{
+													"key": "tagId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the tag"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "1460b4e3-ef28-4d6d-bc94-2e5653b58854",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"name\": \"John Smith\",\n  \"email\": \"john.smith@gmail.com\",\n  \"password\": \"abcdeg123!\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/tags/:tagId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"tags",
+														":tagId"
+													],
+													"variable": [
+														{
+															"key": "tagId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the tag"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "\"\""
+										}
+									]
+								}
+							],
+							"id": "e00fe61a-ef59-445d-916f-64e768e5c027"
+						},
+						{
+							"name": "Create Tag",
+							"id": "6366ee64-1e93-4405-9ee5-da7a92e5b8cc",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"techno\",\n  \"slug\": \"techno\",\n  \"tag_type_id\": 1\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/tags",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"tags"
+									]
+								}
+							},
+							"response": [
+								{
+									"id": "1dfeb51d-3b91-4029-9a00-326b0830622a",
+									"name": "Successful response",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"description": "Added as a part of security scheme: basic",
+												"key": "Authorization",
+												"value": "Basic <credentials>"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"techno\",\n  \"slug\": \"techno\",\n  \"tag_type_id\": 1\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/tags",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"tags"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"name\": \"post punk\",\n  \"id\": 1,\n  \"slug\": \"post-punk\",\n  \"tag_stype_id\": 1,\n  \"created_at\": \"/1401/i\",\n  \"updated_at\": \"/6464/i\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Get Tags by Tag Type Id",
+							"id": "a74a3782-3f30-4efa-8778-b81e4a9a1dbc",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/tags?tagtype_id=35483455",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"tags"
+									],
+									"query": [
+										{
+											"key": "tagtype_id",
+											"value": "35483455"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"id": "180cb988-dd6c-44bf-bfe9-78661a09e9cd",
+									"name": "Successful response",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"description": "Added as a part of security scheme: basic",
+												"key": "Authorization",
+												"value": "Basic <credentials>"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/tags?tagtype_id=35483455",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"tags"
+											],
+											"query": [
+												{
+													"key": "tagtype_id",
+													"value": "35483455"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"current_page\": 37640619,\n  \"first_page_url\": \"https://dev.arcane.city/api/events?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/events?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/events?page=2\",\n  \"path\": \"https://dev.arcane.city/api/event\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/events?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
+								}
+							]
+						}
+					],
+					"id": "6e059e19-2793-4a93-bb46-2470a8fa30a6"
+				},
+				{
+					"name": "users",
+					"item": [
+						{
+							"name": "{user Id}",
+							"item": [
+								{
+									"name": "Get one User",
+									"id": "86553e25-a480-4210-bf84-bd8a9ff9a3a1",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/users/:userId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"users",
+												":userId"
+											],
+											"variable": [
+												{
+													"key": "userId",
+													"value": "reference #/components/schemas/UserId not found in the OpenAPI spec",
+													"description": "(Required) The unique identifier of the user"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "bd7fb53f-b777-4b98-9f32-ca65b3e80c5c",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/users/:userId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"users",
+														":userId"
+													],
+													"variable": [
+														{
+															"key": "userId",
+															"value": "reference #/components/schemas/UserId not found in the OpenAPI spec",
+															"description": "(Required) The unique identifier of the user"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"name\": \"john.smith\",\n  \"email\": \"john.smith@gmail.com\",\n  \"password\": \"abcdefg\",\n  \"id\": {\n    \"value\": \"reference #/components/schemas/UserId not found in the OpenAPI spec\"\n  },\n  \"user_status_id\": 1,\n  \"remember_token\": \"ABCDEFGHI\",\n  \"email_verified_at\": \"/8948/i\",\n  \"created_at\": \"/5823-69/i\",\n  \"updated_at\": \"/4736-15-05T21:96.192101780/i\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Update User",
+									"id": "cee44cda-c205-4e39-aab3-7ab446bfa67a",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"John Smith\",\n  \"email\": \"john.smith@gmail.com\",\n  \"password\": \"abcdeg123!\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/users/:userId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"users",
+												":userId"
+											],
+											"variable": [
+												{
+													"key": "userId",
+													"value": "reference #/components/schemas/UserId not found in the OpenAPI spec",
+													"description": "(Required) The unique identifier of the user"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "2f54d1de-2ec7-49ff-8a81-777ef25e2885",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"name\": \"John Smith\",\n  \"email\": \"john.smith@gmail.com\",\n  \"password\": \"abcdeg123!\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/users/:userId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"users",
+														":userId"
+													],
+													"variable": [
+														{
+															"key": "userId",
+															"value": "reference #/components/schemas/UserId not found in the OpenAPI spec",
+															"description": "(Required) The unique identifier of the user"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "\"\""
+										}
+									]
+								},
+								{
+									"name": "Delete User",
+									"id": "7c81ba08-e063-4215-8966-e19f6896927d",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/users/:userId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"users",
+												":userId"
+											],
+											"variable": [
+												{
+													"key": "userId",
+													"value": "reference #/components/schemas/UserId not found in the OpenAPI spec",
+													"description": "(Required) The unique identifier of the user"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "351228f3-621e-4f0b-bd4e-d3b5342cde71",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/users/:userId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"users",
+														":userId"
+													],
+													"variable": [
+														{
+															"key": "userId",
+															"value": "reference #/components/schemas/UserId not found in the OpenAPI spec",
+															"description": "(Required) The unique identifier of the user"
+														}
+													]
+												}
+											},
+											"status": "No Content",
+											"code": 204,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "\"\""
+										}
+									]
+								}
+							],
+							"id": "0e431e60-90fd-4d54-96ad-4ba4e0276091"
+						},
+						{
+							"name": "Create User",
+							"id": "ee620046-962e-499b-9d21-eede1d52417f",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"John Smith\",\n  \"email\": \"john.smith@gmail.com\",\n  \"password\": \"abcdeg123!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/users",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"users"
+									]
+								}
+							},
+							"response": [
+								{
+									"id": "34c23702-c4e6-43a5-90ac-dcea0f16aea8",
+									"name": "Successful response",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"description": "Added as a part of security scheme: basic",
+												"key": "Authorization",
+												"value": "Basic <credentials>"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"John Smith\",\n  \"email\": \"john.smith@gmail.com\",\n  \"password\": \"abcdeg123!\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/users",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"users"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "\"\""
+								}
+							]
+						},
+						{
+							"name": "Get Users by User Status Id",
+							"id": "12ecd2fd-2c62-4083-9700-11dd90e38586",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/users?user_status_id=35483455",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"users"
+									],
+									"query": [
+										{
+											"key": "user_status_id",
+											"value": "35483455"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"id": "4f187191-0c2e-484a-af48-e142d8830a69",
+									"name": "Successful response",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"description": "Added as a part of security scheme: basic",
+												"key": "Authorization",
+												"value": "Basic <credentials>"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/users?user_status_id=35483455",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"users"
+											],
+											"query": [
+												{
+													"key": "user_status_id",
+													"value": "35483455"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"current_page\": 37640619,\n  \"first_page_url\": \"https://dev.arcane.city/api/events?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/events?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/events?page=2\",\n  \"path\": \"https://dev.arcane.city/api/event\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/events?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
+								}
+							]
+						}
+					],
+					"id": "cc486121-78a2-4a58-8bf0-5c08080e8c90"
+				},
+				{
+					"name": "Get Docs",
+					"id": "b1b20620-beaf-467e-9e11-d3429e886f65",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -436,1108 +2631,84 @@
 						"method": "GET",
 						"header": [
 							{
-								"key": "Content-Type",
-								"value": "{{content_type}}",
-								"type": "text"
+								"key": "Accept",
+								"value": "application/json"
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/api/event-statuses",
+							"raw": "{{baseUrl}}/api/docs",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
-								"event-statuses"
+								"docs"
 							]
 						}
 					},
-					"response": []
-				},
-				{
-					"name": "Update Event Statuses",
-					"event": [
+					"response": [
 						{
-							"listen": "test",
-							"script": {
-								"id": "791074d0-ec29-4f7c-9783-43a44f6ea158",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"var jsonData = pm.response.json();\r",
-									"\r",
-									"pm.test(\"Billing system name is updated\", function () {\r",
-									"    pm.expect(jsonData.data.name).to.eql('update test system');\r",
-									"});\r",
-									""
+							"id": "0a6d7557-40a9-4e78-83d7-9b8fa2239c01",
+							"name": "Successful response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "Added as a part of security scheme: basic",
+										"key": "Authorization",
+										"value": "Basic <credentials>"
+									}
 								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "a3851759-b410-4305-9d67-8fae41b27f15",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"update test system\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+								"url": {
+									"raw": "{{baseUrl}}/api/docs",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"docs"
+									]
 								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/event-statuses/1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"event-statuses",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Event",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "20a930bd-09ba-4c76-bbae-d0cabf649a5d",
-								"exec": [
-									"pm.test(\"Status code is 204\", function () {\r",
-									"    pm.response.to.have.status(204);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "2c88cc25-9f2b-483f-84fc-efdceef428db",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/event-statuses/1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"event-statuses",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"id": "578d0693-2393-4c9f-a122-adb36d721449"
-		},
-		{
-			"name": "entities",
-			"item": [
-				{
-					"name": "Create Entity",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "d57b5429-2739-4afb-8e3e-a2532cc81461",
-								"exec": [
-									"pm.test(\"Status code is 201\", function () {\r",
-									"    pm.response.to.have.status(201);\r",
-									"});\r",
-									"\r",
-									"var jsonData = pm.response.json();\r",
-									"\r",
-									"pm.test(\"Account code is correct\", function () {\r",
-									"    pm.expect(jsonData.data.account_code).to.eql('123456');\r",
-									"});\r",
-									"\r",
-									"pm.environment.set(\"account_id\", jsonData.data.id);\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "f4f69d9f-2fcc-4704-837d-ccd0203093fc",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n   \"customer_id\": 48,\r\n   \"billing_system_id\": 5,\r\n   \"account_code\": \"123456\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/entities",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"entities"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Entities",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "cf89d4eb-9048-4d46-a19d-22975b189db2",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "c768895f-98f0-49d8-bdb0-c75d0df049ba",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "text/javascript",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/api/entities",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"entities"
-							],
-							"query": [
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
 								{
 									"key": "Content-Type",
-									"value": "text/jason",
-									"type": "text",
-									"disabled": true
+									"value": "application/json"
 								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Entity",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "207767b0-cf4e-4162-9f51-000fbf57bf65",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"var jsonData = pm.response.json();\r",
-									"\r",
-									"pm.test(\"Account code is correct\", function () {\r",
-									"    pm.expect(jsonData.data.account_code).to.eql('123456');\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "1235dc58-6d76-4fc3-ae2d-9dbe55d8c172",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/entities/1",
-							"host": [
-								"{{baseUrl}}"
 							],
-							"path": [
-								"api",
-								"entities",
-								"1"
-							]
+							"cookie": [],
+							"body": "\"\""
 						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Entities by Entity Type Id",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "6137f445-8c46-4b20-b91e-4a4e951b0980",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"var jsonData = pm.response.json()\r",
-									"\r",
-									"pm.test(\"Ensure reponse has data\", function () {\r",
-									"    pm.expect(jsonData.data.length).to.not.eql(0);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Ensure reponse includes all keys\", function () {\r",
-									"    pm.expect(jsonData.data[0]).to.have.all.keys(\r",
-									"        `id`,\r",
-									"        `account_code`,\r",
-									"        'bill_date',\r",
-									"        'bill_number',\r",
-									"        'invoice_total',\r",
-									"        'total_due',\r",
-									"        );\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Ensure reponse values are valid types\", function () {\r",
-									"    pm.expect(jsonData.data[0].id).to.be.a(\"Number\")\r",
-									"    pm.expect(jsonData.data[0].account_code).to.be.a(\"String\")\r",
-									"    pm.expect(jsonData.data[0].bill_date).to.be.a(\"String\")\r",
-									"    pm.expect(jsonData.data[0].bill_number).to.be.a(\"String\")\r",
-									"    pm.expect(jsonData.data[0].invoice_total).to.be.a(\"Number\")\r",
-									"    pm.expect(jsonData.data[0].total_due).to.be.a(\"Number\")\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "3e09dced-e1de-49e3-aa75-245272918824",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/entities?entity_type_id=1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"entities"
-							],
-							"query": [
-								{
-									"key": "entity_type_id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Entity",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "f66205e3-c913-41d0-9ea4-5b87222b05a7",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"var jsonData = pm.response.json();\r",
-									"\r",
-									"pm.test(\"Account code is updated\", function () {\r",
-									"    pm.expect(jsonData.data.account_code).to.eql('987654');\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "e2d1ff7f-7bc6-4d9d-9c72-68ef45c3309e",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"customer_id\": 48,\r\n \"billing_system_id\": 5,\r\n  \"account_code\": \"987654\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/entities/1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"entities",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Entity",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "3518135e-89af-4dc0-a83d-dbc340bacb90",
-								"exec": [
-									"pm.test(\"Status code is 204\", function () {\r",
-									"    pm.response.to.have.status(204);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "3d49cc41-bca1-4385-ae38-f6839d5a6326",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/entities/1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"entities",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"id": "f39ea8b6-91cb-41a8-ab1e-d6a2b0c93efb"
-		},
-		{
-			"name": "series",
-			"item": [
-				{
-					"name": "Create Series",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "d57b5429-2739-4afb-8e3e-a2532cc81461",
-								"exec": [
-									"pm.test(\"Status code is 201\", function () {\r",
-									"    pm.response.to.have.status(201);\r",
-									"});\r",
-									"\r",
-									"var jsonData = pm.response.json();\r",
-									"\r",
-									"pm.test(\"Account code is correct\", function () {\r",
-									"    pm.expect(jsonData.data.account_code).to.eql('123456');\r",
-									"});\r",
-									"\r",
-									"pm.environment.set(\"account_id\", jsonData.data.id);\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "a6e337e2-ca4c-4b8d-b04b-d755fd1e3a77",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n   \"customer_id\": 48,\r\n   \"billing_system_id\": 5,\r\n   \"account_code\": \"123456\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/series",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"series"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get all Series",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "cf89d4eb-9048-4d46-a19d-22975b189db2",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "daa1ea57-a4b8-41c1-bfb1-3ffa565291a8",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/series",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"series"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get one Series",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "207767b0-cf4e-4162-9f51-000fbf57bf65",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"var jsonData = pm.response.json();\r",
-									"\r",
-									"pm.test(\"Account code is correct\", function () {\r",
-									"    pm.expect(jsonData.data.account_code).to.eql('123456');\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "f75c6969-12f5-4902-871b-26e05b9f92dd",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/series/1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"series",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Series by Event Type Id",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "6137f445-8c46-4b20-b91e-4a4e951b0980",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"var jsonData = pm.response.json()\r",
-									"\r",
-									"pm.test(\"Ensure reponse has data\", function () {\r",
-									"    pm.expect(jsonData.data.length).to.not.eql(0);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Ensure reponse includes all keys\", function () {\r",
-									"    pm.expect(jsonData.data[0]).to.have.all.keys(\r",
-									"        `id`,\r",
-									"        `account_code`,\r",
-									"        'bill_date',\r",
-									"        'bill_number',\r",
-									"        'invoice_total',\r",
-									"        'total_due',\r",
-									"        );\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Ensure reponse values are valid types\", function () {\r",
-									"    pm.expect(jsonData.data[0].id).to.be.a(\"Number\")\r",
-									"    pm.expect(jsonData.data[0].account_code).to.be.a(\"String\")\r",
-									"    pm.expect(jsonData.data[0].bill_date).to.be.a(\"String\")\r",
-									"    pm.expect(jsonData.data[0].bill_number).to.be.a(\"String\")\r",
-									"    pm.expect(jsonData.data[0].invoice_total).to.be.a(\"Number\")\r",
-									"    pm.expect(jsonData.data[0].total_due).to.be.a(\"Number\")\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "1039f977-b9d8-459e-80a4-463660c17701",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/series?event_type_id=1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"series"
-							],
-							"query": [
-								{
-									"key": "event_type_id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Series",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "f66205e3-c913-41d0-9ea4-5b87222b05a7",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"var jsonData = pm.response.json();\r",
-									"\r",
-									"pm.test(\"Account code is updated\", function () {\r",
-									"    pm.expect(jsonData.data.account_code).to.eql('987654');\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "e433ce7b-8dac-450e-96ad-e44ff41cb3b1",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"customer_id\": 48,\r\n \"billing_system_id\": 5,\r\n  \"account_code\": \"987654\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/series/1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"series",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Series",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "3518135e-89af-4dc0-a83d-dbc340bacb90",
-								"exec": [
-									"pm.test(\"Status code is 204\", function () {\r",
-									"    pm.response.to.have.status(204);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "65d088c0-058e-43db-b6c3-d41c782cc0c5",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/series/1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"series",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"id": "4d6f9aff-46b9-43b0-8a41-120208562d37"
-		},
-		{
-			"name": "users",
-			"item": [
-				{
-					"name": "Create User",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "d57b5429-2739-4afb-8e3e-a2532cc81461",
-								"exec": [
-									"pm.test(\"Status code is 201\", function () {\r",
-									"    pm.response.to.have.status(201);\r",
-									"});\r",
-									"\r",
-									"var jsonData = pm.response.json();\r",
-									"\r",
-									"pm.test(\"Account code is correct\", function () {\r",
-									"    pm.expect(jsonData.data.account_code).to.eql('123456');\r",
-									"});\r",
-									"\r",
-									"pm.environment.set(\"account_id\", jsonData.data.id);\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "4a1bc347-ad3f-42dc-809b-f897654554d8",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n   \"customer_id\": 48,\r\n   \"billing_system_id\": 5,\r\n   \"account_code\": \"123456\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/users",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"users"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get all Users",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "cf89d4eb-9048-4d46-a19d-22975b189db2",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "72177647-ab3d-409e-8f1a-ed9074547466",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/users",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"users"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get one User",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "207767b0-cf4e-4162-9f51-000fbf57bf65",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"var jsonData = pm.response.json();\r",
-									"\r",
-									"pm.test(\"Account code is correct\", function () {\r",
-									"    pm.expect(jsonData.data.account_code).to.eql('123456');\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "5111ca21-d17c-449b-8819-097d37437c55",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/users/1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Users by User Status Id",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "6137f445-8c46-4b20-b91e-4a4e951b0980",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"var jsonData = pm.response.json()\r",
-									"\r",
-									"pm.test(\"Ensure reponse has data\", function () {\r",
-									"    pm.expect(jsonData.data.length).to.not.eql(0);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Ensure reponse includes all keys\", function () {\r",
-									"    pm.expect(jsonData.data[0]).to.have.all.keys(\r",
-									"        `id`,\r",
-									"        `account_code`,\r",
-									"        'bill_date',\r",
-									"        'bill_number',\r",
-									"        'invoice_total',\r",
-									"        'total_due',\r",
-									"        );\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Ensure reponse values are valid types\", function () {\r",
-									"    pm.expect(jsonData.data[0].id).to.be.a(\"Number\")\r",
-									"    pm.expect(jsonData.data[0].account_code).to.be.a(\"String\")\r",
-									"    pm.expect(jsonData.data[0].bill_date).to.be.a(\"String\")\r",
-									"    pm.expect(jsonData.data[0].bill_number).to.be.a(\"String\")\r",
-									"    pm.expect(jsonData.data[0].invoice_total).to.be.a(\"Number\")\r",
-									"    pm.expect(jsonData.data[0].total_due).to.be.a(\"Number\")\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "bed02382-0c58-45e3-9216-c9fbd9653047",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/users?user_status_id=1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"users"
-							],
-							"query": [
-								{
-									"key": "user_status_id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update User",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "f66205e3-c913-41d0-9ea4-5b87222b05a7",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"var jsonData = pm.response.json();\r",
-									"\r",
-									"pm.test(\"Account code is updated\", function () {\r",
-									"    pm.expect(jsonData.data.account_code).to.eql('987654');\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "befd00a4-976f-4063-8507-2260587d15ca",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"customer_id\": 48,\r\n \"billing_system_id\": 5,\r\n  \"account_code\": \"987654\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/users/1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete User",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "3518135e-89af-4dc0-a83d-dbc340bacb90",
-								"exec": [
-									"pm.test(\"Status code is 204\", function () {\r",
-									"    pm.response.to.have.status(204);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "99cc411b-7664-4e2e-861e-395c5b0a5165",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/users/1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"id": "0e21df2f-733e-4146-8a0d-487667d9adec"
-		},
-		{
-			"name": "Get Docs",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript",
-						"id": "d239c5a3-c125-4100-8a8d-e18995606090"
-					}
-				}
-			],
-			"id": "8c6e9604-d13f-4ed7-b263-68ff4dad93c6",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "exampleId",
-						"value": "1",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{baseUrl}}/api/docs",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"docs"
 					]
 				}
-			},
-			"response": []
+			],
+			"id": "2510c092-a343-4fa7-ac1d-4c9b04bcc5ab"
 		}
 	],
 	"auth": {
 		"type": "basic",
 		"basic": [
 			{
-				"key": "password",
-				"value": "expedient",
+				"key": "username",
+				"value": "<Basic Auth Username>",
 				"type": "string"
 			},
 			{
-				"key": "username",
-				"value": "{{authUsername}}",
+				"key": "password",
+				"value": "<Basic Auth Password>",
 				"type": "string"
 			}
 		]
 	},
-	"event": [
+	"variable": [
 		{
-			"listen": "prerequest",
-			"script": {
-				"id": "85e5d9b6-8d60-45e0-aab9-460f230d0f28",
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"id": "a279f092-f993-4815-8b8e-da13aa3137aa",
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
+			"id": "8085f841-497c-4160-9958-0829d13106b8",
+			"key": "baseUrl",
+			"value": "https://arcane.city",
+			"type": "string"
 		}
 	]
 }

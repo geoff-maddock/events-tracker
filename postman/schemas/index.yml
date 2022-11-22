@@ -646,15 +646,25 @@ components:
 security:
   - basicAuth: []
 tags:
-  - name: events
-  - name: entities
-  - name: series
-  - name: users
-  - name: tags
+  - name: actions
+  - name: activities
   - name: blogs
+  - name: entities
+  - name: entity-types
+  - name: events
   - name: forums
-  - name: threads
+  - name: links
+  - name: locations
+  - name: occurrence_days
+  - name: occurrence_types
+  - name: occurrence_weeks
+  - name: photos
   - name: posts
+  - name: roles
+  - name: series
+  - name: tags
+  - name: threads
+  - name: users
 paths:
   /api/events:
     post:
@@ -693,7 +703,17 @@ paths:
         - name: venue_id
           in: query
           schema:
-            type: integer
+            $ref: "#/components/schemas/EntityId"
+          example: '1'
+        - name: promoter_id
+          in: query
+          schema:
+            $ref: "#/components/schemas/EntityId"
+          example: '1'
+        - name: event_type_id
+          in: query
+          schema:
+            $ref: "#/components/schemas/EventTypeId"
           example: '1'
       responses:
         '200':
@@ -718,7 +738,9 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/Event"
     put:
       tags:
         - events
@@ -755,9 +777,14 @@ paths:
             schema:
               type: object
               example:
-                customer_id: 48
-                billing_system_id: 5
-                account_code: '123456'
+                name: Brillobox
+                slug: brillobox-bar
+                short: A two level bar venue
+                description: A two level bar and venue that specializes in indie music and vegetarian food
+                entity_status_id: 1
+                entity_type_id: 1
+                facebook_username: brillobox-fb
+                twitter_username: brillonow-twitter
       responses:
         '201':
           description: Successful response
@@ -796,7 +823,9 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json: 
+                schema:
+                    $ref: "#/components/schemas/Entity"
     put:
       tags:
         - entities
@@ -822,6 +851,86 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /api/entity-types:
+    post:
+      tags:
+        - entity-types
+      summary: Create Entity Type
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: Space
+                slug: space
+                short: Space for events
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - entity-types
+      summary: Get Entities types
+      parameters:
+        - name: name
+          in: query
+          schema:
+            type: string
+          example: 'Space'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/EntityType"
+  /api/entity-types/{entityTypeId}:
+    parameters:
+        - name: entityTypeId
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+              $ref: "#/components/schemas/EntityTypeId"
+    get:
+      tags:
+        - entity-types
+      summary: Get Entity Type
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+                schema:
+                    $ref: "#/components/schemas/EntityType"
+    put:
+      tags:
+        - entity-types
+      summary: Update Entity Type
+      requestBody:
+        content:
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/EntityType"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/EntityType"
+    delete:
+      tags:
+        - entities
+      summary: Delete Entity Type
+      responses:
+        '204':
+          description: Successful response
+          content:
+            application/json: {}
   /api/series:
     post:
       tags:
@@ -833,9 +942,23 @@ paths:
             schema:
               type: object
               example:
-                customer_id: 48
-                billing_system_id: 5
-                account_code: '123456'
+                name: FUZZ
+                slug: fuzz-412dnb
+                short: A weekly night for drum and bass
+                description: A weeknight wednesday night event for drum and bass at the bloomfield bridge tavern
+                visibility_id: 1
+                event_type_id: 5
+                occurrence_type_id: 4
+                occurrence_week_id: 2
+                occurrence_day_id: 6
+                is_benefit: 0
+                promoter_id: 18
+                venue_id: 1
+                door_price: 5.00
+                primary_link: https://412dnb.com
+                founded_at: 2008-06-06 22:00:00
+                start_at: 2008-06-06 22:00:00
+                min_age: 21
       responses:
         '201':
           description: Successful response
@@ -855,7 +978,9 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/Series"
   /api/series/{seriesId}:
     parameters:
         - name: seriesId
@@ -872,7 +997,9 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/Series"
     put:
       tags:
         - series
@@ -883,9 +1010,23 @@ paths:
             schema:
               type: object
               example:
-                customer_id: 48
-                billing_system_id: 5
-                account_code: '987654'
+                name: FUZZ
+                slug: fuzz-412dnb
+                short: A weekly night for drum and bass
+                description: A weeknight wednesday night event for drum and bass at the bloomfield bridge tavern
+                visibility_id: 1
+                event_type_id: 5
+                occurrence_type_id: 4
+                occurrence_week_id: 2
+                occurrence_day_id: 6
+                is_benefit: 0
+                promoter_id: 18
+                venue_id: 1
+                door_price: 5.00
+                primary_link: https://412dnb.com
+                founded_at: 2008-06-06 22:00:00
+                start_at: 2008-06-06 22:00:00
+                min_age: 21
       responses:
         '200':
           description: Successful response
@@ -900,6 +1041,81 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /api/tags:
+    post:
+      tags:
+        - tags
+      summary: Create Tag
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: techno
+                slug: techno
+                tag_type_id: 1
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/Tag"
+    get:
+      tags:
+        - tags
+      summary: Get Tags by Tag Type Id
+      parameters:
+        - name: tagtype_id
+          in: query
+          schema:
+            type: integer
+          example: '1'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/Pagination"
+  /api/tags/{tagId}:
+    parameters:
+        - name: tagId
+          description: The unique identifier of the tag
+          in: path
+          required: true
+          schema:
+              $ref: "#/components/schemas/TagId"
+    get:
+      tags:
+        - tags
+      summary: Get one tag
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/Tag"
+    put:
+      tags:
+        - users
+      summary: Update User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: John Smith
+                email: john.smith@gmail.com
+                password:  abcdeg123!
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
   /api/users:
     post:
       tags:
@@ -911,9 +1127,9 @@ paths:
             schema:
               type: object
               example:
-                customer_id: 48
-                billing_system_id: 5
-                account_code: '123456'
+                name: John Smith
+                email: john.smith@gmail.com
+                password:  abcdeg123!
       responses:
         '201':
           description: Successful response
@@ -933,7 +1149,9 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/Pagination"
   /api/users/{userId}:
     parameters:
         - name: userId
@@ -950,7 +1168,9 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/User"
     put:
       tags:
         - users
@@ -961,9 +1181,9 @@ paths:
             schema:
               type: object
               example:
-                customer_id: 48
-                billing_system_id: 5
-                account_code: '987654'
+                name: John Smith
+                email: john.smith@gmail.com
+                password:  abcdeg123!
       responses:
         '200':
           description: Successful response
