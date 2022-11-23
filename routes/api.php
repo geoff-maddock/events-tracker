@@ -6,21 +6,28 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::name('api.')->group(function () {
+    Route::match(['get', 'post'], 'events/filter', ['as' => 'events.filter', 'uses' => 'Api\EventsController@filter']);
+    Route::get('events/reset', ['as' => 'events.reset', 'uses' => 'Api\EventsController@reset']);
+    Route::get('events/rpp-reset', ['as' => 'events.rppReset', 'uses' => 'Api\EventsController@rppReset']);
     Route::resource('events', 'Api\EventsController');
+
+    Route::match(['get', 'post'], 'entities/filter', ['as' => 'entities.filter', 'uses' => 'Api\EntitiesController@filter']);
+    Route::get('entities/reset', ['as' => 'entities.reset', 'uses' => 'Api\EntitiesController@reset']);
+    Route::get('entities/rpp-reset', ['as' => 'entities.rppReset', 'uses' => 'Api\EntitiesController@rppReset']);
     Route::resource('entities', 'Api\EntitiesController');
-    Route::resource('tags', 'Api\TagsController');
+
+    Route::match(['get', 'post'], 'series/filter', ['as' => 'series.filter', 'uses' => 'Api\SeriesController@filter']);
+    Route::get('series/reset', ['as' => 'series.reset', 'uses' => 'Api\SeriesController@reset']);
+    Route::get('series/rpp-reset', ['as' => 'series.rppReset', 'uses' => 'Api\SeriesController@rppReset']);
     Route::resource('series', 'Api\SeriesController');
 
-    // This endpoint collects series and events and returns them as JSON
-    // Route::get('calendar-events', 'EventsController@calendarEventsApi')->name('calendarEvents.api')->middleware('auth.basic');
-    Route::get('calendar-events', 'EventsController@calendarEventsApi')->name('calendarEvents.api');
-    Route::get('tag-calendar-events', 'EventsController@tagCalendarEventsApi')->name('tagCalendarEvents.api');
+    Route::match(['get', 'post'], 'tags/filter', ['as' => 'tags.filter', 'uses' => 'Api\TagsController@filter']);
+    Route::get('tags/reset', ['as' => 'tags.reset', 'uses' => 'Api\TagsController@reset']);
+    Route::get('tags/rpp-reset', ['as' => 'tags.rppReset', 'uses' => 'Api\TagsController@rppReset']);
+    Route::resource('tags', 'Api\TagsController');
 
-    Route::get('series', function () {
-        return Series::all();
-    });
-
-    Route::get('series/{id}', function ($id) {
-        return Series::find($id);
-    });
+    Route::match(['get', 'post'], 'users/filter', ['as' => 'users.filter', 'uses' => 'Api\TagsController@filter']);
+    Route::get('users/reset', ['as' => 'users.reset', 'uses' => 'Api\TagsController@reset']);
+    Route::get('users/rpp-reset', ['as' => 'users.rppReset', 'uses' => 'Api\TagsController@rppReset']);
+    Route::resource('users', 'Api\UsersController');
 });

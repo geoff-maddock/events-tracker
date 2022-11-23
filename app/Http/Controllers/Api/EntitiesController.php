@@ -69,7 +69,7 @@ class EntitiesController extends Controller
 
         // default list variables
         $this->defaultLimit = 5;
-        $this->defaultSort = 'name';
+        $this->defaultSort = 'created_at';
         $this->defaultSortDirection = 'asc';
         $this->defaultSortCriteria = ['entities.created_at' => 'desc'];
 
@@ -101,14 +101,18 @@ class EntitiesController extends Controller
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = Entity::query()
-        ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
-        ->select('entities.*')
-        ->withCount('follows')
+                        ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
+                        ->leftJoin('entity_statuses', 'entities.entity_status_id', '=', 'entity_statuses.id')
+                        ->select('entities.*')
+                        ->withCount('follows')
         ;
 
         // set the default filter to active
         $defaultFilter = ['entity_status' => 'Active'];
 
+        // TODO Change the query param requirements for filter and sort to use a simpler or more robust format
+
+        // set the filter and base query
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
@@ -122,23 +126,68 @@ class EntitiesController extends Controller
         $query = $listResultSet->getList();
 
         // get the entities
-        $entities = $query
-            ->paginate($listResultSet->getLimit());
+        $entities = $query->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        // // count the most common entities in the recent past
-        // $latestEntities = Entity::withCount(['events' => function (Builder $query) {
-        //     $query->where('events.start_at', '>', Carbon::now()->subMonths(3));
-        // }])
-        // ->orderBy('events_count', 'desc')
-        // ->paginate(6);
+        return response()->json($entities);
+    }
+
+        /**
+     * Filter the list of entities.
+     *
+     * @throws \Throwable
+     */
+    public function filter(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): JsonResponse {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_entity');
+        $listParamSessionStore->setKeyPrefix('internal_entity_index');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only entities are returned
+        $baseQuery = Entity::query()
+                        ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
+                        ->leftJoin('entity_statuses', 'entities.entity_status_id', '=', 'entity_statuses.id')
+                        ->select('entities.*')
+                        ->withCount('follows')
+        ;
+
+        // can we just run this on the index??
+        // set the default filter to active
+        $defaultFilter = ['entity_status' => 'Active'];
+
+        // set the filter and base query
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort($this->defaultSortCriteria);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the entities
+        $entities = $query->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return response()->json($entities);
     }
+    
 
     /**
      * Display a listing of the resource that the user is following.
@@ -333,64 +382,7 @@ class EntitiesController extends Controller
             ->render();
     }
 
-    /**
-     * Filter the list of entities.
-     *
-     * @throws \Throwable
-     */
-    public function filter(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore,
-        ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_entity');
-        $listParamSessionStore->setKeyPrefix('internal_entity_index');
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only entities are returned
-        $baseQuery = Entity::query()
-                        ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
-                        ->leftJoin('entity_statuses', 'entities.entity_status_id', '=', 'entity_statuses.id')
-                        ->select('entities.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['entities.name' => 'asc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the entities
-        $entities = $query
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('entities.index')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('entities'))
-            ->render();
-    }
 
     /**
      * Reset the rpp, sort, order.
@@ -409,7 +401,7 @@ class EntitiesController extends Controller
         // clear
         $listParamSessionStore->clearSort();
 
-        return redirect()->route('entities.index');
+        return redirect()->route('api.entities.index');
     }
 
     /**
@@ -430,7 +422,7 @@ class EntitiesController extends Controller
         $listParamSessionStore->clearFilter();
         $listParamSessionStore->clearSort();
 
-        return redirect()->route('entities.index');
+        return redirect()->route('api.entities.index');
     }
 
     /**
