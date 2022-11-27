@@ -16,6 +16,11 @@ Route::name('api.')->group(function () {
     Route::get('entities/rpp-reset', ['as' => 'entities.rppReset', 'uses' => 'Api\EntitiesController@rppReset']);
     Route::resource('entities', 'Api\EntitiesController');
 
+    Route::match(['get', 'post'], 'entity-types/filter', ['as' => 'entityType.filter', 'uses' => 'Api\EntityTypesController@filter']);
+    Route::get('entity-types/reset', ['as' => 'entity-types.reset', 'uses' => 'Api\EntityTypesController@reset']);
+    Route::get('entity-types/rpp-reset', ['as' => 'entity-types.rppReset', 'uses' => 'Api\EntityTypesController@rppReset']);
+    Route::resource('entity-types', 'Api\EntityTypesController');
+
     Route::match(['get', 'post'], 'series/filter', ['as' => 'series.filter', 'uses' => 'Api\SeriesController@filter']);
     Route::get('series/reset', ['as' => 'series.reset', 'uses' => 'Api\SeriesController@reset']);
     Route::get('series/rpp-reset', ['as' => 'series.rppReset', 'uses' => 'Api\SeriesController@rppReset']);

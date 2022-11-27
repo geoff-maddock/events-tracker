@@ -380,14 +380,14 @@ class UsersController extends Controller
     /**
      * @throws Exception
      */
-    public function destroy(User $user): RedirectResponse
+    public function destroy(User $user): JsonResponse
     {
         // add to activity log
         Activity::log($user, $this->user, 3);
 
         $user->delete();
 
-        return redirect('users');
+        return response()->json([], 204);
     }
 
     /**

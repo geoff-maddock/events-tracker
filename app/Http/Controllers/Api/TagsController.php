@@ -81,11 +81,11 @@ class TagsController extends Controller
      *
      * @throws \Exception
      */
-    public function destroy(Tag $tag): RedirectResponse
+    public function destroy(Tag $tag): JsonResponse
     {
         $tag->delete();
 
-        return redirect('tags');
+        return response()->json([], 204);
     }
 
     /**

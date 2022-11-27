@@ -61,7 +61,7 @@ class EntitiesController extends Controller
 
     public function __construct(EntityFilters $filter)
     {
-        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'follow']]);
+        // $this->middleware('auth', ['only' => ['store', 'update', 'follow']]);
         $this->filter = $filter;
 
         // prefix for session storage
@@ -127,63 +127,6 @@ class EntitiesController extends Controller
 
         // get the entities
         $entities = $query->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return response()->json($entities);
-    }
-
-        /**
-     * Filter the list of entities.
-     *
-     * @throws \Throwable
-     */
-    public function filter(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore,
-        ListEntityResultBuilder $listEntityResultBuilder
-    ): JsonResponse {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_entity');
-        $listParamSessionStore->setKeyPrefix('internal_entity_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only entities are returned
-        $baseQuery = Entity::query()
-                        ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
-                        ->leftJoin('entity_statuses', 'entities.entity_status_id', '=', 'entity_statuses.id')
-                        ->select('entities.*')
-                        ->withCount('follows')
-        ;
-
-        // can we just run this on the index??
-        // set the default filter to active
-        $defaultFilter = ['entity_status' => 'Active'];
-
-        // set the filter and base query
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort($this->defaultSortCriteria);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the entities
-        $entities = $query->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return response()->json($entities);
     }
@@ -558,20 +501,11 @@ class EntitiesController extends Controller
             ->render();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response|string
-     */
-    public function create()
-    {
-        return view('entities.create')->with($this->getFormOptions());
-    }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(EntityRequest $request, Entity $entity): Response
+    public function store(EntityRequest $request, Entity $entity): JsonResponse
     {
         $msg = '';
 
@@ -628,16 +562,13 @@ class EntitiesController extends Controller
         // add to activity log
         Activity::log($entity, $this->user, 1);
 
-        flash()->success('Success', 'Your entity has been created');
-
-        // return redirect()->route('entities.index');
-        return redirect()->route('entities.show', compact('entity'));
+        return response()->json($entity);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Entity $entity, EmbedExtractor $embedExtractor): View
+    public function show(Entity $entity, EmbedExtractor $embedExtractor): JsonResponse
     {
         app('redirect')->setIntendedUrl(url()->current());
 
@@ -649,18 +580,8 @@ class EntitiesController extends Controller
         // $tracks = $embedExtractor->getTracksFromUrl('https://0h85.bandcamp.com/');
         $tracks = [];
 
-        return view('entities.show', compact('entity', 'threads', 'embeds', 'tracks'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Entity $entity): View
-    {
-        $this->middleware('auth');
-
-        return view('entities.edit', compact('entity'))
-        ->with($this->getFormOptions());
+        // return view('entities.show', compact('entity', 'threads', 'embeds', 'tracks'));
+        return response()->json($entity);
     }
 
     /**
@@ -738,14 +659,14 @@ class EntitiesController extends Controller
      *
      * @throws \Exception
      */
-    public function destroy(Entity $entity): RedirectResponse
+    public function destroy(Entity $entity): JsonResponse
     {
         // add to activity log
         Activity::log($entity, $this->user, 3);
 
         $entity->delete();
 
-        return redirect('entities');
+        return response()->json([], 204);
     }
 
     /**
