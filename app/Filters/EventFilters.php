@@ -26,6 +26,17 @@ class EventFilters extends QueryFilter
         }
     }
 
+    public function promoter(?string $value = null): Builder
+    {
+        if (isset($value)) {
+            return $this->builder->whereHas('promoter', function ($q) use ($value) {
+                $q->where('name', '=', ucfirst($value));
+            });
+        } else {
+            return $this->builder;
+        }
+    }
+
     public function tag(?string $value = null): Builder
     {
         if (isset($value)) {
@@ -85,6 +96,30 @@ class EventFilters extends QueryFilter
 
             if (isset($value['end']) && $end = $value['end']) {
                 $this->builder->whereDate('start_at', '<=', $end);
+            }
+
+            return $this->builder;
+        } else {
+            return $this->builder;
+        }
+    }
+
+
+    public function end_at(mixed $value = null): Builder
+    {
+        // if not an array, do not process
+
+        if (isset($value)) {
+            if (!is_array($value)) {
+                return $this->builder;
+            }
+
+            if (isset($value['start']) && $start = $value['start']) {
+                $this->builder->whereDate('end_at', '>=', $start);
+            }
+
+            if (isset($value['end']) && $end = $value['end']) {
+                $this->builder->whereDate('end_at', '<=', $end);
             }
 
             return $this->builder;

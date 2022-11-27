@@ -91,51 +91,6 @@ class SeriesController extends Controller
     }
 
     /**
-     * Filter the list of events.
-     *
-     * @throws \Throwable
-     */
-    public function filter(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore,
-        ListEntityResultBuilder $listEntityResultBuilder
-    ): JsonResponse {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_series');
-        $listParamSessionStore->setKeyPrefix('internal_series_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([SeriesController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only series entities are returned
-        $baseQuery = $this->baseQuery();
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort($this->defaultSortCriteria);
-
-        // dump($this->filter);
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the series
-        $series = $query
-            ->with('occurrenceType', 'visibility', 'tags')
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return response()->json($series);
-    }
-
-    /**
      * Get the base criteria.
      */
     protected function baseQuery(): Builder
@@ -223,11 +178,6 @@ class SeriesController extends Controller
         $series = $query
             ->with('occurrenceType', 'visibility', 'tags')
             ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return response()->json($series);
     }
@@ -775,14 +725,14 @@ class SeriesController extends Controller
         return redirect('/');
     }
 
-    public function destroy(Series $series): RedirectResponse
+    public function destroy(Series $series): JsonResponse
     {
         // add to activity log
         Activity::log($series, $this->user, 3);
 
         $series->delete();
 
-        return redirect('series');
+        return response()->json([], 204);
     }
 
     /**

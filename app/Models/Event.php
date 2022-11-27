@@ -131,13 +131,13 @@ class Event extends Eloquent
 
         static::creating(function ($event) {
             $user = Auth::user();
-            $event->created_by = $user ? $user->id : null;
-            $event->updated_by = $user ? $user->id : null;
+            $event->created_by = $user ? $user->id : 1;
+            $event->updated_by = $user ? $user->id : 1;
         });
 
         static::updating(function ($event) {
             $user = Auth::user();
-            $event->updated_by = $user ? $user->id : null;
+            $event->updated_by = $user ? $user->id : 1;
         });
     }
 
