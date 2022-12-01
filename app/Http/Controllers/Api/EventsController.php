@@ -7,6 +7,7 @@ use App\Events\EventUpdated;
 use App\Filters\EventFilters;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventRequest;
+use App\Http\Resources\EventCollection;
 use App\Http\Resources\EventResource;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Mail\FollowingUpdate;
@@ -138,13 +139,9 @@ class EventsController extends Controller
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
 
-        // set the default filter to starting today, can override
-        $defaultFilter = ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]];
-
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
-            ->setDefaultFilters($defaultFilter)
             ->setDefaultSort(['events.start_at' => 'asc']);
 
         // get the result set from the builder
@@ -159,7 +156,7 @@ class EventsController extends Controller
             ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
 
-        return response()->json(EventResource::collection($events));
+        return response()->json(new EventCollection($events));
     }
 
     /**
@@ -301,15 +298,14 @@ class EventsController extends Controller
         return redirect()->route('events.index');
     }
 
+
     /**
      * Reset the filtering of entities.
-     *
-     * @return RedirectResponse|View
      */
     public function reset(
         Request $request,
         ListParameterSessionStore $listParamSessionStore
-    ) {
+    ): JsonResponse {
         // set filters and list controls to default values
         $keyPrefix = $request->get('key') ?? 'internal_event_index';
         $listParamSessionStore->setBaseIndex('internal_event');
@@ -319,7 +315,7 @@ class EventsController extends Controller
         $listParamSessionStore->clearFilter();
         $listParamSessionStore->clearSort();
 
-        return redirect()->route($request->get('redirect') ?? 'events.index');
+        return response()->json([]);
     }
 
 
@@ -1406,7 +1402,7 @@ class EventsController extends Controller
 
         $thread->save();
 
-        $thread->tags()->attach($event->tags()->pluck('tags.id')->toArray()); 
+        $thread->tags()->attach($event->tags()->pluck('tags.id')->toArray());
         $thread->entities()->attach($event->entities()->pluck('entities.id')->toArray());
 
         return redirect()->route('events.show', ['event' => $event->id]);

@@ -129,6 +129,7 @@ class Event extends Eloquent
     {
         parent::boot();
 
+        // TODO Fix the default after I resolve user setup in API
         static::creating(function ($event) {
             $user = Auth::user();
             $event->created_by = $user ? $user->id : 1;
