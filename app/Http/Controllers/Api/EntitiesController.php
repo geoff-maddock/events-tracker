@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Filters\EntityFilters;
 use App\Http\Requests\EntityRequest;
+use App\Http\Resources\EntityCollection;
+use App\Http\Resources\EntityResource;
+use App\Http\Resources\EventCollection;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Alias;
@@ -128,7 +131,8 @@ class EntitiesController extends Controller
         // get the entities
         $entities = $query->paginate($listResultSet->getLimit());
 
-        return response()->json($entities);
+        //return response()->json($entities);
+        return response()->json(new EntityCollection($entities));
     }
     
 
@@ -581,13 +585,13 @@ class EntitiesController extends Controller
         $tracks = [];
 
         // return view('entities.show', compact('entity', 'threads', 'embeds', 'tracks'));
-        return response()->json($entity);
+        return response()->json(new EntityResource($entity));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Entity $entity, EntityRequest $request): RedirectResponse
+    public function update(Entity $entity, EntityRequest $request): JsonResponse
     {
         $msg = '';
 
@@ -648,10 +652,7 @@ class EntitiesController extends Controller
         // add to activity log
         Activity::log($entity, $this->user, 2);
 
-        // flash this message
-        flash()->success('Success', $msg);
-
-        return redirect()->route('entities.show', compact('entity'));
+        return response()->json($entity);
     }
 
     /**

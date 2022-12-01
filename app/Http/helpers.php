@@ -65,7 +65,7 @@ function link_form_icon(
     ?string $label = '',
     ?string $class = '',
     ?string $confirm = 'confirm'
-    ): string {
+): string {
     $csrf = csrf_token();
     $object = 'object';
 
