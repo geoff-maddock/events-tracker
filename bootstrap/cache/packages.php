@@ -144,4 +144,11 @@
       0 => 'Spatie\\Sitemap\\SitemapServiceProvider',
     ),
   ),
+  'vinkla/shield' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Vinkla\\Shield\\ShieldServiceProvider',
+    ),
+  ),
 );
