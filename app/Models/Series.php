@@ -129,12 +129,14 @@ class Series extends Eloquent
         parent::boot();
 
         static::creating(function ($series) {
-            $series->created_by = Auth::user()->id;
-            $series->updated_by = Auth::user() ? Auth::user()->id : null;
+            $user = Auth::user();
+            $series->created_by = $user ? $user->id : 1;
+            $series->updated_by = $user ? $user->id : 1;
         });
 
         static::updating(function ($series) {
-            $series->updated_by = Auth::user() ? Auth::user()->id : null;
+            $user = Auth::user();
+            $series->updated_by = $user ? $user->id : 1;
         });
     }
 

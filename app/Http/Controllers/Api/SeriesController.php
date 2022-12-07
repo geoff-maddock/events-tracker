@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Filters\SeriesFilters;
 use App\Http\Requests\SeriesRequest;
+use App\Http\Resources\SeriesCollection;
+use App\Http\Resources\SeriesResource;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Entity;
@@ -65,7 +67,7 @@ class SeriesController extends Controller
 
     public function __construct(SeriesFilters $filter)
     {
-        $this->middleware('verified', ['only' => ['create', 'edit', 'store', 'update']]);
+        //$this->middleware('verified', ['only' => ['create', 'edit', 'store', 'update']]);
         $this->filter = $filter;
 
         // prefix for session storage
@@ -179,7 +181,7 @@ class SeriesController extends Controller
             ->with('occurrenceType', 'visibility', 'tags')
             ->paginate($listResultSet->getLimit());
 
-        return response()->json($series);
+        return response()->json(new SeriesCollection($series));
     }
 
     /**
@@ -533,15 +535,15 @@ class SeriesController extends Controller
             ->with($this->getSeriesFormOptions());
     }
 
-    public function show(Series $series): View
+    public function show(Series $series): JsonResponse
     {
         $events = $series->events()->paginate($this->childLimit);
         $threads = $series->threads()->paginate($this->childLimit);
 
-        return view('series.show', compact('series', 'events', 'threads'));
+        return response()->json(new SeriesResource($series));
     }
 
-    public function store(SeriesRequest $request, Series $series): RedirectResponse
+    public function store(SeriesRequest $request, Series $series): JsonResponse
     {
         $msg = '';
         $input = $request->all();
@@ -584,9 +586,7 @@ class SeriesController extends Controller
         // add to activity log
         Activity::log($series, $this->user, 1);
 
-        flash()->success('Success', 'Your event series has been created');
-
-        return redirect()->route('series.show', compact('series'));
+        return response()->json($series);
     }
 
     public function edit(Series $series): View
@@ -670,15 +670,16 @@ class SeriesController extends Controller
         ->with(['series' => $series]);
     }
 
-    public function update(Series $series, SeriesRequest $request): RedirectResponse
+    public function update(Series $series, SeriesRequest $request): JsonResponse
     {
         $msg = '';
 
         $series->fill($request->input())->save();
 
-        if (!$series->ownedBy($this->user)) {
-            $this->unauthorized($request);
-        }
+        // TODO Revisit after auth is added
+        // if (!$series->ownedBy($this->user)) {
+        //     $this->unauthorized($request);
+        // }
 
         $tagArray = $request->input('tag_list', []);
         $syncArray = [];
@@ -711,7 +712,7 @@ class SeriesController extends Controller
         flash('Success', 'Your event template has been updated');
 
         //return redirect('series');
-        return redirect()->route('series.show', compact('series'));
+        return response()->json($series);
     }
 
     protected function unauthorized(SeriesRequest $request): RedirectResponse | Response
