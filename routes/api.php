@@ -5,7 +5,7 @@ use App\Models\Series;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Route::name('api.')->group(function () {
+Route::middleware('shield')->name('api.')->group(function () {
     Route::match(['get', 'post'], 'events/filter', ['as' => 'events.filter', 'uses' => 'Api\EventsController@filter']);
     Route::get('events/reset', ['as' => 'events.reset', 'uses' => 'Api\EventsController@reset']);
     Route::get('events/rpp-reset', ['as' => 'events.rppReset', 'uses' => 'Api\EventsController@rppReset']);

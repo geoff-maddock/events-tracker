@@ -30,7 +30,8 @@
 		"laravel/tinker": "^2.7",
 		"predis/predis": "^2.0",
 		"anhskohbo/no-captcha": "^3.4",
-		"sentry/sentry-laravel": "^3.1"
+		"sentry/sentry-laravel": "^3.1",
+		"vinkla/shield": "^8.0"
     },
 	"require-dev": {
 		"mockery/mockery": "^1.0",
