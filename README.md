@@ -73,6 +73,9 @@ $ npm install
   - ```npm run dev```
   - ```npm run prod```
 
+#### API Configuration
+* Generate basic auth u/p and configure in .env as per [Laravel Shield](https://github.com/vinkla/laravel-shield)
+
 #### Bug Reports & Feature Requests
 
 Please use the [issue tracker](https://github.com/geoff-maddock/events-tracker/issues) to report any bugs or file feature requests.

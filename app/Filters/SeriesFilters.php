@@ -26,6 +26,17 @@ class SeriesFilters extends QueryFilter
         }
     }
 
+    public function promoter(?string $value = null): Builder
+    {
+        if (isset($value)) {
+            return $this->builder->whereHas('promoter', function ($q) use ($value) {
+                $q->where('name', '=', ucfirst($value));
+            });
+        } else {
+            return $this->builder;
+        }
+    }
+
     public function tag(?string $value = null): Builder
     {
         if (isset($value)) {
@@ -41,17 +52,6 @@ class SeriesFilters extends QueryFilter
     {
         if (isset($value)) {
             return $this->builder->whereHas('entities', function ($q) use ($value) {
-                $q->where('name', '=', ucfirst($value));
-            });
-        } else {
-            return $this->builder;
-        }
-    }
-
-    public function series(?string $value = null): Builder
-    {
-        if (isset($value)) {
-            return $this->builder->whereHas('series', function ($q) use ($value) {
                 $q->where('name', '=', ucfirst($value));
             });
         } else {
@@ -81,7 +81,29 @@ class SeriesFilters extends QueryFilter
         }
     }
 
-    public function start_at(array | string $value = null): Builder
+    public function occurrence_week(?string $value = null): Builder
+    {
+        if (isset($value)) {
+            return $this->builder->whereHas('occurrenceWeek', function ($q) use ($value) {
+                $q->where('name', '=', ucfirst($value));
+            });
+        } else {
+            return $this->builder;
+        }
+    }
+
+    public function occurrence_day(?string $value = null): Builder
+    {
+        if (isset($value)) {
+            return $this->builder->whereHas('occurrenceDay', function ($q) use ($value) {
+                $q->where('name', '=', ucfirst($value));
+            });
+        } else {
+            return $this->builder;
+        }
+    }
+
+    public function start_at(mixed $value = null): Builder
     {
         // if not an array, do not process
 
@@ -104,6 +126,29 @@ class SeriesFilters extends QueryFilter
         }
     }
 
+
+    public function end_at(mixed $value = null): Builder
+    {
+        // if not an array, do not process
+
+        if (isset($value)) {
+            if (!is_array($value)) {
+                return $this->builder;
+            }
+
+            if (isset($value['start']) && $start = $value['start']) {
+                $this->builder->whereDate('end_at', '>=', $start);
+            }
+
+            if (isset($value['end']) && $end = $value['end']) {
+                $this->builder->whereDate('end_at', '<=', $end);
+            }
+
+            return $this->builder;
+        } else {
+            return $this->builder;
+        }
+    }
     public function ages(?string $order = 'desc'): Builder
     {
         return $this->builder->orderBy('ages_id', $order);

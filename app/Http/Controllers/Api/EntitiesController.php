@@ -7,7 +7,6 @@ use App\Filters\EntityFilters;
 use App\Http\Requests\EntityRequest;
 use App\Http\Resources\EntityCollection;
 use App\Http\Resources\EntityResource;
-use App\Http\Resources\EventCollection;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Alias;
@@ -131,7 +130,6 @@ class EntitiesController extends Controller
         // get the entities
         $entities = $query->paginate($listResultSet->getLimit());
 
-        //return response()->json($entities);
         return response()->json(new EntityCollection($entities));
     }
     
@@ -566,7 +564,8 @@ class EntitiesController extends Controller
         // add to activity log
         Activity::log($entity, $this->user, 1);
 
-        return response()->json($entity);
+        // return response()->json($entity);
+        return response()->json(new EntityResource($entity));
     }
 
     /**
@@ -576,14 +575,15 @@ class EntitiesController extends Controller
     {
         app('redirect')->setIntendedUrl(url()->current());
 
-        $threads = $entity->threads()->paginate($this->limit);
+        // $threads = $entity->threads()->paginate($this->limit);
 
-        $embeds = $embedExtractor->getEmbedsForEntity($entity);
+        // $embeds = $embedExtractor->getEmbedsForEntity($entity);
 
         // get all the tracks as streamable URLs
         // $tracks = $embedExtractor->getTracksFromUrl('https://0h85.bandcamp.com/');
-        $tracks = [];
+        // $tracks = [];
 
+        // TO DO return these objects as relations OR create seperate endpoints
         // return view('entities.show', compact('entity', 'threads', 'embeds', 'tracks'));
         return response()->json(new EntityResource($entity));
     }

@@ -23,8 +23,6 @@ class EntityStatusRequest extends Request
     {
         return [
             'name' => 'required|min:3',
-            'slug' => 'required',
-            'short' => 'required',
         ];
     }
 }

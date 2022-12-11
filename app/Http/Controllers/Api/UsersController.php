@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Filters\UserFilters;
 use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\UserRequest;
+use App\Http\Resources\UserCollection;
+use App\Http\Resources\UserResource;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Mail\UserActivation;
 use App\Mail\UserSuspended;
@@ -69,7 +71,7 @@ class UsersController extends Controller
 
     public function __construct(UserFilters $filter)
     {
-        $this->middleware('verified', ['except' => ['index', 'show']]);
+        // $this->middleware('verified', ['except' => ['index', 'show']]);
         $this->filter = $filter;
 
         // prefix for session storage
@@ -133,26 +135,7 @@ class UsersController extends Controller
         $users = $query
             ->paginate($listResultSet->getLimit());
 
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        // return view('users.index')
-        //     ->with(array_merge(
-        //         [
-        //             'limit' => $listResultSet->getLimit(),
-        //             'sort' => $listResultSet->getSort(),
-        //             'direction' => $listResultSet->getSortDirection(),
-        //             'hasFilter' => $this->hasFilter,
-        //             'filters' => $listResultSet->getFilters(),
-        //         ],
-        //         $this->getFilterOptions(),
-        //         $this->getListControlOptions()
-        //     ))
-        //     ->with(compact('users'))
-        //     ->render();
-        return response()->json($users);
+        return response()->json(new UserCollection($users));
     }
 
     /**
@@ -297,27 +280,29 @@ class UsersController extends Controller
         return $request->session()->get($this->prefix.'tabs', $this->getDefaultTabs());
     }
 
-    public function show(User $user, Request $request): RedirectResponse | View
+    public function show(User $user, Request $request): JsonResponse
     {
-        // if tabs were passed in the request, store them
-        $this->setTabs($request);
+        // // if tabs were passed in the request, store them
+        // $this->setTabs($request);
 
-        // get the current tabs from the session
-        $tabs = $this->getTabs($request);
+        // // get the current tabs from the session
+        // $tabs = $this->getTabs($request);
 
-        // if there is no profile, create one?
-        if (!$user->profile) {
-            $profile = new Profile();
-            $profile->user_id = $user->id;
+        // // if there is no profile, create one?
+        // if (!$user->profile) {
+        //     $profile = new Profile();
+        //     $profile->user_id = $user->id;
 
-            $profile->save();
+        //     $profile->save();
 
-            return redirect('users/'.$user->id);
-        }
+        //     return redirect('users/'.$user->id);
+        // }
 
-        $token = \Password::getRepository()->create($user);
+        // // TODO What is this token used for?
+        // $token = \Password::getRepository()->create($user);
 
-        return view('users.show', compact('user', 'tabs', 'token'));
+        return response()->json(new UserResource($user));
+        // return view('users.show', compact('user', 'tabs', 'token'));
     }
 
     public function profile(User $user, Request $request): RedirectResponse
@@ -327,11 +312,15 @@ class UsersController extends Controller
         return redirect('users/'.$this->user->id);
     }
 
-    public function store(UserRequest $request, User $user): void
+    public function store(UserRequest $request): JsonResponse
     {
+        // input does have values
         $input = $request->all();
 
-        $user->create($input);
+        // changed this to use the static method and it worked
+        $user = User::create($input);
+
+        // set the user status
         $user->user_status_id = 1;
 
         // if there is no profile, create one
@@ -339,18 +328,11 @@ class UsersController extends Controller
         $profile->user_id = $user->id;
         $profile->save();
 
-        flash('Success', 'Your user has been created!');
+        return response()->json(new UserResource($user));
     }
 
-    public function edit(User $user): View
-    {
-        $this->middleware('auth');
 
-        return view('users.edit', compact('user'))
-            ->with($this->getFormOptions());
-    }
-
-    public function update(User $user, ProfileRequest $request): View
+    public function update(User $user, ProfileRequest $request): JsonResponse
     {
         $input = $request->all();
 
@@ -367,14 +349,12 @@ class UsersController extends Controller
         }
 
         // get all the tabs from the session
-        $tabs = $this->getTabs($request);
+        // $tabs = $this->getTabs($request);
 
         // add to activity log
         Activity::log($user, $this->user, 2);
 
-        flash('Success', 'The user has been updated');
-
-        return view('users.show', compact('user', 'tabs'));
+        return response()->json(new UserResource($user));
     }
 
     /**
@@ -464,7 +444,7 @@ class UsersController extends Controller
 
         Mail::to($user->email)->send(new UserActivation($url, $site, $admin_email, $reply_email, $user));
 
-        return back();
+        return response()->json(new UserResource($user));
     }
 
     /**
