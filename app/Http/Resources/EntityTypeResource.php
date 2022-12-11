@@ -3,7 +3,11 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Models\EntityType;
 
+/**
+ * @mixin \App\Models\EntityType
+ */
 class EntityTypeResource extends JsonResource
 {
     /**

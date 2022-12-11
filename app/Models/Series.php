@@ -504,6 +504,14 @@ class Series extends Eloquent
     }
 
     /**
+     * An event has one status.
+     */
+    public function eventStatus(): HasOne
+    {
+        return $this->hasOne(EventStatus::class, 'id', 'event_status_id');
+    }
+
+    /**
      * An series has one occurrence type.
      */
     public function occurrenceType(): HasOne

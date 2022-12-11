@@ -113,10 +113,8 @@ class Entity extends Eloquent
 
         // TODO Fix the default after I resolve user setup in API
         static::creating(function ($entity) {
-            if (Auth::user()) {
-                $entity->created_by = Auth::user() ? Auth::user()->id : 1;
-                $entity->updated_by = Auth::user() ? Auth::user()->id : 1;
-            }
+            $entity->created_by = Auth::user() ? Auth::user()->id : 1;
+            $entity->updated_by = Auth::user() ? Auth::user()->id : 1;
         });
 
         static::updating(function ($entity) {

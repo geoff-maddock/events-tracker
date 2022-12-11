@@ -3,6 +3,11 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Models\Event;
+
+/**
+ * @mixin \App\Models\Event
+ */
 
 class EventResource extends JsonResource
 {
@@ -23,7 +28,7 @@ class EventResource extends JsonResource
             'description' => $this->description,
             'event_status' => $this->eventStatus,
             'event_type' => $this->eventType,
-            'is_benefit' => $this->isBenefit,
+            'is_benefit' => $this->is_benefit,
             'promoter' => $this->promoter,
             'venue' => $this->venue,
             'attending' => $this->attending,
