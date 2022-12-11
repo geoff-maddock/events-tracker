@@ -30,7 +30,7 @@ class Tag extends Eloquent
 
     public function getRouteKeyName()
     {
-        return 'id';
+        return 'slug';
     }
 
     protected $dates = ['created_at', 'updated_at'];

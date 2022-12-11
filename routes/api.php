@@ -6,12 +6,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('shield')->name('api.')->group(function () {
-    Route::match(['get', 'post'], 'events/filter', ['as' => 'events.filter', 'uses' => 'Api\EventsController@filter']);
     Route::get('events/reset', ['as' => 'events.reset', 'uses' => 'Api\EventsController@reset']);
     Route::get('events/rpp-reset', ['as' => 'events.rppReset', 'uses' => 'Api\EventsController@rppReset']);
     Route::resource('events', 'Api\EventsController');
 
-    Route::match(['get', 'post'], 'entities/filter', ['as' => 'entities.filter', 'uses' => 'Api\EntitiesController@filter']);
     Route::get('entities/reset', ['as' => 'entities.reset', 'uses' => 'Api\EntitiesController@reset']);
     Route::get('entities/rpp-reset', ['as' => 'entities.rppReset', 'uses' => 'Api\EntitiesController@rppReset']);
     Route::resource('entities', 'Api\EntitiesController');
@@ -26,7 +24,6 @@ Route::middleware('shield')->name('api.')->group(function () {
     Route::get('entity-statuses/rpp-reset', ['as' => 'entity-statuses.rppReset', 'uses' => 'Api\EntityStatusesController@rppReset']);
     Route::resource('entity-statuses', 'Api\EntityStatusesController');
 
-    Route::match(['get', 'post'], 'series/filter', ['as' => 'series.filter', 'uses' => 'Api\SeriesController@filter']);
     Route::get('series/reset', ['as' => 'series.reset', 'uses' => 'Api\SeriesController@reset']);
     Route::get('series/rpp-reset', ['as' => 'series.rppReset', 'uses' => 'Api\SeriesController@rppReset']);
     Route::resource('series', 'Api\SeriesController');

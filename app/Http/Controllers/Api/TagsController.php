@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Filters\TagFilters;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\TagCollection;
+use App\Http\Resources\TagResource;
+use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Entity;
 use App\Models\Event;
@@ -10,6 +14,7 @@ use App\Models\Follow;
 use App\Models\Series;
 use App\Models\Tag;
 use App\Models\TagType;
+use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -49,18 +54,21 @@ class TagsController extends Controller
 
     protected array $defaultSortCriteria;
 
-    public function __construct(Tag $tag)
+    protected TagFilters $filter;
+
+    public function __construct(Tag $tag, TagFilters $filter)
     {
-        $this->middleware('verified', ['only' => ['create', 'edit', 'store', 'update']]);
+        // $this->middleware('verified', ['only' => ['create', 'edit', 'store', 'update']]);
         $this->tag = $tag;
 
         // prefix for session storage
         $this->prefix = 'app.tags.';
 
         // default list variables
+        $this->defaultLimit = 5;
         $this->defaultSort = 'name';
         $this->defaultSortDirection = 'asc';
-        $this->defaultLimit = 25;
+        $this->defaultSortCriteria = ['tags.name' => 'asc'];
 
         // set list variables
         $this->sort = $this->defaultSort;
@@ -70,6 +78,8 @@ class TagsController extends Controller
         $this->defaultSortCriteria = ['name' => 'desc'];
 
         $this->hasFilter = false;
+
+        $this->filter = $filter;
 
         parent::__construct();
     }
@@ -91,61 +101,47 @@ class TagsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index():  JsonResponse
-    {
-        // count the most common tags in the recent past
-        $latestTags = Tag::withCount(['events' => function (Builder $query) {
-            $query->where('events.start_at', '>', Carbon::now()->subMonths(3));
-        }])
-        ->orderBy('events_count', 'desc')
-        ->paginate(6);
+    public function index(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ):  JsonResponse {
 
-        // default to no tag
-        $tag = null;
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_tag');
+        $listParamSessionStore->setKeyPrefix('internal_tag_index');
 
-        // get the tags the user is following
-        $userTags = null;
-        $tagNames = [];
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([TagsController::class, 'index']));
 
-        // get a list of all the user's followed tags
-        if (isset($this->user)) {
-            $userTags = $this->user->getTagsFollowing();
-            foreach ($userTags as $userTag) {
-                $tagNames[] = $userTag->name;
-            }
-        }
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Tag::query()
+                        ->leftJoin('tag_types', 'tags.tag_type_id', '=', 'tag_types.id')
+                        ->select('tags.*')
+        ;
 
-        // get all series linked to the tag
-        $series = Series::whereHas('tags', function ($q) use ($tagNames) {
-            $q->whereIn('name', $tagNames);
-        })->visible($this->user)
-                    ->orderBy('start_at', 'ASC')
-                    ->orderBy('name', 'ASC')
-                    ->with('tags', 'entities', 'occurrenceType')
-                    ->paginate();
+        // set the default filter to active
+        // $defaultFilter = ['entity_status' => 'Active'];
 
-        // get all the events linked to the tag
-        $events = Event::whereHas('tags', function ($q) use ($tagNames) {
-            $q->whereIn('name', $tagNames);
-        })->visible($this->user)
-                    ->orderBy('start_at', 'DESC')
-                    ->orderBy('name', 'ASC')
-                    ->with('visibility', 'tags', 'entities', 'venue', 'eventType', 'threads')
-                    ->simplePaginate($this->limit);
+        // TODO Change the query param requirements for filter and sort to use a simpler or more robust format
 
-        // get all entities linked to the tag
-        $entities = Entity::whereHas('tags', function ($q) use ($tagNames) {
-            $q->whereIn('name', $tagNames);
-        })->orderBy('entity_type_id', 'ASC')
-                    ->orderBy('name', 'ASC')
-                    ->with('tags', 'locations', 'roles')
-                    ->simplePaginate($this->limit);
+        // set the filter and base query
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort($this->defaultSortCriteria);
 
-        // get a list of all tags
-        $tags = Tag::orderBy('name', 'ASC')->get();
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the tags
+        $tags = $query->paginate($listResultSet->getLimit());
 
         // return view('tags.index', compact('series', 'entities', 'events', 'tag', 'tags', 'userTags', 'latestTags'));
-        return response()->json($tags);
+        return response()->json(new TagCollection($tags));
     }
 
     /**
@@ -211,70 +207,9 @@ class TagsController extends Controller
     /**
      * Return all relevant data related to a tag.
      */
-    public function show(string $slug, StringHelper $stringHelper): View
+    public function show(Tag $tag): JsonResponse
     {
-        $tagObject = Tag::where('slug', '=', $slug)->first();
-
-        // convert the slug to name?
-        $tag = $stringHelper->SlugToName($slug);
-
-        // get all series linked to the tag
-        $series = Series::getByTag($slug)
-            ->where(function ($query) {
-                /* @phpstan-ignore-next-line */
-                $query->visible($this->user);
-            })
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
-            ->paginate();
-
-        // get all the events linked to the tag
-        $events = Event::getByTag($slug)
-            ->orderBy('start_at', 'DESC')
-            ->orderBy('name', 'ASC')
-            ->simplePaginate($this->limit);
-
-        $events->filter(function ($e) {
-            return ($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id);
-        });
-
-        // get all entities linked to the tag
-        $entities = Entity::getByTag($slug)
-            ->where(function ($query) {
-                $query->active()
-                    ->orWhere('created_by', '=', ($this->user ? $this->user->id : null));
-            })
-            ->orderBy('entity_type_id', 'ASC')
-            ->orderBy('name', 'ASC')
-            ->simplePaginate($this->limit);
-
-        $tags = Tag::orderBy('name', 'ASC')->get();
-
-        return view('tags.index', compact('series', 'entities', 'events', 'slug', 'tag', 'tagObject', 'tags'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @internal param int $id
-     */
-    public function edit(Tag $tag): View
-    {
-        $this->middleware('auth');
-
-        $tagTypes = TagType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        return view('tags.edit', compact('tag', 'tagTypes'));
-    }
-
-    /**
-     * Show a form to create a new tag.
-     **/
-    public function create(): View
-    {
-        $tagTypes = TagType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        return view('tags.create', compact('tagTypes'));
+        return response()->json(new TagResource($tag));
     }
 
     /**
@@ -282,28 +217,32 @@ class TagsController extends Controller
      *
      * @internal param Request $request
      */
-    public function store(Request $request, Tag $tag): RedirectResponse
+    public function store(Request $request, Tag $tag): JsonResponse
     {
-        $msg = '';
-
         // get the request
         $input = $request->all();
 
-        // if the tag name does not exist, create
-        if (!Tag::where('name', '=', $input['name'])->first()) {
-            // set the slug
-            $input['slug'] = Str::slug($input['name'], '-');
-            $tag = $tag->create($input);
-
-            flash()->success('Success', sprintf('You added a new tag %s.', $tag->name));
-
-            // add to activity log
-            Activity::log($tag, $this->user, 1);
+        if (!$input['slug']) {
+            $slug = Str::slug($input['name'], '-');
         } else {
-            flash()->error('Error', sprintf('The tag %s already exists.', $input['name']));
+            $slug = $input['slug'];
         }
 
-        return back();
+        $tagObject = Tag::where('slug', '=', $slug)->first();
+
+        // if the tag name does not exist, create
+        if (!$tagObject) {
+            $tagObject = $tag->create($input);
+
+            flash()->success('Success', sprintf('You added a new tag %s.', $tagObject->name));
+
+            // add to activity log
+            Activity::log($tagObject, $this->user, 1);
+        } else {
+            // flash()->error('Error', sprintf('The tag %s already exists.', $input['name']));
+        }
+
+        return response()->json($tagObject);
     }
 
     /**
@@ -403,74 +342,6 @@ class TagsController extends Controller
     }
 
     /**
-     * Returns true if the user has any filters outside of the default.
-     *
-     * @return bool
-     */
-    protected function getIsFiltered(Request $request)
-    {
-        if (($filters = $this->getFilters($request)) == $this->getDefaultFilters()) {
-            return false;
-        }
-
-        return (bool) count($filters);
-    }
-
-    /**
-     * Get user session attribute.
-     *
-     * @param string $attribute
-     * @param mixed  $default
-     *
-     * @return mixed
-     */
-    public function getAttribute(Request $request, $attribute, $default = null)
-    {
-        return $request->session()
-            ->get($this->prefix.$attribute, $default);
-    }
-
-    /**
-     * Get session filters.
-     *
-     * @return array
-     */
-    public function getFilters(Request $request)
-    {
-        return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
-    }
-
-    /**
-     * Get the current page for this module.
-     *
-     * @return int
-     */
-    public function getPage(Request $request): ?int
-    {
-        return $this->getAttribute($request, 'page', 1);
-    }
-
-    /**
-     * Get the current results per page.
-     *
-     * @return int
-     */
-    public function getLimit(Request $request)
-    {
-        return $this->getAttribute($request, 'limit', $this->limit);
-    }
-
-    /**
-     * Get the sort order and column.
-     *
-     * @return array
-     */
-    public function getSort(Request $request)
-    {
-        return $this->getAttribute($request, 'sort', $this->getDefaultSort());
-    }
-
-    /**
      * Get the default sort array.
      *
      * @return array
@@ -488,46 +359,6 @@ class TagsController extends Controller
     public function getDefaultFilters()
     {
         return [];
-    }
-
-    /**
-     * Set user session attribute.
-     */
-    public function setAttribute(Request $request, string $attribute, mixed $value): void
-    {
-        $request->session()->put($this->prefix.$attribute, $value);
-    }
-
-    /**
-     * Set filters attribute.
-     */
-    public function setFilters(Request $request, array $input): void
-    {
-        $this->setAttribute($request, 'filters', $input);
-    }
-
-    /**
-     * Set page attribute.
-     */
-    public function setPage(Request $request, int $input): void
-    {
-        $this->setAttribute($request, 'page', $input);
-    }
-
-    /**
-     * Set results per page attribute.
-     */
-    public function setLimit(Request $request, int $input): void
-    {
-        $this->setAttribute($request, 'limit', 5);
-    }
-
-    /**
-     * Set sort order attribute.
-     */
-    public function setSort(Request $request, array $input): void
-    {
-        $this->setAttribute($request, 'sort', $input);
     }
 
     /**
@@ -585,12 +416,12 @@ class TagsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Tag $tag, Request $request): RedirectResponse
+    public function update(Tag $tag, Request $request): JsonResponse
     {
         $msg = '';
 
         $tag->fill($request->input())->save();
 
-        return redirect('tags');
+        return response()->json($tag);
     }
 }

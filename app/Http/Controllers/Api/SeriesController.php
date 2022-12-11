@@ -522,18 +522,6 @@ class SeriesController extends Controller
         ];
     }
 
-    /**
-     * Show a form to create a new series.
-     **/
-    public function create(): View
-    {
-        // initialize a series and pass in
-        $series = new Series();
-        $series->visibility_id = Visibility::VISIBILITY_PUBLIC;
-
-        return view('series.create', compact('series'))
-            ->with($this->getSeriesFormOptions());
-    }
 
     public function show(Series $series): JsonResponse
     {
@@ -586,13 +574,8 @@ class SeriesController extends Controller
         // add to activity log
         Activity::log($series, $this->user, 1);
 
-        return response()->json($series);
-    }
-
-    public function edit(Series $series): View
-    {
-        return view('series.edit', compact('series'))
-            ->with($this->getSeriesFormOptions());
+        // return response()->json($series);
+        return response()->json(new SeriesResource($series));
     }
 
     public function export(
@@ -709,7 +692,7 @@ class SeriesController extends Controller
         // add to activity log
         Activity::log($series, $this->user, 2);
 
-        flash('Success', 'Your event template has been updated');
+        // flash('Success', 'Your event template has been updated');
 
         //return redirect('series');
         return response()->json($series);
