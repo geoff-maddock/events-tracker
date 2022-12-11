@@ -106,7 +106,6 @@ class TagsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ):  JsonResponse {
-
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_tag');
         $listParamSessionStore->setKeyPrefix('internal_tag_index');
@@ -361,33 +360,6 @@ class TagsController extends Controller
         return [];
     }
 
-    /**
-     * Builds the criteria from the session.
-     */
-    public function buildCriteria(Request $request): Builder
-    {
-        // get all the filters from the session
-        $filters = $this->getFilters($request);
-
-        // base criteria
-        $query = Tag::query();
-
-        // add the criteria from the session
-        // check request for passed filter values
-        if (!empty($filters['filter_name'])) {
-            // getting name from the request
-            $name = $filters['filter_name'];
-            $query->where('name', 'like', '%'.$name.'%');
-            $filters['filter_name'] = $name;
-        }
-
-        // change this - should be separate
-        if (!empty($filters['filter_limit'])) {
-            $this->limit = $filters['filter_limit'];
-        }
-
-        return $query;
-    }
 
     protected function notifyFollowing(?Tag $tag): RedirectResponse
     {

@@ -648,182 +648,6 @@ class EventsController extends Controller
         return response()->json($eventList);
     }
 
-    /**
-     * Makes a call to the FB API if there is a link present and downloads the event cover photo.
-     *
-     * @param int $id
-     */
-    public function importPhoto($id): RedirectResponse
-    {
-        $event = Event::findOrFail($id);
-
-        if (empty($event->primary_link)) {
-            flash()->error('Error', 'You must have a valid Facebook event linked to import the photo.  To add from your desktop, drop an image file to the right.');
-
-            return back();
-        }
-
-        if ($this->addFbPhoto($event)) {
-            flash()->success('Success', 'Successfully imported the event cover photo.');
-        }
-
-        return back();
-    }
-
-    /**
-     * Call to Facebook to login the user and ask them to grant the app permission.
-     */
-    private function getFacebookLoginUrl(string $permissions): string
-    {
-        $fbGraphVersion = config('app.fb_graph_version');
-        $fbAppId = config('app.fb_app_id');
-        $endpoint = 'https://www.facebook.com/'.$fbGraphVersion.'/dialog/oauth';
-
-        $params = [
-            'client_id' => $fbAppId,
-            'redirect_uri' => '/',
-            'scope' => $permissions,
-            'auth_type' => 'rerequest',
-        ];
-
-        return $endpoint.'?'.http_build_query($params);
-    }
-
-    /**
-     * Call to Facebook after login to get an access token.
-     */
-    private function getAccessTokenWithCode(string $code): array
-    {
-        $endpoint = 'https://graph.facebook.com/'.config('app.fb_graph_version').'/oauth/access_token';
-
-        $params = [
-            'client_id' => config('app.fb_app_id'),
-            'client_secret' => config('app.fb_app_secret'),
-            'redirect_url' => '/',
-            'code' => $code,
-        ];
-
-        return $this->makeApiCall($endpoint, 'GET', $params);
-    }
-
-    /**
-     * Curl API call.
-     */
-    private function makeApiCall(string $endpoint, string $type, array $params): array
-    {
-        $ch = curl_init();
-
-        // create endpoint with params
-        $apiEndpoint = $endpoint.'?'.http_build_query($params);
-
-        // set other curl options
-        curl_setopt($ch, CURLOPT_URL, $apiEndpoint);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-        // get response
-        $response = curl_exec($ch);
-
-        curl_close($ch);
-
-        return [
-            'type' => $type,
-            'endpoint' => $endpoint,
-            'params' => $params,
-            'api_endpoint' => $apiEndpoint,
-            'data' => json_decode($response, true),
-        ];
-    }
-
-    /**
-     * This is the callback from the login that will get and set an access token.
-     **/
-    public function fbAuthToken(): mixed
-    {
-        // build an ajax call to get an access token?
-
-        // check if there is an access token
-        if (isset($_COOKIE['fb-token'])) {
-            return $_COOKIE['fb-token'];
-        }
-
-        // if not, seet if we made the login
-        if (isset($_GET['code'])) {
-            $accessToken = $this->getAccessTokenWithCode($_GET['code']);
-            setcookie('fb-token', $accessToken['data'], time() + (86400 * 30), '/');
-            dump($accessToken);
-        }
-
-        return null;
-    }
-
-
-
-    protected function makePhoto(UploadedFile $file): Photo
-    {
-        $photo = Photo::named($file->getClientOriginalName());
-
-        return $photo->makeThumbnail();
-    }
-
-    /**
-     * Makes a call to the FB API if there is a link present and downloads the event cover photo.
-     */
-    public function importPhotos(): RedirectResponse
-    {
-        // get all the events with no photo, but a fb url
-        $events = Event::has('photos', '<', 1)
-            ->where('primary_link', '<>', '')
-            ->where('primary_link', 'like', '%facebook%')
-            ->get();
-
-        // FB facebook-php-business-sdk
-        $fbEventFields = [
-            EventFields::ATTENDING_COUNT,
-            EventFields::CATEGORY,
-            EventFields::COVER,
-            EventFields::INTERESTED_COUNT,
-            EventFields::NAME,
-            EventFields::NOREPLY_COUNT,
-            EventFields::MAYBE_COUNT,
-        ];
-
-        foreach ($events as $event) {
-            $str = $event->primary_link;
-            $spl = explode('/', $str);
-            $event_id = $spl[4];
-
-            $fbEvent = (new ObjectEvent($event_id))->getSelf($fbEventFields);
-
-            // get the cover from FB
-            if (($cover = $fbEvent->cover) && ($source = $cover->getField('source'))) {
-                $content = file_get_contents($source);
-
-                $fileName = time().'_temp.jpg';
-                file_put_contents(storage_path().'/app/public/photos/'.$fileName, $content);
-                $file = new UploadedFile(storage_path().'/app/public/photos/'.$fileName, 'temp.jpg', null, null, false);
-
-                // make the photo object from the file in the request
-                /** @var Photo $photo */
-                $photo = $this->makePhoto($file);
-                if ($photo !== null) {
-                    // count existing photos, and if zero, make this primary
-                    if (0 === count($event->photos)) {
-                        $photo->is_primary = 1;
-                    }
-
-                    $photo->save();
-
-                    // attach to event
-                    /* @var Event $event */
-                    $event->addPhoto($photo);
-                }
-            }
-        }
-
-        flash()->success('Success', 'Successfully imported the event cover photos.');
-
-        return back();
-    }
 
     public function show(?Event $event, EmbedExtractor $embedExtractor): JsonResponse
     {
@@ -891,7 +715,7 @@ class EventsController extends Controller
         // check if a FB link was included
         if (false !== strpos($event->primary_link, 'facebook')) {
             // try to import the photo
-            $this->addFbPhoto($event);
+            // $this->addFbPhoto($event);
         }
 
         $photo = $event->getPrimaryPhoto();
@@ -1251,7 +1075,7 @@ class EventsController extends Controller
         // get the event
         if ($event = Event::find($id)) {
             // make the photo object from the file in the request
-            $photo = $this->makePhoto($request->file('file'));
+            // $photo = $this->makePhoto($request->file('file'));
 
             // count existing photos, and if zero, make this primary
             if (isset($event->photos) && 0 === count($event->photos)) {
