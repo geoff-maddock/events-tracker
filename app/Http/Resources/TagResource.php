@@ -3,7 +3,11 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Models\Tag;
 
+/**
+ * @mixin \App\Models\Tag
+ */
 class TagResource extends JsonResource
 {
     /**
@@ -18,7 +22,7 @@ class TagResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
-            'tag_type' => $this->tag_type,
+            'tag_type' => $this->tagType,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at
             ];

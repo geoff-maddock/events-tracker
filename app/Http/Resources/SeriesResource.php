@@ -3,7 +3,11 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Models\Series;
 
+/**
+ * @mixin \App\Models\Series
+ */
 class SeriesResource extends JsonResource
 {
     /**
@@ -25,8 +29,8 @@ class SeriesResource extends JsonResource
             'event_type' => $this->eventType,
             'occurrence_type' => $this->occurrenceType,
             'occurrence_week' => $this->occurrenceWeek,
-            'occurrence_day' => $this->occurenceDay,
-            'is_benefit' => $this->isBenefit,
+            'occurrence_day' => $this->occurrenceDay,
+            'is_benefit' => $this->is_benefit,
             'promoter' => $this->promoter,
             'venue' => $this->venue,
             'attending' => $this->attending,
@@ -38,7 +42,6 @@ class SeriesResource extends JsonResource
             'start_at' => $this->start_at,
             'end_at' => $this->end_at,
             'min_age' => $this->min_age,
-            'series' => $this->series,
             'primary_link' => $this->primary_link,
             'ticket_link' => $this->ticket_link,
             'created_by' => $this->created_by,
