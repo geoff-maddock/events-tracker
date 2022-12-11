@@ -410,19 +410,18 @@ class UsersController extends Controller
     /**
      * Mark user as activated.
      */
-    public function activate(int $id, Request $request): Response|RedirectResponse
+    public function activate(int $id, Request $request): JsonResponse
     {
-        // check if there is a logged in user
-        if (!$this->user) {
-            flash()->error('Error', 'No user is logged in.');
+        // // check if there is a logged in user
+        // if (!$this->user) {
+        //     flash()->error('Error', 'No user is logged in.');
 
-            return back();
-        }
+        //     return back();
+        // }
 
+        // Get the user by id
         if (!$user = User::find($id)) {
-            flash()->error('Error', 'No such user');
-
-            return back();
+            return response()->json([]);
         }
 
         // add the following response
@@ -434,8 +433,6 @@ class UsersController extends Controller
 
         // add to activity log
         Activity::log($user, $this->user, 10);
-
-        flash()->success('Success', 'User '.$user->name.' is now activated.');
 
         $reply_email = config('app.noreplyemail');
         $admin_email = config('app.admin');
