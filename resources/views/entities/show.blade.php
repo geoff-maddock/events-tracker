@@ -13,7 +13,7 @@
 <h1 class="display-crumbs text-primary">Entity	@include('entities.crumbs', ['slug' => $entity->name], ['class' => 'item-title'])</h1>
 
 <div id="action-menu" class="mb-2">
-@if ($user && Auth::user()->id === ($entity->user ? $entity->user->id : null))
+@if ($user && Auth::user()->id === ($entity->user ? $entity->user?->id : null))
 	<a href="{!! route('entities.edit', ['entity' => $entity->slug]) !!}" class="btn btn-primary"  title="Edit this entity">Edit Entity</a>
 @endif
 	<a href="{!! URL::route('entities.index') !!}" class="btn btn-info">Return to list</a>
@@ -64,7 +64,7 @@
 				</a>
 				@endif
 
-				@if ($user && (Auth::user()->id === $entity->user->id || $user->id === Config::get('app.superuser') ) )
+				@if ($user && (Auth::user()->id === $entity->user?->id || $user->id === Config::get('app.superuser') ) )
 				<br>
 				<a href="{!! route('entities.tweet', ['id' => $entity->id]) !!}" title="Click to tweet entity">
 					Tweet <i class="bi bi-twitter"></i>
@@ -140,7 +140,7 @@
 
 			@endunless
 
-			@if ($user && Auth::user()->id == ($entity->user ? $entity->user->id : null))
+			@if ($user && Auth::user()->id == ($entity->user ? $entity->user?->id : null))
 				<div class="my-2">
 					<a href="{!! route('entities.locations.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Location</a>
 				</div>
@@ -162,7 +162,7 @@
 			@endunless
 
 
-			@if ($user && Auth::user()->id == ($entity->user ? $entity->user->id : null))
+			@if ($user && Auth::user()->id == ($entity->user ? $entity->user?->id : null))
 				<div class="my-2"><a href="{!! route('entities.contacts.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Contact</a></div>
 			@endif
 			
@@ -188,7 +188,7 @@
 					@endforeach
 			@endunless
 
-			@if ($user && Auth::user()->id == ($entity->user ? $entity->user->id : null))
+			@if ($user && Auth::user()->id == ($entity->user ? $entity->user?->id : null))
 					<div>
 							<a href="{!! route('entities.links.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Link</a>
 					</div><br>
@@ -200,7 +200,7 @@
 			{{-- @include('entities.tracks', ['tracks' => $tracks]) --}}
 
 			<P>
-			@if ($user && Auth::user()->id === $entity->user ? $entity->user->id : null)
+			@if ($user && Auth::user()->id === $entity->user ? $entity->user?->id : null)
 				<span>
 					<a href="{!! route('events.create') !!}" class="btn btn-primary">Add Event</a>
 				</span>
@@ -257,7 +257,7 @@
 				<div class="col-2">
 					<a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" data-lightbox="grid" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom">
 						<img src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}" alt="{{ $entity->name}}"  class="mw-100"></a>
-					@if ($user && (Auth::user()->id == ($entity->user ? $entity->user->id : null) || $user->id == Config::get('app.superuser')))
+					@if ($user && (Auth::user()->id == ($entity->user ? $entity->user?->id : null) || $user->id == Config::get('app.superuser')))
 						{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning', $photo, 'DELETE', 'Delete the photo') !!}
 						@if ($photo->is_primary)
 						{!! link_form_bootstrap_icon('bi bi-star-fill text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
@@ -269,7 +269,7 @@
 				@endforeach
 			@endforeach
 			<div class="col">
-				@if ($user && (Auth::user()->id == ($entity->user ? $entity->user->id : null) || $user->hasGroup('super_admin') ))
+				@if ($user && (Auth::user()->id == ($entity->user ? $entity->user?->id : null) || $user->hasGroup('super_admin') ))
 				<form action="/entities/{{ $entity->id }}/photos" class="dropzone h-auto" id="myDropzone" method="POST">
 					<input type="hidden" name="_token" value="{{ csrf_token() }}">
 				</form>
