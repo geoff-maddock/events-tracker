@@ -157,7 +157,7 @@
 				<i class="bi bi-star icon"></i> No response</a>
 		@endif
 
-		@if ($user && (Auth::user()->id === $event->user->id || $user->hasGroup('super_admin') ) )
+		@if ($user && (Auth::user()->id === $event->user?->id || $user->hasGroup('super_admin') ) )
 			<a href="{!! route('events.tweet', ['id' => $event->id]) !!}" title="Click to tweet event">
 				<i class="bi bi-twitter"></i>
 			</a>
@@ -189,7 +189,7 @@
 		@endforeach
 	@endunless
 
-	<div><small class="text-muted">Added by <a href="/users/{{ $event->user ? $event->user->id : ''}}">{{ $event->user ? $event->user->name : '' }}</a></small></div>
+	<div><small class="text-muted">Added by <a href="/users/{{ $event->user ? $event->user?->id : ''}}">{{ $event->user ? $event->user->name : '' }}</a></small></div>
 
 	</div>
 	</div>
@@ -203,7 +203,7 @@
 					<a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" data-lightbox="grid" title="Click to see enlarged image"  data-toggle="tooltip" data-placement="bottom">
 						<img src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}" alt="{{ $event->name}}"  class="mw-100">
 					</a>
-					@if ($user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )
+					@if ($user && (Auth::user()->id == $event->user?->id || $user->id == Config::get('app.superuser') ) )
 						@if ($signedIn || $user->id == Config::get('app.superuser'))
 							{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning', $photo, 'DELETE', 'Delete the photo') !!}
 							@if ($photo->is_primary)
@@ -223,7 +223,7 @@
 				</div>
 				@endforeach
 			@endforeach
-			@if ($user && (Auth::user()->id == $event->user->id || $user->hasGroup('super_admin') ))
+			@if ($user && (Auth::user()->id == $event->user?->id || $user->hasGroup('super_admin') ))
 			<div class="col">
 				<form action="/events/{{ $event->id }}/photos" class="dropzone" id="myDropzone" method="POST">
 					<input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -281,7 +281,7 @@
 
 @section('scripts.footer')
 
-@if ($user && (Auth::user()->id === $event->user->id || $user->hasGroup('super_admin') ))
+@if ($user && (Auth::user()->id === $event->user?->id || $user->hasGroup('super_admin') ))
 <script>
 window.Dropzone.autoDiscover = true;
 $(document).ready(function(){

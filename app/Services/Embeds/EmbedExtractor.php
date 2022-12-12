@@ -154,7 +154,7 @@ class EmbedExtractor
     }
 
 
-    protected function getEmbedsFromBandcampUrl(string $url, int $depth = 0): ?array
+    protected function getEmbedsFromBandcampUrl(string $url, int $depth = 1): ?array
     {
         // prevent an infinite loop
         if ($depth > 2) {
@@ -192,6 +192,7 @@ class EmbedExtractor
                     }
                 }
             }
+        
             // reset the response
             $this->provider->setResponse(null);
         }
@@ -220,7 +221,6 @@ class EmbedExtractor
         $doc->loadHTML($htmlString);
         $xpath = new DOMXPath($doc);
 
-
         // parse the url to get the base
         $parsedUrl = parse_url($containerUrl);
 
@@ -231,17 +231,24 @@ class EmbedExtractor
         $baseUrl = $scheme."://".$host;
 
         $albumLinks = $xpath->evaluate("//a[contains(@href,'/album')]");
-
+        
         // add album links to the url array
         foreach ($albumLinks as $albumLink) {
             if (strpos($albumLink->getAttribute("href"), 'https') === 0) {
-                if (!in_array($albumLink->getAttribute("href"), $urls) && strpos($parsedUrl["host"], $albumLink->getAttribute("href"))) {
+                if (!in_array($albumLink->getAttribute("href"), $urls)
+                     && strpos($parsedUrl["host"], $albumLink->getAttribute("href"))
+                     && $albumLink->getAttribute("href") !== $containerUrl
+                ) {
                     $urls[] = $albumLink->getAttribute("href");
                 }
             } else {
                 // handle the case where the links are just partial
                 if (substr($albumLink->getAttribute("href"), 4) !== 'http') {
-                    $urls[] = $baseUrl.$albumLink->getAttribute("href");
+                    if (!in_array($baseUrl.$albumLink->getAttribute("href"), $urls)
+                        && $baseUrl.$albumLink->getAttribute("href") !== $containerUrl
+                    ) {
+                        $urls[] = $baseUrl.$albumLink->getAttribute("href");
+                    }
                 }
             }
         }
@@ -251,13 +258,20 @@ class EmbedExtractor
         // add track links to the url array
         foreach ($trackLinks as $trackLink) {
             if (strpos($trackLink->getAttribute("href"), 'https') === 0) {
-                if (!in_array($trackLink->getAttribute("href"), $urls) && strpos($parsedUrl["host"], $trackLink->getAttribute("href"))) {
+                if (!in_array($trackLink->getAttribute("href"), $urls)
+                    && strpos($parsedUrl["host"], $trackLink->getAttribute("href"))
+                    && $trackLink->getAttribute("href") !== $containerUrl
+                ) {
                     $urls[] = $trackLink->getAttribute("href");
                 }
             } else {
                 // handle the case where the links are just partial
                 if (substr($trackLink->getAttribute("href"), 4) !== 'http') {
-                    $urls[] = $baseUrl.$trackLink->getAttribute("href");
+                    if (!in_array($baseUrl.$trackLink->getAttribute("href"), $urls)
+                        && $baseUrl.$trackLink->getAttribute("href") !== $containerUrl
+                    ) {
+                        $urls[] = $baseUrl.$trackLink->getAttribute("href");
+                    }
                 }
             }
         }
