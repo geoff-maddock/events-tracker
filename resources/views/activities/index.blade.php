@@ -115,7 +115,7 @@
 
 		<br>
 
-		<small>by <a href="/activity/filter?filters[user]={{ $activity->userName }}">{{ $activity->userName }}</a> {{ isset($activity->created_at)
+		<small>by <a href="/activity/filter?filters[user]={{ $activity->userName }}">{{ $activity->userName }}</a> [<a href="{{ url('users/'.$activity->user_id) }}" title="Show user profile.">#</a>] {{ isset($activity->created_at)
 			? ' on '.$activity->created_at->format('m/d/Y H:i') : '' }} {{ (isset($activity->ip_address) ? '
 			['.$activity->ip_address.']' : '') }} </small>
 	</li>
