@@ -984,7 +984,7 @@ class EventsController extends Controller
         // clear
         $listParamSessionStore->clearSort();
 
-        return redirect()->route('events.index');
+        return redirect()->route($request->get('redirect') ?? 'events.index');
     }
 
     /**
@@ -3228,4 +3228,117 @@ class EventsController extends Controller
         return response($rss)
             ->header('Content-type', 'application/rss+xml');
     }
+
+    /**
+     * Display events that the specified user is attending
+     *
+     * @return Response|View
+     */
+    public function indexUserAttending(
+        int $id,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ) {
+        // find user or fail
+        $user = User::findOrFail($id);
+
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_attending');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = $user->getAttending()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
+
+        // set the default filter to starting today, can override
+        $defaultFilter = ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]];
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultFilters($defaultFilter)
+            ->setDefaultSort(['events.start_at' => 'asc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the events
+        $events = $query
+            ->with('visibility', 'venue')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        return view('events.indexUserAttending')
+        ->with(array_merge(
+            [
+                'slug' => 'Attending',
+                'limit' => $listResultSet->getLimit(),
+                'sort' => $listResultSet->getSort(),
+                'direction' => $listResultSet->getSortDirection(),
+                'hasFilter' => $this->hasFilter,
+                'filters' => $listResultSet->getFilters(),
+                'filterRoute' => 'events.attending',
+                'key' => 'internal_event_attending',
+                'redirect' => 'events.attending',
+            ],
+            $this->getFilterOptions(),
+            $this->getListControlOptions()
+        ))
+            ->with(compact('events', 'user'));
+    }
+
+    
+    /**
+     * Reset the filtering of events the user is attending.
+     *
+     * @return RedirectResponse|View
+     */
+    public function resetUserAttending(
+        int $id,
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ) {
+        // set filters and list controls to default values
+        $keyPrefix = $request->get('key') ?? 'internal_event_attending';
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
+
+        // clear
+        $listParamSessionStore->clearFilter();
+        $listParamSessionStore->clearSort();
+
+        return redirect()->route('users.attending', ['id' => $id]);
+    }
+
+
+    /**
+     * Reset the limit, sort, order.
+     *
+     * @throws \Throwable
+     */
+    public function rppResetUserAttending(
+        int $id,
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ): RedirectResponse {
+        // set the rpp, sort, direction only to default values
+        $keyPrefix = $request->get('key') ?? 'internal_event_attending';
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
+
+        // clear
+        $listParamSessionStore->clearSort();
+
+        return redirect()->route('users.attending', ['id' => $id]);
+    }
+
 }
