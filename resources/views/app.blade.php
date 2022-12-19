@@ -38,8 +38,8 @@
 	<!-- Lightbox -->
 	<link href="{{ asset('/css/lightbox.min.css') }}" rel="stylesheet">
 	<!-- Full Calendar -->
-	<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.min.css' rel='stylesheet' />
-	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.min.js"></script>
+	@yield('calendar.include')
+
 	@if (config('app.google_tags') !== "")
 	@include ('partials.analytics')
 	@endif
