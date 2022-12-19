@@ -34,7 +34,9 @@
 	<!-- Icons -->
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
 	<!-- Fonts -->
-	<link href="//fonts.googleapis.com/css?family=Roboto:400,300&display=swap" rel="stylesheet" type="text/css">
+	<link rel="DNS-prefetch" href="//fonts.googleapis.com"/>
+	<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin/>
+	<link href="//fonts.googleapis.com/css?family=Roboto:400,300&display=swap" rel="stylesheet" type="text/css" media="print" onload="this.onload=null;this.removeAttribute('media');">
 	<!-- Lightbox -->
 	<link href="{{ asset('/css/lightbox.min.css') }}" rel="stylesheet">
 	<!-- Full Calendar -->
