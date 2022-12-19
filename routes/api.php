@@ -37,4 +37,10 @@ Route::middleware('shield')->name('api.')->group(function () {
     Route::get('users/reset', ['as' => 'users.reset', 'uses' => 'Api\TagsController@reset']);
     Route::get('users/rpp-reset', ['as' => 'users.rppReset', 'uses' => 'Api\TagsController@rppReset']);
     Route::resource('users', 'Api\UsersController');
+
+
 });
+
+// calendar routes
+Route::get('calendar-events', 'EventsController@calendarEventsApi')->name('calendarEvents.api');
+Route::get('tag-calendar-events', 'EventsController@tagCalendarEventsApi')->name('tagCalendarEvents.api');
