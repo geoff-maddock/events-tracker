@@ -1,13 +1,13 @@
 @extends('app')
 
-@section('title','User Profile View')
+@section('title', 'User Profile View')
 
 @section('content')
 
+    <h1 class="display-crumbs text-primary">User  @include('users.crumbs')</h1>
     <div class="row">
-
         <div class="m-2">
-            <h1 class="display-6 text-primary">{{ $user->name }}</h1>
+            <a href="{!! route('users.attending', ['id' => $user->id]) !!}" class="btn btn-primary">Attending</a>
             @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser') ) )
                 <a href="{!! route('users.edit', ['user' => $user->id]) !!}" class="btn btn-primary">Edit Profile</a>
                 @can('grant_access')
