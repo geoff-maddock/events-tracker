@@ -28,9 +28,9 @@
 	@else
 		<link href="{{ asset('/css/dark.css') }}" rel="stylesheet">
     @endif
-	<!-- Select2 -->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.1.1/dist/select2-bootstrap-5-theme.min.css" />
+
+	@yield('select2.include')
+
 	<!-- Icons -->
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
 	<!-- Fonts -->
@@ -39,6 +39,7 @@
 	<link href="//fonts.googleapis.com/css?family=Roboto:400,300&display=swap" rel="stylesheet" type="text/css" media="print" onload="this.onload=null;this.removeAttribute('media');">
 	<!-- Lightbox -->
 	<link href="{{ asset('/css/lightbox.min.css') }}" rel="stylesheet">
+
 	<!-- Full Calendar -->
 	@yield('calendar.include')
 
