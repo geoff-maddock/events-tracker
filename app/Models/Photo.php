@@ -182,6 +182,7 @@ class Photo extends Eloquent
 
         // builds an image given the path of the file on the external disk, then creates a version
         $image = Image::make(Storage::disk('external')->url($this->path))
+            // ->scaleDown(width: 200)
             ->encode('webp', $quality)
             ->save('storage/'.$webpPath);
 

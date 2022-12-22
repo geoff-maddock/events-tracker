@@ -101,7 +101,7 @@
 				myDropzone.on("error", function (file, message) {
 					Swal.fire({
 						title: "Are you sure?",
-						text: "You cannot upload a file that large. Or can you? "+message,
+						text: "Error: " + message.message,
 						type: "warning",
 						showCancelButton: true,
 						confirmButtonColor: "#DD6B55",
