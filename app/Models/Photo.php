@@ -121,22 +121,6 @@ class Photo extends Eloquent
         return $photo;
     }
 
-    public static function named(string $name): Photo
-    {
-        return (new static())->saveAs($name);
-    }
-
-    protected function saveAs(string $name): Photo
-    {
-        $this->name = sprintf('%s_%s', time(), $name);
-        $this->path = sprintf('%s/%s', $this->baseDir, $this->name);
-        $this->thumbnail = sprintf('%s/tn-%s', $this->baseDir, $this->name);
-        $this->thumbName = sprintf('tn-%s', $this->name);
-        $this->caption = $name;
-
-        return $this;
-    }
-
     public function move(UploadedFile $file): Photo
     {
         try {
@@ -149,6 +133,25 @@ class Photo extends Eloquent
 
         return $this;
     }
+
+
+    public static function named(string $name): Photo
+    {
+        return (new static())->saveAs($name);
+    }
+
+    // Sets properies on the photo
+    protected function saveAs(string $name): Photo
+    {
+        $this->name = sprintf('%s', $name);
+        $this->path = sprintf('%s/%s', $this->baseDir, $name);
+        $this->thumbnail = sprintf('%s/tn-%s', $this->baseDir, $name);
+        $this->thumbName = sprintf('tn-%s', $name);
+        $this->caption = $name;
+
+        return $this;
+    }
+
 
     public function makeThumbnail(): Photo
     {
@@ -164,6 +167,62 @@ class Photo extends Eloquent
         // clean up local files
         $image->destroy();
         unlink($saved_image_uri);
+
+        return $this;
+    }
+
+    public function makeWebp(int $quality = 75): Photo
+    {
+        // extracts the parts of the file name
+        $parts = pathinfo($this->name);
+
+        // creates a valid name for a webp file
+        $webpName = $parts['filename'].'.webp';
+        $webpPath = sprintf('%s/%s', $this->baseDir, $webpName);
+
+        // builds an image given the path of the file on the external disk, then creates a version
+        $image = Image::make(Storage::disk('external')->url($this->path))
+            ->encode('webp', $quality)
+            ->save('storage/'.$webpPath);
+
+        $saved_image_uri = $image->basePath();
+
+        $path = Storage::disk('external')->putFileAs('photos', new HttpFile($saved_image_uri), $webpName, 'public');
+
+        // clean up local files
+        $image->destroy();
+        unlink($saved_image_uri);
+
+        // save the webp file as the name
+        $this->saveAs($webpName);
+
+        return $this;
+    }
+
+    public function makeJpg(int $quality = 75): Photo
+    {
+        // extracts the parts of the file name
+        $parts = pathinfo($this->name);
+
+        // creates a valid name for a jpg file
+        $webpName = $parts['filename'].'.jpg';
+        $webpPath = sprintf('%s/%s', $this->baseDir, $webpName);
+
+        // builds an image given the path of the file on the external disk, then creates a version
+        $image = Image::make(Storage::disk('external')->url($this->path))
+            ->encode('jpg', $quality)
+            ->save('storage/'.$webpPath);
+
+        $saved_image_uri = $image->basePath();
+
+        $path = Storage::disk('external')->putFileAs('photos', new HttpFile($saved_image_uri), $webpName, 'public');
+
+        // clean up local files
+        $image->destroy();
+        unlink($saved_image_uri);
+
+        // save the webp file as the name
+        $this->saveAs($webpName);
 
         return $this;
     }

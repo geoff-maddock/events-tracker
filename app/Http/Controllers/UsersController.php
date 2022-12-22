@@ -17,6 +17,7 @@ use App\Models\Profile;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Visibility;
+use App\Services\ImageHandler;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
 use Eluceo\iCal\Component\Calendar;
@@ -392,19 +393,16 @@ class UsersController extends Controller
      *
      * @throws ValidationException
      */
-    public function addPhoto(int $id, Request $request): void
+    public function addPhoto(int $id, Request $request, ImageHandler $imageHandler): void
     {
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif',
         ]);
 
-        $fileName = time().'_'.$request->file->getClientOriginalName();
-        $filePath = $request->file('file')->storePubliclyAs('photos', $fileName, 'external');
-
         // attach to user
         if ($user = User::find($id)) {
             // make the photo based on the stored file
-            $photo = $this->makePhoto($request->file('file'));
+            $photo = $imageHandler->makePhoto($request->file('file'));
 
             // count existing photos, and if zero, make this primary
             if (isset($user->photos) && 0 === count($user->photos)) {
@@ -416,12 +414,6 @@ class UsersController extends Controller
             // attach to user
             $user->addPhoto($photo);
         }
-    }
-
-    protected function makePhoto(UploadedFile $file): ?Photo
-    {
-        return Photo::named($file->getClientOriginalName())
-            ->makeThumbnail();
     }
 
     /**

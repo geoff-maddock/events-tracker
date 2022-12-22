@@ -27,6 +27,7 @@ use App\Models\User;
 use App\Models\Visibility;
 use App\Notifications\EventPublished;
 use App\Services\Embeds\EmbedExtractor;
+use App\Services\ImageHandler;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
@@ -46,8 +47,9 @@ use Illuminate\Support\Facades\Session;
 
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Image;
 use Storage;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Illuminate\Http\UploadedFile;
 
 class EventsController extends Controller
 {
@@ -1838,7 +1840,7 @@ class EventsController extends Controller
      *
      * @param int $id
      */
-    public function importPhoto($id): RedirectResponse
+    public function importPhoto($id, ImageHandler $imageHandler): RedirectResponse
     {
         $event = Event::findOrFail($id);
 
@@ -1848,7 +1850,7 @@ class EventsController extends Controller
             return back();
         }
 
-        if ($this->addFbPhoto($event)) {
+        if ($this->addFbPhoto($event, $imageHandler)) {
             flash()->success('Success', 'Successfully imported the event cover photo.');
         }
 
@@ -1944,7 +1946,7 @@ class EventsController extends Controller
     /**
      * Add a FB photo to an event.
      */
-    protected function addFbPhoto(Event $event): bool | RedirectResponse
+    protected function addFbPhoto(Event $event, ImageHandler $imageHandler): bool | RedirectResponse
     {
         // get the FB event id from the primary link
         $str = $event->primary_link;
@@ -1998,7 +2000,7 @@ class EventsController extends Controller
                 $stored = Storage::disk('external')->putFileAs('photos', $file, $fileName, 'public');
 
                 // make the photo object from the file in the request
-                $photo = $this->makePhoto($file);
+                $photo = $imageHandler->makePhoto($file);
                 if ($photo !== null) {
                     // count existing photos, and if zero, make this primary
                     if (0 === count($event->photos)) {
@@ -2023,17 +2025,11 @@ class EventsController extends Controller
         return true;
     }
 
-    protected function makePhoto(UploadedFile $file): Photo
-    {
-        $photo = Photo::named($file->getClientOriginalName());
-
-        return $photo->makeThumbnail();
-    }
 
     /**
      * Makes a call to the FB API if there is a link present and downloads the event cover photo.
      */
-    public function importPhotos(): RedirectResponse
+    public function importPhotos(ImageHandler $imageHandler): RedirectResponse
     {
         // get all the events with no photo, but a fb url
         $events = Event::has('photos', '<', 1)
@@ -2065,14 +2061,15 @@ class EventsController extends Controller
                 $content = file_get_contents($source);
                 $fileName = time().'_temp.jpg';
                 file_put_contents(storage_path().'/app/public/photos/'.$fileName, $content);
+                // gets the uploaded file from the local path
                 $file = new UploadedFile(storage_path().'/app/public/photos/'.$fileName, 'temp.jpg', null, null, false);
 
-                // store the file externally
+                // store the file externally using the original name
                 $stored = Storage::disk('external')->putFileAs('photos', $file, $fileName, 'public');
 
                 // make the photo object from the file in the request
                 /** @var Photo $photo */
-                $photo = $this->makePhoto($file);
+                $photo = $imageHandler->makePhoto($file);
                 if ($photo !== null) {
                     // count existing photos, and if zero, make this primary
                     if (0 === count($event->photos)) {
@@ -2132,7 +2129,7 @@ class EventsController extends Controller
         return view('events.show', compact('event', 'embeds'))->with(['thread' => $thread, 'blacklist' => $blacklist])->render();
     }
 
-    public function store(EventRequest $request, Event $event): RedirectResponse
+    public function store(EventRequest $request, Event $event, ImageHandler $imageHandler): RedirectResponse
     {
         $msg = '';
 
@@ -2182,7 +2179,7 @@ class EventsController extends Controller
         // check if a FB link was included
         if (false !== strpos($event->primary_link, 'facebook')) {
             // try to import the photo
-            $this->addFbPhoto($event);
+            $this->addFbPhoto($event, $imageHandler);
         }
 
         $photo = $event->getPrimaryPhoto();
@@ -2968,19 +2965,18 @@ class EventsController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function addPhoto(int $id, Request $request): void
+    public function addPhoto(int $id, Request $request, ImageHandler $imageHandler): void
     {
+        // confirm the file is one of these types
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif',
         ]);
 
-        $fileName = time().'_'.$request->file->getClientOriginalName();
-        $filePath = $request->file('file')->storePubliclyAs('photos', $fileName, 'external');
-
         // get the event
         if ($event = Event::find($id)) {
-            // make the photo object from the file in the request
-            $photo = $this->makePhoto($request->file('file'));
+
+            // make the photo object from the file in the request, returning photo object
+            $photo = $imageHandler->makePhoto($request->file('file'));
 
             // count existing photos, and if zero, make this primary
             if (isset($event->photos) && 0 === count($event->photos)) {

@@ -1058,45 +1058,6 @@ class EventsController extends Controller
         return view('events.indexWeek', compact('events'));
     }
 
-    // /**
-    //  * Add a photo to an event.
-    //  *
-    //  * @throws \Illuminate\Validation\ValidationException
-    //  */
-    // public function addPhoto(int $id, Request $request): void
-    // {
-    //     $this->validate($request, [
-    //         'file' => 'required|mimes:jpg,jpeg,png,gif',
-    //     ]);
-
-    //     $fileName = time().'_'.$request->file->getClientOriginalName();
-    //     $filePath = $request->file('file')->storeAs('photos', $fileName, 'public');
-
-    //     // get the event
-    //     if ($event = Event::find($id)) {
-    //         // make the photo object from the file in the request
-    //         // $photo = $this->makePhoto($request->file('file'));
-
-    //         // count existing photos, and if zero, make this primary
-    //         if (isset($event->photos) && 0 === count($event->photos)) {
-    //             $photo->is_primary = 1;
-    //         }
-
-    //         $photo->save();
-
-    //         // attach to event
-    //         $event->addPhoto($photo);
-
-    //         // make a call to notify all users who are following any of the tags/keywords if the event starts in the future
-    //         if ($event->start_at >= Carbon::now()) {
-    //             // only do the notification if there is exactly one photo
-    //             if (1 === count($event->photos)) {
-    //                 $this->notifyFollowing($event);
-    //             }
-    //         }
-    //     }
-    // }
-
     public function follow(int $id): RedirectResponse
     {
         // check if there is a logged in user

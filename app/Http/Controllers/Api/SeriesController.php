@@ -21,6 +21,7 @@ use App\Models\Series;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\Visibility;
+use App\Services\ImageHandler;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
@@ -722,7 +723,7 @@ class SeriesController extends Controller
     /**
      * Add a photo to a series.
      */
-    public function addPhoto(int $id, Request $request): void
+    public function addPhoto(int $id, Request $request, ImageHandler $imageHandler): void
     {
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif',
@@ -734,7 +735,7 @@ class SeriesController extends Controller
         // attach to series
         if ($series = Series::find($id)) {
             // make the photo object from the file in the request
-            $photo = $this->makePhoto($request->file('file'));
+            $photo = $imageHandler->makePhoto($request->file('file'));
 
             // count existing photos, and if zero, make this primary
             if (isset($series->photos) && 0 === count($series->photos)) {
