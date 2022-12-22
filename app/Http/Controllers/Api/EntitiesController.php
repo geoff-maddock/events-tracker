@@ -20,6 +20,7 @@ use App\Models\Tag;
 use App\Models\User;
 use App\Notifications\EventPublished;
 use App\Services\Embeds\EmbedExtractor;
+use App\Services\ImageHandler;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
 use Carbon\Carbon;
@@ -673,7 +674,7 @@ class EntitiesController extends Controller
     /**
      * Add a photo to an entity.
      */
-    public function addPhoto(int $id, Request $request): void
+    public function addPhoto(int $id, Request $request, ImageHandler $imageHandler): void
     {
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif',
@@ -684,7 +685,7 @@ class EntitiesController extends Controller
 
         // attach to entity
         if ($entity = Entity::find($id)) {
-            $photo = $this->makePhoto($request->file('file'));
+            $photo = $imageHandler->makePhoto($request->file('file'));
 
             // count existing photos, and if zero, make this primary
             if (isset($entity->photos) && 0 === count($entity->photos)) {
