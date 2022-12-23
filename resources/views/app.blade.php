@@ -32,13 +32,14 @@
 	@yield('select2.include')
 
 	<!-- Icons -->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css&display=swap">
 	<!-- Fonts -->
 	<link rel="DNS-prefetch" href="//fonts.googleapis.com"/>
 	<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin/>
 	<link href="//fonts.googleapis.com/css?family=Roboto:400,300&display=swap" rel="stylesheet" type="text/css" media="print" onload="this.onload=null;this.removeAttribute('media');">
 	<!-- Lightbox -->
-	<link href="{{ asset('/css/lightbox.min.css') }}" rel="stylesheet">
+	{{-- <link href="{{ asset('/css/lightbox.min.css') }}" rel="stylesheet"> --}}
+	<link href="{{ asset('/css/lightbox.min.css') }}" rel="stylesheet" type="text/css" media="print" onload="this.onload=null;this.removeAttribute('media');">
 
 	<!-- Full Calendar -->
 	@yield('calendar.include')
