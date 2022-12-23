@@ -32,7 +32,7 @@
 	@yield('select2.include')
 
 	<!-- Icons -->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css&display=swap">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
 	<!-- Fonts -->
 	<link rel="DNS-prefetch" href="//fonts.googleapis.com"/>
 	<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin/>
