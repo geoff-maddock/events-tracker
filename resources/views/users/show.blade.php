@@ -169,7 +169,7 @@
                                     <div class="d-block" id="attending-events">
                                         <div class="col-sm-12">
                                             <ul class="list-style-none"  class="mt-0">
-                                                <li>{!! link_to_route('events.attending', 'All Events Attending', ['filters[start_at][start]'=> ''], ['id' => 'add-event', 'class' => 'page-link text-nowrap']) !!}</li>
+                                                <li>{!! link_to_route('users.attending', 'All Events Attending', ['id' => $user->id, 'filters[start_at][start]'=> ''], ['id' => 'add-event', 'class' => 'page-link text-nowrap']) !!}</li>
                                             </ul>
                                         </div>
                                     </div>
