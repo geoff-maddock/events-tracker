@@ -232,11 +232,12 @@
 			@endif
 		</div>
 
-		@include('embeds.playlist', ['embeds' => $embeds])
+		@include('embeds.playlist', ['event' => $event, 'embeds' => $embeds])
 
-		<div class="row">
+
 		@if (isset($thread))
-			<div class="col-lg-12">
+		<div class="row">
+ 			<div class="col-lg-12">
 				<div class="card bg-dark">
 
 					<h5 class="card-header bg-primary">
@@ -273,8 +274,8 @@
 					</div>
 				</div>
 			</div>
-		@endif
 		</div>
+		@endif
 	</div>
 </div>
 @stop

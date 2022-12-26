@@ -196,6 +196,7 @@ Route::get('events/add/{date?}', 'EventsController@indexAdd')->name('events.add'
 Route::get('events/past', 'EventsController@indexPast');
 Route::get('events/week', 'EventsController@indexWeek')->name('events.week');
 Route::get('events/starting/{date}', 'EventsController@indexStarting');
+Route::get('events/{id}/load-embeds', 'EventsController@loadEmbeds');
 Route::get('events/by-date/{year}/{month?}/{day?}', 'EventsController@indexByDate')
     ->where('year', '[1-9][0-9][0-9][0-9]')
     ->where('month', '(0?[1-9]|1[012])$');

@@ -14,4 +14,8 @@
         </div>
     </div>
 </div>
+@else
+    @if (isset($event))
+        <div id="playlist-{{ $event->id}}" class="playlist-id" data-url="/events/{{ $event->id }}/load-embeds"></div>
+    @endif
 @endif
