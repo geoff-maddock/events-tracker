@@ -424,6 +424,7 @@ Route::resource('groups', 'GroupsController');
 // ENTITIES
 Route::match(['get', 'post'], 'entities/following', 'EntitiesController@indexFollowing')->name('entities.following')->middleware('auth');
 
+Route::get('entities/{id}/load-embeds', 'EntitiesController@loadEmbeds');
 Route::post('entities/{id}/photos', 'EntitiesController@addPhoto');
 
 Route::get('entities/type/{type}', 'EntitiesController@indexTypes');

@@ -663,13 +663,45 @@ class EntitiesController extends Controller
 
         $threads = $entity->threads()->paginate($this->limit);
 
-        $embeds = $embedExtractor->getEmbedsForEntity($entity);
+        // pass empty embeds here - this was moved to a deferred ajax load
+        $embeds = [];
 
         // get all the tracks as streamable URLs
         // $tracks = $embedExtractor->getTracksFromUrl('https://0h85.bandcamp.com/');
         $tracks = [];
 
         return view('entities.show', compact('entity', 'threads', 'embeds', 'tracks'));
+    }
+
+    /**
+     * Load the embeds and add to the UI
+     *
+     * @throws \Throwable
+     */
+    public function loadEmbeds(int $id, EmbedExtractor $embedExtractor, Request $request): RedirectResponse | array
+    {
+        // load the entity
+        if (!$entity = Entity::find($id)) {
+            flash()->error('Error', 'No such entity');
+
+            return back();
+        }
+
+        // extract all the links from the entity and convert into embeds
+        $embeds = $embedExtractor->getEmbedsForEntity($entity);
+
+        // handle the request if ajax
+        if ($request->ajax()) {
+            return [
+                'Message' => 'Added embeds to entity page.',
+                'Success' => view('embeds.playlist')
+                    ->with(compact('embeds'))
+                    ->render(),
+            ];
+        }
+        flash()->success('Error', 'You cannot load embeds directly');
+
+        return back();
     }
 
     /**
