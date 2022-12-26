@@ -144,8 +144,6 @@ class EventsController extends Controller
             // ->withCount('eventResponses')
         ;
 
-        // dd($baseQuery->toSql());
-
         // set the default filter to starting today, can override
         $defaultFilter = ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]];
 
