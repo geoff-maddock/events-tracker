@@ -11,6 +11,27 @@ var App = (function()
         this.setupAjaxAction('body');
         $('.auto-submit').autoSubmit();
         this.setupNameToSlug();
+        this.loadEmbeds();
+    };
+
+
+    // load embeded audio code
+    var loadEmbeds = function() {
+        console.log('triggered load embeds');
+        $('body div.playlist-id').each(function(e) {
+            var url = $(this).attr('data-url');
+            var target = $(this).attr('id');
+            $.ajax({
+                url : url
+            }).done(function (data) {
+                // load results into the applicable position
+                
+                $('#'+target).html(data.Success);
+                console.log('Loaded embeds: '+target);
+            }).fail(function () {
+                console.log('No event embeds could be loaded')
+            });
+        });
     };
 
     var initTooltip = function () {
@@ -221,6 +242,7 @@ var App = (function()
         setupLoadingModal: setupLoadingModal,
         showLoadingModal: showLoadingModal,
         setupNameToSlug: setupNameToSlug,
+        loadEmbeds: loadEmbeds,
     };
 })();
 
@@ -258,12 +280,12 @@ var Home = (function()
     // check the day sections and load via ajax
     var loadDays = function() {
         $('body section.day').each(function(e) {
-
             var url = $(this).attr('href');
             var num = $(this).attr('data-num');
             getDayEvents(url, num);
         });
     };
+
 
     // when a pagination link is clicked, load the results of the url
     var setupPagination = function() {
@@ -282,7 +304,6 @@ var Home = (function()
         console.log('setup add events');
         $('body').on('click', '#add-event', function(e) {
             e.preventDefault();
-            console.log('add event');
             var url = $(this).attr('href');
             var target = '.home';
 
@@ -295,8 +316,6 @@ var Home = (function()
 
     // set up javascript that fires when the page scrolls
     var setupLoadScroll = function() {
-        console.log('setup load scroll');
-
         var scrollTimeout;
         var throttle = 300;
 
@@ -344,7 +363,6 @@ var Home = (function()
 
     // load a whole block of events and append
     var addEvents = function addEvents(url, target) {
-        console.log('add events: '+url)
         $.ajax({
             url : url
         }).done(function (data) {
@@ -355,8 +373,6 @@ var Home = (function()
             console.log('No events could be loaded.');
         });
     };
-
-
 
     return {
         init: init,

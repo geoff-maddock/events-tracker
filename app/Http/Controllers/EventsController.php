@@ -141,7 +141,6 @@ class EventsController extends Controller
         $baseQuery = Event::query()
             ->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')
             ->select('events.*')
-            // ->withCount('eventResponses')
         ;
 
         // set the default filter to starting today, can override
@@ -2122,9 +2121,42 @@ class EventsController extends Controller
         $blacklist = $this->checkBlackList($event);
 
         // extract all the links from the event body and convert into embeds
-        $embeds = $embedExtractor->getEmbedsForEvent($event);
+        // $embeds = $embedExtractor->getEmbedsForEvent($event);
+        $embeds = [];
 
         return view('events.show', compact('event', 'embeds'))->with(['thread' => $thread, 'blacklist' => $blacklist])->render();
+    }
+
+
+    /**
+     * Load the embeds and add to the UI
+     *
+     * @throws \Throwable
+     */
+    public function loadEmbeds(int $id, EmbedExtractor $embedExtractor, Request $request): RedirectResponse | array
+    {
+        // load the event
+        if (!$event = Event::find($id)) {
+            flash()->error('Error', 'No such event');
+
+            return back();
+        }
+
+        // extract all the links from the event body and convert into embeds
+        $embeds = $embedExtractor->getEmbedsForEvent($event);
+
+        // handle the request if ajax
+        if ($request->ajax()) {
+            return [
+                'Message' => 'Added embeds to event page.',
+                'Success' => view('embeds.playlist')
+                    ->with(compact('embeds'))
+                    ->render(),
+            ];
+        }
+        flash()->success('Error', 'You cannot load embeds directly');
+
+        return back();
     }
 
     public function store(EventRequest $request, Event $event, ImageHandler $imageHandler): RedirectResponse
