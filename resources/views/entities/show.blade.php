@@ -278,31 +278,33 @@
 		</div>
 		<div class="row event-container">
 
-				<div class="event-columns">
-					<div class="card bg-dark">
+			<div class="event-columns">
+				<div class="card bg-dark">
 
-							<h5 class="card-header bg-primary">Past Events <span class="badge rounded-pill bg-dark float-end"><a href="{{ url('events/related-to/'.$entity->slug) }}">{{ $entity->pastEvents()->total() }}</a></span></h5>
+					<h5 class="card-header bg-primary">Future Events <span class="badge rounded-pill bg-dark float-end"><a href="{{ url('events/related-to/'.$entity->slug) }}">{{ $entity->futureEvents()->total() }}</a></span></h5>
 
-							<div class="card-body">
-								@include('events.vertical-list', ['events' => $entity->pastEvents()])
-								{!! $entity->pastEvents()->render() !!}
-							</div>
-
-					</div>
-				</div>
-
-				<div class="event-columns">
-					<div class="card bg-dark">
-
-						<h5 class="card-header bg-primary">Future Events <span class="badge rounded-pill bg-dark float-end"><a href="{{ url('events/related-to/'.$entity->slug) }}">{{ $entity->futureEvents()->total() }}</a></span></h5>
-
-							<div class="card-body">
-								@include('events.vertical-list', ['events' => $entity->futureEvents()])
-								{!! $entity->futureEvents()->render() !!}
-							</div>
+						<div class="card-body">
+							@include('events.vertical-list', ['events' => $entity->futureEvents()])
+							{!! $entity->futureEvents()->render() !!}
 						</div>
 					</div>
 				</div>
+			</div>
+
+			<div class="event-columns">
+				<div class="card bg-dark">
+
+						<h5 class="card-header bg-primary">Past Events <span class="badge rounded-pill bg-dark float-end"><a href="{{ url('events/related-to/'.$entity->slug) }}">{{ $entity->pastEvents()->total() }}</a></span></h5>
+
+						<div class="card-body">
+							@include('events.vertical-list', ['events' => $entity->pastEvents()])
+							{!! $entity->pastEvents()->render() !!}
+						</div>
+
+				</div>
+			</div>
+
+
 		</div>
 	</div>
 </div>
