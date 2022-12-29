@@ -180,6 +180,7 @@
 		@foreach ($event->entities as $entity)
 			@include('entities.single_label')
 		@endforeach
+		@php unset($entity) @endphp
 	@endunless
 	<br>
 	@unless ($event->tags->isEmpty())
@@ -232,8 +233,7 @@
 			@endif
 		</div>
 
-		@include('embeds.playlist', ['event' => $event, 'embeds' => $embeds])
-
+		@include('embeds.playlist', ['event' => $event])
 
 		@if (isset($thread))
 		<div class="row">
