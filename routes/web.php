@@ -269,7 +269,7 @@ Route::bind('events', function ($id) {
     return Event::whereId($id)->firstOrFail();
 });
 
-Route::resource('events', 'EventsController')->middleware('cache.headers:public;max_age=2628000;etag');
+Route::resource('events', 'EventsController');
 
 // FORUMS
 Route::bind('forums', function ($id) {
