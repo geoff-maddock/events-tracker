@@ -431,3 +431,7 @@ a.fc-col-header-cell-cushion {
 h5 {
 	font-size: 1rem;
 }
+
+.btn-primary .page-link {
+	background-color: #4c9be8 !important ;
+}
