@@ -2174,7 +2174,7 @@ class EventsController extends Controller
 
         // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
-            if (!Tag::find($tag)) {
+            if (!is_numeric($tag) || !$newTag = Tag::find($tag)) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->slug = Str::slug($tag);
@@ -2188,7 +2188,7 @@ class EventsController extends Controller
 
                 $msg .= ' Added tag '.$tag.'.';
             } else {
-                $syncArray[$key] = $tag;
+                $syncArray[] = $newTag->id;
             }
         }
 
@@ -2307,7 +2307,7 @@ class EventsController extends Controller
 
         // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
-            if (!Tag::find($tag)) {
+            if (!is_numeric($tag) || !$newTag = Tag::find($tag)) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->slug = Str::slug($tag);
