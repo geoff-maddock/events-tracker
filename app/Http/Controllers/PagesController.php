@@ -135,9 +135,9 @@ class PagesController extends Controller
                     })
                     ->orderBy('start_at', 'DESC')
                     ->orderBy('name', 'ASC');
-
-        $events = $eventQuery->paginate($this->limit);
+        
         $eventsCount = $eventQuery->count();
+        $events = $eventQuery->paginate($this->limit);
 
         // find matching series by entity, tag or name
         $seriesQuery = Series::getByEntity(strtolower($searchSlug))
@@ -164,18 +164,21 @@ class PagesController extends Controller
                 })
                 ->orderBy('entity_type_id', 'ASC')
                 ->orderBy('name', 'ASC');
+
         $entitiesCount = $entitiesQuery->count();
         $entities = $entitiesQuery->paginate($this->limit);
 
         // find tags by name
         $tagsQuery = Tag::where('name', 'like', '%'.$search.'%')
                 ->orderBy('name', 'ASC');
+
         $tagsCount = $tagsQuery->count();
         $tags = $tagsQuery->simplePaginate($this->limit);
 
         // find users by name
         $usersQuery = User::where('name', 'like', '%'.$search.'%')
                 ->orderBy('name', 'ASC');
+
         $usersCount = $usersQuery->count();
         $users = $usersQuery->simplePaginate($this->limit);
 
@@ -185,6 +188,7 @@ class PagesController extends Controller
                 $q->where('name', '=', ucfirst($search));
             })
             ->orderBy('name', 'ASC');
+            
         $threadsCount = $threadsQuery->count();
         $threads = $threadsQuery->paginate($this->limit);
 

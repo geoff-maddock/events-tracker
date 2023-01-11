@@ -18,6 +18,7 @@
 </div>
 
 <div class="row">
+	<div class="col-lg-12">
 	@if (isset($entities) && $entitiesCount > 0)
 	<div class="card surface my-2">
 
@@ -38,10 +39,13 @@
 		No matching entities found.
 	</div>
 	@endif
+
+</div>
 </div>
 
 <div class="row">
-	@if (isset($events) && $eventsCount > 0)
+	<div class="col-lg-12">
+	@if (isset($events) && count($events) > 0)
 		@if (isset($tags) && $tagsCount > 0)
 			<div class="card surface">
 				<h5 class="card-header bg-primary">Tags
@@ -70,6 +74,7 @@
 				</div>
 
 			</div>
+		</div>
 	@else
 		<div class="col-lg-12">
 			<div class="bs-component">
@@ -80,8 +85,8 @@
 	</div>
 
 <div class="row">
-	@if (isset($series) && $seriesCount > 0)
-	<div class="col-xl-6">
+	@if (isset($series) && count($series) > 0)
+	<div class="col-lg-12">
 		<div class="card surface">
 			<h5 class="card-header bg-primary">Series
 					<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Series that match this search term.">{{ $seriesCount}}</span></a>
@@ -89,13 +94,11 @@
 			</h5>
 			
 			<div class="card-body collapsible collapse show" id="search-series">
-			@include('series.list', ['series' => $series])
-			{!! $series->appends(['keyword' => $search])->render() !!}
+				@include('series.vertical-list', ['series' => $series])
 			</div>
 
 		</div>
 	</div>
-
 	@else
 	<div class="bs-component">
 		No matching series found.
@@ -103,7 +106,7 @@
 	@endif
 </div>
 
-		@if (isset($users) && $usersCount > 0)
+		@if (isset($users) && count($users) > 0)
 		<div class="card surface my-2">
 
 			<h5 class="card-header bg-primary">Users
@@ -118,17 +121,13 @@
 
 		</div>
 		@else
-
-				<div class="bs-component">
-
-					No matching users found.
-
-				</div>
-
+			<div class="bs-component">
+				No matching users found.
+			</div>
 		@endif
 
 
-		@if (isset($threads) && $threadsCount > 0)
+		@if (isset($threads) && count($threads) > 0)
 		<div class="card surface my-2">
 
 			<h5 class="card-header bg-primary">Threads
