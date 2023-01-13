@@ -43,6 +43,22 @@ components:
         type: integer
         readOnly: true
         example: 1
+    EntitySimple:
+        type: object
+        properties:
+            id:
+                $ref: "#/components/schemas/EntityId"
+                example: 1000
+            name:
+                type: string
+                maxLength: 255
+                description: The cannonical name of the enitity
+                example: Brillobox
+            slug:
+                type: string
+                maxLength: 255
+                description: A unique identifier name for the entity in kebab-case
+                example: brillobox-bar
     EntityRequest:
         type: object
         required:
@@ -139,13 +155,11 @@ components:
                 example: { id: 1, name: Active }
                 description: The entity status object that relates to an entity
             created_by:
-                $ref: "#/components/schemas/UserId"
-                example: 1
-                description: Relation to the user table that defines the user who created an entity
+                $ref: "#/components/schemas/UserSimple"
+                description: The related user who created the entity
             updated_by:
-                $ref: "#/components/schemas/UserId"
-                example: 1
-                description: Relation to the user table that defines the user who last updated an entity
+                $ref: "#/components/schemas/UserSimple"
+                description: The related user who updated the entity
             created_at:
                 $ref: "#/components/schemas/DateTime"
                 description: Date and time that the entity was created
@@ -171,15 +185,14 @@ components:
                 "$ref": "#/components/schemas/Link"
               }
     Entities:
+      allOf: [ $ref: '#/components/schemas/Pagination']
       type: object
-      allOf:     # Combines the BasicErrorModel and the inline model
-        - $ref: '#/components/schemas/Pagination'
-          properties:
-            data:
-              type: array
-              items: {
-                "$ref": "#/components/schemas/EntityResponse"
-              }
+      properties:
+        data:
+          type: array
+          description: List of the current page of entities
+          items: 
+            "$ref": "#/components/schemas/EntityResponse"
     EntityTypeId:
         description: The unique identifier of an entity type
         type: integer
@@ -202,7 +215,7 @@ components:
                 type: string
                 maxLength: 255
                 description: A unique identifier name for the entity type in kebab-case
-                example: octobers-lazercrunk-at-the-brillobox
+                example: group-slug
             short:
                 type: string
                 example: A multi-member entity
@@ -233,17 +246,7 @@ components:
                 type: string
                 maxLength: 255
                 description: A name of an entity status
-                example: Group
-            slug:
-                type: string
-                maxLength: 255
-                description: A unique identifier name for the entity status in kebab-case
-                example: octobers-lazercrunk-at-the-brillobox
-            short:
-                type: string
-                example: A multi-member entity
-                description: A brief description of the entitystatus
-                maxLength: 255
+                example: Active
             created_at:
                 $ref: "#/components/schemas/DateTime"
                 description: Date and time that the entity status was created
@@ -517,30 +520,22 @@ components:
                 $ref: "#/components/schemas/Visibility"
                 example: { id: 1, name: Public }
                 description: Relation to the visibility table that defines the visibility of events
-            visibility_id:
-                $ref: "#/components/schemas/VisibilityId"
-                example: 1
-                description: Relation to the visibility table that defines the visibility of events
             description:
                 type: string
                 description: Full description of the event
                 example: a really fun dj night featuring performers from around the world and locally playing new electronic music
                 maxLength: 65535
-            event_status_id:
-                $ref: "#/components/schemas/EventStatusId"
-                example: 1
-                description: Relation to the event type table that defines the status of the event
-            event_type_id:
-                $ref: "#/components/schemas/EventTypeId"
-                example: 1
-                description: Relation to the event type table that defines the type of event
-            promoter_id:
-                $ref: "#/components/schemas/EntityId"
-                example: 1
-                description: Relation to the entity table that defines the promoter of the event
-            venue_id:
-                $ref: "#/components/schemas/EntityId"
-                example: 1
+            event_status:
+                $ref: "#/components/schemas/EventStatus"
+                description: Relation to the event status table that defines the event type of event
+            event_type:
+                $ref: "#/components/schemas/EventType"
+                description: Relation to the event type table that defines the event type of event
+            promoter:
+                $ref: "#/components/schemas/EntityResponse"
+                description: Relation to the entity table that defines the promoter for the event
+            venue:
+                $ref: "#/components/schemas/EntityResponse"
                 description: Relation to the entity table that defines the venue for the event
             is_benefit:
                 type: boolean
@@ -574,9 +569,8 @@ components:
             end_at:
                 $ref: "#/components/schemas/DateTime"
                 description: Date and time that the event starts
-            series_id:
-                $ref: "#/components/schemas/SeriesId"
-                example: 1
+            series:
+                $ref: "#/components/schemas/SeriesResponse"
                 description: Relation to the series table that defines the series for the event
             min_age:
                 description: The minimum age requirement for the event in years
@@ -602,13 +596,11 @@ components:
                 $ref: "#/components/schemas/DateTime"
                 description: Date and time that the event was cancelled
             created_by:
-                $ref: "#/components/schemas/UserId"
-                example: 1
-                description: Relation to the user table that defines the user who created the event
+                $ref: "#/components/schemas/UserSimple"
+                description: The related user who created the entity
             updated_by:
-                $ref: "#/components/schemas/UserId"
-                example: 1
-                description: Relation to the user table that defines the user who last updated the event
+                $ref: "#/components/schemas/UserSimple"
+                description: The related user who updated the entity
     Events:
       allOf: [ $ref: '#/components/schemas/Pagination']
       type: object
@@ -701,7 +693,7 @@ components:
             - name
         properties:
             id:
-                $ref: "#/components/schemasLinkId"
+                $ref: "#/components/schemas/LinkId"
                 example: 1
             title:
                 type: string
@@ -744,6 +736,232 @@ components:
         description: The unique identifier of a location
         type: integer
         example: 1
+    Location:
+        type: object
+        required:
+            - name
+        properties:
+            id:
+                $ref: "#/components/schemas/LocationId"
+                example: 1
+            name:
+                type: string
+                maxLength: 255
+                description: The name of the location
+                example: Brillobox
+            slug:
+                type: string
+                maxLength: 255
+                description: A unique identifier name for the series in kebab-case
+                example: brillobox-bar
+            address_line_one:
+                type: string
+                maxLength: 255
+                description: First line of the address
+                example: 100 East Street
+            address_line_two:
+                type: string
+                maxLength: 255
+                description: Second line of the address
+                example: Suite 9000
+            neighborhood:
+                type: string
+                maxLength: 255
+                description: Neighborhood the location is in
+                example: Bloomfield
+            city:
+                type: string
+                maxLength: 255
+                description: City of the location
+                example: Pittsburgh
+            state:
+                type: string
+                maxLength: 5
+                description: State of the location
+                example: Pittsburgh
+            postal_code:
+                type: string
+                maxLength: 15
+                description: Postal code of the location
+                example: 15224
+            country:
+                type: string
+                maxLength: 64
+                description: Country of the location
+                example: USA
+            latitude:
+                type: number
+                description: Latitude of the location
+                example: 0.00000000
+            longitude:
+                type: number
+                description: longitude of the location
+                example: 0.00000000
+            visibility:
+                $ref: "#/components/schemas/Visibility"
+                example: { id: 1, name: Public }
+                description: Relation to the visibility table that defines the visibility of location 
+            map_url:
+                type: string
+                maxLength: 128
+                description: URL of the map location
+                example: USA
+            created_at:
+                $ref: "#/components/schemas/DateTime"
+                description: Date and time that the entity type was created
+                readOnly: true
+            updated_at:
+                $ref: "#/components/schemas/DateTime"
+                description: Date and time that the entity type was last updated
+                readOnly: true
+    Locations:
+      allOf:     # Combines the BasicErrorModel and the inline model
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items: {
+                "$ref": "#/components/schemas/Location"
+              }
+    OccurrenceDayId:
+        description: The unique identifier of an occurrence day
+        type: integer
+        readOnly: true
+        example: 1
+    OccurrenceDay:
+        type: object
+        required:
+            - name
+        properties:
+            id:
+                $ref: "#/components/schemas/OccurrenceDayId"
+                example: 1
+            name:
+                type: string
+                maxLength: 255
+                description: A name of an occurrence day
+                example: Group
+            slug:
+                type: string
+                maxLength: 255
+                description: A unique identifier name for the occurrence day in kebab-case
+                example: octobers-lazercrunk-at-the-brillobox
+            short:
+                type: string
+                example: A multi-member occurrence
+                description: A brief description of the occurrence day
+                maxLength: 255
+            created_at:
+                $ref: "#/components/schemas/DateTime"
+                description: Date and time that the occurrence day was created
+                readOnly: true
+            updated_at:
+                $ref: "#/components/schemas/DateTime"
+                description: Date and time that the occurrence day was last updated
+                readOnly: true
+    OccurrenceDays:
+      allOf:     # Combines the BasicErrorModel and the inline model
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items: {
+                "$ref": "#/components/schemas/OccurrenceDay"
+              }
+    OccurrenceTypeId:
+        description: The unique identifier of an occurrence type
+        type: integer
+        readOnly: true
+        example: 1
+    OccurrenceType:
+        type: object
+        required:
+            - name
+        properties:
+            id:
+                $ref: "#/components/schemas/OccurrenceTypeId"
+                example: 1
+            name:
+                type: string
+                maxLength: 255
+                description: A name of an occurrence type
+                example: Group
+            slug:
+                type: string
+                maxLength: 255
+                description: A unique identifier name for the occurrence type in kebab-case
+                example: octobers-lazercrunk-at-the-brillobox
+            short:
+                type: string
+                example: A multi-member occurrence
+                description: A brief description of the occurrence type
+                maxLength: 255
+            created_at:
+                $ref: "#/components/schemas/DateTime"
+                description: Date and time that the occurrence type was created
+                readOnly: true
+            updated_at:
+                $ref: "#/components/schemas/DateTime"
+                description: Date and time that the occurrence type was last updated
+                readOnly: true
+    OccurrenceTypes:
+      allOf:     # Combines the BasicErrorModel and the inline model
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items: {
+                "$ref": "#/components/schemas/OccurrenceType"
+              }
+    OccurrenceWeekId:
+        description: The unique identifier of an occurrence week
+        type: integer
+        readOnly: true
+        example: 1
+    OccurrenceWeek:
+        type: object
+        required:
+            - name
+        properties:
+            id:
+                $ref: "#/components/schemas/OccurrenceWeekId"
+                example: 1
+            name:
+                type: string
+                maxLength: 255
+                description: A name of an occurrence week
+                example: Group
+            slug:
+                type: string
+                maxLength: 255
+                description: A unique identifier name for the occurrence week in kebab-case
+                example: octobers-lazercrunk-at-the-brillobox
+            short:
+                type: string
+                example: A multi-member occurrence
+                description: A brief description of the occurrence week
+                maxLength: 255
+            created_at:
+                $ref: "#/components/schemas/DateTime"
+                description: Date and time that the occurrence week was created
+                readOnly: true
+            updated_at:
+                $ref: "#/components/schemas/DateTime"
+                description: Date and time that the occurrence week was last updated
+                readOnly: true
+    OccurrenceWeeks:
+      allOf:     # Combines the BasicErrorModel and the inline model
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items: {
+                "$ref": "#/components/schemas/OccurrenceWeek"
+              }
     Series:
         type: object
         required:
@@ -793,6 +1011,123 @@ components:
             occurrence_day_id:
                 $ref: "#/components/schemas/OccurrenceDayId"
                 example: 1
+                description: Relation to the occurrence day table that defines the occurrence day of the week
+            hold_date:
+                type: boolean
+                description: Flag indicating that there is a request to hold this date open
+                example: true
+            promoter_id:
+                $ref: "#/components/schemas/EntityId"
+                example: 1
+                description: Relation to the entity table that defines the promoter for the series
+            venue_id:
+                $ref: "#/components/schemas/EntityId"
+                example: 1
+                description: Relation to the entity table that defines the venue for the series
+            is_benefit:
+                type: boolean
+                description: Flag indicating if the series is a benefit
+                example: true
+            attending:
+                description: The number of users who marked that they are attending the series
+                type: integer
+                example: 10
+            like:
+                description: The number of users who marked that they like the series
+                type: integer
+                example: 10
+            presale_price:
+                description: The price for a presale price for the series
+                type: number
+                example: 9.99
+            door_price:
+                description: The price of the show at the door
+                type: number
+                example: 19.99
+            soundcheck_at:
+                $ref: "#/components/schemas/DateTime"
+                description: Date and time that the series soundcheck is scheduled
+            door_at:
+                $ref: "#/components/schemas/DateTime"
+                description: Date and time that the series doors are scheduled to open
+            start_at:
+                $ref: "#/components/schemas/DateTime"
+                description: Date and time that the series starts
+            end_at:
+                $ref: "#/components/schemas/DateTime"
+                description: Date and time that the series starts
+            min_age:
+                description: The minimum age requirement for the series in years
+                type: integer
+                example: 21
+            primary_link:
+                type: string
+                description: The primary URL related to this series
+                example: http://lazercrunk.com/october-2022
+                maxLength: 255
+            ticket_link:
+                type: string
+                description: The URL for buying a ticket to the series
+                example: http://lazercrunk.com/october-2022/tickets
+                maxLength: 255
+            created_at:
+                $ref: "#/components/schemas/DateTime"
+                description: Date and time that the series was created
+            updated_at:
+                $ref: "#/components/schemas/DateTime"
+                description: Date and time that the series was last updated
+            cancelled_at:
+                $ref: "#/components/schemas/DateTime"
+                description: Date and time that the series was cancelled
+            created_by:
+                $ref: "#/components/schemas/UserId"
+                example: 1
+                description: Relation to the user table that defines the user who created the series
+            updated_by:
+                $ref: "#/components/schemas/UserId"
+                example: 1
+                description: Relation to the user table that defines the user who last updated the series
+    SeriesResponse:
+        type: object
+        properties:
+            id:
+                $ref: "#/components/schemas/SeriesId"
+                example: 1000
+            name:
+                type: string
+                example: Lazercrunk, First Fridays of the Month
+                description: The cannonical name of the series
+                maxLength: 255
+            slug:
+                type: string
+                maxLength: 255
+                description: A unique identifier name for the series in kebab-case
+                example: lazercrunk-first-fridays-of-the-month
+            short:
+                type: string
+                example: a really fun monthly dj night featuring performers from around the world
+                description: A brief description of the series
+                maxLength: 255
+            visibility:
+                $ref: "#/components/schemas/Visibility"
+                example: { id: 1, name: Public }
+                description: Relation to the visibility table that defines the visibility of series
+            description:
+                type: string
+                description: Full description of the series
+                example: a really fun monthly dj night featuring performers from around the world and locally playing new electronic music
+                maxLength: 65535
+            event_type:
+                $ref: "#/components/schemas/EventType"
+                description: Relation to the event type table that defines the event type of series
+            occurrence_type:
+                $ref: "#/components/schemas/OccurrenceType"
+                description: Relation to the occurrence type table that defines the type of occurrence
+            occurrence_week:
+                $ref: "#/components/schemas/OccurrenceWeek"
+                description: Relation to the occurrence week table that defines the occurrence week of the month
+            occurrence_day:
+                $ref: "#/components/schemas/OccurrenceDay"
                 description: Relation to the occurrence day table that defines the occurrence day of the week
             hold_date:
                 type: boolean
@@ -862,28 +1197,25 @@ components:
                 $ref: "#/components/schemas/DateTime"
                 description: Date and time that the series was cancelled
             created_by:
-                $ref: "#/components/schemas/UserId"
-                example: 1
-                description: Relation to the user table that defines the user who created the series
+                $ref: "#/components/schemas/UserSimple"
+                description: The related user who created the series
             updated_by:
-                $ref: "#/components/schemas/UserId"
-                example: 1
-                description: Relation to the user table that defines the user who last updated the series
+                $ref: "#/components/schemas/UserSimple"
+                description: The related user who updated the entity
     SeriesId:
         description: The unique identifier of a series
         type: integer
         readOnly: true
         example: 1
     Seriess:
-      allOf:     # Combines the BasicErrorModel and the inline model
-        - $ref: '#/components/schemas/Pagination'
-        - type: object
-          properties:
-            data:
-              type: array
-              items: {
-                "$ref": "#/components/schemas/Series"
-              }
+      allOf: [ $ref: '#/components/schemas/Pagination']
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of the current page of series
+          items: 
+            "$ref": "#/components/schemas/SeriesResponse"
     Tag:
         type: object
         required:
@@ -903,7 +1235,7 @@ components:
                 maxLength: 255
                 description: A unique identifier name for the tag in kebab-case
                 example: post-punk
-            tag_stype_id:
+            tag_type_id:
                 $ref: "#/components/schemas/TagTypeId"
                 example: 1
                 description: Relation to the tag type table that defines the type of tag
@@ -972,6 +1304,64 @@ components:
         readOnly: true
         example: 1
     User:
+        type: object
+        properties:
+            id:
+                $ref: "#/components/schemas/UserId"
+                example: 1000
+            name:
+                type: string
+                description: Name of the user
+                example: john.smith
+                maxLength: 255
+            password:
+                type: string
+                description: Encrypted password of the user
+                example: abcdefg
+                maxLength: 60
+            email:
+                type: string
+                description: Email address of the user
+                example: john.smith@gmail.com
+                maxLength: 255
+            user_status_id:
+                $ref: "#/components/schemas/UserStatusId"
+                example: 1
+                description: Relation to the user status table that defines the status of the user
+            remember_token:
+                type: string
+                description: Token used to remember the user's logged in status
+                example: ABCDEFGHI
+                maxLength: 100
+            email_verified_at:
+                $ref: "#/components/schemas/DateTime"
+                description: Date and time that the user's email was verified
+                readOnly: true
+            created_at:
+                $ref: "#/components/schemas/DateTime"
+                description: Date and time that the user was created
+                readOnly: true
+            updated_at:
+                $ref: "#/components/schemas/DateTime"
+                description: Date and time that the user was last updated
+                readOnly: true
+    UserSimple:
+        type: object
+        properties:
+            id:
+                $ref: "#/components/schemas/UserId"
+                example: 1000
+            name:
+                type: string
+                description: Name of the user
+                example: john.smith
+                maxLength: 255
+            email:
+                type: string
+                description: Email address of the user
+                example: john.smith@gmail.com
+                maxLength: 255
+    UserResponse:
         type: object
         properties:
             id:
@@ -1165,6 +1555,7 @@ security:
 tags:
   - name: events
   - name: entities
+  - name: links
   - name: series
   - name: users
   - name: tags
@@ -1513,17 +1904,66 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /api/entity-statuses/{entityStatusId}:
+    parameters:
+        - name: entityStatusId
+          description: The unique identifier of the entity status
+          in: path
+          required: true
+          schema:
+              $ref: "#/components/schemas/EntityStatusId"
+    get:
+      tags:
+        - entity-statuses
+      summary: Get EntityStatus
+      operationId: getEntityStatus
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/EntityStatus"
+    put:
+      tags:
+        - entity-statuses
+      summary: Update Entity Status
+      operationId: updateEntityStatus
+      requestBody:
+        content:
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/EntityStatus"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/EntityStatus"
+    delete:
+      tags:
+        - entity-statuses
+      summary: Delete Entity Status
+      operationId: deleteEntityStatus
+      responses:
+        '204':
+          description: Successful response
+          content:
+            application/json: {}
   /api/entity-types:
    get:
       tags:
         - entity-types
       summary: Get Entity Types
       parameters:
-        - name: name
+        - name: filters[name]
           in: query
+          required: false
+          description: A filter query of the entity status name 
           schema:
             type: string
-          example: Group
+          example: 'Group'
       responses:
         '200':
           description: Successful response
@@ -1539,7 +1979,7 @@ paths:
         content:
             application/json:
                 schema:
-                    $ref: "#/components/schemas/EntityTypeRequest"
+                    $ref: "#/components/schemas/EntityType"
       responses:
         '201':
           description: Successful response
@@ -1589,11 +2029,93 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /api/links:
+   get:
+      tags:
+        - links
+      summary: Get Links
+      operationId: getAllLinks
+      parameters:
+        - name: title
+          in: query
+          schema:
+            type: string
+          example: Google
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/Links"
+   post:
+      tags:
+        - links
+      summary: Create link
+      operationId: createLink
+      requestBody:
+        content:
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/Link"
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/links/{linkId}:
+    parameters:
+        - name: linkId
+          description: The unique identifier of the link
+          in: path
+          required: true
+          schema:
+              $ref: "#/components/schemas/LinkId"
+    get:
+      tags:
+        - links
+      summary: Get Link
+      operationId: getLinkById
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/Link"
+    put:
+      tags:
+        - links
+      summary: Update link
+      operationId: updateLinkById
+      requestBody:
+        content:
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/Link"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/Link"
+    delete:
+      tags:
+        - links
+      summary: Delete Link
+      operationId: deleteLinkById
+      responses:
+        '204':
+          description: Successful response
+          content:
+            application/json: {}
   /api/series:
     post:
       tags:
         - series
       summary: Create Series
+      operationId: createSeries
       requestBody:
         content:
             application/json:
@@ -1603,22 +2125,120 @@ paths:
         '201':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/Series"
     get:
       tags:
         - series
-      summary: Get Series by Event Type Id
+      summary: Get Series by filters
+      operationId: getAllSeries
       parameters:
-        - name: event_type_id
+        - name: filters[name]
           in: query
+          required: false
+          description: A filter query of series name
+          schema:
+            type: string
+          example: 'Lazercrunk'
+        - name: filters[event_type]
+          in: query
+          required: false
+          description: A filter query of related event type name
+          schema:
+            type: string
+          example: 'Concert'
+        - name: filters[venue]
+          in: query
+          required: false
+          description: A filter query of the venue name
+          schema:
+            type: string
+          example: 'Brillobox'
+        - name: filters[promoter]
+          in: query
+          required: false
+          description: A filter query of the promoter name
+          schema:
+            type: string
+          example: 'Cutups'
+        - name: filters[related]
+          in: query
+          required: false
+          description: A filter query of related entity name
+          schema:
+            type: string
+          example: '0h85'
+        - name: filters[occurrence_type]
+          in: query
+          required: false
+          description: A filter query of related occurrence type name
+          schema:
+            type: string
+          example: 'Monthly'
+        - name: filters[occurrence_week]
+          in: query
+          required: false
+          description: A filter query of related occurrence week name
+          schema:
+            type: string
+          example: 'First'
+        - name: filters[occurrence_day]
+          in: query
+          required: false
+          description: A filter query of related occurrence day name
+          schema:
+            type: string
+          example: 'Friday'
+        - name: filters[start_at][start]
+          in: query
+          required: false
+          description: A filter query of the start time starting
+          schema:
+            type: string
+          example: '2022-01-01 1:00:00'
+        - name: filters[start_at][end]
+          in: query
+          required: false
+          description: A filter query of the start time ending
+          schema:
+            type: string
+          example: '2022-02-01 2:00:00'
+        - name: filters[end_at][start]
+          in: query
+          required: false
+          description: A filter query of the end time starting
+          schema:
+            type: string
+          example: '2022-02-01 1:00:00'
+        - name: filters[end_at][end]
+          in: query
+          required: false
+          description: A filter query of the end time ending
+          schema:
+            type: string
+          example: '2022-01-01 2:00:00'
+        - name: filters[ages]
+          in: query
+          required: false
+          description: A filter query of the end time ending
           schema:
             type: integer
-          example: '1'
+          example: 21
+        - name: orderBy
+          in: query
+          required: false
+          description: A order by clause to be applied to the select
+          schema:
+              type: string
+              example: title desc
       responses:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/Seriess"
   /api/series/{seriesId}:
     parameters:
         - name: seriesId
@@ -1631,17 +2251,19 @@ paths:
       tags:
         - series
       summary: Get one Series
+      operationId: getSeriesById
       responses:
         '200':
           description: Successful response
           content:
             application/json:
                 schema:
-                    $ref: "#/components/schemas/Series"
+                    $ref: "#/components/schemas/SeriesResponse"
     put:
       tags:
         - series
       summary: Update Series
+      operationId: updateSeriesById
       requestBody:
         content:
             application/json:
@@ -1651,11 +2273,14 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/SeriesResponse"
     delete:
       tags:
         - series
       summary: Delete Series
+      operationId: deleteSeriesById
       responses:
         '204':
           description: Successful response
@@ -1666,6 +2291,7 @@ paths:
       tags:
         - tags
       summary: Create Tag
+      operationId: createTag
       requestBody:
         content:
             application/json:
@@ -1675,13 +2301,16 @@ paths:
         '201':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/Tag"
     get:
       tags:
         - tags
       summary: Get Tags
+      operationId: getAllTags
       parameters:
-        - name: name
+        - name: filters[name]
           in: query
           schema:
             type: string
@@ -1703,6 +2332,7 @@ paths:
       tags:
         - tags
       summary: Get one Tag
+      operationId: getTagById
       responses:
         '200':
           description: Successful response
@@ -1714,6 +2344,7 @@ paths:
       tags:
         - tags
       summary: Update Tag
+      operationId: updateTagById
       requestBody:
         content:
             application/json:
@@ -1728,6 +2359,7 @@ paths:
       tags:
         - tags
       summary: Delete Tag
+      operationId: deleteTagById
       responses:
         '204':
           description: Successful response
@@ -1738,6 +2370,7 @@ paths:
       tags:
         - users
       summary: Create User
+      operationId: createUser
       requestBody:
         content:
             application/json:
@@ -1749,11 +2382,12 @@ paths:
           content:
               application/json:
                   schema:
-                      $ref: "#/components/schemas/User"
+                      $ref: "#/components/schemas/UserResponse"
     get:
       tags:
         - users
       summary: Get Users
+      operationId: getAllUsers
       parameters:
         - name: filters[status]
           in: query
@@ -1780,7 +2414,9 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/Users"
   /api/users/{userId}:
     parameters:
         - name: userId
@@ -1793,33 +2429,36 @@ paths:
       tags:
         - users
       summary: Get one User
+      operationId: getUserById
       responses:
         '200':
           description: Successful response
           content:
-            application/json: {}
+              application/json:
+                  schema:
+                      $ref: "#/components/schemas/UserResponse"
     put:
       tags:
         - users
       summary: Update User
+      operationId: updateUserById
       requestBody:
         content:
-          application/json:
-            schema:
-              type: object
-              example:
-                customer_id: 48
-                billing_system_id: 5
-                account_code: '987654'
+            application/json:
+                schema:
+                    $ref: "#/components/schemas/User"
       responses:
         '200':
           description: Successful response
           content:
-            application/json: {}
+              application/json:
+                  schema:
+                      $ref: "#/components/schemas/UserResponse"
     delete:
       tags:
         - users
       summary: Delete User
+      operationId: deleteUserById
       responses:
         '204':
           description: Successful response

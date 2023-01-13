@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "3175b5b1-f608-4f44-ab3a-abe411e27466",
+		"_postman_id": "d7849208-e3bd-41ce-8a14-6acbdeb85309",
 		"name": "Arcane City",
 		"description": "REST API for working with Arcane City data\n\nContact Support:\n Name: Geoff Maddock\n Email: geoff.maddock@gmail.com",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_uid": "21955993-3175b5b1-f608-4f44-ab3a-abe411e27466"
+		"_uid": "21955993-d7849208-e3bd-41ce-8a14-6acbdeb85309"
 	},
 	"item": [
 		{
@@ -18,7 +18,7 @@
 							"item": [
 								{
 									"name": "Get Event",
-									"id": "38b72d5c-1ea7-4d52-8d0c-feeea99567c2",
+									"id": "ed41bb29-3b38-49e2-a8d6-5326b692564d",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -51,7 +51,7 @@
 									},
 									"response": [
 										{
-											"id": "41e6bb4a-7c34-4c16-b0c3-5af691ba4fc6",
+											"id": "1b281807-6004-4762-afa1-bcf72697fd65",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "GET",
@@ -91,13 +91,13 @@
 												}
 											],
 											"cookie": [],
-											"body": "{\n  \"id\": 1,\n  \"name\": \"October's Lazercrunk at the Brillobox\",\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"a really fun dj night featuring performers from around the world\",\n  \"visibility\": {\n    \"name\": \"Public\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"visibility_id\": 1,\n  \"description\": \"a really fun dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_status_id\": 1,\n  \"event_type_id\": 1,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"series_id\": 1,\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": 1,\n  \"updated_by\": 1\n}"
+											"body": "{\n  \"id\": 1,\n  \"name\": \"October's Lazercrunk at the Brillobox\",\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"a really fun dj night featuring performers from around the world\",\n  \"visibility\": {\n    \"name\": \"Public\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"description\": \"a really fun dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_status\": {\n    \"name\": \"Active\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"event_type\": {\n    \"name\": \"Concert\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"promoter\": {\n    \"id\": 1,\n    \"name\": \"Brillobox\",\n    \"slug\": \"brillobox-bar\",\n    \"short\": \"A two level bar and venue\",\n    \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n    \"entity_type\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"group-slug\",\n      \"short\": \"A multi-member entity\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"entity_status\": {\n      \"name\": \"Active\",\n      \"id\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"created_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"updated_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\",\n    \"started_at\": \"2018-03-20T09:12:28Z\",\n    \"facebook_username\": \"johnsmith\",\n    \"twitter_username\": \"johnsmith\",\n    \"links\": [\n      {\n        \"id\": 1,\n        \"title\": \"This is the lazercrunk website.\",\n        \"text\": \"Lazercrunk Website\",\n        \"url\": \"https://lazercrunk.com\",\n        \"is_primary\": true,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      },\n      {\n        \"id\": 1,\n        \"title\": \"This is the lazercrunk website.\",\n        \"text\": \"Lazercrunk Website\",\n        \"url\": \"https://lazercrunk.com\",\n        \"is_primary\": true,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      }\n    ]\n  },\n  \"venue\": {\n    \"id\": 1,\n    \"name\": \"Brillobox\",\n    \"slug\": \"brillobox-bar\",\n    \"short\": \"A two level bar and venue\",\n    \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n    \"entity_type\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"group-slug\",\n      \"short\": \"A multi-member entity\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"entity_status\": {\n      \"name\": \"Active\",\n      \"id\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"created_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"updated_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\",\n    \"started_at\": \"2018-03-20T09:12:28Z\",\n    \"facebook_username\": \"johnsmith\",\n    \"twitter_username\": \"johnsmith\",\n    \"links\": [\n      {\n        \"id\": 1,\n        \"title\": \"This is the lazercrunk website.\",\n        \"text\": \"Lazercrunk Website\",\n        \"url\": \"https://lazercrunk.com\",\n        \"is_primary\": true,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      },\n      {\n        \"id\": 1,\n        \"title\": \"This is the lazercrunk website.\",\n        \"text\": \"Lazercrunk Website\",\n        \"url\": \"https://lazercrunk.com\",\n        \"is_primary\": true,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      }\n    ]\n  },\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"series\": {\n    \"id\": 1,\n    \"name\": \"Lazercrunk, First Fridays of the Month\",\n    \"slug\": \"lazercrunk-first-fridays-of-the-month\",\n    \"short\": \"a really fun monthly dj night featuring performers from around the world\",\n    \"visibility\": {\n      \"name\": \"Public\",\n      \"id\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"description\": \"a really fun monthly dj night featuring performers from around the world and locally playing new electronic music\",\n    \"event_type\": {\n      \"name\": \"Concert\",\n      \"id\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"occurrence_type\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n      \"short\": \"A multi-member occurrence\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"occurrence_week\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n      \"short\": \"A multi-member occurrence\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"occurrence_day\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n      \"short\": \"A multi-member occurrence\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"hold_date\": true,\n    \"promoter_id\": 1,\n    \"venue_id\": 1,\n    \"is_benefit\": true,\n    \"attending\": 10,\n    \"like\": 10,\n    \"presale_price\": 9.99,\n    \"door_price\": 19.99,\n    \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n    \"door_at\": \"2018-03-20T09:12:28Z\",\n    \"start_at\": \"2018-03-20T09:12:28Z\",\n    \"end_at\": \"2018-03-20T09:12:28Z\",\n    \"min_age\": 21,\n    \"primary_link\": \"http://lazercrunk.com/october-2022\",\n    \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\",\n    \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n    \"created_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"updated_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    }\n  },\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": {\n    \"id\": 1,\n    \"name\": \"john.smith\",\n    \"email\": \"john.smith@gmail.com\"\n  },\n  \"updated_by\": {\n    \"id\": 1,\n    \"name\": \"john.smith\",\n    \"email\": \"john.smith@gmail.com\"\n  }\n}"
 										}
 									]
 								},
 								{
 									"name": "Update Events",
-									"id": "9f7859d1-11f1-4d73-a355-f5859e3e8d66",
+									"id": "5b79a383-6a96-4570-b2e0-5a0f02e8948d",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -143,7 +143,7 @@
 									},
 									"response": [
 										{
-											"id": "93c68718-5ddb-4ce5-a446-82dec217e394",
+											"id": "03066e3e-01f3-4c3b-9510-e85e850f52d0",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "PUT",
@@ -192,13 +192,13 @@
 												}
 											],
 											"cookie": [],
-											"body": "{\n  \"id\": 1,\n  \"name\": \"October's Lazercrunk at the Brillobox\",\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"a really fun dj night featuring performers from around the world\",\n  \"visibility\": {\n    \"name\": \"Public\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"visibility_id\": 1,\n  \"description\": \"a really fun dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_status_id\": 1,\n  \"event_type_id\": 1,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"series_id\": 1,\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": 1,\n  \"updated_by\": 1\n}"
+											"body": "{\n  \"id\": 1,\n  \"name\": \"October's Lazercrunk at the Brillobox\",\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"a really fun dj night featuring performers from around the world\",\n  \"visibility\": {\n    \"name\": \"Public\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"description\": \"a really fun dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_status\": {\n    \"name\": \"Active\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"event_type\": {\n    \"name\": \"Concert\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"promoter\": {\n    \"id\": 1,\n    \"name\": \"Brillobox\",\n    \"slug\": \"brillobox-bar\",\n    \"short\": \"A two level bar and venue\",\n    \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n    \"entity_type\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"group-slug\",\n      \"short\": \"A multi-member entity\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"entity_status\": {\n      \"name\": \"Active\",\n      \"id\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"created_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"updated_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\",\n    \"started_at\": \"2018-03-20T09:12:28Z\",\n    \"facebook_username\": \"johnsmith\",\n    \"twitter_username\": \"johnsmith\",\n    \"links\": [\n      {\n        \"id\": 1,\n        \"title\": \"This is the lazercrunk website.\",\n        \"text\": \"Lazercrunk Website\",\n        \"url\": \"https://lazercrunk.com\",\n        \"is_primary\": true,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      },\n      {\n        \"id\": 1,\n        \"title\": \"This is the lazercrunk website.\",\n        \"text\": \"Lazercrunk Website\",\n        \"url\": \"https://lazercrunk.com\",\n        \"is_primary\": true,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      }\n    ]\n  },\n  \"venue\": {\n    \"id\": 1,\n    \"name\": \"Brillobox\",\n    \"slug\": \"brillobox-bar\",\n    \"short\": \"A two level bar and venue\",\n    \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n    \"entity_type\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"group-slug\",\n      \"short\": \"A multi-member entity\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"entity_status\": {\n      \"name\": \"Active\",\n      \"id\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"created_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"updated_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\",\n    \"started_at\": \"2018-03-20T09:12:28Z\",\n    \"facebook_username\": \"johnsmith\",\n    \"twitter_username\": \"johnsmith\",\n    \"links\": [\n      {\n        \"id\": 1,\n        \"title\": \"This is the lazercrunk website.\",\n        \"text\": \"Lazercrunk Website\",\n        \"url\": \"https://lazercrunk.com\",\n        \"is_primary\": true,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      },\n      {\n        \"id\": 1,\n        \"title\": \"This is the lazercrunk website.\",\n        \"text\": \"Lazercrunk Website\",\n        \"url\": \"https://lazercrunk.com\",\n        \"is_primary\": true,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      }\n    ]\n  },\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"series\": {\n    \"id\": 1,\n    \"name\": \"Lazercrunk, First Fridays of the Month\",\n    \"slug\": \"lazercrunk-first-fridays-of-the-month\",\n    \"short\": \"a really fun monthly dj night featuring performers from around the world\",\n    \"visibility\": {\n      \"name\": \"Public\",\n      \"id\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"description\": \"a really fun monthly dj night featuring performers from around the world and locally playing new electronic music\",\n    \"event_type\": {\n      \"name\": \"Concert\",\n      \"id\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"occurrence_type\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n      \"short\": \"A multi-member occurrence\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"occurrence_week\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n      \"short\": \"A multi-member occurrence\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"occurrence_day\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n      \"short\": \"A multi-member occurrence\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"hold_date\": true,\n    \"promoter_id\": 1,\n    \"venue_id\": 1,\n    \"is_benefit\": true,\n    \"attending\": 10,\n    \"like\": 10,\n    \"presale_price\": 9.99,\n    \"door_price\": 19.99,\n    \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n    \"door_at\": \"2018-03-20T09:12:28Z\",\n    \"start_at\": \"2018-03-20T09:12:28Z\",\n    \"end_at\": \"2018-03-20T09:12:28Z\",\n    \"min_age\": 21,\n    \"primary_link\": \"http://lazercrunk.com/october-2022\",\n    \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\",\n    \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n    \"created_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"updated_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    }\n  },\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": {\n    \"id\": 1,\n    \"name\": \"john.smith\",\n    \"email\": \"john.smith@gmail.com\"\n  },\n  \"updated_by\": {\n    \"id\": 1,\n    \"name\": \"john.smith\",\n    \"email\": \"john.smith@gmail.com\"\n  }\n}"
 										}
 									]
 								},
 								{
 									"name": "Delete Event",
-									"id": "10c525cb-679e-4259-b0a6-6de07836ac50",
+									"id": "96f1be97-e015-411a-bdc0-c25d859ccb5d",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -231,7 +231,7 @@
 									},
 									"response": [
 										{
-											"id": "57ae134f-24e6-46a3-b705-def06bcf8ea9",
+											"id": "4922c315-cff5-458d-94dc-ffe16458eb70",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "DELETE",
@@ -276,11 +276,11 @@
 									]
 								}
 							],
-							"id": "e339e558-b2e0-430d-877d-4819efdbb4d1"
+							"id": "a82bc823-97ad-4737-b57d-545e9d7e6fc7"
 						},
 						{
 							"name": "Create Event",
-							"id": "512c7d2a-a0cb-4f01-9888-4cd770496ed6",
+							"id": "7975c8ca-f9a5-41b8-935e-5340b66ebd14",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -318,7 +318,7 @@
 							},
 							"response": [
 								{
-									"id": "f85c5ecb-0703-4663-8f9b-30d1c0d10872",
+									"id": "0d27973a-64cd-4cfd-ad8e-a7037f3d318d",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "POST",
@@ -359,10 +359,10 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n  \"id\": 1,\n  \"name\": \"October's Lazercrunk at the Brillobox\",\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"a really fun dj night featuring performers from around the world\",\n  \"visibility\": {\n    \"name\": \"Public\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"visibility_id\": 1,\n  \"description\": \"a really fun dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_status_id\": 1,\n  \"event_type_id\": 1,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"series_id\": 1,\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": 1,\n  \"updated_by\": 1\n}"
+									"body": "{\n  \"id\": 1,\n  \"name\": \"October's Lazercrunk at the Brillobox\",\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"a really fun dj night featuring performers from around the world\",\n  \"visibility\": {\n    \"name\": \"Public\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"description\": \"a really fun dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_status\": {\n    \"name\": \"Active\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"event_type\": {\n    \"name\": \"Concert\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"promoter\": {\n    \"id\": 1,\n    \"name\": \"Brillobox\",\n    \"slug\": \"brillobox-bar\",\n    \"short\": \"A two level bar and venue\",\n    \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n    \"entity_type\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"group-slug\",\n      \"short\": \"A multi-member entity\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"entity_status\": {\n      \"name\": \"Active\",\n      \"id\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"created_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"updated_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\",\n    \"started_at\": \"2018-03-20T09:12:28Z\",\n    \"facebook_username\": \"johnsmith\",\n    \"twitter_username\": \"johnsmith\",\n    \"links\": [\n      {\n        \"id\": 1,\n        \"title\": \"This is the lazercrunk website.\",\n        \"text\": \"Lazercrunk Website\",\n        \"url\": \"https://lazercrunk.com\",\n        \"is_primary\": true,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      },\n      {\n        \"id\": 1,\n        \"title\": \"This is the lazercrunk website.\",\n        \"text\": \"Lazercrunk Website\",\n        \"url\": \"https://lazercrunk.com\",\n        \"is_primary\": true,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      }\n    ]\n  },\n  \"venue\": {\n    \"id\": 1,\n    \"name\": \"Brillobox\",\n    \"slug\": \"brillobox-bar\",\n    \"short\": \"A two level bar and venue\",\n    \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n    \"entity_type\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"group-slug\",\n      \"short\": \"A multi-member entity\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"entity_status\": {\n      \"name\": \"Active\",\n      \"id\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"created_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"updated_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\",\n    \"started_at\": \"2018-03-20T09:12:28Z\",\n    \"facebook_username\": \"johnsmith\",\n    \"twitter_username\": \"johnsmith\",\n    \"links\": [\n      {\n        \"id\": 1,\n        \"title\": \"This is the lazercrunk website.\",\n        \"text\": \"Lazercrunk Website\",\n        \"url\": \"https://lazercrunk.com\",\n        \"is_primary\": true,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      },\n      {\n        \"id\": 1,\n        \"title\": \"This is the lazercrunk website.\",\n        \"text\": \"Lazercrunk Website\",\n        \"url\": \"https://lazercrunk.com\",\n        \"is_primary\": true,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      }\n    ]\n  },\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"series\": {\n    \"id\": 1,\n    \"name\": \"Lazercrunk, First Fridays of the Month\",\n    \"slug\": \"lazercrunk-first-fridays-of-the-month\",\n    \"short\": \"a really fun monthly dj night featuring performers from around the world\",\n    \"visibility\": {\n      \"name\": \"Public\",\n      \"id\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"description\": \"a really fun monthly dj night featuring performers from around the world and locally playing new electronic music\",\n    \"event_type\": {\n      \"name\": \"Concert\",\n      \"id\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"occurrence_type\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n      \"short\": \"A multi-member occurrence\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"occurrence_week\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n      \"short\": \"A multi-member occurrence\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"occurrence_day\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n      \"short\": \"A multi-member occurrence\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"hold_date\": true,\n    \"promoter_id\": 1,\n    \"venue_id\": 1,\n    \"is_benefit\": true,\n    \"attending\": 10,\n    \"like\": 10,\n    \"presale_price\": 9.99,\n    \"door_price\": 19.99,\n    \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n    \"door_at\": \"2018-03-20T09:12:28Z\",\n    \"start_at\": \"2018-03-20T09:12:28Z\",\n    \"end_at\": \"2018-03-20T09:12:28Z\",\n    \"min_age\": 21,\n    \"primary_link\": \"http://lazercrunk.com/october-2022\",\n    \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\",\n    \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n    \"created_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"updated_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    }\n  },\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": {\n    \"id\": 1,\n    \"name\": \"john.smith\",\n    \"email\": \"john.smith@gmail.com\"\n  },\n  \"updated_by\": {\n    \"id\": 1,\n    \"name\": \"john.smith\",\n    \"email\": \"john.smith@gmail.com\"\n  }\n}"
 								},
 								{
-									"id": "588872e7-871b-4825-af3b-b4d0586b64ab",
+									"id": "0daaee9a-05b6-4e7d-bd99-7d29e7e0a94d",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "POST",
@@ -406,7 +406,7 @@
 									"body": "{\n  \"id\": 1,\n  \"name\": \"October's Lazercrunk at the Brillobox\",\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"a really fun dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_status_id\": 1,\n  \"event_type_id\": 1,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"series_id\": 1,\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": 1,\n  \"updated_by\": 1\n}"
 								},
 								{
-									"id": "e187327a-de11-47f8-8a9e-fd946c7f1bd9",
+									"id": "8717e759-611e-485c-9781-6b03ccb63037",
 									"name": "Unexpected error",
 									"originalRequest": {
 										"method": "POST",
@@ -447,13 +447,13 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n  \"message\": \"eu velit incididunt\"\n}"
+									"body": "{\n  \"message\": \"cillum labore\"\n}"
 								}
 							]
 						},
 						{
 							"name": "Get Events",
-							"id": "605cf44f-718f-4c6d-b15b-2a35b4efdefe",
+							"id": "1096c54c-61de-49da-9f0e-10becbb45750",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -540,7 +540,7 @@
 							},
 							"response": [
 								{
-									"id": "14c14b41-7db0-4ed7-ba2e-0c12fe564410",
+									"id": "45091030-538a-4d3e-a387-d5101edf2f96",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "GET",
@@ -622,13 +622,13 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n  \"current_page\": 89330361,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100,\n  \"data\": [\n    {\n      \"id\": 1,\n      \"name\": \"October's Lazercrunk at the Brillobox\",\n      \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n      \"short\": \"a really fun dj night featuring performers from around the world\",\n      \"visibility\": {\n        \"name\": \"Public\",\n        \"id\": 1,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      },\n      \"visibility_id\": 1,\n      \"description\": \"a really fun dj night featuring performers from around the world and locally playing new electronic music\",\n      \"event_status_id\": 1,\n      \"event_type_id\": 1,\n      \"promoter_id\": 1,\n      \"venue_id\": 1,\n      \"is_benefit\": true,\n      \"attending\": 10,\n      \"like\": 10,\n      \"presale_price\": 9.99,\n      \"door_price\": 19.99,\n      \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n      \"door_at\": \"2018-03-20T09:12:28Z\",\n      \"start_at\": \"2018-03-20T09:12:28Z\",\n      \"end_at\": \"2018-03-20T09:12:28Z\",\n      \"series_id\": 1,\n      \"min_age\": 21,\n      \"primary_link\": \"http://lazercrunk.com/october-2022\",\n      \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\",\n      \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n      \"created_by\": 1,\n      \"updated_by\": 1\n    },\n    {\n      \"id\": 1,\n      \"name\": \"October's Lazercrunk at the Brillobox\",\n      \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n      \"short\": \"a really fun dj night featuring performers from around the world\",\n      \"visibility\": {\n        \"name\": \"Public\",\n        \"id\": 1,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      },\n      \"visibility_id\": 1,\n      \"description\": \"a really fun dj night featuring performers from around the world and locally playing new electronic music\",\n      \"event_status_id\": 1,\n      \"event_type_id\": 1,\n      \"promoter_id\": 1,\n      \"venue_id\": 1,\n      \"is_benefit\": true,\n      \"attending\": 10,\n      \"like\": 10,\n      \"presale_price\": 9.99,\n      \"door_price\": 19.99,\n      \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n      \"door_at\": \"2018-03-20T09:12:28Z\",\n      \"start_at\": \"2018-03-20T09:12:28Z\",\n      \"end_at\": \"2018-03-20T09:12:28Z\",\n      \"series_id\": 1,\n      \"min_age\": 21,\n      \"primary_link\": \"http://lazercrunk.com/october-2022\",\n      \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\",\n      \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n      \"created_by\": 1,\n      \"updated_by\": 1\n    }\n  ]\n}"
+									"body": "{\n  \"current_page\": 32756096,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
 								}
 							]
 						},
 						{
 							"name": "Reset event filters",
-							"id": "90370eee-f85b-4c66-a13a-6fa66d35cb0a",
+							"id": "89fb8832-5702-496d-9dea-b788194c83a8",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -654,7 +654,7 @@
 							},
 							"response": [
 								{
-									"id": "5ebf87e7-6f76-4756-a5f1-af17cb442095",
+									"id": "3641c108-f8ad-4a8c-93db-1e1b4cbcacfd",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "GET",
@@ -692,7 +692,7 @@
 							]
 						}
 					],
-					"id": "7fd02b58-0672-4776-b913-c5fd8bf085cb"
+					"id": "adf55519-eeff-4d4c-bd09-1f5556136a89"
 				},
 				{
 					"name": "entities",
@@ -702,7 +702,7 @@
 							"item": [
 								{
 									"name": "Get Entity",
-									"id": "52e7dbf4-3766-4c31-8906-7d11efeefc72",
+									"id": "a31dfb53-d927-49d9-b3ee-324adbed5df0",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -735,7 +735,7 @@
 									},
 									"response": [
 										{
-											"id": "e3c13062-0c9b-45fb-b954-817634f391e2",
+											"id": "750a4d90-2495-4eef-8bee-e8aa8156edad",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "GET",
@@ -781,7 +781,7 @@
 								},
 								{
 									"name": "Update Entity",
-									"id": "db332b72-0ec0-4a73-94eb-5671b5882dc6",
+									"id": "1ecbfee7-b681-40a3-841c-09bbac10aa84",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -827,7 +827,7 @@
 									},
 									"response": [
 										{
-											"id": "159fd265-cf10-42bf-9bbb-d54153da681d",
+											"id": "8b149b4d-79f4-4639-9100-182a86dea4f1",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "PUT",
@@ -882,7 +882,7 @@
 								},
 								{
 									"name": "Delete Entity",
-									"id": "2747503f-0ec5-4125-8a91-4f2957052d1d",
+									"id": "711254bd-cef0-4a84-8ded-0cf379fae018",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -915,7 +915,7 @@
 									},
 									"response": [
 										{
-											"id": "5208087c-bfd9-4e61-bc70-8469230d91b6",
+											"id": "7ce5fbb2-efa8-4d20-bf4b-eba92ae2fe2d",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "DELETE",
@@ -960,11 +960,11 @@
 									]
 								}
 							],
-							"id": "f36e41b2-4c07-4e9b-93ed-8f759b218dac"
+							"id": "ff4b9e18-1e48-4f3e-88be-15d38f621c9e"
 						},
 						{
 							"name": "Create Entity",
-							"id": "5621df22-5550-4604-9dd4-86fe707ba19b",
+							"id": "bb10aa71-a976-4d23-a5f6-9500f59ba542",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -1002,7 +1002,7 @@
 							},
 							"response": [
 								{
-									"id": "abb49dcf-c7d1-4ede-a048-58d847c13286",
+									"id": "f93d3949-97b1-413e-af32-f34428ea281f",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "POST",
@@ -1049,7 +1049,7 @@
 						},
 						{
 							"name": "Get Entities",
-							"id": "4b579405-f08e-4556-8c7b-0fb023dc1493",
+							"id": "a38187a1-1c3c-4eb0-aafe-208fb7bc4076",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -1101,7 +1101,7 @@
 							},
 							"response": [
 								{
-									"id": "2df81d9e-d9f9-4249-8a96-5aa242fce91f",
+									"id": "1ce4fa9a-0d01-4a3f-9584-c719b71fe8d3",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "GET",
@@ -1155,13 +1155,13 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n  \"current_page\": 78638462,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100,\n  \"data\": [\n    {\n      \"id\": 1,\n      \"name\": \"Brillobox\",\n      \"slug\": \"brillobox-bar\",\n      \"short\": \"A two level bar and venue\",\n      \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n      \"entity_type\": {\n        \"name\": \"Group\",\n        \"id\": 1,\n        \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n        \"short\": \"A multi-member entity\",\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      },\n      \"entity_status\": {\n        \"name\": \"Group\",\n        \"id\": 1,\n        \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n        \"short\": \"A multi-member entity\",\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      },\n      \"created_by\": 1,\n      \"updated_by\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\",\n      \"started_at\": \"2018-03-20T09:12:28Z\",\n      \"facebook_username\": \"johnsmith\",\n      \"twitter_username\": \"johnsmith\",\n      \"links\": [\n        {\n          \"id\": {\n            \"value\": \"reference #/components/schemasLinkId not found in the OpenAPI spec\"\n          },\n          \"title\": \"This is the lazercrunk website.\",\n          \"text\": \"Lazercrunk Website\",\n          \"url\": \"https://lazercrunk.com\",\n          \"is_primary\": true,\n          \"created_at\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"updated_at\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"id\": {\n            \"value\": \"reference #/components/schemasLinkId not found in the OpenAPI spec\"\n          },\n          \"title\": \"This is the lazercrunk website.\",\n          \"text\": \"Lazercrunk Website\",\n          \"url\": \"https://lazercrunk.com\",\n          \"is_primary\": true,\n          \"created_at\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"updated_at\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    {\n      \"id\": 1,\n      \"name\": \"Brillobox\",\n      \"slug\": \"brillobox-bar\",\n      \"short\": \"A two level bar and venue\",\n      \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n      \"entity_type\": {\n        \"name\": \"Group\",\n        \"id\": 1,\n        \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n        \"short\": \"A multi-member entity\",\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      },\n      \"entity_status\": {\n        \"name\": \"Group\",\n        \"id\": 1,\n        \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n        \"short\": \"A multi-member entity\",\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      },\n      \"created_by\": 1,\n      \"updated_by\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\",\n      \"started_at\": \"2018-03-20T09:12:28Z\",\n      \"facebook_username\": \"johnsmith\",\n      \"twitter_username\": \"johnsmith\",\n      \"links\": [\n        {\n          \"id\": {\n            \"value\": \"reference #/components/schemasLinkId not found in the OpenAPI spec\"\n          },\n          \"title\": \"This is the lazercrunk website.\",\n          \"text\": \"Lazercrunk Website\",\n          \"url\": \"https://lazercrunk.com\",\n          \"is_primary\": true,\n          \"created_at\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"updated_at\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"id\": {\n            \"value\": \"reference #/components/schemasLinkId not found in the OpenAPI spec\"\n          },\n          \"title\": \"This is the lazercrunk website.\",\n          \"text\": \"Lazercrunk Website\",\n          \"url\": \"https://lazercrunk.com\",\n          \"is_primary\": true,\n          \"created_at\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"updated_at\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    }\n  ]\n}"
+									"body": "{\n  \"current_page\": 54512129,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
 								}
 							]
 						},
 						{
 							"name": "Reset Entity filters",
-							"id": "b2fc158b-c962-4f7a-bad3-d0f13b883533",
+							"id": "c012e5b9-a52f-4ff1-b393-9ce65d8be82b",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -1187,7 +1187,7 @@
 							},
 							"response": [
 								{
-									"id": "718f088d-9846-4682-b932-45dbbd7c97a6",
+									"id": "96052016-d5c9-4f0e-aa61-a73914615b50",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "GET",
@@ -1225,14 +1225,279 @@
 							]
 						}
 					],
-					"id": "5d86b8cc-b7c5-4f44-b4da-0bfad658a1cf"
+					"id": "aa27c466-9bd1-4728-ac5c-30fe80af05e3"
 				},
 				{
 					"name": "entity-statuses",
 					"item": [
 						{
+							"name": "{entity Status Id}",
+							"item": [
+								{
+									"name": "Get EntityStatus",
+									"id": "ea417aa5-f9fa-4650-aed0-c6aa51ce5da4",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/entity-statuses/:entityStatusId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"entity-statuses",
+												":entityStatusId"
+											],
+											"variable": [
+												{
+													"key": "entityStatusId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the entity status"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "71e1e4c2-313e-4572-a603-bc9db6f75659",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/entity-statuses/:entityStatusId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"entity-statuses",
+														":entityStatusId"
+													],
+													"variable": [
+														{
+															"key": "entityStatusId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the entity status"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"name\": \"Active\",\n  \"id\": 1,\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Update Entity Status",
+									"id": "3099241e-de5c-436f-864e-07a043ebbdfa",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"Active\",\n  \"id\": 1\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/entity-statuses/:entityStatusId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"entity-statuses",
+												":entityStatusId"
+											],
+											"variable": [
+												{
+													"key": "entityStatusId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the entity status"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "41943c4f-b719-401b-b6d3-e53c9354f497",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"name\": \"Active\",\n  \"id\": 1\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/entity-statuses/:entityStatusId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"entity-statuses",
+														":entityStatusId"
+													],
+													"variable": [
+														{
+															"key": "entityStatusId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the entity status"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"name\": \"Active\",\n  \"id\": 1,\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Delete Entity Status",
+									"id": "93fb90da-df9b-4168-8937-dae1403b32c5",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/entity-statuses/:entityStatusId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"entity-statuses",
+												":entityStatusId"
+											],
+											"variable": [
+												{
+													"key": "entityStatusId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the entity status"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "b020f1ef-d481-43c5-979d-83fa8bfa17ea",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/entity-statuses/:entityStatusId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"entity-statuses",
+														":entityStatusId"
+													],
+													"variable": [
+														{
+															"key": "entityStatusId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the entity status"
+														}
+													]
+												}
+											},
+											"status": "No Content",
+											"code": 204,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "\"\""
+										}
+									]
+								}
+							],
+							"id": "359ed92c-229c-480c-8ccd-5f563c07a6be"
+						},
+						{
 							"name": "Get Entity Statuses",
-							"id": "1c598ae8-9c7a-4a11-b89b-d46fda64909a",
+							"id": "7e30f7a7-cbcf-474a-bd98-3194d8add3cd",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -1264,7 +1529,7 @@
 							},
 							"response": [
 								{
-									"id": "62003282-48ec-43e9-b4e4-a122a324c37e",
+									"id": "0771233b-a785-4c15-934f-058ff0f27308",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "GET",
@@ -1302,13 +1567,13 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n  \"current_page\": -35665536,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
+									"body": "{\n  \"current_page\": 54512129,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
 								}
 							]
 						},
 						{
 							"name": "Create entity status",
-							"id": "3746d6d7-3871-400a-a756-bdebcff4335e",
+							"id": "3f306299-6098-4185-8262-75367223a157",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -1326,7 +1591,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"name\": \"Group\",\n  \"id\": 1,\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"A multi-member entity\"\n}",
+									"raw": "{\n  \"name\": \"Active\",\n  \"id\": 1\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1346,7 +1611,7 @@
 							},
 							"response": [
 								{
-									"id": "95889715-30a7-41e1-98f3-32c30c419810",
+									"id": "a57aab20-690f-423b-95b7-96a10e4cac71",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "POST",
@@ -1359,7 +1624,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"name\": \"Group\",\n  \"id\": 1,\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"A multi-member entity\"\n}",
+											"raw": "{\n  \"name\": \"Active\",\n  \"id\": 1\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -1392,7 +1657,7 @@
 							]
 						}
 					],
-					"id": "c7526835-68a8-41d2-97a4-5ccb21e21fae"
+					"id": "f8d3bb50-dfdd-420a-bcea-439a47885e16"
 				},
 				{
 					"name": "entity-types",
@@ -1402,7 +1667,7 @@
 							"item": [
 								{
 									"name": "Get EntityType",
-									"id": "360845f4-9db9-470d-8ff8-381f04067f17",
+									"id": "737be26b-3ba7-482f-87f4-4666718decbe",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -1435,7 +1700,7 @@
 									},
 									"response": [
 										{
-											"id": "fdfce32e-f103-4507-8fd8-677ff5a373d7",
+											"id": "c1bf0286-f9d9-4f13-a330-6484a39b26c2",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "GET",
@@ -1475,13 +1740,13 @@
 												}
 											],
 											"cookie": [],
-											"body": "{\n  \"name\": \"Group\",\n  \"id\": 1,\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"A multi-member entity\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\"\n}"
+											"body": "{\n  \"name\": \"Group\",\n  \"id\": 1,\n  \"slug\": \"group-slug\",\n  \"short\": \"A multi-member entity\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\"\n}"
 										}
 									]
 								},
 								{
 									"name": "Update Entity Type",
-									"id": "35e4ec7f-0f65-4a20-a308-03c4a0c7d1a3",
+									"id": "bf4a6724-b4c6-4212-ac5b-8862b2c71c98",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -1499,7 +1764,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"name\": \"Group\",\n  \"id\": 1,\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"A multi-member entity\"\n}",
+											"raw": "{\n  \"name\": \"Group\",\n  \"id\": 1,\n  \"slug\": \"group-slug\",\n  \"short\": \"A multi-member entity\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -1527,7 +1792,7 @@
 									},
 									"response": [
 										{
-											"id": "07d66273-ee09-4586-a354-90970904b2d7",
+											"id": "d5c5d4cd-edc0-4cce-adb9-380d809b992c",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "PUT",
@@ -1540,7 +1805,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"name\": \"Group\",\n  \"id\": 1,\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"A multi-member entity\"\n}",
+													"raw": "{\n  \"name\": \"Group\",\n  \"id\": 1,\n  \"slug\": \"group-slug\",\n  \"short\": \"A multi-member entity\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -1576,13 +1841,13 @@
 												}
 											],
 											"cookie": [],
-											"body": "{\n  \"name\": \"Group\",\n  \"id\": 1,\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"A multi-member entity\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\"\n}"
+											"body": "{\n  \"name\": \"Group\",\n  \"id\": 1,\n  \"slug\": \"group-slug\",\n  \"short\": \"A multi-member entity\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\"\n}"
 										}
 									]
 								},
 								{
 									"name": "Delete Entity Type",
-									"id": "8c7b4f9a-fe0b-451c-8789-767a89f47a10",
+									"id": "13fd1c88-037e-4557-aaa1-e6ab481915a1",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -1615,7 +1880,7 @@
 									},
 									"response": [
 										{
-											"id": "7f958981-48bf-43c0-944a-f9d4d459fbd7",
+											"id": "d69592bd-8070-4f0a-9673-c816c0cc0994",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "DELETE",
@@ -1660,11 +1925,11 @@
 									]
 								}
 							],
-							"id": "e680bbb7-9a7a-40ca-8b8d-2a773c3b93c9"
+							"id": "c2792f0e-7fd1-4187-9d6b-a074ec2c364d"
 						},
 						{
 							"name": "Get Entity Types",
-							"id": "ea16bf15-3dbf-46ef-823c-2540b921c703",
+							"id": "b5f07f60-30f3-49c9-a470-bac0f7b6167d",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -1677,7 +1942,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/api/entity-types?name=Group",
+									"raw": "{{baseUrl}}/api/entity-types?filters[name]=Group",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -1687,15 +1952,16 @@
 									],
 									"query": [
 										{
-											"key": "name",
-											"value": "Group"
+											"key": "filters[name]",
+											"value": "Group",
+											"description": "A filter query of the entity status name"
 										}
 									]
 								}
 							},
 							"response": [
 								{
-									"id": "46951823-c68a-4b35-b8fd-27f8b9b8eb2f",
+									"id": "3cb8f880-ae18-43af-a10d-785dca2f178c",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "GET",
@@ -1707,7 +1973,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/api/entity-types?name=Group",
+											"raw": "{{baseUrl}}/api/entity-types?filters[name]=Group",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -1717,7 +1983,7 @@
 											],
 											"query": [
 												{
-													"key": "name",
+													"key": "filters[name]",
 													"value": "Group"
 												}
 											]
@@ -1733,13 +1999,13 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n  \"current_page\": -35665536,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
+									"body": "{\n  \"current_page\": 54512129,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
 								}
 							]
 						},
 						{
 							"name": "Create entity type",
-							"id": "fa27f830-8d4b-44fe-9f78-3a11d3b66ef6",
+							"id": "e9da021d-7e8c-4fd2-a84b-289a295e19f0",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -1757,7 +2023,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"value\": \"reference #/components/schemas/EntityTypeRequest not found in the OpenAPI spec\"\n}",
+									"raw": "{\n  \"name\": \"Group\",\n  \"id\": 1,\n  \"slug\": \"group-slug\",\n  \"short\": \"A multi-member entity\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1777,7 +2043,7 @@
 							},
 							"response": [
 								{
-									"id": "5463aa76-ab1e-49e0-8993-45ee5f4f64bf",
+									"id": "62dc880d-6f7e-4331-afcd-0ffd387ba194",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "POST",
@@ -1790,7 +2056,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"value\": \"reference #/components/schemas/EntityTypeRequest not found in the OpenAPI spec\"\n}",
+											"raw": "{\n  \"name\": \"Group\",\n  \"id\": 1,\n  \"slug\": \"group-slug\",\n  \"short\": \"A multi-member entity\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -1823,7 +2089,438 @@
 							]
 						}
 					],
-					"id": "dda1c3b7-b259-41f5-9b0a-f33b9910ca97"
+					"id": "e4d129ce-152c-423b-a438-d076e174c950"
+				},
+				{
+					"name": "links",
+					"item": [
+						{
+							"name": "{link Id}",
+							"item": [
+								{
+									"name": "Get Link",
+									"id": "da2324ea-0386-4ec7-b956-9724ce498f52",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/links/:linkId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"links",
+												":linkId"
+											],
+											"variable": [
+												{
+													"key": "linkId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the link"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "d977d670-0caf-4547-a1b1-7f98362a1058",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/links/:linkId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"links",
+														":linkId"
+													],
+													"variable": [
+														{
+															"key": "linkId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the link"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"id\": 1,\n  \"title\": \"This is the lazercrunk website.\",\n  \"text\": \"Lazercrunk Website\",\n  \"url\": \"https://lazercrunk.com\",\n  \"is_primary\": true,\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Update link",
+									"id": "bfbafcff-fcac-4ca7-b8c4-64ec8790261a",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"id\": 1,\n  \"title\": \"This is the lazercrunk website.\",\n  \"text\": \"Lazercrunk Website\",\n  \"url\": \"https://lazercrunk.com\",\n  \"is_primary\": true\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/links/:linkId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"links",
+												":linkId"
+											],
+											"variable": [
+												{
+													"key": "linkId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the link"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "680db5ed-3eef-45b2-8a65-7101154c43b0",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"id\": 1,\n  \"title\": \"This is the lazercrunk website.\",\n  \"text\": \"Lazercrunk Website\",\n  \"url\": \"https://lazercrunk.com\",\n  \"is_primary\": true\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/links/:linkId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"links",
+														":linkId"
+													],
+													"variable": [
+														{
+															"key": "linkId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the link"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"id\": 1,\n  \"title\": \"This is the lazercrunk website.\",\n  \"text\": \"Lazercrunk Website\",\n  \"url\": \"https://lazercrunk.com\",\n  \"is_primary\": true,\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Delete Link",
+									"id": "4b883842-d71f-4469-921d-902cb1a11a5f",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/links/:linkId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"links",
+												":linkId"
+											],
+											"variable": [
+												{
+													"key": "linkId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the link"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "e73eb187-5845-4ac2-8e2c-30908014d34e",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/links/:linkId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"links",
+														":linkId"
+													],
+													"variable": [
+														{
+															"key": "linkId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the link"
+														}
+													]
+												}
+											},
+											"status": "No Content",
+											"code": 204,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "\"\""
+										}
+									]
+								}
+							],
+							"id": "8186dad4-2f91-4931-be78-f27ee128ad4b"
+						},
+						{
+							"name": "Get Links",
+							"id": "a1434c14-26d5-412a-b7ce-c8f73518061f",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/links?title=Google",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"links"
+									],
+									"query": [
+										{
+											"key": "title",
+											"value": "Google"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"id": "53755b7b-5680-48c7-9d39-c6694a5874cf",
+									"name": "Successful response",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"description": "Added as a part of security scheme: basic",
+												"key": "Authorization",
+												"value": "Basic <credentials>"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/links?title=Google",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"links"
+											],
+											"query": [
+												{
+													"key": "title",
+													"value": "Google"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"current_page\": -51358666,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100,\n  \"data\": [\n    {\n      \"id\": 1,\n      \"title\": \"This is the lazercrunk website.\",\n      \"text\": \"Lazercrunk Website\",\n      \"url\": \"https://lazercrunk.com\",\n      \"is_primary\": true,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    {\n      \"id\": 1,\n      \"title\": \"This is the lazercrunk website.\",\n      \"text\": \"Lazercrunk Website\",\n      \"url\": \"https://lazercrunk.com\",\n      \"is_primary\": true,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    }\n  ]\n}"
+								}
+							]
+						},
+						{
+							"name": "Create link",
+							"id": "d8fdd6d7-8518-4653-8e6e-0c46d52a1407",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"id\": 1,\n  \"title\": \"This is the lazercrunk website.\",\n  \"text\": \"Lazercrunk Website\",\n  \"url\": \"https://lazercrunk.com\",\n  \"is_primary\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/links",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"links"
+									]
+								}
+							},
+							"response": [
+								{
+									"id": "a6d0ae60-57cb-4d60-84c0-b6874221acfd",
+									"name": "Successful response",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"description": "Added as a part of security scheme: basic",
+												"key": "Authorization",
+												"value": "Basic <credentials>"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"id\": 1,\n  \"title\": \"This is the lazercrunk website.\",\n  \"text\": \"Lazercrunk Website\",\n  \"url\": \"https://lazercrunk.com\",\n  \"is_primary\": true\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/links",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"links"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "\"\""
+								}
+							]
+						}
+					],
+					"id": "a61776e3-d341-4350-9091-de8e87ce0e01"
 				},
 				{
 					"name": "series",
@@ -1833,7 +2530,7 @@
 							"item": [
 								{
 									"name": "Get one Series",
-									"id": "9af0275a-4303-4873-85e1-9398de6fd4ea",
+									"id": "ab51850e-5878-4373-8567-986d455818e1",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -1866,7 +2563,7 @@
 									},
 									"response": [
 										{
-											"id": "51cb2785-e36f-4377-b448-b0c97a718d4e",
+											"id": "acd4fd3c-3378-44a1-91ce-3f770ebfef0b",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "GET",
@@ -1906,13 +2603,13 @@
 												}
 											],
 											"cookie": [],
-											"body": "{\n  \"id\": 1,\n  \"name\": \"Lazercrunk, First Fridays of the Month\",\n  \"slug\": \"lazercrunk-first-fridays-of-the-month\",\n  \"short\": \"a really fun monthly dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun monthly dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_type_id\": 1,\n  \"occurrence_type_id\": {\n    \"value\": \"reference #/components/schemas/OccurrenceTypeId not found in the OpenAPI spec\"\n  },\n  \"occurrence_week_id\": {\n    \"value\": \"reference #/components/schemas/OccurrenceWeekId not found in the OpenAPI spec\"\n  },\n  \"occurrence_day_id\": {\n    \"value\": \"reference #/components/schemas/OccurrenceDayId not found in the OpenAPI spec\"\n  },\n  \"hold_date\": true,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": 1,\n  \"updated_by\": 1\n}"
+											"body": "{\n  \"id\": 1,\n  \"name\": \"Lazercrunk, First Fridays of the Month\",\n  \"slug\": \"lazercrunk-first-fridays-of-the-month\",\n  \"short\": \"a really fun monthly dj night featuring performers from around the world\",\n  \"visibility\": {\n    \"name\": \"Public\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"description\": \"a really fun monthly dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_type\": {\n    \"name\": \"Concert\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"occurrence_type\": {\n    \"name\": \"Group\",\n    \"id\": 1,\n    \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n    \"short\": \"A multi-member occurrence\",\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"occurrence_week\": {\n    \"name\": \"Group\",\n    \"id\": 1,\n    \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n    \"short\": \"A multi-member occurrence\",\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"occurrence_day\": {\n    \"name\": \"Group\",\n    \"id\": 1,\n    \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n    \"short\": \"A multi-member occurrence\",\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"hold_date\": true,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": {\n    \"id\": 1,\n    \"name\": \"john.smith\",\n    \"email\": \"john.smith@gmail.com\"\n  },\n  \"updated_by\": {\n    \"id\": 1,\n    \"name\": \"john.smith\",\n    \"email\": \"john.smith@gmail.com\"\n  }\n}"
 										}
 									]
 								},
 								{
 									"name": "Update Series",
-									"id": "2e7bd4a9-2362-4390-95b6-ef73172708d5",
+									"id": "eb887116-f9ca-48fe-a171-598767c2d0e7",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -1930,7 +2627,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"id\": 1,\n  \"name\": \"Lazercrunk, First Fridays of the Month\",\n  \"slug\": \"lazercrunk-first-fridays-of-the-month\",\n  \"short\": \"a really fun monthly dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun monthly dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_type_id\": 1,\n  \"occurrence_type_id\": {\n    \"value\": \"reference #/components/schemas/OccurrenceTypeId not found in the OpenAPI spec\"\n  },\n  \"occurrence_week_id\": {\n    \"value\": \"reference #/components/schemas/OccurrenceWeekId not found in the OpenAPI spec\"\n  },\n  \"occurrence_day_id\": {\n    \"value\": \"reference #/components/schemas/OccurrenceDayId not found in the OpenAPI spec\"\n  },\n  \"hold_date\": true,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": 1,\n  \"updated_by\": 1\n}",
+											"raw": "{\n  \"id\": 1,\n  \"name\": \"Lazercrunk, First Fridays of the Month\",\n  \"slug\": \"lazercrunk-first-fridays-of-the-month\",\n  \"short\": \"a really fun monthly dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun monthly dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_type_id\": 1,\n  \"occurrence_type_id\": 1,\n  \"occurrence_week_id\": 1,\n  \"occurrence_day_id\": 1,\n  \"hold_date\": true,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": 1,\n  \"updated_by\": 1\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -1958,7 +2655,7 @@
 									},
 									"response": [
 										{
-											"id": "964d3f91-4885-4c09-a570-e595033a6cec",
+											"id": "ab90ea93-dbc4-4793-b814-ebc369037049",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "PUT",
@@ -1971,7 +2668,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"id\": 1,\n  \"name\": \"Lazercrunk, First Fridays of the Month\",\n  \"slug\": \"lazercrunk-first-fridays-of-the-month\",\n  \"short\": \"a really fun monthly dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun monthly dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_type_id\": 1,\n  \"occurrence_type_id\": {\n    \"value\": \"reference #/components/schemas/OccurrenceTypeId not found in the OpenAPI spec\"\n  },\n  \"occurrence_week_id\": {\n    \"value\": \"reference #/components/schemas/OccurrenceWeekId not found in the OpenAPI spec\"\n  },\n  \"occurrence_day_id\": {\n    \"value\": \"reference #/components/schemas/OccurrenceDayId not found in the OpenAPI spec\"\n  },\n  \"hold_date\": true,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": 1,\n  \"updated_by\": 1\n}",
+													"raw": "{\n  \"id\": 1,\n  \"name\": \"Lazercrunk, First Fridays of the Month\",\n  \"slug\": \"lazercrunk-first-fridays-of-the-month\",\n  \"short\": \"a really fun monthly dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun monthly dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_type_id\": 1,\n  \"occurrence_type_id\": 1,\n  \"occurrence_week_id\": 1,\n  \"occurrence_day_id\": 1,\n  \"hold_date\": true,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": 1,\n  \"updated_by\": 1\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -2007,13 +2704,13 @@
 												}
 											],
 											"cookie": [],
-											"body": "\"\""
+											"body": "{\n  \"id\": 1,\n  \"name\": \"Lazercrunk, First Fridays of the Month\",\n  \"slug\": \"lazercrunk-first-fridays-of-the-month\",\n  \"short\": \"a really fun monthly dj night featuring performers from around the world\",\n  \"visibility\": {\n    \"name\": \"Public\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"description\": \"a really fun monthly dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_type\": {\n    \"name\": \"Concert\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"occurrence_type\": {\n    \"name\": \"Group\",\n    \"id\": 1,\n    \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n    \"short\": \"A multi-member occurrence\",\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"occurrence_week\": {\n    \"name\": \"Group\",\n    \"id\": 1,\n    \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n    \"short\": \"A multi-member occurrence\",\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"occurrence_day\": {\n    \"name\": \"Group\",\n    \"id\": 1,\n    \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n    \"short\": \"A multi-member occurrence\",\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"hold_date\": true,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": {\n    \"id\": 1,\n    \"name\": \"john.smith\",\n    \"email\": \"john.smith@gmail.com\"\n  },\n  \"updated_by\": {\n    \"id\": 1,\n    \"name\": \"john.smith\",\n    \"email\": \"john.smith@gmail.com\"\n  }\n}"
 										}
 									]
 								},
 								{
 									"name": "Delete Series",
-									"id": "ff50cf7a-6cc1-4de8-9ac6-9b93aaf5ec67",
+									"id": "aa8e99c6-3fd7-4dfd-ba02-597d341b7323",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -2046,7 +2743,7 @@
 									},
 									"response": [
 										{
-											"id": "d84555e4-cc91-4459-8168-48b1dabc65e4",
+											"id": "af7c7bc0-1368-4dd8-8e9e-7cbd879f904d",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "DELETE",
@@ -2091,11 +2788,11 @@
 									]
 								}
 							],
-							"id": "8423c2b7-3a95-4308-a913-aa1408ca66db"
+							"id": "b9d05971-3233-4860-b587-64fd1a0b7704"
 						},
 						{
 							"name": "Create Series",
-							"id": "28b042e8-37f8-4c4c-9614-f817857c1900",
+							"id": "aa5b519d-9c65-4dd7-956c-194196658e9d",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -2113,7 +2810,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"id\": 1,\n  \"name\": \"Lazercrunk, First Fridays of the Month\",\n  \"slug\": \"lazercrunk-first-fridays-of-the-month\",\n  \"short\": \"a really fun monthly dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun monthly dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_type_id\": 1,\n  \"occurrence_type_id\": {\n    \"value\": \"reference #/components/schemas/OccurrenceTypeId not found in the OpenAPI spec\"\n  },\n  \"occurrence_week_id\": {\n    \"value\": \"reference #/components/schemas/OccurrenceWeekId not found in the OpenAPI spec\"\n  },\n  \"occurrence_day_id\": {\n    \"value\": \"reference #/components/schemas/OccurrenceDayId not found in the OpenAPI spec\"\n  },\n  \"hold_date\": true,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": 1,\n  \"updated_by\": 1\n}",
+									"raw": "{\n  \"id\": 1,\n  \"name\": \"Lazercrunk, First Fridays of the Month\",\n  \"slug\": \"lazercrunk-first-fridays-of-the-month\",\n  \"short\": \"a really fun monthly dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun monthly dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_type_id\": 1,\n  \"occurrence_type_id\": 1,\n  \"occurrence_week_id\": 1,\n  \"occurrence_day_id\": 1,\n  \"hold_date\": true,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": 1,\n  \"updated_by\": 1\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -2133,7 +2830,7 @@
 							},
 							"response": [
 								{
-									"id": "229b346d-a2a5-428a-afe0-d6d79697f9a5",
+									"id": "22e826e3-f194-4180-86d2-b77ed3c78f9a",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "POST",
@@ -2146,7 +2843,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"id\": 1,\n  \"name\": \"Lazercrunk, First Fridays of the Month\",\n  \"slug\": \"lazercrunk-first-fridays-of-the-month\",\n  \"short\": \"a really fun monthly dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun monthly dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_type_id\": 1,\n  \"occurrence_type_id\": {\n    \"value\": \"reference #/components/schemas/OccurrenceTypeId not found in the OpenAPI spec\"\n  },\n  \"occurrence_week_id\": {\n    \"value\": \"reference #/components/schemas/OccurrenceWeekId not found in the OpenAPI spec\"\n  },\n  \"occurrence_day_id\": {\n    \"value\": \"reference #/components/schemas/OccurrenceDayId not found in the OpenAPI spec\"\n  },\n  \"hold_date\": true,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": 1,\n  \"updated_by\": 1\n}",
+											"raw": "{\n  \"id\": 1,\n  \"name\": \"Lazercrunk, First Fridays of the Month\",\n  \"slug\": \"lazercrunk-first-fridays-of-the-month\",\n  \"short\": \"a really fun monthly dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun monthly dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_type_id\": 1,\n  \"occurrence_type_id\": 1,\n  \"occurrence_week_id\": 1,\n  \"occurrence_day_id\": 1,\n  \"hold_date\": true,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": 1,\n  \"updated_by\": 1\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -2174,13 +2871,13 @@
 										}
 									],
 									"cookie": [],
-									"body": "\"\""
+									"body": "{\n  \"id\": 1,\n  \"name\": \"Lazercrunk, First Fridays of the Month\",\n  \"slug\": \"lazercrunk-first-fridays-of-the-month\",\n  \"short\": \"a really fun monthly dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun monthly dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_type_id\": 1,\n  \"occurrence_type_id\": 1,\n  \"occurrence_week_id\": 1,\n  \"occurrence_day_id\": 1,\n  \"hold_date\": true,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": 1,\n  \"updated_by\": 1\n}"
 								}
 							]
 						},
 						{
-							"name": "Get Series by Event Type Id",
-							"id": "76970b2b-1cf7-4fea-959a-dd4197b399d7",
+							"name": "Get Series by filters",
+							"id": "b61ff7eb-8317-4b70-88f0-c3e36554a31f",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -2193,7 +2890,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/api/series?event_type_id=-36295581",
+									"raw": "{{baseUrl}}/api/series?filters[name]=Lazercrunk&filters[event_type]=Concert&filters[venue]=Brillobox&filters[promoter]=Cutups&filters[related]=0h85&filters[occurrence_type]=Monthly&filters[occurrence_week]=First&filters[occurrence_day]=Friday&filters[start_at][start]=2022-01-01 1:00:00&filters[start_at][end]=2022-02-01 2:00:00&filters[end_at][start]=2022-02-01 1:00:00&filters[end_at][end]=2022-01-01 2:00:00&filters[ages]=21&orderBy=title desc",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -2203,15 +2900,81 @@
 									],
 									"query": [
 										{
-											"key": "event_type_id",
-											"value": "-36295581"
+											"key": "filters[name]",
+											"value": "Lazercrunk",
+											"description": "A filter query of series name"
+										},
+										{
+											"key": "filters[event_type]",
+											"value": "Concert",
+											"description": "A filter query of related event type name"
+										},
+										{
+											"key": "filters[venue]",
+											"value": "Brillobox",
+											"description": "A filter query of the venue name"
+										},
+										{
+											"key": "filters[promoter]",
+											"value": "Cutups",
+											"description": "A filter query of the promoter name"
+										},
+										{
+											"key": "filters[related]",
+											"value": "0h85",
+											"description": "A filter query of related entity name"
+										},
+										{
+											"key": "filters[occurrence_type]",
+											"value": "Monthly",
+											"description": "A filter query of related occurrence type name"
+										},
+										{
+											"key": "filters[occurrence_week]",
+											"value": "First",
+											"description": "A filter query of related occurrence week name"
+										},
+										{
+											"key": "filters[occurrence_day]",
+											"value": "Friday",
+											"description": "A filter query of related occurrence day name"
+										},
+										{
+											"key": "filters[start_at][start]",
+											"value": "2022-01-01 1:00:00",
+											"description": "A filter query of the start time starting"
+										},
+										{
+											"key": "filters[start_at][end]",
+											"value": "2022-02-01 2:00:00",
+											"description": "A filter query of the start time ending"
+										},
+										{
+											"key": "filters[end_at][start]",
+											"value": "2022-02-01 1:00:00",
+											"description": "A filter query of the end time starting"
+										},
+										{
+											"key": "filters[end_at][end]",
+											"value": "2022-01-01 2:00:00",
+											"description": "A filter query of the end time ending"
+										},
+										{
+											"key": "filters[ages]",
+											"value": "21",
+											"description": "A filter query of the end time ending"
+										},
+										{
+											"key": "orderBy",
+											"value": "title desc",
+											"description": "A order by clause to be applied to the select"
 										}
 									]
 								}
 							},
 							"response": [
 								{
-									"id": "155979c1-a079-4a53-93ef-3c724abb22e1",
+									"id": "0d028fd4-8cb8-460a-b64a-eb5bda854e5d",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "GET",
@@ -2223,7 +2986,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/api/series?event_type_id=-36295581",
+											"raw": "{{baseUrl}}/api/series?filters[name]=Lazercrunk&filters[event_type]=Concert&filters[venue]=Brillobox&filters[promoter]=Cutups&filters[related]=0h85&filters[occurrence_type]=Monthly&filters[occurrence_week]=First&filters[occurrence_day]=Friday&filters[start_at][start]=2022-01-01 1:00:00&filters[start_at][end]=2022-02-01 2:00:00&filters[end_at][start]=2022-02-01 1:00:00&filters[end_at][end]=2022-01-01 2:00:00&filters[ages]=21&orderBy=title desc",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -2233,8 +2996,60 @@
 											],
 											"query": [
 												{
-													"key": "event_type_id",
-													"value": "-36295581"
+													"key": "filters[name]",
+													"value": "Lazercrunk"
+												},
+												{
+													"key": "filters[event_type]",
+													"value": "Concert"
+												},
+												{
+													"key": "filters[venue]",
+													"value": "Brillobox"
+												},
+												{
+													"key": "filters[promoter]",
+													"value": "Cutups"
+												},
+												{
+													"key": "filters[related]",
+													"value": "0h85"
+												},
+												{
+													"key": "filters[occurrence_type]",
+													"value": "Monthly"
+												},
+												{
+													"key": "filters[occurrence_week]",
+													"value": "First"
+												},
+												{
+													"key": "filters[occurrence_day]",
+													"value": "Friday"
+												},
+												{
+													"key": "filters[start_at][start]",
+													"value": "2022-01-01 1:00:00"
+												},
+												{
+													"key": "filters[start_at][end]",
+													"value": "2022-02-01 2:00:00"
+												},
+												{
+													"key": "filters[end_at][start]",
+													"value": "2022-02-01 1:00:00"
+												},
+												{
+													"key": "filters[end_at][end]",
+													"value": "2022-01-01 2:00:00"
+												},
+												{
+													"key": "filters[ages]",
+													"value": "21"
+												},
+												{
+													"key": "orderBy",
+													"value": "title desc"
 												}
 											]
 										}
@@ -2249,12 +3064,12 @@
 										}
 									],
 									"cookie": [],
-									"body": "\"\""
+									"body": "{\n  \"current_page\": 54512129,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
 								}
 							]
 						}
 					],
-					"id": "776629c4-3d99-4f4c-9103-fe57b99a25f0"
+					"id": "45e86cd9-68b3-4ae8-8d95-739d94058ce5"
 				},
 				{
 					"name": "tags",
@@ -2264,7 +3079,7 @@
 							"item": [
 								{
 									"name": "Get one Tag",
-									"id": "6444c528-aff3-4e3b-a802-a7b379132020",
+									"id": "078bf211-a919-47f2-8263-43becdea7571",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -2297,7 +3112,7 @@
 									},
 									"response": [
 										{
-											"id": "c4985543-a2d6-446a-ae7b-e35d7244bf23",
+											"id": "69feecd5-3291-4e2d-82dc-1ed5487e56b3",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "GET",
@@ -2337,13 +3152,13 @@
 												}
 											],
 											"cookie": [],
-											"body": "{\n  \"name\": \"post punk\",\n  \"id\": 1,\n  \"slug\": \"post-punk\",\n  \"tag_stype_id\": 1,\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\"\n}"
+											"body": "{\n  \"name\": \"post punk\",\n  \"tag_type_id\": 1,\n  \"id\": 1,\n  \"slug\": \"post-punk\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\"\n}"
 										}
 									]
 								},
 								{
 									"name": "Update Tag",
-									"id": "09c63c86-2fd0-43a5-b19c-acd2c2cd7095",
+									"id": "74a58c37-8474-43a0-96d8-f9597b409193",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -2361,7 +3176,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"name\": \"post punk\",\n  \"id\": 1,\n  \"slug\": \"post-punk\",\n  \"tag_stype_id\": 1\n}",
+											"raw": "{\n  \"name\": \"post punk\",\n  \"tag_type_id\": 1,\n  \"id\": 1,\n  \"slug\": \"post-punk\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -2389,7 +3204,7 @@
 									},
 									"response": [
 										{
-											"id": "50b682df-56f7-484f-8a03-a78329e1984a",
+											"id": "0d21671e-b29a-44aa-bca8-973649ec54f8",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "PUT",
@@ -2402,7 +3217,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"name\": \"post punk\",\n  \"id\": 1,\n  \"slug\": \"post-punk\",\n  \"tag_stype_id\": 1\n}",
+													"raw": "{\n  \"name\": \"post punk\",\n  \"tag_type_id\": 1,\n  \"id\": 1,\n  \"slug\": \"post-punk\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -2444,7 +3259,7 @@
 								},
 								{
 									"name": "Delete Tag",
-									"id": "a0ed1621-8c4d-4465-853a-bfcb7472ffa5",
+									"id": "67e682a3-096e-484b-9298-b471a2ae0261",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -2477,7 +3292,7 @@
 									},
 									"response": [
 										{
-											"id": "7260cc60-71ac-4159-932d-fa7f421a6aad",
+											"id": "d3db3dbb-8787-4427-b1a6-2200c3998ac6",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "DELETE",
@@ -2522,11 +3337,11 @@
 									]
 								}
 							],
-							"id": "1c30eeff-3e90-4205-8308-f22ad9a932be"
+							"id": "ce49a4a7-0f81-44ef-b683-ddc2be6d9e65"
 						},
 						{
 							"name": "Create Tag",
-							"id": "13b7945f-8b90-4f8d-8fa5-18f82115e655",
+							"id": "28655a5d-8b83-44d4-bc9b-73db8d60e477",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -2544,7 +3359,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"name\": \"post punk\",\n  \"id\": 1,\n  \"slug\": \"post-punk\",\n  \"tag_stype_id\": 1\n}",
+									"raw": "{\n  \"name\": \"post punk\",\n  \"tag_type_id\": 1,\n  \"id\": 1,\n  \"slug\": \"post-punk\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -2564,7 +3379,7 @@
 							},
 							"response": [
 								{
-									"id": "5b55a99c-d049-41f2-a150-e11297556db7",
+									"id": "282fe14c-399f-4f40-b640-31ff25a452da",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "POST",
@@ -2577,7 +3392,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"name\": \"post punk\",\n  \"id\": 1,\n  \"slug\": \"post-punk\",\n  \"tag_stype_id\": 1\n}",
+											"raw": "{\n  \"name\": \"post punk\",\n  \"tag_type_id\": 1,\n  \"id\": 1,\n  \"slug\": \"post-punk\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -2605,13 +3420,13 @@
 										}
 									],
 									"cookie": [],
-									"body": "\"\""
+									"body": "{\n  \"name\": \"post punk\",\n  \"tag_type_id\": 1,\n  \"id\": 1,\n  \"slug\": \"post-punk\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\"\n}"
 								}
 							]
 						},
 						{
 							"name": "Get Tags",
-							"id": "41125993-be92-4441-9eb4-08d4288a7c46",
+							"id": "73fa4f9f-0b02-4f43-8325-e043e3614ec4",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -2624,7 +3439,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/api/tags?name=techno",
+									"raw": "{{baseUrl}}/api/tags?filters[name]=techno",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -2634,7 +3449,7 @@
 									],
 									"query": [
 										{
-											"key": "name",
+											"key": "filters[name]",
 											"value": "techno"
 										}
 									]
@@ -2642,7 +3457,7 @@
 							},
 							"response": [
 								{
-									"id": "0a7f7c83-438e-4ff7-a4fc-43c980a086a4",
+									"id": "699ab977-0dda-491e-a3d6-c99bdbaec068",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "GET",
@@ -2654,7 +3469,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/api/tags?name=techno",
+											"raw": "{{baseUrl}}/api/tags?filters[name]=techno",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -2664,7 +3479,7 @@
 											],
 											"query": [
 												{
-													"key": "name",
+													"key": "filters[name]",
 													"value": "techno"
 												}
 											]
@@ -2685,7 +3500,7 @@
 							]
 						}
 					],
-					"id": "982a9440-72d8-4aa7-9ad7-e4bdd7c873f9"
+					"id": "d271bccb-ab32-45d7-8d16-43646ff81d34"
 				},
 				{
 					"name": "users",
@@ -2695,7 +3510,7 @@
 							"item": [
 								{
 									"name": "Get one User",
-									"id": "6199e96c-51e8-4ab7-bbb4-2f481649b779",
+									"id": "61188590-36fd-4574-9f8e-ded0a88b9066",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -2728,7 +3543,7 @@
 									},
 									"response": [
 										{
-											"id": "0f9c2341-ddb0-43a4-9aeb-55d543288161",
+											"id": "e9e03ebd-80d5-4fe3-9a29-a388bf60da99",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "GET",
@@ -2768,13 +3583,13 @@
 												}
 											],
 											"cookie": [],
-											"body": "\"\""
+											"body": "{\n  \"id\": 1,\n  \"name\": \"john.smith\",\n  \"password\": \"abcdefg\",\n  \"email\": \"john.smith@gmail.com\",\n  \"user_status_id\": 1,\n  \"remember_token\": \"ABCDEFGHI\",\n  \"email_verified_at\": \"2018-03-20T09:12:28Z\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\"\n}"
 										}
 									]
 								},
 								{
 									"name": "Update User",
-									"id": "9a7b7c28-4418-48ba-adbd-0a333174cacc",
+									"id": "9bfe0280-e162-4a2d-ad41-9b576669595a",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -2792,7 +3607,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"customer_id\": 48,\n  \"billing_system_id\": 5,\n  \"account_code\": \"987654\"\n}",
+											"raw": "{\n  \"id\": 1,\n  \"name\": \"john.smith\",\n  \"password\": \"abcdefg\",\n  \"email\": \"john.smith@gmail.com\",\n  \"user_status_id\": 1,\n  \"remember_token\": \"ABCDEFGHI\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -2820,7 +3635,7 @@
 									},
 									"response": [
 										{
-											"id": "330c72e8-839a-455f-b2b3-7ba6461e3967",
+											"id": "ae603618-45a5-453e-95cb-b94fac6f457c",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "PUT",
@@ -2833,7 +3648,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"customer_id\": 48,\n  \"billing_system_id\": 5,\n  \"account_code\": \"987654\"\n}",
+													"raw": "{\n  \"id\": 1,\n  \"name\": \"john.smith\",\n  \"password\": \"abcdefg\",\n  \"email\": \"john.smith@gmail.com\",\n  \"user_status_id\": 1,\n  \"remember_token\": \"ABCDEFGHI\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -2869,13 +3684,13 @@
 												}
 											],
 											"cookie": [],
-											"body": "\"\""
+											"body": "{\n  \"id\": 1,\n  \"name\": \"john.smith\",\n  \"password\": \"abcdefg\",\n  \"email\": \"john.smith@gmail.com\",\n  \"user_status_id\": 1,\n  \"remember_token\": \"ABCDEFGHI\",\n  \"email_verified_at\": \"2018-03-20T09:12:28Z\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\"\n}"
 										}
 									]
 								},
 								{
 									"name": "Delete User",
-									"id": "834a1880-fde5-4e89-b53b-63999dc251be",
+									"id": "6ca21eb8-ffc7-45fc-bcfe-76b6a5e1c948",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -2908,7 +3723,7 @@
 									},
 									"response": [
 										{
-											"id": "a364b99f-a0fa-4bbb-b4ac-807f5dc6c83b",
+											"id": "78387b34-a779-4ff3-90d9-53fec6b3df44",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "DELETE",
@@ -2953,11 +3768,11 @@
 									]
 								}
 							],
-							"id": "00f6450d-b9ba-4cf7-8af8-b594de6a25ad"
+							"id": "024e8864-5eaf-48b1-8576-72d1713363c0"
 						},
 						{
 							"name": "Create User",
-							"id": "bce85c97-8b6b-4217-80da-c28d4fc64cbd",
+							"id": "591ea102-b905-4e46-9869-c9f8c1a469d5",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -2995,7 +3810,7 @@
 							},
 							"response": [
 								{
-									"id": "ee2b8ab8-7e3a-44b2-99e6-eaeb17515787",
+									"id": "c5e371f7-b014-4467-bffb-0b218638781e",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "POST",
@@ -3042,7 +3857,7 @@
 						},
 						{
 							"name": "Get Users",
-							"id": "2dd29cdc-00cb-413d-bb9c-3dbb3d6ef30e",
+							"id": "8eee099a-4221-4c45-9509-1f13594eef2a",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -3084,7 +3899,7 @@
 							},
 							"response": [
 								{
-									"id": "5f04c5e1-eef0-439e-8cdf-5b0a00111ab5",
+									"id": "32c8ad2f-71ee-4cf5-99a3-6253800ba2e6",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "GET",
@@ -3130,16 +3945,16 @@
 										}
 									],
 									"cookie": [],
-									"body": "\"\""
+									"body": "{\n  \"current_page\": -24429145,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
 								}
 							]
 						}
 					],
-					"id": "44bd1484-cd9d-42f3-a1c0-6e069fe08619"
+					"id": "6003031b-f0ad-4f28-b9b0-1b2575b90517"
 				},
 				{
 					"name": "Get Docs",
-					"id": "ee482515-20ad-4eba-b8e4-fab255a0bc98",
+					"id": "8cce29d6-859b-4cb2-8f90-488dec21ba14",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -3164,7 +3979,7 @@
 					},
 					"response": [
 						{
-							"id": "8a517063-0856-4ef5-8379-56b0ef6af3a6",
+							"id": "6ede0a42-6f90-4e51-ae81-bc867a5d0c75",
 							"name": "Successful response",
 							"originalRequest": {
 								"method": "GET",
@@ -3201,27 +4016,49 @@
 					]
 				}
 			],
-			"id": "33852115-2b50-4f46-ad26-459c3d2d3d7a"
+			"id": "e764e633-9c69-4dd0-b377-5b02702cb248"
 		}
 	],
 	"auth": {
 		"type": "basic",
 		"basic": [
 			{
-				"key": "username",
-				"value": "<Basic Auth Username>",
+				"key": "password",
+				"value": "{{password}}",
 				"type": "string"
 			},
 			{
-				"key": "password",
-				"value": "<Basic Auth Password>",
+				"key": "username",
+				"value": "{{username}}",
 				"type": "string"
 			}
 		]
 	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "99f3a090-52c2-4460-b6da-0f9a33865c5a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "27ffad10-9c7c-45b6-9dfd-02b983ade246",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
 	"variable": [
 		{
-			"id": "f11c3498-e543-4d14-b428-5e0a93b75085",
+			"id": "22745f04-b6a8-456c-9966-2a1ba351be2d",
 			"key": "baseUrl",
 			"value": "https://arcane.city",
 			"type": "string"
