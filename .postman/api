@@ -11,8 +11,8 @@ files[] = {"id":"21955993-d7849208-e3bd-41ce-8a14-6acbdeb85309","path":"Arcane C
 
 [relations.apiDefinition]
 rootDirectory = postman/schemas
-files[] = {"path":"index.yml","metaData":{}}
+files[] = {"path":"api.yml","metaData":{}}
 
 [relations.apiDefinition.metaData]
 type = openapi:3
-rootFiles[] = index.yml
+rootFiles[] = api.yml
