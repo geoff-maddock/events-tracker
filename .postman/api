@@ -4,13 +4,13 @@ id = 61190cbb-a16c-4348-846c-60d173cc246a
 [relations]
 
 [relations.collections]
-rootDirectory = postman/collections
+rootDirectory = public/postman/collections
 files[] = {"id":"21955993-d7849208-e3bd-41ce-8a14-6acbdeb85309","path":"Arcane City.json","metaData":{}}
 
 [relations.collections.metaData]
 
 [relations.apiDefinition]
-rootDirectory = postman/schemas
+rootDirectory = public/postman/schemas
 files[] = {"path":"api.yml","metaData":{}}
 
 [relations.apiDefinition.metaData]
