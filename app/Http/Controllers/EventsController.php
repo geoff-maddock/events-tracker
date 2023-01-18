@@ -2143,6 +2143,7 @@ class EventsController extends Controller
         }
 
         // extract all the links from the event body and convert into embeds
+        $embedExtractor->setLayout("medium");
         $embeds = $embedExtractor->getEmbedsForEvent($event);
 
         // handle the request if ajax

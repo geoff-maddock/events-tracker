@@ -17,6 +17,8 @@ class EmbedExtractor
     const CONTAINER_LIMIT = 4;
 
     protected Provider $provider;
+    protected array $config = [];
+    protected string $size = "medium";
 
     /**
      * @param Provider $provider
@@ -26,34 +28,66 @@ class EmbedExtractor
         $this->provider = $provider;
     }
 
+    public function setLayout(string $size = "medium"): void
+    {
+        $this->size = $size;
+        $this->config = $this->getLayoutConfig($size);
+    }
+
+    private function getLayoutConfig(string $size = "medium"): array 
+    {
+        $config = [];
+
+        // set up the variables;
+        switch ($this->size) {
+            case "large":
+                $config["bandcamp"] = '/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/transparent=true/';
+                $config["soundcloud"] = '&color=%23ff5500&inverse=false&auto_play=true&show_user=true';
+                $config["bandcamp_layout"] = '<iframe style="border: 0; width: 100%%; height: 300px;" src="%s" allowfullscreen seamless></iframe>';
+                $config["soundcloud_layout"] = '<iframe style="border: 0; width: 100%%; height: 300px;" src="%s" allowfullscreen seamless></iframe>';
+                break;
+            case "small":
+                $config["bandcamp"] = '/size=small/bgcol=333333/linkcol=0687f5/transparent=true/';
+                $config["soundcloud"] = '&color=%23232863&inverse=true&auto_play=true&show_user=true';
+                $config["bandcamp_layout"] = '<iframe style="border: 0; width: 100%%; height: 42px;" src="%s" allowfullscreen seamless></iframe>';
+                $config["soundcloud_layout"] = '<iframe style="border: 0; width: 100%%; height: 20px; color: #cccccc;" src="%s" allowfullscreen seamless></iframe>';
+               break;
+            default:
+                $config["bandcamp"] = '/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/transparent=true/';
+                $config["soundcloud"] = '&color=%23ff5500&auto_play=true&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false';
+                $config["bandcamp_layout"] = '<iframe style="border: 0; width: 100%%; height: 120px;" src="%s" allowfullscreen seamless></iframe>';
+                $config["soundcloud_layout"] = '<iframe style="border: 0; width: 100%%; height: 120px;" src="%s" allowfullscreen seamless></iframe>';
+        }
+
+        return $config;
+    }
+
     /**
      * Returns an array of embeds for an entity
      */
-    public function getEmbedsForEntity(Entity $entity): array
+    public function getEmbedsForEntity(Entity $entity, string $size = "medium"): array
     {
         $embeds = [];
         $links = [];
 
+        // check if the config is set, if not, set it
+        if (empty($this->config)) {
+            $this->config = $this->getLayoutConfig($size);
+        };
+
         // ripple extracts data from audio provider links
         $ripple = new Ripple;
 
-        // LARGE - Set up a large bandcamp player
-        // $ripple->options(['curl' => [], 'embed' => ['Bandcamp' => 'size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/transparent=true/'], 'response' => []]);
-
-        // MEDIUM - Set up a medium bandcamp player
+        // set up ripple
         $ripple->options([
             'curl' => [],
             'embed' => [
-                'Bandcamp' => '/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/transparent=true/',
-                'Soundcloud' => '&color=%23ff5500&auto_play=true&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false',
- 
+                'Bandcamp' => $this->config["bandcamp"],
+                'Soundcloud' => $this->config["soundcloud"]
             ],
             'response' => []
         ]);
-       
-        // SMALL - Set up a small bandcamp player
-        //$ripple->options(['curl' => [], 'embed' => ['Bandcamp' => '/size=small/bgcol=333333/linkcol=0687f5/transparent=true/'], 'response' => []]);
-        
+
         // get some data about the entities bandcamp links
         $collectionLinks = $entity->links;
 
@@ -70,13 +104,13 @@ class EmbedExtractor
             }
         }
 
-        // convert the entitie's links into embeds when they contain embeddable audio
+        // convert the entity's links into embeds when they contain embeddable audio
         foreach ($links as $link) {
             // soundcloud
             if (strpos($link, "soundcloud.com") && substr_count($link, '/') > 3) {
                 // it's a soundcloud link, so request info
                 $ripple->request($link);
-                $embeds[] = sprintf('<iframe style="border: 0; width: 100%%; height: 120px;"  src="%s" allowfullscreen seamless></iframe>', $ripple->embed());
+                $embeds[] = sprintf($this->config["soundcloud_layout"], $ripple->embed().$this->config["soundcloud"]);
             }
         }
 
@@ -86,31 +120,29 @@ class EmbedExtractor
     /**
      * Returns an array of embeds for an event
      */
-    public function getEmbedsForEvent(Event $event): array
+    public function getEmbedsForEvent(Event $event, string $size = "medium"): array
     {
         $embeds = [];
         $links = [];
 
+        // check if the config is set, if not, set it
+        if (empty($this->config)) {
+            $this->config = $this->getLayoutConfig($size);
+        };
+
         // ripple extracts data from audio provider links
         $ripple = new Ripple;
 
-        // LARGE - Set up a large bandcamp player
-        // $ripple->options(['curl' => [], 'embed' => ['Bandcamp' => 'size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/transparent=true/'], 'response' => []]);
-
-        // MEDIUM - Set up a medium bandcamp player
+        // set up ripple
         $ripple->options([
             'curl' => [],
             'embed' => [
-                'Bandcamp' => '/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/transparent=true/',
-                'Soundcloud' => '&color=%23ff5500&auto_play=true&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false',
- 
+                'Bandcamp' => $this->config["bandcamp"],
+                'Soundcloud' => $this->config["soundcloud"]
             ],
             'response' => []
         ]);
-       
-        // SMALL - Set up a small bandcamp player
-        //$ripple->options(['curl' => [], 'embed' => ['Bandcamp' => '/size=small/bgcol=333333/linkcol=0687f5/transparent=true/'], 'response' => []]);
-        
+
         // get the body of the event and extract any relevant links
         $body = $event->description;
 
@@ -146,15 +178,29 @@ class EmbedExtractor
             if (strpos($link, "soundcloud.com") && substr_count($link, '/') > 3) {
                 // it's a soundcloud link, so request info
                 $ripple->request($link);
-                $embeds[] = sprintf('<iframe style="border: 0; width: 100%%; height: 120px;"  src="%s" allowfullscreen seamless></iframe>', $ripple->embed());
+
+                $embeds[] = sprintf($this->config["soundcloud_layout"], $ripple->embed().$this->config["soundcloud"]);
             }
         }
 
         return $embeds;
     }
 
+    /**
+     * Converts the Bandcamp Meta OG Video format based on size
+     */
+    protected function convertBandcampMetaOgVideo(string $content): string
+    {
+        switch ($this->size) {
+            case "small":
+                $content = str_replace("large", "small", $content);
+                $content = str_replace("artwork=small/", "", $content);
+        }
 
-    protected function getEmbedsFromBandcampUrl(string $url, int $depth = 1): ?array
+        return $content;
+    }
+
+    protected function getEmbedsFromBandcampUrl(string $url, int $depth = 1, string $size = 'medium'): ?array
     {
         // prevent an infinite loop
         if ($depth > 2) {
@@ -166,6 +212,11 @@ class EmbedExtractor
         $embeds = [];
         $containerCount = 1;
 
+        // set up the layout config
+        if (empty($this->config)) {
+            $this->config = $this->getLayoutConfig($size);
+        };
+
         // if it's a bandcamp link
         if (strpos($url, "bandcamp.com")) {
             // send a request to the URL and look for a meta tag
@@ -174,7 +225,11 @@ class EmbedExtractor
                 
             // if there is a matching meta tag on the page
             if (null !== $content) {
-                $embeds[] = sprintf('<iframe style="border: 0; width: 100%%; height: 120px;"  src="%s" allowfullscreen seamless></iframe>', $content);
+
+                // convert content based on size
+                $content = $this->convertBandcampMetaOgVideo($content);
+
+                $embeds[] = sprintf($this->config['bandcamp_layout'], $content);
             } else {
                 // no embed in meta, so might be container
                 $containerUrls = $this->getUrlsFromContainer($url);
@@ -185,7 +240,7 @@ class EmbedExtractor
                         break;
                     }
                     // if there is an embed, add it to the array
-                    $temp = $this->getEmbedsFromBandcampUrl($containerUrl, $depth + 1);
+                    $temp = $this->getEmbedsFromBandcampUrl($containerUrl, $depth + 1, $size);
                     if (count($temp) > 0) {
                         $embeds = array_merge($embeds, $temp);
                         $containerCount++;
