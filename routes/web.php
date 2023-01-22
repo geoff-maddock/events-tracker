@@ -199,6 +199,7 @@ Route::get('events/past', 'EventsController@indexPast');
 Route::get('events/week', 'EventsController@indexWeek')->name('events.week');
 Route::get('events/starting/{date}', 'EventsController@indexStarting');
 Route::get('events/{id}/load-embeds', 'EventsController@loadEmbeds');
+Route::get('events/{id}/load-minimal-embeds', 'EventsController@loadMinimalEmbeds');
 Route::get('events/by-date/{year}/{month?}/{day?}', 'EventsController@indexByDate')
     ->where('year', '[1-9][0-9][0-9][0-9]')
     ->where('month', '(0?[1-9]|1[012])$');
@@ -427,6 +428,7 @@ Route::resource('groups', 'GroupsController');
 Route::match(['get', 'post'], 'entities/following', 'EntitiesController@indexFollowing')->name('entities.following')->middleware('auth');
 
 Route::get('entities/{id}/load-embeds', 'EntitiesController@loadEmbeds');
+Route::get('entities/{id}/load-minimal-embeds', 'EntitiesController@loadMinimalEmbeds');
 Route::post('entities/{id}/photos', 'EntitiesController@addPhoto');
 
 Route::get('entities/type/{type}', 'EntitiesController@indexTypes');

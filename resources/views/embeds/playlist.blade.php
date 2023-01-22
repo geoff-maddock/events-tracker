@@ -1,4 +1,4 @@
-@if (count($embeds) > 0)
+@if (isset($embeds) && count($embeds) > 0)
 <div class="row">
     <div class="col-lg-12">
         <div class="card bg-dark">

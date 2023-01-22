@@ -49,8 +49,8 @@ class EmbedExtractor
             case "small":
                 $config["bandcamp"] = '/size=small/bgcol=333333/linkcol=0687f5/transparent=true/';
                 $config["soundcloud"] = '&color=%23232863&inverse=true&auto_play=true&show_user=true';
-                $config["bandcamp_layout"] = '<iframe style="border: 0; width: 100%%; height: 42px;" src="%s" allowfullscreen seamless></iframe>';
-                $config["soundcloud_layout"] = '<iframe style="border: 0; width: 100%%; height: 20px; color: #cccccc;" src="%s" allowfullscreen seamless></iframe>';
+                $config["bandcamp_layout"] = '<iframe style="border: 0; width: 100%%; height: 42px; margin-bottom: -7px;" src="%s" allowfullscreen seamless></iframe>';
+                $config["soundcloud_layout"] = '<iframe style="border: 0; width: 100%%; height: 20px; margin-bottom: -7px; color: #cccccc;" src="%s" allowfullscreen seamless></iframe>';
                break;
             default:
                 $config["bandcamp"] = '/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/transparent=true/';
