@@ -89,7 +89,7 @@
 		'aria-label' => $event->name]) !!}
 		<br>
 		@if (!empty($event->series_id))
-		<a href="/series/{{$event->series_id }}">{!! $event->series->name !!}</a> series
+		<a href="/series/{{$event->series_id }}">{!! $event?->series?->name !!}</a> series
 		@endif
 
 		<a href="/events/type/{{ $event->eventType->slug }}">{{ $event->eventType->name }}</a>
@@ -133,6 +133,7 @@
 			@foreach ($event->entities as $entity)
 				@include('entities.single_label')
 			@endforeach
+			@php unset($entity) @endphp
 			@endunless
 
 			@unless ($event->tags->isEmpty())
@@ -142,4 +143,6 @@
 			@endunless
 		</P>
 	</div>
+
+	@include('embeds.minimal-playlist', ['event' => $event])
 </li>

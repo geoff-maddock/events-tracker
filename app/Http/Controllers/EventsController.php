@@ -2160,6 +2160,38 @@ class EventsController extends Controller
         return back();
     }
 
+    /**
+     * Load the embeds and add to the UI
+     *
+     * @throws \Throwable
+     */
+    public function loadMinimalEmbeds(int $id, EmbedExtractor $embedExtractor, Request $request): RedirectResponse | array
+    {
+        // load the event
+        if (!$event = Event::find($id)) {
+            flash()->error('Error', 'No such event');
+
+            return back();
+        }
+
+        // extract all the links from the event body and convert into embeds
+        $embedExtractor->setLayout("small");
+        $embeds = $embedExtractor->getEmbedsForEvent($event);
+
+        // handle the request if ajax
+        if ($request->ajax()) {
+            return [
+                'Message' => 'Added embeds to event page.',
+                'Success' => view('embeds.minimal-playlist')
+                    ->with(compact('embeds'))
+                    ->render(),
+            ];
+        }
+        flash()->success('Error', 'You cannot load embeds directly');
+
+        return back();
+    }
+
     public function store(EventRequest $request, Event $event, ImageHandler $imageHandler): RedirectResponse
     {
         $msg = '';
