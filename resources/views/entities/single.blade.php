@@ -92,6 +92,7 @@
 		<li>Next Event:
 			<b>{{ $event->start_at->format('m.d.y') }}</b> {!! link_to_route('events.show', $event->name, [$event->id]) !!}
 		</li>
+		@php unset($event) @endphp
 		@endforeach
 		@endif
 		@if ($events = $entity->pastEvents()->take(1))
@@ -99,7 +100,10 @@
 		<li>Past Event:
 			<b>{{ $event->start_at->format('m.d.y') }}</b> {!! link_to_route('events.show', $event->name, [$event->id]) !!}
 		</li>
+		@php unset($event) @endphp
 		@endforeach
 		@endif
 	</ul>
+
+	@include('embeds.minimal-playlist', ['entity' => $entity])
 </li>
