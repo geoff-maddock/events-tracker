@@ -4,6 +4,7 @@ namespace App\Services\Embeds;
 
 use App\Models\Entity;
 use App\Models\Event;
+use App\Models\Series;
 use DOMDocument;
 use DOMXPath;
 use Exception;
@@ -173,6 +174,75 @@ class EmbedExtractor
         }
 
         // convert the event's links into embeds when they contain embeddable audio
+        foreach ($links as $link) {
+            // soundcloud
+            if (strpos($link, "soundcloud.com") && substr_count($link, '/') > 3) {
+                // it's a soundcloud link, so request info
+                $ripple->request($link);
+
+                $embeds[] = sprintf($this->config["soundcloud_layout"], $ripple->embed().$this->config["soundcloud"]);
+            }
+        }
+
+        return $embeds;
+    }
+
+    /**
+     * Returns an array of embeds for a series
+     */
+    public function getEmbedsForSeries(Series $series, string $size = "medium"): array
+    {
+        $embeds = [];
+        $links = [];
+
+        // check if the config is set, if not, set it
+        if (empty($this->config)) {
+            $this->config = $this->getLayoutConfig($size);
+        };
+
+        // ripple extracts data from audio provider links
+        $ripple = new Ripple;
+
+        // set up ripple
+        $ripple->options([
+            'curl' => [],
+            'embed' => [
+                'Bandcamp' => $this->config["bandcamp"],
+                'Soundcloud' => $this->config["soundcloud"]
+            ],
+            'response' => []
+        ]);
+
+        // get the body of the series and extract any relevant links
+        $body = $series->description;
+
+        // regex match all URLs
+        $regex = "/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i";
+        preg_match_all($regex, $body, $result, PREG_PATTERN_ORDER);
+        $urls = $result[0];
+
+        // collect any URLs from related entities
+        foreach ($series->entities as $entity) {
+            foreach ($entity->links as $link) {
+                if (in_array($link->url, $urls)) {
+                    continue;
+                };
+                $urls[] = $link->url;
+            }
+        };
+
+        // handle any URLs
+        foreach ($urls as $url) {
+            // if it's a bandcamp link
+            if (strpos($url, "bandcamp.com")) {
+                $temp =  $this->getEmbedsFromBandcampUrl($url);
+                $embeds = array_merge($embeds, $temp);
+            } else {
+                $links[] = $url;
+            }
+        }
+
+        // convert the series's links into embeds when they contain embeddable audio
         foreach ($links as $link) {
             // soundcloud
             if (strpos($link, "soundcloud.com") && substr_count($link, '/') > 3) {

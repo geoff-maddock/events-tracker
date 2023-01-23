@@ -2,6 +2,12 @@
 
 @section('title', 'Series Edit')
 
+@section('select2.include')
+<!-- Select2 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.1.1/dist/select2-bootstrap-5-theme.min.css" />
+@endsection
+
 @section('content')
 
 <h1 class="display-6 text-primary">Series . Edit . {{ $series->name }}</h1>
@@ -24,7 +30,7 @@
     </div>
 
     <div class="col-md-4">
-        @if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser') ) )
+        @if ($user && (Auth::user()->id == $series?->user?->id || $user->id == Config::get('app.superuser') ) )
         <form action="/series/{{ $series->id }}/photos" class="dropzone" id="myDropzone" method="POST">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
         </form>
@@ -36,7 +42,7 @@
             <div class="col-md-2">
                 <a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" data-lightbox="{{ Storage::disk('external')->url($photo->getStoragePath()) }}"><img
                         src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}" alt="{{ $series->name}}" class="mw-100"></a>
-                @if ($user && (Auth::user()->id == $series->user->id || $user->id == Config::get('app.superuser') ) )
+                @if ($user && (Auth::user()->id == $series?->user?->id || $user->id == Config::get('app.superuser') ) )
                 @if ($signedIn || $user->id == Config::get('app.superuser'))
                 {!! link_form_bootstrap_icon('bi bi-trash-fill text-warning', $photo, 'DELETE', 'Delete the photo') !!}
                 @if ($photo->is_primary)

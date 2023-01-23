@@ -18,6 +18,7 @@ use App\Models\Series;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\Visibility;
+use App\Services\Embeds\EmbedExtractor;
 use App\Services\ImageHandler;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
@@ -917,6 +918,70 @@ class SeriesController extends Controller
         }
 
         flash()->success('Success', 'You are no longer following the series - '.$series->name);
+
+        return back();
+    }
+
+    /**
+     * Load the embeds and add to the UI
+     *
+     * @throws \Throwable
+     */
+    public function loadEmbeds(int $id, EmbedExtractor $embedExtractor, Request $request): RedirectResponse | array
+    {
+        // load the series
+        if (!$series = Series::find($id)) {
+            flash()->error('Error', 'No such series');
+
+            return back();
+        }
+
+        // extract all the links from the series body and convert into embeds
+        $embedExtractor->setLayout("medium");
+        $embeds = $embedExtractor->getEmbedsForSeries($series);
+
+        // handle the request if ajax
+        if ($request->ajax()) {
+            return [
+                'Message' => 'Added embeds to series page.',
+                'Success' => view('embeds.playlist')
+                    ->with(compact('embeds'))
+                    ->render(),
+            ];
+        }
+        flash()->success('Error', 'You cannot load embeds directly');
+
+        return back();
+    }
+
+    /**
+     * Load the embeds and add to the UI
+     *
+     * @throws \Throwable
+     */
+    public function loadMinimalEmbeds(int $id, EmbedExtractor $embedExtractor, Request $request): RedirectResponse | array
+    {
+        // load the series
+        if (!$series = Series::find($id)) {
+            flash()->error('Error', 'No such series');
+
+            return back();
+        }
+
+        // extract all the links from the event body and convert into embeds
+        $embedExtractor->setLayout("small");
+        $embeds = $embedExtractor->getEmbedsForSeries($series);
+
+        // handle the request if ajax
+        if ($request->ajax()) {
+            return [
+                'Message' => 'Added embeds to series page.',
+                'Success' => view('embeds.minimal-playlist')
+                    ->with(compact('embeds'))
+                    ->render(),
+            ];
+        }
+        flash()->success('Error', 'You cannot load embeds directly');
 
         return back();
     }

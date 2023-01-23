@@ -279,7 +279,6 @@ var Home = (function () {
         });
     };
 
-
     // when a pagination link is clicked, load the results of the url
     var setupPagination = function () {
         $('body').on('click', '.pagination a', function (e) {
@@ -333,11 +332,13 @@ var Home = (function () {
 
     // load a day's events
     var getDayEvents = function (url, num) {
+        console.log('get day events');
         $.ajax({
             url: url
         }).done(function (data) {
             // load results into the applicable position
             $('#day-position-' + num).html(data);
+            App.loadEmbeds();
         }).fail(function () {
             console.log('No events could be loaded')
         });

@@ -119,6 +119,8 @@
 		
 	</div>
 
+	@include('embeds.playlist', ['series' => $series])
+
 	<!-- RELATED THREADS -->
 	@if ($threads)
 		@php
