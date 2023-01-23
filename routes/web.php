@@ -505,7 +505,8 @@ Route::get('reviews/rpp-reset', ['as' => 'reviews.rppReset', 'uses' => 'ReviewsC
 Route::resource('reviews', 'ReviewsController');
 
 // SERIES
-
+Route::get('series/{id}/load-embeds', 'SeriesController@loadEmbeds');
+Route::get('series/{id}/load-minimal-embeds', 'SeriesController@loadMinimalEmbeds');
 Route::match(['get', 'post'], 'series/following', 'SeriesController@indexFollowing')->name('series.following')->middleware('auth');
 
 Route::get('series/createOccurrence', [

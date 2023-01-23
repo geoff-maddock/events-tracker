@@ -114,6 +114,7 @@
         @foreach ($series->entities as $entity)
             @include('entities.single_label')
         @endforeach
+        @php unset($entity) @endphp
         @endunless
 
         @unless ($series->tags->isEmpty())
@@ -122,4 +123,6 @@
         @endforeach
         @endunless
     </P>
+
+	@include('embeds.minimal-playlist', ['series' => $series])
 </li>

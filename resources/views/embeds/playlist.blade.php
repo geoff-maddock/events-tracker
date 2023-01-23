@@ -25,6 +25,16 @@
 			</div>
         </div>
     @endif
+    @if (isset($series))
+    <div id="playlist-{{ $series->id}}" class="playlist-id" data-url="/series/{{ $series->id }}/load-embeds">
+        <div class="card-body">
+            <div class="load-spinner">
+                <div class="double-bounce1"></div>
+                <div class="double-bounce2"></div>
+            </div>
+        </div>
+    </div>
+    @endif
     @if (isset($entity))
         <div id="playlist-{{ $entity->id}}" class="playlist-id" data-url="/entities/{{ $entity->id }}/load-embeds">
             <div class="card-body">
