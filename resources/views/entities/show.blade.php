@@ -194,7 +194,10 @@
 					</div><br>
 			@endif
 			
-			@include('embeds.playlist', ['entity' => $entity, 'embeds' => $embeds])
+			@php unset($event) @endphp
+			@php unset($series) @endphp
+
+			@include('embeds.playlist', ['entity' => $entity])
 
 			{{-- Embeds a player based in an array of embed stream links --}}
 			{{-- @include('entities.tracks', ['tracks' => $tracks]) --}}
