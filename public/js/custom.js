@@ -23,9 +23,10 @@ var App = (function () {
                 url: url
             }).done(function (data) {
                 // load results into the applicable position
-
                 $('#' + target).html(data.Success);
                 console.log('Loaded embeds: ' + target);
+                // remove the target class
+                $('#' + target).removeClass('playlist-id');
             }).fail(function () {
                 console.log('No event embeds could be loaded')
             });
