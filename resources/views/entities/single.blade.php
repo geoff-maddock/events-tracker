@@ -104,6 +104,6 @@
 		@endforeach
 		@endif
 	</ul>
-
+	@php unset($series) @endphp
 	@include('embeds.minimal-playlist', ['entity' => $entity])
 </li>
