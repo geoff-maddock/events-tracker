@@ -144,5 +144,6 @@
 		</P>
 	</div>
 
+	@php unset($series) @endphp
 	@include('embeds.minimal-playlist', ['event' => $event])
 </li>

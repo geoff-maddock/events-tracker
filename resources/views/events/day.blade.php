@@ -49,7 +49,6 @@
                 <div><small>No series listed today.</small></div>
                 @endif
                 
-                
             </div>
     </div>
 </div>
