@@ -26,7 +26,7 @@
 	<div class="row small-gutter row-cols-lg-4 home" id="home">
 		@for ($offset = 0; $offset < 4; $offset++)
 		<?php $day = \Carbon\Carbon::parse($date)->addDay($offset); ?>
-			<section class="day" data-num="{{ $offset }}" id="day-position-{{ $offset }}" href="/events/day/{{ $day->format('Y-m-d') }}">
+			<section class="day">
 				@include('events.day', ['day' => $day, 'position' => $offset ])
 			</section>
 		@endfor
