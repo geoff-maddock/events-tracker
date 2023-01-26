@@ -608,11 +608,12 @@ class SeriesController extends Controller
             ->with($this->getSeriesFormOptions());
     }
 
-    public function show(Series $series): View
+    public function show(Series $series, EmbedExtractor $embedExtractor): View
     {
         $events = $series->events()->paginate($this->childLimit);
         $threads = $series->threads()->paginate($this->childLimit);
-
+        // $embeds = $embedExtractor->getEmbedsForSeries($series);
+        // dd($embeds);
         return view('series.show', compact('series', 'events', 'threads'));
     }
 
