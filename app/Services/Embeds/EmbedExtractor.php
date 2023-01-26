@@ -63,10 +63,11 @@ class EmbedExtractor
         return $config;
     }
 
+
     /**
-     * Returns an array of embeds for an entity
+     * Returns an array of audio embeds based on URLs
      */
-    public function getEmbedsForEntity(Entity $entity, string $size = "medium"): array
+    public function extractEmbedsFromUrls(array $urls, string $size = "medium"): array
     {
         $embeds = [];
         $links = [];
@@ -88,34 +89,60 @@ class EmbedExtractor
             ],
             'response' => []
         ]);
-
-        // get some data about the entities bandcamp links
-        $collectionLinks = $entity->links;
-
-        // handle any URLs that are only containers
-        foreach ($collectionLinks as $collectionLink) {
-            $url = $collectionLink->url;
+        
+        // handle any URLs that could be containers
+        foreach ($urls as $url) {
 
             // if it's a bandcamp link
             if (strpos($url, "bandcamp.com")) {
                 $temp =  $this->getEmbedsFromBandcampUrl($url);
+
+                // merge these embeds into those returned
                 $embeds = array_merge($embeds, $temp);
-            } else {
-                $links[] = $url;
+            }
+
+            // if it's a soundcloud link
+            if (strpos($url, "soundcloud.com")) {
+                $temp =  $this->getEmbedsFromSoundcloudUrl($url);
+
+                $links = array_merge($links, $temp);
             }
         }
 
-        // convert the entity's links into embeds when they contain embeddable audio
+        // convert the event's links into embeds when they contain embeddable audio
         foreach ($links as $link) {
             // soundcloud
             if (strpos($link, "soundcloud.com") && substr_count($link, '/') > 3) {
                 // it's a soundcloud link, so request info
                 $ripple->request($link);
+
                 $embeds[] = sprintf($this->config["soundcloud_layout"], $ripple->embed().$this->config["soundcloud"]);
             }
         }
 
-        return array_unique($embeds);
+        return $embeds;
+    }
+
+
+    /**
+     * Returns an array of embeds for an entity
+     */
+    public function getEmbedsForEntity(Entity $entity, string $size = "medium"): array
+    {
+        // get some data about the entities bandcamp links
+        $collectionLinks = $entity->links;
+
+        $urls = [];
+
+        // handle any URLs that are only containers
+        foreach ($entity->links as $link) {
+            if (in_array($link->url, $urls)) {
+                continue;
+            };
+            $urls[] = $link->url;
+        }
+        // now that we have the URLs, extract the embeds from them
+        return $this->extractEmbedsFromUrls($urls, $size);
     }
 
     /**
@@ -123,27 +150,6 @@ class EmbedExtractor
      */
     public function getEmbedsForEvent(Event $event, string $size = "medium"): array
     {
-        $embeds = [];
-        $links = [];
-
-        // check if the config is set, if not, set it
-        if (empty($this->config)) {
-            $this->config = $this->getLayoutConfig($size);
-        };
-
-        // ripple extracts data from audio provider links
-        $ripple = new Ripple;
-
-        // set up ripple
-        $ripple->options([
-            'curl' => [],
-            'embed' => [
-                'Bandcamp' => $this->config["bandcamp"],
-                'Soundcloud' => $this->config["soundcloud"]
-            ],
-            'response' => []
-        ]);
-
         // get the body of the event and extract any relevant links
         $body = $event->description;
 
@@ -162,29 +168,8 @@ class EmbedExtractor
             }
         };
 
-        // handle any URLs
-        foreach ($urls as $url) {
-            // if it's a bandcamp link
-            if (strpos($url, "bandcamp.com")) {
-                $temp =  $this->getEmbedsFromBandcampUrl($url);
-                $embeds = array_merge($embeds, $temp);
-            } else {
-                $links[] = $url;
-            }
-        }
-
-        // convert the event's links into embeds when they contain embeddable audio
-        foreach ($links as $link) {
-            // soundcloud
-            if (strpos($link, "soundcloud.com") && substr_count($link, '/') > 3) {
-                // it's a soundcloud link, so request info
-                $ripple->request($link);
-
-                $embeds[] = sprintf($this->config["soundcloud_layout"], $ripple->embed().$this->config["soundcloud"]);
-            }
-        }
-
-        return $embeds;
+        // now that we have the URLs, extract the embeds from them
+        return $this->extractEmbedsFromUrls($urls, $size);
     }
 
     /**
@@ -192,27 +177,6 @@ class EmbedExtractor
      */
     public function getEmbedsForSeries(Series $series, string $size = "medium"): array
     {
-        $embeds = [];
-        $links = [];
-
-        // check if the config is set, if not, set it
-        if (empty($this->config)) {
-            $this->config = $this->getLayoutConfig($size);
-        };
-
-        // ripple extracts data from audio provider links
-        $ripple = new Ripple;
-
-        // set up ripple
-        $ripple->options([
-            'curl' => [],
-            'embed' => [
-                'Bandcamp' => $this->config["bandcamp"],
-                'Soundcloud' => $this->config["soundcloud"]
-            ],
-            'response' => []
-        ]);
-
         // get the body of the series and extract any relevant links
         $body = $series->description;
 
@@ -231,29 +195,8 @@ class EmbedExtractor
             }
         };
 
-        // handle any URLs
-        foreach ($urls as $url) {
-            // if it's a bandcamp link
-            if (strpos($url, "bandcamp.com")) {
-                $temp =  $this->getEmbedsFromBandcampUrl($url);
-                $embeds = array_merge($embeds, $temp);
-            } else {
-                $links[] = $url;
-            }
-        }
-
-        // convert the series's links into embeds when they contain embeddable audio
-        foreach ($links as $link) {
-            // soundcloud
-            if (strpos($link, "soundcloud.com") && substr_count($link, '/') > 3) {
-                // it's a soundcloud link, so request info
-                $ripple->request($link);
-
-                $embeds[] = sprintf($this->config["soundcloud_layout"], $ripple->embed().$this->config["soundcloud"]);
-            }
-        }
-
-        return $embeds;
+        // now that we have the URLs, extract the embeds from them
+        return $this->extractEmbedsFromUrls($urls, $size);
     }
 
     /**
@@ -289,7 +232,8 @@ class EmbedExtractor
 
         // if it's a bandcamp link
         if (strpos($url, "bandcamp.com")) {
-            // send a request to the URL and look for a meta tag
+
+            // send a request to the URL and look for a meta tag that contains the embed link directly
             $this->provider->request($url);
             $content = $this->provider->query('//meta[@property="og:video"]/@content');
                 
@@ -324,6 +268,129 @@ class EmbedExtractor
         return array_unique($embeds);
     }
 
+    protected function getEmbedsFromSoundcloudUrl(string $url, int $depth = 1, string $size = 'medium'): ?array
+    {
+        // prevent an infinite loop
+        if ($depth > 2) {
+            return [];
+        }
+        // reset the response
+        $this->provider->setResponse(null);
+
+        // set up the layout config
+        if (empty($this->config)) {
+            $this->config = $this->getLayoutConfig($size);
+        };
+        
+        $urls = [];
+        $containerUrl = $url;
+
+        // cut off any trailing slashes
+        $url = rtrim($url,"/");
+
+        // if it's a soundcloud url and only contains three slashes, it may be a container
+        if (strpos($url, "soundcloud.com") && substr_count($url, '/') == 3) {
+            $this->provider->request($url);
+
+            $trackLinks = $this->provider->xpathQuery("//article/h2/a[@itemprop='url']/@href");
+
+            // parse the url to get the base
+            $parsedUrl = parse_url($url);
+
+            // if there is no scheme, default to https
+            $scheme = isset($parsedUrl["scheme"]) ? $parsedUrl["scheme"] : 'https';
+            $host = isset($parsedUrl["host"]) ? $parsedUrl["host"] : '';
+    
+            // build the base URL 
+            $baseUrl = $scheme."://".$host;
+
+            // add track links to the url array
+            foreach ($trackLinks as $trackLink) {
+                if (count($urls) >= self::CONTAINER_LIMIT) continue;
+                if (strpos($trackLink, 'https') === 0) {
+                    if (!in_array($trackLink, $urls)
+                        && strpos($parsedUrl["host"], $trackLink)
+                        && $trackLink !== $containerUrl
+                    ) {
+                        $urls[] = $trackLink;
+                    }
+                } else {
+                    // handle the case where the links are just partial
+                    if (substr($trackLink, 4) !== 'http') {
+                        if (!in_array($baseUrl.$trackLink, $urls)
+                            && $baseUrl.$trackLink !== $containerUrl
+                        ) {
+                            $urls[] = $baseUrl.$trackLink;
+                        }
+                    }
+                }
+            }
+
+            // reset the response
+            $this->provider->setResponse(null);
+        } else {
+            // otherwise, just add 
+            $urls[] = $url;
+        }
+
+        return array_unique($urls);
+    }
+
+    protected function getUrlsFromSoundcloudContainer(string $containerUrl): array
+    {
+        $urls = [];
+
+        $httpClient = new \GuzzleHttp\Client();
+
+        try {
+            $response = $httpClient->get($containerUrl);
+        } catch (Exception $e) {
+            // if there was an exception, don't process further
+            return [];
+        }
+
+        $htmlString = (string) $response->getBody();
+
+        libxml_use_internal_errors(true);
+
+        $doc = new DOMDocument();
+        $doc->loadHTML($htmlString);
+        $xpath = new DOMXPath($doc);
+
+        // parse the url to get the base
+        $parsedUrl = parse_url($containerUrl);
+
+        // if there is no scheme, default to https
+        $scheme = isset($parsedUrl["scheme"]) ? $parsedUrl["scheme"] : 'https';
+        $host = isset($parsedUrl["host"]) ? $parsedUrl["host"] : '';
+
+        $baseUrl = $scheme."://".$host;
+
+        $trackLinks = $xpath->evaluate("//a[contains(@href,'/track')]");
+
+        // add track links to the url array
+        foreach ($trackLinks as $trackLink) {
+            if (strpos($trackLink->getAttribute("href"), 'https') === 0) {
+                if (!in_array($trackLink->getAttribute("href"), $urls)
+                    && strpos($parsedUrl["host"], $trackLink->getAttribute("href"))
+                    && $trackLink->getAttribute("href") !== $containerUrl
+                ) {
+                    $urls[] = $trackLink->getAttribute("href");
+                }
+            } else {
+                // handle the case where the links are just partial
+                if (substr($trackLink->getAttribute("href"), 4) !== 'http') {
+                    if (!in_array($baseUrl.$trackLink->getAttribute("href"), $urls)
+                        && $baseUrl.$trackLink->getAttribute("href") !== $containerUrl
+                    ) {
+                        $urls[] = $baseUrl.$trackLink->getAttribute("href");
+                    }
+                }
+            }
+        }
+
+        return array_unique($urls);
+    }
 
     protected function getUrlsFromContainer(string $containerUrl): array
     {

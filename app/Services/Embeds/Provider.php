@@ -31,6 +31,14 @@ class Provider
     }
 
     /**
+     * @return string $response
+     */
+    public function getResponse(): string
+    {
+        return $this->response;
+    }
+
+    /**
      * @param string $url
      */
     public function request(string $url): void
@@ -90,5 +98,32 @@ class Provider
         }
 
         return null;
+    }
+
+    /**
+     * @param string $expression
+     * @return array|null
+     */
+    public function xpathQuery(string $expression): ?array
+    {
+        libxml_use_internal_errors(true);
+
+        $dom = new DOMDocument;
+        $dom->preserveWhiteSpace = false;
+
+        if (null !== $this->response && '' !== $this->response) {
+            $dom->loadHTML(mb_convert_encoding($this->response, 'HTML-ENTITIES'));
+        }
+
+        libxml_clear_errors();
+
+        $xpath = new DOMXPath($dom);
+        $string = $xpath->query($expression);
+        $nodes = [];
+        foreach ($string as $node) {
+            $nodes[] = $node->nodeValue;
+        }
+
+        return $nodes;
     }
 }
