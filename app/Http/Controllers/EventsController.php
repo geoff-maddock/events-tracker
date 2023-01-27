@@ -2120,9 +2120,9 @@ class EventsController extends Controller
         // check blacklist status
         $blacklist = $this->checkBlackList($event);
 
-        // extract all the links from the event body and convert into embeds
+        // // extract all the links from the event body and convert into embeds
+        // $embedExtractor->setLayout("small");
         // $embeds = $embedExtractor->getEmbedsForEvent($event);
-        // dd($embeds);
         $embeds = [];
 
         return view('events.show', compact('event', 'embeds'))->with(['thread' => $thread, 'blacklist' => $blacklist])->render();

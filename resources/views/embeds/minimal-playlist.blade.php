@@ -1,7 +1,7 @@
 @if (isset($embeds) && count($embeds) > 0)
 <div class="row">
     <div class="col-lg-12">
-        <div class="bg-info p-1">      
+        <div class="">      
             @php 
                 $count = 0;
                 $limit = 1;

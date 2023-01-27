@@ -39,23 +39,31 @@ class EmbedExtractor
     {
         $config = [];
 
+        //$theme = 'dark';
+        $css = 'bgcol=333333/linkcol=0f91ff';
+        // if ($theme == 'light') {
+        //     $css = 'bgcol=ffffff/linkcol=0687f5';
+        // } else {
+        //     $css = 'bgcol=333333/linkcol=0f91ff';
+        // };
+
         // set up the variables;
         switch ($this->size) {
             case "large":
-                $config["bandcamp"] = '/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/transparent=true/';
-                $config["soundcloud"] = '&color=%23ff5500&inverse=false&auto_play=true&show_user=true';
+                $config["bandcamp"] = sprintf('/size=large/%s/tracklist=false/transparent=true/', $css);
+                $config["soundcloud"] = '&color=%23ff5500&inverse=true&auto_play=true&show_user=true';
                 $config["bandcamp_layout"] = '<iframe style="border: 0; width: 100%%; height: 300px;" src="%s" allowfullscreen seamless></iframe>';
                 $config["soundcloud_layout"] = '<iframe style="border: 0; width: 100%%; height: 300px;" src="%s" allowfullscreen seamless></iframe>';
                 break;
             case "small":
-                $config["bandcamp"] = '/size=small/bgcol=333333/linkcol=0687f5/transparent=true/';
-                $config["soundcloud"] = '&color=%23232863&inverse=true&auto_play=true&show_user=true';
+                $config["bandcamp"] = sprintf('/size=small/%s/transparent=true/', $css);
+                $config["soundcloud"] = '&color=%160d18&inverse=true&auto_play=true&show_user=true';
                 $config["bandcamp_layout"] = '<iframe style="border: 0; width: 100%%; height: 42px; margin-bottom: -7px;" src="%s" allowfullscreen seamless></iframe>';
-                $config["soundcloud_layout"] = '<iframe style="border: 0; width: 100%%; height: 20px; margin-bottom: -7px; color: #cccccc;" src="%s" allowfullscreen seamless></iframe>';
+                $config["soundcloud_layout"] = '<iframe style="border: 0; width: 100%%; height: 24px; margin-bottom: -7px; padding: 2px; background-color: #333333; color: #cccccc;" src="%s" allowfullscreen seamless></iframe>';
                break;
             default:
-                $config["bandcamp"] = '/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/transparent=true/';
-                $config["soundcloud"] = '&color=%23ff5500&auto_play=true&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false';
+                $config["bandcamp"] = sprintf('/size=large/%s/tracklist=false/artwork=small/transparent=true/',$css);
+                $config["soundcloud"] = '&color=%23ff5500&inverse=true&auto_play=true&show_user=true';
                 $config["bandcamp_layout"] = '<iframe style="border: 0; width: 100%%; height: 120px;" src="%s" allowfullscreen seamless></iframe>';
                 $config["soundcloud_layout"] = '<iframe style="border: 0; width: 100%%; height: 120px;" src="%s" allowfullscreen seamless></iframe>';
         }
@@ -210,6 +218,8 @@ class EmbedExtractor
                 $content = str_replace("artwork=small/", "", $content);
         }
 
+        $content = $content.$this->config["bandcamp"];
+
         return $content;
     }
 
@@ -242,7 +252,6 @@ class EmbedExtractor
 
                 // convert content based on size
                 $content = $this->convertBandcampMetaOgVideo($content);
-
                 $embeds[] = sprintf($this->config['bandcamp_layout'], $content);
             } else {
                 // no embed in meta, so might be container
