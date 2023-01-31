@@ -15,7 +15,6 @@ var App = (function () {
 
     // load embeded audio code
     var loadEmbeds = function () {
-        console.log('triggered load embeds');
         $('body div.playlist-id').each(function (e) {
             var url = $(this).attr('data-url');
             var target = $(this).attr('id');
@@ -24,7 +23,6 @@ var App = (function () {
             }).done(function (data) {
                 // load results into the applicable position
                 $('#' + target).html(data.Success);
-                console.log('Loaded embeds: ' + target);
                 // remove the target class
                 $('#' + target).removeClass('playlist-id');
             }).fail(function () {
@@ -42,8 +40,6 @@ var App = (function () {
             var form = $(this).parents('form');
             var type = $(this).data('type');
             e.preventDefault();
-            console.log('set up delete confirm');
-            console.log('form: ' + form);
             Swal.fire({
                 title: "Are you sure?",
                 text: "You will not be able to recover this " + type + "!",
@@ -62,8 +58,6 @@ var App = (function () {
                 if (result.value) {
                     // handle Confirm button click
                     // result.value will contain `true` or the input value
-                    console.log('set up delete confirm');
-                    console.log('form: ' + form);
                     form.submit();
                 } else {
                     // handle dismissals
@@ -293,7 +287,7 @@ var Home = (function () {
 
     // when the add events link is clicked, append the events to the bottom
     var setupAddEvents = function () {
-        console.log('setup add events');
+        console.log('execute setup add events button');
         $('body').on('click', '#add-event', function (e) {
             e.preventDefault();
             var url = $(this).attr('href');
@@ -332,16 +326,19 @@ var Home = (function () {
 
     // load a day's events
     var getDayEvents = function (url, num) {
-        console.log('get day events');
-        $.ajax({
-            url: url
-        }).done(function (data) {
-            // load results into the applicable position
-            $('#day-position-' + num).html(data);
-            App.loadEmbeds();
-        }).fail(function () {
-            console.log('No events could be loaded')
-        });
+        // maybe add a wait here?
+        if (url !== undefined) {
+            $.ajax({
+                url: url
+            }).done(function (data) {
+                // load results into the applicable position
+                $('#day-position-' + num).html(data);
+                // TODO determine if we need to do this re-load, or ONLY after the days have been added?
+                App.loadEmbeds();
+            }).fail(function () {
+                console.log('No events could be loaded')
+            });
+        }
     };
 
     // load a whole block of events
@@ -357,16 +354,17 @@ var Home = (function () {
 
     // load a whole block of events and append
     var addEvents = function addEvents(url, target) {
-        $.ajax({
-            url: url
-        }).done(function (data) {
-            $('.next-events').parent().remove();
-            $(target).last().after(data);
-            console.log('last targetted ' + target);
-            App.loadEmbeds();
-        }).fail(function () {
-            console.log('No events could be loaded.');
-        });
+        if (url !== undefined) {
+            $.ajax({
+                url: url
+            }).done(function (data) {
+                $('.next-events').parent().remove();
+                $(target).last().after(data);
+                App.loadEmbeds();
+            }).fail(function () {
+                console.log('No events could be loaded.');
+            });
+        }
     };
 
     return {
@@ -384,4 +382,5 @@ var Home = (function () {
 // init app module on document load
 $(function () {
     App.init();
+    console.log('app.init executed');
 });
