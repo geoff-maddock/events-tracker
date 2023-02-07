@@ -326,7 +326,7 @@ class EventsController extends Controller
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
-            ->setQueryBuilder(Event::query())
+            ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['events.start_at' => 'desc']);
 
         // nothing really happens until here in cadence
