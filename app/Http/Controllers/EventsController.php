@@ -87,7 +87,7 @@ class EventsController extends Controller
 
     public function __construct(EventFilters $filter)
     {
-        $this->middleware('verified', ['only' => ['create', 'edit', 'store', 'update', 'indexAttending', 'calendarAttending']]);
+        $this->middleware('verified', ['only' => ['create', 'edit', 'duplicate','store', 'update', 'indexAttending', 'calendarAttending']]);
         $this->filter = $filter;
 
         // prefix for session storage
@@ -3196,6 +3196,17 @@ class EventsController extends Controller
         $thread->entities()->attach($event->entities()->pluck('entities.id')->toArray());
 
         return redirect()->route('events.show', ['event' => $event->id]);
+    }
+
+    public function duplicate(int $id): View
+    {
+        // find the event to duplicate
+        $this->middleware('auth');
+
+        $e = Event::find($id);
+        $event = $e->replicate();
+
+        return view('events.create', compact('event'))->with($this->getFormOptions());
     }
 
     public function export(

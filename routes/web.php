@@ -180,6 +180,11 @@ Route::get('events/createThread', [
     'uses' => 'EventsController@createThread',
 ]);
 
+Route::get('events/{id}/duplicate', [
+    'as' => 'events.duplicate',
+    'uses' => 'EventsController@duplicate',
+]);
+
 Route::get('events/dispatch', function () {
     EventUpdated::dispatch();
 
