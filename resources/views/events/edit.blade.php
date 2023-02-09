@@ -16,20 +16,14 @@
 <h1 class="display-6 text-primary">Events. Edit	@include('events.crumbs', ['slug' => $event->slug ?: $event->id])</h1>
 
 <div id="action-menu" class="mb-2">
-  <a href="{!! route('events.show', ['event' => $event->id]) !!}" class="btn btn-primary">Show Event</a>
-
-  @if (!empty($event->threads) && $user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser')) )
-    <a href="{!! route('events.createThread', ['id' => $event->id]) !!}" title="Create an thread related to this event." class="btn btn-primary"><i class="bi bi-chat-text-fill"></i> Create Thread</a>
-  @endif
-
-  <a href="{!! URL::route('events.index') !!}" class="btn btn-info">Return to list</a>
+	@include('events.show.actions', ['event' => $event, 'user' => $user])
 </div>
 
 <div class="row">
   <div class="col-md-8">
 	{!! Form::model($event, ['route' => ['events.update', $event->id], 'method' => 'PATCH', 'class' => 'form-container']) !!}
 
-		@include('events.form', ['action' => 'update',])
+		@include('events.form', ['action' => 'update'])
 
 	{!! Form::close() !!}
 
