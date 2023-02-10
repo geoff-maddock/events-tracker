@@ -1880,7 +1880,21 @@ paths:
           description: A filter query of the entity status name
           schema:
             type: string
-          example: "Group"
+          example: Group
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+            example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+            example: asc
       responses:
         "200":
           description: Successful response
@@ -1962,6 +1976,20 @@ paths:
           schema:
             type: string
           example: "Group"
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+            example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+            example: asc
       responses:
         "200":
           description: Successful response
@@ -2039,6 +2067,20 @@ paths:
           schema:
             type: string
           example: Google
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+            example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+            example: asc
       responses:
         "200":
           description: Successful response
@@ -2320,6 +2362,20 @@ paths:
           schema:
             type: string
           example: "techno"
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+            example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+            example: asc
       responses:
         "200":
           description: Successful response
@@ -2415,6 +2471,20 @@ paths:
           schema:
             type: string
           example: geoff.maddock@gmail.com
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+            example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+            example: asc
       responses:
         "200":
           description: Successful response

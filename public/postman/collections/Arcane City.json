@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "d7849208-e3bd-41ce-8a14-6acbdeb85309",
+		"_postman_id": "cc58a79b-8dd4-42d8-87f8-8c667838eaa1",
 		"name": "Arcane City",
 		"description": "REST API for working with Arcane City data\n\nContact Support:\n Name: Geoff Maddock\n Email: geoff.maddock@gmail.com",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_uid": "21955993-d7849208-e3bd-41ce-8a14-6acbdeb85309"
+		"_uid": "21955993-cc58a79b-8dd4-42d8-87f8-8c667838eaa1"
 	},
 	"item": [
 		{
@@ -14,11 +14,11 @@
 					"name": "events",
 					"item": [
 						{
-							"name": "{event Id}",
+							"name": "{eventId}",
 							"item": [
 								{
 									"name": "Get Event",
-									"id": "ed41bb29-3b38-49e2-a8d6-5326b692564d",
+									"id": "d16cdc01-6d66-467e-bdf4-5963e480734c",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -51,7 +51,7 @@
 									},
 									"response": [
 										{
-											"id": "1b281807-6004-4762-afa1-bcf72697fd65",
+											"id": "9a535ee1-6c5c-4b97-8722-da9b7888aa41",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "GET",
@@ -97,7 +97,7 @@
 								},
 								{
 									"name": "Update Events",
-									"id": "5b79a383-6a96-4570-b2e0-5a0f02e8948d",
+									"id": "1ab4e59a-a1bf-4042-9e61-f53e0dde9708",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -143,7 +143,7 @@
 									},
 									"response": [
 										{
-											"id": "03066e3e-01f3-4c3b-9510-e85e850f52d0",
+											"id": "a49c1038-5412-4844-bea5-02bdb6167d7e",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "PUT",
@@ -198,7 +198,7 @@
 								},
 								{
 									"name": "Delete Event",
-									"id": "96f1be97-e015-411a-bdc0-c25d859ccb5d",
+									"id": "8c957b25-8538-470c-a57a-f5a05f169cb2",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -231,7 +231,7 @@
 									},
 									"response": [
 										{
-											"id": "4922c315-cff5-458d-94dc-ffe16458eb70",
+											"id": "71cf9fe1-0708-4ced-b76b-35149acaa7c7",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "DELETE",
@@ -276,11 +276,11 @@
 									]
 								}
 							],
-							"id": "a82bc823-97ad-4737-b57d-545e9d7e6fc7"
+							"id": "40aa2c11-0bc4-43d9-aaf3-b756d584fe3d"
 						},
 						{
 							"name": "Create Event",
-							"id": "7975c8ca-f9a5-41b8-935e-5340b66ebd14",
+							"id": "c883b6e4-f311-4c11-8b33-0360ff56c5af",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -318,7 +318,7 @@
 							},
 							"response": [
 								{
-									"id": "0d27973a-64cd-4cfd-ad8e-a7037f3d318d",
+									"id": "36be64bc-384e-4ee8-8f21-022bf7719861",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "POST",
@@ -362,7 +362,7 @@
 									"body": "{\n  \"id\": 1,\n  \"name\": \"October's Lazercrunk at the Brillobox\",\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"a really fun dj night featuring performers from around the world\",\n  \"visibility\": {\n    \"name\": \"Public\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"description\": \"a really fun dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_status\": {\n    \"name\": \"Active\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"event_type\": {\n    \"name\": \"Concert\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"promoter\": {\n    \"id\": 1,\n    \"name\": \"Brillobox\",\n    \"slug\": \"brillobox-bar\",\n    \"short\": \"A two level bar and venue\",\n    \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n    \"entity_type\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"group-slug\",\n      \"short\": \"A multi-member entity\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"entity_status\": {\n      \"name\": \"Active\",\n      \"id\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"created_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"updated_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\",\n    \"started_at\": \"2018-03-20T09:12:28Z\",\n    \"facebook_username\": \"johnsmith\",\n    \"twitter_username\": \"johnsmith\",\n    \"links\": [\n      {\n        \"id\": 1,\n        \"title\": \"This is the lazercrunk website.\",\n        \"text\": \"Lazercrunk Website\",\n        \"url\": \"https://lazercrunk.com\",\n        \"is_primary\": true,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      },\n      {\n        \"id\": 1,\n        \"title\": \"This is the lazercrunk website.\",\n        \"text\": \"Lazercrunk Website\",\n        \"url\": \"https://lazercrunk.com\",\n        \"is_primary\": true,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      }\n    ]\n  },\n  \"venue\": {\n    \"id\": 1,\n    \"name\": \"Brillobox\",\n    \"slug\": \"brillobox-bar\",\n    \"short\": \"A two level bar and venue\",\n    \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n    \"entity_type\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"group-slug\",\n      \"short\": \"A multi-member entity\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"entity_status\": {\n      \"name\": \"Active\",\n      \"id\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"created_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"updated_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\",\n    \"started_at\": \"2018-03-20T09:12:28Z\",\n    \"facebook_username\": \"johnsmith\",\n    \"twitter_username\": \"johnsmith\",\n    \"links\": [\n      {\n        \"id\": 1,\n        \"title\": \"This is the lazercrunk website.\",\n        \"text\": \"Lazercrunk Website\",\n        \"url\": \"https://lazercrunk.com\",\n        \"is_primary\": true,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      },\n      {\n        \"id\": 1,\n        \"title\": \"This is the lazercrunk website.\",\n        \"text\": \"Lazercrunk Website\",\n        \"url\": \"https://lazercrunk.com\",\n        \"is_primary\": true,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      }\n    ]\n  },\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"series\": {\n    \"id\": 1,\n    \"name\": \"Lazercrunk, First Fridays of the Month\",\n    \"slug\": \"lazercrunk-first-fridays-of-the-month\",\n    \"short\": \"a really fun monthly dj night featuring performers from around the world\",\n    \"visibility\": {\n      \"name\": \"Public\",\n      \"id\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"description\": \"a really fun monthly dj night featuring performers from around the world and locally playing new electronic music\",\n    \"event_type\": {\n      \"name\": \"Concert\",\n      \"id\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"occurrence_type\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n      \"short\": \"A multi-member occurrence\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"occurrence_week\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n      \"short\": \"A multi-member occurrence\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"occurrence_day\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n      \"short\": \"A multi-member occurrence\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"hold_date\": true,\n    \"promoter_id\": 1,\n    \"venue_id\": 1,\n    \"is_benefit\": true,\n    \"attending\": 10,\n    \"like\": 10,\n    \"presale_price\": 9.99,\n    \"door_price\": 19.99,\n    \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n    \"door_at\": \"2018-03-20T09:12:28Z\",\n    \"start_at\": \"2018-03-20T09:12:28Z\",\n    \"end_at\": \"2018-03-20T09:12:28Z\",\n    \"min_age\": 21,\n    \"primary_link\": \"http://lazercrunk.com/october-2022\",\n    \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\",\n    \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n    \"created_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"updated_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    }\n  },\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": {\n    \"id\": 1,\n    \"name\": \"john.smith\",\n    \"email\": \"john.smith@gmail.com\"\n  },\n  \"updated_by\": {\n    \"id\": 1,\n    \"name\": \"john.smith\",\n    \"email\": \"john.smith@gmail.com\"\n  }\n}"
 								},
 								{
-									"id": "0daaee9a-05b6-4e7d-bd99-7d29e7e0a94d",
+									"id": "9b3e2114-6c05-4db0-9398-51d47845644d",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "POST",
@@ -406,7 +406,7 @@
 									"body": "{\n  \"id\": 1,\n  \"name\": \"October's Lazercrunk at the Brillobox\",\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"a really fun dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_status_id\": 1,\n  \"event_type_id\": 1,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"series_id\": 1,\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": 1,\n  \"updated_by\": 1\n}"
 								},
 								{
-									"id": "8717e759-611e-485c-9781-6b03ccb63037",
+									"id": "dc29506f-48dd-4baf-a001-ecc2c8eaa7fc",
 									"name": "Unexpected error",
 									"originalRequest": {
 										"method": "POST",
@@ -447,13 +447,13 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n  \"message\": \"cillum labore\"\n}"
+									"body": "{\n  \"message\": \"quis commodo\"\n}"
 								}
 							]
 						},
 						{
 							"name": "Get Events",
-							"id": "1096c54c-61de-49da-9f0e-10becbb45750",
+							"id": "3c193be1-ecda-4b1c-b8ca-faa5f6f1a2c7",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -466,7 +466,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/api/events?filters[name]=Lazercrunk&filters[venue]=Brillobox&filters[promoter]=Cutups&filters[related]=0h85&filters[series]=Lazercrunk&filters[event_type]=Concert&filters[start_at][start]=2022-01-01 1:00:00&filters[start_at][end]=2022-02-01 2:00:00&filters[end_at][start]=2022-02-01 1:00:00&filters[end_at][end]=2022-01-01 2:00:00&orderBy=title desc&filters[ages]=21",
+									"raw": "{{baseUrl}}/api/events?filters[name]=Lazercrunk&filters[venue]=Brillobox&filters[promoter]=Cutups&filters[related]=0h85&filters[series]=Lazercrunk&filters[event_type]=Concert&filters[start_at][start]=2022-01-01 1:00:00&filters[start_at][end]=2022-02-01 2:00:00&filters[end_at][start]=2022-02-01 1:00:00&filters[end_at][end]=2022-01-01 2:00:00&filters[ages]=21&sort=name&direction=asc",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -526,21 +526,26 @@
 											"description": "A filter query of the end time ending"
 										},
 										{
-											"key": "orderBy",
-											"value": "title desc",
-											"description": "A order by clause to be applied to the select"
-										},
-										{
 											"key": "filters[ages]",
 											"value": "21",
 											"description": "A filter query of the end time ending"
+										},
+										{
+											"key": "sort",
+											"value": "name",
+											"description": "A column to be used to sort the query"
+										},
+										{
+											"key": "direction",
+											"value": "asc",
+											"description": "A string indicating the sort direction of the query (asc or desc)"
 										}
 									]
 								}
 							},
 							"response": [
 								{
-									"id": "45091030-538a-4d3e-a387-d5101edf2f96",
+									"id": "028f751b-8ebd-4177-a048-465c70472560",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "GET",
@@ -552,7 +557,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/api/events?filters[name]=Lazercrunk&filters[venue]=Brillobox&filters[promoter]=Cutups&filters[related]=0h85&filters[series]=Lazercrunk&filters[event_type]=Concert&filters[start_at][start]=2022-01-01 1:00:00&filters[start_at][end]=2022-02-01 2:00:00&filters[end_at][start]=2022-02-01 1:00:00&filters[end_at][end]=2022-01-01 2:00:00&orderBy=title desc&filters[ages]=21",
+											"raw": "{{baseUrl}}/api/events?filters[name]=Lazercrunk&filters[venue]=Brillobox&filters[promoter]=Cutups&filters[related]=0h85&filters[series]=Lazercrunk&filters[event_type]=Concert&filters[start_at][start]=2022-01-01 1:00:00&filters[start_at][end]=2022-02-01 2:00:00&filters[end_at][start]=2022-02-01 1:00:00&filters[end_at][end]=2022-01-01 2:00:00&filters[ages]=21&sort=name&direction=asc",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -602,12 +607,16 @@
 													"value": "2022-01-01 2:00:00"
 												},
 												{
-													"key": "orderBy",
-													"value": "title desc"
-												},
-												{
 													"key": "filters[ages]",
 													"value": "21"
+												},
+												{
+													"key": "sort",
+													"value": "name"
+												},
+												{
+													"key": "direction",
+													"value": "asc"
 												}
 											]
 										}
@@ -622,13 +631,13 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n  \"current_page\": 32756096,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
+									"body": "{\n  \"current_page\": 99622977,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
 								}
 							]
 						},
 						{
 							"name": "Reset event filters",
-							"id": "89fb8832-5702-496d-9dea-b788194c83a8",
+							"id": "d9168ca2-b70c-4dd1-a428-53bfbc44b5ed",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -654,7 +663,7 @@
 							},
 							"response": [
 								{
-									"id": "3641c108-f8ad-4a8c-93db-1e1b4cbcacfd",
+									"id": "bae31eb9-b96e-4b50-b931-6df11c8dbcef",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "GET",
@@ -692,7 +701,7 @@
 							]
 						}
 					],
-					"id": "adf55519-eeff-4d4c-bd09-1f5556136a89"
+					"id": "927644f9-5719-450e-91bb-a6a800a820ab"
 				},
 				{
 					"name": "entities",
@@ -702,7 +711,7 @@
 							"item": [
 								{
 									"name": "Get Entity",
-									"id": "a31dfb53-d927-49d9-b3ee-324adbed5df0",
+									"id": "6ce34f97-f078-49ca-bdae-b6efd3022be0",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -735,7 +744,7 @@
 									},
 									"response": [
 										{
-											"id": "750a4d90-2495-4eef-8bee-e8aa8156edad",
+											"id": "742743ad-e4b6-4874-ab97-a9fca0ae1890",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "GET",
@@ -781,7 +790,7 @@
 								},
 								{
 									"name": "Update Entity",
-									"id": "1ecbfee7-b681-40a3-841c-09bbac10aa84",
+									"id": "68aac17f-003a-4564-8028-455c0a8299a6",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -827,7 +836,7 @@
 									},
 									"response": [
 										{
-											"id": "8b149b4d-79f4-4639-9100-182a86dea4f1",
+											"id": "1d55c51d-622f-4b5f-8d3c-1b0be456fca6",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "PUT",
@@ -882,7 +891,7 @@
 								},
 								{
 									"name": "Delete Entity",
-									"id": "711254bd-cef0-4a84-8ded-0cf379fae018",
+									"id": "4202f131-a3d3-40db-8639-cc8531f75543",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -915,7 +924,7 @@
 									},
 									"response": [
 										{
-											"id": "7ce5fbb2-efa8-4d20-bf4b-eba92ae2fe2d",
+											"id": "0493cad6-b8d8-4610-9ef1-c20f6a9aaae3",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "DELETE",
@@ -960,11 +969,11 @@
 									]
 								}
 							],
-							"id": "ff4b9e18-1e48-4f3e-88be-15d38f621c9e"
+							"id": "daea58b2-0a59-441a-b1e8-be4fd3b917f2"
 						},
 						{
 							"name": "Create Entity",
-							"id": "bb10aa71-a976-4d23-a5f6-9500f59ba542",
+							"id": "292e4f00-f913-4249-9e52-998d6adf5f08",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -1002,7 +1011,7 @@
 							},
 							"response": [
 								{
-									"id": "f93d3949-97b1-413e-af32-f34428ea281f",
+									"id": "d3ac99cb-642e-489d-8a9a-d6e5bccfde13",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "POST",
@@ -1049,7 +1058,7 @@
 						},
 						{
 							"name": "Get Entities",
-							"id": "a38187a1-1c3c-4eb0-aafe-208fb7bc4076",
+							"id": "d8503fe6-87ec-4bf7-a72e-79fabc73a4c9",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -1062,7 +1071,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/api/entities?filters[name]=cutups&filters[role]=dj&filters[tag]=jungle&filters[entity_status]=Active&filters[entity_type]=Individual",
+									"raw": "{{baseUrl}}/api/entities?filters[name]=cutups&filters[role]=dj&filters[tag]=jungle&filters[entity_status]=Active&filters[entity_type]=Individual&sort=name&direction=asc",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -1095,13 +1104,23 @@
 											"key": "filters[entity_type]",
 											"value": "Individual",
 											"description": "A filter query of related entity type name"
+										},
+										{
+											"key": "sort",
+											"value": "name",
+											"description": "A column to be used to sort the query"
+										},
+										{
+											"key": "direction",
+											"value": "asc",
+											"description": "A string indicating the sort direction of the query (asc or desc)"
 										}
 									]
 								}
 							},
 							"response": [
 								{
-									"id": "1ce4fa9a-0d01-4a3f-9584-c719b71fe8d3",
+									"id": "483ddbfa-529c-43a7-b0ec-3dca8f505a1b",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "GET",
@@ -1113,7 +1132,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/api/entities?filters[name]=cutups&filters[role]=dj&filters[tag]=jungle&filters[entity_status]=Active&filters[entity_type]=Individual",
+											"raw": "{{baseUrl}}/api/entities?filters[name]=cutups&filters[role]=dj&filters[tag]=jungle&filters[entity_status]=Active&filters[entity_type]=Individual&sort=name&direction=asc",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -1141,6 +1160,14 @@
 												{
 													"key": "filters[entity_type]",
 													"value": "Individual"
+												},
+												{
+													"key": "sort",
+													"value": "name"
+												},
+												{
+													"key": "direction",
+													"value": "asc"
 												}
 											]
 										}
@@ -1155,13 +1182,13 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n  \"current_page\": 54512129,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
+									"body": "{\n  \"current_page\": -11592493,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
 								}
 							]
 						},
 						{
 							"name": "Reset Entity filters",
-							"id": "c012e5b9-a52f-4ff1-b393-9ce65d8be82b",
+							"id": "9ec6d317-3393-4582-afcf-90642686143d",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -1187,7 +1214,7 @@
 							},
 							"response": [
 								{
-									"id": "96052016-d5c9-4f0e-aa61-a73914615b50",
+									"id": "a445117f-63dd-4255-8308-b6bd75e7b4f5",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "GET",
@@ -1225,17 +1252,17 @@
 							]
 						}
 					],
-					"id": "aa27c466-9bd1-4728-ac5c-30fe80af05e3"
+					"id": "27bd0221-9156-4e6d-823e-22620fb8c4fa"
 				},
 				{
 					"name": "entity-statuses",
 					"item": [
 						{
-							"name": "{entity Status Id}",
+							"name": "{entityStatusId}",
 							"item": [
 								{
 									"name": "Get EntityStatus",
-									"id": "ea417aa5-f9fa-4650-aed0-c6aa51ce5da4",
+									"id": "83e640c4-4fb6-4555-9241-f82e3db06b8d",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -1268,7 +1295,7 @@
 									},
 									"response": [
 										{
-											"id": "71e1e4c2-313e-4572-a603-bc9db6f75659",
+											"id": "50d34813-9316-445e-960a-ca0f08741349",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "GET",
@@ -1314,7 +1341,7 @@
 								},
 								{
 									"name": "Update Entity Status",
-									"id": "3099241e-de5c-436f-864e-07a043ebbdfa",
+									"id": "2f6b8ec7-b899-4401-9b66-7a4eb5414092",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -1360,7 +1387,7 @@
 									},
 									"response": [
 										{
-											"id": "41943c4f-b719-401b-b6d3-e53c9354f497",
+											"id": "709ca994-1406-47f3-b7c8-af6424335956",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "PUT",
@@ -1415,7 +1442,7 @@
 								},
 								{
 									"name": "Delete Entity Status",
-									"id": "93fb90da-df9b-4168-8937-dae1403b32c5",
+									"id": "b5cb3f11-77c7-40f6-87a0-cceef96a574b",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -1448,7 +1475,7 @@
 									},
 									"response": [
 										{
-											"id": "b020f1ef-d481-43c5-979d-83fa8bfa17ea",
+											"id": "25e5d247-ded8-478c-aae8-499d625fe869",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "DELETE",
@@ -1493,11 +1520,11 @@
 									]
 								}
 							],
-							"id": "359ed92c-229c-480c-8ccd-5f563c07a6be"
+							"id": "ea350c17-a97d-4567-9312-5083f68849d3"
 						},
 						{
 							"name": "Get Entity Statuses",
-							"id": "7e30f7a7-cbcf-474a-bd98-3194d8add3cd",
+							"id": "a9bff00e-feac-4129-a6af-8c7c5bfc85f2",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -1510,7 +1537,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/api/entity-statuses?filters[name]=Group",
+									"raw": "{{baseUrl}}/api/entity-statuses?filters[name]=Group&sort=name&direction=asc",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -1523,13 +1550,23 @@
 											"key": "filters[name]",
 											"value": "Group",
 											"description": "A filter query of the entity status name"
+										},
+										{
+											"key": "sort",
+											"value": "name",
+											"description": "A column to be used to sort the query"
+										},
+										{
+											"key": "direction",
+											"value": "asc",
+											"description": "A string indicating the sort direction of the query (asc or desc)"
 										}
 									]
 								}
 							},
 							"response": [
 								{
-									"id": "0771233b-a785-4c15-934f-058ff0f27308",
+									"id": "9b34a09f-d8dc-4e59-a843-d19abb310c35",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "GET",
@@ -1541,7 +1578,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/api/entity-statuses?filters[name]=Group",
+											"raw": "{{baseUrl}}/api/entity-statuses?filters[name]=Group&sort=name&direction=asc",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -1553,6 +1590,14 @@
 												{
 													"key": "filters[name]",
 													"value": "Group"
+												},
+												{
+													"key": "sort",
+													"value": "name"
+												},
+												{
+													"key": "direction",
+													"value": "asc"
 												}
 											]
 										}
@@ -1567,13 +1612,13 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n  \"current_page\": 54512129,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
+									"body": "{\n  \"current_page\": -11592493,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
 								}
 							]
 						},
 						{
 							"name": "Create entity status",
-							"id": "3f306299-6098-4185-8262-75367223a157",
+							"id": "8dafb0aa-1e18-42ad-8923-c932f93cc447",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -1611,7 +1656,7 @@
 							},
 							"response": [
 								{
-									"id": "a57aab20-690f-423b-95b7-96a10e4cac71",
+									"id": "a399beaf-a8f0-4252-a772-8c75400d3506",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "POST",
@@ -1657,17 +1702,17 @@
 							]
 						}
 					],
-					"id": "f8d3bb50-dfdd-420a-bcea-439a47885e16"
+					"id": "c9541cb8-f344-4ec7-800e-64045d0b8a0d"
 				},
 				{
 					"name": "entity-types",
 					"item": [
 						{
-							"name": "{entity Type Id}",
+							"name": "{entityTypeId}",
 							"item": [
 								{
 									"name": "Get EntityType",
-									"id": "737be26b-3ba7-482f-87f4-4666718decbe",
+									"id": "ab88547f-4f26-4948-8bf4-3071160fc1c8",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -1700,7 +1745,7 @@
 									},
 									"response": [
 										{
-											"id": "c1bf0286-f9d9-4f13-a330-6484a39b26c2",
+											"id": "3dbf6dca-ec25-4276-96c6-c4f4fb43092d",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "GET",
@@ -1746,7 +1791,7 @@
 								},
 								{
 									"name": "Update Entity Type",
-									"id": "bf4a6724-b4c6-4212-ac5b-8862b2c71c98",
+									"id": "96c54e5c-4e7f-4ef7-b50a-375315b9191c",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -1792,7 +1837,7 @@
 									},
 									"response": [
 										{
-											"id": "d5c5d4cd-edc0-4cce-adb9-380d809b992c",
+											"id": "5d0df9d8-6a67-49bc-a356-cee6a4e17529",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "PUT",
@@ -1847,7 +1892,7 @@
 								},
 								{
 									"name": "Delete Entity Type",
-									"id": "13fd1c88-037e-4557-aaa1-e6ab481915a1",
+									"id": "a17744c1-9dd4-4200-8f85-32f583e57362",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -1880,7 +1925,7 @@
 									},
 									"response": [
 										{
-											"id": "d69592bd-8070-4f0a-9673-c816c0cc0994",
+											"id": "807b7408-4ce1-43e7-a26c-e7bc114791ef",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "DELETE",
@@ -1925,11 +1970,11 @@
 									]
 								}
 							],
-							"id": "c2792f0e-7fd1-4187-9d6b-a074ec2c364d"
+							"id": "d4f17d8e-7732-486c-93a8-4c5a97c59655"
 						},
 						{
 							"name": "Get Entity Types",
-							"id": "b5f07f60-30f3-49c9-a470-bac0f7b6167d",
+							"id": "aa52d624-a59f-4026-a0ef-d7c224ae68e1",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -1942,7 +1987,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/api/entity-types?filters[name]=Group",
+									"raw": "{{baseUrl}}/api/entity-types?filters[name]=Group&sort=name&direction=asc",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -1955,13 +2000,23 @@
 											"key": "filters[name]",
 											"value": "Group",
 											"description": "A filter query of the entity status name"
+										},
+										{
+											"key": "sort",
+											"value": "name",
+											"description": "A column to be used to sort the query"
+										},
+										{
+											"key": "direction",
+											"value": "asc",
+											"description": "A string indicating the sort direction of the query (asc or desc)"
 										}
 									]
 								}
 							},
 							"response": [
 								{
-									"id": "3cb8f880-ae18-43af-a10d-785dca2f178c",
+									"id": "df1add5d-4bb3-47d4-bf75-b798f44073c9",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "GET",
@@ -1973,7 +2028,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/api/entity-types?filters[name]=Group",
+											"raw": "{{baseUrl}}/api/entity-types?filters[name]=Group&sort=name&direction=asc",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -1985,6 +2040,14 @@
 												{
 													"key": "filters[name]",
 													"value": "Group"
+												},
+												{
+													"key": "sort",
+													"value": "name"
+												},
+												{
+													"key": "direction",
+													"value": "asc"
 												}
 											]
 										}
@@ -1999,13 +2062,13 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n  \"current_page\": 54512129,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
+									"body": "{\n  \"current_page\": -11592493,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
 								}
 							]
 						},
 						{
 							"name": "Create entity type",
-							"id": "e9da021d-7e8c-4fd2-a84b-289a295e19f0",
+							"id": "da232048-9644-466b-a4ab-003ad87b98ba",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -2043,7 +2106,7 @@
 							},
 							"response": [
 								{
-									"id": "62dc880d-6f7e-4331-afcd-0ffd387ba194",
+									"id": "782f8d47-bc5b-4e59-b3b4-b13cd5c0f86f",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "POST",
@@ -2089,17 +2152,17 @@
 							]
 						}
 					],
-					"id": "e4d129ce-152c-423b-a438-d076e174c950"
+					"id": "d1eb6649-4a12-4558-a586-42f7d787d540"
 				},
 				{
 					"name": "links",
 					"item": [
 						{
-							"name": "{link Id}",
+							"name": "{linkId}",
 							"item": [
 								{
 									"name": "Get Link",
-									"id": "da2324ea-0386-4ec7-b956-9724ce498f52",
+									"id": "ec580e21-cc0a-44f9-bb59-5142994eb93e",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -2132,7 +2195,7 @@
 									},
 									"response": [
 										{
-											"id": "d977d670-0caf-4547-a1b1-7f98362a1058",
+											"id": "ddc9e0f9-f608-4335-bb04-213c5711dae8",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "GET",
@@ -2178,7 +2241,7 @@
 								},
 								{
 									"name": "Update link",
-									"id": "bfbafcff-fcac-4ca7-b8c4-64ec8790261a",
+									"id": "44d2426c-cf58-438a-894f-5b9436db29eb",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -2224,7 +2287,7 @@
 									},
 									"response": [
 										{
-											"id": "680db5ed-3eef-45b2-8a65-7101154c43b0",
+											"id": "545f05be-8e1f-4101-937f-ffb4a0fcb28b",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "PUT",
@@ -2279,7 +2342,7 @@
 								},
 								{
 									"name": "Delete Link",
-									"id": "4b883842-d71f-4469-921d-902cb1a11a5f",
+									"id": "1269b201-1069-4f36-8570-20c670bd84e9",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -2312,7 +2375,7 @@
 									},
 									"response": [
 										{
-											"id": "e73eb187-5845-4ac2-8e2c-30908014d34e",
+											"id": "01eb7958-a309-4b47-b0ae-aad34c933f00",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "DELETE",
@@ -2357,11 +2420,11 @@
 									]
 								}
 							],
-							"id": "8186dad4-2f91-4931-be78-f27ee128ad4b"
+							"id": "30ad6c8e-16dd-4646-bf00-223a5e4854aa"
 						},
 						{
 							"name": "Get Links",
-							"id": "a1434c14-26d5-412a-b7ce-c8f73518061f",
+							"id": "9456f290-115d-4553-afc9-1400c0c32fd5",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -2374,7 +2437,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/api/links?title=Google",
+									"raw": "{{baseUrl}}/api/links?title=Google&sort=name&direction=asc",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -2386,13 +2449,23 @@
 										{
 											"key": "title",
 											"value": "Google"
+										},
+										{
+											"key": "sort",
+											"value": "name",
+											"description": "A column to be used to sort the query"
+										},
+										{
+											"key": "direction",
+											"value": "asc",
+											"description": "A string indicating the sort direction of the query (asc or desc)"
 										}
 									]
 								}
 							},
 							"response": [
 								{
-									"id": "53755b7b-5680-48c7-9d39-c6694a5874cf",
+									"id": "47d5d56e-be74-4a12-ac1e-1d8801306882",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "GET",
@@ -2404,7 +2477,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/api/links?title=Google",
+											"raw": "{{baseUrl}}/api/links?title=Google&sort=name&direction=asc",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -2416,6 +2489,14 @@
 												{
 													"key": "title",
 													"value": "Google"
+												},
+												{
+													"key": "sort",
+													"value": "name"
+												},
+												{
+													"key": "direction",
+													"value": "asc"
 												}
 											]
 										}
@@ -2430,13 +2511,13 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n  \"current_page\": -51358666,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100,\n  \"data\": [\n    {\n      \"id\": 1,\n      \"title\": \"This is the lazercrunk website.\",\n      \"text\": \"Lazercrunk Website\",\n      \"url\": \"https://lazercrunk.com\",\n      \"is_primary\": true,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    {\n      \"id\": 1,\n      \"title\": \"This is the lazercrunk website.\",\n      \"text\": \"Lazercrunk Website\",\n      \"url\": \"https://lazercrunk.com\",\n      \"is_primary\": true,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    }\n  ]\n}"
+									"body": "{\n  \"current_page\": -76875621,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100,\n  \"data\": [\n    {\n      \"id\": 1,\n      \"title\": \"This is the lazercrunk website.\",\n      \"text\": \"Lazercrunk Website\",\n      \"url\": \"https://lazercrunk.com\",\n      \"is_primary\": true,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    {\n      \"id\": 1,\n      \"title\": \"This is the lazercrunk website.\",\n      \"text\": \"Lazercrunk Website\",\n      \"url\": \"https://lazercrunk.com\",\n      \"is_primary\": true,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    }\n  ]\n}"
 								}
 							]
 						},
 						{
 							"name": "Create link",
-							"id": "d8fdd6d7-8518-4653-8e6e-0c46d52a1407",
+							"id": "28c26709-9c41-45c8-9f3c-9199df45295e",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -2474,7 +2555,7 @@
 							},
 							"response": [
 								{
-									"id": "a6d0ae60-57cb-4d60-84c0-b6874221acfd",
+									"id": "10ad2e17-ad47-4f47-a00c-8b62eb3c7006",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "POST",
@@ -2520,17 +2601,17 @@
 							]
 						}
 					],
-					"id": "a61776e3-d341-4350-9091-de8e87ce0e01"
+					"id": "cff3d339-1355-4584-8cec-43e5026de8e8"
 				},
 				{
 					"name": "series",
 					"item": [
 						{
-							"name": "{series Id}",
+							"name": "{seriesId}",
 							"item": [
 								{
 									"name": "Get one Series",
-									"id": "ab51850e-5878-4373-8567-986d455818e1",
+									"id": "d20d90e1-9af6-426c-8e9e-fdd6bfcf71e9",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -2563,7 +2644,7 @@
 									},
 									"response": [
 										{
-											"id": "acd4fd3c-3378-44a1-91ce-3f770ebfef0b",
+											"id": "6cdc6981-92e1-45e9-9c68-10ff4ec9afa4",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "GET",
@@ -2609,7 +2690,7 @@
 								},
 								{
 									"name": "Update Series",
-									"id": "eb887116-f9ca-48fe-a171-598767c2d0e7",
+									"id": "20949c09-04ba-4e18-939b-82ab730a4314",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -2655,7 +2736,7 @@
 									},
 									"response": [
 										{
-											"id": "ab90ea93-dbc4-4793-b814-ebc369037049",
+											"id": "475e7e5f-2830-4566-baf0-1cb585f17b39",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "PUT",
@@ -2710,7 +2791,7 @@
 								},
 								{
 									"name": "Delete Series",
-									"id": "aa8e99c6-3fd7-4dfd-ba02-597d341b7323",
+									"id": "9b746d52-8417-4a3d-a4e7-33febb103d39",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -2743,7 +2824,7 @@
 									},
 									"response": [
 										{
-											"id": "af7c7bc0-1368-4dd8-8e9e-7cbd879f904d",
+											"id": "55a025a6-ded2-4938-8e2f-3f857f1d6322",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "DELETE",
@@ -2788,11 +2869,11 @@
 									]
 								}
 							],
-							"id": "b9d05971-3233-4860-b587-64fd1a0b7704"
+							"id": "f0c507c3-904c-4dd9-b7a1-6ee71f472daa"
 						},
 						{
 							"name": "Create Series",
-							"id": "aa5b519d-9c65-4dd7-956c-194196658e9d",
+							"id": "773680b1-41a5-4a85-b73c-43cc279a0a47",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -2830,7 +2911,7 @@
 							},
 							"response": [
 								{
-									"id": "22e826e3-f194-4180-86d2-b77ed3c78f9a",
+									"id": "a65b7953-95be-4a58-8f5f-bc0a91ff50fe",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "POST",
@@ -2877,7 +2958,7 @@
 						},
 						{
 							"name": "Get Series by filters",
-							"id": "b61ff7eb-8317-4b70-88f0-c3e36554a31f",
+							"id": "1f666bb7-d925-42e6-8d48-7a830532b52a",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -2890,7 +2971,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/api/series?filters[name]=Lazercrunk&filters[event_type]=Concert&filters[venue]=Brillobox&filters[promoter]=Cutups&filters[related]=0h85&filters[occurrence_type]=Monthly&filters[occurrence_week]=First&filters[occurrence_day]=Friday&filters[start_at][start]=2022-01-01 1:00:00&filters[start_at][end]=2022-02-01 2:00:00&filters[end_at][start]=2022-02-01 1:00:00&filters[end_at][end]=2022-01-01 2:00:00&filters[ages]=21&orderBy=title desc",
+									"raw": "{{baseUrl}}/api/series?filters[name]=Lazercrunk&filters[event_type]=Concert&filters[venue]=Brillobox&filters[promoter]=Cutups&filters[related]=0h85&filters[occurrence_type]=Monthly&filters[occurrence_week]=First&filters[occurrence_day]=Friday&filters[start_at][start]=2022-01-01 1:00:00&filters[start_at][end]=2022-02-01 2:00:00&filters[end_at][start]=2022-02-01 1:00:00&filters[end_at][end]=2022-01-01 2:00:00&filters[ages]=21&sort=name&direction=asc",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -2965,16 +3046,21 @@
 											"description": "A filter query of the end time ending"
 										},
 										{
-											"key": "orderBy",
-											"value": "title desc",
-											"description": "A order by clause to be applied to the select"
+											"key": "sort",
+											"value": "name",
+											"description": "A column to be used to sort the query"
+										},
+										{
+											"key": "direction",
+											"value": "asc",
+											"description": "A string indicating the sort direction of the query (asc or desc)"
 										}
 									]
 								}
 							},
 							"response": [
 								{
-									"id": "0d028fd4-8cb8-460a-b64a-eb5bda854e5d",
+									"id": "c7f90ba9-4357-4921-9c3c-43f1330799c5",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "GET",
@@ -2986,7 +3072,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/api/series?filters[name]=Lazercrunk&filters[event_type]=Concert&filters[venue]=Brillobox&filters[promoter]=Cutups&filters[related]=0h85&filters[occurrence_type]=Monthly&filters[occurrence_week]=First&filters[occurrence_day]=Friday&filters[start_at][start]=2022-01-01 1:00:00&filters[start_at][end]=2022-02-01 2:00:00&filters[end_at][start]=2022-02-01 1:00:00&filters[end_at][end]=2022-01-01 2:00:00&filters[ages]=21&orderBy=title desc",
+											"raw": "{{baseUrl}}/api/series?filters[name]=Lazercrunk&filters[event_type]=Concert&filters[venue]=Brillobox&filters[promoter]=Cutups&filters[related]=0h85&filters[occurrence_type]=Monthly&filters[occurrence_week]=First&filters[occurrence_day]=Friday&filters[start_at][start]=2022-01-01 1:00:00&filters[start_at][end]=2022-02-01 2:00:00&filters[end_at][start]=2022-02-01 1:00:00&filters[end_at][end]=2022-01-01 2:00:00&filters[ages]=21&sort=name&direction=asc",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -3048,8 +3134,12 @@
 													"value": "21"
 												},
 												{
-													"key": "orderBy",
-													"value": "title desc"
+													"key": "sort",
+													"value": "name"
+												},
+												{
+													"key": "direction",
+													"value": "asc"
 												}
 											]
 										}
@@ -3064,22 +3154,22 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n  \"current_page\": 54512129,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
+									"body": "{\n  \"current_page\": -11592493,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
 								}
 							]
 						}
 					],
-					"id": "45e86cd9-68b3-4ae8-8d95-739d94058ce5"
+					"id": "944b5eae-51ac-48fe-aef9-9106f0bf8ba0"
 				},
 				{
 					"name": "tags",
 					"item": [
 						{
-							"name": "{tag Id}",
+							"name": "{tagId}",
 							"item": [
 								{
 									"name": "Get one Tag",
-									"id": "078bf211-a919-47f2-8263-43becdea7571",
+									"id": "9b2c85d2-cd64-4a6e-9906-647c9d83291c",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -3112,7 +3202,7 @@
 									},
 									"response": [
 										{
-											"id": "69feecd5-3291-4e2d-82dc-1ed5487e56b3",
+											"id": "ecefb669-e5f9-401f-95fd-c8fd7b3dcdc7",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "GET",
@@ -3158,7 +3248,7 @@
 								},
 								{
 									"name": "Update Tag",
-									"id": "74a58c37-8474-43a0-96d8-f9597b409193",
+									"id": "cc3310e5-fb66-4b01-8b6a-9ea9e9466286",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -3204,7 +3294,7 @@
 									},
 									"response": [
 										{
-											"id": "0d21671e-b29a-44aa-bca8-973649ec54f8",
+											"id": "6476a463-c7f6-41de-94f1-5e8c6b8278a4",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "PUT",
@@ -3259,7 +3349,7 @@
 								},
 								{
 									"name": "Delete Tag",
-									"id": "67e682a3-096e-484b-9298-b471a2ae0261",
+									"id": "1e6cea47-b3b9-4a9c-ab3f-f6b082e9710d",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -3292,7 +3382,7 @@
 									},
 									"response": [
 										{
-											"id": "d3db3dbb-8787-4427-b1a6-2200c3998ac6",
+											"id": "7838e50e-902e-42ce-bab9-7c42666f8af8",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "DELETE",
@@ -3337,11 +3427,11 @@
 									]
 								}
 							],
-							"id": "ce49a4a7-0f81-44ef-b683-ddc2be6d9e65"
+							"id": "a3dd27c5-fdc4-4e77-999c-44e208e38298"
 						},
 						{
 							"name": "Create Tag",
-							"id": "28655a5d-8b83-44d4-bc9b-73db8d60e477",
+							"id": "d07f6895-ff5c-4f11-9691-5643f570b9c7",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -3379,7 +3469,7 @@
 							},
 							"response": [
 								{
-									"id": "282fe14c-399f-4f40-b640-31ff25a452da",
+									"id": "e2e60e91-ab5f-49f6-83a0-70ceb993978f",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "POST",
@@ -3426,7 +3516,21 @@
 						},
 						{
 							"name": "Get Tags",
-							"id": "73fa4f9f-0b02-4f43-8325-e043e3614ec4",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ac03848d-13f3-42fc-bfff-14b5d492fbc8",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"id": "2a35c77b-ef53-4321-abd5-a80f8ea37a77",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -3439,7 +3543,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/api/tags?filters[name]=techno",
+									"raw": "{{baseUrl}}/api/tags?filters[name]=techno&sort=name&direction=asc",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -3451,13 +3555,23 @@
 										{
 											"key": "filters[name]",
 											"value": "techno"
+										},
+										{
+											"key": "sort",
+											"value": "name",
+											"description": "A column to be used to sort the query"
+										},
+										{
+											"key": "direction",
+											"value": "asc",
+											"description": "A string indicating the sort direction of the query (asc or desc)"
 										}
 									]
 								}
 							},
 							"response": [
 								{
-									"id": "699ab977-0dda-491e-a3d6-c99bdbaec068",
+									"id": "57ae60cc-3361-4d5b-9de3-047cf51804b4",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "GET",
@@ -3469,7 +3583,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/api/tags?filters[name]=techno",
+											"raw": "{{baseUrl}}/api/tags?filters[name]=techno&sort=name&direction=asc",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -3481,6 +3595,14 @@
 												{
 													"key": "filters[name]",
 													"value": "techno"
+												},
+												{
+													"key": "sort",
+													"value": "name"
+												},
+												{
+													"key": "direction",
+													"value": "asc"
 												}
 											]
 										}
@@ -3500,17 +3622,17 @@
 							]
 						}
 					],
-					"id": "d271bccb-ab32-45d7-8d16-43646ff81d34"
+					"id": "2eeff19b-854f-4837-9ee0-376e49d7fc0f"
 				},
 				{
 					"name": "users",
 					"item": [
 						{
-							"name": "{user Id}",
+							"name": "{userId}",
 							"item": [
 								{
 									"name": "Get one User",
-									"id": "61188590-36fd-4574-9f8e-ded0a88b9066",
+									"id": "b2336c6a-a324-4bc6-9300-fdbe76bdfe0a",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -3543,7 +3665,7 @@
 									},
 									"response": [
 										{
-											"id": "e9e03ebd-80d5-4fe3-9a29-a388bf60da99",
+											"id": "34078653-f091-4579-a176-80ab13e15958",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "GET",
@@ -3589,7 +3711,7 @@
 								},
 								{
 									"name": "Update User",
-									"id": "9bfe0280-e162-4a2d-ad41-9b576669595a",
+									"id": "6945b07f-3a86-42f6-83a3-588fd32c080c",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -3635,7 +3757,7 @@
 									},
 									"response": [
 										{
-											"id": "ae603618-45a5-453e-95cb-b94fac6f457c",
+											"id": "78c292ab-174c-49bf-9c54-6a78cafbe360",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "PUT",
@@ -3690,7 +3812,7 @@
 								},
 								{
 									"name": "Delete User",
-									"id": "6ca21eb8-ffc7-45fc-bcfe-76b6a5e1c948",
+									"id": "3b5533ca-3cad-4d89-b313-cff9a7323c44",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
@@ -3723,7 +3845,7 @@
 									},
 									"response": [
 										{
-											"id": "78387b34-a779-4ff3-90d9-53fec6b3df44",
+											"id": "70806141-9276-4731-a0bc-72b10552ee00",
 											"name": "Successful response",
 											"originalRequest": {
 												"method": "DELETE",
@@ -3768,11 +3890,11 @@
 									]
 								}
 							],
-							"id": "024e8864-5eaf-48b1-8576-72d1713363c0"
+							"id": "0005f1a2-4e06-4c3e-bdc1-dc361837b483"
 						},
 						{
 							"name": "Create User",
-							"id": "591ea102-b905-4e46-9869-c9f8c1a469d5",
+							"id": "6058865b-13e8-4f7f-9877-9d02f3354c80",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -3810,7 +3932,7 @@
 							},
 							"response": [
 								{
-									"id": "c5e371f7-b014-4467-bffb-0b218638781e",
+									"id": "e8c86701-22f8-46a6-b101-661e77c23225",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "POST",
@@ -3857,7 +3979,7 @@
 						},
 						{
 							"name": "Get Users",
-							"id": "8eee099a-4221-4c45-9509-1f13594eef2a",
+							"id": "4d99a338-49da-4d0a-8f25-9db13db72c38",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -3870,7 +3992,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/api/users?filters[status]=Active&filters[name]=Geoff&filters[email]=geoff.maddock@gmail.com",
+									"raw": "{{baseUrl}}/api/users?filters[status]=Active&filters[name]=Geoff&filters[email]=geoff.maddock@gmail.com&sort=name&direction=asc",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -3893,13 +4015,23 @@
 											"key": "filters[email]",
 											"value": "geoff.maddock@gmail.com",
 											"description": "A filter query of the user email"
+										},
+										{
+											"key": "sort",
+											"value": "name",
+											"description": "A column to be used to sort the query"
+										},
+										{
+											"key": "direction",
+											"value": "asc",
+											"description": "A string indicating the sort direction of the query (asc or desc)"
 										}
 									]
 								}
 							},
 							"response": [
 								{
-									"id": "32c8ad2f-71ee-4cf5-99a3-6253800ba2e6",
+									"id": "59f22330-102a-4520-a82b-37d29ddfb4a6",
 									"name": "Successful response",
 									"originalRequest": {
 										"method": "GET",
@@ -3911,7 +4043,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/api/users?filters[status]=Active&filters[name]=Geoff&filters[email]=geoff.maddock@gmail.com",
+											"raw": "{{baseUrl}}/api/users?filters[status]=Active&filters[name]=Geoff&filters[email]=geoff.maddock@gmail.com&sort=name&direction=asc",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -3931,6 +4063,14 @@
 												{
 													"key": "filters[email]",
 													"value": "geoff.maddock@gmail.com"
+												},
+												{
+													"key": "sort",
+													"value": "name"
+												},
+												{
+													"key": "direction",
+													"value": "asc"
 												}
 											]
 										}
@@ -3945,16 +4085,16 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n  \"current_page\": -24429145,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
+									"body": "{\n  \"current_page\": -45224522,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
 								}
 							]
 						}
 					],
-					"id": "6003031b-f0ad-4f28-b9b0-1b2575b90517"
+					"id": "3d4b9de6-0782-45cb-9f32-1c53e7d0ed33"
 				},
 				{
 					"name": "Get Docs",
-					"id": "8cce29d6-859b-4cb2-8f90-488dec21ba14",
+					"id": "dd6e6e4b-67ff-4c81-b833-efced8b9d87e",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -3979,7 +4119,7 @@
 					},
 					"response": [
 						{
-							"id": "6ede0a42-6f90-4e51-ae81-bc867a5d0c75",
+							"id": "9934d266-a455-452c-a7cb-c5bdc85ecd88",
 							"name": "Successful response",
 							"originalRequest": {
 								"method": "GET",
@@ -4016,7 +4156,7 @@
 					]
 				}
 			],
-			"id": "e764e633-9c69-4dd0-b377-5b02702cb248"
+			"id": "50e1eb60-d975-4f42-973e-56509d236662"
 		}
 	],
 	"auth": {
@@ -4038,7 +4178,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "99f3a090-52c2-4460-b6da-0f9a33865c5a",
+				"id": "20c176a9-ee95-445c-a95a-671917cbb60a",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -4048,7 +4188,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "27ffad10-9c7c-45b6-9dfd-02b983ade246",
+				"id": "b2b9a387-323d-4057-93c3-9bb7e2981b5d",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -4058,7 +4198,7 @@
 	],
 	"variable": [
 		{
-			"id": "22745f04-b6a8-456c-9966-2a1ba351be2d",
+			"id": "660b7892-87f6-41c0-9cd7-1be4b5cd1221",
 			"key": "baseUrl",
 			"value": "https://arcane.city",
 			"type": "string"
