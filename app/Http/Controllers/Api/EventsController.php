@@ -137,7 +137,10 @@ class EventsController extends Controller
         $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
+        $baseQuery = Event::query()
+                    ->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')
+                    ->select('events.*')
+        ;
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -997,7 +1000,7 @@ class EventsController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder(Event::query())
-            ->setDefaultSort(['evebts.start_at' => 'desc']);
+            ->setDefaultSort(['events.start_at' => 'desc']);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
