@@ -1787,6 +1787,20 @@ paths:
           schema:
             type: string
           example: "Individual"
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+            example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+            example: asc
       responses:
         "200":
           description: Successful response
