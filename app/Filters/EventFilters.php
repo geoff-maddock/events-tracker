@@ -128,8 +128,12 @@ class EventFilters extends QueryFilter
         }
     }
 
-    public function ages(?string $order = 'desc'): Builder
+    public function ages(?string $value = null): Builder
     {
-        return $this->builder->orderBy('ages_id', $order);
+        if (isset($value)) {
+            return $this->builder->where('events.min_age', '=', $value);
+        } else {
+            return $this->builder;
+        }
     }
 }
