@@ -33,10 +33,10 @@ Route::middleware('shield')->name('api.')->group(function () {
     Route::get('tags/rpp-reset', ['as' => 'tags.rppReset', 'uses' => 'Api\TagsController@rppReset']);
     Route::resource('tags', 'Api\TagsController');
 
-    Route::match(['get', 'post'], 'users/filter', ['as' => 'users.filter', 'uses' => 'Api\TagsController@filter']);
-    Route::get('users/reset', ['as' => 'users.reset', 'uses' => 'Api\TagsController@reset']);
-    Route::get('users/rpp-reset', ['as' => 'users.rppReset', 'uses' => 'Api\TagsController@rppReset']);
-    Route::resource('users', 'Api\UsersController');
+    Route::match(['get', 'post'], 'links/filter', ['as' => 'links.filter', 'uses' => 'Api\LinksController@filter']);
+    Route::get('links/reset', ['as' => 'links.reset', 'uses' => 'Api\LinksController@reset']);
+    Route::get('links/rpp-reset', ['as' => 'links.rppReset', 'uses' => 'Api\LinksController@rppReset']);
+    Route::resource('links', 'Api\LinksController');
 
 
 });
