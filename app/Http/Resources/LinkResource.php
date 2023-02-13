@@ -6,7 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\Link;
 
 /**
- * @mixin \App\Models\Entity
+ * @mixin \App\Models\Link
  */
 class LinkResource extends JsonResource
 {
