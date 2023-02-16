@@ -293,6 +293,8 @@ var Home = (function () {
             var url = $(this).attr('href');
             var target = '.home';
 
+            $('#add-event').attr("href", "");
+            $('#add-event').html("Loading...");
             addEvents(url, target);
 
             console.log('url: ' + url)
@@ -313,6 +315,13 @@ var Home = (function () {
 
                         var url = $('#add-event').attr('href');
                         var target = '.home';
+
+                        // log this event
+                        console.log('Scrolling Load Fired:' + url)
+
+                        // change the next events content
+                        $('#add-event').attr("href", "");
+                        $('#add-event').html("Loading...");
 
                         addEvents(url, target);
 
