@@ -5,7 +5,7 @@ use App\Models\Series;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('shield')->name('api.')->group(function () {
+Route::middleware('auth.basic')->name('api.')->group(function () {
     Route::get('events/reset', ['as' => 'events.reset', 'uses' => 'Api\EventsController@reset']);
     Route::get('events/rpp-reset', ['as' => 'events.rppReset', 'uses' => 'Api\EventsController@rppReset']);
     Route::resource('events', 'Api\EventsController');
@@ -45,6 +45,6 @@ Route::middleware('shield')->name('api.')->group(function () {
 
 });
 
-// calendar routes
+// calendar routes - these are used by the web app for dynamic loading
 Route::get('calendar-events', 'EventsController@calendarEventsApi')->name('calendarEvents.api');
 Route::get('tag-calendar-events', 'EventsController@tagCalendarEventsApi')->name('tagCalendarEvents.api');
