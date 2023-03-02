@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\MustVerifyEmail;
 use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
@@ -21,6 +21,7 @@ use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
  * App\Models\User.
@@ -80,14 +81,14 @@ use Illuminate\Support\Facades\Auth;
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUserStatusId($value)
  * @mixin \Eloquent
  */
-class User extends Model implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract, MustVerifyEmailContract
+class User extends Authenticatable implements AuthorizableContract, CanResetPasswordContract, MustVerifyEmailContract
 {
-    use Authenticatable;
     use Authorizable;
     use CanResetPassword;
     use MustVerifyEmail;
     use Notifiable;
     use HasFactory;
+    use HasApiTokens;
 
     /**
      * The database table used by the model.
