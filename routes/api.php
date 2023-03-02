@@ -4,8 +4,23 @@ use App\Models\Entity;
 use App\Models\Series;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('tokens/validate', function () {
+        return ['data' => 'token is valid'];
+    });
+});
 
 Route::middleware('auth.basic')->name('api.')->group(function () {
+
+    Route::post('/tokens/create', function (Request $request) {
+        $token = $request->user()->createToken($request->token_name, ['event:check']);
+     
+        return ['token' => $token->plainTextToken];
+    });
+
+
     Route::get('events/reset', ['as' => 'events.reset', 'uses' => 'Api\EventsController@reset']);
     Route::get('events/rpp-reset', ['as' => 'events.rppReset', 'uses' => 'Api\EventsController@rppReset']);
     Route::resource('events', 'Api\EventsController');

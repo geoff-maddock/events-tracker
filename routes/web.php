@@ -36,6 +36,10 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes(['verify' => true]);
 
+Route::get('tokens/test', function () {
+    return ['data' => 'has event check'];
+})->middleware('auth:sanctum');
+
 Route::view('/api/docs', 'docs.swagger');
 
 Route::get('/redirect', 'SocialAuthFacebookController@redirect');
