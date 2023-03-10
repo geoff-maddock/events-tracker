@@ -175,7 +175,7 @@ class Series extends Eloquent
     /**
      * Additional fields to treat as Carbon instances.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'founded_at' => 'datetime',
