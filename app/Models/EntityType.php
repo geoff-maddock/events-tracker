@@ -21,5 +21,7 @@ class EntityType extends Eloquent
         'name', 'slug', 'short',
     ];
 
-    protected $dates = ['updated_at'];
+    protected $casts = [
+        'updated_at' => 'datetime',
+    ];
 }

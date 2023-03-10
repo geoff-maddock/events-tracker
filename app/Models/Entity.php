@@ -100,7 +100,10 @@ class Entity extends Eloquent
         'name', 'slug', 'short', 'description', 'entity_type_id', 'entity_status_id', 'entity_address_id', 'facebook_username', 'twitter_username', 'created_by', 'started_at',
     ];
 
-    protected $dates = ['updated_at', 'started_at'];
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 
     protected $attributes = [
         'description' => '',

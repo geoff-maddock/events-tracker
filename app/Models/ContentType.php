@@ -17,12 +17,6 @@ class ContentType extends Eloquent
         'name',
     ];
 
-    /**
-     * Additional fields to treat as Carbon instances.
-     *
-     * @var array
-     */
-    protected $dates = [];
 
     public function __toString()
     {

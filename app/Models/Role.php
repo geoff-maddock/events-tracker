@@ -16,7 +16,9 @@ class Role extends Eloquent
 
     protected $appends = ['plural'];
 
-    protected $dates = ['updated_at'];
+    protected $casts = [
+        'updated_at' => 'datetime',
+    ];
 
     /**
      * Get the entities that belong to the role.

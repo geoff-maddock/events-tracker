@@ -46,7 +46,10 @@ class Follow extends Eloquent
         'object_type',
     ];
 
-    protected $dates = ['created_at', 'updated_at'];
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 
     /**
      * Get the user who follows the object.

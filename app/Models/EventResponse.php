@@ -21,7 +21,10 @@ class EventResponse extends Eloquent
         'event_id', 'user_id', 'response_type_id',
     ];
 
-    protected $dates = ['created_at', 'updated_at'];
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 
     /**
      * Get the event that the response belongs to.

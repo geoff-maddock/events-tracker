@@ -17,13 +17,6 @@ class ThreadCategory extends Eloquent
     ];
 
     /**
-     * Additional fields to treat as Carbon instances.
-     *
-     * @var array
-     */
-    protected $dates = [];
-
-    /**
      * A thread category can have many threads.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

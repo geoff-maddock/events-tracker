@@ -177,7 +177,14 @@ class Series extends Eloquent
      *
      * @var array
      */
-    protected $dates = ['founded_at', 'cancelled_at', 'soundcheck_at', 'door_at', 'start_at', 'end_at'];
+    protected $casts = [
+        'founded_at' => 'datetime',
+        'soundcheck_at' => 'datetime',
+        'door_at' => 'datetime',
+        'start_at' => 'datetime',
+        'end_at' => 'datetime',
+        'cancelled_at' => 'datetime'
+    ];
 
     public function scopeFuture(Builder $query): Builder
     {

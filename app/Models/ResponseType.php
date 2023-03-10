@@ -14,13 +14,6 @@ class ResponseType extends Eloquent
     ];
 
     /**
-     * Additional fields to treat as Carbon instances.
-     *
-     * @var array
-     */
-    protected $dates = [];
-
-    /**
      * A response type can have many event responses.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

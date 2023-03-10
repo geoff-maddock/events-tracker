@@ -28,13 +28,6 @@ class UserStatus extends Eloquent
     ];
 
     /**
-     * Additional fields to treat as Carbon instances.
-     *
-     * @var array
-     */
-    protected $dates = [];
-
-    /**
      * A status can have many users.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

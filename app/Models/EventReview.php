@@ -47,7 +47,10 @@ class EventReview extends Eloquent
         'event_id', 'user_id', 'review_type_id', 'attended', 'confirmed', 'expectation', 'rating', 'review',
     ];
 
-    protected $dates = ['created_at', 'updated_at'];
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 
     /**
      * Get the event that the review belongs to.

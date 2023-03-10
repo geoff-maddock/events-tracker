@@ -11,13 +11,6 @@ class ReviewType extends Eloquent
     ];
 
     /**
-     * Additional fields to treat as Carbon instances.
-     *
-     * @var array
-     */
-    protected $dates = [];
-
-    /**
      * A review type can belong to many event reviews.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
