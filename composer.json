@@ -82,7 +82,7 @@
 			"@php artisan package:discover"
 		],
 		"phpstan": [
-			"./vendor/bin/phpstan analyse"
+			"./vendor/bin/phpstan analyse -V"
 		],
 		"tests": [
 			"php artisan migrate --verbose",
