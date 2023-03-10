@@ -81,7 +81,7 @@ use Illuminate\Support\Str;
  * @property \App\Models\User                                                                                          $user
  * @property \App\Models\Entity|null                                                                                   $venue
  * @property \App\Models\Visibility|null                                                                               $visibility
- *
+ * @mixin \Illuminate\Database\Eloquent\Relations\Relation
  * @method static Builder|Event filter(\App\Filters\QueryFilter $filters)
  * @method static Builder|Event future()
  * @method static Builder|Event newModelQuery()
