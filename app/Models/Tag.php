@@ -33,7 +33,11 @@ class Tag extends Eloquent
         return 'slug';
     }
 
-    protected $dates = ['created_at', 'updated_at'];
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
 
     /**
      * Get the threads that belong to the tag.

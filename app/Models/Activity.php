@@ -68,10 +68,15 @@ class Activity extends Eloquent
     protected $dateFormat = 'Y-m-d H:i:s';
 
     protected $fillable = [
-        'object_table', 'object_name', 'object_id',
+        'object_table', 
+        'object_name', 
+        'object_id',
     ];
 
-    protected $dates = ['created_at', 'updated_at'];
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 
     /**
      * Get the events that belong to the activity.

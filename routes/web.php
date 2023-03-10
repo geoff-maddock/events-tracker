@@ -578,3 +578,7 @@ Route::get('rss', 'EventsController@rss');
 Route::get('rss/tag/{tag}', 'EventsController@rssTags');
 
 Auth::routes();
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

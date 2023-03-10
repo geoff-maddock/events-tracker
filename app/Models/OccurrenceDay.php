@@ -15,13 +15,6 @@ class OccurrenceDay extends Eloquent
     ];
 
     /**
-     * Additional fields to treat as Carbon instances.
-     *
-     * @var array
-     */
-    protected $dates = [];
-
-    /**
      * An occurence type can have many event templates.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

@@ -14,13 +14,6 @@ class LocationType extends Eloquent
     ];
 
     /**
-     * Additional fields to treat as Carbon instances.
-     *
-     * @var array
-     */
-    protected $dates = [];
-
-    /**
      * An location type can have many locations.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

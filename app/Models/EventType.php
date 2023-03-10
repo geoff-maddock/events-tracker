@@ -19,13 +19,6 @@ class EventType extends Eloquent
     ];
 
     /**
-     * Additional fields to treat as Carbon instances.
-     *
-     * @var array
-     */
-    protected $dates = [];
-
-    /**
      * An event type can have many events.
      */
     public function events(): HasMany

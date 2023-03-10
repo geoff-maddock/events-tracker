@@ -167,7 +167,13 @@ class Event extends Eloquent
         'created_by',
     ];
 
-    protected $dates = ['soundcheck_at', 'door_at', 'start_at', 'end_at', 'cancelled_at'];
+    protected $casts = [
+        'soundcheck_at' => 'datetime',
+        'door_at' => 'datetime',
+        'start_at' => 'datetime',
+        'end_at' => 'datetime',
+        'cancelled_at' => 'datetime'
+    ];
 
     public function scopeFilter(Builder $query, QueryFilter $filters): Builder
     {

@@ -19,7 +19,10 @@ class Like extends Eloquent
         'object_id', 'user_id', 'object_type',
     ];
 
-    protected $dates = ['created_at', 'updated_at'];
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 
     /**
      * The user who likes the object.

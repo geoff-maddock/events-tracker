@@ -21,7 +21,10 @@ class Alias extends Eloquent
         'name',
     ];
 
-    protected $dates = ['created_at', 'updated_at'];
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 
     /**
      * Get the entities that belong to the alias.

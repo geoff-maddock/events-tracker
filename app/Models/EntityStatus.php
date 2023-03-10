@@ -31,13 +31,6 @@ class EntityStatus extends Eloquent
     ];
 
     /**
-     * Additional fields to treat as Carbon instances.
-     *
-     * @var array
-     */
-    protected $dates = [];
-
-    /**
      * An event status can have many events.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

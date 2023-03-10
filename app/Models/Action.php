@@ -25,7 +25,10 @@ class Action extends Eloquent
         'name', 'object_table', 'child_object_table',
     ];
 
-    protected $dates = ['created_at', 'updated_at'];
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 
     /**
      * Get the activity that belongs to the action.

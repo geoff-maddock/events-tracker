@@ -12,13 +12,6 @@ class TagType extends Eloquent
     ];
 
     /**
-     * Additional fields to treat as Carbon instances.
-     *
-     * @var array
-     */
-    protected $dates = [];
-
-    /**
      * An tag type can have many tags.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

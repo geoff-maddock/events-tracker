@@ -68,7 +68,10 @@ class Photo extends Eloquent
         'name', 'path', 'thumbnail', 'caption',
     ];
 
-    protected $dates = ['created_at', 'updated_at'];
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 
     protected string $baseDir = 'photos';
 

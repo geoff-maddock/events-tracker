@@ -12,12 +12,6 @@ class EventStatus extends Eloquent
         'name',
     ];
 
-    /**
-     * Additional fields to treat as Carbon instances.
-     *
-     * @var array
-     */
-    protected $dates = [];
 
     /**
      * An event status can have many events.
