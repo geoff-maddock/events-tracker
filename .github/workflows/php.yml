@@ -66,8 +66,8 @@ jobs:
       - name: Create symlink
         run: php artisan storage:link
 
-      - name: Echo the php stan config:clear
-        run: echo phpstan.neon.dist
+      - name: Output the phpstan config
+        run: more phpstan.neon.dist
 
       - name: Run php stan static analysis
         run: composer run-script phpstan
