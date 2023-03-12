@@ -31,7 +31,7 @@
 		"anhskohbo/no-captcha": "^3.4",
 		"sentry/sentry-laravel": "^3.1",
 		"laravel/sanctum": "^3.2",
-		"laravel-notification-channels/twitter": "*",
+		"laravel-notification-channels/twitter": "^7.0",
 		"laravel/ui": "^4.2",
 		"vinkla/shield": "^9.0",
 		"nunomaduro/collision": "^7.1"
@@ -82,7 +82,7 @@
 			"@php artisan package:discover"
 		],
 		"phpstan": [
-			"./vendor/bin/phpstan analyse -V"
+			"./vendor/bin/phpstan analyse"
 		],
 		"tests": [
 			"php artisan migrate --verbose",

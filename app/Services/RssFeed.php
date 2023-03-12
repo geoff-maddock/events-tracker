@@ -54,10 +54,10 @@ class RssFeed
         }
 
         $events = Event::getByTag(ucfirst($tag))
-        ->future()
-        ->orderBy('start_at', 'desc')
-        ->take(config('event.rss_size'))
-        ->get();
+            ->future()
+            ->orderBy('start_at', 'desc')
+            ->take(config('event.rss_size'))
+            ->get();
 
         $rss = $this->buildRssData($events);
         Cache::add('rss-feed'.$tag, $rss, 7200);
@@ -73,14 +73,13 @@ class RssFeed
         $now = Carbon::now();
         $feed = new Feed();
         $channel = new Channel();
-        $channel
-      ->title(config('event.title'))
-      ->description(config('event.description'))
-      ->url(url('/'))
-      ->language('en')
-      ->copyright('Copyright (c) '.config('event.author'))
-      ->lastBuildDate($now->timestamp)
-      ->appendTo($feed);
+        $channel->title(config('event.title'))
+        ->description(config('event.description'))
+        ->url(url('/'))
+        ->language('en')
+        ->copyright('Copyright (c) '.config('event.author'))
+        ->lastBuildDate($now->timestamp)
+        ->appendTo($feed);
 
         foreach ($events as $event) {
             $item = new Item();

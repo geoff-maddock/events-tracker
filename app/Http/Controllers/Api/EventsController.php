@@ -356,8 +356,6 @@ class EventsController extends Controller
         // get the entity by the slug name
         $related = Entity::where('slug', '=', $slug)->firstOrFail();
 
-        $eventList = [];
-
         // get all events related to the entity
         $events = Event::getByEntity(strtolower($slug))
             ->orderBy('start_at', 'ASC')
@@ -374,6 +372,8 @@ class EventsController extends Controller
         $series = $series->filter(function ($e) {
             return (('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
         });
+
+        $eventList = [];
 
         // adds events to event list
         foreach ($events as $event) {
