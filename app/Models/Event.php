@@ -8,7 +8,7 @@ use DateTime;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -117,10 +117,11 @@ use Illuminate\Support\Str;
  * @method static Builder|Event whereTicketLink($value)
  * @method static Builder|Event whereUpdatedAt($value)
  * @method static Builder|Event whereUpdatedBy($value)
- * @method static Builder|Event whereVenueId($value)
+ * @method static Builder|Event whereVenueId($value)    
  * @method static Builder|Event whereVisibilityId($value)
+ * @method static Builder|Event getByEntity($value)
  */
-class Event extends Eloquent
+class Event extends Model
 {
     use Notifiable;
     use HasFactory;
@@ -308,9 +309,6 @@ class Event extends Eloquent
             ->orderBy('start_at', 'asc');
     }
 
-    /**
-     * @return EventBuilder<Event>
-     */
     public function scopeFuture(Builder $query): Builder
     {
         return $query->where('start_at', '>=', Carbon::today()->startOfDay())
