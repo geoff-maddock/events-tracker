@@ -308,6 +308,9 @@ class Event extends Eloquent
             ->orderBy('start_at', 'asc');
     }
 
+    /**
+     * @return EventBuilder<Event>
+     */
     public function scopeFuture(Builder $query): Builder
     {
         return $query->where('start_at', '>=', Carbon::today()->startOfDay())
