@@ -283,27 +283,7 @@ class UsersController extends Controller
 
     public function show(User $user, Request $request): JsonResponse
     {
-        // // if tabs were passed in the request, store them
-        // $this->setTabs($request);
-
-        // // get the current tabs from the session
-        // $tabs = $this->getTabs($request);
-
-        // // if there is no profile, create one?
-        // if (!$user->profile) {
-        //     $profile = new Profile();
-        //     $profile->user_id = $user->id;
-
-        //     $profile->save();
-
-        //     return redirect('users/'.$user->id);
-        // }
-
-        // // TODO What is this token used for?
-        // $token = \Password::getRepository()->create($user);
-
         return response()->json(new UserResource($user));
-        // return view('users.show', compact('user', 'tabs', 'token'));
     }
 
     public function profile(User $user, Request $request): RedirectResponse
