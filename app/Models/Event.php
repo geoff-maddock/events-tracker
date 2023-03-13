@@ -176,6 +176,11 @@ class Event extends Model
         'cancelled_at' => 'datetime'
     ];
 
+
+
+    /**
+     * @return Builder<Event>
+     */
     public function scopeFilter(Builder $query, QueryFilter $filters): Builder
     {
         return $filters->apply($query);
@@ -303,18 +308,28 @@ class Event extends Model
         }
     }
 
+    /**
+     * @param Builder<Event> $query
+     */
     public function scopeToday(Builder $query): Builder
     {
+        /* @var Builder<Event>*/
         return $query->whereDate('start_at', '=', Carbon::today()->toDateString())
             ->orderBy('start_at', 'asc');
     }
 
+    /**
+     * @param Builder<Event> $query 
+     */
     public function scopeFuture(Builder $query): Builder
     {
         return $query->where('start_at', '>=', Carbon::today()->startOfDay())
             ->orderBy('start_at', 'asc');
     }
 
+    /**
+     * @param Builder<Event> $query
+     */
     public function scopePast(Builder $query): Builder
     {
         return $query->where('start_at', '<', Carbon::today()->startOfDay())
@@ -323,6 +338,7 @@ class Event extends Model
 
     /**
      * Returns visible events.
+     * @return Builder<Event>
      */
     public function scopeVisible(Builder $query, ?User $user): Builder
     {
@@ -560,6 +576,7 @@ class Event extends Model
 
     /**
      * Return a collection of events with the passed tag.
+     * @return Builder<Event>
      */
     public static function getByTag(string $tag): Builder
     {
@@ -571,6 +588,7 @@ class Event extends Model
 
     /**
      * Return a collection of events with the passed venue.
+     * @return Builder<Event>
      */
     public static function getByVenue(string $slug): Builder
     {
@@ -582,6 +600,7 @@ class Event extends Model
 
     /**
      * Return a collection of events with the passed event type.
+     * @return Builder<Event>
      */
     public static function getByType(?string $slug): Builder
     {
@@ -593,6 +612,7 @@ class Event extends Model
 
     /**
      * Return a collection of events with the passed series.
+     * @return Builder<Event>
      */
     public static function getBySeries(?string $slug): Builder
     {
@@ -604,6 +624,7 @@ class Event extends Model
 
     /**
      * Return a collection of events with the passed entity.
+     * @return Builder<Event>
      */
     public static function getByEntity(?string $slug): Builder
     {
@@ -694,6 +715,7 @@ class Event extends Model
 
     /**
      * Return a collection of events that begin on the passed date.
+     * @return Builder<Event>
      */
     public static function getByStartAt(?DateTime $date): Builder
     {

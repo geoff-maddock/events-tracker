@@ -186,18 +186,27 @@ class Series extends Eloquent
         'cancelled_at' => 'datetime'
     ];
 
+     /**
+     * @param Builder<Event> $query 
+     */
     public function scopeFuture(Builder $query): Builder
     {
         return $query->where('start_at', '>=', Carbon::now())
                         ->orderBy('start_at', 'asc');
     }
 
+    /**
+     * @param Builder<Event> $query 
+     */
     public function scopePast(Builder $query): Builder
     {
         return $query->where('start_at', '<', Carbon::now())
                         ->orderBy('start_at', 'desc');
     }
 
+    /**
+     * @param Builder<Event> $query 
+     */
     public function scopeActive(Builder $query): Builder
     {
         return $query->whereNull('cancelled_at');
@@ -380,7 +389,7 @@ class Series extends Eloquent
 
     /**
      * Return a collection of series with the passed tag.
-     *
+     * @return Builder<Series>
      **/
     public static function getByTag(string $tag): Builder
     {
@@ -392,7 +401,7 @@ class Series extends Eloquent
 
     /**
      * Return a collection of series with the passed event type.
-     *
+     * @return Builder<Series>
      **/
     public static function getByType(string $slug): Builder
     {
@@ -404,7 +413,7 @@ class Series extends Eloquent
 
     /**
      * Return a collection of series with the passed venue.
-     *
+     * @return Builder<Series>
      **/
     public static function getByVenue(string $slug): Builder
     {
@@ -416,7 +425,7 @@ class Series extends Eloquent
 
     /**
      * Return a collection of series with the passed entity.
-     *
+     * @return Builder<Series>
      **/
     public static function getByEntity(string $slug): Builder
     {

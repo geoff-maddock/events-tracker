@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\SocialFacebookAccountService;
-use Illuminate\Http\RedirectResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Laravel\Socialite\Facades\Socialite;
 
 class SocialAuthFacebookController extends Controller

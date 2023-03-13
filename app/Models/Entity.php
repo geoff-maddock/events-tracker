@@ -127,7 +127,7 @@ class Entity extends Eloquent
 
     /**
      * Return a collection of entities with the role venue.
-     *
+     * @return Builder<Entity>
      **/
     public static function getVenues(): Builder
     {
@@ -140,8 +140,8 @@ class Entity extends Eloquent
     }
 
     /**
-     * Return a collection of entities with the role  promoter.
-     *
+     * Return a collection of entities with the role promoter.
+     * @return Builder<Entity>
      **/
     public static function getPromoters(): Builder
     {
@@ -155,6 +155,7 @@ class Entity extends Eloquent
 
     /**
      * Return a collection of entities with the passed role.
+     * @return Builder<Entity>
      **/
     public static function getByRole(string $role): Builder
     {
@@ -168,7 +169,7 @@ class Entity extends Eloquent
 
     /**
      * Return a collection of entities with the passed tag.
-     *
+     * @return Builder<Entity>
      **/
     public static function getByTag(string $tag): Builder
     {
