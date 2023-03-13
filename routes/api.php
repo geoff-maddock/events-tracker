@@ -1,5 +1,4 @@
 <?php
-
 use App\Models\Entity;
 use App\Models\Series;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +10,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         return ['data' => 'token is valid'];
     });
 });
+
+// Route::middleware('auth:sanctum')->get('tokens/test', function (Request $request) {
+//     return ['data' => 'token test'];
+// });
+
 
 Route::middleware('auth.basic')->name('api.')->group(function () {
 

@@ -105,7 +105,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     /**
      * The attributes excluded from the model's JSON form.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $hidden = ['password', 'remember_token'];
 
@@ -539,7 +539,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     {
         return static::where('user_id', $user->id)
             ->latest()
-            ->with('object')
+            // ->with('object')
             ->take($take)
             ->get()
             ->groupBy(function ($activity) {

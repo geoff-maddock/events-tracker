@@ -1132,6 +1132,7 @@ class EventsController extends Controller
         $eventList = [];
 
         // get all events related to the entity
+        // \PHPStan\dumpType(Event::getByEntity(strtolower($slug))->get());
         $events = Event::getByEntity(strtolower($slug))
             ->orderBy('start_at', 'ASC')
             ->orderBy('name', 'ASC')
