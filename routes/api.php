@@ -11,9 +11,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     });
 });
 
-// Route::middleware('auth:sanctum')->get('tokens/test', function (Request $request) {
-//     return ['data' => 'token test'];
-// });
+Route::middleware('auth:sanctum')->get('tokens/test', function (Request $request) {
+    return ['data' => 'token test'];
+});
 
 
 Route::middleware('auth.basic')->name('api.')->group(function () {
