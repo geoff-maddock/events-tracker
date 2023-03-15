@@ -47,9 +47,11 @@ use Illuminate\Support\Facades\Session;
 
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
 use Image;
 use Storage;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Route;
 
 class EventsController extends Controller
 {
@@ -115,7 +117,6 @@ class EventsController extends Controller
         );
 
         $this->facebook = Api::instance();
-
         $this->hasFilter = false;
         parent::__construct();
     }
@@ -2258,7 +2259,7 @@ class EventsController extends Controller
         }
 
         // add a twitter notification if the user is admin
-        if ($this->user->hasGroup('super_admin') && config('app.twitter_consumer_key') !== '999') {
+        if (Auth::user()->hasGroup('super_admin') && config('app.twitter_consumer_key') !== '999') {
             // only tweet if there is a primary photo
             if ($photo !== null) {
                 $event->notify(new EventPublished());
@@ -2333,7 +2334,7 @@ class EventsController extends Controller
 
         $event->fill($request->input())->save();
 
-        if (!$event->ownedBy($this->user)) {
+        if (!$event->ownedBy(auth()->user())) {
             $this->unauthorized($request);
         }
 
@@ -2350,7 +2351,7 @@ class EventsController extends Controller
                 $newTag->save();
 
                 // log adding of new tag
-                Activity::log($newTag, $this->user, 1);
+                Activity::log($newTag, auth()->user(), 1);
 
                 $syncArray[strtolower($tag)] = $newTag->id;
 
@@ -2386,7 +2387,7 @@ class EventsController extends Controller
     public function destroy(Event $event): RedirectResponse
     {
         // add to activity log
-        Activity::log($event, $this->user, 3);
+        Activity::log($event, auth()->user(), 3);
 
         $event->delete();
 

@@ -58,7 +58,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::group([
             'namespace' => $this->namespace,
-            'middleware' => ['web'],  // changing this from middleware to middlewareGroups worked
+            'middleware' => 'web',  // changing this from middleware to middlewareGroups worked
         ], function ($router) {
             require base_path('routes/web.php');
         });
