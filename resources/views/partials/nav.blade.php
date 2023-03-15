@@ -143,7 +143,7 @@
 									<path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
 								  </svg>
 							</a>
-							<a href="#" class="nav-link dropdown-toggle d-none d-xl-block" id="profile-dropdown" data-hover="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Show a calendar view of events.">{{ Auth::user()->name }} <span class="caret"></span></a>
+							<a href="#" class="nav-link dropdown-toggle d-none d-xl-block" id="profile-dropdown" data-hover="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="User settings.">{{ Auth::user()->name }} <span class="caret"></span></a>
 							<ul class="dropdown-menu" aria-labelledby="profile-dropdown">
 
 							<li class="nav-item"><a href="{{ url('/users/'.Auth::user()->id) }}" class="dropdown-item">Profile</a></li>
