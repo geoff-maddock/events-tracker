@@ -103,6 +103,7 @@ class Entity extends Eloquent
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'started_at' => 'datetime',
     ];
 
     protected $attributes = [
