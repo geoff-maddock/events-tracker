@@ -13,10 +13,10 @@
 <script src="{{ asset('/js/facebook-sdk.js') }}"></script>
 <script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
 
-<h1 class="display-6 text-primary">Events. Edit	@include('events.crumbs', ['slug' => $event->slug ?: $event->id])</h1>
+<h1 class="display-crumbs text-primary">Events. Edit	@include('events.crumbs', ['slug' => $event->slug ?: $event->id])</h1>
 
 <div id="action-menu" class="mb-2">
-	@include('events.show.actions', ['event' => $event, 'user' => $user])
+	@include('events.edit.actions', ['event' => $event, 'user' => $user])
 </div>
 
 <div class="row">
