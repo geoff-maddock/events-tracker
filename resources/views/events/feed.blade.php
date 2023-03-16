@@ -17,7 +17,7 @@
 {{ $event->name }}
 
 
-@if (!empty($event->series_id))
+@if (!empty($event->series_id) && !empty($event->series))
 <br><a href="/series/{{$event->series_id }}">{!! $event->series->name !!}</a> series
 @endif
 <br>
@@ -58,6 +58,8 @@ Tags:
 
 @if ($event->primary_link)
 <br>{{ $event->primary_link ?? ''}}
+@else 
+<br>{!! URL::to('events/'.$event->id) !!} 
 @endif
 <br><br>
 @endforeach

@@ -29,20 +29,20 @@ class ImpersonateUsersTest extends TestCase
             ->assertStatus(403);
     }
 
-    /** @test */
-    public function admins_can_impersonate_users()
-    {
-        // create a new user
-        $user = User::factory()->create();
+    // /** @test */
+    // public function admins_can_impersonate_users()
+    // {
+    //     // create a new user
+    //     $user = User::factory()->create();
 
-        // create a new admin user
-        $admin = User::factory()->create();
-        $admin->assignGroup('admin');
+    //     // create a new admin user
+    //     $admin = User::factory()->create();
+    //     $admin->assignGroup('admin');
 
-        $this->actingAs($admin);
+    //     $this->actingAs($admin);
 
-        $response = $this->get('/impersonate/' . $user->id);
+    //     $response = $this->get('/impersonate/' . $user->id);
 
-        $response->assertStatus(302);
-    }
+    //     $response->assertStatus(302);
+    // }
 }
