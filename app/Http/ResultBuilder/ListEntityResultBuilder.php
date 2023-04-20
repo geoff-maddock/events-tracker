@@ -156,7 +156,13 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
     private function addSort(): void
     {
         $this->appliedSortField = $this->listQueryParameters->getSortFieldName();
-        $this->appliedSortDirection = $this->listQueryParameters->getSortDirection();
+        
+        if (!in_array($this->listQueryParameters->getSortDirection(), ['asc', 'desc'])) {
+            $this->appliedSortDirection = 'asc';
+        } else {
+            $this->appliedSortDirection = $this->listQueryParameters->getSortDirection();
+        }
+
 
         // Set the default sort if no sort is provided from listQueryParameters
         if (is_null($this->appliedSortDirection) && is_null($this->appliedSortField) && 1 === count($this->defaultSort)) {
