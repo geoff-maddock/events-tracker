@@ -823,6 +823,32 @@ class UsersController extends Controller
         return back();
     }
 
+    /**
+     * @return View|RedirectResponse
+     */
+    public function purge(Request $request)
+    {
+        // get all the users who are not approved
+        $users = User::where('user_status_id', '=', '1')->orderBy('name', 'ASC')->get();
+
+        if (count($users) < 1) {
+            flash()->success('Error', 'There are no users to purge.');
+
+            return back();
+        }
+
+        $list = '';
+        Log::info('Purging users.');
+        foreach ($users as $user) {
+            $list .= $user->name.', ';
+            $user->delete();
+        }
+
+        flash()->success('Success', 'These users have been purged: '.$list);
+
+        return back();
+    }
+
     protected function getListControlOptions(): array
     {
         return [

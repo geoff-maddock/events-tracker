@@ -29,8 +29,14 @@
 			{!! Form::submit('Send Invites', ['class' =>'btn btn-primary']) !!}
 		</div>
 		{!! Form::close() !!}
-
 	</div>
+	<div class="my-2 col-4">
+        {!! Form::open(['route' => 'users.purge']) !!}
+        <div class="form-group">
+            {!! Form::submit('Purge Users', ['class' =>'btn btn-primary confirm']) !!}
+        </div>
+        {!! Form::close() !!}
+    </div>
 
 @stop
 
