@@ -10,8 +10,8 @@
 			@endif
 
             @if ($signedIn &&  Auth::user()->id == Config::get('app.superuser'))
-					<a href="{!! route('tags.edit', ['tag' => $tag->id]) !!}" title="Click to edit"><i class='bi bi-pencil-fill'></i></a>
-                {!! link_form_bootstrap_icon('bi bi-trash-fill text-info icon', $tag, 'DELETE', 'Delete the tag') !!}
+					<a href="{!! route('tags.edit', ['tag' => $tag->slug]) !!}" title="Click to edit"><i class='bi bi-pencil-fill'></i></a>
+                {!! link_form_bootstrap_icon('bi bi-trash-fill text-info icon', $tag->slug, 'DELETE', 'Delete the tag') !!}
             @endif
 		@endif
 	</h1>
