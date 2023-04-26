@@ -32,7 +32,7 @@
 
 .site-title a {
 	text-decoration: none;
-	color: #dddddd;
+	color: #eeeeee;
 	background: linear-gradient(225deg, #FF3CAC 0%, #784BA0 50%, #2B86C5 100%);
 	-webkit-transition: all .3s;
 	-moz-transition: all .3s;
@@ -40,7 +40,7 @@
 }
 
 .site-title a:hover {
-	color: #eeeeee;
+	color: #ffffff;
 }
 
 .profile-card {
@@ -312,6 +312,7 @@ span.bg-dark {
 	color: rgba(255, 255, 255, 0.5) !important;
 }
 
+
 /* select2 dark styles */
 .select2 {
 	color: rgba(255, 255, 255, 0.5) !important;
@@ -469,4 +470,9 @@ h5 {
 
 .btn-primary .page-link {
 	background-color: #4c9be8 !important;
+}
+
+button.form-control:focus {
+	background-color: var(--bs-btn-bg) !important;
+	color: #fff;
 }
