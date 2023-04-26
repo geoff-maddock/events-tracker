@@ -13,10 +13,10 @@
 
 <div id="action-menu" class="mb-2">	
 	@if ($user && (Auth::user()->id == $series?->user?->id || $user->id == Config::get('app.superuser')  ) )
-	<a href="{!! route('series.edit', ['series' => $series->id]) !!}" class="btn btn-primary">Edit Series</a>
-	<a href="{!! route('series.createOccurrence', ['id' => $series->id]) !!}" class="btn btn-primary">Add Occurrence</a>
+	<a href="{!! route('series.edit', ['series' => $series->id]) !!}" class="btn btn-primary my-1">Edit Series</a>
+	<a href="{!! route('series.createOccurrence', ['id' => $series->id]) !!}" class="btn btn-primary my-1">Add Occurrence</a>
 	@endif
-	<a href="{!! URL::route('series.index') !!}" class="btn btn-info">Return to list</a>
+	<a href="{!! URL::route('series.index') !!}" class="btn btn-info my-1">Return to list</a>
 </div>
 
 <div class="row">

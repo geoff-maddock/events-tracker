@@ -13,9 +13,9 @@
 <h1 class="display-crumbs text-primary">Forum @include('threads.crumbs')</h1>
 
 <div id="action-menu" class="mb-2">
-    <a href="{{ url('/threads/all') }}" class="btn btn-info">Show all threads</a>
-    <a href="{!! URL::route('threads.index') !!}" class="btn btn-info">Show paged threads</a>
-    <a href="{!! URL::route('threads.create') !!}" class="btn btn-primary">Add a thread</a>
+    <a href="{{ url('/threads/all') }}" class="btn btn-info my-1">Show all threads</a>
+    <a href="{!! URL::route('threads.index') !!}" class="btn btn-info my-1">Show paged threads</a>
+    <a href="{!! URL::route('threads.create') !!}" class="btn btn-primary my-1">Add a thread</a>
 </div>
 
 <div id="filters-container" class="row">
