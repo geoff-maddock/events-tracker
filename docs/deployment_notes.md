@@ -18,10 +18,10 @@ Follow these steps to configure and deploy the application
 		2vCPUs
 		4GB / 80 GB Disk
   ```
-* PHP 7.4+ [verify version]
+* PHP 8,1+ [verify version]
 	```
 	gmaddock@Wrecked:/var/www/dev-events$ php -v
-	PHP 7.4.7 (cli) (built: Jun 12 2020 07:43:48) ( NTS )
+	PHP 8.1.16 (cli) (built: Feb 14 2023 18:34:05) (NTS)
 	```
 * Verify required extensions are installed:  pdo_mysql, zip
 * MySQL 8 [verify version - may not require 8]
