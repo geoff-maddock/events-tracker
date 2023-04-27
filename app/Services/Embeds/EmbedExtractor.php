@@ -162,10 +162,10 @@ class EmbedExtractor
         $body = $event->description;
 
         // regex match all URLs
-        $regex = "/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i";
+        $regex = "/\b(?:(?:https|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i";
         preg_match_all($regex, $body, $result, PREG_PATTERN_ORDER);
         $urls = $result[0];
-
+        
         // collect any URLs from related entities
         foreach ($event->entities as $entity) {
             foreach ($entity->links as $link) {
@@ -189,7 +189,7 @@ class EmbedExtractor
         $body = $series->description;
 
         // regex match all URLs
-        $regex = "/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i";
+        $regex = "/\b(?:(?:https|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i";
         preg_match_all($regex, $body, $result, PREG_PATTERN_ORDER);
         $urls = $result[0];
 

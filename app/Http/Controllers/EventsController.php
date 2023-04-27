@@ -2116,6 +2116,7 @@ class EventsController extends Controller
         if (!$event) {
             abort(404);
         }
+        $embeds = $embedExtractor->getEmbedsForEvent($event);
 
         $thread = Thread::where('event_id', '=', $event->id)->first();
 
