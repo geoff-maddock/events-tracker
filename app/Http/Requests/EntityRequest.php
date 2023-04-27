@@ -1,28 +1,26 @@
 <?php
 
 namespace App\Http\Requests;
+use Illuminate\Validation\Rule;
 
 class EntityRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'name' => 'required|min:3',
+            'slug' => Rule::unique('entities')->ignore(isset($this->entity) ? $this->entity->id : ''),
             'short' => 'required',
             'description' => 'required',
         ];
