@@ -288,6 +288,14 @@ a {
 }
 
 /* removes the underline for links and sets the color to a lighter color */
+.event-card a:focus,
+.event-card a:hover,
+.event-card a:active {
+	color: #a2e9f3;
+	text-decoration: none;
+}
+
+/* removes the underline for links and sets the color to a lighter color */
 a:focus,
 a:hover,
 a:active {
@@ -456,12 +464,13 @@ table th a:active {
 }
 
 .item-title {
+
 	color: #7be0ee !important;
 }
 
 
 .item-title:hover {
-	color: #5bc0dc !important;
+	color: #a2e9f3 !important;
 }
 
 h5 {
@@ -475,4 +484,8 @@ h5 {
 button.form-control:focus {
 	background-color: var(--bs-btn-bg) !important;
 	color: #fff;
+}
+
+.event-date {
+	color: #5bc0de !important;
 }

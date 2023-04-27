@@ -24,7 +24,7 @@
 	@if ($event->visibility->name !== 'Public')
 	<span class="text-warning">{{ $event->visibility->name }}</span><br>
 	@endif
-	<span class='event-date'>{!! $event->start_at->format('D F jS Y') !!} </span>
+	<span class='event-date'><a href='/events/by-date/{!! $event->start_at->format('Y') !!}/{!! $event->start_at->format('m') !!}/{!! $event->start_at->format('d') !!}'>{!! $event->start_at->format('D F jS Y') !!}</a> </span>
 
 	<!-- ACTIONS -->
 	<span>
