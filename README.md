@@ -23,8 +23,8 @@ Run an instance to create your own community where events, event series, entitie
 * Added enhanced data to the headers to improve search results and return site events on google.
 
 ### Built On
-* PHP 8
-* Laravel 9
+* PHP 8.1
+* Laravel 10
 * MySQL 8 (can be database agnostic)
 * Bootstrap 5
 * Optional Integrations: Facebook, Twitter
