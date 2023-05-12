@@ -36,16 +36,24 @@ class DailyTweet extends Command
         // get all the events happening today
         $events = Event::today()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*')->get();
 
+        // cycle through all the events - just to log
+        foreach ($events as $event) {
+
+            // log that the daily events tweet were sent
+            Log::info('Daily tweet for event '.$event->id.' '.$event->name.' was sent.');
+            
+        };
+
         // cycle through all the events
         foreach ($events as $event) {
 
             // add a twitter notification
             $event->notify(new EventPublished());
 
-            // unlink the temp file
-            if ($photo = $event->getPrimaryPhoto()) {
-                unlink(storage_path().'/app/public/photos/temp/'.$photo->name);
-            };
+            // // unlink the temp file
+            // if ($photo = $event->getPrimaryPhoto()) {
+            //     unlink(storage_path().'/app/public/photos/temp/'.$photo->name);
+            // };
         };
         
         // log that the daily events tweet were sent
