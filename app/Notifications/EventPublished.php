@@ -68,7 +68,8 @@ class EventPublished extends Notification
             $public = Storage::disk('public');
             $public->put('./photos/temp/'.$photo->name, $temp);
 
-            return (new TwitterStatusUpdate($notifiable->getBriefFormat()))->withImage('storage/photos/temp/'.$photo->name);
+            $storage = storage_path().'/app/public/photos/temp/'.$photo->name;
+            return (new TwitterStatusUpdate($notifiable->getBriefFormat()))->withImage($storage);
         }
 
         return new TwitterStatusUpdate($notifiable->getBriefFormat());

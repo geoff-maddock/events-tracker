@@ -50,10 +50,10 @@ class DailyTweet extends Command
             // add a twitter notification
             $event->notify(new EventPublished());
 
-            // // unlink the temp file
-            // if ($photo = $event->getPrimaryPhoto()) {
-            //     unlink(storage_path().'/app/public/photos/temp/'.$photo->name);
-            // };
+            // unlink the temp file
+            if ($photo = $event->getPrimaryPhoto()) {
+                unlink(storage_path().'/app/public/photos/temp/'.$photo->name);
+            };
         };
         
         // log that the daily events tweet were sent
