@@ -11,4 +11,7 @@ return array(
 
     // Capture default user context
    //  'user_context' => true,
+    'traces_sample_rate' => 1.0,
+    // Set a sampling rate for profiling - this is relative to traces_sample_rate
+    'profiles_sample_rate' => 1.0,
 );
