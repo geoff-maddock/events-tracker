@@ -72,7 +72,8 @@ Route::get('help', 'PagesController@help');
 Route::get('calendar', 'EventsController@calendar')->name('calendar');
 Route::get('calendar/{year?}/{month?}/{day?}', 'EventsController@calendarByDate')->name('calendar.byDate')
     ->where('year', '[1-9][0-9][0-9][0-9]')
-    ->where('month', '(0?[1-9]|1[012])$');
+    ->where('month', '(0?[1-9]|1[012])$')
+    ->where('day', '[0-3][0-9]');
 Route::get('calendar/tag/{tag}', 'EventsController@calendarTags')->name('calendar.tag');
 Route::get('tag-calendar', 'EventsController@calendarTagOnly')->name('tag-calendar');
 Route::get('calendar/related-to/{slug}', 'EventsController@calendarRelatedTo');
@@ -213,11 +214,13 @@ Route::get('events/{id}/load-embeds', 'EventsController@loadEmbeds');
 Route::get('events/{id}/load-minimal-embeds', 'EventsController@loadMinimalEmbeds');
 Route::get('events/by-date/{year}/{month?}/{day?}', 'EventsController@indexByDate')
     ->where('year', '[1-9][0-9][0-9][0-9]')
-    ->where('month', '(0?[1-9]|1[012])$');
+    ->where('month', '(0?[1-9]|1[012])$')
+    ->where('day', '[0-3][0-9]');
 // Use this route for the front page to display a window of events
 Route::get('events/window/{year}/{month?}/{day?}', 'EventsController@indexWindow')
     ->where('year', '[1-9][0-9][0-9][0-9]')
-    ->where('month', '(0?[1-9]|1[012])$');
+    ->where('month', '(0?[1-9]|1[012])$')
+    ->where('day', '[0-3][0-9]');
 Route::get('events/daily', 'EventsController@daily');
 Route::get('events/day/{day}', 'EventsController@day')->name('events.day');
 Route::match(['get', 'post'], 'events/attending', 'EventsController@indexAttending')->name('events.attending');
