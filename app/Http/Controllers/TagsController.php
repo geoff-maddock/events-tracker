@@ -118,10 +118,10 @@ class TagsController extends Controller
         $series = Series::whereHas('tags', function ($q) use ($tagNames) {
             $q->whereIn('name', $tagNames);
         })->visible($this->user)
-                    ->orderBy('start_at', 'ASC')
-                    ->orderBy('name', 'ASC')
-                    ->with('tags', 'entities', 'occurrenceType')
-                    ->paginate();
+            ->orderBy('start_at', 'ASC')
+            ->orderBy('name', 'ASC')
+            ->with('tags', 'entities', 'occurrenceType','occurrenceWeek','occurrenceDay')
+            ->paginate();
 
         // get all the events linked to the tag
         $events = Event::whereHas('tags', function ($q) use ($tagNames) {

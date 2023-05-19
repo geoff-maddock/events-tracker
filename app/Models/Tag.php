@@ -88,6 +88,7 @@ class Tag extends Eloquent
         $response = Follow::where('object_type', '=', 'tag')
         ->where('object_id', '=', $this->id)
         ->where('user_id', '=', $user->id)
+        ->with('user')
         ->first();
 
         return $response;
