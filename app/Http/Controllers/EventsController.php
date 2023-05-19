@@ -1263,14 +1263,17 @@ class EventsController extends Controller
         $events = Event::where(function ($query) {
             /* @phpstan-ignore-next-line */
             $query->visible($this->user);
-        })->get();
+        })->with('eventType', 'visibility')
+        ->get();
 
         // get all the upcoming series events
-        $series = Series::active()->get();
+        $series = Series::active()->with('visibility','occurrenceType')->get();
 
         // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
-            return (('Public' == $e->visibility->name) || ($this->user && $e->created_by === $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
+            return (
+                ('Public' == $e->visibility->name) ||
+                 ($this->user && $e->created_by === $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
         });
 
         // adds events to event list
@@ -1648,6 +1651,7 @@ class EventsController extends Controller
         $events = Event::where('door_price', 0)
             ->orderBy('start_at', 'ASC')
             ->orderBy('name', 'ASC')
+            ->with('visibility', 'eventType')
             ->get();
 
         // filter public events and those created by the current user
@@ -1656,7 +1660,7 @@ class EventsController extends Controller
         });
 
         // get all the upcoming series events
-        $series = Series::where('door_price', 0)->active()->get();
+        $series = Series::where('door_price', 0)->active()->with('visibility','occurrenceType')->get();
 
         // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
@@ -1712,6 +1716,7 @@ class EventsController extends Controller
         $events = Event::where('min_age', '<=', $age)
             ->orderBy('start_at', 'ASC')
             ->orderBy('name', 'ASC')
+            ->with('visibility','eventType')
             ->get();
 
         // filter only public events and those created by the user
@@ -1720,7 +1725,7 @@ class EventsController extends Controller
         });
 
         // get all the upcoming series events
-        $series = Series::where('min_age', '<=', $age)->active()->get();
+        $series = Series::where('min_age', '<=', $age)->active()->with('visibility','occurrenceType')->get();
 
         // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
@@ -1778,6 +1783,7 @@ class EventsController extends Controller
         $events = Event::getByType($slug)
             ->orderBy('start_at', 'ASC')
             ->orderBy('name', 'ASC')
+            ->with('visibility','eventType')
             ->get();
 
         $events->filter(function ($e) {
@@ -1785,7 +1791,7 @@ class EventsController extends Controller
         });
 
         // get all the upcoming series events
-        $series = Series::getByType($slug)->active()->get();
+        $series = Series::getByType($slug)->active()->with('visibility','occurrenceType')->get();
 
         // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
