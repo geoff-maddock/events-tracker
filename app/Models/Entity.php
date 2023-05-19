@@ -518,7 +518,7 @@ class Entity extends Eloquent
         $address = '';
 
         // get a list of events that start on the passed date
-        $primary = $this->locations()->first();
+        $primary = $this->locations->first();
 
         // @phpstan-ignore-next-line
         if ($primary && ('Guarded' != $primary->visibility->name || ('Guarded' == $primary->visibility->name) && $signedIn)) {

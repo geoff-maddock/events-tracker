@@ -910,7 +910,7 @@ class EventsController extends Controller
         // get the events
         // @phpstan-ignore-next-line
         $events = $query->visible($this->user)
-            ->with('visibility', 'venue')
+            ->with('visibility', 'venue','eventType','entities','tags')
             ->paginate(1000);
 
         return view('events.feed', compact('events'));

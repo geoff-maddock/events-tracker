@@ -36,7 +36,7 @@ class RssFeed
             return Cache::get('rss-feed');
         }
 
-        $events = Event::future()->orderBy('start_at', 'desc')->take(config('event.rss_size'))->get();
+        $events = Event::future()->orderBy('start_at', 'desc')->take(config('event.rss_size'))->with('eventType','series')->get();
 
         $rss = $this->buildRssData($events);
         Cache::add('rss-feed', $rss, 7200);
