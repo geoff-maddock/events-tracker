@@ -583,8 +583,10 @@ class Series extends Eloquent
         $event = null;
 
         if (null == $this->cancelled_at) {
-            $event = Event::where('series_id', '=', $this->id)->where('start_at', '>=', Carbon::now())
-                        ->orderBy('start_at', 'asc')->first();
+            $event = Event::where('series_id', '=', $this->id)
+                    ->where('start_at', '>=', Carbon::now())
+                    ->orderBy('start_at', 'asc')
+                    ->first();
         }
 
         return $event;

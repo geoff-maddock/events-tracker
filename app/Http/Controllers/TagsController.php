@@ -141,7 +141,7 @@ class TagsController extends Controller
                     ->simplePaginate($this->limit);
 
         // get a list of all tags
-        $tags = Tag::orderBy('name', 'ASC')->get();
+        $tags = Tag::with('visibility',)->orderBy('name', 'ASC')->get();
 
         return view('tags.index', compact('series', 'entities', 'events', 'tag', 'tags', 'userTags', 'latestTags'));
     }
@@ -228,6 +228,7 @@ class TagsController extends Controller
 
         // get all the events linked to the tag
         $events = Event::getByTag($slug)
+            ->with('visibility')
             ->orderBy('start_at', 'DESC')
             ->orderBy('name', 'ASC')
             ->simplePaginate($this->limit);
