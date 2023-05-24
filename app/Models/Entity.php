@@ -494,7 +494,7 @@ class Entity extends Eloquent
     public function getPrimaryLocation(): ?Model
     {
         // get a list of events that start on the passed date
-        $primary = $this->locations()->first();
+        $primary = $this->locations->first();
 
         return $primary;
     }
@@ -538,7 +538,7 @@ class Entity extends Eloquent
     public function getPrimaryLocationMap(): ?string
     {
         // get a list of events that start on the passed date
-        $primary = $this->locations()->first();
+        $primary = $this->locations->first();
 
         if ($primary) {
             return $primary->map_url;

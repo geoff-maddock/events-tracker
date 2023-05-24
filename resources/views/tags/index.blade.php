@@ -59,12 +59,17 @@ Keyword Tags
 					</div>
 					<div class="col-10">
 						<ul>
+							@if ($signedIn)
+							@php 
+								$following = $user->getTagsFollowing();
+							@endphp 
+							@endif
 						@foreach ($tags as $t)
 							@if (isset($tag) && (strtolower($slug) === strtolower($t->slug)))
 								<?php $match = $t;?>
 								<li class='vertical-list selected'><a href="/tags/{{ $t->slug }}" title="Click to show all related events and entities." name="{{ $t->name[0] }}">{{ $t->name }}</a>
 									@if ($signedIn)
-										@if ($follow = $t->followedBy($user))
+										@if ($following->contains($t))
 										<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" title="Click to unfollow"><i class="bi bi-check-circle-fill  text-info"></i></a>
 										@else
 										<a href="{!! route('tags.follow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" title="Click to follow"><i class="bi bi-plus-circle text-warning"></i></a>
@@ -74,7 +79,7 @@ Keyword Tags
 							@else
 								<li class='vertical-list'><a href="/tags/{{ $t->slug }}"  name="{{ $t->name[0] }}">{{ $t->name }}</a>
 									@if ($signedIn)
-										@if ($follow = $t->followedBy($user))
+										@if ($following->contains($t))
 										<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" title="Click to unfollow"><i class="bi bi-check-circle-fill text-info"></i></a>
 										@else
 										<a href="{!! route('tags.follow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" title="Click to follow"><i class="bi bi-plus-circle text-warning"></i></a>

@@ -117,6 +117,7 @@ class PagesController extends Controller
 
         // find matching events by entity, tag or series or name
         $eventQuery = Event::getByEntity(strtolower($searchSlug))
+                    ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
                     ->orWhereHas('tags', function ($q) use ($search) {
                         $q->where('name', '=', ucfirst($search));
                     })
@@ -141,6 +142,7 @@ class PagesController extends Controller
 
         // find matching series by entity, tag or name
         $seriesQuery = Series::getByEntity(strtolower($searchSlug))
+                    ->with('visibility', 'venue','tags', 'entities','eventType','threads','occurrenceType','occurrenceWeek','occurrenceDay')
                     ->orWhereHas('tags', function ($q) use ($search) {
                         $q->where('name', '=', ucfirst($search));
                     })
@@ -152,10 +154,11 @@ class PagesController extends Controller
                     ->orderBy('name', 'ASC');
 
         $seriesCount = $seriesQuery->count();
-        $series = $seriesQuery->paginate($this->limit);
+        $series = $seriesQuery->with('occurrenceWeek','occurrenceType','occurrenceDay')->paginate($this->limit);
 
         // find entities by name, tags or aliases
         $entitiesQuery = Entity::where('name', 'like', '%'.$search.'%')
+                ->with('tags', 'events','entityType','locations','entityStatus','user')
                 ->orWhereHas('tags', function ($q) use ($search) {
                     $q->where('name', '=', ucfirst($search));
                 })
@@ -183,7 +186,7 @@ class PagesController extends Controller
         $users = $usersQuery->simplePaginate($this->limit);
 
         // find threads by name
-        $threadsQuery = Thread::where('name', 'like', '%'.$search.'%')
+        $threadsQuery = Thread::with('visibility','entities','tags','posts','event','user')->where('name', 'like', '%'.$search.'%')
             ->orWhereHas('tags', function ($q) use ($search) {
                 $q->where('name', '=', ucfirst($search));
             })
