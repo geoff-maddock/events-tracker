@@ -129,7 +129,7 @@ class UsersController extends Controller
         $query = $listResultSet->getList();
 
         // get the users
-        $users = $query->paginate($listResultSet->getLimit());
+        $users = $query->with('status')->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();

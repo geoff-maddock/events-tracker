@@ -849,7 +849,7 @@ class EventsController extends Controller
 
         // get the events
         $events = $query
-            ->with('visibility', 'venue')
+            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -2596,6 +2596,7 @@ class EventsController extends Controller
 
         // @phpstan-ignore-next-line
         $future_events = $futureQuery
+            ->with('visibility', 'venue','tags','entities','series','eventType','threads')
             ->future()
             ->orderBy('events.start_at', 'ASC')
             ->orderBy('events.name', 'ASC')
@@ -2608,10 +2609,10 @@ class EventsController extends Controller
         // @phpstan-ignore-next-line
         $past_events = $pastQuery
         // @phpstan-ignore-next-line
+            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
             ->past()
             ->orderBy('events.start_at', 'ASC')
             ->orderBy('events.name', 'ASC')
-            ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
 
         $past_events->filter(function ($e) {
@@ -2677,6 +2678,7 @@ class EventsController extends Controller
 
         // @phpstan-ignore-next-line
         $future_events = $futureQuery
+            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
             ->future()
             ->orderBy('events.start_at', 'ASC')
             ->orderBy('events.name', 'ASC')
@@ -2688,10 +2690,10 @@ class EventsController extends Controller
 
         // @phpstan-ignore-next-line
         $past_events = $pastQuery
+            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
             ->past()
             ->orderBy('events.start_at', 'ASC')
             ->orderBy('events.name', 'ASC')
-            ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
 
         $past_events->filter(function ($e) {
@@ -2756,6 +2758,7 @@ class EventsController extends Controller
         $cdate_tomorrow = Carbon::parse($date)->addDay();
 
         $future_events = Event::where('events.start_at', '>', $cdate_yesterday->toDateString())
+            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
             ->where('events.start_at', '<', $cdate_tomorrow->toDateString())
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
@@ -2818,6 +2821,7 @@ class EventsController extends Controller
         $query = $listResultSet->getList();
 
         $future_events = Event::getByVenue(strtolower($slug))
+            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
             ->future()
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
@@ -2828,6 +2832,7 @@ class EventsController extends Controller
             ->paginate($this->limit);
 
         $past_events = Event::getByVenue(strtolower($slug))
+            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
             ->past()
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
@@ -2893,6 +2898,7 @@ class EventsController extends Controller
 
         // @phpstan-ignore-next-line
         $future_events = $futureQuery
+            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
             ->future()
             ->orderBy('events.start_at', 'ASC')
             ->orderBy('events.name', 'ASC')
@@ -2904,10 +2910,10 @@ class EventsController extends Controller
 
         // @phpstan-ignore-next-line
         $past_events = $pastQuery
+            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
             ->past()
             ->orderBy('events.start_at', 'ASC')
             ->orderBy('events.name', 'ASC')
-            ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
 
         $past_events->filter(function ($e) {
@@ -2972,6 +2978,7 @@ class EventsController extends Controller
 
         // @phpstan-ignore-next-line
         $future_events = $futureQuery
+            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
             ->future()
             ->orderBy('events.start_at', 'ASC')
             ->orderBy('events.name', 'ASC')
@@ -2983,10 +2990,10 @@ class EventsController extends Controller
 
         // @phpstan-ignore-next-line
         $past_events = $pastQuery
+            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
             ->past()
             ->orderBy('events.start_at', 'ASC')
             ->orderBy('events.name', 'ASC')
-            ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
 
         $past_events->filter(function ($e) {

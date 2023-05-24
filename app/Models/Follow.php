@@ -76,4 +76,12 @@ class Follow extends Eloquent
     {
         return $this->morphTo();
     }
+
+    /**
+     * Get the parent followable model (tag or event).
+     */
+    public function followable(): MorphTo
+    {
+        return $this->morphTo();
+    }
 }

@@ -122,6 +122,7 @@ class EntitiesController extends Controller
 
         // get the entities
         $entities = $query
+            ->with('tags', 'events','entityType','locations','entityStatus','user')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -133,6 +134,7 @@ class EntitiesController extends Controller
         $latestEntities = Entity::withCount(['events' => function (Builder $query) {
             $query->where('events.start_at', '>', Carbon::now()->subMonths(3));
         }])
+        ->with('tags', 'events','entityType','locations','entityStatus','roles','user')
         ->orderBy('events_count', 'desc')
         ->paginate(6);
 
