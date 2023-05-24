@@ -12,7 +12,7 @@
             </div>
 
             <div class="card-body">
-                <?php $events = App\Models\Event::starting($day->format('Y-m-d'))->get(); ?>
+                <?php $events = App\Models\Event::with('series')->starting($day->format('Y-m-d'))->get(); ?>
 
                 @if (count($events) > 0)
 

@@ -43,8 +43,10 @@ class Kernel extends ConsoleKernel
         // send a test email every day at noon
         $schedule->command('adminTest')->daily()->timezone('America/New_York')->at('12:00');
 
-        // send event tweetes every day at 8AM
-        $schedule->command('dailyTweet')->daily()->timezone('America/New_York')->at('08:00');
+        // send event tweets every day at 8AM
+        if (config('app.twitter_consumer_key') !== '999') {
+            $schedule->command('dailyTweet')->daily()->timezone('America/New_York')->at('08:00');
+        }
 
         // update the sitemap once per week
         $schedule->command('sitemap:generate')->weekly()->sundays()->timezone('America/New_York')->at('5:00');
