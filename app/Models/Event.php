@@ -168,6 +168,8 @@ class Event extends Model
         'created_by',
     ];
 
+    // protected $with = ['visibility', 'entities','photos'];
+
     protected $casts = [
         'soundcheck_at' => 'datetime',
         'door_at' => 'datetime',
@@ -176,6 +178,10 @@ class Event extends Model
         'cancelled_at' => 'datetime'
     ];
 
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->with('photos', 'entities')->where('id', $value)->firstOrFail();
+    }
 
 
     /**
@@ -741,7 +747,6 @@ class Event extends Model
      **/
     public function getFlyer(): ?Photo
     {
-        // get a list of events that start on the passed date
         return $this->photos()->first();
     }
 
