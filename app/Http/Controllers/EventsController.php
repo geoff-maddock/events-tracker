@@ -163,7 +163,7 @@ class EventsController extends Controller
         // get the events
         // @phpstan-ignore-next-line
         $events = $query->visible($this->user)
-            ->with('visibility', 'venue')
+            ->with('visibility', 'venue', 'tags','entities')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -3032,7 +3032,7 @@ class EventsController extends Controller
     public function indexWeek(Request $request)
     {
         // no filters or sorting applied, just future events
-        $events = Event::future()->get();
+        $events = Event::with('visibility')->future()->get();
         $events->filter(function ($e) {
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });

@@ -388,9 +388,9 @@ class Thread extends Eloquent
      */
     public function getPostCountAttribute(): int
     {
-        $posts = $this->posts()->get();
+        $posts = $this->posts->count();
 
-        return count($posts);
+        return $posts;
     }
 
     /**
