@@ -38,7 +38,7 @@
           <div class="col-md-2">
           <a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" data-lightbox="{{ Storage::disk('external')->url($photo->getStoragePath()) }}">
             <img src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}" alt="{{ $event->name}}" class="mw-100"></a>
-          @if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser')))
+          @if ($user && $event->user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser')))
           @if ($signedIn || $user->id === Config::get('app.superuser'))
             {!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $photo, 'DELETE', 'Delete the photo') !!}
             @if ($photo->is_primary)
@@ -53,7 +53,7 @@
       @endforeach
 
       <div class="col mb-2">
-      @if ($user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser') || $event->canUserPostPhoto($user)) )
+      @if ($user &&  $event->user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser') || $event->canUserPostPhoto($user)) )
       <form action="/events/{{ $event->id }}/photos" class="dropzone" id="myDropzone" method="POST">
         <input type="hidden" name="_token" value="{{ csrf_token() }}">
       </form>

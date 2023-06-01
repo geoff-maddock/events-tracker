@@ -398,8 +398,6 @@ class Thread extends Eloquent
      */
     public function getIsLockedAttribute(): bool
     {
-        $posts = $this->posts()->get();
-
         return (null == $this->locker) ? false : true;
     }
 
