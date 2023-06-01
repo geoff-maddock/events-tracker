@@ -2146,7 +2146,7 @@ class EventsController extends Controller
     public function loadEmbeds(int $id, EmbedExtractor $embedExtractor, Request $request): RedirectResponse | array
     {
         // load the event
-        if (!$event = Event::find($id)) {
+        if (!$event = Event::with('entities.links')->find($id)) {
             flash()->error('Error', 'No such event');
 
             return back();
@@ -2178,7 +2178,7 @@ class EventsController extends Controller
     public function loadMinimalEmbeds(int $id, EmbedExtractor $embedExtractor, Request $request): RedirectResponse | array
     {
         // load the event
-        if (!$event = Event::find($id)) {
+        if (!$event = Event::with('entities.links')->find($id)) {
             flash()->error('Error', 'No such event');
 
             return back();

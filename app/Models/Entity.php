@@ -126,6 +126,7 @@ class Entity extends Eloquent
         });
     }
 
+    
     /**
      * Return a collection of entities with the role venue.
      * @return Builder<Entity>
@@ -383,7 +384,7 @@ class Entity extends Eloquent
      */
     public function events(): BelongsToMany
     {
-        return $this->belongsToMany(Event::class)->with('visibility', 'venue')->withTimestamps();
+        return $this->belongsToMany(Event::class)->with('visibility', 'venue','entities')->withTimestamps();
     }
 
     /**
