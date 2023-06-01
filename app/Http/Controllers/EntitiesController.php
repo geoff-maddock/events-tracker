@@ -981,6 +981,10 @@ class EntitiesController extends Controller
             return back();
         }
 
+        if (config('app.twitter_consumer_key') === '999') {
+            flash()->error('Error', 'Twitter is not configured.');
+        }
+        
         // Add a twitter notification
         $entity->notify(new EventPublished());
 
