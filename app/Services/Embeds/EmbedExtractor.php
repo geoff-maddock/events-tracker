@@ -35,7 +35,8 @@ class EmbedExtractor
         $this->config = $this->getLayoutConfig($size);
     }
 
-    private function getLayoutConfig(string $size = "medium"): array 
+
+    public function getLayoutConfig(): array 
     {
         $config = [];
 
