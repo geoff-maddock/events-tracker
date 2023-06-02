@@ -32,7 +32,7 @@ class EmbedExtractor
     public function setLayout(string $size = "medium"): void
     {
         $this->size = $size;
-        $this->config = $this->getLayoutConfig($size);
+        $this->config = $this->getLayoutConfig();
     }
 
 
@@ -83,7 +83,7 @@ class EmbedExtractor
 
         // check if the config is set, if not, set it
         if (empty($this->config)) {
-            $this->config = $this->getLayoutConfig($size);
+            $this->config = $this->getLayoutConfig();
         };
 
         // ripple extracts data from audio provider links
@@ -238,7 +238,7 @@ class EmbedExtractor
 
         // set up the layout config
         if (empty($this->config)) {
-            $this->config = $this->getLayoutConfig($size);
+            $this->config = $this->getLayoutConfig();
         };
 
         // if it's a bandcamp link
@@ -289,7 +289,7 @@ class EmbedExtractor
 
         // set up the layout config
         if (empty($this->config)) {
-            $this->config = $this->getLayoutConfig($size);
+            $this->config = $this->getLayoutConfig();
         };
         
         $urls = [];
