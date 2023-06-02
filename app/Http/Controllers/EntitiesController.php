@@ -663,6 +663,7 @@ class EntitiesController extends Controller
     {
         app('redirect')->setIntendedUrl(url()->current());
 
+        // get the threads for the entity
         $threads = $entity->threads()->paginate($this->limit);
 
         // pass empty embeds here - this was moved to a deferred ajax load
