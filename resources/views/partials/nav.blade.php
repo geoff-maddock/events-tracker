@@ -130,9 +130,6 @@
 						</a>
 					</li>
 				@else
-					@if ($latest)
-					<li></li>
-					@endif
 						@foreach ($menus as $menu)
 							<li class="nav-item d-none d-xl-block"><a href="{{ url('/menus/'.$menu->id.'/content') }}" class="nav-link visible-lg">{{ $menu->name  }}</a></li>
 						@endforeach

@@ -35,9 +35,8 @@ class ViewComposerServiceProvider extends ServiceProvider
     private function composeNavigation(): void
     {
         view()->composer('partials.nav', function ($view) {
-            $view->with('latest', Event::latest()->first());
             $view->with('roles', Role::orderBy('name', 'ASC')->get());
-            $view->with('hasForum', Forum::latest()->first());
+            $view->with('hasForum', Forum::latest()->count());
             $view->with('menus', Menu::orderBy('name', 'ASC')->visible()->get());
         });
     }

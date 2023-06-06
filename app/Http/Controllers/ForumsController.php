@@ -352,10 +352,7 @@ class ForumsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        $threads = Thread::where('forum_id', $forum->id)->orderBy('created_at', 'desc')->paginate(1000000);
-        $threads->filter(function ($e) {
-            return ($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id);
-        });
+        $threads = Thread::whereRelation('visibility','name','Public')->where('forum_id', $forum->id)->orderBy('created_at', 'desc')->paginate(1000000);
 
         // pass a slug for the forum
         $slug = $forum->description;

@@ -170,8 +170,6 @@ class Thread extends Eloquent
 
     /**
      * The posts that belong to the thread.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function posts(): HasMany
     {
@@ -210,8 +208,6 @@ class Thread extends Eloquent
 
     /**
      * An thread is created by one user.
-     *
-     * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function creator(): BelongsTo
     {
@@ -219,9 +215,8 @@ class Thread extends Eloquent
     }
 
     /**
-     * Checks if the thread is followed by the user.
-     *
-     **/
+     * Checks if the thread is followed by the user.    
+     */
     public function followedBy(User $user): ?Follow
     {
         return Follow::where('object_type', '=', 'thread')
@@ -240,7 +235,6 @@ class Thread extends Eloquent
 
     /**
      * Returns the users that follow the entity.
-     *
      **/
     public function followers(): Collection
     {
@@ -254,8 +248,7 @@ class Thread extends Eloquent
 
     /**
      * Checks if the thread is liked by the user.
-     *
-     **/
+     */
     public function likedBy(User $user): ?Like
     {
         return Like::where('object_type', '=', 'thread')
@@ -274,11 +267,8 @@ class Thread extends Eloquent
 
     /**
      * Returns the users that like the entity.
-     *
-     * @return Collection $likes
-     *
-     **/
-    public function likers()
+     */
+    public function likers(): Collection
     {
         $users = User::join('likes', 'users.id', '=', 'likes.user_id')
             ->where('likes.object_type', 'thread')
@@ -468,8 +458,7 @@ class Thread extends Eloquent
 
     /**
      * Return a collection of threads with the passed tag.
-     *
-     **/
+     */
     public static function getByTag(string $tag): Builder
     {
         // get a list of threads that have the passed tag
@@ -480,8 +469,7 @@ class Thread extends Eloquent
 
     /**
      * Return a collection of threads with the passed series.
-     *
-     **/
+     */
     public static function getBySeries(string $series): Builder
     {
         // get a list of threads that have the passed series
@@ -492,8 +480,7 @@ class Thread extends Eloquent
 
     /**
      * Return a collection of threads with the passed thread category.
-     *
-     **/
+     */
     public static function getByCategory(string $slug): Builder
     {
         // get a list of threads that have the passed category
@@ -504,8 +491,7 @@ class Thread extends Eloquent
 
     /**
      * Return a collection of threads with the passed entity.
-     *
-     **/
+     */
     public static function getByEntity(string $slug): Builder
     {
         // get a list of threads that have the passed entity
@@ -521,8 +507,7 @@ class Thread extends Eloquent
 
     /**
      * Return the flyer for this thread.
-     *
-     **/
+     */
     public function getFlyer(): ?Photo
     {
         // get a list of threads that start on the passed date
@@ -531,7 +516,6 @@ class Thread extends Eloquent
 
     /**
      * Return the primary photo for this thread.
-     *
      **/
     public function getPrimaryPhoto(): ?Photo
     {

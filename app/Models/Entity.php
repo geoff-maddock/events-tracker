@@ -424,11 +424,10 @@ class Entity extends Eloquent
      */
     public function pastEvents(int $rpp = null): LengthAwarePaginator
     {
-        $events = $this->events()
+        return $this->events()
             ->where('start_at', '<', Carbon::now())
-            ->orderBy('start_at', 'DESC');
-
-        return $events->paginate($rpp);
+            ->orderBy('start_at', 'DESC')
+            ->paginate($rpp);
     }
 
     /**

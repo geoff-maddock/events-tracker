@@ -103,6 +103,11 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     protected $fillable = ['name', 'email', 'password', 'user_status_id'];
 
     /**
+     * Always hydrate these relationships.
+     */
+    // protected $with = ['profile'];
+
+    /**
      * The attributes excluded from the model's JSON form.
      *
      * @var array<int, string>
