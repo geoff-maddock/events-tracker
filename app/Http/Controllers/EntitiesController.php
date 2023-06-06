@@ -321,9 +321,8 @@ class EntitiesController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
-        // get the threads
-        $entities = $query
-            ->paginate($listResultSet->getLimit());
+        // get the entities
+        $entities = $query->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();

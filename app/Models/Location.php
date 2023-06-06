@@ -54,9 +54,6 @@ class Location extends Eloquent
      */
     public function scopeVisible(Builder $query, ?User $user): Builder
     {
-        $public = Visibility::where('name', '=', 'Public')->first();
-        $guarded = Visibility::where('name', '=', 'Guarded')->first();
-
-        return $query->where('visibility_id', '=', $public ? $public->id : null)->orWhere('created_by', '=', ($user ? $user->id : null));
+        return $query->whereRelation('visibility','name','Public')->orWhere('created_by', '=', ($user ? $user->id : null));
     }
 }

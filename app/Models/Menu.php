@@ -54,9 +54,7 @@ class Menu extends Eloquent
      */
     public function scopeVisible(Builder $query): Builder
     {
-        $public = Visibility::where('name', '=', 'Public')->first();
-
-        return $query->where('visibility_id', '=', $public ? $public->id : null);
+        return $query->whereRelation('visibility','name','Public');
     }
 
     /**
