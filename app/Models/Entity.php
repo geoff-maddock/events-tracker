@@ -376,7 +376,21 @@ class Entity extends Eloquent
      */
     public function futureEvents(?int $rpp = null): LengthAwarePaginator
     {
-        return $this->events()->where('start_at', '>=', Carbon::now())->orderBy('start_at', 'ASC')->paginate($rpp);
+        return $this->events()
+            ->where('start_at', '>=', Carbon::now())
+            ->orderBy('start_at', 'ASC')
+            ->paginate($rpp);
+    }
+
+        /**
+     * If there is a past event, return it.
+     */
+    public function pastEvents(int $rpp = null): LengthAwarePaginator
+    {
+        return $this->events()
+            ->where('start_at', '<', Carbon::now())
+            ->orderBy('start_at', 'DESC')
+            ->paginate($rpp);
     }
 
     /**
@@ -419,16 +433,6 @@ class Entity extends Eloquent
         return $this->links()->where('url', 'LIKE', '%soundcloud%')->orderBy('created_at', 'ASC')->first();
     }
 
-    /**
-     * If there is a future event, return it.
-     */
-    public function pastEvents(int $rpp = null): LengthAwarePaginator
-    {
-        return $this->events()
-            ->where('start_at', '<', Carbon::now())
-            ->orderBy('start_at', 'DESC')
-            ->paginate($rpp);
-    }
 
     /**
      * Events that occurred at this venue.

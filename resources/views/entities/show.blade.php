@@ -287,8 +287,8 @@
 					<h5 class="card-header bg-primary">Future Events <span class="badge rounded-pill bg-dark float-end"><a href="{{ url('events/related-to/'.$entity->slug) }}">{{ $entity->futureEvents()->total() }}</a></span></h5>
 
 					<div class="card-body">
-						@include('events.vertical-list', ['events' => $entity->futureEvents(5)])
-						{!! $entity->futureEvents()->render() !!}
+						@include('events.vertical-list', ['events' => $futureEvents])
+						{!! $futureEvents->render() !!}
 					</div>
 				</div>
 			</div>
@@ -299,8 +299,8 @@
 					<h5 class="card-header bg-primary">Past Events <span class="badge rounded-pill bg-dark float-end"><a href="{{ url('events/related-to/'.$entity->slug) }}">{{ $entity->pastEvents()->total() }}</a></span></h5>
 
 					<div class="card-body">
-						@include('events.vertical-list', ['events' => $entity->pastEvents(5)])
-						{!! $entity->pastEvents()->render() !!}
+						@include('events.vertical-list', ['events' => $pastEvents])
+						{!! $pastEvents->render() !!}
 					</div>
 
 				</div>
