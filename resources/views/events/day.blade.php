@@ -29,7 +29,8 @@
                 
 
                 <!-- find all series that would fall on this date -->
-                <?php $series = App\Models\Series::byNextDate($day->format('Y-m-d')); ?>
+                <!-- Exclude series that have already been listed as events -->
+                <?php $series = App\Models\Series::byNextDate($day->format('Y-m-d'), $events); ?>
                 @if (count($series) > 0)
                 <ul class='day-list'>
                 

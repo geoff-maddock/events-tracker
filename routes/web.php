@@ -206,7 +206,8 @@ Route::match(['get', 'post'], 'events/grid', 'EventsController@indexGrid')->name
 Route::match(['get', 'post'], 'events/photos', 'EventsController@indexPhoto')->name('events.photo');
 Route::get('events/future', 'EventsController@indexFuture')->name('events.future');
 Route::get('events/upcoming/{date?}', 'EventsController@indexUpcoming')->name('events.upcoming');
-Route::get('events/add/{date?}', 'EventsController@indexAdd')->name('events.add');
+Route::get('events/add/{date?}', 'EventsController@indexAdd')->name('events.add')
+    ->where('date', '[1-2][0-9][0-9][0-9][0-3][0-9][0-9][0-9]');    
 Route::get('events/past', 'EventsController@indexPast');
 Route::get('events/week', 'EventsController@indexWeek')->name('events.week');
 Route::get('events/starting/{date}', 'EventsController@indexStarting');
@@ -222,7 +223,8 @@ Route::get('events/window/{year}/{month?}/{day?}', 'EventsController@indexWindow
     ->where('month', '(0?[1-9]|1[012])$')
     ->where('day', '[0-3][0-9]');
 Route::get('events/daily', 'EventsController@daily');
-Route::get('events/day/{day}', 'EventsController@day')->name('events.day');
+Route::get('events/day/{day}', 'EventsController@day')->name('events.day')
+    ->where('day', '[1-2][0-9][0-9][0-9][0-3][0-9][0-9][0-9]');    
 Route::match(['get', 'post'], 'events/attending', 'EventsController@indexAttending')->name('events.attending');
 Route::match(['get', 'post'], 'events/filter', ['as' => 'events.filter', 'uses' => 'EventsController@filter']);
 Route::get('events/reset', ['as' => 'events.reset', 'uses' => 'EventsController@reset']);
