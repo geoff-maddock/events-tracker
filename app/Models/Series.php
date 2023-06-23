@@ -595,30 +595,33 @@ class Series extends Eloquent
     /**
      * Get all series that would fall on the passed date.
      */
-    public static function byNextDate(?string $date): array
+    public static function byNextDate(?string $date, ?Collection $events = null): array
     {
         $list = [];
 
+        // get all the ids from the events
+        if ($events) {
+            $ids = $events->pluck('series_id')->toArray();
+        }
+
         // get all the upcoming series events
-        $series = Series::active()->with(['visibility', 'occurrenceType'])->get();
+        $series = Series::active()
+            ->whereNotIn('id', $ids ?? [])
+            ->with(['visibility', 'occurrenceType'])
+            ->get();
 
         $series = $series->filter(function ($e) {
-            // all public events
-            // and all events with a schedule
-            //$next_date = $e->nextOccurrenceDate()->format('Y-m-d');
-
             return ('Public' === $e->visibility->name) and ('No Schedule' !== $e->occurrenceType->name);
         });
 
         foreach ($series as $s) {
-            if (null == $s->nextEvent() and null != $s->nextOccurrenceDate()) {
-                // add matches to list
+
                 $next_date = $s->nextOccurrenceDate()->format('Y-m-d');
 
                 if ($next_date == $date) {
                     $list[] = $s;
                 }
-            }
+
         }
 
         return $list;
