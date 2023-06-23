@@ -224,7 +224,7 @@ Route::get('events/window/{year}/{month?}/{day?}', 'EventsController@indexWindow
     ->where('day', '[0-3][0-9]');
 Route::get('events/daily', 'EventsController@daily');
 Route::get('events/day/{day}', 'EventsController@day')->name('events.day')
-    ->where('day', '[1-2][0-9][0-9][0-9][0-3][0-9][0-9][0-9]');    
+    ->where('day', '[1-2][0-9][0-9][0-9]-[0-3][0-9]-[0-9][0-9]');    
 Route::match(['get', 'post'], 'events/attending', 'EventsController@indexAttending')->name('events.attending');
 Route::match(['get', 'post'], 'events/filter', ['as' => 'events.filter', 'uses' => 'EventsController@filter']);
 Route::get('events/reset', ['as' => 'events.reset', 'uses' => 'EventsController@reset']);
