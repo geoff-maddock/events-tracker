@@ -37,10 +37,11 @@
 
 		<div class="event-date mt-3">
 			@if ($event->visibility->name !== 'Public')
-				<span class="text-warning">{{ $event->visibility->name }}</span><br>
-			@endif
-			@if ($event->visibility->name == 'Cancelled')
-				<span class="text-warning">Cancelled on {{ $event->cancelled_at ? $event->cancelled_at->format('l M jS Y') : null }}</span><br>
+				<span class="text-warning">{{ $event->visibility->name }}
+					@if ($event->visibility->name == 'Cancelled' && $event->cancelled_at)
+					 on {{ $event->cancelled_at ? $event->cancelled_at->format('l M jS Y') : null }}
+					@endif
+				</span><br>
 			@endif
 	
 			<h3 class="listing">{!! $event->start_at->format('l M jS Y') !!}</h3>

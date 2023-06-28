@@ -29,6 +29,10 @@
 			</div>
 			@endif
 
+			@if ($entity->entityStatus->name !== 'Active')
+			<span class="text-warning">{{ $entity->entityStatus->name }}</span>
+			@endif
+
 			<h2 class="item-title  mt-3">{{ $entity->name }}</h2>
 
 			@unless ($entity->aliases->isEmpty())

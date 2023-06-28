@@ -1,4 +1,4 @@
-<li id="event-{{ $event->id }}" class="event-card {{ $event->pastOrFuture }} flow-root">
+<li id="event-{{ $event->id }}" class="event-card {{ $event->pastOrFuture }} {{ $event->visibility->name === 'Cancelled' ?  "event-cancelled" : ""}} flow-root">
 	@if ($primary = $event->getPrimaryPhoto())
 	<div class="event-list-thumbnail">
 		<a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}" 
