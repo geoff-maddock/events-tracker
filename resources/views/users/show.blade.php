@@ -43,7 +43,13 @@
 
             <div class="col-lg-6 profile-card">
                 <b>Name </b> {{ $user->full_name }}<br>
-                <b>Status </b> {{ $user->status ? $user->status->name : '' }}<br>
+                <b>Status </b> 
+                @if ($user->status->name !== 'Active')
+                <span class="text-warning">{{ $user->status->name }}</span>
+                @else
+                {{ $user->status->name }}
+                @endif
+                <br>
                 @if ($user->profile->alias )
                     <b>Alias </b> {{ $user->profile->alias }}<br>
                 @endif
