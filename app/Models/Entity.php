@@ -285,6 +285,22 @@ class Entity extends Eloquent
     }
 
     /**
+     * Returns visible entities.
+     * @return Builder<Entity>
+     */
+    public function scopeVisible(Builder $query, ?User $user): Builder
+    {
+        return $query->where(function ($query) use ($user) {
+            // if logged in, can see guarded
+            if ($user) {
+                $query->orWhere('created_by', '=', ($this->user ? $this->user->id : null));
+            }
+
+            return $query;
+        });
+    }
+
+    /**
      * An entity is owned by a user.
      *
      * @ return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -382,7 +398,7 @@ class Entity extends Eloquent
             ->paginate($rpp);
     }
 
-        /**
+    /**
      * If there is a past event, return it.
      */
     public function pastEvents(int $rpp = null): LengthAwarePaginator

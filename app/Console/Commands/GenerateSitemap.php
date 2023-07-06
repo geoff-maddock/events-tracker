@@ -53,7 +53,7 @@ class GenerateSitemap extends Command
                 }
 
                 // skip event add links
-                if (strpos($url->path(), 'events/add') !== false) {
+                if (strpos($url->path(), '/events/add') !== false) {
                     return;
                 }               
                                     
