@@ -141,10 +141,12 @@ class Tag extends Eloquent
     {
         $total = [];
 
-        $events = $this->events()->get();
+        $events = $this->events()->with('tags')->get();
         foreach ($events as $event) {
-            $tags = $event->tags()->where('name', '!=', $this->name)->get();
-            foreach ($tags as $tag) {
+            foreach ($event->tags as $tag) {
+                if ($tag->name == $this->name) {
+                    continue;
+                }
                 if (isset($total[$tag->name])) {
                     ++$total[$tag->name];
                 } else {

@@ -59,7 +59,7 @@ class TagsController extends Controller
         // default list variables
         $this->defaultSort = 'name';
         $this->defaultSortDirection = 'asc';
-        $this->defaultLimit = 25;
+        $this->defaultLimit = 10;
 
         // set list variables
         $this->sort = $this->defaultSort;
@@ -218,30 +218,31 @@ class TagsController extends Controller
 
         // get all series linked to the tag
         $series = Series::getByTag($slug)
+            ->with('visibility', 'venue','tags', 'entities','eventType','threads','occurrenceType','occurrenceWeek','occurrenceDay')
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
-                $query->visible($this->user);
+                $query->active()->visible($this->user);
             })
             ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
             ->paginate();
 
         // get all the events linked to the tag
         $events = Event::getByTag($slug)
-            ->with('visibility')
+            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
+            ->where(function ($query) {
+                /* @phpstan-ignore-next-line */
+                $query->visible($this->user);
+            })
             ->orderBy('start_at', 'DESC')
             ->orderBy('name', 'ASC')
             ->simplePaginate($this->limit);
 
-        $events->filter(function ($e) {
-            return ($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id);
-        });
-
         // get all entities linked to the tag
         $entities = Entity::getByTag($slug)
+            ->with('tags', 'events','entityType','locations','entityStatus','user')
             ->where(function ($query) {
-                $query->active()
-                    ->orWhere('created_by', '=', ($this->user ? $this->user->id : null));
+                /* @phpstan-ignore-next-line */
+                $query->visible($this->user);
             })
             ->orderBy('entity_type_id', 'ASC')
             ->orderBy('name', 'ASC')
