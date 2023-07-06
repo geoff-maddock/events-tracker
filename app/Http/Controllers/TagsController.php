@@ -129,13 +129,14 @@ class TagsController extends Controller
         })->visible($this->user)
                     ->orderBy('start_at', 'DESC')
                     ->orderBy('name', 'ASC')
-                    ->with('visibility', 'tags', 'entities', 'venue', 'eventType', 'threads')
+                    ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
                     ->simplePaginate($this->limit);
 
         // get all entities linked to the tag
         $entities = Entity::whereHas('tags', function ($q) use ($tagNames) {
             $q->whereIn('name', $tagNames);
-        })->orderBy('entity_type_id', 'ASC')
+        }) ->active()
+                ->orderBy('entity_type_id', 'ASC')
                     ->orderBy('name', 'ASC')
                     ->with('tags', 'locations', 'roles')
                     ->simplePaginate($this->limit);
@@ -221,7 +222,7 @@ class TagsController extends Controller
             ->with('visibility', 'venue','tags', 'entities','eventType','threads','occurrenceType','occurrenceWeek','occurrenceDay')
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
-                $query->active()->visible($this->user);
+                $query->visible($this->user);
             })
             ->orderBy('start_at', 'ASC')
             ->paginate();
@@ -242,7 +243,7 @@ class TagsController extends Controller
             ->with('tags', 'events','entityType','locations','entityStatus','user')
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
-                $query->visible($this->user);
+                $query->active();
             })
             ->orderBy('entity_type_id', 'ASC')
             ->orderBy('name', 'ASC')

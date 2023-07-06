@@ -255,16 +255,6 @@ class Entity extends Eloquent
     }
 
     /**
-     * Returns active entities.
-     */
-    public function scopeActive(Builder $query): Builder
-    {
-        $status = EntityStatus::where('name', '=', 'Active')->first();
-
-        return $query->where('entity_status_id', '=', $status ? $status->id : null);
-    }
-
-    /**
      * Returns entities created by the user.
      *
      * @ param User $user
@@ -285,20 +275,32 @@ class Entity extends Eloquent
     }
 
     /**
-     * Returns visible entities.
-     * @return Builder<Entity>
+     * Returns active entities.
      */
-    public function scopeVisible(Builder $query, ?User $user): Builder
+    public function scopeActive(Builder $query): Builder
     {
-        return $query->where(function ($query) use ($user) {
-            // if logged in, can see guarded
-            if ($user) {
-                $query->orWhere('created_by', '=', ($this->user ? $this->user->id : null));
-            }
+        $status = EntityStatus::where('name', '=', 'Active')->first();
 
-            return $query;
-        });
+        return $query->where('entity_status_id', '=', $status ? $status->id : null);
     }
+
+    // /**
+    //  * Returns visible entities.
+    //  * @return Builder<Entity>
+    //  */
+    // public function scopeVisible(Builder $query, ?User $user): Builder
+    // {
+    //     $query = $query->active();
+    //     return $query->where(function ($query) use ($user) {
+
+    //         // if logged in, can see guarded
+    //         if ($user) {
+    //             $query->orWhere('created_by', '=', ($this->user ? $this->user->id : null));
+    //         }
+
+    //         return $query;
+    //     });
+    // }
 
     /**
      * An entity is owned by a user.
