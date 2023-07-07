@@ -5,10 +5,10 @@
         <th>
           Threads
         </th>
-        <th class="cell-stat d-none d-sm-table-cell">Category</th>
-        <th class="cell-stat d-none d-md-table-cell">User</th>
-        <th class="cell-stat text-center thread-columns d-none d-sm-table-cell">Posts</th>
-        <th class="cell-stat text-center thread-columns d-none d-sm-table-cell">Views</th>
+        <th class="cell-stat d-none d-lg-table-cell">Category</th>
+        <th class="cell-stat d-none d-sm-table-cell">User</th>
+        <th class="cell-stat text-center thread-columns d-none d-md-table-cell">Posts</th>
+        <th class="cell-stat text-center thread-columns d-none d-md-table-cell">Views</th>
         <th class="cell-stat thread-columns">Last Post</th>
       </tr>
     </thead>
@@ -59,23 +59,26 @@
       @endunless
                   </span>
 	</td>
-    <td class="d-none d-sm-table-cell">@if (isset($thread->threadCategory))
+    <td class="d-none d-lg-table-cell">@if (isset($thread->threadCategory))
     <a class="forum-link" href="/threads/category/{{ urlencode($thread->threadCategory->name) }}">{{ $thread->threadCategory->name }}</a>
 	  @else
     General
     @endif
     </td>
-    <td class="cell-stat d-none d-md-table-cell text-nowrap">
+    <td class="cell-stat d-none d-sm-table-cell text-nowrap">
       @if (isset($thread->user))
         @include('users.avatar', ['user' => $thread->user])
-      {!! link_to_route('users.show', $thread->user->name, [$thread->user->id], ['class' => 'forum-link']) !!}
-      @else
-      User deleted
-      @endif
+        <span class="cell-stat d-none d-lg-table-cell">
+        {!! link_to_route('users.show', $thread->user->name, [$thread->user->id], ['class' => 'forum-link']) !!}
+        </span>
+        @else
+         User deleted
+       @endif
+
     </td>
-    <td class="cell-stat text-center thread-columns d-none d-sm-table-cell">{{ $thread->postCount }}</td>
-    <td class="cell-stat text-center thread-columns d-none d-sm-table-cell">{{ $thread->views }}</td>
-    <td class="thread-columns">{{ $thread->lastPostAt->diffForHumans() }}</td>
+    <td class="cell-stat text-center thread-columns d-none d-md-table-cell">{{ $thread->postCount }}</td>
+    <td class="cell-stat text-center thread-columns d-none d-md-table-cell">{{ $thread->views }}</td>
+    <td class="thread-columns text-nowrap">{{ $thread->lastPostAt->diffForHumans() }}</td>
     </tr>
 
 	@endforeach
