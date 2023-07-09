@@ -57,8 +57,18 @@ class GenerateSitemap extends Command
                     return;
                 }               
                                     
+                // skip create routes
+                if (strpos($url->path(), '/create') !== false) {
+                    return;
+                }
+
                 // skip edit links
                 if (strpos($url->path(), '/edit') !== false) {
+                    return;
+                }
+
+                // skip upcoming links
+                if (strpos($url->path(), '/upcoming') !== false) {
                     return;
                 }
 
@@ -76,6 +86,12 @@ class GenerateSitemap extends Command
                 if (strpos($url->segment(1), '?day_offset') !== false) {
                     return;
                 }
+
+                // skip day_offset urls
+                if (strpos($url->segment(1), '?day_offset') !== false) {
+                    return;
+                }
+                
 
                 // blacklist entities in the config
                 if ($blacklist = config('app.spider_blacklist')) {
@@ -102,7 +118,6 @@ class GenerateSitemap extends Command
                 // if an entity, get the entities's updated at time and use
                 if ($url->segment(1) === 'entities' && gettype($url->segment(2)) === 'string' && $url->segment(2) !== 'tag') {
                     $slug = $url->segment(2);
-                    $this->line('<fg=white;bg=red>Entity slug: '.$slug.'</>');
                     $entity = Entity::where('slug', '=', $slug)->first();
                     if ($entity !== null) {
                         $url->setLastModificationDate($entity->updated_at);
