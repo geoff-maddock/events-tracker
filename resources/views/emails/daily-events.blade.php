@@ -48,7 +48,7 @@ Good morning!
 		@endif
 		@if ($ticket = $event->ticket_link)
 		<a href="{{ $link }}" target="_" title="Ticket link">
-			<i class="bi bi-cart3"></i>
+			<i class="bi bi-ticket-perforated"></i>
 		</a>
 		@endif
 
