@@ -158,9 +158,18 @@
 <div class="row mb-1">
 	<div class="form-group col-md-3">
 		{!! Form::label('series_id','Series:') !!}
+
 		{!! Form::select('series_id', $seriesOptions, (isset($event->series_id) ? $event->series_id : NULL), 
-		['class' => 'form-control select2 form-background',  'data-placeholder' => '']) !!}
+		[
+			'class' => 'form-control select2 form-background',
+			'data-placeholder' => 'Link to an existing event series',
+			])
+		 !!}
 		{!! $errors->first('series_id','<span class="help-block">:message</span>') !!}
+		<div class="py-1">
+			<a href="#" class="float-end"><i class="bi bi-question-octagon-fill" data-toggle="tooltip" data-placement="bottom" role="tooltip" title="Add your event as a series if it's occurring on an ongoing basis (weekly, monthly, etc.)"></i></a>
+			<a href="/series/create" class="float-end px-1" target="_"><i class="bi bi-plus-circle-fill"></i> Add New Event Series</a>
+		</div>
 	</div>
 </div>
 
@@ -170,10 +179,14 @@
 		{!! Form::select('entity_list[]', $entityOptions, null, [
 		'id' => 'entity_list',
 		'class' =>'form-control select2 form-background',
-		'data-placeholder' => 'Choose a related artist, producer, dj',
+		'data-placeholder' => 'Choose related artists, producers, djs, bands, etc.',
 		'data-tags' => 'false',
 		'multiple' => 'multiple']) !!}
 		{!! $errors->first('entities','<span class="help-block">:message</span>') !!}
+		<div class="py-1">
+			<a href="#" class="float-end"><i class="bi bi-question-octagon-fill" data-toggle="tooltip" data-placement="bottom" role="tooltip" title="Add an entity to create a link between your event and a performers, venues, promoters, etc. that is missing from the list."></i></a>
+			<a href="/entities/create" class="float-end px-1" target="_"><i class="bi bi-plus-circle-fill"></i> Add New Entity</a>
+		</div>
 	</div>
 </div>
 
@@ -183,10 +196,14 @@
 		{!! Form::select('tag_list[]', $tagOptions, null, [
 		'id' => 'tag_list',
 		'class' =>'form-control select2 form-background',
-		'data-placeholder' => 'Choose a tag',
-		'data-tags' => 'true',
+		'data-placeholder' => 'Choose a keyword tag that describes this event',
+		'data-tags' => 'false',
 		'multiple' => 'multiple']) !!}
 		{!! $errors->first('tags','<span class="help-block">:message</span>') !!}
+		<div class="py-1">
+			<a href="#" class="float-end"><i class="bi bi-question-octagon-fill" data-toggle="tooltip" data-placement="bottom" role="tooltip" title="Add a keyword if the genre or category of your event is missing from the existing keyword tag list."></i></a>
+			<a href="/tags/create" class="float-end px-1" target="_"><i class="bi bi-plus-circle-fill"></i> Add New Keyword Tag</a>
+		</div>
 	</div>
 </div>
 
