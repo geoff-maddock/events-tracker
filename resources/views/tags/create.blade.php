@@ -1,10 +1,10 @@
 @extends('app')
 
-@section('title', 'Tag Add')
+@section('title', 'Keyword Tag Add')
 
 @section('content')
 
-<h1 class="display-crumbs text-primary">Add a New Tag</h1>
+<h1 class="display-crumbs text-primary">Add a New Keyword Tag</h1>
 
 {!! Form::open(['route' => 'tags.store']) !!}
 
