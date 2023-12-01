@@ -14,6 +14,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  */
 class Action extends Eloquent
 {
+    const CREATE = 1;
+    const UPDATE = 2;
+    const DELETE = 3;
+    const LOGIN = 4;
+    const LOGOUT = 5;
+    const FOLLOW = 6;
+    const UNFOLLOW = 7;
+    const LOCK = 8;
+    const UNLOCK = 9;
+
     /**
      * The storage format of the model's date columns.
      *

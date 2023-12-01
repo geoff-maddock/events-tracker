@@ -6,6 +6,7 @@ use App\Filters\EntityFilters;
 use App\Http\Requests\EntityRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
+use App\Models\Action;
 use App\Models\Alias;
 use App\Models\Entity;
 use App\Models\EntityStatus;
@@ -615,7 +616,7 @@ class EntitiesController extends Controller
                 $newTag->save();
 
                 // log adding of new tag
-                Activity::log($newTag, $this->user, 1);
+                Activity::log($newTag, $this->user, Action::CREATE);
 
                 $syncArray[] = $newTag->id;
 
@@ -647,7 +648,7 @@ class EntitiesController extends Controller
         $entity->roles()->attach($request->input('role_list', []));
 
         // add to activity log
-        Activity::log($entity, $this->user, 1);
+        Activity::log($entity, $this->user, Action::CREATE);
 
         flash()->success('Success', 'Your entity has been created');
 
@@ -784,7 +785,7 @@ class EntitiesController extends Controller
                 $newTag->save();
 
                 // log adding of new tag
-                Activity::log($newTag, $this->user, 1);
+                Activity::log($newTag, $this->user, Action::CREATE);
 
                 $syncArray[strtolower($tag)] = $newTag->id;
 
@@ -814,7 +815,7 @@ class EntitiesController extends Controller
         $entity->roles()->sync($request->input('role_list', []));
 
         // add to activity log
-        Activity::log($entity, $this->user, 2);
+        Activity::log($entity, $this->user, Action::UPDATE);
 
         // flash this message
         flash()->success('Success', $msg);
@@ -830,7 +831,7 @@ class EntitiesController extends Controller
     public function destroy(Entity $entity): RedirectResponse
     {
         // add to activity log
-        Activity::log($entity, $this->user, 3);
+        Activity::log($entity, $this->user, Action::DELETE);
 
         $entity->delete();
 
@@ -903,7 +904,7 @@ class EntitiesController extends Controller
         Log::info('User '.$id.' is following '.$entity->name);
 
         // add to activity log
-        Activity::log($entity, $this->user, 6);
+        Activity::log($entity, $this->user, Action::FOLLOW);
 
         // handle the request if ajax
         if ($request->ajax()) {
@@ -946,7 +947,7 @@ class EntitiesController extends Controller
         $follow->delete();
 
         // add to activity log
-        Activity::log($entity, $this->user, 7);
+        Activity::log($entity, $this->user, Action::UNFOLLOW);
 
         // handle the request if ajax
         if ($request->ajax()) {

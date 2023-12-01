@@ -76,7 +76,8 @@ class AuthController extends Controller
 
     protected function redirectTo(): string
     {
-        Activity::log(Auth::user(), Auth::user(), 4);
+        // Test - removing login when redirecting to home
+        // Activity::log(Auth::user(), Auth::user(), 4);
 
         return '/home';
     }

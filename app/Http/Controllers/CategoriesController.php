@@ -7,6 +7,7 @@ use App\Models\Activity;
 use App\Models\ThreadCategory;
 use App\Http\Requests\ThreadCategoryRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
+use App\Models\Action;
 use App\Models\Forum;
 use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
@@ -205,7 +206,7 @@ class CategoriesController extends Controller
         flash()->success('Success', 'Your category has been created');
 
         // add to activity log
-        Activity::log($category, $this->user, 1);
+        Activity::log($category, $this->user, Action::CREATE);
 
         return redirect()->route('categories.index');
     }
@@ -241,7 +242,7 @@ class CategoriesController extends Controller
         $category->fill($request->input())->save();
 
         // add to activity log
-        Activity::log($category, $this->user, 2);
+        Activity::log($category, $this->user, Action::UPDATE);
 
         flash('Success', 'Your category has been updated');
 
@@ -264,7 +265,7 @@ class CategoriesController extends Controller
         }
 
         // add to activity log
-        Activity::log($category, $this->user, 3);
+        Activity::log($category, $this->user, Action::DELETE);
 
         $category->delete();
 
