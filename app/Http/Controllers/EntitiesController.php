@@ -459,15 +459,15 @@ class EntitiesController extends Controller
         string $slug,
         StringHelper $stringHelper
     ): string {
-        // get the tag by the slug name
+        // Get the tag by the slug name
         $tag = Tag::where('slug', '=', $slug)->firstOrFail();
 
         $listParamSessionStore->setBaseIndex('internal_entity');
         $listParamSessionStore->setKeyPrefix('internal_entity_tags');
-        // set the index tab in the session
+        // Set the index tab in the session
         $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
 
-        // create the base query including any required joins; needs select to make sure only event entities are returned
+        // Create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = $this->getBaseQuery();
 
         $listEntityResultBuilder
@@ -476,17 +476,17 @@ class EntitiesController extends Controller
             ->setDefaultSort(['entities.name' => 'asc'])
             ->setParentFilter(['tag' => $slug]);
 
-        // get the result set from the builder
+        // Get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
-        // get the query builder
+        // Get the query builder
         $query = $listResultSet->getList();
 
-        // get the threads
+        // Get the entities
         $entities = $query
             ->paginate($listResultSet->getLimit());
 
-        // saves the updated session
+        // Save the updated session
         $listParamSessionStore->save();
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
@@ -651,8 +651,6 @@ class EntitiesController extends Controller
         Activity::log($entity, $this->user, Action::CREATE);
 
         flash()->success('Success', 'Your entity has been created');
-
-        // return redirect()->route('entities.index');
         return redirect()->route('entities.show', compact('entity'));
     }
 
