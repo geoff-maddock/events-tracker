@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 use Str;
+use App\Models\Action;
 
 class BlogsController extends Controller
 {
@@ -223,7 +224,7 @@ class BlogsController extends Controller
         // $this->notifyFollowing($blog);
 
         // add to activity log
-        Activity::log($blog, $this->user, 1);
+        Activity::log($blog, $this->user, Action::CREATE);
 
         return redirect()->route('blogs.index');
     }
@@ -307,7 +308,7 @@ class BlogsController extends Controller
                 $newTag->save();
 
                 // log adding of new tag
-                Activity::log($newTag, $this->user, 1);
+                Activity::log($newTag, $this->user, Action::CREATE);
 
                 $syncArray[strtolower($tag)] = $newTag->id;
 
@@ -321,7 +322,7 @@ class BlogsController extends Controller
         $blog->entities()->sync($request->input('entity_list', []));
 
         // add to activity log
-        Activity::log($blog, $this->user, 2);
+        Activity::log($blog, $this->user, Action::UPDATE);
 
         flash('Success', 'Your blog has been updated');
 
@@ -344,7 +345,7 @@ class BlogsController extends Controller
         }
 
         // add to activity log
-        Activity::log($blog, $this->user, 3);
+        Activity::log($blog, $this->user, Action::DELETE);
 
         $blog->delete();
 
