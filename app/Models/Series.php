@@ -680,8 +680,14 @@ class Series extends Eloquent
             case 'Monthly':
             case 'Bimonthly':
                 $next = $carbonDate->addMonth();
+
                 if ($date) {
-                    $next = $carbonDate->nthOfMonth($this->occurrence_week_id, ($this->occurrence_day_id - 1));
+                    // check for last of month
+                    if ($this->occurrence_week_id == 5) {
+                       $next = $carbonDate->lastOfMonth($this->occurrence_day_id - 1);
+                    } else {
+                        $next = $carbonDate->nthOfMonth($this->occurrence_week_id, ($this->occurrence_day_id - 1));
+                    }
                 } else {
                     $next = $carbonDate->addMonth()->startOfMonth();
                 }
