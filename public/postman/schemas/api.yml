@@ -38,27 +38,6 @@ components:
       type: http
       scheme: basic
   schemas:
-    EntityId:
-      description: The unique identifier of an entity
-      type: integer
-      readOnly: true
-      example: 1
-    EntitySimple:
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/EntityId"
-          example: 1000
-        name:
-          type: string
-          maxLength: 255
-          description: The cannonical name of the enitity
-          example: Brillobox
-        slug:
-          type: string
-          maxLength: 255
-          description: A unique identifier name for the entity in kebab-case
-          example: brillobox-bar
     EntityRequest:
       type: object
       required:
@@ -86,29 +65,35 @@ components:
           description: Full description of the entity
           example: A two level bar and venue that specializes in indie music and vegetarian food
         entity_type_id:
-          $ref: "#/components/schemas/EntityTypeId"
-          example: 1
           description: Relation to the entity type table that defines the type of an entity
-        entity_status_id:
-          $ref: "#/components/schemas/EntityStatusId"
+          type: integer
           example: 1
-          description: Relation to the entity status table that defines the status of an entity
+        entity_status_id:
+          description: The unique identifier of an entity type
+          type: integer
+          example: 1
         created_by:
-          $ref: "#/components/schemas/UserId"
+          type: integer
           example: 1
           description: Relation to the user table that defines the user who created an entity
         updated_by:
-          $ref: "#/components/schemas/UserId"
+          type: integer
           example: 1
           description: Relation to the user table that defines the user who last updated an entity
         created_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the entity was created
         updated_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the entity was last updated
         started_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the entity started to exist
         facebook_username:
           type: string
@@ -124,8 +109,10 @@ components:
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/EntityId"
-          example: 1000
+          type: integer
+          readOnly: true
+          example: 1
+          description: Unique ID of the entity
         name:
           type: string
           maxLength: 255
@@ -148,27 +135,26 @@ components:
           example: A two level bar and venue that specializes in indie music and vegetarian food
         entity_type:
           $ref: "#/components/schemas/EntityType"
-          example:
-            { id: 1, name: Group, slug: group, short: a multi member entity }
-          description: The entity type object that relates to an entity
         entity_status:
           $ref: "#/components/schemas/EntityStatus"
-          example: { id: 1, name: Active }
-          description: The entity status object that relates to an entity
         created_by:
           $ref: "#/components/schemas/UserSimple"
-          description: The related user who created the entity
         updated_by:
           $ref: "#/components/schemas/UserSimple"
-          description: The related user who updated the entity
         created_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the entity was created
         updated_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the entity was last updated
         started_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the entity started to exist
         facebook_username:
           type: string
@@ -203,7 +189,8 @@ components:
         - name
       properties:
         id:
-          $ref: "#/components/schemas/EntityTypeId"
+          type: integer
+          readOnly: true
           example: 1
         name:
           type: string
@@ -221,25 +208,26 @@ components:
           description: A brief description of the entity type
           maxLength: 255
         created_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the entity type was created
           readOnly: true
         updated_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the entity type was last updated
           readOnly: true
-    EntityStatusId:
-      description: The unique identifier of an entity type
-      type: integer
-      readOnly: true
-      example: 1
     EntityStatus:
       type: object
       required:
         - name
       properties:
         id:
-          $ref: "#/components/schemas/EntityStatusId"
+          description: The unique identifier of an entity type
+          type: integer
+          readOnly: true
           example: 1
         name:
           type: string
@@ -247,11 +235,15 @@ components:
           description: A name of an entity status
           example: Active
         created_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the entity status was created
           readOnly: true
         updated_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the entity status was last updated
           readOnly: true
     EventId:
@@ -268,8 +260,9 @@ components:
         - start_at
       properties:
         id:
-          $ref: "#/components/schemas/EventId"
-          example: 1000
+          type: integer
+          readOnly: true
+          example: 1
         name:
           type: string
           example: October's Lazercrunk at the Brillobox
@@ -286,7 +279,8 @@ components:
           description: A brief description of the event
           maxLength: 255
         visibility_id:
-          $ref: "#/components/schemas/VisibilityId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the visibility table that defines the visibility of events
         description:
@@ -295,19 +289,23 @@ components:
           example: a really fun dj night featuring performers from around the world and locally playing new electronic music
           maxLength: 65535
         event_status_id:
-          $ref: "#/components/schemas/EventStatusId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the event type table that defines the status of the event
         event_type_id:
-          $ref: "#/components/schemas/EventTypeId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the event type table that defines the type of event
         promoter_id:
-          $ref: "#/components/schemas/EntityId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the entity table that defines the promoter of the event
         venue_id:
-          $ref: "#/components/schemas/EntityId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the entity table that defines the venue for the event
         is_benefit:
@@ -331,19 +329,28 @@ components:
           type: number
           example: 19.99
         soundcheck_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event soundcheck is scheduled
         door_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event doors are scheduled to open
         start_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event starts
         end_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event starts
         series_id:
-          $ref: "#/components/schemas/SeriesId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the series table that defines the series for the event
         min_age:
@@ -361,20 +368,28 @@ components:
           example: http://lazercrunk.com/october-2022/tickets
           maxLength: 255
         created_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event was created
         updated_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time"
           description: Date and time that the event was last updated
         cancelled_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event was cancelled
         created_by:
-          $ref: "#/components/schemas/UserId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the user table that defines the user who created the event
         updated_by:
-          $ref: "#/components/schemas/UserId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the user table that defines the user who last updated the event
     Event:
@@ -385,8 +400,9 @@ components:
         - slug
       properties:
         id:
-          $ref: "#/components/schemas/EventId"
-          example: 1000
+          type: integer
+          readOnly: true
+          example: 1
         name:
           type: string
           example: October's Lazercrunk at the Brillobox
@@ -403,7 +419,8 @@ components:
           description: A brief description of the event
           maxLength: 255
         visibility_id:
-          $ref: "#/components/schemas/VisibilityId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the visibility table that defines the visibility of events
         description:
@@ -412,19 +429,23 @@ components:
           example: a really fun dj night featuring performers from around the world and locally playing new electronic music
           maxLength: 65535
         event_status_id:
-          $ref: "#/components/schemas/EventStatusId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the event type table that defines the status of the event
         event_type_id:
-          $ref: "#/components/schemas/EventTypeId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the event type table that defines the type of event
         promoter_id:
-          $ref: "#/components/schemas/EntityId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the entity table that defines the promoter of the event
         venue_id:
-          $ref: "#/components/schemas/EntityId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the entity table that defines the venue for the event
         is_benefit:
@@ -448,19 +469,28 @@ components:
           type: number
           example: 19.99
         soundcheck_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event soundcheck is scheduled
         door_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event doors are scheduled to open
         start_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event starts
         end_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event starts
         series_id:
-          $ref: "#/components/schemas/SeriesId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the series table that defines the series for the event
         min_age:
@@ -478,28 +508,37 @@ components:
           example: http://lazercrunk.com/october-2022/tickets
           maxLength: 255
         created_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event was created
         updated_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event was last updated
         cancelled_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event was cancelled
         created_by:
-          $ref: "#/components/schemas/UserId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the user table that defines the user who created the event
         updated_by:
-          $ref: "#/components/schemas/UserId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the user table that defines the user who last updated the event
     EventResponse:
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/EventId"
-          example: 1000
+          type: integer
+          readOnly: true
+          example: 1
         name:
           type: string
           example: October's Lazercrunk at the Brillobox
@@ -517,8 +556,6 @@ components:
           maxLength: 255
         visibility:
           $ref: "#/components/schemas/Visibility"
-          example: { id: 1, name: Public }
-          description: Relation to the visibility table that defines the visibility of events
         description:
           type: string
           description: Full description of the event
@@ -526,16 +563,12 @@ components:
           maxLength: 65535
         event_status:
           $ref: "#/components/schemas/EventStatus"
-          description: Relation to the event status table that defines the event type of event
         event_type:
           $ref: "#/components/schemas/EventType"
-          description: Relation to the event type table that defines the event type of event
         promoter:
           $ref: "#/components/schemas/EntityResponse"
-          description: Relation to the entity table that defines the promoter for the event
         venue:
           $ref: "#/components/schemas/EntityResponse"
-          description: Relation to the entity table that defines the venue for the event
         is_benefit:
           type: boolean
           description: Flag indicating if the event is a benefit
@@ -557,20 +590,27 @@ components:
           type: number
           example: 19.99
         soundcheck_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event soundcheck is scheduled
         door_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event doors are scheduled to open
         start_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event starts
         end_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event starts
         series:
           $ref: "#/components/schemas/SeriesResponse"
-          description: Relation to the series table that defines the series for the event
         min_age:
           description: The minimum age requirement for the event in years
           type: integer
@@ -586,20 +626,24 @@ components:
           example: http://lazercrunk.com/october-2022/tickets
           maxLength: 255
         created_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event was created
         updated_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event was last updated
         cancelled_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event was cancelled
         created_by:
           $ref: "#/components/schemas/UserSimple"
-          description: The related user who created the entity
         updated_by:
           $ref: "#/components/schemas/UserSimple"
-          description: The related user who updated the entity
     Events:
       allOf: [$ref: "#/components/schemas/Pagination"]
       type: object
@@ -609,18 +653,14 @@ components:
           description: List of the current page of events
           items:
             "$ref": "#/components/schemas/EventResponse"
-    EventStatusId:
-      description: The unique identifier of an event status
-      type: integer
-      readOnly: true
-      example: 1
     EventStatus:
       type: object
       required:
         - name
       properties:
         id:
-          $ref: "#/components/schemas/EventStatusId"
+          type: integer
+          readOnly: true
           example: 1
         name:
           type: string
@@ -628,33 +668,25 @@ components:
           description: A name of an event status
           example: Active
         created_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event status was created
           readOnly: true
         updated_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event status was last updated
           readOnly: true
-    EventStatuses:
-      allOf: # Combines the BasicErrorModel and the inline model
-        - $ref: "#/components/schemas/Pagination"
-        - type: object
-          properties:
-            data:
-              type: array
-              items: { "$ref": "#/components/schemas/EventStatus" }
-    EventTypeId:
-      description: The unique identifier of an event type
-      type: integer
-      readOnly: true
-      example: 1
     EventType:
       type: object
       required:
         - name
       properties:
         id:
-          $ref: "#/components/schemas/EventTypeId"
+          type: integer
+          readOnly: true
           example: 1
         name:
           type: string
@@ -662,21 +694,17 @@ components:
           description: A name of an event type
           example: Concert
         created_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event type  was created
           readOnly: true
         updated_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the event type was last updated
           readOnly: true
-    EventTypes:
-      allOf: # Combines the BasicErrorModel and the inline model
-        - $ref: "#/components/schemas/Pagination"
-        - type: object
-          properties:
-            data:
-              type: array
-              items: { "$ref": "#/components/schemas/EventType" }
     LinkId:
       description: The unique identifier of a link
       type: integer
@@ -688,7 +716,8 @@ components:
         - name
       properties:
         id:
-          $ref: "#/components/schemas/LinkId"
+          type: integer
+          readOnly: true
           example: 1
         title:
           type: string
@@ -710,11 +739,15 @@ components:
           description: Flag indicating that the link is primary for it's related entity
           example: true
         created_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the entity type was created
           readOnly: true
         updated_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the entity type was last updated
           readOnly: true
     Links:
@@ -725,17 +758,14 @@ components:
             data:
               type: array
               items: { "$ref": "#/components/schemas/Link" }
-    LocationId:
-      description: The unique identifier of a location
-      type: integer
-      example: 1
     Location:
       type: object
       required:
         - name
       properties:
         id:
-          $ref: "#/components/schemas/LocationId"
+          type: integer
+          readOnly: true
           example: 1
         name:
           type: string
@@ -792,41 +822,31 @@ components:
           example: 0.00000000
         visibility:
           $ref: "#/components/schemas/Visibility"
-          example: { id: 1, name: Public }
-          description: Relation to the visibility table that defines the visibility of location
         map_url:
           type: string
           maxLength: 128
           description: URL of the map location
           example: USA
         created_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the entity type was created
           readOnly: true
         updated_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the entity type was last updated
           readOnly: true
-    Locations:
-      allOf: # Combines the BasicErrorModel and the inline model
-        - $ref: "#/components/schemas/Pagination"
-        - type: object
-          properties:
-            data:
-              type: array
-              items: { "$ref": "#/components/schemas/Location" }
-    OccurrenceDayId:
-      description: The unique identifier of an occurrence day
-      type: integer
-      readOnly: true
-      example: 1
     OccurrenceDay:
       type: object
       required:
         - name
       properties:
         id:
-          $ref: "#/components/schemas/OccurrenceDayId"
+          type: integer
+          readOnly: true
           example: 1
         name:
           type: string
@@ -844,33 +864,25 @@ components:
           description: A brief description of the occurrence day
           maxLength: 255
         created_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the occurrence day was created
           readOnly: true
         updated_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the occurrence day was last updated
           readOnly: true
-    OccurrenceDays:
-      allOf: # Combines the BasicErrorModel and the inline model
-        - $ref: "#/components/schemas/Pagination"
-        - type: object
-          properties:
-            data:
-              type: array
-              items: { "$ref": "#/components/schemas/OccurrenceDay" }
-    OccurrenceTypeId:
-      description: The unique identifier of an occurrence type
-      type: integer
-      readOnly: true
-      example: 1
     OccurrenceType:
       type: object
       required:
         - name
       properties:
         id:
-          $ref: "#/components/schemas/OccurrenceTypeId"
+          type: integer
+          readOnly: true
           example: 1
         name:
           type: string
@@ -888,33 +900,25 @@ components:
           description: A brief description of the occurrence type
           maxLength: 255
         created_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time"
           description: Date and time that the occurrence type was created
           readOnly: true
         updated_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the occurrence type was last updated
           readOnly: true
-    OccurrenceTypes:
-      allOf: # Combines the BasicErrorModel and the inline model
-        - $ref: "#/components/schemas/Pagination"
-        - type: object
-          properties:
-            data:
-              type: array
-              items: { "$ref": "#/components/schemas/OccurrenceType" }
-    OccurrenceWeekId:
-      description: The unique identifier of an occurrence week
-      type: integer
-      readOnly: true
-      example: 1
     OccurrenceWeek:
       type: object
       required:
         - name
       properties:
         id:
-          $ref: "#/components/schemas/OccurrenceWeekId"
+          type: integer
+          readOnly: true
           example: 1
         name:
           type: string
@@ -932,21 +936,17 @@ components:
           description: A brief description of the occurrence week
           maxLength: 255
         created_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the occurrence week was created
           readOnly: true
         updated_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the occurrence week was last updated
           readOnly: true
-    OccurrenceWeeks:
-      allOf: # Combines the BasicErrorModel and the inline model
-        - $ref: "#/components/schemas/Pagination"
-        - type: object
-          properties:
-            data:
-              type: array
-              items: { "$ref": "#/components/schemas/OccurrenceWeek" }
     Series:
       type: object
       required:
@@ -955,8 +955,9 @@ components:
         - slug
       properties:
         id:
-          $ref: "#/components/schemas/SeriesId"
-          example: 1000
+          type: integer
+          readOnly: true
+          example: 1
         name:
           type: string
           example: Lazercrunk, First Fridays of the Month
@@ -973,7 +974,8 @@ components:
           description: A brief description of the series
           maxLength: 255
         visibility_id:
-          $ref: "#/components/schemas/VisibilityId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the visibility table that defines the visibility of series
         description:
@@ -982,19 +984,23 @@ components:
           example: a really fun monthly dj night featuring performers from around the world and locally playing new electronic music
           maxLength: 65535
         event_type_id:
-          $ref: "#/components/schemas/EventTypeId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the event type table that defines the type of series
         occurrence_type_id:
-          $ref: "#/components/schemas/OccurrenceTypeId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the occurrence type table that defines the type of occurrence
         occurrence_week_id:
-          $ref: "#/components/schemas/OccurrenceWeekId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the occurrence week table that defines the occurrence week of the month
         occurrence_day_id:
-          $ref: "#/components/schemas/OccurrenceDayId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the occurrence day table that defines the occurrence day of the week
         hold_date:
@@ -1002,11 +1008,13 @@ components:
           description: Flag indicating that there is a request to hold this date open
           example: true
         promoter_id:
-          $ref: "#/components/schemas/EntityId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the entity table that defines the promoter for the series
         venue_id:
-          $ref: "#/components/schemas/EntityId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the entity table that defines the venue for the series
         is_benefit:
@@ -1030,17 +1038,25 @@ components:
           type: number
           example: 19.99
         soundcheck_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the series soundcheck is scheduled
         door_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the series doors are scheduled to open
         start_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the series starts
         end_at:
-          $ref: "#/components/schemas/DateTime"
-          description: Date and time that the series starts
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the series ends
         min_age:
           description: The minimum age requirement for the series in years
           type: integer
@@ -1056,28 +1072,37 @@ components:
           example: http://lazercrunk.com/october-2022/tickets
           maxLength: 255
         created_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the series was created
         updated_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the series was last updated
         cancelled_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the series was cancelled
         created_by:
-          $ref: "#/components/schemas/UserId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the user table that defines the user who created the series
         updated_by:
-          $ref: "#/components/schemas/UserId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the user table that defines the user who last updated the series
     SeriesResponse:
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/SeriesId"
-          example: 1000
+          type: integer
+          readOnly: true
+          example: 1
         name:
           type: string
           example: Lazercrunk, First Fridays of the Month
@@ -1095,8 +1120,6 @@ components:
           maxLength: 255
         visibility:
           $ref: "#/components/schemas/Visibility"
-          example: { id: 1, name: Public }
-          description: Relation to the visibility table that defines the visibility of series
         description:
           type: string
           description: Full description of the series
@@ -1104,26 +1127,24 @@ components:
           maxLength: 65535
         event_type:
           $ref: "#/components/schemas/EventType"
-          description: Relation to the event type table that defines the event type of series
         occurrence_type:
           $ref: "#/components/schemas/OccurrenceType"
-          description: Relation to the occurrence type table that defines the type of occurrence
         occurrence_week:
           $ref: "#/components/schemas/OccurrenceWeek"
-          description: Relation to the occurrence week table that defines the occurrence week of the month
         occurrence_day:
           $ref: "#/components/schemas/OccurrenceDay"
-          description: Relation to the occurrence day table that defines the occurrence day of the week
         hold_date:
           type: boolean
           description: Flag indicating that there is a request to hold this date open
           example: true
         promoter_id:
-          $ref: "#/components/schemas/EntityId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the entity table that defines the promoter of the series
         venue_id:
-          $ref: "#/components/schemas/EntityId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the entity table that defines the venue for the series
         is_benefit:
@@ -1147,16 +1168,24 @@ components:
           type: number
           example: 19.99
         soundcheck_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the series soundcheck is scheduled
         door_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the series doors are scheduled to open
         start_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the series starts
         end_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the series starts
         min_age:
           description: The minimum age requirement for the series in years
@@ -1173,20 +1202,24 @@ components:
           example: http://lazercrunk.com/october-2022/tickets
           maxLength: 255
         created_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the series was created
         updated_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the series was last updated
         cancelled_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the series was cancelled
         created_by:
           $ref: "#/components/schemas/UserSimple"
-          description: The related user who created the series
         updated_by:
           $ref: "#/components/schemas/UserSimple"
-          description: The related user who updated the entity
     SeriesId:
       description: The unique identifier of a series
       type: integer
@@ -1208,7 +1241,8 @@ components:
         - tag_type_id
       properties:
         id:
-          $ref: "#/components/schemas/TagId"
+          type: integer
+          readOnly: true
           example: 1
         name:
           type: string
@@ -1221,15 +1255,20 @@ components:
           description: A unique identifier name for the tag in kebab-case
           example: post-punk
         tag_type_id:
-          $ref: "#/components/schemas/TagTypeId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the tag type table that defines the type of tag
         created_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the tag was created
           readOnly: true
         updated_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the tag was last updated
           readOnly: true
     TagId:
@@ -1245,40 +1284,6 @@ components:
             data:
               type: array
               items: { "$ref": "#/components/schemas/Tag" }
-    TagTypeId:
-      description: The unique identifier of a tag type
-      type: integer
-      readOnly: true
-      example: 1
-    TagType:
-      type: object
-      required:
-        - name
-      properties:
-        id:
-          $ref: "#/components/schemas/TagId"
-          example: 1
-        name:
-          type: string
-          description: Name of the tag
-          example: post punk
-          maxLength: 255
-        created_at:
-          $ref: "#/components/schemas/DateTime"
-          description: Date and time that the tag was created
-          readOnly: true
-        updated_at:
-          $ref: "#/components/schemas/DateTime"
-          description: Date and time that the tag was last updated
-          readOnly: true
-    TagTypes:
-      allOf: # Combines the BasicErrorModel and the inline model
-        - $ref: "#/components/schemas/Pagination"
-        - type: object
-          properties:
-            data:
-              type: array
-              items: { "$ref": "#/components/schemas/TagType" }
     UserId:
       description: The unique identifier of a user
       type: integer
@@ -1288,8 +1293,9 @@ components:
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/UserId"
-          example: 1000
+          type: integer
+          readOnly: true
+          example: 1
         name:
           type: string
           description: Name of the user
@@ -1306,7 +1312,8 @@ components:
           example: john.smith@gmail.com
           maxLength: 255
         user_status_id:
-          $ref: "#/components/schemas/UserStatusId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the user status table that defines the status of the user
         remember_token:
@@ -1315,23 +1322,30 @@ components:
           example: ABCDEFGHI
           maxLength: 100
         email_verified_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the user's email was verified
           readOnly: true
         created_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the user was created
           readOnly: true
         updated_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the user was last updated
           readOnly: true
     UserSimple:
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/UserId"
-          example: 1000
+          type: integer
+          readOnly: true
+          example: 1
         name:
           type: string
           description: Name of the user
@@ -1346,8 +1360,9 @@ components:
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/UserId"
-          example: 1000
+          type: integer
+          readOnly: true
+          example: 1
         name:
           type: string
           description: Name of the user
@@ -1364,7 +1379,8 @@ components:
           example: john.smith@gmail.com
           maxLength: 255
         user_status_id:
-          $ref: "#/components/schemas/UserStatusId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the user status table that defines the status of the user
         remember_token:
@@ -1373,15 +1389,21 @@ components:
           example: ABCDEFGHI
           maxLength: 100
         email_verified_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the user's email was verified
           readOnly: true
         created_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the user was created
           readOnly: true
         updated_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the user was last updated
           readOnly: true
     UserRequest:
@@ -1407,7 +1429,8 @@ components:
           example: john.smith@gmail.com
           maxLength: 255
         user_status_id:
-          $ref: "#/components/schemas/UserStatusId"
+          type: integer
+          readOnly: true
           example: 1
           description: Relation to the user status table that defines the status of the user
         remember_token:
@@ -1423,48 +1446,30 @@ components:
             data:
               type: array
               items: { "$ref": "#/components/schemas/Users" }
-    UserStatusId:
-      description: The unique identifier of an user status
-      type: integer
-      readOnly: true
-      example: 1
     Visibility:
       type: object
       required:
         - name
       properties:
         id:
-          $ref: "#/components/schemas/UserId"
-          example: 1000
+          type: integer
+          readOnly: true
+          example: 1
         name:
           type: string
           example: Public
         created_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the visibility was created
           readOnly: true
         updated_at:
-          $ref: "#/components/schemas/DateTime"
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
           description: Date and time that the visibility was last updated
           readOnly: true
-    VisibilityId:
-      description: The unique identifier of a visibility
-      type: integer
-      readOnly: true
-      example: 1
-    Visibilities:
-      allOf: # Combines the BasicErrorModel and the inline model
-        - $ref: "#/components/schemas/Pagination"
-        - type: object
-          properties:
-            data:
-              type: array
-              items: { "$ref": "#/components/schemas/Visibility" }
-    DateTime:
-      type: string
-      description: A date and time
-      example: "2018-03-20T09:12:28Z"
-      format: date-time
     Error:
       type: object
       required:
@@ -1745,7 +1750,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Entity"
+                $ref: "#/components/schemas/EntityResponse"
     get:
       tags:
         - entities
@@ -1839,7 +1844,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Entity"
+                $ref: "#/components/schemas/EntityResponse"
     put:
       tags:
         - entities
@@ -1856,7 +1861,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Entity"
+                $ref: "#/components/schemas/EntityResponse"
     delete:
       tags:
         - entities
@@ -1923,7 +1928,10 @@ paths:
         in: path
         required: true
         schema:
-          $ref: "#/components/schemas/EntityStatusId"
+          description: The unique identifier of an entity type
+          type: integer
+          readOnly: true
+          example: 1
     get:
       tags:
         - entity-statuses
@@ -2380,7 +2388,9 @@ paths:
         "200":
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tags"
   /api/tags/{tagId}:
     parameters:
       - name: tagId
