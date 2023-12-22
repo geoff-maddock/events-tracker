@@ -13,6 +13,21 @@ servers:
     description: Stage
   - url: https://dev.arcane.city
     description: Development
+tags:
+  - name: blogs 
+  - name: default
+  - name: entities
+  - name: entity-statuses
+  - name: entity-types
+  - name: events
+  - name: forums 
+  - name: links
+  - name: locations
+  - name: posts
+  - name: series
+  - name: tags
+  - name: threads 
+  - name: users
 components:
   responses:
     NotFound:
@@ -1220,11 +1235,6 @@ components:
           $ref: "#/components/schemas/UserSimple"
         updated_by:
           $ref: "#/components/schemas/UserSimple"
-    SeriesId:
-      description: The unique identifier of a series
-      type: integer
-      readOnly: true
-      example: 1
     Seriess:
       allOf: [$ref: "#/components/schemas/Pagination"]
       type: object
@@ -1697,7 +1707,9 @@ paths:
         required: true
         example: 1
         schema:
-          $ref: "#/components/schemas/EventId"
+          type: integer
+          readOnly: true
+          example: 1
     get:
       tags:
         - events
@@ -2301,7 +2313,9 @@ paths:
         in: path
         required: true
         schema:
-          $ref: "#/components/schemas/SeriesId"
+          type: integer
+          readOnly: true
+          example: 1
     get:
       tags:
         - series
