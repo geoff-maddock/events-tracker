@@ -193,11 +193,6 @@ components:
           description: List of the current page of entities
           items:
             "$ref": "#/components/schemas/EntityResponse"
-    EntityTypeId:
-      description: The unique identifier of an entity type
-      type: integer
-      readOnly: true
-      example: 1
     EntityType:
       type: object
       required:
@@ -261,11 +256,6 @@ components:
           format: date-time
           description: Date and time that the entity status was last updated
           readOnly: true
-    EventId:
-      description: The unique identifier of an event
-      type: integer
-      readOnly: true
-      example: 1
     EventRequest:
       type: object
       required:
@@ -720,11 +710,6 @@ components:
           format: date-time
           description: Date and time that the event type was last updated
           readOnly: true
-    LinkId:
-      description: The unique identifier of a link
-      type: integer
-      readOnly: true
-      example: 1
     Link:
       type: object
       required:
@@ -1281,11 +1266,6 @@ components:
           format: date-time
           description: Date and time that the tag was last updated
           readOnly: true
-    TagId:
-      description: The unique identifier of a tag
-      type: integer
-      readOnly: true
-      example: 1
     Tags:
       allOf: # Combines the BasicErrorModel and the inline model
         - $ref: "#/components/schemas/Pagination"
@@ -1294,11 +1274,6 @@ components:
             data:
               type: array
               items: { "$ref": "#/components/schemas/Tag" }
-    UserId:
-      description: The unique identifier of a user
-      type: integer
-      readOnly: true
-      example: 1
     User:
       type: object
       properties:
@@ -2038,7 +2013,9 @@ paths:
         in: path
         required: true
         schema:
-          $ref: "#/components/schemas/EntityTypeId"
+          type: integer
+          readOnly: true
+          example: 1
     get:
       tags:
         - entity-types
@@ -2130,7 +2107,9 @@ paths:
         in: path
         required: true
         schema:
-          $ref: "#/components/schemas/LinkId"
+          type: integer
+          readOnly: true
+          example: 1
     get:
       tags:
         - links
@@ -2412,7 +2391,9 @@ paths:
         in: path
         required: true
         schema:
-          $ref: "#/components/schemas/TagId"
+          type: integer
+          readOnly: true
+          example: 1
     get:
       tags:
         - tags
@@ -2523,7 +2504,9 @@ paths:
         in: path
         required: true
         schema:
-          $ref: "#/components/schemas/UserId"
+          type: integer
+          readOnly: true
+          example: 1
     get:
       tags:
         - users
