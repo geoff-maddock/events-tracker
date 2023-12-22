@@ -14,19 +14,19 @@ servers:
   - url: https://dev.arcane.city
     description: Development
 tags:
-  - name: blogs 
+  - name: blogs
   - name: default
   - name: entities
   - name: entity-statuses
   - name: entity-types
   - name: events
-  - name: forums 
+  - name: forums
   - name: links
   - name: locations
   - name: posts
   - name: series
   - name: tags
-  - name: threads 
+  - name: threads
   - name: users
 components:
   responses:
@@ -1519,17 +1519,6 @@ components:
           items: {}
 security:
   - basicAuth: []
-tags:
-  - name: events
-  - name: entities
-  - name: links
-  - name: series
-  - name: users
-  - name: tags
-  - name: blogs
-  - name: forums
-  - name: threads
-  - name: posts
 paths:
   /api/events:
     post:
@@ -1803,7 +1792,7 @@ paths:
   /api/entities/reset:
     get:
       tags:
-        - events
+        - entities
       summary: Reset Entity filters
       operationId: resetEntityFilters
       responses:
@@ -2144,6 +2133,103 @@ paths:
         - links
       summary: Delete Link
       operationId: deleteLinkById
+      responses:
+        "204":
+          description: Successful response
+          content:
+            application/json: {}
+  /api/locations:
+    get:
+      tags:
+        - locations
+      summary: Get Locations
+      operationId: getAllLocations
+      parameters:
+        - name: title
+          in: query
+          schema:
+            type: string
+          example: Google
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+            example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+            example: asc
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Location"
+    post:
+      tags:
+        - locations
+      summary: Create location
+      operationId: createLocation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Location"
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json: {}
+  /api/locations/{locationId}:
+    parameters:
+      - name: locationId
+        description: The unique identifier of the location
+        in: path
+        required: true
+        schema:
+          type: integer
+          readOnly: true
+          example: 1
+    get:
+      tags:
+        - locations
+      summary: Get Location
+      operationId: getLocationById
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Location"
+    put:
+      tags:
+        - locations
+      summary: Update location
+      operationId: updateLocationById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Location"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Location"
+    delete:
+      tags:
+        - locations
+      summary: Delete Location
+      operationId: deleteLocationById
       responses:
         "204":
           description: Successful response
