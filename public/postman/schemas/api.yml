@@ -848,6 +848,91 @@ components:
           format: date-time
           description: Date and time that the entity type was last updated
           readOnly: true
+    LocationRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          maxLength: 255
+          description: The name of the location
+          example: Brillobox
+        slug:
+          type: string
+          maxLength: 255
+          description: A unique identifier name for the series in kebab-case
+          example: brillobox-bar
+        address_line_one:
+          type: string
+          maxLength: 255
+          description: First line of the address
+          example: 100 East Street
+        address_line_two:
+          type: string
+          maxLength: 255
+          description: Second line of the address
+          example: Suite 9000
+        neighborhood:
+          type: string
+          maxLength: 255
+          description: Neighborhood the location is in
+          example: Bloomfield
+        city:
+          type: string
+          maxLength: 255
+          description: City of the location
+          example: Pittsburgh
+        state:
+          type: string
+          maxLength: 5
+          description: State of the location
+          example: Pittsburgh
+        postal_code:
+          type: string
+          maxLength: 15
+          description: Postal code of the location
+          example: 15224
+        country:
+          type: string
+          maxLength: 64
+          description: Country of the location
+          example: USA
+        latitude:
+          type: number
+          description: Latitude of the location
+          example: 0.00000000
+        longitude:
+          type: number
+          description: longitude of the location
+          example: 0.00000000
+        visibility_id:
+          type: integer
+          description: Type of visibility
+          example: 1
+        locatoin_type_id:
+          type: integer
+          description: Type of location
+          example: 1
+        map_url:
+          type: string
+          maxLength: 128
+          description: URL of the map location
+          example: USA
+        created_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the entity type was created
+          readOnly: true
+        updated_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the entity type was last updated
+          readOnly: true
     OccurrenceDay:
       type: object
       required:
@@ -2257,7 +2342,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Location"
+              $ref: "#/components/schemas/LocationRequest"
       responses:
         "201":
           description: Successful response
@@ -2294,7 +2379,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Location"
+              $ref: "#/components/schemas/LocationRequest"
       responses:
         "200":
           description: Successful response

@@ -6,7 +6,7 @@ use App\Filters\LocationFilters;
 use App\Models\Entity;
 use App\Models\Location;
 use App\Models\Visibility;
-use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\LocationRequest;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use App\Http\Controllers\Controller;
@@ -14,8 +14,7 @@ use App\Http\Resources\LocationCollection;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Js;
-use Nette\Utils\Json;
+
 
 class LocationsController extends Controller
 {
@@ -37,6 +36,8 @@ class LocationsController extends Controller
 
     protected bool $hasFilter;
 
+    protected string $prefix;
+
     protected LocationFilters $filter;
 
     protected array $rules = [
@@ -46,7 +47,7 @@ class LocationsController extends Controller
 
     public function __construct(LocationFilters $filter)
     {
-        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
+        // $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
 
         // default list variables
         $this->defaultLimit = 5;
@@ -60,38 +61,24 @@ class LocationsController extends Controller
 
         $this->hasFilter = false;
         $this->filter = $filter;
+        
+        // prefix for session storage
+        $this->prefix = 'app.locations.';
 
         parent::__construct();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create(Entity $entity): View
-    {
-        return view('locations.create', compact('entity'))
-            ->with($this->getFormOptions());
-    }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, Entity $entity): RedirectResponse
+    public function store(LocationRequest $request): JsonResponse
     {
-        $msg = '';
-
-        // get the request
         $input = $request->all();
-        $input['entity_id'] = $entity->id;
-        $input['is_primary'] = isset($input['is_primary']) ? 1 : 0;
-
-        $this->validate($request, $this->rules);
 
         $location = Location::create($input);
 
-        flash()->success('Success', 'Your location has been created');
-
-        return redirect()->route('entities.show', $entity->slug);
+        return response()->json($location);
     }
 
     /**
@@ -102,26 +89,13 @@ class LocationsController extends Controller
         return response()->json($location);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Entity $entity, Location $location): View
-    {
-        return view('locations.edit', compact('entity', 'location'))
-            ->with($this->getFormOptions());
-    }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Location $location): JsonResponse
+    public function update(Location $location, LocationRequest $request): JsonResponse
     {
-        $input = $request->all();
-        $input['is_primary'] = isset($input['is_primary']) ? 1 : 0;
-
-        $location->fill($input)->save();
-
-        flash()->success('Success', 'Your location has been updated!');
+        $location->fill($request->input())->save();
 
         return response()->json($location);
     }
@@ -140,12 +114,6 @@ class LocationsController extends Controller
         return response()->json([], 204);
     }
 
-    protected function getFormOptions(): array
-    {
-        return [
-            'visibilities' => ['' => ''] + Visibility::pluck('name', 'id')->all(),
-        ];
-    }
 
         /**
      * Display a listing of the resource.
