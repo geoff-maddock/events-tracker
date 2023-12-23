@@ -28,7 +28,7 @@
 @if (isset($type))
 . {{ ucfirst($type) }}
 @endif
-@if (isset($slug))
+@if (isset($event))
 . {{ $event->name }}
 @endif
 @if (isset($cdate))
