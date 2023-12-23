@@ -16,6 +16,6 @@
 @if (isset($type))
 	. {{ ucfirst($type) }}
 @endif
-@if (isset($slug))
+@if (isset($entity))
 	. {{ $entity->name }}
 @endif 
