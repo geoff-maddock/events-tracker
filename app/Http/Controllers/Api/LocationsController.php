@@ -14,6 +14,8 @@ use App\Http\Resources\LocationCollection;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Js;
+use Nette\Utils\Json;
 
 class LocationsController extends Controller
 {
@@ -95,9 +97,9 @@ class LocationsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Entity $entity, Location $location): View
+    public function show(Location $location): JsonResponse
     {
-        return view('locations.show', compact('entity', 'location'));
+        return response()->json($location);
     }
 
     /**
@@ -112,7 +114,7 @@ class LocationsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Entity $entity, Location $location): RedirectResponse
+    public function update(Request $request, Location $location): JsonResponse
     {
         $input = $request->all();
         $input['is_primary'] = isset($input['is_primary']) ? 1 : 0;
@@ -121,7 +123,7 @@ class LocationsController extends Controller
 
         flash()->success('Success', 'Your location has been updated!');
 
-        return redirect()->route('entities.show', $entity->slug);
+        return response()->json($location);
     }
 
     /**
@@ -129,13 +131,13 @@ class LocationsController extends Controller
      *
      * @throws \Exception
      */
-    public function destroy(Entity $entity, Location $location): RedirectResponse
+    public function destroy(Location $location): JsonResponse
     {
         $location->delete();
 
         flash()->success('Success', 'Your location has been deleted!');
 
-        return redirect()->route('entities.show', $entity->slug);
+        return response()->json([], 204);
     }
 
     protected function getFormOptions(): array

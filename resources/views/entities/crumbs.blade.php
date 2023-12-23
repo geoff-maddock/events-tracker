@@ -17,5 +17,5 @@
 	. {{ ucfirst($type) }}
 @endif
 @if (isset($slug))
-	. {{ Str::studly($slug) }}
+	. {{ $entity->name }}
 @endif 

@@ -9,7 +9,7 @@
 
 @section('content')
 
-<h1 class="display-6 text-primary">Series	@include('series.crumbs', ['slug' => $series->name])</h4>
+<h1 class="display-crumbs text-primary">Series	@include('series.crumbs', ['slug' => $series->name])</h4>
 
 <div id="action-menu" class="mb-2">	
 	@if ($user && (Auth::user()->id == $series?->user?->id || $user->id == Config::get('app.superuser')  ) )

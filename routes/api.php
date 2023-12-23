@@ -57,6 +57,11 @@ Route::middleware('auth.basic')->name('api.')->group(function () {
     Route::get('links/rpp-reset', ['as' => 'links.rppReset', 'uses' => 'Api\LinksController@rppReset']);
     Route::resource('links', 'Api\LinksController');
 
+    Route::match(['get', 'post'], 'locations/filter', ['as' => 'locations.filter', 'uses' => 'Api\LocationsController@filter']);
+    Route::get('locations/reset', ['as' => 'locations.reset', 'uses' => 'Api\LocationsController@reset']);
+    Route::get('locations/rpp-reset', ['as' => 'locations.rppReset', 'uses' => 'Api\LocationsController@rppReset']);
+    Route::resource('locations', 'Api\LocationsController');
+
     Route::match(['get', 'post'], 'users/filter', ['as' => 'users.filter', 'uses' => 'Api\UsersController@filter']);
     Route::get('users/reset', ['as' => 'users.reset', 'uses' => 'Api\UsersController@reset']);
     Route::get('users/rpp-reset', ['as' => 'users.rppReset', 'uses' => 'Api\UsersController@rppReset']);

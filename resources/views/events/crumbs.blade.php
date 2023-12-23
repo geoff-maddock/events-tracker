@@ -29,7 +29,7 @@
 . {{ ucfirst($type) }}
 @endif
 @if (isset($slug))
-. {{ ucfirst($slug) }}
+. {{ $event->name }}
 @endif
 @if (isset($cdate))
 . {{ $cdate->toDateString() }}
