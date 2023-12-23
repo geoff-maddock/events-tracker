@@ -8,5 +8,5 @@
 • {{ ucfirst($type) }}
 @endif
 @if (isset($slug))
-• {{ strtoupper($slug) }}
+• {{ strtoupper($name) }}
 @endif 

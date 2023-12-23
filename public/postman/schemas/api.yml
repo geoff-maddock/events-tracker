@@ -2222,11 +2222,11 @@ paths:
       summary: Get Locations
       operationId: getLocations
       parameters:
-        - name: title
+        - name: name
           in: query
           schema:
             type: string
-          example: Google
+          example: Brillobox
         - name: sort
           in: query
           required: false
