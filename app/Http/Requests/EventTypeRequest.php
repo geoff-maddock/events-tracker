@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-class EntityTypeRequest extends Request
+class EventTypeRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,7 @@ class EntityTypeRequest extends Request
     public function rules()
     {
         return [
-            'name' => 'required|min:3:max:255',
-            'slug' => 'required|min:3|max:255',
-            'short' => 'required|min:3|max:255',
+            'name' => 'required|min:3|max:255',
         ];
     }
 }
