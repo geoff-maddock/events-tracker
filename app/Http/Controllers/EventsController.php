@@ -2240,6 +2240,15 @@ class EventsController extends Controller
         $event->tags()->attach($syncArray);
         $event->entities()->attach($request->input('entity_list'));
 
+        // also attach the venue and promoter if set
+        if ($request->input('venue_id')) {
+            $event->entities()->attach($request->input('venue_id'));
+        }
+
+        if ($request->input('promoter_id')) {
+            $event->entities()->attach($request->input('promoter_id'));
+        }
+
         // add to activity log
         Activity::log($event, $this->user, 1);
 

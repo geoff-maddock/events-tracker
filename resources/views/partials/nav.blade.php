@@ -15,9 +15,6 @@
 				<li class="nav-item dropdown {{ Request::is('events') ? 'active' : '' }}">
 		          <a href="#" class="nav-link dropdown-toggle" id="event-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  title="Show paginated list of events">Events <span class="caret"></span></a>
 		          <ul class="dropdown-menu" aria-labelledby="event-dropdown">
-					<li class="{{ Request::is('events/future') ? 'active' : '' }}">
-						<a href="{{ url('/events/future') }}" class="dropdown-item">Events Future</a>
-					</li>
 					<li class="{{ Request::is('events') ? 'active' : '' }}">
 						<a href="{{ url('/events') }}" class="dropdown-item">Event Index</a>
 					</li>

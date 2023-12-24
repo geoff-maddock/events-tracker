@@ -16,6 +16,7 @@ tags:
   - name: entity-statuses
   - name: entity-types
   - name: events
+  - name: event-types
   - name: forums
   - name: links
   - name: locations
@@ -715,6 +716,15 @@ components:
           format: date-time
           description: Date and time that the event type was last updated
           readOnly: true
+    EventTypes:
+      allOf: [$ref: "#/components/schemas/Pagination"]
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of the current page of events
+          items:
+            "$ref": "#/components/schemas/EventType"
     Link:
       type: object
       required:

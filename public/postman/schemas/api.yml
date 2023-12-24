@@ -20,6 +20,7 @@ tags:
   - name: entity-statuses
   - name: entity-types
   - name: events
+  - name: event-types
   - name: forums
   - name: links
   - name: locations
@@ -719,6 +720,15 @@ components:
           format: date-time
           description: Date and time that the event type was last updated
           readOnly: true
+    EventTypes:
+      allOf: [$ref: "#/components/schemas/Pagination"]
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of the current page of events
+          items:
+            "$ref": "#/components/schemas/EventType"
     Link:
       type: object
       required:
@@ -2198,6 +2208,105 @@ paths:
         - entity-types
       summary: Delete Entity Type
       operationId: deleteEntityTypeById
+      responses:
+        "204":
+          description: Successful response
+          content:
+            application/json: {}
+  /api/event-types:
+    get:
+      tags:
+        - event-types
+      summary: Get Event Types
+      operationId: updateEventTypes
+      parameters:
+        - name: filters[name]
+          in: query
+          required: false
+          description: A filter query of the event status name
+          schema:
+            type: string
+          example: "Concert"
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+            example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+            example: asc
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventTypes"
+    post:
+      tags:
+        - event-types
+      summary: Create event type
+      operationId: createEventType
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventType"
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json: {}
+  /api/event-types/{eventTypeId}:
+    parameters:
+      - name: eventTypeId
+        description: The unique identifier of the event type
+        in: path
+        required: true
+        schema:
+          type: integer
+          readOnly: true
+          example: 1
+    get:
+      tags:
+        - event-types
+      summary: Get EventType
+      operationId: getEventTypeById
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventType"
+    put:
+      tags:
+        - event-types
+      summary: Update Event Type
+      operationId: updateEventTypeById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventType"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventType"
+    delete:
+      tags:
+        - event-types
+      summary: Delete Event Type
+      operationId: deleteEventTypeById
       responses:
         "204":
           description: Successful response
