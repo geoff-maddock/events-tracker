@@ -65,7 +65,7 @@ Entities @include('entities.title-crumbs')
             </div>
 
 			<div class="col">
-                {!! Form::label('filter_tag','Filter By Tag', array('width' => '100%')) !!}
+                {!! Form::label('filter_tag','Tag', array('width' => '100%')) !!}
                 {!! Form::select('filter_tag', $tagOptions, (isset($filters['tag']) ? $filters['tag'] :
                 NULL),
                 [

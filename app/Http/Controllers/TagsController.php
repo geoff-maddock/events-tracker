@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TagRequest;
 use App\Models\Activity;
 use App\Models\Entity;
 use App\Models\Event;
@@ -281,9 +282,9 @@ class TagsController extends Controller
     /**
      * Store a newly created resource.
      *
-     * @internal param Request $request
+     * @internal param TagRequest $request
      */
-    public function store(Request $request, Tag $tag): RedirectResponse
+    public function store(TagRequest $request, Tag $tag): RedirectResponse
     {
         $msg = '';
 
@@ -586,7 +587,7 @@ class TagsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Tag $tag, Request $request): RedirectResponse
+    public function update(Tag $tag, TagRequest $request): RedirectResponse
     {
         $msg = '';
 
