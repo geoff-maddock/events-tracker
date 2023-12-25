@@ -164,13 +164,13 @@
 <div class="row mb-2">
 	<div class="form-group col-md-4">
 		{!! Form::label('primary_link','Primary Link:') !!}
-		{!! Form::text('primary_link', null, ['class' => 'form-control form-background']) !!}
+		{!! Form::text('primary_link', null, ['class' => 'form-control form-background', 'placeholder' => 'https://primarylink.com']) !!}
 		{!! $errors->first('primary_link','<span class="help-block">:message</span>') !!}
 	</div>
 
 	<div class="form-group col-md-4">
 		{!! Form::label('ticket_link','Ticket Link:') !!}
-		{!! Form::text('ticket_link', null, ['class' => 'form-control form-background']) !!}
+		{!! Form::text('ticket_link', null, ['class' => 'form-control form-background', 'placeholder' => 'https://ticketlink.com',]) !!}
 		{!! $errors->first('ticket_link','<span class="help-block">:message</span>') !!}
 	</div>
 </div>

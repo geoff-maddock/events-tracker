@@ -70,25 +70,20 @@
             </div>
 
             <div class="col-sm">
-                {!! Form::label('filter_tag','Tag') !!}
-                {!! Form::select('filter_tag', $tagOptions, (isset($filters['tag']) ? $filters['tag'] : NULL),
+                {!! Form::label('filter_tag','Tag', array('width' => '100%')) !!}
+                {!! Form::select('filter_tag', $tagOptions, (isset($filters['tag']) ? $filters['tag'] :  NULL),
                 [
-                    'data-theme'=> 'bootstrap-5',
-                    'data-width' => '100%', 
-                    'class' =>'form-control select2 form-background',
-                    'data-placeholder' => 'Select a tag',
-                    'name' => 'filters[tag]'
+                    'class' =>'form-control form-background',
+                    'name' => 'filters[tag]',
                 ]) !!}
             </div>
+
 
             <div class="col-sm">
                 {!! Form::label('filter_visibility','Visibility') !!}
                 {!! Form::select('filter_visibility', $visibilityOptions, (isset($filters['visibility']) ? $filters['visibility'] : NULL),
                 [
-                    'data-theme'=> 'bootstrap-5',
-                    'data-width' => '100%', 
-                    'class' =>'form-control select2 form-background',
-                    'data-placeholder' => 'Select a visibility',
+                    'class' =>'form-control form-background',
                     'name' => 'filters[visibility]'
                 ]) !!}
             </div>

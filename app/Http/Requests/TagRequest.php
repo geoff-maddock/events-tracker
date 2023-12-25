@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 use Illuminate\Validation\Rule;
 
-class EntityRequest extends Request
+class TagRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -20,9 +20,7 @@ class EntityRequest extends Request
     {
         return [
             'name' => 'required|min:3|max:255',
-            'slug' => Rule::unique('entities')->ignore(isset($this->entity) ? $this->entity->id : ''),
-            'name' => 'required|min:3|max:255',
-            'description' => 'required',
+            'slug' => Rule::unique('tags')->ignore(isset($this->tag) ? $this->tag->id : ''),
         ];
     }
 }
