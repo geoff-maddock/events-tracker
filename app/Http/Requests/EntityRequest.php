@@ -21,8 +21,8 @@ class EntityRequest extends Request
         return [
             'name' => 'required|min:3|max:255',
             'slug' => Rule::unique('entities')->ignore(isset($this->entity) ? $this->entity->id : ''),
-            'name' => 'required|min:3|max:255',
-            'description' => 'required',
+            'short' => 'max:255',
+            'entity_type_id' => 'required',
         ];
     }
 }

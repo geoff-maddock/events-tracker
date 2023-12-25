@@ -2073,16 +2073,16 @@ paths:
           content:
             application/json: {}
   /api/event-types/{eventTypeId}:
-    parameters:
-      - name: eventTypeId
-        description: The unique identifier of the event type
-        in: path
-        required: true
-        schema:
-          type: integer
-          readOnly: true
-          example: 1
     get:
+      parameters:
+        - name: eventTypeId
+          description: The unique identifier of the event type
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
       tags:
         - event-types
       summary: Get EventType
@@ -2095,6 +2095,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/EventType"
     put:
+      parameters:
+        - name: eventTypeId
+          description: The unique identifier of the event type
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
       tags:
         - event-types
       summary: Update Event Type
@@ -2112,6 +2121,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/EventType"
     delete:
+      parameters:
+        - name: eventTypeId
+          description: The unique identifier of the event type
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
       tags:
         - event-types
       summary: Delete Event Type
@@ -2172,16 +2190,16 @@ paths:
               schema:
                 $ref: "#/components/schemas/Tags"
   /api/tags/{tagId}:
-    parameters:
-      - name: tagId
-        description: The unique identifier of the tag
-        in: path
-        required: true
-        schema:
-          type: integer
-          readOnly: true
-          example: 1
     get:
+      parameters:
+        - name: tagId
+          description: The unique identifier of the tag
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
       tags:
         - tags
       summary: Get one Tag
@@ -2194,6 +2212,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/Tag"
     put:
+      parameters:
+        - name: tagId
+          description: The unique identifier of the tag
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
       tags:
         - tags
       summary: Update Tag
@@ -2209,6 +2236,15 @@ paths:
           content:
             application/json: {}
     delete:
+      parameters:
+        - name: tagId
+          description: The unique identifier of the tag
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
       tags:
         - tags
       summary: Delete Tag
