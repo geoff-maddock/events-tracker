@@ -46,7 +46,7 @@ Route::middleware('auth.basic')->name('api.')->group(function () {
     Route::match(['get', 'post'], 'event-types/filter', ['as' => 'eventType.filter', 'uses' => 'Api\EventTypesController@filter']);
     Route::get('event-types/reset', ['as' => 'event-types.reset', 'uses' => 'Api\EventTypesController@reset']);
     Route::get('event-types/rpp-reset', ['as' => 'event-types.rppReset', 'uses' => 'Api\EventTypesController@rppReset']);
-    Route::resource('entity-types', 'Api\EventTypesController');
+    Route::resource('event-types', 'Api\EventTypesController');
 
     Route::get('series/reset', ['as' => 'series.reset', 'uses' => 'Api\SeriesController@reset']);
     Route::get('series/rpp-reset', ['as' => 'series.rppReset', 'uses' => 'Api\SeriesController@rppReset']);
