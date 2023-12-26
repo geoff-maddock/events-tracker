@@ -11,7 +11,7 @@
 </div>
 
 
-	{!! Form::model($tag, ['route' => ['tags.update', $tag->id], 'method' => 'PATCH']) !!}
+	{!! Form::model($tag, ['route' => ['tags.update', $tag->slug], 'method' => 'PATCH']) !!}
 
 		@include('tags.form', ['action' => 'update'])
 

@@ -24,7 +24,17 @@ class UserRequest extends Request
     public function rules()
     {
         return [
-            'name' => 'required|min:3',
+            'name' => ['required','min:3','max:255', 'regex:/^[a-zA-Z0-9\s]+$/'],
         ];
     }
-}
+
+    public function messages()
+    {
+        return [
+            'name.required' => 'A user name is required',
+            'name.min' => 'A user name must be at least 3 characters',
+            'name.max' => 'A user name must be less than 255 characters',
+            'name.regex' => 'A user name must be alphanumeric',
+        ];
+    }
+ }

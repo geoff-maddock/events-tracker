@@ -510,7 +510,6 @@ Route::delete('/entities/{entity:slug}/comments/{comment:id}/edit', 'CommentsCon
 
 Route::resource('entities.comments', 'CommentsController');
 Route::resource('events.comments', 'CommentsController');
-
 Route::resource('events.reviews', 'EventReviewsController');
 
 // REVIEWS
