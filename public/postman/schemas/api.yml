@@ -1666,6 +1666,7 @@ paths:
           description: A filter query of the event name
           schema:
             type: string
+            example: "Lazercrunk"
           example: "Lazercrunk"
         - name: filters[venue]
           in: query
@@ -1743,14 +1744,14 @@ paths:
           description: A column to be used to sort the query
           schema:
             type: string
-            example: name
+          example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-            example: asc
+          example: asc
       responses:
         "200":
           description: Successful response
@@ -1904,14 +1905,14 @@ paths:
           description: A column to be used to sort the query
           schema:
             type: string
-            example: name
+          example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-            example: asc
+          example: asc
       responses:
         "200":
           description: Successful response
@@ -2014,14 +2015,14 @@ paths:
           description: A column to be used to sort the query
           schema:
             type: string
-            example: name
+          example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-            example: asc
+          example: asc
       responses:
         "200":
           description: Successful response
@@ -2055,7 +2056,7 @@ paths:
             description: The unique identifier of an entity type
             type: integer
             readOnly: true
-            example: 1
+          example: 1
       tags:
         - entity-statuses
       summary: Get EntityStatus
@@ -2077,7 +2078,7 @@ paths:
             description: The unique identifier of an entity type
             type: integer
             readOnly: true
-            example: 1
+          example: 1
       tags:
         - entity-statuses
       summary: Update Entity Status
@@ -2104,7 +2105,7 @@ paths:
             description: The unique identifier of an entity type
             type: integer
             readOnly: true
-            example: 1
+          example: 1
       tags:
         - entity-statuses
       summary: Delete Entity Status
@@ -2134,14 +2135,14 @@ paths:
           description: A column to be used to sort the query
           schema:
             type: string
-            example: name
+          example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-            example: asc
+          example: asc
       responses:
         "200":
           description: Successful response
@@ -2173,7 +2174,7 @@ paths:
         schema:
           type: integer
           readOnly: true
-          example: 1
+        example: 1
     get:
       tags:
         - entity-types
@@ -2233,14 +2234,14 @@ paths:
           description: A column to be used to sort the query
           schema:
             type: string
-            example: name
+          example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-            example: asc
+          example: asc
       responses:
         "200":
           description: Successful response
@@ -2323,6 +2324,7 @@ paths:
           in: query
           schema:
             type: string
+            example: Google
           example: Google
         - name: sort
           in: query
@@ -2330,14 +2332,14 @@ paths:
           description: A column to be used to sort the query
           schema:
             type: string
-            example: name
+          example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-            example: asc
+          example: asc
       responses:
         "200":
           description: Successful response
@@ -2370,6 +2372,7 @@ paths:
           type: integer
           readOnly: true
           example: 1
+        example: 1
     get:
       tags:
         - links
@@ -2427,14 +2430,14 @@ paths:
           description: A column to be used to sort the query
           schema:
             type: string
-            example: name
+          example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-            example: asc
+          example: asc
       responses:
         "200":
           description: Successful response
@@ -2466,7 +2469,7 @@ paths:
         schema:
           type: integer
           readOnly: true
-          example: 1
+        example: 1
     get:
       tags:
         - locations
@@ -2627,14 +2630,14 @@ paths:
           description: A column to be used to sort the query
           schema:
             type: string
-            example: name
+          example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-            example: asc
+          example: asc
       responses:
         "200":
           description: Successful response
@@ -2651,7 +2654,7 @@ paths:
         schema:
           type: integer
           readOnly: true
-          example: 1
+        example: 1
     get:
       tags:
         - series
@@ -2726,14 +2729,14 @@ paths:
           description: A column to be used to sort the query
           schema:
             type: string
-            example: name
+          example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-            example: asc
+          example: asc
       responses:
         "200":
           description: Successful response
@@ -2839,14 +2842,14 @@ paths:
           description: A column to be used to sort the query
           schema:
             type: string
-            example: name
+          example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-            example: asc
+          example: asc
       responses:
         "200":
           description: Successful response
@@ -2863,7 +2866,7 @@ paths:
         schema:
           type: integer
           readOnly: true
-          example: 1
+        example: 1
     get:
       tags:
         - users
