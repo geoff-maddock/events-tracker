@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TagRequest;
+use App\Models\Action;
 use App\Models\Activity;
 use App\Models\Entity;
 use App\Models\Event;
@@ -591,8 +592,21 @@ class TagsController extends Controller
     {
         $msg = '';
 
-        $tag->fill($request->input())->save();
+        $input = $request->all();
 
-        return redirect('tags');
+        $input['slug'] = Str::slug($request->input('name', '-'));
+
+        $tag->fill($input)->save();
+
+        // if we got this far, it worked
+        $msg = 'Updated tag. ';
+
+        // add to activity log
+        Activity::log($tag, $this->user, Action::UPDATE);
+
+        // flash this message
+        flash()->success('Success', $msg);
+
+        return redirect()->route('tags.show', compact('tag'));
     }
 }
