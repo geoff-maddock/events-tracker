@@ -1912,13 +1912,6 @@ paths:
           schema:
             type: string
           example: "Individual"
-        - name: filters[tag]
-          in: query
-          required: false
-          description: A filter query of the entity tags
-          schema:
-            type: string
-          example: "cutups"
         - name: sort
           in: query
           required: false
