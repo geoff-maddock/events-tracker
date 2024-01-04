@@ -30,6 +30,7 @@ class EntityResource extends JsonResource
         'twitter_username' => $this->twitter_username,
         'started_at' => $this->started_at,
         'links' => $this->links,
+        'tags' => $this->tags,
         'created_by' => $this->created_by,
         'updated_by' => $this->updated_by,
         'created_at' => $this->created_at,
