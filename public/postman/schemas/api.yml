@@ -185,6 +185,9 @@ components:
         links:
           type: array
           items: { "$ref": "#/components/schemas/Link" }
+        tags:
+          type: array
+          items: { "$ref": "#/components/schemas/Tag" }
     Entities:
       allOf: [$ref: "#/components/schemas/Pagination"]
       type: object
@@ -655,6 +658,9 @@ components:
           example: "2018-03-20T09:12:28Z"
           format: date-time
           description: Date and time that the event was cancelled
+        tags:
+          type: array
+          items: { "$ref": "#/components/schemas/Tag" }
         created_by:
           $ref: "#/components/schemas/UserSimple"
         updated_by:
