@@ -1546,7 +1546,7 @@ paths:
       tags:
         - events
       summary: Create Event
-      operationId: getCreateEvent
+      operationId: createEvent
       requestBody:
         content:
           application/json:
@@ -1682,17 +1682,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Events"
-  /api/events/reset:
-    get:
-      tags:
-        - events
-      summary: Reset event filters
-      operationId: resetEventsFilters
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json: {}
   /api/events/{eventId}:
     get:
       parameters:
@@ -1707,7 +1696,7 @@ paths:
             example: 1
       tags:
         - events
-      summary: Get Event
+      summary: Get Event by ID
       operationId: getEventById
       responses:
         "200":
@@ -1729,7 +1718,7 @@ paths:
             example: 1
       tags:
         - events
-      summary: Update Events
+      summary: Update Events by ID
       operationId: updateEventById
       requestBody:
         content:
@@ -1756,7 +1745,7 @@ paths:
             example: 1
       tags:
         - events
-      summary: Delete Event
+      summary: Delete Event by ID
       operationId: deleteEventById
       responses:
         "204":
@@ -1843,21 +1832,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Entities"
-  /api/entities/reset:
-    get:
-      tags:
-        - entities
-      summary: Reset Entity filters
-      operationId: resetEntityFilters
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json: {}
-  /api/entities/{slug}:
+  /api/entities/{entitySlug}:
     get:
       parameters:
-        - name: slug
+        - name: entitySlug
           description: The unique identifier of the entity
           in: path
           required: true
@@ -1866,7 +1844,7 @@ paths:
           example: cutups
       tags:
         - entities
-      summary: Get Entity
+      summary: Get Entity by Slug
       operationId: getEntityBySlug
       responses:
         "200":
@@ -1877,7 +1855,7 @@ paths:
                 $ref: "#/components/schemas/EntityResponse"
     put:
       parameters:
-        - name: slug
+        - name: entitySlug
           description: The unique identifier of the entity
           in: path
           required: true
@@ -1886,7 +1864,7 @@ paths:
           example: cutups
       tags:
         - entities
-      summary: Update Entity
+      summary: Update Entity by Slug
       operationId: updateEntityBySlug
       requestBody:
         content:
@@ -1902,7 +1880,7 @@ paths:
                 $ref: "#/components/schemas/EntityResponse"
     delete:
       parameters:
-        - name: slug
+        - name: entitySlug
           description: The unique identifier of the entity
           in: path
           required: true
@@ -1911,7 +1889,7 @@ paths:
           example: cutups
       tags:
         - entities
-      summary: Delete Entity
+      summary: Delete Entity by Slug
       operationId: deleteEntityBySlug
       responses:
         "204":
@@ -1956,7 +1934,7 @@ paths:
     post:
       tags:
         - entity-types
-      summary: Create entity type
+      summary: Create Entity Type
       operationId: createEntityType
       requestBody:
         content:
@@ -1981,7 +1959,7 @@ paths:
             example: 1
       tags:
         - entity-types
-      summary: Get EntityType
+      summary: Get Entity Type by ID
       operationId: getEntityTypeById
       responses:
         "200":
@@ -2002,7 +1980,7 @@ paths:
             example: 1
       tags:
         - entity-types
-      summary: Update Entity Type
+      summary: Update Entity Type by ID
       operationId: updateEntityTypeById
       requestBody:
         content:
@@ -2028,7 +2006,7 @@ paths:
             example: 1
       tags:
         - entity-types
-      summary: Delete Entity Type
+      summary: Delete Entity Type by ID
       operationId: deleteEntityTypeById
       responses:
         "204":
@@ -2040,7 +2018,7 @@ paths:
       tags:
         - event-types
       summary: Get Event Types
-      operationId: updateEventTypes
+      operationId: getEventTypes
       parameters:
         - name: filters[name]
           in: query
@@ -2073,7 +2051,7 @@ paths:
     post:
       tags:
         - event-types
-      summary: Create event type
+      summary: Create Event Type
       operationId: createEventType
       requestBody:
         content:
@@ -2098,7 +2076,7 @@ paths:
             example: 1
       tags:
         - event-types
-      summary: Get EventType
+      summary: Get Event Type by ID
       operationId: getEventTypeById
       responses:
         "200":
@@ -2119,7 +2097,7 @@ paths:
             example: 1
       tags:
         - event-types
-      summary: Update Event Type
+      summary: Update Event Type by ID
       operationId: updateEventTypeById
       requestBody:
         content:
@@ -2145,7 +2123,7 @@ paths:
             example: 1
       tags:
         - event-types
-      summary: Delete Event Type
+      summary: Delete Event Type by ID
       operationId: deleteEventTypeById
       responses:
         "204":
@@ -2215,7 +2193,7 @@ paths:
             example: 1
       tags:
         - tags
-      summary: Get one Tag
+      summary: Get one Tag by ID
       operationId: getTagById
       responses:
         "200":
@@ -2236,7 +2214,7 @@ paths:
             example: 1
       tags:
         - tags
-      summary: Update Tag
+      summary: Update Tag by ID
       operationId: updateTagById
       requestBody:
         content:
@@ -2260,7 +2238,7 @@ paths:
             example: 1
       tags:
         - tags
-      summary: Delete Tag
+      summary: Delete Tag by ID
       operationId: deleteTagById
       responses:
         "204":
