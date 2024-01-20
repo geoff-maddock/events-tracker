@@ -1935,17 +1935,134 @@ class EventsController extends Controller
 
         // check if there is an access token
         if (isset($_COOKIE['fb-token'])) {
+            var_dump('fb_token');
             return $_COOKIE['fb-token'];
         }
 
-        // if not, seet if we made the login
+        // if not, see if we made the login
         if (isset($_GET['code'])) {
+            var_dump('code');
             $accessToken = $this->getAccessTokenWithCode($_GET['code']);
             setcookie('fb-token', $accessToken['data'], time() + (86400 * 30), '/');
-            dump($accessToken);
+            var_dump("Token: ".$accessToken);
+        }
+        var_dump("null");
+        return null;
+    }
+
+    /**
+     * Post an event to Instagram
+     */
+    protected function postEventToInstagram(Event $event): bool | RedirectResponse
+    {
+        // configs
+        $userAccessToken = config('app.facebook_system_user_access_token');
+        $pageAccessToken = config('app.facebook_system_page_access_token');
+        $pageId = 665944966869026;
+        $apiVersion = "v18.0";
+        $igUserId = 17841406067178184;
+        $mediaType = "IMAGE";
+
+        // get the instagram account
+        if (!$igUserId) {
+            flash()->error('Error', 'You must have an Instagram user account linked to post to Instagram.');
+
+            return back();
         }
 
-        return null;
+        // get the instagram page access token
+        if (!$pageAccessToken) {
+            flash()->error('Error', 'You must have an Instagram page linked to post to Instagram.');
+
+            return back();
+        }
+
+        // get the image URL
+        $photo = $event->getPrimaryPhoto();
+
+        if (!$photo) {
+            flash()->error('Error', 'You must have an photo to extract the image to post to Instagram');
+
+            return back();
+        }
+
+        $imageUrl = Storage::disk('external')->url($photo->getStoragePath());
+
+        if (!$imageUrl) {
+            flash()->error('Error', 'You must have an image url to post to Instagram');
+
+            return back();
+        }
+
+        // get the instagram caption
+        $caption = $event->getBriefFormat();
+
+        if (!$caption) {
+            flash()->error('Error', 'You must have an Instagram caption linked to post to Instagram.');
+
+            return back();
+        }
+
+        // make the instagram api calls
+        // upload the image
+        $params = [];
+        $endpoint = 'https://graph.facebook.com/'.$apiVersion.'/media?media_type='.$mediaType.'&image_url='.$imageUrl.'&caption='.$caption.'&access_token='.$pageAccessToken;
+        $response = $this->makeApiCall($endpoint, 'POST', $params);
+        if (isset($response['data']['id'])) {
+            $igContainerId = $response['data']['id'];
+            flash()->success('Success', 'Successfully posted to Instagram, returned id: '.$response['data']['id']);
+        } else {
+            flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
+
+            return back();
+        }
+
+        // check the container status every 5 seconds until status_code is FINISHED
+        $finished = false;
+        $maxCount = 10;
+        $count = 0;
+        while (!$finished) {
+            $params = [];
+            $endpoint = 'https://graph.facebook.com/'.$apiVersion.'/'.$igContainerId.'?fields=status_code,status&access_token='.$pageAccessToken;
+            $response = $this->makeApiCall($endpoint, 'GET', $params);
+            if (isset($response['data']['status_code']) && 'FINISHED' == $response['data']['status_code']) {
+                $finished = true;
+            }
+            $count++;
+            if ($count > $maxCount) {
+                flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
+
+                return back();
+            }
+            sleep(5);
+        }
+
+        // pubish the image
+        // https://graph.facebook.com/{{api_version}}/{{ig_user_id}}/media_publish?creation_id={{ig_container_id}}&access_token={{page_access_token}}
+        $params = [];
+        $endpoint = 'https://graph.facebook.com/'.$apiVersion.'/'.$igUserId.'/media_publish?creation_id='.$igContainerId.'&access_token='.$pageAccessToken;
+        $response = $this->makeApiCall($endpoint, 'POST', $params);
+        if (isset($response['data']['id'])) {
+            flash()->success('Success', 'Successfully published to Instagram, returned id: '.$response['data']['id']);
+        } else {
+            flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
+
+            return back();
+        }
+
+        return back();
+    }
+
+    public function postToInstagram(?Event $event): RedirectResponse
+    {
+        if (!$event) {
+            abort(404);
+        }
+
+        // try to post to instagram
+        $this->postEventToInstagram($event);
+
+        return back();
     }
 
     /**

@@ -233,6 +233,9 @@ Route::get('events/rpp-reset', ['as' => 'events.rppReset', 'uses' => 'EventsCont
 // FB access token
 Route::get('fb-access', 'EventsController@fbAuthToken');
 
+// POST to Instagram
+Route::get('events/{id}/instagram-post', 'EventsController@postToInstagram')->name('events.instagramPost');
+
 Route::get('events/tag/{tag}', 'EventsController@indexTags')->name('events.tag');
 Route::get('events/venue/{slug}', 'EventsController@indexVenues')->name('events.venue');
 Route::get('events/related-to/{slug}', 'EventsController@indexRelatedTo')->name('events.relatedto');
