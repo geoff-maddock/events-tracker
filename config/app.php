@@ -109,6 +109,12 @@ return [
     'fb_graph_version' => env('FACEBOOK_GRAPH_VERSION'),
     'fb_default_access_token' => env('FACEBOOK_DEFAULT_ACCESS_TOKEN'),
 
+    'facebook_graph_api' => env('FACEBOOK_GRAPH_API'),
+    'facebook_system_user_access_token' => env('FACEBOOK_SYSTEM_USER_ACCESS_TOKEN'),
+    'facebook_system_page_access_token' => env('FACEBOOK_SYSTEM_PAGE_ACCESS_TOKEN'),
+    'facebook_page_id' => env('FACEBOOK_PAGE_ID'),
+    'facebook_ig_user_id' => env('FACEBOOK_IG_USER_ID'),
+
     'spider_blacklist' => env('SPIDER_BLACKLIST'),
 
     'app_name' => env('APP_NAME', 'Event Repo'),
