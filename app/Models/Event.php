@@ -168,8 +168,6 @@ class Event extends Model
         'created_by',
     ];
 
-    // protected $with = ['visibility', 'entities','photos'];
-
     protected $casts = [
         'soundcheck_at' => 'datetime',
         'door_at' => 'datetime',

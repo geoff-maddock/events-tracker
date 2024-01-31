@@ -27,6 +27,7 @@ use App\Models\User;
 use App\Models\Visibility;
 use App\Notifications\EventPublished;
 use App\Services\Embeds\EmbedExtractor;
+use App\Services\Integrations\Instagram;
 use App\Services\ImageHandler;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
@@ -1976,28 +1977,24 @@ class EventsController extends Controller
     }
     
 
-    /**
-     * Post an event to Instagram
-     */
-    protected function postEventToInstagram(Event $event): bool | RedirectResponse
+    public function postToInstagram(int $id, Instagram $instagram): RedirectResponse
     {
-        // configs
-        $userAccessToken = config('app.facebook_system_user_access_token');
-        $pageAccessToken = config('app.facebook_system_page_access_token');
-        $pageId = 665944966869026;
-        $apiVersion = "v18.0";
-        $igUserId = 17841406067178184;
-        $mediaType = "IMAGE";
+        // load the event
+        if (!$event = Event::find($id)) {
+            flash()->error('Error', 'No such event');
+
+            return back();
+        }
 
         // get the instagram account
-        if (!$igUserId) {
+        if (!$instagram->getIgUserId()) {
             flash()->error('Error', 'You must have an Instagram user account linked to post to Instagram.');
 
             return back();
         }
 
         // get the instagram page access token
-        if (!$pageAccessToken) {
+        if (!$instagram->getPageAccessToken()) {
             flash()->error('Error', 'You must have an Instagram page linked to post to Instagram.');
 
             return back();
@@ -2031,65 +2028,31 @@ class EventsController extends Controller
 
         // make the instagram api calls
         // upload the image
-        $params = [];
-        $endpoint = 'https://graph.facebook.com/'.$apiVersion.'/'.$igUserId.'/media?media_type='.$mediaType.'&image_url='.$imageUrl.'&caption='.$caption.'&access_token='.$pageAccessToken;
-        $response = $this->makeApiCall($endpoint, 'POST', $params);
-
-        // check if data is not null
-        if (!isset($response['data']['id'])) {
-            flash()->error('Error', 'No data returned. There was an error posting to Instagram.  Please try again.');
-
-            return back();
-        }
-
-        $igContainerId = $response['data']['id'];
-
-        // check the container status every 5 seconds until status_code is FINISHED
-        $finished = false;
-        $maxCount = 5;
-        $count = 0;
-        while (!$finished) {
-            $params = [];
-            $endpoint = 'https://graph.facebook.com/'.$apiVersion.'/'.$igContainerId.'?fields=status_code,status&access_token='.$pageAccessToken;
-            $response = $this->makeApiCall($endpoint, 'GET', $params);
-
-            if (isset($response['data']['status_code']) && 'FINISHED' == $response['data']['status_code']) {
-                $finished = true;
-            }
-            $count++;
-            if ($count > $maxCount) {
-                flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
-                return back();
-            }
-            sleep(5);
-        }
-
-        // pubish the image
-        $params = [];
-        $endpoint = 'https://graph.facebook.com/'.$apiVersion.'/'.$igUserId.'/media_publish?creation_id='.$igContainerId.'&access_token='.$pageAccessToken;
-        $response = $this->makeApiCall($endpoint, 'POST', $params);
-        if (isset($response['data']['id'])) {
-            flash()->success('Success', 'Successfully published to Instagram, returned id: '.$response['data']['id']);
-        } else {
+        try {
+            $igContainerId = $instagram->uploadPhoto($imageUrl, $caption);
+        } catch (Exception $e) {
             flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
 
             return back();
         }
 
-        return back();
-    }
-
-    public function postToInstagram(int $id): RedirectResponse
-    {
-        // load the event
-        if (!$event = Event::find($id)) {
-            flash()->error('Error', 'No such event');
+        // check the container status every 5 seconds until status_code is FINISHED
+        if ($instagram->checkStatus($igContainerId) === false) {
+            flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
 
             return back();
         }
 
-        // try to post to instagram
-        $this->postEventToInstagram($event);
+        // pubish the image
+        $result = $instagram->publishMedia($igContainerId);
+        if ($result === false) {
+            flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
+
+            return back();
+        }
+
+        // post was successful
+        flash()->success('Success', 'Successfully published to Instagram, returned id: '.$result);
 
         return back();
     }
