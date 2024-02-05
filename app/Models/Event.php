@@ -916,4 +916,74 @@ class Event extends Model
         // only return the first 280 chars
         return substr($format, 0, 280);
     }
+
+   // Format the event to post tp instagram
+   public function getInstagramFormat(): ?string
+   {
+       // no max length
+       // add the date and name - always include this
+       $format = $this->start_at->format('l F jS Y').' | '.$this->name;
+
+       // if part of a series, include the series
+       if (!empty($this->series_id)) {
+           $format .= ' '.$this->series->name.' series';
+       }
+
+       // include the type of event
+       $format .= ' '.$this->eventType->name;
+
+       // include the location of the event
+       if ($this->venue) {
+           $format .= ' at ';
+           $format .= $this->venue->name ?? 'No venue specified';
+       }
+
+       // include the start time
+       if ($this->start_at) {
+           $format .= ' at '.$this->start_at->format('gA');
+       }
+
+       // include the door price
+       if ($this->door_price) {
+           $format .= ' $'.number_format(floatval($this->door_price), 0);
+       }
+
+       // include the related entities
+       if (!$this->entities->isEmpty()) {
+           foreach ($this->entities as $entity) {
+               if (!empty($entity->facebook_username)) {
+
+                   // try to use the twitter username, but not guaranteed to be the same
+                   $format .= ' @'.$entity->facebook_username;
+               } else {
+                   // if the twitter username isn't set, then just add a hashtag
+                   $format .= ' #'.Str::studly($entity->slug);
+               }
+           }
+       }
+
+       // Turn related tags into hashtags
+       if (!$this->tags->isEmpty()) {
+           foreach ($this->tags as $tag) {
+               $format .= ' #'.Str::studly($tag->name);
+           }
+       }
+
+       // add default hashtag
+        $format .= ' #'.config('app.default_hashtag');
+
+       // add the arcane city URL
+        $format .= ' https://arcane.city/events/'.$this->id;
+
+       // add the primary link
+       if ($this->primary_link) {
+           // if there are at least 23 chars remaining, add primary link
+           if (strlen($format) < 258) {
+               $format .= ' '.$this->primary_link;
+           }
+       }
+
+       return $format;
+    }
+
 }

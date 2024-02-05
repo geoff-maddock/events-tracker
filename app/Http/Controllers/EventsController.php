@@ -2018,7 +2018,7 @@ class EventsController extends Controller
         }
 
         // get the instagram caption
-        $caption = urlEncode($event->getBriefFormat());
+        $caption = urlEncode($event->getInstagramFormat());
 
         if (!$caption) {
             flash()->error('Error', 'You must have an Instagram caption linked to post to Instagram.');
