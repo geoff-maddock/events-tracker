@@ -255,6 +255,5 @@ class Photo extends Eloquent
     {
         // changed for external / s3 storage
         return $this->thumbnail;
-        //return '/storage/'.$this->thumbnail;
     }
 }

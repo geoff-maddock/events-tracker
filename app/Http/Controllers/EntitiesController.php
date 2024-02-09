@@ -671,7 +671,7 @@ class EntitiesController extends Controller
         // $tracks = $embedExtractor->getTracksFromUrl('https://0h85.bandcamp.com/');
         $tracks = [];
 
-        $futureEvents = $entity->futureEvents(5);;
+        $futureEvents = $entity->futureEvents(5);
         $pastEvents = $entity->pastEvents(5);
 
         return view('entities.show', compact('entity', 'threads', 'embeds', 'tracks','futureEvents','pastEvents'));
