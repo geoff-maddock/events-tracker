@@ -2,8 +2,6 @@
 
 namespace App\Services\Integrations;
 
-use App\Models\Event;
-
 /**
  * Connects to Instagram API
  */
@@ -50,6 +48,45 @@ class Instagram
 
         return $response['data']['id'];
     }
+
+    public function uploadCarouselPhoto(string $imageUrl): int
+    {
+        $params = [];
+        $endpoint = 'https://graph.facebook.com/'.$this->apiVersion.'/'.$this->igUserId.'/media?media_type='.$this->mediaType.'&image_url='.$imageUrl.'&is_carousel_item=true&access_token='.$this->pageAccessToken;
+        $response = $this->makeApiCall($endpoint, 'POST', $params);
+
+        // check if data is not null
+        if (!isset($response['data']['id'])) {
+            throw new \Exception('No data returned. There was an error posting carousel photo to Instagram.  Please try again.');
+        }
+
+        return $response['data']['id'];
+    }
+
+    public function createCarousel(array $igIds, string $caption): int
+    {
+        // build the children string
+        $children = '';
+        foreach ($igIds as $igId) {
+            $children .= $igId.',';
+        }
+        $children = rtrim($children, ',');
+        $children =  urlEncode($children);
+
+        $caption = substr(urlEncode($caption), 0, 2200);
+        $params = [];
+        $endpoint = 'https://graph.facebook.com/'.$this->apiVersion.'/'.$this->igUserId.'/media?media_type=CAROUSEL&children='.$children.'&caption='.$caption.'&access_token='.$this->pageAccessToken;
+
+        $response = $this->makeApiCall($endpoint, 'POST', $params);
+
+        // check if data is not null
+        if (!isset($response['data']['id'])) {
+            throw new \Exception('No data returned. There was an error posting create carousel to Instagram.  Please try again.');
+        }
+
+        return $response['data']['id'];
+    }
+
 
     public function checkStatus(int $igContainerId): bool
     {

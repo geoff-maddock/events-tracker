@@ -97,6 +97,7 @@ Route::get('events/importPhotos', [
     'uses' => 'EventsController@importPhotos',
 ]);
 
+
 Route::bind('users', function ($id) {
     return App\Models\User::whereId($id)->firstOrFail();
 });
@@ -235,6 +236,7 @@ Route::get('fb-access', 'EventsController@fbAuthToken');
 
 // POST to Instagram
 Route::get('events/{id}/instagram-post', 'EventsController@postToInstagram')->name('events.instagramPost');
+Route::get('events/instagram-post-week', 'EventsController@postWeekToInstagram')->name('events.instagramPostWeek');
 
 Route::get('events/tag/{tag}', 'EventsController@indexTags')->name('events.tag');
 Route::get('events/venue/{slug}', 'EventsController@indexVenues')->name('events.venue');
@@ -258,6 +260,11 @@ Route::get(
         'uses' => 'EventsController@exportAttending',
     ]
 );
+
+Route::get('events/{id}/generateImage', [
+    'as' => 'events.generateImage',
+    'uses' => 'EventsController@generateImage',
+]);
 
 Route::get('events/{id}/importPhoto', [
     'as' => 'events.importPhoto',
