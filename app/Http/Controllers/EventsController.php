@@ -2085,7 +2085,7 @@ class EventsController extends Controller
         $events = Event::where('start_at', '>=', Carbon::now()->startOfWeek())
             ->where('start_at', '<=', Carbon::now()->endOfWeek())
             ->orderBy('start_at', 'ASC')
-            ->limit(10)
+            ->limit(9)
             ->get();
 
         // get the first image to post
