@@ -13,6 +13,7 @@ class Instagram
     protected string $apiVersion = "v18.0";
     protected int $igUserId = 17841406067178184;
     protected string $mediaType = "IMAGE";
+    protected string $endPoint;
 
 
     public function __construct()
@@ -23,6 +24,7 @@ class Instagram
         $this->apiVersion = "v18.0";
         $this->igUserId = 17841406067178184;
         $this->mediaType = "IMAGE";
+        $this->endPoint ="https://graph.facebook.com/".$this->apiVersion."/";
     }
 
     public function getIgUserId(): int
