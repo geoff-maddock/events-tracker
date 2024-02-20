@@ -948,6 +948,10 @@ class Event extends Model
            $format .= ' $'.number_format(floatval($this->door_price), 0);
        }
 
+
+       // include the short description
+       $format .= ' '.$this->short;
+
        // include the related entities
        if (!$this->entities->isEmpty()) {
            foreach ($this->entities as $entity) {
