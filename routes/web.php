@@ -298,6 +298,7 @@ Route::bind('events', function ($id) {
     return Event::whereId($id)->firstOrFail();
 });
 
+// Default resource for events
 Route::resource('events', 'EventsController');
 
 // FORUMS

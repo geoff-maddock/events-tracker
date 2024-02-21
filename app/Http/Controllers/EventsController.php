@@ -2516,11 +2516,11 @@ class EventsController extends Controller
 
         // also attach the venue and promoter if set
         if ($request->input('venue_id')) {
-            $event->entities()->attach($request->input('venue_id'));
+            $event->entities()->syncWithoutDetaching($request->input('venue_id'));
         }
 
         if ($request->input('promoter_id')) {
-            $event->entities()->attach($request->input('promoter_id'));
+            $event->entities()->syncWithoutDetaching($request->input('promoter_id'));
         }
 
         // add to activity log
