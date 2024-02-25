@@ -655,6 +655,7 @@ class Series extends Eloquent
         if (!$start) {
             $start = $this->created_at;
         }
+        $next = $start;
 
         $next = $start;
 
@@ -673,6 +674,7 @@ class Series extends Eloquent
      */
     public function cycleForward(?DateTime $date): Carbon
     {
+
         $carbonDate = Carbon::parse($date);
 
         switch ($this->occurrenceType->name) {
@@ -703,6 +705,13 @@ class Series extends Eloquent
                 $next = $carbonDate->addDay();
         }
 
+
+        if (!$next) {
+            dump($this);
+            dump($date);
+            dump($next);
+            die();
+        }
         return $next;
     }
 
