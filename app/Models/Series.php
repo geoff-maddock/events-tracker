@@ -649,19 +649,20 @@ class Series extends Eloquent
     public function cycleFromFoundedAt(): ?Carbon
     {
         // local founded at
-        $next = $this->founded_at;
+        $start = $this->founded_at;
 
         // if no founded date, assume created at date
-        if (!$next) {
-            $next = $this->created_at;
+        if (!$start) {
+            $start = $this->created_at;
         }
+        $next = $start;
 
         while ($next < Carbon::now('America/New_York')->startOfDay()) {
             $next = $this->cycleForward($next);
         }
 
-        $next->setHour($this->founded_at->hour);
-        $next->setMinute($this->founded_at->minute);
+        $next->setHour($start->hour);
+        $next->setMinute($start->minute);
 
         return $next;
     }
@@ -671,6 +672,7 @@ class Series extends Eloquent
      */
     public function cycleForward(?DateTime $date): Carbon
     {
+
         $carbonDate = Carbon::parse($date);
 
         switch ($this->occurrenceType->name) {
@@ -680,13 +682,15 @@ class Series extends Eloquent
             case 'Monthly':
             case 'Bimonthly':
                 $next = $carbonDate->addMonth();
+
                 if ($date) {
                     // check for last of month
                     if ($this->occurrence_week_id == 5) {
-                       $next = $carbonDate->lastOfMonth($this->occurrence_day_id - 1);
-                    } else {
-                        $next = $carbonDate->nthOfMonth($this->occurrence_week_id, ($this->occurrence_day_id - 1));
-                    }
+                        $next = $carbonDate->lastOfMonth($this->occurrence_day_id - 1);
+                     } else {
+                         $next = $carbonDate->nthOfMonth($this->occurrence_week_id, ($this->occurrence_day_id - 1));
+                     }
+
                 } else {
                     $next = $carbonDate->addMonth()->startOfMonth();
                 }
