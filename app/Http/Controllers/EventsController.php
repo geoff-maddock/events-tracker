@@ -3332,7 +3332,7 @@ class EventsController extends Controller
     {
         // confirm the file is one of these types
         $this->validate($request, [
-            'file' => 'required|mimes:jpg,jpeg,png,gif',
+            'file' => 'required|mimes:jpg,jpeg,png,gif,webp',
         ]);
 
         // get the event
