@@ -25,7 +25,7 @@
 
     @endif
 
-    <span>{{ $series->occurrenceType->name }} {{ $series->occurrence_repeat }}</span>
+    <span class="series-occurrence">{{ $series->occurrenceType->name }} {{ $series->occurrence_repeat }}</span>
 
     @if ($signedIn && ($series->ownedBy($user) || $user->hasGroup('super_admin')))
     <a href="{!! route('series.edit', ['series' => $series->id]) !!}"
