@@ -92,6 +92,14 @@
 		<a href="/series/{{$event->series_id }}">{!! $event?->series?->name !!}</a> series
 		@endif
 
+		@if ($event->short)
+		<small>
+				{{ (strlen($event->short) > 32) ? substr($event->short,0,29).'...' : $event->short; }}
+		</small>
+		</br>
+		@endif
+
+
 		<a href="/events/type/{{ $event->eventType->slug }}">{{ $event->eventType->name }}</a>
 
 		@if ($event->venue)

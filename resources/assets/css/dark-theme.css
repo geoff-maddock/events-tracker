@@ -489,3 +489,13 @@ button.form-control:focus {
 .event-date {
 	color: #5bc0de !important;
 }
+
+.event-card,
+.series-card,
+.entity-card {
+	color: #cceeff;
+}
+
+.series-occurrence {
+	color: #5bc0de;
+}
