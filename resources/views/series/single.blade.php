@@ -78,8 +78,7 @@
     {!! link_to_route('series.show', $series->name, [$series->id], ['class' => 'item-title', 'alt' => $series->name, 'aria-label' => $series->name]) !!}
     </div>
 
-
-    <small>
+    <small class="shorten-text">
          {{ $series->short }}
     </small>
 

@@ -93,10 +93,9 @@
 		@endif
 
 		@if ($event->short)
-		<small>
-				{{ (strlen($event->short) > 32) ? substr($event->short,0,29).'...' : $event->short; }}
+		<small class="shorten-text">
+			{{ $event->short }}
 		</small>
-		</br>
 		@endif
 
 

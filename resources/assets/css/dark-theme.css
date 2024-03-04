@@ -499,3 +499,10 @@ button.form-control:focus {
 .series-occurrence {
 	color: #5bc0de;
 }
+
+.shorten-text {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	display: block;
+}
