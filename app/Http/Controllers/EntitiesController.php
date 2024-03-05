@@ -842,7 +842,7 @@ class EntitiesController extends Controller
     public function addPhoto(int $id, Request $request, ImageHandler $imageHandler): void
     {
         $this->validate($request, [
-            'file' => 'required|mimes:jpg,jpeg,png,gif',
+            'file' => 'required|mimes:jpg,jpeg,png,gif,webp',
         ]);
 
         // attach to entity
