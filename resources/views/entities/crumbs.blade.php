@@ -18,4 +18,14 @@
 @endif
 @if (isset($entity))
 	. {{ $entity->name }}
+
+    @if ($signedIn)
+    @if ($follow = $entity->followedBy($user))
+    <a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}" title="You are following this entity.  Click to unfollow">
+        <i class="bi bi-check-circle-fill text-info icon"></i>
+    </a>
+    @else
+    <a href="{!! route('entities.follow', ['id' => $entity->id]) !!}" title="Click to follow this entity."><i class="bi bi-plus-circle icon"></i></a>
+    @endif
+@endif
 @endif 
