@@ -3,8 +3,7 @@
 @section('title','Event Calendar')
 
 @section('calendar.include')
-<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.min.css' rel='stylesheet' />
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 @endsection
 
 @section('content')
@@ -18,11 +17,22 @@
 	<div class='m-2'>
 		<script>
 
+			// check the current viewport size
+			function checkViewport() {
+				if (window.innerWidth < 768) {
+					return 'timeGridDay';
+				} else if (window.innerWidth < 1024) {
+					return 'timeGridWeek';
+				} else {
+					return 'dayGridMonth';
+				}
+			}
+
 			document.addEventListener('DOMContentLoaded', function() {
 			  var calendarEl = document.getElementById('calendar');
 			  var calendar = new FullCalendar.Calendar(calendarEl, {
 				headerToolbar: { center: 'dayGridMonth,timeGridWeek,timeGridDay' },
-				initialView: 'dayGridMonth',
+				initialView: checkViewport(),
 				// directly use JSON with events
 				events: {!! $eventList !!},
 				// use an API call with eventSources
