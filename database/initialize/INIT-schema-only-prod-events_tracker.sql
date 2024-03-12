@@ -271,6 +271,7 @@ CREATE TABLE `entities`  (
   `updated_at` timestamp(0) NOT NULL DEFAULT '0000-00-00 00:00:00',
   `facebook_username` varchar(64) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `twitter_username` varchar(64) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `instagram_username` varchar(64) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = MyISAM AUTO_INCREMENT = 354 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = Dynamic;
 
@@ -1104,6 +1105,7 @@ CREATE TABLE `profiles`  (
   `visibility_id` int(10) UNSIGNED NULL DEFAULT NULL,
   `facebook_username` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   `twitter_username` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
+  `instagram_username` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   `created_at` timestamp(0) NOT NULL DEFAULT '0000-00-00 00:00:00',
   `updated_at` timestamp(0) NOT NULL DEFAULT '0000-00-00 00:00:00',
   `first_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
@@ -1365,7 +1367,7 @@ CREATE TABLE `tag_types`  (
 DROP TABLE IF EXISTS `tags`;
 CREATE TABLE `tags`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `tag_type_id` int(11) NULL DEFAULT NULL,
   `created_at` timestamp(0) NOT NULL DEFAULT '0000-00-00 00:00:00',
   `updated_at` timestamp(0) NOT NULL DEFAULT '0000-00-00 00:00:00',

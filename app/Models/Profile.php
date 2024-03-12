@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int|null                                                    $visibility_id
  * @property string|null                                                 $facebook_username
  * @property string|null                                                 $twitter_username
+ * @property string|null                                                 $instagram_username
  * @property \Illuminate\Support\Carbon                                  $created_at
  * @property \Illuminate\Support\Carbon                                  $updated_at
  * @property string|null                                                 $first_name
@@ -62,7 +63,7 @@ class Profile extends Eloquent
     }
 
     protected $fillable = [
-        'first_name', 'last_name', 'bio', 'alias', 'location', 'facebook_username', 'twitter_username', 'default_theme', 'setting_weekly_update', 'setting_daily_update', 'setting_instant_update', 'setting_forum_update',
+        'first_name', 'last_name', 'bio', 'alias', 'location', 'facebook_username', 'twitter_username', 'instagram_username','default_theme', 'setting_weekly_update', 'setting_daily_update', 'setting_instant_update', 'setting_forum_update',
     ];
 
     protected $casts = [

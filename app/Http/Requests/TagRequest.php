@@ -19,7 +19,7 @@ class TagRequest extends Request
     public function rules(): array
     {
         return [
-            'name' => 'required|min:3|max:255',
+            'name' => 'required|min:3|max:16',
             'slug' => Rule::unique('tags')->ignore(isset($this->tag) ? $this->tag->id : ''),
         ];
     }
