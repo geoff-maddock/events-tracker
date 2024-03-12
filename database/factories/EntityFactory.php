@@ -36,6 +36,7 @@ class EntityFactory extends Factory
             },
             'facebook_username' => $this->faker->name,
             'twitter_username' => $this->faker->name,
+            'instagram_username' => $this->faker->name,
             'created_by' => 1
         ];
     }

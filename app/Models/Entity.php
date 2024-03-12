@@ -35,6 +35,7 @@ use Str;
  * @property \Illuminate\Support\Carbon                                      $updated_at
  * @property string|null                                                     $facebook_username
  * @property string|null                                                     $twitter_username
+ * @property string|null                                                     $instagram_username
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Alias[]    $aliases
  * @property int|null                                                        $aliases_count
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[]  $comments
@@ -97,7 +98,7 @@ class Entity extends Eloquent
     use Notifiable;
 
     protected $fillable = [
-        'name', 'slug', 'short', 'description', 'entity_type_id', 'entity_status_id', 'entity_address_id', 'facebook_username', 'twitter_username', 'created_by', 'started_at',
+        'name', 'slug', 'short', 'description', 'entity_type_id', 'entity_status_id', 'entity_address_id', 'facebook_username', 'twitter_username', 'instagram_username','created_by', 'started_at',
     ];
 
     protected $casts = [
