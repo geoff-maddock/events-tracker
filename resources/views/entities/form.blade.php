@@ -86,10 +86,12 @@
 	</div>
 	<div class="form-group col-md-6">
 		{!! Form::label('tag_list','Tags:') !!}
-		{!! Form::select('tag_list[]', $tagOptions, null, ['id' => 'tag_list', 'class' =>'form-control select2 form-background',
-		'data-placeholder' => 'Choose a tag',
-		'data-tags' => 'true',
-		 'multiple']) !!}
+		{!! Form::select('tag_list[]', $tagOptions, null, [
+			'id' => 'tag_list', 
+			'class' =>'form-control select2 form-background',
+			'data-placeholder' => 'Choose a tag',
+			'data-tags' => 'false',
+			 'multiple']) !!}
 		{!! $errors->first('tags','<span class="help-block">:message</span>') !!}
 		</div>
 </div>
