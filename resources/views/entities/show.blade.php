@@ -179,6 +179,10 @@
 					<b>Twitter:</b> <a href="https://twitter.com/{{ $entity->twitter_username }}" target="_">{{ '@' }}{{  $entity->twitter_username }}</a>
 			@endif
 
+			@if ($entity->instagram_username)
+					<b>Instagram:</b> <a href="https://instagram.com/{{ $entity->instagram_username }}" target="_">{{ '@' }}{{  $entity->instagram_username }}</a>
+			@endif
+
 			@unless ($entity->links->isEmpty())
 					<P><b>Links</b><br>
 					@foreach ($entity->links as $link)

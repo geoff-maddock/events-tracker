@@ -63,12 +63,9 @@
 
 <div class="row mb-1">
 	<div class="form-group col-md-6">
-	{!! Form::label('role_list','Roles:') !!}
-	{!! Form::select('role_list[]', $roleOptions, null, ['id' => 'role_list',	'class' => 'form-control select2 form-background',
-	'data-placeholder' => 'Choose a role',
-	'data-tags' => 'false',
-	'multiple']) !!}
-	{!! $errors->first('roles','<span class="help-block">:message</span>') !!}
+		{!! Form::label('instagram_username','Instagram Username') !!}
+		{!! Form::text('instagram_username', null, ['placeholder' => 'Add the related instagram username if there is one.','class' => 'form-control form-background']) !!}
+		{!! $errors->first('instagram_username','<span class="help-block">:message</span>') !!}
 	</div>
 	<div class="form-group col-md-6">
 		{!! Form::label('started_at','Started At:') !!}
@@ -80,13 +77,21 @@
 
 <div class="row mb-1">
 	<div class="form-group col-md-6">
-	{!! Form::label('tag_list','Tags:') !!}
-	{!! Form::select('tag_list[]', $tagOptions, null, ['id' => 'tag_list', 'class' =>'form-control select2 form-background',
-	'data-placeholder' => 'Choose a tag',
-	'data-tags' => 'true',
-	 'multiple']) !!}
-	{!! $errors->first('tags','<span class="help-block">:message</span>') !!}
+	{!! Form::label('role_list','Roles:') !!}
+	{!! Form::select('role_list[]', $roleOptions, null, ['id' => 'role_list',	'class' => 'form-control select2 form-background',
+	'data-placeholder' => 'Choose a role',
+	'data-tags' => 'false',
+	'multiple']) !!}
+	{!! $errors->first('roles','<span class="help-block">:message</span>') !!}
 	</div>
+	<div class="form-group col-md-6">
+		{!! Form::label('tag_list','Tags:') !!}
+		{!! Form::select('tag_list[]', $tagOptions, null, ['id' => 'tag_list', 'class' =>'form-control select2 form-background',
+		'data-placeholder' => 'Choose a tag',
+		'data-tags' => 'true',
+		 'multiple']) !!}
+		{!! $errors->first('tags','<span class="help-block">:message</span>') !!}
+		</div>
 </div>
 
 <div class="row mb-1">
