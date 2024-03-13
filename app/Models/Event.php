@@ -955,10 +955,10 @@ class Event extends Model
        // include the related entities
        if (!$this->entities->isEmpty()) {
            foreach ($this->entities as $entity) {
-               if (!empty($entity->facebook_username)) {
+               if (!empty($entity->instagram_username)) {
 
                    // try to use the twitter username, but not guaranteed to be the same
-                   $format .= ' @'.$entity->facebook_username;
+                   $format .= ' @'.$entity->instagram_username;
                } else {
                    // if the twitter username isn't set, then just add a hashtag
                    $format .= ' #'.Str::studly($entity->slug);

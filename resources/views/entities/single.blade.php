@@ -56,6 +56,12 @@
 	</a>
 	@endif
 
+	@if ($entity->instagram_username)
+	<a href="https://instagram.com/{{ $entity->instagram_username }}" target="_">	
+			<i class="bi bi-instagram card-actions"></i>
+	</a>
+	@endif
+
 	@if ($entity->soundcloudLink !== null)
 	<a href="{{ $entity->soundcloudLink->url}}" target="_">	
 			<i class="bi bi-music-note-beamed card-actions"></i>
