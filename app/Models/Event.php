@@ -545,13 +545,13 @@ class Event extends Model
     /**
      * Get the end time of the event.
      */
-    public function getEndTimeAttribute(): Carbon
+    public function getEndTimeAttribute(): ?Carbon
     {
         if (isset($this->end_at)) {
             return $this->end_at;
         }
 
-        return $this->start_at->addDay()->startOfDay();
+        return null;
     }
 
     /**
