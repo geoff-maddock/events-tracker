@@ -622,12 +622,15 @@ class SeriesController extends Controller
         $msg = '';
         $input = $request->all();
 
+        // transform the slug passed in the request
+        $input['slug'] = Str::slug($request->input('slug', '-'));
+
         $tagArray = $request->input('tag_list', []);
         $syncArray = [];
 
         // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
-            if (count(DB::table('tags')->where('id', $tag)->get()) > 0) {
+            if (!is_numeric($tag) || !$newTag = Tag::find($tag)) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->slug = Str::slug($tag);
@@ -636,11 +639,12 @@ class SeriesController extends Controller
 
                 // log adding of new tag
                 Activity::log($newTag, $this->user, 1);
+
                 $syncArray[] = $newTag->id;
 
                 $msg .= ' Added tag '.$tag.'.';
             } else {
-                $syncArray[$key] = $tag;
+                $syncArray[] = $newTag->id;
             }
         }
 
