@@ -45,7 +45,13 @@
 			@endif
 	
 			<h3 class="listing">{!! $event->start_at->format('l M jS Y') !!}</h3>
-			<h4 class="listing">{!! $event->start_at->format('g:i A') !!} {!! $event->end_time ? 'until '.$event->end_time->format('h:i A') : '' !!}</h4>
+
+			<h4 class="listing">
+				@if ($event->door_at)
+				Doors {!! $event->door_at->format('g:i A') !!}
+				@endif
+				Show {!! $event->start_at->format('g:i A') !!} {!! $event->end_time ? 'until '.$event->end_time->format('h:i A') : '' !!}
+			</h4>
 		</div>
 	
 		<h2 class="item-title">{{ $event->name }}</h2>
