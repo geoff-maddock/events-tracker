@@ -127,6 +127,19 @@
 		@endif
 		@endif
 
+		@if (isset($event->presale_price))
+			@if (floor($event->presale_price) == $event->presale_price)
+			<a href="{{ $ticket }}" target="_" title="Ticket link">
+				${{ number_format($event->presale_price, 0) }}	
+			</a>
+				
+			@else 
+			<a href="{{ $ticket }}" target="_" title="Ticket link">
+				${{ number_format($event->presale_price, 2) }}	
+			</a>
+			@endif /
+		@endif
+
 		@if (isset($event->door_price))
 			@if (floor($event->door_price) == $event->door_price)
 				${{ number_format($event->door_price, 0) }}
