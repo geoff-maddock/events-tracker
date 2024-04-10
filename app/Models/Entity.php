@@ -374,6 +374,26 @@ class Entity extends Eloquent
         return $this->belongsToMany(Alias::class)->withTimestamps();
     }
 
+    public function getAliasString(): string
+    {
+        $aliases = '';
+        foreach ($this->aliases as $alias) {
+            $aliases .= $alias->name.', ';
+        }
+
+        return substr($aliases, 0, -2);
+    }
+
+    public function getRoleString(): string
+    {
+        $roles = '';
+        foreach ($this->roles as $role) {
+            $roles .= $role->name.', ';
+        }
+
+        return substr($roles, 0, -2);
+    }
+
     /**
      * The follows that belong to the entity.
      */
@@ -514,9 +534,9 @@ class Entity extends Eloquent
      * Return the primary location for this entity.
      *
      **/
-    public function getPrimaryLocation(): ?Model
+    public function getPrimaryLocation(): ?Location
     {
-        // get a list of events that start on the passed date
+        // get a list of locations
         $primary = $this->locations->first();
 
         return $primary;
@@ -540,7 +560,7 @@ class Entity extends Eloquent
     {
         $address = '';
 
-        // get a list of events that start on the passed date
+        // get the first location from the list.
         $primary = $this->locations->first();
 
         // @phpstan-ignore-next-line
@@ -711,4 +731,93 @@ class Entity extends Eloquent
         // only return the first 280 chars
         return substr($format, 0, 280);
     }
+
+ // Format the entity to post tp instagram
+ public function getInstagramFormat(): ?string
+ {
+     // no max length
+     // add the name
+     $format = "\n".$this->name."\n";
+
+     // include the type of entity
+     $format .= $this->entityType->name." - ".$this->getRoleString()."\n";
+
+     $location = $this->getPrimaryLocation();
+     if ($location) {
+        
+        if (!empty($location->address_one)) {
+            $format .= $location->address_one;
+        }
+        
+        if (!empty($location->address_two)) {
+            $format .= " ".$location->address_two;
+        }
+
+        if (!empty($location->neighborhood)) {
+            $format .= " ".$location->neighborhood;
+        }
+
+        if (!empty($location->city)) {
+            $format .= " ".$location->city;
+        }
+
+        if (!empty($location->state)) {
+            $format .= " ".$location->state;
+        }
+
+        if (!empty($location->country)) {
+            $format .= " ".$location->country;
+        }
+        $format .= "\n\n";
+     }
+
+     // include the description
+     if (!empty($this->description)) {
+        $format .= $this->description."\n";
+     }
+
+    if (!empty($this->instagram_username)) {
+
+        // try to use the twitter username, but not guaranteed to be the same
+        $format .= ' @'.$this->instagram_username;
+    } else {
+        // if the twitter username isn't set, then just add a hashtag
+        $format .= ' #'.Str::studly($this->slug);
+    }
+
+     // Turn related tags into hashtags
+     if (!$this->tags->isEmpty()) {
+         foreach ($this->tags as $tag) {
+             $format .= ' #'.Str::studly($tag->name);
+         }
+     }
+
+     // add default hashtag
+      $format .= " #".config('app.default_hashtag');
+
+     // add the arcane city URL
+      $format .= " https://arcane.city/entities/".$this->slug;
+
+     // add the primary link
+     $primaryLink = $this->primaryLink();
+     if ($primaryLink) {
+         // if there are at least 23 chars remaining, add primary link
+         if (strlen($format) < 258) {
+             $format .= ' '.$primaryLink;
+         }
+     }
+
+     // add the next three events
+     $events = $this->futureEvents(5)->items();
+     if (count($events) > 0) {
+            $format .= "\n\nUpcoming Events:";
+            foreach ($events as $event) {
+                $start = $event->start_at->format('m/d');
+                $format .= "\n\n".$start." ".$event->name." at ".$event->venue->name;
+            }
+     }
+
+     return $format;
+  }
+
 }

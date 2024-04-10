@@ -20,10 +20,13 @@ use App\Notifications\EventPublished;
 use App\Services\Embeds\EmbedExtractor;
 use App\Services\ImageHandler;
 use App\Services\SessionStore\ListParameterSessionStore;
+use App\Services\Integrations\Instagram;
 use App\Services\StringHelper;
 use Carbon\Carbon;
 use DOMDocument;
 use DOMXPath;
+use Exception;
+use Storage;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -993,6 +996,89 @@ class EntitiesController extends Controller
         Log::info('User '.$id.' tweeted '.$entity->name);
 
         flash()->success('Success', 'You tweeted the entity - '.$entity->name);
+
+        return back();
+    }
+
+    /**
+     * Endpoint to post a single entity to Instagram.
+     */
+    public function postToInstagram(int $id, Instagram $instagram): RedirectResponse
+    {
+        // load the entity
+        if (!$entity = Entity::find($id)) {
+            flash()->error('Error', 'No such entity');
+
+            return back();
+        }
+
+        // get the instagram account
+        if (!$instagram->getIgUserId()) {
+            flash()->error('Error', 'You must have an Instagram user account linked to post to Instagram.');
+
+            return back();
+        }
+
+        // get the instagram page access token
+        if (!$instagram->getPageAccessToken()) {
+            flash()->error('Error', 'You must have an Instagram page linked to post to Instagram.');
+
+            return back();
+        }
+
+        // get the image URL
+        $photo = $entity->getPrimaryPhoto();
+
+        if (!$photo) {
+            flash()->error('Error', 'You must have an photo to extract the image to post to Instagram');
+
+            return back();
+        }
+
+        $imageUrl = Storage::disk('external')->url($photo->getStoragePath());
+
+        if (!$imageUrl) {
+            flash()->error('Error', 'You must have an image url to post to Instagram');
+
+            return back();
+        }
+
+        // get the instagram caption
+        $caption = urlEncode($entity->getInstagramFormat());
+
+        if (!$caption) {
+            flash()->error('Error', 'You must have an Instagram caption linked to post to Instagram.');
+
+            return back();
+        }
+
+        // make the instagram api calls
+        // upload the image
+        try {
+            $igContainerId = $instagram->uploadPhoto($imageUrl, $caption);
+        } catch (Exception $e) {
+            flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
+
+            return back();
+        }
+
+        // check the container status every 5 seconds until status_code is FINISHED
+        if ($instagram->checkStatus($igContainerId) === false) {
+            flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
+
+            return back();
+        }
+
+        // pubish the image
+        $result = $instagram->publishMedia($igContainerId);
+        if ($result === false) {
+            flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
+
+            return back();
+        }
+
+        // post was successful
+        flash()->success('Success', 'Successfully published to Instagram, returned id: '.$result);
 
         return back();
     }

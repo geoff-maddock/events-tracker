@@ -41,7 +41,7 @@
 				@foreach ($entity->aliases as $alias)
 					<span class="badge rounded-pill bg-dark"><a href="/entities/alias/{{ $alias->name }}">{{ $alias->name }}</a></span>
 				@endforeach
-
+				<br>
 			@endunless
 
 			<b>{{ $entity->entityType ? $entity->entityType->name : ''}}</b><br>
@@ -72,6 +72,12 @@
 				<br>
 				<a href="{!! route('entities.tweet', ['id' => $entity->id]) !!}" title="Click to tweet entity">
 					Tweet <i class="bi bi-twitter"></i>
+				</a>
+				@endif
+
+				@if ($user && (Auth::user()->id === $entity->user?->id || $user->hasGroup('super_admin') ) )
+				<a href="{!! route('entities.instagramPost', ['id' => $entity->id]) !!}" title="Click to post to instagram">
+					<i class="bi bi-instagram"></i>
 				</a>
 				@endif
 
