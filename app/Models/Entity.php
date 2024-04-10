@@ -796,14 +796,14 @@ class Entity extends Eloquent
       $format .= " #".config('app.default_hashtag');
 
      // add the arcane city URL
-      $format .= " https://arcane.city/entities/".$this->slug;
+      $format .= " https://arcane.city/entities/".$this->slug."\n";
 
      // add the primary link
      $primaryLink = $this->primaryLink();
      if ($primaryLink) {
          // if there are at least 23 chars remaining, add primary link
          if (strlen($format) < 258) {
-             $format .= ' '.$primaryLink;
+             $format .= ' '.$primaryLink->url;
          }
      }
 
