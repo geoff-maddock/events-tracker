@@ -475,6 +475,8 @@ Route::get('entities/{id}/tweet', [
     'uses' => 'EntitiesController@tweet',
 ]);
 
+Route::get('entities/{id}/instagram-post', 'EntitiesController@postToInstagram')->name('entities.instagramPost');
+
 Route::match(['get', 'post'], 'entities/{id}/follow', [
     'as' => 'entities.follow',
     'uses' => 'EntitiesController@follow',
