@@ -793,7 +793,7 @@ class Entity extends Eloquent
      }
 
      // add default hashtag
-      $format .= " #".config('app.default_hashtag');
+      $format .= " #".config('app.default_hashtag')."\n";
 
      // add the arcane city URL
       $format .= " https://arcane.city/entities/".$this->slug."\n";
@@ -807,8 +807,8 @@ class Entity extends Eloquent
          }
      }
 
-     // add the next three events
-     $events = $this->futureEvents(5)->items();
+     // add the next events
+     $events = $this->futureEvents(14)->items();
      if (count($events) > 0) {
             $format .= "\n\nUpcoming Events:";
             foreach ($events as $event) {
