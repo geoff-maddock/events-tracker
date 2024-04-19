@@ -8,7 +8,7 @@
 
 @section('content')
 
-	<h1 class="display-crumbs text-primary">Events Calendar xxx
+	<h1 class="display-crumbs text-primary">Events Calendar
 		@include('events.crumbs')
 	</h1>
 

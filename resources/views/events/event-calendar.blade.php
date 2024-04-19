@@ -41,7 +41,7 @@
 				// 		url: '/api/calendar-events',
 				// 	}
 				// ],
-				height: 820,
+				height: 1000,
 				initialDate: '{{ $initialDate }}',
 			  });
 			  calendar.render();
