@@ -26,6 +26,11 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
  */
 class EntityStatus extends Eloquent
 {
+    CONST DRAFT = 1;
+    CONST ACTIVE = 2;
+    CONST INACTIVE = 3;
+    CONST UNLISTED = 4;
+
     protected $fillable = [
         'name',
     ];

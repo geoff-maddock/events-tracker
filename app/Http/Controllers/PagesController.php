@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Entity;
+use App\Models\EntityStatus;
 use App\Models\Event;
 use App\Models\Series;
 use App\Models\Tag;
@@ -159,6 +160,7 @@ class PagesController extends Controller
         // find entities by name, tags or aliases
         $entitiesQuery = Entity::where('name', 'like', '%'.$search.'%')
                 ->with('tags', 'events','entityType','locations','entityStatus','user')
+                ->where('entity_status_id','<>',EntityStatus::UNLISTED)
                 ->orWhereHas('tags', function ($q) use ($search) {
                     $q->where('name', '=', ucfirst($search));
                 })

@@ -112,6 +112,24 @@ class EntitiesController extends Controller
         // set the default filter to active
         $defaultFilter = ['entity_status' => 'Active'];
 
+        // if the user is not logged in, only show active entities
+        // check if there is a logged in user
+        if (!isset($this->user)) {
+            $baseQuery = Entity::query()
+            ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
+            ->select('entities.*')
+            ->where('entity_status_id', '<>', EntityStatus::UNLISTED)
+            ->withCount('follows')
+            ;
+    
+        } else {
+            $baseQuery = Entity::query()
+            ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
+            ->select('entities.*')
+            ->withCount('follows')
+            ;    
+        }
+
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
@@ -663,6 +681,12 @@ class EntitiesController extends Controller
     public function show(Entity $entity, EmbedExtractor $embedExtractor): View
     {
         app('redirect')->setIntendedUrl(url()->current());
+
+        // if the user is not a logged in admin, do not show unlisted entities
+        if ($entity->entity_status_id == EntityStatus::UNLISTED && (!isset($this->user) || !$this->user->hasGroup('super_admin'))) {
+
+            abort(404);
+        }
 
         // get the threads for the entity
         $threads = $entity->threads()->paginate($this->limit);
