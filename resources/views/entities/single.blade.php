@@ -25,6 +25,12 @@
 	</a>
 	@endif
 
+	@if (isset($keyword) && $signedIn && $user->can('show_admin'))
+	<a href="{!! route('pages.relate', ['id' => $entity->id, 'keyword' => $keyword]) !!}" alt="Auto Related {{ $entity->name }}" aria-label="Auto Relate {{ $entity->name }}">
+		<i class="bi bi-link-45deg card-actions"></i>
+	</a>
+	@endif
+
 	@if ($signedIn)
 	@if ($follow = $entity->followedBy($user))
 	<a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}" data-target="#entity-{{ $entity->id }}"

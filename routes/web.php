@@ -71,7 +71,7 @@ Route::get('help', 'PagesController@help');
 
 Route::get('calendar', 'EventsController@calendar')->name('calendar');
 Route::get('calendar/{year?}/{month?}/{day?}', 'EventsController@calendarByDate')->name('calendar.byDate')
-    ->where('year', '[1-9][0-9][0-9][0-9]')
+    ->where('year', '[1-9][0-9][0-9][0-9] ') 
     ->where('month', '(0?[1-9]|1[012])$')
     ->where('day', '[0-3][0-9]');
 Route::get('calendar/tag/{tag}', 'EventsController@calendarTags')->name('calendar.tag');
@@ -82,7 +82,18 @@ Route::get('calendar/attending', 'EventsController@calendarAttending')->name('ca
 Route::get('calendar/type/{tag}', 'EventsController@calendarEventTypes')->name('calendar.type');
 Route::get('calendar/min-age/{age}', 'EventsController@calendarMinAge')->name('calendar.minAge');
 
-Route::get('search', 'PagesController@search');
+Route::get('search', 'PagesController@search')->name('pages.search');
+
+Route::match(['get', 'post'], 'auto-relate-entity/{id}', [
+    'as' => 'pages.relate',
+    'uses' => 'PagesController@autoRelateEntity',
+]);
+
+Route::get('users/{id}/notify', [
+    'as' => 'users.notify',
+    'uses' => 'UsersController@notifyUser',
+]);
+
 
 Route::match(['get', 'post'], 'activity/filter', ['as' => 'activities.filter', 'uses' => 'ActivityController@filter']);
 Route::get('activity', 'ActivityController@index')->name('activities.index');
