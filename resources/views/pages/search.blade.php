@@ -28,7 +28,7 @@
 		</h5>
 
 		<div class="card-body collapsible collapse show" id="search-entities">
-				@include('entities.list', ['entities' => $entities])
+				@include('entities.list', ['entities' => $entities, 'keyword' => $search])
 				{!! $entities->appends(['keyword' => $search])->render() !!}
 		</div>
 	</div>
