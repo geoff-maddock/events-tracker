@@ -77,6 +77,19 @@
 		@endif
 		</p>
 
+		<br>
+		@if ($series->facebook_username)
+				<b>Facebook:</b> <a href="https://facebook.com/{{ $series->facebook_username }}" target="_">{{$series->facebook_username}}</a>
+		@endif
+
+		@if ($series->twitter_username)
+				<b>Twitter:</b> <a href="https://twitter.com/{{ $series->twitter_username }}" target="_">{{ '@' }}{{ $series->twitter_username }}</a>
+		@endif
+
+		@if ($series->instagram_username)
+				<b>Instagram:</b> <a href="https://instagram.com/{{ $series->instagram_username }}" target="_">{{ '@' }}{{ $series->instagram_username }}</a>
+		@endif
+
 		@if ($signedIn)
 		<br>
 		{{ count($series->followers()) }} Follows |
@@ -173,28 +186,23 @@
 		<div class="row">
 		@foreach ($series->photos->chunk(4) as $set)
 			@foreach ($set as $photo)
-			<div class="col-2">
-				<a href={{ Storage::disk('external')->url($photo->getStoragePath()) }} data-lightbox="grid" title="Click to see enlarged image" data-toggle="tooltip" data-placement="bottom">
-					<img src={{ Storage::disk('external')->url($photo->getStorageThumbnail()) }} alt="{{ $series->name}}" class="mw-100"></a>
-				@if ($user && (Auth::user()->id == $series?->user?->id || $user->id == Config::get('app.superuser')))
-					{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning', $photo, 'DELETE', 'Delete the photo') !!}
-					@if ($photo->is_primary)
-					{!! link_form_bootstrap_icon('bi bi-star-fill text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
-					@else
-					{!! link_form_bootstrap_icon('bi bi-star text-info', '/photos/'.$photo->id.'/setPrimary', 'POST', 'Set as primary photo') !!}
-					@endif
-				@endif
-			</div>
+				@include('photos.single', ['event' => $series, 'photo' => $photo, 'user' => $user])
 			@endforeach
 		@endforeach
+
+		@foreach ($series->entities as $entity)
+		@foreach ($entity->photos as $photo)
+			@include('photos.single-no-actions', ['event' => $series, 'photo' => $photo, 'user' => $user])
+		@endforeach
+		@endforeach
+
 		<div class="col">
 			@if ($user && (Auth::user()->id == $series?->user?->id || $user->hasGroup('super_admin') ))
 			<form action="/series/{{ $series->id }}/photos" class="dropzone h-auto" id="myDropzone" method="POST">
 				<input type="hidden" name="_token" value="{{ csrf_token() }}">
 			</form>
 			@endif
-		</div>
-	
+		</div>	
 </div>
 
 <div class="row">

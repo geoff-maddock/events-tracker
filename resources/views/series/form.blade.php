@@ -176,6 +176,26 @@
 </div>
 
 
+<div class="row">
+    <div class="form-group col-md-2">
+        {!! Form::label('facebook_username','Facebook Username') !!}
+        {!! Form::text('facebook_username', null, ['class' => 'form-control form-background']) !!}
+        {!! $errors->first('facebook_username','<span class="help-block">:message</span>') !!}
+    </div>
+
+    <div class="form-group col-md-2">
+        {!! Form::label('instagram_username','Instagram Username') !!}
+        {!! Form::text('instagram_username', null, ['class' => 'form-control form-background']) !!}
+        {!! $errors->first('instagram_username','<span class="help-block">:message</span>') !!}
+    </div>
+
+    <div class="form-group col-md-2">
+        {!! Form::label('twitter_username','Twitter Username') !!}
+        {!! Form::text('twitter_username', null, ['class' => 'form-control form-background']) !!}
+        {!! $errors->first('twitter_username','<span class="help-block">:message</span>') !!}
+    </div>
+</div>
+
 <div class="row mb-1">
 	<div class="form-group col-md-6">
 		{!! Form::label('entity_list','Related Entities:') !!}
