@@ -68,6 +68,19 @@
                     </div>
                 @endif
 
+                @if ($user->profile->facebook_username)
+                    <b>Facebook:</b> <a href="https://facebook.com/{{ $user->profile->facebook_username }}" target="_">{{$user->profile->facebook_username}}</a>
+                @endif
+
+                @if ($user->profile->twitter_username)
+                        <b>Twitter:</b> <a href="https://twitter.com/{{ $user->profile->twitter_username }}" target="_">{{ '@' }}{{ $user->profile->twitter_username }}</a>
+                @endif
+
+                @if ($user->profile->instagram_username)
+                        <b>Instagram:</b> <a href="https://instagram.com/{{ $user->profile->instagram_username }}" target="_">{{ '@' }}{{ $user->profile->instagram_username }}</a>
+                @endif
+
+
                 <hr>
                 <b>Settings</b><br>
                 Receive Weekly Updates: {{ $user->profile->setting_weekly_update ? 'Yes' : 'No'}}<br>

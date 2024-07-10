@@ -170,6 +170,9 @@ class Series extends Eloquent
         'primary_link',
         'ticket_link',
         'created_by',
+        'facebook_username',
+        'instagram_username',
+        'twitter_username',
     ];
 
     /**
