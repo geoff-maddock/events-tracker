@@ -8,7 +8,7 @@ Events Tracker is a CMS designed to be set up for a music or arts community to t
 Run an instance to create your own community where events, event series, entities, attendees and other objects can be added, tagged maintained and followed.  Keep the discussion going through a related discussion forum.  
 
 
-## FEATURES (v2021.11.28 - Stable Release)
+## FEATURES (v2022.9.1 - Stable Release)
 
 * Public filterable and sortable event listings, with built in views by time, type and topic.
 * Event creation, editing and following for registered users.
@@ -21,6 +21,8 @@ Run an instance to create your own community where events, event series, entitie
 * Photos module to display images from events.
 * Default dark layout with light option.
 * Added enhanced data to the headers to improve search results and return site events on google.
+* Links to bandcamp and soundcloud audio dynamically transform to widget players.
+* File asset storage for images in S3 config.
 
 ### Built On
 * PHP 8.1
@@ -30,7 +32,6 @@ Run an instance to create your own community where events, event series, entitie
 * Optional Integrations: Facebook, Twitter
 
 ### Roadmap
-* Integration with external audio widgets to add previews and playlists for artists and events dynamically.
 * Adding to the site API to facilitate external embedding of event and entity data.
 * Building a more lightweight frontend that connects to the API
 

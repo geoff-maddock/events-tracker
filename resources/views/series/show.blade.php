@@ -191,11 +191,11 @@
 		@endforeach
 
 		@foreach ($series->entities as $entity)
-		@foreach ($entity->photos as $photo)
-			@if ($photo->is_primary)
-				@include('photos.single-no-actions', ['event' => $series, 'photo' => $photo, 'user' => $user])
-			@endif
-		@endforeach
+			@foreach ($entity->photos as $photo)
+				@if ($photo->is_primary)
+					@include('photos.single-no-actions', ['event' => $series, 'photo' => $photo, 'user' => $user])
+				@endif
+			@endforeach
 		@endforeach
 
 		<div class="col">
