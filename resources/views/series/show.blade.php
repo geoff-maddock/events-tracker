@@ -192,7 +192,9 @@
 
 		@foreach ($series->entities as $entity)
 		@foreach ($entity->photos as $photo)
-			@include('photos.single-no-actions', ['event' => $series, 'photo' => $photo, 'user' => $user])
+			@if ($photo->is_primary)
+				@include('photos.single-no-actions', ['event' => $series, 'photo' => $photo, 'user' => $user])
+			@endif
 		@endforeach
 		@endforeach
 
