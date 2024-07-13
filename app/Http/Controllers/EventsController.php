@@ -2406,7 +2406,7 @@ class EventsController extends Controller
         // // extract all the links from the event body and convert into embeds
         // $embedExtractor->setLayout("small");
         // $embeds = $embedExtractor->getEmbedsForEvent($event);
-        $embeds = [];
+        // $embeds = [];
 
         return view('events.show', compact('event', 'embeds'))->with(['thread' => $thread, 'blacklist' => $blacklist])->render();
     }
