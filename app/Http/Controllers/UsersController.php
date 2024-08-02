@@ -68,7 +68,7 @@ class UsersController extends Controller
 
     public function __construct(UserFilters $filter)
     {
-        $this->middleware('verified', ['except' => ['index', 'show']]);
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
         $this->filter = $filter;
 
         // prefix for session storage
