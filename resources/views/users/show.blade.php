@@ -53,7 +53,9 @@
                 @if ($user->profile->alias )
                     <b>Alias </b> {{ $user->profile->alias }}<br>
                 @endif
+                @if ($signedIn && (Auth::user()->hasGroup('super_admin')))
                 <b>Contact </b> <a href="mailto:{{ $user->email }}">{{ $user->email }}</a><br>
+                @endif
                 <b>Default
                     Theme </b> {{ $user->profile->default_theme ? $user->profile->default_theme : Config::get('app.default_theme') }}
                 <br>
