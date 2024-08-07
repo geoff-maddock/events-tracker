@@ -53,7 +53,8 @@
                 @if ($user->profile->alias )
                     <b>Alias </b> {{ $user->profile->alias }}<br>
                 @endif
-                @if ($signedIn && (Auth::user()->hasGroup('super_admin')))
+                @if ($signedIn && (Auth::user()->hasGroup('super_admin') || Auth::user()->email == $user->email))
+                    <b>Email </b> {{ $user->email }}<br>
                 <b>Contact </b> <a href="mailto:{{ $user->email }}">{{ $user->email }}</a><br>
                 @endif
                 <b>Default
