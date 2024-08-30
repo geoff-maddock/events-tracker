@@ -20,7 +20,7 @@
         "sass": "^1.56.1",
         "sass-loader": "^12.1.0",
         "vue": "^3.2",
-        "webpack": "^5.76.0"
+        "webpack": "^5.94.0"
     },
     "dependencies": {
         "@popperjs/core": "^2.9.2",
