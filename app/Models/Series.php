@@ -604,7 +604,9 @@ class Series extends Eloquent
 
         // get all the ids from the events
         if ($events) {
-            $ids = $events->pluck('series_id')->toArray();
+            $ids = $events->filter(function ($event) {
+                return !is_null($event->series_id);
+            })->pluck('series_id')->toArray();
         }
 
         // get all the upcoming series events
