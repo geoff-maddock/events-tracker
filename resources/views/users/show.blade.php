@@ -151,11 +151,14 @@
 
                             @if ($tabs['events'] === 'created')
                             <div class="card-header bg-primary">
-                                <h5 class="my-0 fw-normal">Events  <span  class="badge rounded-pill bg-warning text-dark">{{ $user->eventCount }}</span></h3>
+                                <h5 class="my-0 fw-normal">Events</span></h3>
                             </div>
                                 <ul class="nav nav-pills m-2">
                                     <li role="presentation" class="nav-item">
-                                        <a class="nav-link @if ($tabs['events'] === 'created')active @endif" aria-current="page" href="/users/{{ $user->id }}?tabs[events]=created&tabs[following]={{ $tabs['following'] }}">Created</a>
+                                        <a class="nav-link @if ($tabs['events'] === 'created')active @endif" aria-current="page" href="/users/{{ $user->id }}?tabs[events]=created&tabs[following]={{ $tabs['following'] }}">Created
+                                            <span  class="badge rounded-pill bg-warning text-dark">{{ $user->eventCount }}
+                                        </a>
+
                                     </li>
                                     <li role="presentation" class="nav-item">
                                         <a class="nav-link @if ($tabs['events'] === 'attending')active @endif" href="/users/{{ $user->id }}?tabs[events]=attending&tabs[following]={{ $tabs['following'] }}">Attending</a>
@@ -175,14 +178,17 @@
                                 </div>
                             @else
                             <div class="card-header bg-primary">
-                                <h5 class="my-0 fw-normal">Events  <span class="badge rounded-pill bg-warning text-dark">{{ $user->attendingCount }}</span></h3>
+                                <h5 class="my-0 fw-normal">Events  </h3>
                             </div>
                                 <ul class="nav nav-pills m-2">
                                     <li role="presentation" class="nav-item">
                                         <a class="nav-link @if ($tabs['events'] === 'created') active @endif" href="/users/{{ $user->id }}?tabs[events]=created&tabs[following]={{ $tabs['following'] }}">Created</a>
                                     </li>
                                     <li role="presentation" class="nav-item">
-                                        <a class="nav-link @if ($tabs['events'] === 'attending') active @endif" href="/users/{{ $user->id }}?tabs[events]=attending&tabs[following]={{ $tabs['following'] }}">Attending</a>
+                                        <a class="nav-link @if ($tabs['events'] === 'attending') active @endif" href="/users/{{ $user->id }}?tabs[events]=attending&tabs[following]={{ $tabs['following'] }}">Attending
+                                            <span class="badge rounded-pill bg-warning text-dark">{{ $user->attendingCount }}</span>
+                                        </a>
+                                        
                                     </li>
                                 </ul>
                                 <div class="card-body">
@@ -210,11 +216,13 @@
                             @switch($tabs['following'])
                                 @case('tags')
                                     <div class="card-header bg-primary">
-                                        <h5 class="my-0 fw-normal">Following <span class="badge rounded-pill bg-warning text-dark">{{ $user->countTagsFollowing() }}</span></h3>
+                                        <h5 class="my-0 fw-normal">Following </h3>
                                     </div>
                                     <ul  class="nav nav-pills m-2">
                                         <li role="presentation" class="nav-item">
-                                            <a class="nav-link @if ($tabs['following'] === 'tags') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=tags">Tags</a>
+                                            <a class="nav-link @if ($tabs['following'] === 'tags') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=tags">Tags
+                                                <span class="badge rounded-pill bg-warning text-dark">{{ $user->countTagsFollowing() }}</span>
+                                            </a>
                                         </li>
                                         <li role="presentation" class="">
                                             <a class="nav-link @if ($tabs['following'] === 'entities') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=entities">Entities</a>
@@ -233,14 +241,16 @@
 
                                 @case('entities')
                                     <div class="card-header bg-primary">
-                                        <h5 class="my-0 fw-normal">Following <span class="badge rounded-pill bg-warning text-dark">{{ $user->countEntitiesFollowing() }}</span></h3>
+                                        <h5 class="my-0 fw-normal">Following</h3>
                                     </div>
                                     <ul  class="nav nav-pills m-2">
                                         <li role="presentation" class="nav-item">
                                             <a class="nav-link @if ($tabs['following'] === 'tags') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=tags">Tags</a>
                                         </li>
                                         <li role="presentation" class="nav-item">
-                                            <a class="nav-link @if ($tabs['following'] === 'entities') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=entities">Entities</a>
+                                            <a class="nav-link @if ($tabs['following'] === 'entities') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=entities">Entities
+                                                <span class="badge rounded-pill bg-warning text-dark">{{ $user->countEntitiesFollowing() }}</span>
+                                            </a>
                                         </li>
                                         <li role="presentation" class="nav-item">
                                             <a class="nav-link @if ($tabs['following'] === 'series') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=series">Series</a>
@@ -263,7 +273,7 @@
 
                                 @case('series')
                                     <div class="card-header bg-primary">
-                                        <h5 class="my-0 fw-normal">Following <span class="badge rounded-pill bg-warning text-dark">{{ $user->countSeriesFollowing() }}</span></h3>
+                                        <h5 class="my-0 fw-normal">Following</h3>
                                     </div>
                                     <ul class="nav nav-pills m-2">
                                         <li role="presentation" class="nav-item">
@@ -273,7 +283,9 @@
                                             <a class="nav-link @if ($tabs['following'] === 'entities') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=entities">Entities</a>
                                         </li>
                                         <li role="presentation" class="nav-item">
-                                            <a class="nav-link @if ($tabs['following'] === 'series') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=series">Series</a>
+                                            <a class="nav-link @if ($tabs['following'] === 'series') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=series">Series
+                                                <span class="badge rounded-pill bg-warning text-dark">{{ $user->countSeriesFollowing() }}</span>
+                                            </a>
                                         </li>
                                         <li role="presentation" class="nav-item">
                                             <a class="nav-link @if ($tabs['following'] === 'threads') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=threads">Threads</a>
@@ -294,7 +306,7 @@
 
                                 @case('threads')
                                     <div class="card-header bg-primary">
-                                        <h5 class="my-0 fw-normal">Following <span class="badge rounded-pill bg-warning text-dark">{{ $user->countThreadsFollowing() }}</span></h3>
+                                        <h5 class="my-0 fw-normal">Following </h3>
                                     </div>
                                     <ul class="nav nav-pills m-2">
                                         <li role="presentation" class="nav-item">
@@ -307,7 +319,9 @@
                                             <a class="nav-link @if ($tabs['following'] === 'series') active @endif"href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=series">Series</a>
                                         </li>
                                         <li role="presentation" class="nav-item">
-                                            <a class="nav-link @if ($tabs['following'] === 'threads') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=threads">Threads</a>
+                                            <a class="nav-link @if ($tabs['following'] === 'threads') active @endif" href="/users/{{ $user->id }}?tabs[events]={{ $tabs['events'] }}&tabs[following]=threads">Threads
+                                                <span class="badge rounded-pill bg-warning text-dark">{{ $user->countThreadsFollowing() }}</span>
+                                            </a>
                                         </li>
                                     </ul>
                                     <div class="card-body">
