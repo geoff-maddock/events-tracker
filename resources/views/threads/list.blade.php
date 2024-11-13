@@ -68,12 +68,12 @@
     <td class="cell-stat d-none d-sm-table-cell text-nowrap">
       @if (isset($thread->user))
         @include('users.avatar', ['user' => $thread->user])
-        <span class="cell-stat d-none d-lg-table-cell">
-        {!! link_to_route('users.show', $thread->user->name, [$thread->user->id], ['class' => 'forum-link']) !!}
+        <span class="cell-stat d-none d-xl-table-cell">
+          {!! link_to_route('users.show', $thread->user->name, [$thread->user->id], ['class' => 'forum-link']) !!}
         </span>
-        @else
+      @else
          User deleted
-       @endif
+      @endif
 
     </td>
     <td class="cell-stat text-center thread-columns d-none d-md-table-cell">{{ $thread->postCount }}</td>
