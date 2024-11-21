@@ -15,7 +15,6 @@ use App\Models\Activity;
 use App\Models\Entity;
 use App\Models\Event;
 use App\Models\EventResponse;
-use App\Models\EventReview;
 use App\Models\EventType;
 use App\Models\Follow;
 use App\Models\OccurrenceDay;
@@ -158,6 +157,8 @@ class EventsController extends Controller
         $events = $query->visible($this->user)
             ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
+        
+        // how do I create an event response DTO that includes everything I want
 
         return response()->json(new EventCollection($events));
     }

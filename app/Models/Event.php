@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Filters\QueryFilter;
 use Carbon\Carbon;
 use DateTime;
+use Storage;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -990,4 +991,28 @@ class Event extends Model
        return $format;
     }
 
+
+    // returns the actual path to the primary photo
+    public function getPrimaryPhotoPath(): ?string
+    {
+        $photo = $this->getPrimaryPhoto();
+
+        if ($photo) {
+            return Storage::disk('external')->url($photo->getStoragePath());
+        }                    
+
+        return null;
+    }
+
+    // returns the actual path to the thumbnail
+    public function getPrimaryPhotoThumbnailPath(): ?string
+    {
+        $photo = $this->getPrimaryPhoto();
+
+        if ($photo) {
+            return Storage::disk('external')->url($photo->getStorageThumbnail());
+        }                    
+
+        return null;
+    }
 }
