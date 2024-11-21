@@ -53,9 +53,9 @@
                 @if ($user->profile->alias )
                     <b>Alias </b> {{ $user->profile->alias }}<br>
                 @endif
-                @if ($signedIn && (Auth::user()->hasGroup('super_admin') || Auth::user()->email == $user->email))
+                @if (($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser')) || $user->profile->setting_public_profile == 1))
                     <b>Email </b> {{ $user->email }}<br>
-                <b>Contact </b> <a href="mailto:{{ $user->email }}">{{ $user->email }}</a><br>
+                    <b>Contact </b> <a href="mailto:{{ $user->email }}">{{ $user->email }}</a><br>
                 @endif
                 <b>Default
                     Theme </b> {{ $user->profile->default_theme ? $user->profile->default_theme : Config::get('app.default_theme') }}
@@ -86,10 +86,13 @@
 
                 <hr>
                 <b>Settings</b><br>
+                @if (($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser')) || $user->profile->setting_public_profile == 1))
                 Receive Weekly Updates: {{ $user->profile->setting_weekly_update ? 'Yes' : 'No'}}<br>
                 Receive Daily Updates: {{ $user->profile->setting_daily_update ? 'Yes' : 'No'}}<br>
                 Receive Instant Updates: {{ $user->profile->setting_instant_update ? 'Yes' : 'No'}}<br>
                 Receive Forum Updates: {{ $user->profile->setting_forum_update ? 'Yes' : 'No'}}<br>
+                @endif
+                Public Profile: {{ $user->profile->setting_public_profile ? 'Yes' : 'No'}}<br><br>
 
                 <div class="groups">
                     @unless ($user->groups->isEmpty())
@@ -238,7 +241,7 @@
                                     @include('tags.list', ['tags' => $user->getTagsFollowing()])
                                     </div>
                                     @break
-
+ 
                                 @case('entities')
                                     <div class="card-header bg-primary">
                                         <h5 class="my-0 fw-normal">Following</h3>

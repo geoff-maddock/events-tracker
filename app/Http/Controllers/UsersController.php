@@ -355,6 +355,7 @@ class UsersController extends Controller
         $input['setting_daily_update'] = isset($input['setting_daily_update']) ? 1 : 0;
         $input['setting_instant_update'] = isset($input['setting_instant_update']) ? 1 : 0;
         $input['setting_forum_update'] = isset($input['setting_forum_update']) ? 1 : 0;
+        $input['setting_public_profile'] = isset($input['setting_public_profile']) ? 1 : 0;
 
         $user->fill($input)->save();
         $user->profile->fill($input)->save();
