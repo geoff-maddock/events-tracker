@@ -1,7 +1,7 @@
 <?php
 return [
     'paths' => ['api/*'],
-    'allowed_origins' => ['https://dev.arcane.city','https://arcane.city','http://localhost:3000'], // Replace with your React app's URL
+    'allowed_origins' => ['https://dev.arcane.city','https://arcane.city','http://localhost:3000','http://localhost:5173'],
     'allowed_methods' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     'allowed_headers' => ['Content-Type', 'Authorization'],
     'exposed_headers' => [],
