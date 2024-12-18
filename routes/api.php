@@ -24,6 +24,10 @@ Route::middleware('auth.basic')->name('api.')->group(function () {
         return ['token' => $token->plainTextToken];
     });
 
+    
+    Route::get('events/{event}/embeds', ['as' => 'events.embeds', 'uses' => 'Api\EventsController@embeds']);
+    Route::get('events/reset', ['as' => 'events.reset', 'uses' => 'Api\EventsController@reset']);
+
 
     Route::get('events/reset', ['as' => 'events.reset', 'uses' => 'Api\EventsController@reset']);
     Route::get('events/rpp-reset', ['as' => 'events.rppReset', 'uses' => 'Api\EventsController@rppReset']);

@@ -54,6 +54,33 @@ components:
       type: http
       scheme: basic
   schemas:
+    Embeds:
+      allOf: [$ref: "#/components/schemas/Pagination"]
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of the current page of event embeds
+          items:
+            "$ref": "#/components/schemas/EmbedResponse"
+    EmbedResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          maxLength: 65535
+          description: Full description of the entity
+          example: https://bandcamp.com/brillobox
+        created_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the entity was created
+        updated_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the entity was last updated
     EntityRequest:
       type: object
       required:
@@ -1853,6 +1880,29 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /api/events/{eventId}/embeds:
+    get:
+      parameters:
+        - name: eventId
+          description: The unique identifier of the event
+          in: path
+          required: true
+          example: 1
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - events
+      summary: Get Event Embeds
+      operationId: getEventEmbedsById
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmbedResponse"
   /api/entities:
     post:
       tags:

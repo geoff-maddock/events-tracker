@@ -636,6 +636,190 @@
 							]
 						},
 						{
+							"name": "Get Event Embeds",
+							"id": "3c193be1-ecda-4b1c-b8ca-faa5f6f1a2c7",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/events?filters[name]=Lazercrunk&filters[venue]=Brillobox&filters[promoter]=Cutups&filters[related]=0h85&filters[series]=Lazercrunk&filters[event_type]=Concert&filters[start_at][start]=2022-01-01 1:00:00&filters[start_at][end]=2022-02-01 2:00:00&filters[end_at][start]=2022-02-01 1:00:00&filters[end_at][end]=2022-01-01 2:00:00&filters[ages]=21&sort=name&direction=asc",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"events"
+									],
+									"query": [
+										{
+											"key": "filters[name]",
+											"value": "Lazercrunk",
+											"description": "A filter query of the event name"
+										},
+										{
+											"key": "filters[venue]",
+											"value": "Brillobox",
+											"description": "A filter query of the venue name"
+										},
+										{
+											"key": "filters[promoter]",
+											"value": "Cutups",
+											"description": "A filter query of the promoter name"
+										},
+										{
+											"key": "filters[related]",
+											"value": "0h85",
+											"description": "A filter query of related entity name"
+										},
+										{
+											"key": "filters[series]",
+											"value": "Lazercrunk",
+											"description": "A filter query of related series name"
+										},
+										{
+											"key": "filters[event_type]",
+											"value": "Concert",
+											"description": "A filter query of related event type name"
+										},
+										{
+											"key": "filters[start_at][start]",
+											"value": "2022-01-01 1:00:00",
+											"description": "A filter query of the start time starting"
+										},
+										{
+											"key": "filters[start_at][end]",
+											"value": "2022-02-01 2:00:00",
+											"description": "A filter query of the start time ending"
+										},
+										{
+											"key": "filters[end_at][start]",
+											"value": "2022-02-01 1:00:00",
+											"description": "A filter query of the end time starting"
+										},
+										{
+											"key": "filters[end_at][end]",
+											"value": "2022-01-01 2:00:00",
+											"description": "A filter query of the end time ending"
+										},
+										{
+											"key": "filters[ages]",
+											"value": "21",
+											"description": "A filter query of the end time ending"
+										},
+										{
+											"key": "sort",
+											"value": "name",
+											"description": "A column to be used to sort the query"
+										},
+										{
+											"key": "direction",
+											"value": "asc",
+											"description": "A string indicating the sort direction of the query (asc or desc)"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"id": "028f751b-8ebd-4177-a048-465c70472560",
+									"name": "Successful response",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"description": "Added as a part of security scheme: basic",
+												"key": "Authorization",
+												"value": "Basic <credentials>"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/events?filters[name]=Lazercrunk&filters[venue]=Brillobox&filters[promoter]=Cutups&filters[related]=0h85&filters[series]=Lazercrunk&filters[event_type]=Concert&filters[start_at][start]=2022-01-01 1:00:00&filters[start_at][end]=2022-02-01 2:00:00&filters[end_at][start]=2022-02-01 1:00:00&filters[end_at][end]=2022-01-01 2:00:00&filters[ages]=21&sort=name&direction=asc",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"events"
+											],
+											"query": [
+												{
+													"key": "filters[name]",
+													"value": "Lazercrunk"
+												},
+												{
+													"key": "filters[venue]",
+													"value": "Brillobox"
+												},
+												{
+													"key": "filters[promoter]",
+													"value": "Cutups"
+												},
+												{
+													"key": "filters[related]",
+													"value": "0h85"
+												},
+												{
+													"key": "filters[series]",
+													"value": "Lazercrunk"
+												},
+												{
+													"key": "filters[event_type]",
+													"value": "Concert"
+												},
+												{
+													"key": "filters[start_at][start]",
+													"value": "2022-01-01 1:00:00"
+												},
+												{
+													"key": "filters[start_at][end]",
+													"value": "2022-02-01 2:00:00"
+												},
+												{
+													"key": "filters[end_at][start]",
+													"value": "2022-02-01 1:00:00"
+												},
+												{
+													"key": "filters[end_at][end]",
+													"value": "2022-01-01 2:00:00"
+												},
+												{
+													"key": "filters[ages]",
+													"value": "21"
+												},
+												{
+													"key": "sort",
+													"value": "name"
+												},
+												{
+													"key": "direction",
+													"value": "asc"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"current_page\": 99622977,\n  \"first_page_url\": \"https://dev.arcane.city/api/resources?page=1\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"https://dev.arcane.city/api/resources?page=100\",\n  \"next_page_url\": \"https://dev.arcane.city/api/resources?page=2\",\n  \"path\": \"https://dev.arcane.city/api/resources\",\n  \"per_page\": 25,\n  \"prev_page_url\": \"https://dev.arcane.city/api/resources?page=0\",\n  \"to\": 25,\n  \"total\": 100\n}"
+								}
+							]
+						},
+						{
 							"name": "Reset event filters",
 							"id": "d9168ca2-b70c-4dd1-a428-53bfbc44b5ed",
 							"protocolProfileBehavior": {
