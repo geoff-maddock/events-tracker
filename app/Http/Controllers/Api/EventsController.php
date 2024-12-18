@@ -670,6 +670,24 @@ class EventsController extends Controller
         return response()->json(new EventResource($event));
     }
 
+
+    public function embeds(?Event $event,  EmbedExtractor $embedExtractor): JsonResponse
+    {
+        if (!$event) {
+            abort(404);
+        }
+
+        // check blacklist status
+        $blacklist = $this->checkBlackList($event);
+
+        // extract all the links from the event body and convert into embeds
+        $embeds = $embedExtractor->getEmbedsForEvent($event);
+
+        
+        // converts array of embeds into json embed list
+        return response()->json($embeds);
+    }
+
     public function store(EventRequest $request, Event $event): JsonResponse
     {
         $msg = '';
