@@ -107,6 +107,18 @@ class Tag extends Eloquent
     }
 
     /**
+     * Returns the count of the users that follow the tag.
+     *
+     **/
+    public function followerCount(): int
+    {
+        return User::leftJoin('follows', 'users.id', '=', 'follows.user_id')
+        ->where('follows.object_type', 'tag')
+        ->where('follows.object_id', $this->id)
+        ->count();
+    }
+
+    /**
      * The follows that belong to the entity.
      */
     public function follows(): MorphMany

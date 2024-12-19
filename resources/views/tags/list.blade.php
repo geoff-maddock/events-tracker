@@ -27,6 +27,9 @@
 		@if (count($tag->entities) > 0)
 		<span class="badge rounded-pill bg-dark">{!! link_to_route('entities.tag', 'Entities', [$tag->slug], ['class' => 'item-title']) !!} {{ $tag->entities ? count($tag->entities) : 0}}</span>
 		@endif
+		@if ($tag->followerCount() > 0)
+		<span class="badge rounded-pill bg-dark">{!! link_to_route('entities.tag', 'Followers', [$tag->slug], ['class' => 'item-title']) !!} {{ $tag->followerCount() ? $tag->followerCount() : 0}}</span>
+		@endif
 		@if (count($tag->threads) > 0)
 		<span class="badge rounded-pill bg-dark">{!! link_to_route('threads.tag', 'Threads', [$tag->slug], ['class' => 'item-title']) !!} {{ $tag->threads ? count($tag->threads) : 0 }}</span>
 		@endif
