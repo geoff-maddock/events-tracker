@@ -54,8 +54,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Eluceo\iCal\Component\Calendar;
-use Eluceo\iCal\Component\Event as iCalEvent;
+use Eluceo\iCal\Domain\Entity\Calendar;
+use Eluceo\iCal\Domain\Entity\Event as iCalEvent;
+use Eluceo\iCal\Domain\ValueObject\Organizer;
+use Eluceo\iCal\Domain\ValueObject\Uri;
+use Eluceo\iCal\Domain\ValueObject\EmailAddress;
+use Eluceo\iCal\Domain\ValueObject\DateTime;
+use Eluceo\iCal\Domain\ValueObject\Location;
+use Eluceo\iCal\Domain\ValueObject\UniqueIdentifier;
+use Eluceo\iCal\Presentation\Factory\CalendarFactory;
 
 class EventsController extends Controller
 {
@@ -193,7 +200,7 @@ class EventsController extends Controller
 
 
     /**
-     * Return all future events in iCal format.
+     * Return all future events in iCal format, used for calendar subscriptions.
      */
     public function indexIcal(
         Request $request,
@@ -241,11 +248,15 @@ class EventsController extends Controller
         define('ICAL_FORMAT', 'Ymd\THis\Z');
 
         // create a calendar object
-        $vCalendar = new Calendar('Arcane City Calendar');
+        $vCalendar = new Calendar([]);
 
         // loop over events
         foreach ($events as $event) {
+            // get the name for the venue or set to empty
             $venue = $event->venue ? $event->venue->name : '';
+
+            // use the route for the event as the unique id
+            $uniqueId = route('events.show', ['event' => $event]);
 
             $vEvent = new iCalEvent();
             $vEvent
@@ -254,11 +265,36 @@ class EventsController extends Controller
                 ->setDtStamp($event->created_at)
                 ->setSummary($event->name)
                 ->setDescription($event->description)
-                ->setUniqueId($event->id)
+                ->setUniqueId($uniqueId)
                 ->setLocation($venue)
                 ->setModified($event->updated_at)
                 ->setStatus('CONFIRMED')
-                ->setUrl($event->primary_link);
+                ->setUrl($event->primary_link ? $event->primary_link : $uniqueId);
+
+            // get the promoter to set organizer
+
+            if ($event->promoter) {
+                // check for contacts on the promoter
+                if ($event->promoter->contacts->count() > 0) {
+
+                    // cycle through all contacts to find one with an email address
+                    foreach ($event->promoter->contacts as $contact) {
+                        if ($contact->email) {
+                           
+                            $organizer = new Organizer(
+                                new EmailAddress('test@example.org'),
+                                $event->promoter->name,
+                                new Uri('ldap://example.com:6666/o=ABC%20Industries,c=US???(cn=Jim%20Dolittle)'),
+                                new EmailAddress('sender@example.com')
+                            );
+        
+                            $vEvent->setOrganizer($organizer);
+
+                            break;
+                        }
+                    }
+                }
+            }
 
             $vCalendar->addComponent($vEvent);
         }
