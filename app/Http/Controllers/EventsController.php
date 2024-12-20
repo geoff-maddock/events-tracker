@@ -48,13 +48,14 @@ use Illuminate\Support\Facades\Session;
 use Intervention\Image\Facades\Image;
 use Illuminate\Http\File as HttpFile;
 use Storage;
-
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Eluceo\iCal\Component\Calendar;
+use Eluceo\iCal\Component\Event as iCalEvent;
 
 class EventsController extends Controller
 {
@@ -189,6 +190,86 @@ class EventsController extends Controller
             ->with(compact('events'))
             ->render();
     }
+
+
+    /**
+     * Return all future events in iCal format.
+     */
+    public function indexIcal(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+    )
+    {
+        
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_index');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Event::query()
+            ->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')
+            ->select('events.*')
+        ;
+
+        // set the default filter to starting today, can override
+        $defaultFilter = ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]];
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultFilters($defaultFilter)
+            ->setDefaultSort(['events.start_at' => 'asc'])
+        ;
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the events
+        /* @phpstan-ignore-next-line */
+        $events = $query->visible($this->user)
+            ->with('visibility', 'venue')
+            ->paginate($listResultSet->getLimit());
+
+        // define the iCal format
+        define('ICAL_FORMAT', 'Ymd\THis\Z');
+
+        // create a calendar object
+        $vCalendar = new Calendar('Arcane City Calendar');
+
+        // loop over events
+        foreach ($events as $event) {
+            $venue = $event->venue ? $event->venue->name : '';
+
+            $vEvent = new iCalEvent();
+            $vEvent
+                ->setDtStart($event->start_at)
+                ->setDtEnd($event->end_at)
+                ->setDtStamp($event->created_at)
+                ->setSummary($event->name)
+                ->setDescription($event->description)
+                ->setUniqueId($event->id)
+                ->setLocation($venue)
+                ->setModified($event->updated_at)
+                ->setStatus('CONFIRMED')
+                ->setUrl($event->primary_link);
+
+            $vCalendar->addComponent($vEvent);
+        }
+
+        // Set the headers
+        header('Content-type: text/calendar; charset=utf-8');
+        header('Content-Disposition: attachment; filename="arcane-city-ical.ics"');
+
+        return $vCalendar->render();
+    }
+
 
     /**
      * Display a listing of events by date.
@@ -3582,6 +3663,7 @@ class EventsController extends Controller
 
         return view('events.feed', compact('events'));
     }
+
 
     public function rss(RssFeed $feed): Response
     {

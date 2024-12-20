@@ -255,6 +255,7 @@ Route::get('events/related-to/{slug}', 'EventsController@indexRelatedTo')->name(
 Route::get('events/type/{slug}', 'EventsController@indexTypes');
 Route::get('events/series/{slug}', 'EventsController@indexSeries');
 Route::get('events/feed', 'EventsController@feed');
+Route::get('events/ical', 'EventsController@indexIcal');
 Route::get('events/feed/tag/{tag}', 'EventsController@feedTags');
 Route::get('events/brief-text', 'EventsController@briefText');
 Route::get(
