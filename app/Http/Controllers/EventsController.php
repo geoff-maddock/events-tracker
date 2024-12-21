@@ -45,24 +45,26 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
-use Intervention\Image\Facades\Image;
 use Illuminate\Http\File as HttpFile;
 use Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Eluceo\iCal\Domain\Entity\Calendar;
 use Eluceo\iCal\Domain\Entity\Event as iCalEvent;
 use Eluceo\iCal\Domain\ValueObject\Organizer;
 use Eluceo\iCal\Domain\ValueObject\Uri;
 use Eluceo\iCal\Domain\ValueObject\EmailAddress;
-use Eluceo\iCal\Domain\ValueObject\DateTime;
 use Eluceo\iCal\Domain\ValueObject\Location;
 use Eluceo\iCal\Domain\ValueObject\UniqueIdentifier;
 use Eluceo\iCal\Presentation\Factory\CalendarFactory;
+use Eluceo\iCal\Domain\ValueObject\TimeSpan;
+use Eluceo\iCal\Domain\ValueObject\DateTime;
+use Eluceo\iCal\Domain\ValueObject\Attachment;
+
+
 
 class EventsController extends Controller
 {
@@ -244,35 +246,47 @@ class EventsController extends Controller
             ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
 
-        // define the iCal format
-        define('ICAL_FORMAT', 'Ymd\THis\Z');
-
         // create a calendar object
         $vCalendar = new Calendar([]);
 
         // loop over events
         foreach ($events as $event) {
+            // use the route for the event as the unique id
+            $uniqueId = route('events.show', ['event' => $event]);
+            
+            // set up unique ID
+            $uniqueIdentifier = new UniqueIdentifier($uniqueId);
+
+            $vEvent = new iCalEvent($uniqueIdentifier);
+
+            // set up occurrence           
+            $start = new DateTime($event->start_at, false);
+            $end = $event->end_at ? new DateTime($event->end_at, false) : null;
+            $occurrence = new TimeSpan($start, $end ? $end : $start);
+
+            $vEvent->setOccurrence($occurrence)
+                ->setSummary($event->name)
+                ->setDescription($event->description);
+
+            // convert $event->updated_at to timestamp
+            $updated = new DateTime($event->updated_at, false);
+            $vEvent->touch($updated);
+
+            // set the url
+            $url = $event->primary_link ? $event->primary_link : $uniqueId;
+            $url = new Uri($url);
+            $vEvent->setUrl($url);
+
+            // set up the venue location
             // get the name for the venue or set to empty
             $venue = $event->venue ? $event->venue->name : '';
 
-            // use the route for the event as the unique id
-            $uniqueId = route('events.show', ['event' => $event]);
-
-            $vEvent = new iCalEvent();
-            $vEvent
-                ->setDtStart($event->start_at)
-                ->setDtEnd($event->end_at)
-                ->setDtStamp($event->created_at)
-                ->setSummary($event->name)
-                ->setDescription($event->description)
-                ->setUniqueId($uniqueId)
-                ->setLocation($venue)
-                ->setModified($event->updated_at)
-                ->setStatus('CONFIRMED')
-                ->setUrl($event->primary_link ? $event->primary_link : $uniqueId);
+            // set the location
+            if ($venue) {
+                $vEvent->setLocation(new Location($venue));
+            }
 
             // get the promoter to set organizer
-
             if ($event->promoter) {
                 // check for contacts on the promoter
                 if ($event->promoter->contacts->count() > 0) {
@@ -296,14 +310,30 @@ class EventsController extends Controller
                 }
             }
 
-            $vCalendar->addComponent($vEvent);
+            // add the primary image as a url attachment
+            $photo = $event->getPrimaryPhoto();
+            if ($photo) {
+                $imageUrl = Storage::disk('external')->url($photo->getStoragePath());
+
+                $urlAttachment = new Attachment(
+                    new Uri($imageUrl),
+                    'image/jpeg'
+                );
+
+                $vEvent->addAttachment($urlAttachment);
+            }
+
+            $vCalendar->addEvent($vEvent);
         }
+
+        $componentFactory = new CalendarFactory();
+        $calendarComponent = $componentFactory->createCalendar($vCalendar);
 
         // Set the headers
         header('Content-type: text/calendar; charset=utf-8');
         header('Content-Disposition: attachment; filename="arcane-city-ical.ics"');
 
-        return $vCalendar->render();
+        return $calendarComponent;
     }
 
 
