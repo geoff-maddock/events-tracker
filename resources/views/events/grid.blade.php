@@ -6,13 +6,7 @@
 
 <h1 class="display-crumbs text-primary">Events @include('events.crumbs')</h4>
 
-<div id="action-menu" class="mb-2">
-	<a href="{!! URL::route('events.index') !!}" class="btn btn-info">Show event index</a>
-	<a href="{!! URL::route('calendar') !!}" class="btn btn-info">Show calendar</a>
-	<a href="{!! URL::route('events.week') !!}" class="btn btn-info">Show week's events</a>
-	<a href="{!! URL::route('events.create') !!}" class="btn btn-primary">Add an event</a>
-	<a href="{!! URL::route('series.create') !!}" class="btn btn-primary">Add an event series</a>
-</div>
+	@include('events.index._actions', ['user' => $user])
 
 <div id="filters-container" class="row">
 	<div id="filters-content" class="col-xl-9">
