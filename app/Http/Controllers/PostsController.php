@@ -25,6 +25,11 @@ use Illuminate\View\View;
 use Str;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class PostsController
+ *
+ * This controller handles the CRUD operations for posts.
+ */
 class PostsController extends Controller
 {
     protected Post $post;
@@ -79,6 +84,11 @@ class PostsController extends Controller
 
     /**
      * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @param ListParameterSessionStore $listParamSessionStore
+     * @param ListEntityResultBuilder $listEntityResultBuilder
+     * @return string
      */
     public function index(
         Request $request,
@@ -147,6 +157,11 @@ class PostsController extends Controller
 
     /**
      * Filter a list of posts.
+     *
+     * @param Request $request
+     * @param ListParameterSessionStore $listParamSessionStore
+     * @param ListEntityResultBuilder $listEntityResultBuilder
+     * @return string
      */
     public function filter(
         Request $request,
@@ -214,6 +229,13 @@ class PostsController extends Controller
 
     /**
      * Display a listing of posts by tag.
+     *
+     * @param Request $request
+     * @param ListParameterSessionStore $listParamSessionStore
+     * @param ListEntityResultBuilder $listEntityResultBuilder
+     * @param string $slug
+     * @param StringHelper $stringHelper
+     * @return string
      */
     public function indexTags(
         Request $request,
@@ -282,11 +304,11 @@ class PostsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @return Response
-     *
-     * @internal param Request $request
+     * @param Request $request
+     * @param Thread $thread
+     * @return RedirectResponse
      */
-    public function store(Request $request, Thread $thread)
+    public function store(Request $request, Thread $thread): RedirectResponse
     {
         $msg = '';
 
@@ -338,11 +360,12 @@ class PostsController extends Controller
     }
 
     /**
-     * @param Post $post
+     * Notify users following the thread or tags related to the post.
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @param Post $post
+     * @return RedirectResponse
      */
-    protected function notifyFollowing($post)
+    protected function notifyFollowing(Post $post): RedirectResponse
     {
         $admin_email = config('app.admin');
         $reply_email = config('app.noreplyemail');
@@ -407,7 +430,8 @@ class PostsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @internal param int $id
+     * @param Post $post
+     * @return RedirectResponse
      */
     public function show(Post $post): RedirectResponse
     {
@@ -429,6 +453,9 @@ class PostsController extends Controller
 
     /**
      * Show the form for editing the specified resource.
+     *
+     * @param Post $post
+     * @return View
      */
     public function edit(Post $post): View
     {
@@ -437,6 +464,11 @@ class PostsController extends Controller
         return view('posts.edit', compact('post'))->with($this->getFormOptions());
     }
 
+    /**
+     * Get form options for creating or editing a post.
+     *
+     * @return array
+     */
     protected function getFormOptions(): array
     {
         return [
@@ -449,7 +481,9 @@ class PostsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @internal param int $id
+     * @param Post $post
+     * @param PostRequest $request
+     * @return RedirectResponse
      */
     public function update(Post $post, PostRequest $request): RedirectResponse
     {
@@ -495,9 +529,9 @@ class PostsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
+     * @param Post $post
+     * @return RedirectResponse
      * @throws \Exception
-     *
-     * @internal param int $id
      */
     public function destroy(Post $post): RedirectResponse
     {
@@ -522,6 +556,10 @@ class PostsController extends Controller
 
     /**
      * Mark user as liking the post.
+     *
+     * @param int $id
+     * @param Request $request
+     * @return RedirectResponse
      */
     public function like(int $id, Request $request): RedirectResponse
     {
@@ -559,9 +597,11 @@ class PostsController extends Controller
     /**
      * Mark user as unliking the post.
      *
-     * @return Response
+     * @param int $id
+     * @param Request $request
+     * @return RedirectResponse
      */
-    public function unlike(int $id, Request $request)
+    public function unlike(int $id, Request $request): RedirectResponse
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -589,6 +629,12 @@ class PostsController extends Controller
         return back();
     }
 
+    /**
+     * Handle unauthorized access.
+     *
+     * @param PostRequest $request
+     * @return RedirectResponse|Response
+     */
     protected function unauthorized(PostRequest $request): RedirectResponse | Response
     {
         if ($request->ajax()) {
@@ -603,6 +649,9 @@ class PostsController extends Controller
     /**
      * Reset the limit, sort, direction.
      *
+     * @param Request $request
+     * @param ListParameterSessionStore $listParamSessionStore
+     * @return RedirectResponse
      * @throws \Throwable
      */
     public function rppReset(
@@ -623,12 +672,14 @@ class PostsController extends Controller
     /**
      * Reset the filtering of entities.
      *
-     * @return RedirectResponse|View
+     * @param Request $request
+     * @param ListParameterSessionStore $listParamSessionStore
+     * @return RedirectResponse
      */
     public function reset(
         Request $request,
         ListParameterSessionStore $listParamSessionStore
-    ) {
+    ): RedirectResponse {
         // set filters and list controls to default values
         $keyPrefix = $request->get('key') ?? 'internal_post_index';
         $listParamSessionStore->setBaseIndex('internal_post');
@@ -641,6 +692,11 @@ class PostsController extends Controller
         return redirect()->route($request->get('redirect') ?? 'posts.index');
     }
 
+    /**
+     * Get filter options for posts.
+     *
+     * @return array
+     */
     protected function getFilterOptions(): array
     {
         return [
@@ -649,6 +705,11 @@ class PostsController extends Controller
         ];
     }
 
+    /**
+     * Get list control options for posts.
+     *
+     * @return array
+     */
     protected function getListControlOptions(): array
     {
         return [

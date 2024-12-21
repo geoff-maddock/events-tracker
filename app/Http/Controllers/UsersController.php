@@ -216,7 +216,7 @@ class UsersController extends Controller
     /**
      * Reset the limit, sort, order.
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function rppReset(
         Request $request,
@@ -236,7 +236,7 @@ class UsersController extends Controller
     /**
      * Reset the filtering of useres.
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function reset(
         Request $request,

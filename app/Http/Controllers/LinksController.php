@@ -55,6 +55,9 @@ class LinksController extends Controller
 
     /**
      * Show the form for creating a new resource.
+     *
+     * @param Entity $entity
+     * @return View
      */
     public function create(Entity $entity): View
     {
@@ -64,6 +67,10 @@ class LinksController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     *
+     * @param Request $request
+     * @param Entity $entity
+     * @return RedirectResponse
      */
     public function store(Request $request, Entity $entity): RedirectResponse
     {
@@ -87,6 +94,10 @@ class LinksController extends Controller
 
     /**
      * Display the specified resource.
+     *
+     * @param Entity $entity
+     * @param Link $link
+     * @return View
      */
     public function show(Entity $entity, Link $link): View
     {
@@ -95,6 +106,10 @@ class LinksController extends Controller
 
     /**
      * Show the form for editing the specified resource.
+     *
+     * @param Entity $entity
+     * @param Link $link
+     * @return View
      */
     public function edit(Entity $entity, Link $link): View
     {
@@ -104,6 +119,11 @@ class LinksController extends Controller
 
     /**
      * Update the specified resource in storage.
+     *
+     * @param Request $request
+     * @param Entity $entity
+     * @param Link $link
+     * @return RedirectResponse
      */
     public function update(Request $request, Entity $entity, Link $link): RedirectResponse
     {
@@ -120,6 +140,9 @@ class LinksController extends Controller
     /**
      * Remove the specified resource from storage.
      *
+     * @param Entity $entity
+     * @param Link $link
+     * @return RedirectResponse
      * @throws \Exception
      */
     public function destroy(Entity $entity, Link $link): RedirectResponse
@@ -131,6 +154,11 @@ class LinksController extends Controller
         return redirect()->route('entities.show', $entity->slug);
     }
 
+    /**
+     * Get form options for creating or editing a link.
+     *
+     * @return array
+     */
     protected function getFormOptions(): array
     {
         return [
