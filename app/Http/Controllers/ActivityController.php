@@ -60,61 +60,51 @@ class ActivityController extends Controller
         parent::__construct();
     }
 
-    public function filter(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore,
-        ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_activity');
-        $listParamSessionStore->setKeyPrefix('internal_activity_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([ActivityController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Activity::query()->select('activities.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['activities.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the activities
-        $activities = $query->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('activities.index')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('activities'))
-            ->render();
-    }
-
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @param ListParameterSessionStore $listParamSessionStore
+     * @param ListEntityResultBuilder $listEntityResultBuilder
+     * @return string
+     */
     public function index(
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
+        return $this->getActivityList($request, $listParamSessionStore, $listEntityResultBuilder);
+    }
+
+    /**
+     * Filter the list of activities.
+     *
+     * @param Request $request
+     * @param ListParameterSessionStore $listParamSessionStore
+     * @param ListEntityResultBuilder $listEntityResultBuilder
+     * @return string
+     */
+    public function filter(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        return $this->getActivityList($request, $listParamSessionStore, $listEntityResultBuilder);
+    }
+
+    /**
+     * Get the list of activities.
+     *
+     * @param Request $request
+     * @param ListParameterSessionStore $listParamSessionStore
+     * @param ListEntityResultBuilder $listEntityResultBuilder
+     * @return string
+     */
+    private function getActivityList(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_activity');
         $listParamSessionStore->setKeyPrefix('internal_activity_index');
@@ -160,6 +150,12 @@ class ActivityController extends Controller
             ->render();
     }
 
+    /**
+     * Handle unauthorized access.
+     *
+     * @param SeriesRequest $request
+     * @return Response|RedirectResponse
+     */
     protected function unauthorized(SeriesRequest $request): Response | RedirectResponse
     {
         if ($request->ajax()) {
@@ -171,6 +167,12 @@ class ActivityController extends Controller
         return redirect('/');
     }
 
+    /**
+     * Delete an activity.
+     *
+     * @param Activity $activity
+     * @return RedirectResponse
+     */
     public function destroy(Activity $activity): RedirectResponse
     {
         $activity->delete();
@@ -180,6 +182,8 @@ class ActivityController extends Controller
 
     /**
      * Get the default filters array.
+     *
+     * @return array
      */
     public function getDefaultFilters(): array
     {
@@ -189,6 +193,9 @@ class ActivityController extends Controller
     /**
      * Reset the rpp, sort, order.
      *
+     * @param Request $request
+     * @param ListParameterSessionStore $listParamSessionStore
+     * @return RedirectResponse
      * @throws \Throwable
      */
     public function rppReset(
@@ -208,6 +215,10 @@ class ActivityController extends Controller
 
     /**
      * Reset the filtering of entities.
+     *
+     * @param Request $request
+     * @param ListParameterSessionStore $listParamSessionStore
+     * @return RedirectResponse
      */
     public function reset(
         Request $request,
@@ -225,6 +236,11 @@ class ActivityController extends Controller
         return redirect()->route($request->get('redirect') ?? 'activities.index');
     }
 
+    /**
+     * Get the list control options.
+     *
+     * @return array
+     */
     protected function getListControlOptions(): array
     {
         return  [
@@ -234,6 +250,11 @@ class ActivityController extends Controller
         ];
     }
 
+    /**
+     * Get the filter options.
+     *
+     * @return array
+     */
     protected function getFilterOptions(): array
     {
         return  [
