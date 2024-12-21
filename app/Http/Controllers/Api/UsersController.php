@@ -570,60 +570,6 @@ class UsersController extends Controller
         return back();
     }
 
-    /**
-     * Return the users events in iCal format.
-     *
-     * @return Response|RedirectResponse|string
-     */
-    public function ical(int $id, Request $request)
-    {
-        // check if there is a logged in user
-        if (!$this->user) {
-            flash()->error('Error', 'No user is logged in.');
-
-            return back();
-        }
-
-        if (!$user = User::find($id)) {
-            flash()->error('Error', 'No such user');
-
-            return back();
-        }
-        define('ICAL_FORMAT', 'Ymd\THis\Z');
-
-        // create a calendar object
-        $vCalendar = new Calendar($this->user->getFullNameAttribute().' Calendar');
-
-        // add the following response
-        // get the next x events they are attending
-        $events = $user->getAttendingFuture()->take(self::DEFAULT_SHOW_COUNT);
-
-        // loop over events
-        foreach ($events as $event) {
-            $venue = $event->venue ? $event->venue->name : '';
-
-            $vEvent = new Event();
-            $vEvent
-                ->setDtStart($event->start_at)
-                ->setDtEnd($event->end_at)
-                ->setDtStamp($event->created_at)
-                ->setSummary($event->name)
-                ->setDescription($event->description)
-                ->setUniqueId($event->id)
-                ->setLocation($venue)
-                ->setModified($event->updated_at)
-                ->setStatus('CONFIRMED')
-                ->setUrl($event->primary_link);
-
-            $vCalendar->addComponent($vEvent);
-        }
-
-        // Set the headers
-        header('Content-type: text/calendar; charset=utf-8');
-        header('Content-Disposition: attachment; filename="cal.ics"');
-
-        return $vCalendar->render();
-    }
 
     /**
      * @return RedirectResponse|Response

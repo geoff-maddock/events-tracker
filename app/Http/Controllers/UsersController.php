@@ -12,7 +12,6 @@ use App\Mail\UserUpdate;
 use App\Mail\WeeklyUpdate;
 use App\Models\Activity;
 use App\Models\Group;
-use App\Models\Photo;
 use App\Models\Profile;
 use App\Models\User;
 use App\Models\UserStatus;
@@ -20,8 +19,6 @@ use App\Models\Visibility;
 use App\Services\ImageHandler;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
-use Eluceo\iCal\Component\Calendar;
-use Eluceo\iCal\Component\Event;
 use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -30,7 +27,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use App\Services\Calendar\CalBuilder;
 use Throwable;
 
 class UsersController extends Controller
@@ -605,7 +602,10 @@ class UsersController extends Controller
      *
      * @return Response|RedirectResponse|string
      */
-    public function ical(int $id, Request $request)
+    public function ical(
+        int $id,
+        Request $request,
+        CalBuilder $iCalBuilder)
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -619,40 +619,14 @@ class UsersController extends Controller
 
             return back();
         }
-        define('ICAL_FORMAT', 'Ymd\THis\Z');
 
-        // create a calendar object
-        $vCalendar = new Calendar($this->user->getFullNameAttribute().' Calendar');
-
-        // add the following response
         // get the next x events they are attending
         $events = $user->getAttendingFuture()->take(self::DEFAULT_SHOW_COUNT);
 
-        // loop over events
-        foreach ($events as $event) {
-            $venue = $event->venue ? $event->venue->name : '';
+        // create a calendar object
+        $calendar = $iCalBuilder->buildCalendar($this->user->getFullNameAttribute().' Calendar', $events);
 
-            $vEvent = new Event();
-            $vEvent
-                ->setDtStart($event->start_at)
-                ->setDtEnd($event->end_at)
-                ->setDtStamp($event->created_at)
-                ->setSummary($event->name)
-                ->setDescription($event->description)
-                ->setUniqueId($event->id)
-                ->setLocation($venue)
-                ->setModified($event->updated_at)
-                ->setStatus('CONFIRMED')
-                ->setUrl($event->primary_link);
-
-            $vCalendar->addComponent($vEvent);
-        }
-
-        // Set the headers
-        header('Content-type: text/calendar; charset=utf-8');
-        header('Content-Disposition: attachment; filename="cal.ics"');
-
-        return $vCalendar->render();
+        return $calendar;
     }
 
     /**
