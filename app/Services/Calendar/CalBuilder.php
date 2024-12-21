@@ -29,7 +29,7 @@ class CalBuilder
      * @param $events Array of Event models
      * @return string The iCal formatted calendar
      */
-    public function buildCalendar(string $calendarName = "event-tracker.ics", $events): string
+    public function buildCalendar(string $calendarName, $events): string
     {
         // create a calendar object
         $vCalendar = new Calendar([]);
