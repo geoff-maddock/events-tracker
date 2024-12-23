@@ -36,11 +36,14 @@ class ICalBuilder
         // create a calendar object
         $vCalendar = new Calendar([]);
 
-        $oldestTime = new DateTimeImmutable('now');
-        $latestTime = new DateTimeImmutable('now');
+        // set the default php time zone
+        date_default_timezone_set('America/New_York');
 
         // specify local time zone
-        $phpDateTimeZone = new PhpDateTimeZone('EST');
+        $phpDateTimeZone = new PhpDateTimeZone('America/New_York');
+
+        $oldestTime = new DateTimeImmutable('now', $phpDateTimeZone);
+        $latestTime = new DateTimeImmutable('now', $phpDateTimeZone);
 
         // loop over events
         foreach ($events as $event) {
