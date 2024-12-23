@@ -52,7 +52,7 @@ use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\UploadedFile;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use App\Services\Calendar\CalBuilder;
+use App\Services\Calendar\ICalBuilder;
 
 
 class EventsController extends Controller
@@ -197,7 +197,7 @@ class EventsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder,
-        CalBuilder $iCalBuilder
+        ICalBuilder $iCalBuilder
     )
     {
         

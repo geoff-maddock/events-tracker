@@ -2,7 +2,6 @@
 
 namespace App\Services\Calendar;
 
-use App\Models\Event;
 use Eluceo\iCal\Domain\Entity\Calendar;
 use Eluceo\iCal\Domain\Entity\Event as iCalEvent;
 use Eluceo\iCal\Domain\ValueObject\Organizer;
@@ -14,13 +13,16 @@ use Eluceo\iCal\Presentation\Factory\CalendarFactory;
 use Eluceo\iCal\Domain\ValueObject\TimeSpan;
 use Eluceo\iCal\Domain\ValueObject\DateTime;
 use Eluceo\iCal\Domain\ValueObject\Attachment;
+use Eluceo\iCal\Domain\Entity\TimeZone;
+use DateTimeZone as PhpDateTimeZone;
 use Storage;
+use DateTimeImmutable;
 
 
 /**
  * Builds and exports ical calendar
  */
-class CalBuilder
+class ICalBuilder
 {
 
     /**
@@ -33,6 +35,13 @@ class CalBuilder
     {
         // create a calendar object
         $vCalendar = new Calendar([]);
+
+        $oldestTime = new DateTimeImmutable('now');
+        $latestTime = new DateTimeImmutable('now');
+
+        // specify local time zone
+        $phpDateTimeZone = new PhpDateTimeZone('America/New_York');
+
 
         // loop over events
         foreach ($events as $event) {
@@ -48,6 +57,15 @@ class CalBuilder
             $start = new DateTime($event->start_at, false);
             $end = $event->end_at ? new DateTime($event->end_at, false) : null;
             $occurrence = new TimeSpan($start, $end ? $end : $start);
+
+            // update oldest and latest times
+            if ($start->getDateTime() < $oldestTime) {
+                $oldestTime = $start->getDateTime();
+            }
+            if ($start->getDateTime() > $latestTime) {
+                $latestTime = $start->getDateTime();
+            }
+
 
             $vEvent->setOccurrence($occurrence)
                 ->setSummary($event->name)
@@ -110,6 +128,14 @@ class CalBuilder
 
             $vCalendar->addEvent($vEvent);
         }
+
+        $timeZone = TimeZone::createFromPhpDateTimeZone(
+            $phpDateTimeZone,
+            $oldestTime,
+            $latestTime,
+        );
+
+        $vCalendar->addTimeZone($timeZone);
 
         $componentFactory = new CalendarFactory();
         $calendarComponent = $componentFactory->createCalendar($vCalendar);
