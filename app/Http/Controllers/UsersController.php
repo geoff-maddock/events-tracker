@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
-use App\Services\Calendar\CalBuilder;
+use App\Services\Calendar\ICalBuilder;
 use Throwable;
 
 class UsersController extends Controller
@@ -605,7 +605,7 @@ class UsersController extends Controller
     public function ical(
         int $id,
         Request $request,
-        CalBuilder $iCalBuilder)
+        ICalBuilder $iCalBuilder)
     {
         // check if there is a logged in user
         if (!$this->user) {
