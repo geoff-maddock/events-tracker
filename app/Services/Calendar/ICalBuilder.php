@@ -40,8 +40,7 @@ class ICalBuilder
         $latestTime = new DateTimeImmutable('now');
 
         // specify local time zone
-        $phpDateTimeZone = new PhpDateTimeZone('America/New_York');
-
+        $phpDateTimeZone = new PhpDateTimeZone('EST');
 
         // loop over events
         foreach ($events as $event) {
