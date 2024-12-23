@@ -54,8 +54,8 @@ class ICalBuilder
             $vEvent = new iCalEvent($uniqueIdentifier);
 
             // set up occurrence           
-            $start = new DateTime($event->start_at, false);
-            $end = $event->end_at ? new DateTime($event->end_at, false) : null;
+            $start = new DateTime($event->start_at, true);
+            $end = $event->end_at ? new DateTime($event->end_at, true) : null;
             $occurrence = new TimeSpan($start, $end ? $end : $start);
 
             // update oldest and latest times
@@ -72,7 +72,7 @@ class ICalBuilder
                 ->setDescription($event->description);
 
             // convert $event->updated_at to timestamp
-            $updated = new DateTime($event->updated_at, false);
+            $updated = new DateTime($event->updated_at, true);
             $vEvent->touch($updated);
 
             // set the url
