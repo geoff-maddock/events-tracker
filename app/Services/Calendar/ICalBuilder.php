@@ -15,8 +15,10 @@ use Eluceo\iCal\Domain\ValueObject\DateTime;
 use Eluceo\iCal\Domain\ValueObject\Attachment;
 use Eluceo\iCal\Domain\Entity\TimeZone;
 use DateTimeZone as PhpDateTimeZone;
+use DateTime as PhpDateTime;
 use Storage;
 use DateTimeImmutable;
+use DateInterval;
 
 
 /**
@@ -41,6 +43,7 @@ class ICalBuilder
 
         // specify local time zone
         $phpDateTimeZone = new PhpDateTimeZone('America/New_York');
+        $utcTimeZone = new PhpDateTimeZone('UTC');
 
         $oldestTime = new DateTimeImmutable('now', $phpDateTimeZone);
         $latestTime = new DateTimeImmutable('now', $phpDateTimeZone);
@@ -56,9 +59,22 @@ class ICalBuilder
             $vEvent = new iCalEvent($uniqueIdentifier);
 
             // set up occurrence           
-            $start = new DateTime($event->start_at, true);
-            $end = $event->end_at ? new DateTime($event->end_at, true) : null;
-            $occurrence = new TimeSpan($start, $end ? $end : $start);
+            $phpStart = PhpDateTime::createFromFormat('Y-m-d H:i:s', $event->start_at, $phpDateTimeZone);
+            $phpStart->setTimezone($utcTimeZone);
+            $start = new DateTime($phpStart, true);
+
+            if ($event->end_at) {
+                $phpEnd = PhpDateTime::createFromFormat('Y-m-d H:i:s', $event->end_at, $phpDateTimeZone);
+                $phpEnd->setTimezone($utcTimeZone);
+                $end = new DateTime($phpEnd, true);
+            } else {
+                $phpEnd =PhpDateTime::createFromFormat('Y-m-d H:i:s', $event->end_at, $phpDateTimeZone);
+                $phpEnd->setTimezone($utcTimeZone);
+                $end = new DateTime($phpEnd, true);
+                $end->add(new DateInterval("PT4H"));
+            }
+
+            $occurrence = new TimeSpan($start, $end);
 
             // update oldest and latest times
             if ($start->getDateTime() < $oldestTime) {
@@ -67,7 +83,6 @@ class ICalBuilder
             if ($start->getDateTime() > $latestTime) {
                 $latestTime = $start->getDateTime();
             }
-
 
             $vEvent->setOccurrence($occurrence)
                 ->setSummary($event->name)
