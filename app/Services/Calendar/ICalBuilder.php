@@ -68,7 +68,7 @@ class ICalBuilder
                 $phpEnd->setTimezone($utcTimeZone);
                 $end = new DateTime($phpEnd, true);
             } else {
-                $phpEnd =PhpDateTime::createFromFormat('Y-m-d H:i:s', $event->end_at, $phpDateTimeZone);
+                $phpEnd = PhpDateTime::createFromFormat('Y-m-d H:i:s', $event->start_at, $phpDateTimeZone);
                 $phpEnd->setTimezone($utcTimeZone);
                 $end = new DateTime($phpEnd, true);
                 $end->add(new DateInterval("PT4H"));
