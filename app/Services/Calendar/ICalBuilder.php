@@ -64,20 +64,20 @@ class ICalBuilder
             // set up occurrence           
             $phpStart = PhpDateTime::createFromFormat('Y-m-d H:i:s', $event->start_at, $phpDateTimeZone);
             $phpStart->setTimezone($phpDateTimeZone);
-            $start = new DateTime($phpStart, true);
+            $start = new DateTime($phpStart, false);
 
 
             if ($event->end_at) {
                 $phpEnd = PhpDateTime::createFromFormat('Y-m-d H:i:s', $event->end_at, $phpDateTimeZone);
                 $phpEnd->setTimezone($phpDateTimeZone);
-                $end = new DateTime($phpEnd, true);
+                $end = new DateTime($phpEnd, false);
             } else {
                 $phpEnd = PhpDateTime::createFromFormat('Y-m-d H:i:s', $event->start_at, $phpDateTimeZone);
                 $phpEnd->setTimezone($phpDateTimeZone);
 
                 // add 4 hours to the php end time  
                 $phpEnd->add(new DateInterval('PT4H'));
-                $end = new DateTime($phpEnd, true);
+                $end = new DateTime($phpEnd, false);
 
             }
 
