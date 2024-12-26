@@ -559,4 +559,34 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     {
         return $this->groups->pluck('id')->all();
     }
+
+    /**
+     * Get the events related to entities or tags that the user is following.
+     *
+     * @return Collection 
+     */
+    public function followedEvents(): Collection
+    {
+        $tags = $this->getTagsFollowing();
+        $entities = $this->getEntitiesFollowing();
+        $attendingEvents = $this->getAttendingFuture();
+
+        // get events related to the followed tags where the event 
+        $tagEvents = Event::whereHas('tags', function ($query) use ($tags) {
+            $query->whereIn('tags.id', $tags->pluck('id'));
+            $query->where('start_at', '>=', Carbon::now());
+        })->get();
+
+
+        // get events related to the followed entities
+        $entityEvents = Event::whereHas('entities', function ($query) use ($entities) {
+            $query->whereIn('entities.id', $entities->pluck('id'));
+            $query->where('start_at', '>=', Carbon::now());
+        })->get();
+
+        // merge the events and return unique events
+        $events = $tagEvents->merge($entityEvents)->merge($attendingEvents)->unique();
+
+        return $events;
+    }
 }

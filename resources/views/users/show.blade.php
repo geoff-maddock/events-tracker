@@ -8,9 +8,15 @@
     <div class="row">
         <div class="m-2">
             <a href="{!! route('users.attending', ['id' => $user->id]) !!}" class="btn btn-primary">Attending</a>
-            <a href="{!! route('users.attendingIcal', ['id' => $user->id]) !!}" class="btn btn-primary" title="Link to iCal format calendar of user's attending events">
-                Ical Link
-            </a>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    Ical
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{!! route('users.attendingIcal', ['id' => $user->id]) !!}">Attending Ical</a></li>
+                    <li><a class="dropdown-item" href="{!! route('users.interestedIcal', ['id' => $user->id]) !!}">Interested Ical</a></li>
+                </ul>
+            </div>
 
             @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser') ) )
                 <a href="{!! route('users.edit', ['user' => $user->id]) !!}" class="btn btn-primary">Edit Profile</a>
