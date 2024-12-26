@@ -66,6 +66,7 @@ class ICalBuilder
             $phpStart->setTimezone($phpDateTimeZone);
             $start = new DateTime($phpStart, true);
 
+
             if ($event->end_at) {
                 $phpEnd = PhpDateTime::createFromFormat('Y-m-d H:i:s', $event->end_at, $phpDateTimeZone);
                 $phpEnd->setTimezone($phpDateTimeZone);
@@ -73,8 +74,11 @@ class ICalBuilder
             } else {
                 $phpEnd = PhpDateTime::createFromFormat('Y-m-d H:i:s', $event->start_at, $phpDateTimeZone);
                 $phpEnd->setTimezone($phpDateTimeZone);
+
+                // add 4 hours to the php end time  
+                $phpEnd->add(new DateInterval('PT4H'));
                 $end = new DateTime($phpEnd, true);
-                $end->add(new DateInterval("PT4H"));
+
             }
 
             $occurrence = new TimeSpan($start, $end);
@@ -84,7 +88,7 @@ class ICalBuilder
                 $oldestTime = $start->getDateTime();
             }
             if ($start->getDateTime() > $latestTime) {
-                $latestTime = $start->getDateTime();
+                $latestTime = $end->getDateTime();
             }
 
             $vEvent->setOccurrence($occurrence)
@@ -149,7 +153,8 @@ class ICalBuilder
             $vEvents[] = $vEvent;
         }
 
-        // dd($latestTime);
+        // move the oldest time back 1 month
+        $oldestTime->sub(new DateInterval('P1M'));
 
         $timeZone = TimeZone::createFromPhpDateTimeZone(
             $phpDateTimeZone,
