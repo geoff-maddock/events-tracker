@@ -6,6 +6,7 @@
 	@if (isset($slug) && $slug == 'Attending')
 	<a href="{!! URL::route('events.export.attending') !!}" class="btn btn-primary my-1" target="_blank" aria-label="Exports your list of events in a simple, sharable plain-text format." title="Exports your list of events in a simple, sharable plain-text format.">Export</a>
     @elseif (!isset($slug))
-	<a href="{!! URL::route('events.export') !!}" class="btn btn-primary my-1" target="_blank" title="Exports the list of events in a simple, sharable plain-text format.">Export</a>
+	<a href="{!! URL::route('events.export') !!}" class="btn btn-primary my-1" target="_blank" title="Exports the list of events in a simple, sharable plain-text format.">Export TXT</a>
 	@endif
+	<a href="{!! URL::route('events.indexIcal') !!}" class="btn btn-primary my-1" target="_blank" title="Exports the list of events into ical format to import into other calendar apps.">Export Ical</a>
 </div>

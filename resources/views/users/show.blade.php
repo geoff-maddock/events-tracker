@@ -8,6 +8,10 @@
     <div class="row">
         <div class="m-2">
             <a href="{!! route('users.attending', ['id' => $user->id]) !!}" class="btn btn-primary">Attending</a>
+            <a href="{!! route('users.attendingIcal', ['id' => $user->id]) !!}" class="btn btn-primary" title="Link to iCal format calendar of user's attending events">
+                Ical Link
+            </a>
+
             @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser') ) )
                 <a href="{!! route('users.edit', ['user' => $user->id]) !!}" class="btn btn-primary">Edit Profile</a>
                 @can('grant_access')
@@ -17,7 +21,7 @@
                 </a>
                 @endif
                 @if ($user->isActive)
-                    <a href="{!! route('users.reminder', ['id' => $user->id]) !!}"  class="btn btn-primary confirm">
+                    <a href="{!! route('users.reminder', ['id' => $user->id]) !!}" title="Shows all future events you are attending"  class="btn btn-primary confirm">
                         Send Reminder
                     </a>
                 @endif
@@ -32,6 +36,7 @@
 					Send Weekly Update
 				</a>
 			    @endif
+
                 <a href="{{ url('/password/reset') }}" class="btn btn-primary">Reset Password</a>
                 {!! delete_form(['users.destroy', $user->id]) !!}
             @endif
