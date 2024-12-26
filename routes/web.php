@@ -161,6 +161,7 @@ Route::post('purge', 'UsersController@purge')->name('users.purge');
 
 Route::match(['get', 'post'], 'users/{id}/attending', 'EventsController@indexUserAttending')->name('users.attending');
 Route::match(['get', 'post'], 'users/{id}/attending-ical', 'EventsController@indexUserAttendingIcal')->name('users.attendingIcal');
+Route::match(['get', 'post'], 'users/{id}/interested-ical', 'EventsController@indexUserInterestedIcal')->name('users.interestedIcal');
 Route::match(['get', 'post'], 'users/{id}/resetUserAttending', ['as' => 'users.resetUserAttending', 'uses' => 'EventsController@resetUserAttending']);
 Route::get('users/{id}/rppResetUserAttending', ['as' => 'users.rppResetUserAttending', 'uses' => 'EventsController@rppResetUserAttending']);
 

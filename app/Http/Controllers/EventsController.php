@@ -1137,6 +1137,7 @@ class EventsController extends Controller
             $interests = [];
             $seriesList = [];
 
+            // get all the events the user is attending in the future, up to 100
             $events = $user->getAttendingFuture()->take(100);
 
             // build an array of future events based on tags the user follows
@@ -3772,6 +3773,27 @@ class EventsController extends Controller
 
         // create a calendar object for the user
         $calendar = $iCalBuilder->buildCalendar('arcane-city-attending-ical.ics', $events);
+
+        return $calendar;
+    }
+
+
+    /**
+     * Display ical of events that the specified user is interested in
+     *
+     * @return Response|View
+     */
+    public function indexUserInterestedIcal(
+        int $id,
+        ICalBuilder $iCalBuilder
+    ) {
+        // find user or fail
+        $user = User::findOrFail($id);
+
+        $events = $user->followedEvents();
+
+        // create a calendar object for the user
+        $calendar = $iCalBuilder->buildCalendar('arcane-city-interested-ical.ics', $events);
 
         return $calendar;
     }
