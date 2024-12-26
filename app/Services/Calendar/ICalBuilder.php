@@ -48,6 +48,9 @@ class ICalBuilder
         $oldestTime = new DateTimeImmutable('now', $phpDateTimeZone);
         $latestTime = new DateTimeImmutable('now', $phpDateTimeZone);
 
+        // create an empty array to store the events
+        $vEvents = [];
+
         // loop over events
         foreach ($events as $event) {
             // use the route for the event as the unique id
@@ -60,16 +63,16 @@ class ICalBuilder
 
             // set up occurrence           
             $phpStart = PhpDateTime::createFromFormat('Y-m-d H:i:s', $event->start_at, $phpDateTimeZone);
-            $phpStart->setTimezone($utcTimeZone);
+            $phpStart->setTimezone($phpDateTimeZone);
             $start = new DateTime($phpStart, true);
 
             if ($event->end_at) {
                 $phpEnd = PhpDateTime::createFromFormat('Y-m-d H:i:s', $event->end_at, $phpDateTimeZone);
-                $phpEnd->setTimezone($utcTimeZone);
+                $phpEnd->setTimezone($phpDateTimeZone);
                 $end = new DateTime($phpEnd, true);
             } else {
                 $phpEnd = PhpDateTime::createFromFormat('Y-m-d H:i:s', $event->start_at, $phpDateTimeZone);
-                $phpEnd->setTimezone($utcTimeZone);
+                $phpEnd->setTimezone($phpDateTimeZone);
                 $end = new DateTime($phpEnd, true);
                 $end->add(new DateInterval("PT4H"));
             }
@@ -143,8 +146,10 @@ class ICalBuilder
                 $vEvent->addAttachment($urlAttachment);
             }
 
-            $vCalendar->addEvent($vEvent);
+            $vEvents[] = $vEvent;
         }
+
+        // dd($latestTime);
 
         $timeZone = TimeZone::createFromPhpDateTimeZone(
             $phpDateTimeZone,
@@ -153,6 +158,11 @@ class ICalBuilder
         );
 
         $vCalendar->addTimeZone($timeZone);
+
+        // add all events to the calendar
+        foreach ($vEvents as $vEvent) {
+            $vCalendar->addEvent($vEvent);
+        }
 
         $componentFactory = new CalendarFactory();
         $calendarComponent = $componentFactory->createCalendar($vCalendar);
