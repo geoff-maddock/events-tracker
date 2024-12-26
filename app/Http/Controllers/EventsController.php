@@ -3725,7 +3725,7 @@ class EventsController extends Controller
     /**
      * Display ical of events that the specified user is attending
      *
-     * @return Response|View
+     * @return string
      */
     public function indexUserAttendingIcal(
         int $id,
@@ -3781,7 +3781,7 @@ class EventsController extends Controller
     /**
      * Display ical of events that the specified user is interested in
      *
-     * @return Response|View
+     * @return string
      */
     public function indexUserInterestedIcal(
         int $id,
