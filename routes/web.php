@@ -160,6 +160,7 @@ Route::get('users/{id}/delete', [
 Route::post('purge', 'UsersController@purge')->name('users.purge');
 
 Route::match(['get', 'post'], 'users/{id}/attending', 'EventsController@indexUserAttending')->name('users.attending');
+Route::match(['get', 'post'], 'users/{id}/attending-ical', 'EventsController@indexUserAttendingIcal')->name('users.attendingIcal');
 Route::match(['get', 'post'], 'users/{id}/resetUserAttending', ['as' => 'users.resetUserAttending', 'uses' => 'EventsController@resetUserAttending']);
 Route::get('users/{id}/rppResetUserAttending', ['as' => 'users.rppResetUserAttending', 'uses' => 'EventsController@rppResetUserAttending']);
 
@@ -255,7 +256,7 @@ Route::get('events/related-to/{slug}', 'EventsController@indexRelatedTo')->name(
 Route::get('events/type/{slug}', 'EventsController@indexTypes');
 Route::get('events/series/{slug}', 'EventsController@indexSeries');
 Route::get('events/feed', 'EventsController@feed');
-Route::get('events/ical', 'EventsController@indexIcal');
+Route::get('events/ical', 'EventsController@indexIcal')->name('events.indexIcal');
 Route::get('events/feed/tag/{tag}', 'EventsController@feedTags');
 Route::get('events/brief-text', 'EventsController@briefText');
 Route::get(

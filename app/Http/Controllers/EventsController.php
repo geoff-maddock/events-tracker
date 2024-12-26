@@ -3720,6 +3720,62 @@ class EventsController extends Controller
             ->with(compact('events', 'user'));
     }
 
+
+    /**
+     * Display ical of events that the specified user is attending
+     *
+     * @return Response|View
+     */
+    public function indexUserAttendingIcal(
+        int $id,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        ICalBuilder $iCalBuilder
+    ) {
+        // find user or fail
+        $user = User::findOrFail($id);
+
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_attending');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = $user->getAttending()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
+
+        // set the default filter to starting today, can override
+        $defaultFilter = ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]];
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultFilters($defaultFilter)
+            ->setDefaultSort(['events.start_at' => 'asc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the events
+        $events = $query
+            ->with('visibility', 'venue')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        // create a calendar object for the user
+        $calendar = $iCalBuilder->buildCalendar('arcane-city-attending-ical.ics', $events);
+
+        return $calendar;
+    }
+
     
     /**
      * Reset the filtering of events the user is attending.
