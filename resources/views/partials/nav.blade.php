@@ -37,17 +37,20 @@
 		          <ul class="dropdown-menu" aria-labelledby="entity-dropdown">
 					<li class="{{ Request::is('entities') ? 'active' : '' }}">
 						<a href="{{ url('/entities') }}" class="dropdown-item">Entity Index</a>
+						<li class="{{ Request::is('entities/following') ? 'active' : '' }}">
+							<a href="{{ url('/entities/following') }}" class="dropdown-item">Entities Following</a>
+						</li>
+						<li class="{{ Request::is('entities/create') ? 'active' : '' }}">
+							<a href="{!! url('/entities/create') !!}" class="dropdown-item">Add Entity</a>
+						</li>
 					</li>
+					<li role="separator" class="divider"><hr class="dropdown-divider"></li>
 		          @foreach ($roles as $role)
 		          	<li class="{{ Request::is(strtolower('entities/role/'.$role->name)) ? 'active' : '' }}">
 						<a href="{{ url('/entities/role/'.strtolower($role->name)) }}" class="dropdown-item">{{ $role->name }}</a></li>
 		          @endforeach
-					<li class="{{ Request::is('entities/following') ? 'active' : '' }}">
-						<a href="{{ url('/entities/following') }}" class="dropdown-item">Entities Following</a>
-					</li>
-		            <li class="{{ Request::is('entities/create') ? 'active' : '' }}">
-						<a href="{!! url('/entities/create') !!}" class="dropdown-item">Add Entity</a>
-					</li>
+
+
 		          </ul>
 		        </li>
 				<li class="nav-item dropdown {{ Request::is('calendar') ? 'active' : '' }}">
