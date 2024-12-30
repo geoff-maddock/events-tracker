@@ -17,7 +17,7 @@
 		@foreach ($events as $event)
 		<li class="list-group-item">
 			<a href="events/{{ $event->id }}">{{ $event->name }}</a>
-			<a class="btn btn-default" href="events/{{ $event->id }}/importPhoto">Import Photo</a>
+			<a class="btn btn-default" href="events/{{ $event->id }}/import-photo">Import Photo</a>
 		 </li>
 		@endforeach
 	@endif

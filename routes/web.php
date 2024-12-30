@@ -162,8 +162,8 @@ Route::post('purge', 'UsersController@purge')->name('users.purge');
 Route::match(['get', 'post'], 'users/{id}/attending', 'EventsController@indexUserAttending')->name('users.attending');
 Route::match(['get', 'post'], 'users/{id}/attending-ical', 'EventsController@indexUserAttendingIcal')->name('users.attendingIcal');
 Route::match(['get', 'post'], 'users/{id}/interested-ical', 'EventsController@indexUserInterestedIcal')->name('users.interestedIcal');
-Route::match(['get', 'post'], 'users/{id}/resetUserAttending', ['as' => 'users.resetUserAttending', 'uses' => 'EventsController@resetUserAttending']);
-Route::get('users/{id}/rppResetUserAttending', ['as' => 'users.rppResetUserAttending', 'uses' => 'EventsController@rppResetUserAttending']);
+Route::match(['get', 'post'], 'users/{id}/reset-user-attending', ['as' => 'users.resetUserAttending', 'uses' => 'EventsController@resetUserAttending']);
+Route::get('users/{id}/rpp-reset-user-attending', ['as' => 'users.rppResetUserAttending', 'uses' => 'EventsController@rppResetUserAttending']);
 
 Route::match(['get', 'post'], 'users/filter', ['as' => 'users.filter', 'uses' => 'UsersController@filter']);
 Route::get('users/reset', ['as' => 'users.reset', 'uses' => 'UsersController@reset']);
@@ -177,10 +177,10 @@ Route::get('profile', 'UsersController@profile')->name('users.profile');
 Route::get('photos/reset', ['as' => 'photos.reset', 'uses' => 'PhotosController@reset']);
 Route::get('photos/rpp-reset', ['as' => 'photos.rppReset', 'uses' => 'PhotosController@rppReset']);
 Route::delete('photos/{id}', 'PhotosController@destroy');
-Route::post('photos/{id}/setPrimary', 'PhotosController@setPrimary');
-Route::post('photos/{id}/unsetPrimary', 'PhotosController@unsetPrimary');
-Route::post('photos/{id}/setEvent', 'PhotosController@setEvent');
-Route::post('photos/{id}/unsetEvent', 'PhotosController@unsetEvent');
+Route::post('photos/{id}/set-primary', 'PhotosController@setPrimary');
+Route::post('photos/{id}/unset-primary', 'PhotosController@unsetPrimary');
+Route::post('photos/{id}/set-event', 'PhotosController@setEvent');
+Route::post('photos/{id}/unset-event', 'PhotosController@unsetEvent');
 Route::get('photos/tag/{tag}', 'PhotosController@indexTags')->name('photos.tag');
 
 Route::match(['get', 'post'], 'photos/filter', ['as' => 'photos.filter', 'uses' => 'PhotosController@filter']);
@@ -192,11 +192,11 @@ Route::bind('photos', function ($id) {
 Route::resource('photos', 'PhotosController');
 
 // EVENTS
-Route::get('events/createSeries', [
+Route::get('events/create-series', [
     'as' => 'events.createSeries',
     'uses' => 'EventsController@createSeries',
 ]);
-Route::get('events/createThread', [
+Route::get('events/create-thread', [
     'as' => 'events.createThread',
     'uses' => 'EventsController@createThread',
 ]);
@@ -248,7 +248,8 @@ Route::get('events/rpp-reset', ['as' => 'events.rppReset', 'uses' => 'EventsCont
 Route::get('fb-access', 'EventsController@fbAuthToken');
 
 // POST to Instagram
-Route::get('events/{id}/instagram-post', 'EventsController@postToInstagram')->name('events.instagramPost');
+Route::get('events/{id}/instagram-post', 'EventsController@postCarouselToInstagram')->name('events.instagramPost');
+Route::get('events/{id}/instagram-post-single', 'EventsController@postToInstagram')->name('events.instagramPostSingle');
 Route::get('events/instagram-post-week', 'EventsController@postWeekToInstagram')->name('events.instagramPostWeek');
 
 Route::get('events/tag/{tag}', 'EventsController@indexTags')->name('events.tag');
@@ -275,12 +276,12 @@ Route::get(
     ]
 );
 
-Route::get('events/{id}/generateImage', [
+Route::get('events/{id}/generate-image', [
     'as' => 'events.generateImage',
     'uses' => 'EventsController@generateImage',
 ]);
 
-Route::get('events/{id}/importPhoto', [
+Route::get('events/{id}/import-photo', [
     'as' => 'events.importPhoto',
     'uses' => 'EventsController@importPhoto',
 ]);
