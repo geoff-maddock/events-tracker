@@ -921,6 +921,8 @@ class Event extends Model
    // Format the event to post tp instagram
    public function getInstagramFormat(): ?string
    {
+        $maxLength = 2100;
+
        // no max length
        // add the date and name - always include this
        $format = $this->start_at->format('l F jS Y').' | '.$this->name;
@@ -977,16 +979,26 @@ class Event extends Model
        // add default hashtag
         $format .= ' #'.config('app.default_hashtag');
 
+        $format .= "\n";
+
        // add the arcane city URL
         $format .= ' https://arcane.city/events/'.$this->id;
 
        // add the primary link
        if ($this->primary_link) {
-           // if there are at least 23 chars remaining, add primary link
-           if (strlen($format) < 258) {
+           if (strlen($format) + strlen($this->primary_lnik) < $maxLength) {
                $format .= ' '.$this->primary_link;
            }
        }
+
+       // add the description if possible
+         if ($this->description) {
+              if (strlen($format) + strlen($this->description) < $maxLength) {
+                $format .= "\n\n-----\n";
+                $format .= "More info\n";
+                $format .= ' '.$this->description;
+              }
+         }
 
        return $format;
     }
