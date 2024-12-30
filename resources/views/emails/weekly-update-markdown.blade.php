@@ -32,7 +32,7 @@ Here are the event series you follow that are forthcoming.
 @endif
 
 @if (count($events) == 0 && count($seriesList) == 0)
-You have no events specifically happening this week.
+You have no events that you have marked yourself attending happening this week.
 @endif
 
 @if (count($interests) > 0)
