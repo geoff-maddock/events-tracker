@@ -52,7 +52,7 @@
 
 			@if ($entity->description)
 				<b>Description</b><br>
-				<i>{{ $entity->description }}</i><br><br>
+				{{ $entity->description }}<br><br>
 			@endif
 
 				{{ count($entity->follows) }} Follows |
@@ -160,7 +160,11 @@
 			@unless ($entity->contacts->isEmpty())
 				<P><b>Contacts</b><br>
 				@foreach ($entity->contacts as $contact)
-				<span><B>{{ $contact->name }}</B>  {{ $contact->email ?? '' }} {{ $contact->phone ?? '' }}
+				<span><B>{{ $contact->name }}</B> 
+					@if ($contact->email)
+						<a href="mailto:{{ $contact->email }}" title="Email this contact.">{{ $contact->email }}</a>
+					@endif
+					 {{ $contact->phone ?? '' }}
 						@if ($signedIn && $entity->ownedBy($user))
 						<a href="{!! route('entities.contacts.edit', ['entity' => $entity->slug, 'contact' => $contact->id]) !!}"  title="Edit this contact.">
 							<i class="bi bi-pencil"></i>
