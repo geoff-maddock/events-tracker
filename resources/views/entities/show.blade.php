@@ -277,9 +277,9 @@
 					@if ($user && (Auth::user()->id == ($entity->user ? $entity->user?->id : null) || $user->id == Config::get('app.superuser')))
 						{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning', $photo, 'DELETE', 'Delete the photo') !!}
 						@if ($photo->is_primary)
-						{!! link_form_bootstrap_icon('bi bi-star-fill text-primary', '/photos/'.$photo->id.'/unsetPrimary', 'POST', 'Primary Photo [Click to unset]') !!}
+						{!! link_form_bootstrap_icon('bi bi-star-fill text-primary', '/photos/'.$photo->id.'/unset-primary', 'POST', 'Primary Photo [Click to unset]') !!}
 						@else
-						{!! link_form_bootstrap_icon('bi bi-star text-info', '/photos/'.$photo->id.'/setPrimary', 'POST', 'Set as primary photo') !!}
+						{!! link_form_bootstrap_icon('bi bi-star text-info', '/photos/'.$photo->id.'/set-primary', 'POST', 'Set as primary photo') !!}
 						@endif
 					@endif
 				</div>

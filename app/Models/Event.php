@@ -986,7 +986,7 @@ class Event extends Model
 
        // add the primary link
        if ($this->primary_link) {
-           if (strlen($format) + strlen($this->primary_lnik) < $maxLength) {
+           if (strlen($format) + strlen($this->primary_link) < $maxLength) {
                $format .= ' '.$this->primary_link;
            }
        }
