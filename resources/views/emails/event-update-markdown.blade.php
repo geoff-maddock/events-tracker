@@ -4,8 +4,9 @@
 
 @endif
 ## {{ $event->name }}  
-**{!! $event->start_at->format('g:i A') !!} {!! $event->end_time ? 'until '.$event->end_time->format('g:i A') : '' !!}**  
-*{{ $event->short }}* [Link]({{ $url }}events/{{$event->id }}) 
+**{!! $event->start_at->format('g:i A') !!}{!! $event->end_time ? ' until '.$event->end_time->format('g:i A') : '' !!}**  
+{!! $event->short ? '*'.$event->short.'*' : '' !!}
+[Link]({{ $url }}events/{{$event->id }}) 
 
 @if (!empty($event->series_id))
 [{!! $event->series->name !!}]({{ $url }}series/{{$event->series_id }}) series  

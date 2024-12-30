@@ -523,6 +523,8 @@ class UsersController extends Controller
         return back();
     }
 
+
+
     /**
      * Send a weekly site update reminder to the user.
      */

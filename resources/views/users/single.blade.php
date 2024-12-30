@@ -45,13 +45,6 @@
 				</a>
 			@endif
 		@endcan
-		@can('grant_access')
-		@if ($user->isActive)
-			<a href="{!! route('users.attendingIcal', ['id' => $user->id]) !!}">
-				<i class="bi bi-envelope-fill card-actions" title='Ical Link'></i>
-			</a>
-		@endif
-		@endcan
 	@endif
 
 	<ul class="list d-inline">

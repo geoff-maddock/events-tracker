@@ -32,11 +32,6 @@
                     </a>
                 @endif
                 @endcan
-                @can('impersonate_user')
-                <a href="{!! route('user.impersonate', ['user' => $user->id]) !!}" title="Impersonate user"  class="btn btn-primary confirm">
-                    Impersonate
-                </a>
-                @endif
                 @if ($user->isActive)
 				<a href="{!! route('users.weekly', ['id' => $user->id]) !!}"  class="btn btn-primary confirm">
 					Send Weekly Update
@@ -44,6 +39,11 @@
 			    @endif
 
                 <a href="{{ url('/password/reset') }}" class="btn btn-primary">Reset Password</a>
+                @can('impersonate_user')
+                <a href="{!! route('user.impersonate', ['user' => $user->id]) !!}" title="Impersonate user"  class="btn btn-primary confirm">
+                    Impersonate
+                </a>
+                @endif
                 {!! delete_form(['users.destroy', $user->id]) !!}
             @endif
 
@@ -179,7 +179,7 @@
                                     </li>
                                 </ul>
                                 <div class="card-body">
-                                    @include('events.list', ['events' => $user->events ? $user->events->take(20) : null])
+                                    @include('events.list', ['events' => $user->events ? $user->events->take(10) : null])
 
                                     <div class="d-block" id="created-events">
                                         <div class="col-sm-12">
