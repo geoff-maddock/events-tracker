@@ -3,6 +3,7 @@
 @section('title', $entity->getTitleFormat())
 
 @section('og-description', $entity->short)
+@section('description', $entity->short)
 
 @section('og-image')
 @if ($photo = $entity->getPrimaryPhoto()){{ Storage::disk('external')->url($photo->getStoragePath()) }}@endif

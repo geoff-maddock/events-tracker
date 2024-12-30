@@ -12,6 +12,7 @@
 
 @section('title', $event->getDateLastTitleFormat())
 @section('og-description', $event->short)
+@section('description', $event->short)
 
 @section('og-image')
 @if ($photo = $event->getPrimaryPhoto()){{ Storage::disk('external')->url($photo->getStoragePath()) }}@endif
