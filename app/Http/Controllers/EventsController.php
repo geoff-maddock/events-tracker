@@ -2201,6 +2201,37 @@ class EventsController extends Controller
 
         Log::info('Carousel photo uploaded: '.$id);
 
+        // add other photos related to the event to the carousel
+        foreach ($event->getOtherPhotos() as $otherPhotos) {
+            $imageUrl = Storage::disk('external')->url($otherPhotos->getStoragePath());
+
+            if (!$imageUrl) {
+                flash()->error('Error', 'You must have an image url to post to Instagram');
+                Log::info('No image url found for event: '.$event->id);
+                continue;
+            }
+
+            try {
+                $igContainerId = $instagram->uploadCarouselPhoto($imageUrl);
+            } catch (Exception $e) {
+                flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
+                Log::info('Carousel photo error: '. $e->getMessage());
+                return back();
+            }
+
+            // check the container status every 5 seconds until status_code is FINISHED
+            if ($instagram->checkStatus($igContainerId) === false) {
+                flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
+                Log::info('Error checking status of carousel photo');
+                return back();
+            }
+
+            $igContainerIds[] = $igContainerId;
+            Log::info('Added container id: '.$igContainerId);
+
+            Log::info('Carousel photo uploaded: '.$id);
+        }
+
         // only do this if there are any other related photos
         foreach ($event->entities as $entity) {
             foreach ($entity->photos as $photo) {
