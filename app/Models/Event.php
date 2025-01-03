@@ -760,6 +760,16 @@ class Event extends Model
     }
 
     /**
+     * Return the primary photo for this event.
+     *
+     **/
+    public function getOtherPhotos(): Collection
+    {
+        // gets any other photos related to this event
+        return $this->photos()->where('photos.is_primary', '=', '0')->get();
+    }
+
+    /**
      * Create the slug from the name if none was passed.
      */
     public function setSlugAttribute(?string $value): void
