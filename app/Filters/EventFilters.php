@@ -89,13 +89,14 @@ class EventFilters extends QueryFilter
             if (!is_array($value)) {
                 return $this->builder;
             }
-
+        
             if (isset($value['start']) && $start = $value['start']) {
-                $this->builder->whereDate('start_at', '>=', $start);
+
+                $this->builder->where('start_at', '>=', $start);
             }
 
             if (isset($value['end']) && $end = $value['end']) {
-                $this->builder->whereDate('start_at', '<=', $end);
+                $this->builder->where('start_at', '<=', $end);
             }
 
             return $this->builder;
@@ -115,11 +116,11 @@ class EventFilters extends QueryFilter
             }
 
             if (isset($value['start']) && $start = $value['start']) {
-                $this->builder->whereDate('end_at', '>=', $start);
+                $this->builder->where('end_at', '>=', $start);
             }
 
             if (isset($value['end']) && $end = $value['end']) {
-                $this->builder->whereDate('end_at', '<=', $end);
+                $this->builder->where('end_at', '<=', $end);
             }
 
             return $this->builder;
