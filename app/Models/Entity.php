@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Str;
+use Storage;
 
 /**
  * App\Models\Entity.
@@ -528,6 +529,30 @@ class Entity extends Eloquent
         $primary = $this->photos()->where('photos.is_primary', '=', '1')->first();
 
         return $primary;
+    }
+
+    // returns the actual path to the primary photo
+    public function getPrimaryPhotoPath(): ?string
+    {
+        $photo = $this->getPrimaryPhoto();
+
+        if ($photo) {
+            return Storage::disk('external')->url($photo->getStoragePath());
+        }                    
+
+        return null;
+    }
+
+    // returns the actual path to the thumbnail
+    public function getPrimaryPhotoThumbnailPath(): ?string
+    {
+        $photo = $this->getPrimaryPhoto();
+
+        if ($photo) {
+            return Storage::disk('external')->url($photo->getStorageThumbnail());
+        }                    
+
+        return null;
     }
 
     /**
