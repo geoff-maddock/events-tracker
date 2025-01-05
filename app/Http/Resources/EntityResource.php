@@ -31,6 +31,7 @@ class EntityResource extends JsonResource
         'started_at' => $this->started_at,
         'links' => $this->links,
         'tags' => $this->tags,
+        'roles' => $this->roles,
         'created_by' => $this->created_by,
         'updated_by' => $this->updated_by,
         'created_at' => $this->created_at,
