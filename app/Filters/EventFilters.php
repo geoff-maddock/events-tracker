@@ -19,7 +19,7 @@ class EventFilters extends QueryFilter
     {
         if (isset($value)) {
             return $this->builder->whereHas('venue', function ($q) use ($value) {
-                $q->where('name', '=', ucfirst($value));
+                $q->where('name','like', '%'.$value.'%');
             });
         } else {
             return $this->builder;
