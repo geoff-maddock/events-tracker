@@ -54,6 +54,76 @@ components:
       type: http
       scheme: basic
   schemas:
+    Blog:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          maxLength: 255
+          description: A name of an blog
+          example: Group
+        slug:
+          type: string
+          maxLength: 255
+          description: A unique identifier name for the blog in kebab-case
+          example: group-slug
+        description:
+          type: string
+          example: Here is a short blog
+          description: A brief description of the blog
+          maxLength: 255
+        visibility_id:
+          type: integer
+          readOnly: true
+          example: 1
+          description: Relation to the visibility table that defines the visibility of the blog
+        content_type_id:
+          type: integer
+          readOnly: true
+          example: 1
+          description: Relation to the content type of the blog
+        body:
+          type: string
+          example: Here is a short blog
+          description: Main body of the blog
+          maxLength: 65535
+        menu_id:
+          type: integer
+          readOnly: true
+          example: 1
+          description: Relation to the menu of the blog
+        sort_order:
+          type: string
+          example: ASC
+          description: Sort order of the blog
+          maxLength: 255
+        created_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the entity type was created
+          readOnly: true
+        updated_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the entity type was last updated
+          readOnly: true
+    Blogs:
+      allOf: [$ref: "#/components/schemas/Pagination"]
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of the current page of blogs
+          items:
+            "$ref": "#/components/schemas/Blog"
     Embeds:
       allOf: [$ref: "#/components/schemas/Pagination"]
       type: object
@@ -1647,6 +1717,126 @@ components:
 security:
   - basicAuth: []
 paths:
+  /api/blogs:
+    get:
+      tags:
+        - blogs
+      summary: Get Blogs
+      operationId: getBlogs
+      parameters:
+        - name: filters[name]
+          in: query
+          required: false
+          description: A filter query of the blog name
+          schema:
+            type: string
+          example: Blog Title
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+          example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+          example: asc
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pagination"
+    post:
+      tags:
+        - blogs
+      summary: Create blog
+      operationId: createBlog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Blog"
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json: {}
+  /api/blogs/{blogId}:
+    get:
+      parameters:
+        - name: blogId
+          description: The unique identifier of the blog
+          in: path
+          required: true
+          schema:
+            description: The unique identifier of an blog
+            type: integer
+            readOnly: true
+          example: 1
+      tags:
+        - blogs
+      summary: Get Blog
+      operationId: getBlogById
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Blog"
+    put:
+      parameters:
+        - name: blogId
+          description: The unique identifier of the blog
+          in: path
+          required: true
+          schema:
+            description: The unique identifier of a blog
+            type: integer
+            readOnly: true
+          example: 1
+      tags:
+        - blogs
+      summary: Update Blog
+      operationId: updateBlogById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Blog"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Blog"
+    delete:
+      parameters:
+        - name: blogId
+          description: The unique identifier of the blog
+          in: path
+          required: true
+          schema:
+            description: The unique identifier of a blog
+            type: integer
+            readOnly: true
+          example: 1
+      tags:
+        - blogs
+      summary: Delete Blog
+      operationId: deleteBlogById
+      responses:
+        "204":
+          description: Successful response
+          content:
+            application/json: {}
   /api/events:
     post:
       tags:

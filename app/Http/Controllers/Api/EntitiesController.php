@@ -24,9 +24,6 @@ use App\Services\ImageHandler;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
 use Carbon\Carbon;
-use DOMDocument;
-use DOMXPath;
-use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -64,7 +61,6 @@ class EntitiesController extends Controller
 
     public function __construct(EntityFilters $filter)
     {
-        // $this->middleware('auth', ['only' => ['store', 'update', 'follow']]);
         $this->filter = $filter;
 
         // prefix for session storage

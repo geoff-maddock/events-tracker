@@ -24,10 +24,14 @@ Route::middleware('auth.basic')->name('api.')->group(function () {
         return ['token' => $token->plainTextToken];
     });
 
+
+    Route::match(['get', 'post'], 'blogs/filter', ['as' => 'blogss.filter', 'uses' => 'Api\BlogsController@filter']);
+    Route::get('blogs/reset', ['as' => 'links.reset', 'uses' => 'Api\BlogsController@reset']);
+    Route::get('blogs/rpp-reset', ['as' => 'blogs.rppReset', 'uses' => 'Api\BlogsController@rppReset']);
+    Route::resource('blogs', 'Api\BlogsController');
     
     Route::get('events/{event}/embeds', ['as' => 'events.embeds', 'uses' => 'Api\EventsController@embeds']);
     Route::get('events/reset', ['as' => 'events.reset', 'uses' => 'Api\EventsController@reset']);
-
 
     Route::get('events/reset', ['as' => 'events.reset', 'uses' => 'Api\EventsController@reset']);
     Route::get('events/rpp-reset', ['as' => 'events.rppReset', 'uses' => 'Api\EventsController@rppReset']);
