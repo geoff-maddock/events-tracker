@@ -1990,18 +1990,16 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /api/events/{eventId}:
+  /api/events/{slug}:
     get:
       parameters:
-        - name: eventId
-          description: The unique identifier of the event
+        - name: slug
+          description: The unique identifier of the entity
           in: path
           required: true
-          example: 1
           schema:
-            type: integer
-            readOnly: true
-            example: 1
+            type: string
+          example: cutups-event
       tags:
         - events
       summary: Get Event
@@ -2015,15 +2013,15 @@ paths:
                 $ref: "#/components/schemas/EventResponse"
     put:
       parameters:
-        - name: eventId
-          description: The unique identifier of the event
+        - name: slug
+          description: A unique string identifier of the event
           in: path
           required: true
           example: 1
           schema:
-            type: integer
+            type: string
             readOnly: true
-            example: 1
+            example: cutups-event
       tags:
         - events
       summary: Update Events
@@ -2042,15 +2040,15 @@ paths:
                 $ref: "#/components/schemas/EventResponse"
     delete:
       parameters:
-        - name: eventId
-          description: The unique identifier of the event
+        - name: slug
+          description: A unique string identifier of the event
           in: path
           required: true
           example: 1
           schema:
-            type: integer
+            type: string
             readOnly: true
-            example: 1
+            example: cutups-event
       tags:
         - events
       summary: Delete Event
