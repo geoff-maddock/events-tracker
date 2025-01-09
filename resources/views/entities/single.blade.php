@@ -102,7 +102,7 @@
 		@if ($events = $entity->futureEvents()->take(1))
 		@foreach ($events as $event)
 		<li>Next Event:
-			<b>{{ $event->start_at->format('m.d.y') }}</b> {!! link_to_route('events.show', $event->name, [$event->id]) !!}
+			<b>{{ $event->start_at->format('m.d.y') }}</b> {!! link_to_route('events.show', $event->name, [$event->slug]) !!}
 		</li>
 		@php unset($event) @endphp
 		@endforeach
@@ -110,7 +110,7 @@
 		@if ($events = $entity->pastEvents()->take(1))
 		@foreach ($events as $event)
 		<li>Past Event:
-			<b>{{ $event->start_at->format('m.d.y') }}</b> {!! link_to_route('events.show', $event->name, [$event->id]) !!}
+			<b>{{ $event->start_at->format('m.d.y') }}</b> {!! link_to_route('events.show', $event->name, [$event->slug]) !!}
 		</li>
 		@php unset($event) @endphp
 		@endforeach
