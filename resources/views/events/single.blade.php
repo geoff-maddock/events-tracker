@@ -2,7 +2,7 @@
 	@if ($primary = $event->getPrimaryPhoto())
 	<div class="event-list-thumbnail">
 		<a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}" 
-			data-title="{!! $event->start_at->format('l F jS Y') !!} <a href='/events/{{ $event->id }}'>{{ $event->name }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ $event->venue ? $event->venue->name : '' }}</a>"
+			data-title="{!! $event->start_at->format('l F jS Y') !!} <a href='/events/{{ $event->slug }}'>{{ $event->name }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ $event->venue ? $event->venue->name : '' }}</a>"
 			data-lightbox="{{ $primary->path }}"
 			data-toggle="tooltip" data-placement="bottom"
 			title="Click to see enlarged image.">
@@ -12,7 +12,7 @@
 	@else
 	<div class="event-list-thumbnail">
 		<a href="/images/event-placeholder.png" 
-        data-title="{!! $event->start_at->format('l F jS Y') !!} <a href='/events/{{ $event->id }}'>{{ $event->name }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ $event->venue ? $event->venue->name : '' }}</a>"
+        data-title="{!! $event->start_at->format('l F jS Y') !!} <a href='/events/{{ $event->slug }}'>{{ $event->name }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ $event->venue ? $event->venue->name : '' }}</a>"
         data-lightbox="/images/event-placeholder.png"
         data-toggle="tooltip" data-placement="bottom"
 		title="Click to see enlarged image.">
@@ -29,7 +29,7 @@
 	<!-- ACTIONS -->
 	<span>
 		@if ($signedIn && ($event->ownedBy($user) || $user->hasGroup('super_admin')))
-		<a href="{!! route('events.edit', ['event' => $event->id]) !!}"
+		<a href="{!! route('events.edit', ['event' => $event->slug]) !!}"
 			title="Edit this event." alt="Edit {{ $event->name }}"  aria-label="Edit {{ $event->name}}">
 			<i class="bi bi-pencil-fill card-actions"></i>
 		</a>
@@ -84,9 +84,7 @@
 	</div>
 	@endif
 	<div>
-		{!! link_to_route('events.show', $event->name, [$event->id], ['class' => 'item-title', 'alt' =>
-		$event->name,
-		'aria-label' => $event->name]) !!}
+		{!! link_to_route('events.show', $event->name, [$event->slug], ['class' => 'item-title', 'alt' => $event->name,	'aria-label' => $event->name]) !!}
 		<br>
 		@if (!empty($event->series_id))
 		<a href="/series/{{$event->series_id }}">{!! $event?->series?->name !!}</a> series

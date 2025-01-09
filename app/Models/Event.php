@@ -144,6 +144,13 @@ class Event extends Model
         });
     }
 
+    public function getRouteKeyName(): string
+    {
+        \Log::info('Route key name called for Event');
+        \Log::info('Slug value: ' . $this->slug);
+        return 'slug';
+    }
+
     protected $fillable = [
         'name',
         'slug',
@@ -179,7 +186,7 @@ class Event extends Model
 
     public function resolveRouteBinding($value, $field = null)
     {
-        return $this->with('photos', 'entities')->where('id', $value)->firstOrFail();
+        return $this->with('photos', 'entities')->where('slug', $value)->orWhere('id', $value)->firstOrFail();
     }
 
 
