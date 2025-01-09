@@ -3234,22 +3234,6 @@ class EventsController extends Controller
 
 
     /**
-     * Display an event when passed the slug.
-     *
-     * @return Response|string
-     *
-     * @throws \Throwable
-     */
-    public function indexSlug(string $slug)
-    {
-        $event = Event::getBySlug(strtolower($slug))->firstOrFail();
-
-        return view('events.show')
-            ->with(compact('event'))
-            ->render();
-    }
-
-    /**
      * Display a listing of events that start on the specified day.
      *
      * @return View
