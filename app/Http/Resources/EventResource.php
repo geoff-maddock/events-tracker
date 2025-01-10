@@ -44,6 +44,7 @@ class EventResource extends JsonResource
             'primary_link' => $this->primary_link,
             'ticket_link' => $this->ticket_link,
             'tags' => $this->tags,
+            'entities' => $this->entities,
             'created_by' => $this->created_by,
             'updated_by' => $this->updated_by,
             'created_at' => $this->created_at,
