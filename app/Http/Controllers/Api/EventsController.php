@@ -20,7 +20,6 @@ use App\Models\Follow;
 use App\Models\OccurrenceDay;
 use App\Models\OccurrenceType;
 use App\Models\OccurrenceWeek;
-use App\Models\Photo;
 use App\Models\ResponseType;
 use App\Models\Series;
 use App\Models\Tag;
@@ -31,23 +30,17 @@ use App\Notifications\EventPublished;
 use App\Services\Embeds\EmbedExtractor;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
-use App\Services\StringHelper;
 use Carbon\Carbon;
-use Exception;
 use FacebookAds\Api as Api;
-use FacebookAds\Object\Event as ObjectEvent;
-use FacebookAds\Object\Fields\EventFields;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class EventsController extends Controller
 {
@@ -129,8 +122,8 @@ class EventsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder
     ): JsonResponse {
         // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_index');
+        $listParamSessionStore->setBaseIndex('api_event');
+        $listParamSessionStore->setKeyPrefix('api_event_index');
 
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
@@ -138,6 +131,8 @@ class EventsController extends Controller
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = Event::query()
                     ->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')
+                    ->leftJoin('entities as venue', 'events.venue_id', '=', 'venue.id')
+                    ->leftJoin('entities as promoter', 'events.promoter_id', '=', 'promoter.id')
                     ->select('events.*')
         ;
 

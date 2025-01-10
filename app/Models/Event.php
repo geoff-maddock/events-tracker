@@ -355,13 +355,13 @@ class Event extends Model
     public function scopeVisible(Builder $query, ?User $user): Builder
     {
         return $query->where(function ($query) use ($user) {
-            $query->whereIn('visibility_id', [Visibility::VISIBILITY_PROPOSAL, Visibility::VISIBILITY_PRIVATE])
-                ->where('created_by', '=', $user ? $user->id : null);
+            $query->whereIn('events.visibility_id', [Visibility::VISIBILITY_PROPOSAL, Visibility::VISIBILITY_PRIVATE])
+                ->where('events.created_by', '=', $user ? $user->id : null);
             // if logged in, can see guarded
             if ($user) {
-                $query->orWhere('visibility_id', '=', Visibility::VISIBILITY_GUARDED);
+                $query->orWhere('events.visibility_id', '=', Visibility::VISIBILITY_GUARDED);
             }
-            $query->orWhere('visibility_id', '=', Visibility::VISIBILITY_PUBLIC);
+            $query->orWhere('events.visibility_id', '=', Visibility::VISIBILITY_PUBLIC);
 
             return $query;
         });
