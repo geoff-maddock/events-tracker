@@ -81,7 +81,7 @@ $ npm install
 * Generate basic auth u/p and configure in .env as per [Laravel Shield](https://github.com/vinkla/laravel-shield)
 
 ##### API Documentation
-* [API Documentation](docs/api.md)
+* [API Documentation](docs/api_notes.md)
 
 #### Bug Reports & Feature Requests
 

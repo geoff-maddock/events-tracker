@@ -1,14 +1,30 @@
 <?php
-use App\Models\Entity;
-use App\Models\Series;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
+    // validate the token
     Route::get('tokens/validate', function () {
         return ['data' => 'token is valid'];
     });
+
+    // invalidate the token
+    Route::get('tokens/invalidate', function (Request $request) {
+        $request->user()->tokens()->delete();
+        return ['data' => 'token invalidated'];
+    });
+
+    // check if the user can view a profile
+    Route::get('tokens/profile', function (Request $request) {
+        if ($request->user()->tokenCan('user:view-profile')) {
+            // can view profile
+            return ['data' => 'user can view the profile for '. $request->user()->name];
+        } else {
+            // cannot view profile
+            return ['data' => 'user cannot view the profile for '. $request->user()->name];
+        }
+    });
+
 });
 
 Route::middleware('auth:sanctum')->get('tokens/test', function (Request $request) {
@@ -18,12 +34,18 @@ Route::middleware('auth:sanctum')->get('tokens/test', function (Request $request
 
 Route::middleware('auth.basic')->name('api.')->group(function () {
 
+    // creating a token requires basic auth for the user
     Route::post('/tokens/create', function (Request $request) {
-        $token = $request->user()->createToken($request->token_name, ['event:check']);
+
+        // create the token and add abilities
+        $token = $request->user()->createToken($request->token_name, ['user:view-profile','event:show']);
      
         return ['token' => $token->plainTextToken];
     });
 
+});
+
+Route::middleware('auth.either')->name('api.')->group(function () {
 
     Route::match(['get', 'post'], 'blogs/filter', ['as' => 'blogss.filter', 'uses' => 'Api\BlogsController@filter']);
     Route::get('blogs/reset', ['as' => 'links.reset', 'uses' => 'Api\BlogsController@reset']);
@@ -56,14 +78,10 @@ Route::middleware('auth.basic')->name('api.')->group(function () {
     Route::get('event-types/rpp-reset', ['as' => 'event-types.rppReset', 'uses' => 'Api\EventTypesController@rppReset']);
     Route::resource('event-types', 'Api\EventTypesController');
 
-    Route::get('series/reset', ['as' => 'series.reset', 'uses' => 'Api\SeriesController@reset']);
-    Route::get('series/rpp-reset', ['as' => 'series.rppReset', 'uses' => 'Api\SeriesController@rppReset']);
-    Route::resource('series', 'Api\SeriesController');
-
-    Route::match(['get', 'post'], 'tags/filter', ['as' => 'tags.filter', 'uses' => 'Api\TagsController@filter']);
-    Route::get('tags/reset', ['as' => 'tags.reset', 'uses' => 'Api\TagsController@reset']);
-    Route::get('tags/rpp-reset', ['as' => 'tags.rppReset', 'uses' => 'Api\TagsController@rppReset']);
-    Route::resource('tags', 'Api\TagsController');
+    Route::match(['get', 'post'], 'forums/filter', ['as' => 'forums.filter', 'uses' => 'Api\ForumsController@filter']);
+    Route::get('forums/reset', ['as' => 'forums.reset', 'uses' => 'Api\ForumsController@reset']);
+    Route::get('forums/rpp-reset', ['as' => 'forums.rppReset', 'uses' => 'Api\ForumsController@rppReset']);
+    Route::resource('forums', 'Api\ForumsController');
 
     Route::match(['get', 'post'], 'links/filter', ['as' => 'links.filter', 'uses' => 'Api\LinksController@filter']);
     Route::get('links/reset', ['as' => 'links.reset', 'uses' => 'Api\LinksController@reset']);
@@ -75,11 +93,24 @@ Route::middleware('auth.basic')->name('api.')->group(function () {
     Route::get('locations/rpp-reset', ['as' => 'locations.rppReset', 'uses' => 'Api\LocationsController@rppReset']);
     Route::resource('locations', 'Api\LocationsController');
 
+    Route::get('series/reset', ['as' => 'series.reset', 'uses' => 'Api\SeriesController@reset']);
+    Route::get('series/rpp-reset', ['as' => 'series.rppReset', 'uses' => 'Api\SeriesController@rppReset']);
+    Route::resource('series', 'Api\SeriesController');
+
+    Route::match(['get', 'post'], 'tags/filter', ['as' => 'tags.filter', 'uses' => 'Api\TagsController@filter']);
+    Route::get('tags/reset', ['as' => 'tags.reset', 'uses' => 'Api\TagsController@reset']);
+    Route::get('tags/rpp-reset', ['as' => 'tags.rppReset', 'uses' => 'Api\TagsController@rppReset']);
+    Route::resource('tags', 'Api\TagsController');
+
+    Route::match(['get', 'post'], 'threads/filter', ['as' => 'threads.filter', 'uses' => 'Api\ThreadsController@filter']);
+    Route::get('threads/reset', ['as' => 'threads.reset', 'uses' => 'Api\ThreadsController@reset']);
+    Route::get('threads/rpp-reset', ['as' => 'threads.rppReset', 'uses' => 'Api\ThreadsController@rppReset']);
+    Route::resource('threads', 'Api\ThreadsController');
+
     Route::match(['get', 'post'], 'users/filter', ['as' => 'users.filter', 'uses' => 'Api\UsersController@filter']);
     Route::get('users/reset', ['as' => 'users.reset', 'uses' => 'Api\UsersController@reset']);
     Route::get('users/rpp-reset', ['as' => 'users.rppReset', 'uses' => 'Api\UsersController@rppReset']);
     Route::resource('users', 'Api\UsersController');
-
 });
 
 // routes protected by the shield middleware

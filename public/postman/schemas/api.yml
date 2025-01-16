@@ -822,6 +822,60 @@ components:
           description: List of the current page of events
           items:
             "$ref": "#/components/schemas/EventType"
+    Forum:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          maxLength: 255
+          description: A name of a forum
+          example: Forum
+        slug:
+          type: string
+          maxLength: 255
+          description: A unique identifier name for the forum in kebab-case
+          example: forum-slug
+        short:
+          type: string
+          example: The short description of a forum
+          description: A brief description of the forum
+          maxLength: 255
+        description:
+          type: string
+          example: An extensive breakdown of the forum
+          description: An extensive breakdown of the forum
+        visibility_id:
+          type: integer
+          readOnly: true
+          example: 1
+          description: Relation to the visibility table that defines the visibility of the blog
+        created_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the entity type was created
+          readOnly: true
+        updated_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the entity type was last updated
+          readOnly: true
+    Forums:
+      allOf: [$ref: "#/components/schemas/Pagination"]
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of the current page of threads
+          items:
+            "$ref": "#/components/schemas/Forum"
     Link:
       type: object
       required:
@@ -1628,6 +1682,14 @@ components:
             data:
               type: array
               items: { "$ref": "#/components/schemas/UserResponse" }
+    UserTokenResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: Valid user token
+          example: ABCDEF12345
+          maxLength: 255
     Visibility:
       type: object
       required:
@@ -2554,6 +2616,126 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /api/forums:
+    get:
+      tags:
+        - forums
+      summary: Get Forums
+      operationId: getForums
+      parameters:
+        - name: filters[name]
+          in: query
+          required: false
+          description: A filter query of the forum name
+          schema:
+            type: string
+          example: Blog Title
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+          example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+          example: asc
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Forums"
+    post:
+      tags:
+        - forums
+      summary: Create forum
+      operationId: createForum
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Forum"
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json: {}
+  /api/forums/{forumId}:
+    get:
+      parameters:
+        - name: forumId
+          description: The unique identifier of the forum
+          in: path
+          required: true
+          schema:
+            description: The unique identifier of a forum
+            type: integer
+            readOnly: true
+          example: 1
+      tags:
+        - forums
+      summary: Get Forum
+      operationId: getForumId
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Forum"
+    put:
+      parameters:
+        - name: forumId
+          description: The unique identifier of the forum
+          in: path
+          required: true
+          schema:
+            description: The unique identifier of a forum
+            type: integer
+            readOnly: true
+          example: 1
+      tags:
+        - forums
+      summary: Update Forum
+      operationId: updateForumById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Forum"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Forum"
+    delete:
+      parameters:
+        - name: forumId
+          description: The unique identifier of the forum
+          in: path
+          required: true
+          schema:
+            description: The unique identifier of a forum
+            type: integer
+            readOnly: true
+          example: 1
+      tags:
+        - forums
+      summary: Delete Forum
+      operationId: deleteForumById
+      responses:
+        "204":
+          description: Successful response
+          content:
+            application/json: {}
   /api/links:
     get:
       tags:
@@ -3032,6 +3214,37 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /api/tokens/create:
+    post:
+      tags:
+        - users
+      summary: Create User Bearer Token
+      operationId: createUserBearerToken
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserTokenResponse"
+  /api/tokens/validate:
+    get:
+      tags:
+        - users
+      summary: Validate User Token
+      operationId: validateUserToken
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    description: Valid user token
+                    example: ABCDEF12345
   /api/users:
     post:
       tags:
