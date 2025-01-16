@@ -8,6 +8,7 @@
 
 ## Usage
 - Currently requires a basic auth username and password to access the API.
+- You can also request a user token to access the API.
 
 ### Filtering Lists
 You can apply filters to routes using the following:
