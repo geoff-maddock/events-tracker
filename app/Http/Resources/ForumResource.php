@@ -22,7 +22,6 @@ class ForumResource extends JsonResource
         'id' => $this->id,
         'name' => $this->name,
         'slug' => $this->slug,
-        'short' => $this->short,
         'description' => $this->description,
         'visibility_id' => $this->visibility_id,
         'created_at' => $this->created_at,
