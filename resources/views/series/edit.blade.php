@@ -19,7 +19,7 @@
 <i>{{ $series->start_at ? $series->start_at->format('l F jS Y \\a\\t h:i A') : ''}} </i>
 <div class="row">
     <div class="col-md-8">
-        {!! Form::model($series, ['route' => ['series.update', $series->id], 'method' => 'PATCH', 'class' => 'form-container']) !!}
+        {!! Form::model($series, ['route' => ['series.update', $series->slug], 'method' => 'PATCH', 'class' => 'form-container']) !!}
 
         @include('series.form', ['action' => 'update'])
 
