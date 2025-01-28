@@ -309,15 +309,6 @@ Route::get('events/{id}/unattend', [
 Route::post('events/{id}/photos', 'EventsController@addPhoto');
 Route::delete('events/{id}/photos/{photo_id}', 'EventsController@deletePhoto');
 
-
-// Binding for event show page - NOT NEEDED, COMMENTED OUT
-// Route::bind('event', function ($value) {
-//     return \App\Models\Event::query()
-//         ->where('slug', $value)
-//         ->orWhere('id', $value)
-//         ->firstOrFail();
-// });
-
 //Default resource for events
 Route::resource('events', 'EventsController');
 

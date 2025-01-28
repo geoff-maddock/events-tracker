@@ -175,6 +175,13 @@ class Series extends Eloquent
         'twitter_username',
     ];
 
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+
     /**
      * Additional fields to treat as Carbon instances.
      *

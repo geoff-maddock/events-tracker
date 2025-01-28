@@ -13,7 +13,6 @@ use App\Models\Follow;
 use App\Models\OccurrenceDay;
 use App\Models\OccurrenceType;
 use App\Models\OccurrenceWeek;
-use App\Models\Photo;
 use App\Models\Series;
 use App\Models\Tag;
 use App\Models\User;
@@ -28,11 +27,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Str;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class SeriesController extends Controller
 {
@@ -612,8 +609,7 @@ class SeriesController extends Controller
     {
         $events = $series->events()->paginate($this->childLimit);
         $threads = $series->threads()->paginate($this->childLimit);
-        // $embeds = $embedExtractor->getEmbedsForSeries($series);
-        // dd($embeds);
+
         return view('series.show', compact('series', 'events', 'threads'));
     }
 

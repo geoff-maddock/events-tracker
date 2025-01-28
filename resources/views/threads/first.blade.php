@@ -33,7 +33,7 @@
             Series:
             @foreach ($thread->series as $series)
                 <span class="badge rounded-pill bg-dark"><a href="/threads/series/{{ urlencode($series->slug) }}">{{ $series->name }}</a>
-                            <a href="{!! route('series.show', ['series' => $series->id]) !!}" title="Show this series."><i class="bi bi-link-45deg text-info"></i></a>
+                            <a href="{!! route('series.show', ['series' => $series->slug]) !!}" title="Show this series."><i class="bi bi-link-45deg text-info"></i></a>
                         </span>
             @endforeach
         @endunless
