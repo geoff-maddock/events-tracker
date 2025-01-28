@@ -581,8 +581,8 @@ Route::get('series/{id}/unfollow', [
     'uses' => 'SeriesController@unfollow',
 ]);
 
-Route::bind('series', function ($id) {
-    return Series::whereId($id)->firstOrFail();
+Route::bind('series', function ($slug) {
+    return Series::whereSlug($slug)->firstOrFail();
 });
 
 Route::resource('series', 'SeriesController');
