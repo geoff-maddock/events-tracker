@@ -784,9 +784,9 @@ class SeriesController extends Controller
         // add to activity log
         Activity::log($series, $this->user, 2);
 
-        flash('Success', 'Your event template has been updated');
+        flash('Success', 'Your event series has been updated');
 
-        //return redirect('series');
+        // redirect to the show route with the slug
         return redirect()->route('series.show', compact('series'));
     }
 
