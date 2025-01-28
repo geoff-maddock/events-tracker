@@ -48,7 +48,7 @@ Route::middleware('auth.basic')->name('api.')->group(function () {
 Route::middleware('auth.either')->name('api.')->group(function () {
 
     Route::match(['get', 'post'], 'blogs/filter', ['as' => 'blogss.filter', 'uses' => 'Api\BlogsController@filter']);
-    Route::get('blogs/reset', ['as' => 'links.reset', 'uses' => 'Api\BlogsController@reset']);
+    Route::get('blogs/reset', ['as' => 'blogs.reset', 'uses' => 'Api\BlogsController@reset']);
     Route::get('blogs/rpp-reset', ['as' => 'blogs.rppReset', 'uses' => 'Api\BlogsController@rppReset']);
     Route::resource('blogs', 'Api\BlogsController');
     

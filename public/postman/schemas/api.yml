@@ -1525,6 +1525,60 @@ components:
             data:
               type: array
               items: { "$ref": "#/components/schemas/Tag" }
+    Thread:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          maxLength: 255
+          description: A name of a thread
+          example: Forum
+        slug:
+          type: string
+          maxLength: 255
+          description: A unique identifier name for the thread in kebab-case
+          example: thread-slug
+        description:
+          type: string
+          example: An extensive breakdown of the thread
+          description: An extensive breakdown of the thread
+        visibility_id:
+          type: integer
+          readOnly: true
+          example: 1
+          description: Relation to the visibility table that defines the visibility of the thread
+        forum_id:
+          type: integer
+          readOnly: true
+          example: 1
+          description: Relation to the forum table that defines the forum of the thread
+        created_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the entity type was created
+          readOnly: true
+        updated_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the entity type was last updated
+          readOnly: true
+    Threads:
+      allOf: [$ref: "#/components/schemas/Pagination"]
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of the current page of threads
+          items:
+            "$ref": "#/components/schemas/Thread"
     User:
       type: object
       properties:
@@ -3068,21 +3122,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Seriess"
-  /api/series/{seriesId}:
+  /api/series/{slug}:
     parameters:
-      - name: seriesId
+      - name: slug
         description: The unique identifier of the series
         in: path
         required: true
         schema:
-          type: integer
+          type: string
           readOnly: true
         example: 1
     get:
       tags:
         - series
       summary: Get one Series
-      operationId: getSeriesById
+      operationId: getSeriesBySlug
       responses:
         "200":
           description: Successful response
@@ -3209,6 +3263,126 @@ paths:
         - tags
       summary: Delete Tag
       operationId: deleteTagById
+      responses:
+        "204":
+          description: Successful response
+          content:
+            application/json: {}
+  /api/threads:
+    get:
+      tags:
+        - threads
+      summary: Get Threads
+      operationId: getThreads
+      parameters:
+        - name: filters[name]
+          in: query
+          required: false
+          description: A filter query of the thread name
+          schema:
+            type: string
+          example: Thread name
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+          example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+          example: asc
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Threads"
+    post:
+      tags:
+        - threads
+      summary: Create thread
+      operationId: createThread
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Thread"
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json: {}
+  /api/threads/{threadId}:
+    get:
+      parameters:
+        - name: threadId
+          description: The unique identifier of the thread
+          in: path
+          required: true
+          schema:
+            description: The unique identifier of a thread
+            type: integer
+            readOnly: true
+          example: 1
+      tags:
+        - threads
+      summary: Get Thread
+      operationId: getThreadId
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Thread"
+    put:
+      parameters:
+        - name: threadId
+          description: The unique identifier of the thread
+          in: path
+          required: true
+          schema:
+            description: The unique identifier of a thread
+            type: integer
+            readOnly: true
+          example: 1
+      tags:
+        - threads
+      summary: Update Thread
+      operationId: updateThreadById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Thread"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Thread"
+    delete:
+      parameters:
+        - name: forumId
+          description: The unique identifier of the thread
+          in: path
+          required: true
+          schema:
+            description: The unique identifier of a thread
+            type: integer
+            readOnly: true
+          example: 1
+      tags:
+        - threads
+      summary: Delete Thread
+      operationId: deleteThreadById
       responses:
         "204":
           description: Successful response

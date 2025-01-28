@@ -12,7 +12,6 @@ use App\Models\Entity;
 use App\Models\EntityStatus;
 use App\Models\EntityType;
 use App\Models\Follow;
-use App\Models\Photo;
 use App\Models\Role;
 use App\Models\Tag;
 use App\Models\User;
@@ -23,8 +22,6 @@ use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\Integrations\Instagram;
 use App\Services\StringHelper;
 use Carbon\Carbon;
-use DOMDocument;
-use DOMXPath;
 use Exception;
 use Storage;
 use Illuminate\Contracts\View\View;
@@ -34,9 +31,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
-use Jamband\Ripple\Ripple;
 
 class EntitiesController extends Controller
 {
