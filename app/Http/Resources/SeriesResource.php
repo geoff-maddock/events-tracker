@@ -30,6 +30,7 @@ class SeriesResource extends JsonResource
             'occurrence_type' => $this->occurrenceType,
             'occurrence_week' => $this->occurrenceWeek,
             'occurrence_day' => $this->occurrenceDay,
+            'occurrence_repeat' => $this->occurrenceRepeat,
             'is_benefit' => $this->is_benefit,
             'promoter' => $this->promoter,
             'venue' => $this->venue,
