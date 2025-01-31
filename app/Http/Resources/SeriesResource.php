@@ -50,7 +50,6 @@ class SeriesResource extends JsonResource
             'updated_at' => $this->updated_at,
             'primary_photo' => $this->getPrimaryPhotoPath(),
             'primary_photo_thumbnail' => $this->getPrimaryPhotoThumbnailPath(),
-            'primary_location' => $this->getPrimaryLocation(),
         ];
     }
 }
