@@ -42,8 +42,10 @@
         "@type": "Offer",
         @if ($event->ticket_link !== null)
         "url": "{{ $event->ticket_link}}",
-        @else 
+        @elseif ($event->primary_link !== null)
         "url": "{{ $event->primary_link}}",
+        @else
+        "url": "{!! URL::route('events.show', $event->slug) !!}",
         @endif
         "price": "{{ $event->door_price ? $event->door_price : 0}}",
         "priceCurrency": "USD",
