@@ -127,6 +127,8 @@ class Event extends Model
     use Notifiable;
     use HasFactory;
 
+    const DEFAULT_LENGTH = 4;
+
     public static function boot()
     {
         parent::boot();
@@ -561,6 +563,23 @@ class Event extends Model
 
         return null;
     }
+
+    /**
+     * Get the default end time of the event.  If no end time is set, use the default length to determine end time.
+     */
+    public function getDefaultEndTimeAttribute(): ?Carbon
+    {
+        if (isset($this->end_at)) {
+            return $this->end_at;
+        }
+
+        if (isset($this->start_at)) {
+            return $this->start_at->addHours(self::DEFAULT_LENGTH);
+        }
+
+        return null;
+    }
+
 
     /**
      * Get a list of tag ids associated with the event.
