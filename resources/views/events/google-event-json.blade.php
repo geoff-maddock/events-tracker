@@ -4,9 +4,9 @@
     "@type": "Event",
     "name": "{{ $event->name}}",
     "startDate": "{!! $event->start_at->format(DateTimeInterface::ISO8601) !!}",
-@if (isset($event->end_time))
-    "endDate": "{!! $event->end_time->format(DateTimeInterface::ISO8601) !!}",
-@endif
+    @if ($event->default_end_time !== null)
+    "endDate": "{!! $event->default_end_time->format(DateTimeInterface::ISO8601) !!}",
+    @endif
     "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
     "eventStatus": "https://schema.org/EventScheduled",
     @if ($photo = $event->getPrimaryPhoto())
