@@ -2106,6 +2106,41 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /api/events/by-date/{year}/{month?}/{day?}:
+    get:
+      parameters:
+        - name: year
+          description: The year of events to return
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 2012
+        - name: month
+          description: The month of events to return
+          in: path
+          required: false
+          schema:
+            type: string
+          example: 01
+        - name: day
+          description: The day of events to return
+          in: path
+          required: false
+          schema:
+            type: string
+          example: 01
+      tags:
+        - events
+      summary: Get Events by Date
+      operationId: getEventByDate
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventResponse"           
   /api/events/{slug}:
     get:
       parameters:

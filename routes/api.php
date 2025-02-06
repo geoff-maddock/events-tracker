@@ -59,6 +59,11 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('events/rpp-reset', ['as' => 'events.rppReset', 'uses' => 'Api\EventsController@rppReset']);
     Route::resource('events', 'Api\EventsController');
 
+    Route::get('events/by-date/{year}/{month?}/{day?}', 'Api\EventsController@indexByDate')
+    ->where('year', '[1-9][0-9][0-9][0-9]')
+    ->where('month', '(0?[1-9]|1[012])$')
+    ->where('day', '[0-3][0-9]');
+
     Route::get('entities/reset', ['as' => 'entities.reset', 'uses' => 'Api\EntitiesController@reset']);
     Route::get('entities/rpp-reset', ['as' => 'entities.rppReset', 'uses' => 'Api\EntitiesController@rppReset']);
     Route::resource('entities', 'Api\EntitiesController');

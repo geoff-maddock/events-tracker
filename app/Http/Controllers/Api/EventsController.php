@@ -152,9 +152,7 @@ class EventsController extends Controller
         $events = $query->visible($this->user)
             ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
-        
-        // how do I create an event response DTO that includes everything I want
-
+    
         return response()->json(new EventCollection($events));
     }
 
@@ -170,7 +168,7 @@ class EventsController extends Controller
         string $year,
         ?string $month = null,
         ?string $day = null
-    ): string {
+    ): JsonResponse {
         // set the start_at from and to dates based on the passed params
         if ($year && !$month && !$day) {
             $start_at_from = $year.'0101';
@@ -217,27 +215,9 @@ class EventsController extends Controller
             ->orderBy('name', 'ASC')
             ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
+        
 
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('events.index')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                    'slug' => $slug,
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('events'))
-            ->render();
+        return response()->json(new EventCollection($events));
     }
 
     protected function getListControlOptions(): array
