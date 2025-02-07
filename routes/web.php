@@ -69,18 +69,18 @@ Route::get('tos', 'PagesController@tos');
 
 Route::get('help', 'PagesController@help');
 
-Route::get('calendar', 'EventsController@calendar')->name('calendar');
-Route::get('calendar/{year?}/{month?}/{day?}', 'EventsController@calendarByDate')->name('calendar.byDate')
-    ->where('year', '[1-9][0-9][0-9][0-9] ') 
+Route::get('calendar', 'CalendarController@index')->name('calendar');
+Route::get('calendar/by-date/{year}/{month?}/{day?}', 'CalendarController@indexByDate')->name('calendar.byDate')
+    ->where('year', '[1-9][0-9][0-9][0-9]')
     ->where('month', '(0?[1-9]|1[012])$')
     ->where('day', '[0-3][0-9]');
-Route::get('calendar/tag/{tag}', 'EventsController@calendarTags')->name('calendar.tag');
-Route::get('tag-calendar', 'EventsController@calendarTagOnly')->name('tag-calendar');
-Route::get('calendar/related-to/{slug}', 'EventsController@calendarRelatedTo');
-Route::get('calendar/free', 'EventsController@calendarFree')->name('calendar.free');
-Route::get('calendar/attending', 'EventsController@calendarAttending')->name('calendar.attending');
-Route::get('calendar/type/{tag}', 'EventsController@calendarEventTypes')->name('calendar.type');
-Route::get('calendar/min-age/{age}', 'EventsController@calendarMinAge')->name('calendar.minAge');
+Route::get('calendar/tag/{tag}', 'CalendarController@calendarTags')->name('calendar.tag');
+Route::get('tag-calendar', 'CalendarController@calendarTagOnly')->name('tag-calendar');
+Route::get('calendar/related-to/{slug}', 'CalendarController@calendarRelatedTo');
+Route::get('calendar/free', 'CalendarController@calendarFree')->name('calendar.free');
+Route::get('calendar/attending', 'CalendarController@calendarAttending')->name('calendar.attending');
+Route::get('calendar/type/{tag}', 'CalendarController@calendarEventTypes')->name('calendar.type');
+Route::get('calendar/min-age/{age}', 'CalendarController@calendarMinAge')->name('calendar.minAge');
 
 Route::get('search', 'PagesController@search')->name('pages.search');
 
