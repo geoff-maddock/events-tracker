@@ -2,57 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\EventCreated;
-use App\Events\EventUpdated;
 use App\Filters\EventFilters;
-use App\Http\Requests\EventRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
-use App\Mail\FollowingUpdate;
-use App\Models\Activity;
 use App\Models\Entity;
 use App\Models\Event;
-use App\Models\EventResponse;
-use App\Models\EventReview;
 use App\Models\EventType;
-use App\Models\Follow;
-use App\Models\OccurrenceDay;
-use App\Models\OccurrenceType;
-use App\Models\OccurrenceWeek;
-use App\Models\Photo;
-use App\Models\ResponseType;
 use App\Models\Series;
 use App\Models\Tag;
-use App\Models\Thread;
 use App\Models\User;
 use App\Models\Visibility;
-use App\Notifications\EventPublished;
-use App\Services\Embeds\EmbedExtractor;
-use App\Services\Integrations\Instagram;
-use App\Services\ImageHandler;
-use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
-use App\Services\StringHelper;
 use Carbon\Carbon;
-use Exception;
-use FacebookAds\Api as Api;
-use FacebookAds\Object\Event as ObjectEvent;
-use FacebookAds\Object\Fields\EventFields;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Http\File as HttpFile;
-use Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\UploadedFile;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use App\Services\Calendar\ICalBuilder;
 
 
 class CalendarController extends Controller
@@ -87,8 +54,6 @@ class CalendarController extends Controller
 
     protected int $defaultWindow;
 
-    protected Api $facebook;
-
     public function __construct(EventFilters $filter)
     {
         $this->middleware('verified', ['only' => ['create', 'edit', 'duplicate','store', 'update', 'indexAttending', 'calendarAttending']]);
@@ -111,14 +76,6 @@ class CalendarController extends Controller
 
         $this->defaultSortCriteria = ['events.start_at' => 'desc'];
 
-        // inject Facebook into class
-        Api::init(
-            config('app.fb_app_id'),
-            config('app.fb_app_secret'),
-            config('app.fb_graph_version')
-        );
-
-        $this->facebook = Api::instance();
         $this->hasFilter = false;
         parent::__construct();
     }
