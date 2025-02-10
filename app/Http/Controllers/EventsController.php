@@ -18,7 +18,6 @@ use App\Models\Follow;
 use App\Models\OccurrenceDay;
 use App\Models\OccurrenceType;
 use App\Models\OccurrenceWeek;
-use App\Models\Photo;
 use App\Models\ResponseType;
 use App\Models\Series;
 use App\Models\Tag;
@@ -47,7 +46,6 @@ use Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\UploadedFile;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use App\Services\Calendar\ICalBuilder;
 
