@@ -61,8 +61,8 @@
 
 
 	<b>
-		@if (!empty($event->series_id))
-		<a href="/series/{{$event->series_id }}">{!! $event->series->name !!}</a> series
+		@if (!empty($event->series))
+		<a href="/series/{{$event->series->slug }}">{!! $event->series->name !!}</a> series
 		@endif
 
 		<a href="/events/type/{{$event->eventType->slug }}">{{ $event->eventType->name }}</a>
