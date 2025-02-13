@@ -58,7 +58,7 @@
 
         @if ($events = $user->getAttending()->get()->take(3) and count($events) > 0)
             <br>
-            <b>Events Attending</b>
+            <b>Events Attending [{!! link_to_route('users.attending', 'All', [$user->id]) !!}]</b>
             @foreach ($events as $event)
                 <li><b>{{ $event->start_at->format('m.d.y')  }}</b> {!! link_to_route('events.show', $event->name, [$event->id], ['class' =>'butt']) !!} </li>
             @endforeach
