@@ -51,6 +51,20 @@ class Instagram
         return $response['data']['id'];
     }
 
+    public function uploadStoryPhoto(string $imageUrl, string $caption): int
+    {
+        $params = [];
+        $endpoint = 'https://graph.facebook.com/'.$this->apiVersion.'/'.$this->igUserId.'/media?media_type=STORIES&image_url='.$imageUrl.'&access_token='.$this->pageAccessToken;
+        $response = $this->makeApiCall($endpoint, 'POST', $params);
+
+        // check if data is not null
+        if (!isset($response['data']['id'])) {
+            throw new \Exception('No data returned. There was an error posting to Instagram.  Please try again.');
+        }
+
+        return $response['data']['id'];
+    }
+
     public function uploadCarouselPhoto(string $imageUrl): int
     {
         $params = [];
@@ -126,6 +140,21 @@ class Instagram
 
         return $response['data']['id'];
     }
+
+    public function publishStoryMedia(int $igContainerId): bool | int
+    {
+        $params = [];
+        $endpoint = 'https://graph.facebook.com/'.$this->apiVersion.'/'.$this->igUserId.'/media_publish?creation_id='.$igContainerId.'&access_token='.$this->pageAccessToken;
+        $response = $this->makeApiCall($endpoint, 'POST', $params);
+
+        // check if data is not null
+        if (!isset($response['data']['id'])) {
+            return false;
+        }
+
+        return $response['data']['id'];
+    }
+
 
     /**
      * Curl API call.
