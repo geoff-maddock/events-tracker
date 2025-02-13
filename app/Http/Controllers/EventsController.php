@@ -3045,13 +3045,10 @@ class EventsController extends Controller
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = $user->getAttending()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
 
-        // set the default filter to starting today, can override
-        $defaultFilter = ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]];
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
-            ->setDefaultFilters($defaultFilter)
             ->setDefaultSort(['events.start_at' => 'asc']);
 
         // get the result set from the builder
