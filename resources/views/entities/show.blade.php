@@ -16,6 +16,7 @@
 <div id="action-menu" class="mb-2">
 @if ($user && Auth::user()->id === ($entity->user ? $entity->user?->id : null))
 	<a href="{!! route('entities.edit', ['entity' => $entity->slug]) !!}" class="btn btn-primary"  title="Edit this entity">Edit Entity</a>
+	<a href="{{ url('events/related-to/'.$entity->slug) }}" class="btn btn-primary" >Show Related Events</a>
 @endif
 	<a href="{!! URL::route('entities.index') !!}" class="btn btn-info">Return to list</a>
 </div>
