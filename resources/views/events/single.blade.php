@@ -155,9 +155,12 @@
 			@endunless
 
 			@unless ($event->tags->isEmpty())
-			@foreach ($event->tags as $tag)
-				@include('tags.single_label')
-			@endforeach
+				@foreach ($event->tags->take(10) as $tag)
+					@include('tags.single_label')
+				@endforeach
+				@if ($event->tags->count() > 10)
+					...
+				@endif
 			@endunless
 		</P>
 	</div>

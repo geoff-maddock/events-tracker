@@ -10,9 +10,6 @@
 
 @section('content')
 
-<script src="{{ asset('/js/facebook-sdk.js') }}"></script>
-<script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
-
 <h1 class="display-crumbs text-primary">Events. Edit	@include('events.crumbs', ['slug' => $event->slug ?: $event->id, 'event' => $event])</h1>
 
 <div id="action-menu" class="mb-2">
@@ -66,7 +63,6 @@
 @stop
 
 @section('scripts.footer')
-<script src="{{ asset('/js/facebook-event.js') }}"></script>
 <script>
     window.Dropzone["autoDiscover"] = false;
 

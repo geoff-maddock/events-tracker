@@ -197,6 +197,7 @@
 		'id' => 'tag_list',
 		'class' =>'form-control select2 form-background',
 		'data-placeholder' => 'Choose a keyword tag that describes this event',
+		'data-maximum-selection-length' => 10,
 		'data-tags' => 'false',
 		'multiple' => 'multiple']) !!}
 		{!! $errors->first('tags','<span class="help-block">:message</span>') !!}
@@ -231,5 +232,4 @@
 
 
 @section('footer')
-<script src="/js/facebook-event-custom.js"></script>
 @endsection
