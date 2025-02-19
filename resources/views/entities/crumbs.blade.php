@@ -17,7 +17,7 @@
 	. {{ ucfirst($type) }}
 @endif
 @if (isset($entity))
-	. {{ $entity->name }}
+	. <span class="item-title">{{ $entity->name }}</span>
 
     @if ($signedIn)
     @if ($follow = $entity->followedBy($user))
