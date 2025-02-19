@@ -3,7 +3,6 @@
 @section('title', 'Tools')
 
 @section('content')
-	<script src="{{ asset('/js/facebook-sdk.js') }}"></script>
 	<h1 class="display-6 text-primary">Tools</h1>
 	<div class="row">
 		<div class="col-md-3">
