@@ -7,10 +7,7 @@
 	</div>
 
 	@if (Config::get('app.fb_app_id') !== '999')
-	<div class="form-group col-md-3 mb-1">
-		<label></label>
-		<button type="button" class="btn btn-info form-control" id="import-link">Import Data</button>
-	</div>
+
 	@if (isset($event->primary_link) && isset($event->id))
 	<div class="form-group col-md-3 mb-1">
 		<label></label>
