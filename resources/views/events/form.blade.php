@@ -2,7 +2,10 @@
 
 	<div class="form-group col-md-6 mb-2">
 		{!! Form::label('primary_link','Primary Link:') !!}
-		{!! Form::text('primary_link', (isset($event->primary_link) ? $event->primary_link : null), ['class' => 'form-control form-background', 'autofocus' => '']) !!}
+		{!! Form::text('primary_link', (isset($event->primary_link) ? $event->primary_link : null), 
+			['placeholder' => 'Primary link to the event on the web, if one exists (not required)',
+			 'class' => 'form-control form-background',
+			 'autofocus' => '']) !!}
 		{!! $errors->first('primary_link','<span class="help-block">:message</span>') !!}
 	</div>
 
