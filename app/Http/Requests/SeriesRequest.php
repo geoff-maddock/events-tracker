@@ -28,6 +28,7 @@ class SeriesRequest extends Request
             'name' => 'required|min:3|max:255',
             'slug' => Rule::unique('series')->ignore(isset($this->series) ? $this->series->id : ''),
             'short' => 'required|min:3|max:255',
+            'length' => 'integer',
             'event_type_id' => 'required',
             'visibility_id' => 'required',
             'presale_price' => 'nullable|numeric|between:0,999.99',
@@ -57,6 +58,7 @@ class SeriesRequest extends Request
             'primary_link.max' => 'A primary link must be less than 255 characters',
             'ticket_link.regex' => 'A ticket link must be a valid URL starting with http:// or https:// or blank',
             'ticket_link.max' => 'A ticket link must be less than 255 characters',
+            'length.integer' => 'A series length must be an integer',
         ];
     }
 }
