@@ -34,23 +34,17 @@
 			<!-- Email input -->
 			<div class="form-outline mb-4">
 			  <input type="email" name="email" id="email" class="form-control form-control-lg form-background"
-				placeholder="Enter a valid email address" />
+				placeholder="Enter a valid email address" autocomplete="on"/>
 			</div>
   
 			<!-- Password input -->
 			<div class="form-outline mb-3">
 			  <input type="password" name="password" id="password" class="form-control form-control-lg form-background"
-				placeholder="Enter password" />
+				placeholder="Enter password" autocomplete="on"/>
 			</div>
   
 			<div class="d-flex justify-content-between align-items-center">
-			  <!-- Checkbox -->
-			  <div class="form-check mb-0">
-				<input class="form-check-input me-2" type="checkbox" id="remember" name="remember"/>
-				<label class="form-check-label" for="remember">
-				  Remember me
-				</label>
-			  </div>
+
 			  <a href="/password/reset" >Forgot password?</a>
 			</div>
   
