@@ -8,17 +8,6 @@
 			 'autofocus' => '']) !!}
 		{!! $errors->first('primary_link','<span class="help-block">:message</span>') !!}
 	</div>
-
-	@if (Config::get('app.fb_app_id') !== '999')
-
-	@if (isset($event->primary_link) && isset($event->id))
-	<div class="form-group col-md-3 mb-1">
-		<label></label>
-		<a href="{!! URL::route('events.importPhoto', array('id' => $event->id)) !!}"
-			class="btn btn-info form-control">Import Photo</a>
-	</div>
-	@endif
-	@endif
 </div>
 
 <div class="row">
