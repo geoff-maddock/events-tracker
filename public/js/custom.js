@@ -217,6 +217,11 @@ var App = (function () {
     var setupNameToSlug = function () {
         $('body').on('keyup', '#name', function (e) {
             var content = kebabCase(e.target.value)
+            // if content starts with a number, prepend a letter
+            if (content.match(/^[0-9]/)) {
+                content = 'a-' + content;
+            }
+
             $('input#slug').val(content);
         })
     }
