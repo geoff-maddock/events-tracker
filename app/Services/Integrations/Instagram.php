@@ -91,7 +91,14 @@ class Instagram
 
         $caption = substr(urlEncode($caption), 0, 2200);
         $params = [];
-        $endpoint = 'https://graph.facebook.com/'.$this->apiVersion.'/'.$this->igUserId.'/media?media_type=CAROUSEL&children='.$children.'&caption='.$caption.'&access_token='.$this->pageAccessToken;
+
+        // define the media type
+        $mediaType = 'CAROUSEL';
+        if (count($igIds) < 2) {
+            $mediaType = 'IMAGE';
+        }
+
+        $endpoint = 'https://graph.facebook.com/'.$this->apiVersion.'/'.$this->igUserId.'/media?media_type='.$mediaType.'&children='.$children.'&caption='.$caption.'&access_token='.$this->pageAccessToken;
 
         $response = $this->makeApiCall($endpoint, 'POST', $params);
 
