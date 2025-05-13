@@ -1548,7 +1548,7 @@ class EventsController extends Controller
 
         Log::info('Carousel photo uploaded: '.$id);
 
-        // add other photos related to the event to the carousel
+        // // add other photos related to the event to the carousel
         foreach ($event->getOtherPhotos() as $otherPhotos) {
             $imageUrl = Storage::disk('external')->url($otherPhotos->getStoragePath());
 
@@ -1579,7 +1579,7 @@ class EventsController extends Controller
             Log::info('Carousel photo uploaded: '.$id);
         }
 
-        // only do this if there are any other related photos
+        // // only do this if there are any other related photos
         foreach ($event->entities as $entity) {
             foreach ($entity->photos as $photo) {
                 if ($photo->is_primary) {
@@ -1612,6 +1612,10 @@ class EventsController extends Controller
 
                     $igContainerIds[] = $igContainerId;
                     Log::info('Added container id: '.$igContainerId);
+                } else {
+                        flash()->error('Error', 'Photo is not primary');
+            
+                        return back();
                 }
             }
         }
@@ -1620,14 +1624,16 @@ class EventsController extends Controller
         try {
             $igCarouselId = $instagram->createCarousel($igContainerIds, $caption);
         } catch (Exception $e) {
-            flash()->error('Error', 'There was an error posting carousel to Instagram.  Please try again.');
-            Log::info('Error creating carousel');
+            // transform the igContainerIds into a string
+            $igContainerIdsString = implode(', ', $igContainerIds);
+            flash()->error('Error', 'There was an error posting carousel to Instagram.  Unable to create carousel. Please try again. Ids: '.count($igContainerIds).' Container ids: '.$igContainerIdsString.' caption: '.substr($caption, 0, 5));
+            Log::info('Error creating carousel '.$e->getMessage());
             return back();
         }
 
         // check the container status every 5 seconds until status_code is FINISHED
         if ($instagram->checkStatus($igCarouselId) === false) {
-            flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
+            flash()->error('Error', 'There was an error posting to Instagram.  Unable to check status.  Please try again.');
 
             return back();
         }
@@ -1635,7 +1641,7 @@ class EventsController extends Controller
         // pubish the image
         $result = $instagram->publishMedia($igCarouselId);
         if ($result === false) {
-            flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
+            flash()->error('Error', 'There was an error posting to Instagram.  Unable to publish image. Please try again.');
 
             return back();
         }
