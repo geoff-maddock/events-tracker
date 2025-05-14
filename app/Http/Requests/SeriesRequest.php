@@ -7,6 +7,13 @@ use Illuminate\Validation\Rule;
 
 class SeriesRequest extends Request
 {
+   // Define constant for the occurrence type
+    const OCCURRENCE_TYPE_NO_SCHEDULE = 1;
+    const OCCURRENCE_TYPE_WEEKLY = 2;
+    const OCCURRENCE_TYPE_BIWEEKLY = 3;
+    const OCCURRENCE_TYPE_MONTHLY = 4;
+    const OCCURRENCE_TYPE_BIMONTHLY = 5;
+    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -24,7 +31,7 @@ class SeriesRequest extends Request
      */
     public function rules()
     {
-        return [
+        $rules = [
             'name' => 'required|min:3|max:255',
             'slug' => Rule::unique('series')->ignore(isset($this->series) ? $this->series->id : ''),
             'short' => 'required|min:3|max:255',
@@ -36,7 +43,30 @@ class SeriesRequest extends Request
             'occurrence_type_id' => 'required',
             'primary_link' => ['nullable','regex:/^http:\/\/|https:\/\/|^$/','max:255'],
             'ticket_link' => ['nullable','regex:/^http:\/\/|https:\/\/|^$/','max:255'],
+            'occurrence_week_id' => 'nullable',
+            'occurrence_day_id' => 'nullable',
         ];
+        
+        // Add conditional validation rules for monthly occurrence type
+        if ($this->input('occurrence_type_id') == self::OCCURRENCE_TYPE_MONTHLY ) {
+            $rules['occurrence_week_id'] = 'required';
+            $rules['occurrence_day_id'] = 'required';
+        }
+        
+        if ($this->input('occurrence_type_id') == self::OCCURRENCE_TYPE_BIMONTHLY ) {
+            $rules['occurrence_week_id'] = 'required';
+            $rules['occurrence_day_id'] = 'required';
+        }
+
+        if ($this->input('occurrence_type_id') == self::OCCURRENCE_TYPE_WEEKLY ) {
+            $rules['occurrence_day_id'] = 'required';
+        }
+
+        if ($this->input('occurrence_type_id') == self::OCCURRENCE_TYPE_BIWEEKLY ) {
+            $rules['occurrence_day_id'] = 'required';
+        }
+
+        return $rules;
     }
 
     public function messages()
@@ -54,6 +84,8 @@ class SeriesRequest extends Request
             'event_type_id.required' => 'An event type is required',
             'visibility_id.required' => 'A visibility is required',
             'occurrence_type_id.required' => 'An occurrence type is required',
+            'occurrence_week_id.required' => 'An occurrence week is required for this occurrence type',
+            'occurrence_day_id.required' => 'An occurrence day is required for this occurrence type',
             'primary_link.regex' => 'A primary link must be a valid URL starting with http:// or https:// or blank',
             'primary_link.max' => 'A primary link must be less than 255 characters',
             'ticket_link.regex' => 'A ticket link must be a valid URL starting with http:// or https:// or blank',
