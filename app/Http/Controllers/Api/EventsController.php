@@ -652,9 +652,6 @@ class EventsController extends Controller
             abort(404);
         }
 
-        // check blacklist status
-        $blacklist = $this->checkBlackList($event);
-
         // extract all the links from the event body and convert into embeds
         $embedList = $embedExtractor->getEmbedsForEvent($event);
 
@@ -670,6 +667,36 @@ class EventsController extends Controller
             'next_page_url' => '/events/'.$event->id.'/embeds',
             'path' => '/events/'.$event->id.'/embeds',
             'prev_page_url' => '/events/'.$event->id.'/embeds',
+            'to' => count($embedList),
+        ];
+
+        
+        // converts array of embeds into json embed list
+        return response()->json($embeds);
+    }
+
+    public function minimalEmbeds(?Event $event,  EmbedExtractor $embedExtractor): JsonResponse
+    {
+        if (!$event) {
+            abort(404);
+        }
+
+        // extract all the links from the event body and convert into embeds
+        $embedExtractor->setLayout("small");
+        $embedList = $embedExtractor->getEmbedsForEvent($event);
+
+        // create a paginated list of embeds, but for now just using one page
+        $embeds = [
+            'data' => $embedList,
+            'total' => count($embedList),
+            'current_page' => 1,
+            'per_page' => 100,
+            'first_page_url' => '/events/'.$event->id.'/minimal-embeds',
+            'from' => 1,
+            'last_page' => 1,
+            'next_page_url' => '/events/'.$event->id.'/minimal-embeds',
+            'path' => '/events/'.$event->id.'/minimal-embeds',
+            'prev_page_url' => '/events/'.$event->id.'/minimal-embeds',
             'to' => count($embedList),
         ];
 
