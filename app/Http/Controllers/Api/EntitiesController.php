@@ -880,4 +880,63 @@ class EntitiesController extends Controller
             'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
         ];
     }
+
+    public function embeds(?Entity $entity,  EmbedExtractor $embedExtractor): JsonResponse
+    {
+        if (!$entity) {
+            abort(404);
+        }
+
+        // extract all the links from the entity
+        $embedList = $embedExtractor->getEmbedsForEntity($entity);
+
+        // create a paginated list of embeds, but for now just using one page
+        $embeds = [
+            'data' => $embedList,
+            'total' => count($embedList),
+            'current_page' => 1,
+            'per_page' => 100,
+            'first_page_url' => '/entities/'.$entity->id.'/embeds',
+            'from' => 1,
+            'last_page' => 1,
+            'next_page_url' => '/entities/'.$entity->id.'/embeds',
+            'path' => '/entities/'.$entity->id.'/embeds',
+            'prev_page_url' => '/entities/'.$entity->id.'/embeds',
+            'to' => count($embedList),
+        ];
+
+        
+        // converts array of embeds into json embed list
+        return response()->json($embeds);
+    }
+
+    public function minimalEmbeds(?Entity $entity,  EmbedExtractor $embedExtractor): JsonResponse
+    {
+        if (!$entity) {
+            abort(404);
+        }
+
+        // extract all the links from the entity body and convert into embeds
+        $embedExtractor->setLayout("small");
+        $embedList = $embedExtractor->getEmbedsForEntity($entity);
+
+        // create a paginated list of embeds, but for now just using one page
+        $embeds = [
+            'data' => $embedList,
+            'total' => count($embedList),
+            'current_page' => 1,
+            'per_page' => 100,
+            'first_page_url' => '/entities/'.$entity->id.'/minimal-embeds',
+            'from' => 1,
+            'last_page' => 1,
+            'next_page_url' => '/entities/'.$entity->id.'/minimal-embeds',
+            'path' => '/entities/'.$entity->id.'/minimal-embeds',
+            'prev_page_url' => '/entities/'.$entity->id.'/minimal-embeds',
+            'to' => count($embedList),
+        ];
+
+        
+        // converts array of embeds into json embed list
+        return response()->json($embeds);
+    }
 }

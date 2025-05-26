@@ -2410,6 +2410,52 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /api/entities/{entityId}/embeds:
+    get:
+      parameters:
+        - name: entityId
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          example: 1
+          schema:
+            type: string
+            readOnly: true
+            example: strobe
+      tags:
+        - entities
+      summary: Get Entity Embeds
+      operationId: getEntityEmbedsById
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Embeds"
+  /api/entities/{entityId}/minimal-embeds:
+    get:
+      parameters:
+        - name: entityId
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          example: 1
+          schema:
+            type: string
+            readOnly: true
+            example: strobe
+      tags:
+        - entities
+      summary: Get Entity MinimalEmbeds
+      operationId: getEntityMinimalEmbedsById
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Embeds"
   /api/entity-statuses:
     get:
       tags:

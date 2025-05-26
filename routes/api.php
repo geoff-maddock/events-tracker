@@ -65,6 +65,8 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     ->where('month', '(0?[1-9]|1[012])$')
     ->where('day', '[0-3][0-9]');
 
+    Route::get('entities/{entity}/embeds', ['as' => 'entities.embeds', 'uses' => 'Api\EntitiesController@embeds']);
+    Route::get('entities/{entity}/minimal-embeds', ['as' => 'entities.minimalEmbeds', 'uses' => 'Api\EntitiesController@minimalEmbeds']);
     Route::get('entities/reset', ['as' => 'entities.reset', 'uses' => 'Api\EntitiesController@reset']);
     Route::get('entities/rpp-reset', ['as' => 'entities.rppReset', 'uses' => 'Api\EntitiesController@rppReset']);
     Route::resource('entities', 'Api\EntitiesController');
