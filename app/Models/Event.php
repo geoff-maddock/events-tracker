@@ -148,8 +148,6 @@ class Event extends Model
 
     public function getRouteKeyName(): string
     {
-        \Log::info('Route key name called for Event');
-        \Log::info('Slug value: ' . $this->slug);
         return 'slug';
     }
 

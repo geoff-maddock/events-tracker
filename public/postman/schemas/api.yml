@@ -2209,22 +2209,22 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /api/events/{eventId}/embeds:
+  /api/events/{slug}/embeds:
     get:
       parameters:
-        - name: eventId
+        - name: slug
           description: The unique identifier of the event
           in: path
           required: true
-          example: 1
+          example: lazercrunk
           schema:
-            type: integer
+            type: string
             readOnly: true
-            example: 1
+            example: lazercrunk
       tags:
         - events
       summary: Get Event Embeds
-      operationId: getEventEmbedsById
+      operationId: getEventEmbedsBySlug
       responses:
         "200":
           description: Successful response
@@ -2232,22 +2232,22 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Embeds"
-  /api/events/{eventId}/minimal-embeds:
+  /api/events/{slug}/minimal-embeds:
     get:
       parameters:
-        - name: eventId
+        - name: slug
           description: The unique identifier of the event
           in: path
           required: true
-          example: 1
+          example: lazercrunk
           schema:
-            type: integer
+            type: string
             readOnly: true
-            example: 1
+            example: lazercrunk
       tags:
         - events
       summary: Get Event MinimalEmbeds
-      operationId: getEventMinimalEmbedsById
+      operationId: getEventMinimalEmbedsBySlug
       responses:
         "200":
           description: Successful response
@@ -2400,7 +2400,7 @@ paths:
           required: true
           schema:
             type: string
-          example: cutups
+          example: strobe
       tags:
         - entities
       summary: Delete Entity
@@ -2410,14 +2410,14 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /api/entities/{entityId}/embeds:
+  /api/entities/{slug}/embeds:
     get:
       parameters:
-        - name: entityId
+        - name: slug
           description: The unique identifier of the entity
           in: path
           required: true
-          example: 1
+          example: strobe
           schema:
             type: string
             readOnly: true
@@ -2425,7 +2425,7 @@ paths:
       tags:
         - entities
       summary: Get Entity Embeds
-      operationId: getEntityEmbedsById
+      operationId: getEntityEmbedsBySlug
       responses:
         "200":
           description: Successful response
@@ -2433,14 +2433,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Embeds"
-  /api/entities/{entityId}/minimal-embeds:
+  /api/entities/{slug}/minimal-embeds:
     get:
       parameters:
-        - name: entityId
+        - name: slug
           description: The unique identifier of the entity
           in: path
           required: true
-          example: 1
+          example: strobe
           schema:
             type: string
             readOnly: true
@@ -2448,7 +2448,7 @@ paths:
       tags:
         - entities
       summary: Get Entity MinimalEmbeds
-      operationId: getEntityMinimalEmbedsById
+      operationId: getEntityMinimalEmbedsBySlug
       responses:
         "200":
           description: Successful response

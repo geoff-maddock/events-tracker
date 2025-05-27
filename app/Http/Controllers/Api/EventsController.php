@@ -661,12 +661,12 @@ class EventsController extends Controller
             'total' => count($embedList),
             'current_page' => 1,
             'per_page' => 100,
-            'first_page_url' => '/events/'.$event->id.'/embeds',
+            'first_page_url' => '/events/'.$event->slug.'/embeds',
             'from' => 1,
             'last_page' => 1,
-            'next_page_url' => '/events/'.$event->id.'/embeds',
-            'path' => '/events/'.$event->id.'/embeds',
-            'prev_page_url' => '/events/'.$event->id.'/embeds',
+            'next_page_url' => '/events/'.$event->slug.'/embeds',
+            'path' => '/events/'.$event->slug.'/embeds',
+            'prev_page_url' => '/events/'.$event->slug.'/embeds',
             'to' => count($embedList),
         ];
 
@@ -691,12 +691,12 @@ class EventsController extends Controller
             'total' => count($embedList),
             'current_page' => 1,
             'per_page' => 100,
-            'first_page_url' => '/events/'.$event->id.'/minimal-embeds',
+            'first_page_url' => '/events/'.$event->slug.'/minimal-embeds',
             'from' => 1,
             'last_page' => 1,
-            'next_page_url' => '/events/'.$event->id.'/minimal-embeds',
-            'path' => '/events/'.$event->id.'/minimal-embeds',
-            'prev_page_url' => '/events/'.$event->id.'/minimal-embeds',
+            'next_page_url' => '/events/'.$event->slug.'/minimal-embeds',
+            'path' => '/events/'.$event->slug.'/minimal-embeds',
+            'prev_page_url' => '/events/'.$event->slug.'/minimal-embeds',
             'to' => count($embedList),
         ];
 
