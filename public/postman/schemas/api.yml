@@ -141,6 +141,38 @@ components:
           maxLength: 65535
           description: Code that can be output to display embedded content, typically external content
           example: https://bandcamp.com/brillobox
+    Photos:
+      allOf: [$ref: "#/components/schemas/Pagination"]
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of the photo responses
+          items:
+            "$ref": "#/components/schemas/PhotoResponse"
+    PhotoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+          description: Unique ID of the photo
+        name:
+          type: string
+          maxLength: 255
+          description: The cannonical name of the photo
+          example: Brillobox
+        photo:
+          type: string
+          maxLength: 65535
+          description: A link to a photo image
+          example: https://some.url/imagelink.jpg
+        thumbnail:
+          type: string
+          maxLength: 65535
+          description: A link to a photo image thumbnail
+          example: https://some.url/tb-imagelink.jpg
     EntityRequest:
       type: object
       required:
@@ -2255,6 +2287,29 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Embeds"
+  /api/events/{slug}/photos:
+    get:
+      parameters:
+        - name: slug
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          example: strobe
+          schema:
+            type: string
+            readOnly: true
+            example: strobe
+      tags:
+        - events
+      summary: Get Events Photos
+      operationId: getEventPhotosBySlug
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Photos"
   /api/entities:
     post:
       tags:
@@ -2456,6 +2511,29 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Embeds"
+  /api/entities/{slug}/photos:
+    get:
+      parameters:
+        - name: slug
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          example: strobe
+          schema:
+            type: string
+            readOnly: true
+            example: strobe
+      tags:
+        - entities
+      summary: Get Entity Photos
+      operationId: getEntityPhotosBySlug
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Photos"
   /api/entity-statuses:
     get:
       tags:

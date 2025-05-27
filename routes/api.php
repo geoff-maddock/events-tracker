@@ -51,7 +51,8 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('blogs/reset', ['as' => 'blogs.reset', 'uses' => 'Api\BlogsController@reset']);
     Route::get('blogs/rpp-reset', ['as' => 'blogs.rppReset', 'uses' => 'Api\BlogsController@rppReset']);
     Route::resource('blogs', 'Api\BlogsController');
-    
+
+    Route::get('events/{event}/photos', ['as' => 'events.photos', 'uses' => 'Api\EventsController@photos']);
     Route::get('events/{event}/embeds', ['as' => 'events.embeds', 'uses' => 'Api\EventsController@embeds']);
     Route::get('events/{event}/minimal-embeds', ['as' => 'events.minimalEmbeds', 'uses' => 'Api\EventsController@minimalEmbeds']);
     Route::get('events/reset', ['as' => 'events.reset', 'uses' => 'Api\EventsController@reset']);
@@ -65,6 +66,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     ->where('month', '(0?[1-9]|1[012])$')
     ->where('day', '[0-3][0-9]');
 
+    Route::get('entities/{entity}/photos', ['as' => 'entities.photos', 'uses' => 'Api\EntitiesController@photos']);
     Route::get('entities/{entity}/embeds', ['as' => 'entities.embeds', 'uses' => 'Api\EntitiesController@embeds']);
     Route::get('entities/{entity}/minimal-embeds', ['as' => 'entities.minimalEmbeds', 'uses' => 'Api\EntitiesController@minimalEmbeds']);
     Route::get('entities/reset', ['as' => 'entities.reset', 'uses' => 'Api\EntitiesController@reset']);
