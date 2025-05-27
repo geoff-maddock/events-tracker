@@ -34,6 +34,7 @@ use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 use Jamband\Ripple\Ripple;
+use Storage;
 
 class EntitiesController extends Controller
 {
@@ -572,16 +573,6 @@ class EntitiesController extends Controller
     {
         app('redirect')->setIntendedUrl(url()->current());
 
-        // $threads = $entity->threads()->paginate($this->limit);
-
-        // $embeds = $embedExtractor->getEmbedsForEntity($entity);
-
-        // get all the tracks as streamable URLs
-        // $tracks = $embedExtractor->getTracksFromUrl('https://0h85.bandcamp.com/');
-        // $tracks = [];
-
-        // TO DO return these objects as relations OR create seperate endpoints
-        // return view('entities.show', compact('entity', 'threads', 'embeds', 'tracks'));
         return response()->json(new EntityResource($entity));
     }
 
@@ -938,5 +929,26 @@ class EntitiesController extends Controller
         
         // converts array of embeds into json embed list
         return response()->json($embeds);
+    }
+
+    public function photos(?Entity $entity): JsonResponse
+    {
+        if (!$entity) {
+            abort(404);
+        }
+    
+        // extract all the links from the entity
+        $photoList = $entity->photos()->get();
+
+        foreach ($photoList as $photo) {
+            $photos[] = [
+                'id' => $photo->id,
+                'name' => $photo->name,
+                'photo' => Storage::disk('external')->url($photo->getStoragePath()),
+                'thumbnail' => Storage::disk('external')->url($photo->getStorageThumbnail())
+            ];
+        }
+
+        return response()->json($photos);
     }
 }

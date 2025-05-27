@@ -41,6 +41,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Storage;
 
 class EventsController extends Controller
 {
@@ -1302,5 +1303,26 @@ class EventsController extends Controller
         }
 
         return $blacklist;
+    }
+
+    public function photos(?Event $event): JsonResponse
+    {
+        if (!$event) {
+            abort(404);
+        }
+
+        // extract all the links from the event
+        $photoList = $event->photos()->get();
+
+        foreach ($photoList as $photo) {
+            $photos[] = [
+                'id' => $photo->id,
+                'name' => $photo->name,
+                'photo' => Storage::disk('external')->url($photo->getStoragePath()),
+                'thumbnail' => Storage::disk('external')->url($photo->getStorageThumbnail())
+            ];
+        }
+
+        return response()->json($photos);
     }
 }
