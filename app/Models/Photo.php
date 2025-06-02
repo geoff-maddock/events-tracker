@@ -256,4 +256,14 @@ class Photo extends Eloquent
         // changed for external / s3 storage
         return $this->thumbnail;
     }
+
+    public function getPath(): string
+    {
+        return Storage::disk('external')->url($this->getStoragePath());
+    }
+    
+    public function getThumbnailPath(): string
+    {
+        return Storage::disk('external')->url($this->getStorageThumbnail());
+    }
 }

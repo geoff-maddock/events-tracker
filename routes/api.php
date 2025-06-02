@@ -112,6 +112,12 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('tags/rpp-reset', ['as' => 'tags.rppReset', 'uses' => 'Api\TagsController@rppReset']);
     Route::resource('tags', 'Api\TagsController');
 
+
+    Route::match(['get', 'post'], 'posts/filter', ['as' => 'posts.filter', 'uses' => 'Api\PostsController@filter']);
+    Route::get('posts/reset', ['as' => 'posts.reset', 'uses' => 'Api\PostsController@reset']);
+    Route::get('posts/rpp-reset', ['as' => 'posts.rppReset', 'uses' => 'Api\PostsController@rppReset']);
+    Route::resource('posts', 'Api\PostsController');
+
     Route::match(['get', 'post'], 'threads/filter', ['as' => 'threads.filter', 'uses' => 'Api\ThreadsController@filter']);
     Route::get('threads/reset', ['as' => 'threads.reset', 'uses' => 'Api\ThreadsController@reset']);
     Route::get('threads/rpp-reset', ['as' => 'threads.rppReset', 'uses' => 'Api\ThreadsController@rppReset']);

@@ -39,6 +39,13 @@ class EntityResource extends JsonResource
         'primary_photo' => $this->getPrimaryPhotoPath(),
         'primary_photo_thumbnail' => $this->getPrimaryPhotoThumbnailPath(),
         'primary_location' => $this->getPrimaryLocation(),
+        'photos' => $this->photos->map(function ($photo) {
+                return [
+                    'id' => $photo->id,
+                    'path' => $photo->getPath(),
+                    'thumbnail_path' => $photo->getThumbnailPath(),
+                ];
+            })->toArray(),
         ];
     }
 }

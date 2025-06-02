@@ -44,13 +44,20 @@ class EventResource extends JsonResource
             'primary_link' => $this->primary_link,
             'ticket_link' => $this->ticket_link,
             'tags' => $this->tags,
-            'entities' => $this->entities,
+            'entities' => EntityResource::collection($this->entities),
             'created_by' => $this->created_by,
             'updated_by' => $this->updated_by,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'primary_photo' => $this->getPrimaryPhotoPath(),
             'primary_photo_thumbnail' => $this->getPrimaryPhotoThumbnailPath(),
+            'photos' => $this->photos->map(function ($photo) {
+                return [
+                    'id' => $photo->id,
+                    'path' => $photo->getPath(),
+                    'thumbnail_path' => $photo->getThumbnailPath(),
+                ];
+            })->toArray(),
         ];
     }
 }
