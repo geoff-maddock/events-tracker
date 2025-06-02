@@ -1230,6 +1230,52 @@ components:
           format: date-time
           description: Date and time that the occurrence week was last updated
           readOnly: true
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          maxLength: 255
+          description: A name of a thread
+          example: Forum
+        slug:
+          type: string
+          maxLength: 255
+          description: A unique identifier name for the post in kebab-case
+          example: post-slug
+        description:
+          type: string
+          example: An extensive breakdown of the post
+          description: An extensive breakdown of the post
+        visibility_id:
+          type: integer
+          readOnly: true
+          example: 1
+          description: Relation to the visibility table that defines the visibility of the post
+        thread_id:
+          type: integer
+          readOnly: true
+          example: 1
+          description: Relation to the thread table that defines the thread of the post
+        created_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the entity type was created
+          readOnly: true
+    Posts:
+      allOf: [$ref: "#/components/schemas/Pagination"]
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of the current page of posts
+          items:
+            "$ref": "#/components/schemas/Post"
     Series:
       type: object
       required:
@@ -3168,6 +3214,41 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /api/posts:
+    get:
+      tags:
+        - posts
+      summary: Get Posts
+      operationId: getPosts
+      parameters:
+        - name: filters[name]
+          in: query
+          required: false
+          description: A filter query of the post name
+          schema:
+            type: string
+          example: Post name
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+          example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+          example: asc
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Posts"
   /api/series:
     post:
       tags:
