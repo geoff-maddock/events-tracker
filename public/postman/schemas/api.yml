@@ -2415,17 +2415,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Entities"
-  /api/entities/reset:
-    get:
-      tags:
-        - entities
-      summary: Reset Entity filters
-      operationId: resetEntityFilters
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json: {}
   /api/entities/{slug}:
     get:
       parameters:
