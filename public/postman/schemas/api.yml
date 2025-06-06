@@ -1897,6 +1897,20 @@ paths:
           schema:
             type: string
           example: Blog Title
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+          example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+          example: 1
         - name: sort
           in: query
           required: false
@@ -2124,6 +2138,20 @@ paths:
           schema:
             type: string
           example: "electronic"
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+          example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+          example: 1
         - name: sort
           in: query
           required: false
@@ -2376,6 +2404,20 @@ paths:
           schema:
             type: string
           example: "Individual"
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+          example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+          example: 1
         - name: sort
           in: query
           required: false
@@ -2544,6 +2586,20 @@ paths:
           schema:
             type: string
           example: Group
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+          example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+          example: 1
         - name: sort
           in: query
           required: false
@@ -2664,6 +2720,20 @@ paths:
           schema:
             type: string
           example: "Group"
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+          example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+          example: 1
         - name: sort
           in: query
           required: false
@@ -2763,6 +2833,20 @@ paths:
           schema:
             type: string
           example: "Concert"
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+          example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+          example: 1
         - name: sort
           in: query
           required: false
@@ -2862,6 +2946,20 @@ paths:
           schema:
             type: string
           example: Blog Title
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+          example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+          example: 1
         - name: sort
           in: query
           required: false
@@ -2981,6 +3079,20 @@ paths:
             type: string
             example: Google
           example: Google
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+          example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+          example: 1
         - name: sort
           in: query
           required: false
@@ -3079,6 +3191,20 @@ paths:
           schema:
             type: string
           example: Brillobox
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+          example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+          example: 1
         - name: sort
           in: query
           required: false
@@ -3178,6 +3304,20 @@ paths:
           schema:
             type: string
           example: Post name
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+          example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+          example: 1
         - name: sort
           in: query
           required: false
@@ -3314,6 +3454,20 @@ paths:
           schema:
             type: integer
           example: 21
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+          example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+          example: 1
         - name: sort
           in: query
           required: false
@@ -3413,6 +3567,20 @@ paths:
           schema:
             type: string
           example: "techno"
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+          example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+          example: 1
         - name: sort
           in: query
           required: false
@@ -3495,6 +3663,20 @@ paths:
           schema:
             type: string
           example: Thread name
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+          example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+          example: 1
         - name: sort
           in: query
           required: false
@@ -3677,6 +3859,20 @@ paths:
           schema:
             type: string
           example: geoff.maddock@gmail.com
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+          example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+          example: 1
         - name: sort
           in: query
           required: false
