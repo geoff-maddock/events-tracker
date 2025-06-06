@@ -73,19 +73,12 @@ components:
           maxLength: 255
           description: A unique identifier name for the blog in kebab-case
           example: group-slug
-        description:
-          type: string
-          example: Here is a short blog
-          description: A brief description of the blog
-          maxLength: 255
         visibility_id:
           type: integer
-          readOnly: true
           example: 1
           description: Relation to the visibility table that defines the visibility of the blog
         content_type_id:
           type: integer
-          readOnly: true
           example: 1
           description: Relation to the content type of the blog
         body:
@@ -99,10 +92,9 @@ components:
           example: 1
           description: Relation to the menu of the blog
         sort_order:
-          type: string
-          example: ASC
+          type: integer
+          example: 0
           description: Sort order of the blog
-          maxLength: 255
         created_at:
           type: string
           example: "2018-03-20T09:12:28Z"
@@ -417,7 +409,6 @@ components:
           maxLength: 255
         visibility_id:
           type: integer
-          readOnly: true
           example: 1
           description: Relation to the visibility table that defines the visibility of events
         description:
@@ -432,7 +423,6 @@ components:
           description: Relation to the event type table that defines the status of the event
         event_type_id:
           type: integer
-          readOnly: true
           example: 1
           description: Relation to the event type table that defines the type of event
         promoter_id:
@@ -1961,18 +1951,18 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /api/blogs/{blogId}:
+  /api/blogs/{slug}:
     get:
       parameters:
-        - name: blogId
+        - name: slug
           description: The unique identifier of the blog
           in: path
           required: true
           schema:
             description: The unique identifier of an blog
-            type: integer
+            type: string
             readOnly: true
-          example: 1
+          example: about-arcane-city
       tags:
         - blogs
       summary: Get Blog
@@ -1986,15 +1976,15 @@ paths:
                 $ref: "#/components/schemas/Blog"
     put:
       parameters:
-        - name: blogId
+        - name: slug
           description: The unique identifier of the blog
           in: path
           required: true
           schema:
             description: The unique identifier of a blog
-            type: integer
+            type: string
             readOnly: true
-          example: 1
+          example: about-arcane-city
       tags:
         - blogs
       summary: Update Blog
@@ -2013,15 +2003,15 @@ paths:
                 $ref: "#/components/schemas/Blog"
     delete:
       parameters:
-        - name: blogId
+        - name: slug
           description: The unique identifier of the blog
           in: path
           required: true
           schema:
             description: The unique identifier of a blog
-            type: integer
+            type: string
             readOnly: true
-          example: 1
+          example: about-arcane-city
       tags:
         - blogs
       summary: Delete Blog
@@ -2173,17 +2163,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Events"
-  /api/events/reset:
-    get:
-      tags:
-        - events
-      summary: Reset event filters
-      operationId: resetEventsFilters
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json: {}
   /api/events/by-date/{year}/{month?}/{day?}:
     get:
       parameters:

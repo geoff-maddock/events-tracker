@@ -24,11 +24,11 @@ class BlogRequest extends Request
     public function rules()
     {
         return [
-            'name' => 'required|min:3',
-            'slug' => 'required|min:3',
-            'body' => 'required|min:3',
-            'visibility_id' => 'required',
-            'content_type_id' => 'required',
+            'name' => 'required|min:3|max:255',
+            'slug' => 'required|min:3|max:255|unique:blogs,slug',
+            'body' => 'required|min:3|max:65535',
+            'visibility_id' => 'required|integer',
+            'content_type_id' => 'required|integer',
         ];
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
+
 class EntityTypeRequest extends Request
 {
     /**
@@ -21,10 +23,17 @@ class EntityTypeRequest extends Request
      */
     public function rules()
     {
+        $entityTypeId = $this->route('entity_type')?->id ?? null;
+
         return [
-            'name' => 'required|min:3:max:255',
-            'slug' => 'required|min:3|max:255',
+            'name' => 'required|min:3|max:255',
+            'slug' => [
+                'required',
+                'string',
+                Rule::unique('entity_types', 'slug')->ignore($entityTypeId),
+            ],
             'short' => 'required|min:3|max:255',
         ];
     }
+
 }

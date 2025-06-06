@@ -750,14 +750,6 @@ class EventsController extends Controller
         // dispatch notifications that the event was created
         EventCreated::dispatch($event);
 
-        flash()->success('Success', 'Your event has been created');
-
-        // check if a FB link was included
-        if (false !== strpos($event->primary_link, 'facebook')) {
-            // try to import the photo
-            // $this->addFbPhoto($event);
-        }
-
         $photo = $event->getPrimaryPhoto();
 
         // make a call to notify all users who are following any of the tags/keywords if the event starts in the future
@@ -767,15 +759,6 @@ class EventsController extends Controller
                 $this->notifyFollowing($event);
             }
         }
-
-        // TODO re-enable after setting auth
-        // add a twitter notification if the user is admin
-        // if ($this->user->hasGroup('super_admin') && config('app.twitter_consumer_key') !== '999') {
-        //     // only tweet if there is a primary photo
-        //     if ($photo !== null) {
-        //         $event->notify(new EventPublished());
-        //     }
-        // }
 
         // return response()->json($event);
         return response()->json(new EventResource($event));
