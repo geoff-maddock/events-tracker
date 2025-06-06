@@ -199,24 +199,6 @@ components:
           description: The unique identifier of an entity type
           type: integer
           example: 1
-        created_by:
-          type: integer
-          example: 1
-          description: Relation to the user table that defines the user who created an entity
-        updated_by:
-          type: integer
-          example: 1
-          description: Relation to the user table that defines the user who last updated an entity
-        created_at:
-          type: string
-          example: "2018-03-20T09:12:28Z"
-          format: date-time
-          description: Date and time that the entity was created
-        updated_at:
-          type: string
-          example: "2018-03-20T09:12:28Z"
-          format: date-time
-          description: Date and time that the entity was last updated
         started_at:
           type: string
           example: "2018-03-20T09:12:28Z"
