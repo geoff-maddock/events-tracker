@@ -185,7 +185,7 @@ class BlogsController extends Controller
      *
      * @internal param Request $request
      */
-    public function store(BlogRequest $request, Blog $blog): RedirectResponse
+    public function store(BlogRequest $request, Blog $blog): JsonResponse
     {
         // TODO change this to use the trust_blog permission to allow html
         if (auth()->id() === config('app.superuser')) {
@@ -208,7 +208,7 @@ class BlogsController extends Controller
         // add to activity log
         Activity::log($blog, $this->user, Action::CREATE);
 
-        return redirect()->route('blogs.index');
+        return response()->json($blog);
     }
 
     /**
@@ -245,14 +245,10 @@ class BlogsController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @internal param int $id
      */
     public function show(Blog $blog): JsonResponse
     {
-        app('redirect')->setIntendedUrl(url()->current());
-
-        return response()->json(new BlogResource($blog));
+        return response()->json($blog);
     }
 
     /**
@@ -269,7 +265,7 @@ class BlogsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Blog $blog, BlogRequest $request): RedirectResponse
+    public function update(Blog $blog, BlogRequest $request):  JsonResponse
     {
         $msg = '';
 
@@ -308,9 +304,7 @@ class BlogsController extends Controller
         // add to activity log
         Activity::log($blog, $this->user, Action::UPDATE);
 
-        flash('Success', 'Your blog has been updated');
-
-        return redirect()->route('blogs.index');
+        return response()->json($blog);
     }
 
     /**

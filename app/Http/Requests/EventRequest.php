@@ -24,9 +24,15 @@ class EventRequest extends Request
      */
     public function rules()
     {
+        $eventSlug = $this->route('event')?->id ?? null;
+
         return [
             'name' => 'required|min:3|max:255',
-            'slug' => Rule::unique('events')->ignore(isset($this->event) ? $this->event->id : ''),
+            'slug' => [
+                'required',
+                'string',
+                Rule::unique('entities', 'slug')->ignore($eventSlug),
+            ],
             'short' => 'max:255',
             'start_at' => 'required|date',
             'event_type_id' => 'required',

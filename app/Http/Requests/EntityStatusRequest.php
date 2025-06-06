@@ -22,7 +22,7 @@ class EntityStatusRequest extends Request
     public function rules()
     {
         return [
-            'name' => 'required|min:3',
+            'name' => 'required|min:3|max:255|unique:entity_statuses,name',
         ];
     }
 }

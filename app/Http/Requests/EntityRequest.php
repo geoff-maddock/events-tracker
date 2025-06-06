@@ -18,9 +18,15 @@ class EntityRequest extends Request
      */
     public function rules(): array
     {
+        $entitySlug = $this->route('entity')?->id ?? null;
+
         return [
             'name' => 'required|min:3|max:255',
-            'slug' => Rule::unique('entities')->ignore(isset($this->entity) ? $this->entity->id : ''),
+            'slug' => [
+                'required',
+                'string',
+                Rule::unique('entities', 'slug')->ignore($entitySlug),
+            ],
             'short' => 'required|max:255',
             'description' => 'required',
             'entity_type_id' => 'required',
