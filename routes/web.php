@@ -93,8 +93,6 @@ Route::get('users/{id}/notify', [
     'as' => 'users.notify',
     'uses' => 'UsersController@notifyUser',
 ]);
-
-
 Route::match(['get', 'post'], 'activity/filter', ['as' => 'activities.filter', 'uses' => 'ActivityController@filter']);
 Route::get('activity', 'ActivityController@index')->name('activities.index');
 Route::get('activity/reset', ['as' => 'activities.reset', 'uses' => 'ActivityController@reset']);
@@ -121,11 +119,6 @@ Route::get('impersonate/{user}', function (User $user) {
 
 Route::post('users/{id}/photos', 'UsersController@addPhoto');
 Route::delete('users/{id}/photos/{photo_id}', 'UsersController@deletePhoto');
-
-Route::get('users/{id}/notify', [
-    'as' => 'users.notify',
-    'uses' => 'UsersController@notifyUser',
-]);
 
 Route::get('users/{id}/activate', [
     'as' => 'users.activate',
