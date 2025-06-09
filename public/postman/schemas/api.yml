@@ -14,6 +14,7 @@ servers:
   - url: https://dev.arcane.city
     description: Development
 tags:
+  - name: activities
   - name: blogs
   - name: default
   - name: entities
@@ -54,6 +55,99 @@ components:
       type: http
       scheme: basic
   schemas:
+    Activity:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+          description: Unique ID of the activity
+        user_id:
+          type: integer
+          example: 1
+          description: The ID of the user who performed the activity
+        object_table:
+          type: string
+          maxLength: 255
+          description: The table name of the related object
+          example: "Event"
+        object_id:
+          type: integer
+          example: 1
+          description: The ID of the related object
+        object_name:
+          type: string
+          maxLength: 255
+          description: The name of the related object
+          example: "October's Lazercrunk at the Brillobox"
+        action_id:
+          type: integer
+          example: 1
+          description: Relation to the action table that defines the type of activity
+        message:
+          type: string
+          maxLength: 255
+          description: A description of the activity
+          example: "Created event October's Lazercrunk at the Brillobox"
+        changes:
+          type: string
+          description: JSON data about changes made
+          example: '{"name":"October''s Lazercrunk at the Brillobox"}'
+        ip_address:
+          type: string
+          maxLength: 45
+          description: IP address of the user who performed the action
+          example: "192.168.0.1"
+        child_object_table:
+          type: string
+          maxLength: 255
+          description: The table name of the related child object, if applicable
+          example: "Entity"
+        child_object_id:
+          type: integer
+          example: 2
+          description: The ID of the related child object, if applicable
+        child_object_name:
+          type: string
+          maxLength: 255
+          description: The name of the related child object, if applicable
+          example: "Brillobox"
+        created_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the activity was created
+          readOnly: true
+        updated_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the activity was last updated
+          readOnly: true
+        user:
+          $ref: "#/components/schemas/UserSimple"
+        action:
+          type: object
+          properties:
+            id:
+              type: integer
+              readOnly: true
+              example: 1
+            name:
+              type: string
+              maxLength: 255
+              description: Name of the action performed
+              example: "Create"
+    Activities:
+      allOf: [$ref: "#/components/schemas/Pagination"]
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of the current page of activities
+          items:
+            "$ref": "#/components/schemas/Activity"
     Blog:
       type: object
       required:
