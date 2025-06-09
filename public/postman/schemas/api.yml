@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Arcane City
-  version: 1.0.0
+  version: 2025.06.09
   description: REST API for working with Arcane City data
   contact:
     name: Geoff Maddock
@@ -3969,6 +3969,69 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /api/threads/{threadId}/posts:
+    get:
+      parameters:
+        - name: threadId
+          description: The unique identifier of the thread
+          in: path
+          required: true
+          schema:
+            description: The unique identifier of a thread
+            type: integer
+            readOnly: true
+          example: 1
+      tags:
+        - threads
+      summary: Get Posts in Thread
+      operationId: getPostsInThreadById
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Posts"
+  /api/threads/{threadId}/posts/{postId}:
+    parameters:
+      - name: threadId
+        description: The unique identifier of the thread
+        in: path
+        required: true
+        schema:
+          type: integer
+          readOnly: true
+          example: 1
+      - name: postId
+        description: The unique identifier of the post in the thread
+        in: path
+        required: true
+        schema:
+          type: integer
+          readOnly: true
+          example: 1
+    get:
+      parameters:
+        - name: threadId
+          description: The unique identifier of the thread
+          in: path
+          required: true
+          schema:
+            description: The unique identifier of a thread
+            type: integer
+            readOnly: true
+          example: 1
+      tags:
+        - threads
+      summary: Get Post in Thread
+      operationId: getPostInThreadById
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
   /api/tokens/create:
     post:
       tags:

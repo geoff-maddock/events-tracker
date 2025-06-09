@@ -21,6 +21,9 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View as ViewView;
+use App\Filters\PostFilters;
+use App\Http\Resources\PostCollection;
+use App\Models\Post;
 
 class ThreadsController extends Controller
 {
@@ -490,5 +493,62 @@ class ThreadsController extends Controller
         return [
             'visibilities' => ['' => ''] + Visibility::pluck('name', 'id')->all(),
         ];
+    }
+
+    /**
+     * Display all posts related to the specified thread.
+     *
+     * @param int $threadId The ID of the thread
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Services\SessionStore\ListParameterSessionStore $listParamSessionStore
+     * @param \App\Http\ResultBuilder\ListEntityResultBuilder $listEntityResultBuilder
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function posts(
+        int $threadId,
+        Request $request,
+        PostFilters $postFilter,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ) {
+        // Check if the thread exists
+        $thread = Thread::find($threadId);
+        
+        if (!$thread) {
+            return response()->json(['error' => 'Thread not found'], 404);
+        }
+
+        // If the gate does not allow this user to show posts redirect to home
+        if (Gate::denies('show_post')) {
+            return response()->json(['error' => 'Unauthorized', 'message' => 'You cannot view posts'], 403);
+        }
+
+        // Initialize listParamSessionStore with base index key
+        $listParamSessionStore->setBaseIndex('thread_posts');
+        $listParamSessionStore->setKeyPrefix('thread_posts_index_' . $threadId);
+
+        // Set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'posts'], ['threadId' => $threadId]));
+
+        // Create the base query including any required joins
+        $baseQuery = Post::where('thread_id', $threadId)
+            ->select('posts.*');
+
+        $listEntityResultBuilder
+            ->setFilter($postFilter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultLimit($this->defaultLimit)
+            ->setDefaultSort($this->defaultSortCriteria);
+
+        // Get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // Get the query builder
+        $query = $listResultSet->getList();
+
+        // Get the posts with pagination
+        $posts = $query->paginate($listResultSet->getLimit());
+
+        return response()->json(new PostCollection($posts));
     }
 }
