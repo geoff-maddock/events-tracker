@@ -50,12 +50,12 @@ class ActivityController extends Controller
 
         // default list variables
         $this->defaultLimit = 100;
-        $this->defaultSort = 'name';
-        $this->defaultSortDirection = 'asc';
-        $this->defaultSortCriteria = ['object_name' => 'desc'];
+        $this->defaultSort = 'created_at';
+        $this->defaultSortDirection = 'desc';
+        $this->defaultSortCriteria = ['created_at' => 'desc'];
 
         $this->limit = 100;
-        $this->sort = 'object_name';
+        $this->sort = 'created_at';
         $this->sortDirection = 'desc';
 
         parent::__construct();
@@ -79,7 +79,7 @@ class ActivityController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['activities.created_at' => 'desc']);
+            ->setDefaultSort(['activities.'.$this->defaultSort => $this->defaultSortDirection]);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();

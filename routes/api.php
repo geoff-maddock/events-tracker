@@ -124,6 +124,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::match(['get', 'post'], 'threads/filter', ['as' => 'threads.filter', 'uses' => 'Api\ThreadsController@filter']);
     Route::get('threads/reset', ['as' => 'threads.reset', 'uses' => 'Api\ThreadsController@reset']);
     Route::get('threads/rpp-reset', ['as' => 'threads.rppReset', 'uses' => 'Api\ThreadsController@rppReset']);
+    Route::get('threads/{threadId}/posts', ['as' => 'threads.posts', 'uses' => 'Api\ThreadsController@posts']);
     Route::resource('threads', 'Api\ThreadsController');
 
     Route::match(['get', 'post'], 'users/filter', ['as' => 'users.filter', 'uses' => 'Api\UsersController@filter']);
