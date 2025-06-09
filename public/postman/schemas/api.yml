@@ -16,7 +16,6 @@ servers:
 tags:
   - name: activities
   - name: blogs
-  - name: default
   - name: entities
   - name: entity-statuses
   - name: entity-types
@@ -1977,6 +1976,99 @@ components:
 security:
   - basicAuth: []
 paths:
+  /api/activities:
+    get:
+      tags:
+        - activities
+      summary: Get Activities
+      operationId: getActivities
+      parameters:
+        - name: filters[user_id]
+          in: query
+          required: false
+          description: A filter query of the activity user id
+          schema:
+            type: integer
+          example: 1
+        - name: filters[object_id]
+          in: query
+          required: false
+          description: A filter query of the activity object id
+          schema:
+            type: integer
+          example: 1
+        - name: filters[object_table]
+          in: query
+          required: false
+          description: A filter query of the activity object table
+          schema:
+            type: string
+          example: Event
+        - name: filters[message]
+          in: query
+          required: false
+          description: A filter query of the activity message
+          schema:
+            type: string
+          example: Activity Message
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+          example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+          example: 1
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+          example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+          example: asc
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pagination"
+  /api/activities/{id}:
+    get:
+      parameters:
+        - name: id
+          description: The unique identifier of the activity
+          in: path
+          required: true
+          schema:
+            description: The unique identifier of an activity
+            type: string
+            readOnly: true
+          example: about-arcane-city
+      tags:
+        - activities
+      summary: Get Activity
+      operationId: getActivityById
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Activity"
   /api/blogs:
     get:
       tags:
@@ -2267,7 +2359,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Events"
-  /api/events/by-date/{year}/{month?}/{day?}:
+  /api/events/by-date/{year}/{month}/{day}:
     get:
       parameters:
         - name: year
@@ -4034,17 +4126,6 @@ paths:
       operationId: deleteUserById
       responses:
         "204":
-          description: Successful response
-          content:
-            application/json: {}
-  /api/docs:
-    get:
-      tags:
-        - default
-      summary: Get Docs
-      operationId: getDocs
-      responses:
-        "200":
           description: Successful response
           content:
             application/json: {}
