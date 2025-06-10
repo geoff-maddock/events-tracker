@@ -1989,56 +1989,56 @@ paths:
           description: A filter query of the activity user id
           schema:
             type: integer
-          example: 1
+            example: 1
         - name: filters[object_id]
           in: query
           required: false
           description: A filter query of the activity object id
           schema:
             type: integer
-          example: 1
+            example: 1
         - name: filters[object_table]
           in: query
           required: false
           description: A filter query of the activity object table
           schema:
             type: string
-          example: Event
+            example: Event
         - name: filters[message]
           in: query
           required: false
           description: A filter query of the activity message
           schema:
             type: string
-          example: Activity Message
+            example: Activity Message
         - name: limit
           in: query
           required: false
           description: The limit on the number of results to return per page
           schema:
             type: integer
-          example: 25
+            example: 25
         - name: page
           in: query
           required: false
           description: The page number to return
           schema:
             type: integer
-          example: 1
+            example: 1
         - name: sort
           in: query
           required: false
           description: A column to be used to sort the query
           schema:
             type: string
-          example: name
+            example: id
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-          example: asc
+            example: asc
       responses:
         "200":
           description: Successful response
@@ -2057,7 +2057,7 @@ paths:
             description: The unique identifier of an activity
             type: string
             readOnly: true
-          example: about-arcane-city
+            example: about-arcane-city
       tags:
         - activities
       summary: Get Activity
@@ -2082,35 +2082,35 @@ paths:
           description: A filter query of the blog name
           schema:
             type: string
-          example: Blog Title
+            example: Blog Title
         - name: limit
           in: query
           required: false
           description: The limit on the number of results to return per page
           schema:
             type: integer
-          example: 25
+            example: 25
         - name: page
           in: query
           required: false
           description: The page number to return
           schema:
             type: integer
-          example: 1
+            example: 1
         - name: sort
           in: query
           required: false
           description: A column to be used to sort the query
           schema:
             type: string
-          example: name
+            example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-          example: asc
+            example: asc
       responses:
         "200":
           description: Successful response
@@ -2144,7 +2144,7 @@ paths:
             description: The unique identifier of an blog
             type: string
             readOnly: true
-          example: about-arcane-city
+            example: about-arcane-city
       tags:
         - blogs
       summary: Get Blog
@@ -2166,7 +2166,7 @@ paths:
             description: The unique identifier of a blog
             type: string
             readOnly: true
-          example: about-arcane-city
+            example: about-arcane-city
       tags:
         - blogs
       summary: Update Blog
@@ -2193,7 +2193,7 @@ paths:
             description: The unique identifier of a blog
             type: string
             readOnly: true
-          example: about-arcane-city
+            example: about-arcane-city
       tags:
         - blogs
       summary: Delete Blog
@@ -2246,112 +2246,111 @@ paths:
           schema:
             type: string
             example: "Lazercrunk"
-          example: "Lazercrunk"
         - name: filters[venue]
           in: query
           required: false
           description: A filter query of the venue name
           schema:
             type: string
-          example: "Brillobox"
+            example: "Brillobox"
         - name: filters[promoter]
           in: query
           required: false
           description: A filter query of the promoter name
           schema:
             type: string
-          example: "Cutups"
+            example: "Cutups"
         - name: filters[related]
           in: query
           required: false
           description: A filter query of related entity name
           schema:
             type: string
-          example: "0h85"
+            example: "0h85"
         - name: filters[series]
           in: query
           required: false
           description: A filter query of related series name
           schema:
             type: string
-          example: "Lazercrunk"
+            example: "Lazercrunk"
         - name: filters[event_type]
           in: query
           required: false
           description: A filter query of related event type name
           schema:
             type: string
-          example: "Concert"
+            example: "Concert"
         - name: filters[start_at][start]
           in: query
           required: false
           description: A filter query of the start time starting
           schema:
             type: string
-          example: "2022-01-01 1:00:00"
+            example: "2022-01-01 1:00:00"
         - name: filters[start_at][end]
           in: query
           required: false
           description: A filter query of the start time ending
           schema:
             type: string
-          example: "2022-02-01 2:00:00"
+            example: "2022-02-01 2:00:00"
         - name: filters[end_at][start]
           in: query
           required: false
           description: A filter query of the end time starting
           schema:
             type: string
-          example: "2022-02-01 1:00:00"
+            example: "2022-02-01 1:00:00"
         - name: filters[end_at][end]
           in: query
           required: false
           description: A filter query of the end time ending
           schema:
             type: string
-          example: "2022-01-01 2:00:00"
+            example: "2022-01-01 2:00:00"
         - name: filters[ages]
           in: query
           required: false
           description: A filter query of the end time ending
           schema:
             type: integer
-          example: 21
+            example: 21
         - name: filters[tag]
           in: query
           required: false
           description: A filter query of the event tags
           schema:
             type: string
-          example: "electronic"
+            example: "electronic"
         - name: limit
           in: query
           required: false
           description: The limit on the number of results to return per page
           schema:
             type: integer
-          example: 25
+            example: 25
         - name: page
           in: query
           required: false
           description: The page number to return
           schema:
             type: integer
-          example: 1
+            example: 1
         - name: sort
           in: query
           required: false
           description: A column to be used to sort the query
           schema:
             type: string
-          example: name
+            example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-          example: asc
+            example: asc
       responses:
         "200":
           description: Successful response
@@ -2359,6 +2358,55 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Events"
+  /api/events/by-date/{year}:
+    get:
+      parameters:
+        - name: year
+          description: The year of events to return
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "2012"
+      tags:
+        - events
+      summary: Get Events by Year
+      operationId: getEventByYear
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventResponse"
+  /api/events/by-date/{year}/{month}:
+    get:
+      parameters:
+        - name: year
+          description: The year of events to return
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "2012"
+        - name: month
+          description: The month of events to return
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "01"
+      tags:
+        - events
+      summary: Get Events by Year and Month
+      operationId: getEventByDate
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventResponse"
   /api/events/by-date/{year}/{month}/{day}:
     get:
       parameters:
@@ -2368,21 +2416,21 @@ paths:
           required: true
           schema:
             type: string
-          example: 2012
+            example: "2012"
         - name: month
           description: The month of events to return
           in: path
-          required: false
+          required: true
           schema:
             type: string
-          example: 01
+            example: "01"
         - name: day
           description: The day of events to return
           in: path
-          required: false
+          required: true
           schema:
             type: string
-          example: 01
+            example: "01"
       tags:
         - events
       summary: Get Events by Date
@@ -2403,7 +2451,7 @@ paths:
           required: true
           schema:
             type: string
-          example: cutups-event
+            example: "cutups-event"
       tags:
         - events
       summary: Get Event
@@ -2421,11 +2469,10 @@ paths:
           description: A unique string identifier of the event
           in: path
           required: true
-          example: 1
           schema:
             type: string
             readOnly: true
-            example: cutups-event
+            example: "cutups-event"
       tags:
         - events
       summary: Update Events
@@ -2469,11 +2516,10 @@ paths:
           description: The unique identifier of the event
           in: path
           required: true
-          example: lazercrunk
           schema:
             type: string
             readOnly: true
-            example: lazercrunk
+            example: "lazercrunk"
       tags:
         - events
       summary: Get Event Embeds
@@ -2492,11 +2538,10 @@ paths:
           description: The unique identifier of the event
           in: path
           required: true
-          example: lazercrunk
           schema:
             type: string
             readOnly: true
-            example: lazercrunk
+            example: "lazercrunk"
       tags:
         - events
       summary: Get Event MinimalEmbeds
@@ -2515,11 +2560,10 @@ paths:
           description: The unique identifier of the entity
           in: path
           required: true
-          example: strobe
           schema:
             type: string
             readOnly: true
-            example: strobe
+            example: "strobe"
       tags:
         - events
       summary: Get Events Photos
@@ -2561,63 +2605,63 @@ paths:
           description: A filter query of the entity name
           schema:
             type: string
-          example: "cutups"
+            example: "cutups"
         - name: filters[role]
           in: query
           required: false
           description: A filter query of the role name
           schema:
             type: string
-          example: "dj"
+            example: "dj"
         - name: filters[tag]
           in: query
           required: false
           description: A filter query of related tag
           schema:
             type: string
-          example: "jungle"
+            example: "jungle"
         - name: filters[entity_status]
           in: query
           required: false
           description: A filter query of related entity status name
           schema:
             type: string
-          example: "Active"
+            example: "Active"
         - name: filters[entity_type]
           in: query
           required: false
           description: A filter query of related entity type name
           schema:
             type: string
-          example: "Individual"
+            example: "Individual"
         - name: limit
           in: query
           required: false
           description: The limit on the number of results to return per page
           schema:
             type: integer
-          example: 25
+            example: 25
         - name: page
           in: query
           required: false
           description: The page number to return
           schema:
             type: integer
-          example: 1
+            example: 1
         - name: sort
           in: query
           required: false
           description: A column to be used to sort the query
           schema:
             type: string
-          example: name
+            example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-          example: asc
+            example: asc
       responses:
         "200":
           description: Successful response
@@ -2654,7 +2698,7 @@ paths:
           required: true
           schema:
             type: string
-          example: cutups
+            example: "cutups"
       tags:
         - entities
       summary: Update Entity
@@ -2679,7 +2723,7 @@ paths:
           required: true
           schema:
             type: string
-          example: strobe
+            example: "strobe"
       tags:
         - entities
       summary: Delete Entity
@@ -2696,11 +2740,10 @@ paths:
           description: The unique identifier of the entity
           in: path
           required: true
-          example: strobe
           schema:
             type: string
             readOnly: true
-            example: strobe
+            example: "strobe"
       tags:
         - entities
       summary: Get Entity Embeds
@@ -2719,11 +2762,10 @@ paths:
           description: The unique identifier of the entity
           in: path
           required: true
-          example: strobe
           schema:
             type: string
             readOnly: true
-            example: strobe
+            example: "strobe"
       tags:
         - entities
       summary: Get Entity MinimalEmbeds
@@ -2742,11 +2784,10 @@ paths:
           description: The unique identifier of the entity
           in: path
           required: true
-          example: strobe
           schema:
             type: string
             readOnly: true
-            example: strobe
+            example: "strobe"
       tags:
         - entities
       summary: Get Entity Photos
@@ -2771,35 +2812,35 @@ paths:
           description: A filter query of the entity status name
           schema:
             type: string
-          example: Group
+            example: "Group"
         - name: limit
           in: query
           required: false
           description: The limit on the number of results to return per page
           schema:
             type: integer
-          example: 25
+            example: 25
         - name: page
           in: query
           required: false
           description: The page number to return
           schema:
             type: integer
-          example: 1
+            example: 1
         - name: sort
           in: query
           required: false
           description: A column to be used to sort the query
           schema:
             type: string
-          example: name
+            example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-          example: asc
+            example: asc
       responses:
         "200":
           description: Successful response
@@ -2833,7 +2874,7 @@ paths:
             description: The unique identifier of an entity type
             type: integer
             readOnly: true
-          example: 1
+            example: 1
       tags:
         - entity-statuses
       summary: Get EntityStatus
@@ -2855,7 +2896,7 @@ paths:
             description: The unique identifier of an entity type
             type: integer
             readOnly: true
-          example: 1
+            example: 1
       tags:
         - entity-statuses
       summary: Update Entity Status
@@ -2882,7 +2923,7 @@ paths:
             description: The unique identifier of an entity type
             type: integer
             readOnly: true
-          example: 1
+            example: 1
       tags:
         - entity-statuses
       summary: Delete Entity Status
@@ -2905,35 +2946,35 @@ paths:
           description: A filter query of the entity status name
           schema:
             type: string
-          example: "Group"
+            example: "Group"
         - name: limit
           in: query
           required: false
           description: The limit on the number of results to return per page
           schema:
             type: integer
-          example: 25
+            example: 25
         - name: page
           in: query
           required: false
           description: The page number to return
           schema:
             type: integer
-          example: 1
+            example: 1
         - name: sort
           in: query
           required: false
           description: A column to be used to sort the query
           schema:
             type: string
-          example: name
+            example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-          example: asc
+            example: asc
       responses:
         "200":
           description: Successful response
@@ -2965,7 +3006,7 @@ paths:
         schema:
           type: integer
           readOnly: true
-        example: 1
+          example: 1
     get:
       tags:
         - entity-types
@@ -3018,35 +3059,35 @@ paths:
           description: A filter query of the event status name
           schema:
             type: string
-          example: "Concert"
+            example: "Concert"
         - name: limit
           in: query
           required: false
           description: The limit on the number of results to return per page
           schema:
             type: integer
-          example: 25
+            example: 25
         - name: page
           in: query
           required: false
           description: The page number to return
           schema:
             type: integer
-          example: 1
+            example: 1
         - name: sort
           in: query
           required: false
           description: A column to be used to sort the query
           schema:
             type: string
-          example: name
+            example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-          example: asc
+            example: asc
       responses:
         "200":
           description: Successful response
@@ -3131,35 +3172,35 @@ paths:
           description: A filter query of the forum name
           schema:
             type: string
-          example: Blog Title
+            example: Blog Title
         - name: limit
           in: query
           required: false
           description: The limit on the number of results to return per page
           schema:
             type: integer
-          example: 25
+            example: 25
         - name: page
           in: query
           required: false
           description: The page number to return
           schema:
             type: integer
-          example: 1
+            example: 1
         - name: sort
           in: query
           required: false
           description: A column to be used to sort the query
           schema:
             type: string
-          example: name
+            example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-          example: asc
+            example: asc
       responses:
         "200":
           description: Successful response
@@ -3193,7 +3234,7 @@ paths:
             description: The unique identifier of a forum
             type: integer
             readOnly: true
-          example: 1
+            example: 1
       tags:
         - forums
       summary: Get Forum
@@ -3215,7 +3256,7 @@ paths:
             description: The unique identifier of a forum
             type: integer
             readOnly: true
-          example: 1
+            example: 1
       tags:
         - forums
       summary: Update Forum
@@ -3242,7 +3283,7 @@ paths:
             description: The unique identifier of a forum
             type: integer
             readOnly: true
-          example: 1
+            example: 1
       tags:
         - forums
       summary: Delete Forum
@@ -3263,8 +3304,7 @@ paths:
           in: query
           schema:
             type: string
-            example: Google
-          example: Google
+            example: "Google"
         - name: limit
           in: query
           required: false
@@ -3278,21 +3318,21 @@ paths:
           description: The page number to return
           schema:
             type: integer
-          example: 1
+            example: 1
         - name: sort
           in: query
           required: false
           description: A column to be used to sort the query
           schema:
             type: string
-          example: name
+            example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-          example: asc
+            example: asc
       responses:
         "200":
           description: Successful response
@@ -3325,7 +3365,6 @@ paths:
           type: integer
           readOnly: true
           example: 1
-        example: 1
     get:
       tags:
         - links
@@ -3376,35 +3415,35 @@ paths:
           in: query
           schema:
             type: string
-          example: Brillobox
+            example: "Brillobox"
         - name: limit
           in: query
           required: false
           description: The limit on the number of results to return per page
           schema:
             type: integer
-          example: 25
+            example: 25
         - name: page
           in: query
           required: false
           description: The page number to return
           schema:
             type: integer
-          example: 1
+            example: 1
         - name: sort
           in: query
           required: false
           description: A column to be used to sort the query
           schema:
             type: string
-          example: name
+            example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-          example: asc
+            example: asc
       responses:
         "200":
           description: Successful response
@@ -3436,7 +3475,7 @@ paths:
         schema:
           type: integer
           readOnly: true
-        example: 1
+          example: 1
     get:
       tags:
         - locations
@@ -3489,35 +3528,35 @@ paths:
           description: A filter query of the post name
           schema:
             type: string
-          example: Post name
+            example: Post name
         - name: limit
           in: query
           required: false
           description: The limit on the number of results to return per page
           schema:
             type: integer
-          example: 25
+            example: 25
         - name: page
           in: query
           required: false
           description: The page number to return
           schema:
             type: integer
-          example: 1
+            example: 1
         - name: sort
           in: query
           required: false
           description: A column to be used to sort the query
           schema:
             type: string
-          example: name
+            example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-          example: asc
+            example: asc
       responses:
         "200":
           description: Successful response
@@ -3555,112 +3594,112 @@ paths:
           description: A filter query of series name
           schema:
             type: string
-          example: "Lazercrunk"
+            example: "Lazercrunk"
         - name: filters[event_type]
           in: query
           required: false
           description: A filter query of related event type name
           schema:
             type: string
-          example: "Concert"
+            example: "Concert"
         - name: filters[venue]
           in: query
           required: false
           description: A filter query of the venue name
           schema:
             type: string
-          example: "Brillobox"
+            example: "Brillobox"
         - name: filters[promoter]
           in: query
           required: false
           description: A filter query of the promoter name
           schema:
             type: string
-          example: "Cutups"
+            example: "Cutups"
         - name: filters[related]
           in: query
           required: false
           description: A filter query of related entity name
           schema:
             type: string
-          example: "0h85"
+            example: "0h85"
         - name: filters[occurrence_type]
           in: query
           required: false
           description: A filter query of related occurrence type name
           schema:
             type: string
-          example: "Monthly"
+            example: "Monthly"
         - name: filters[occurrence_week]
           in: query
           required: false
           description: A filter query of related occurrence week name
           schema:
             type: string
-          example: "First"
+            example: "First"
         - name: filters[occurrence_day]
           in: query
           required: false
           description: A filter query of related occurrence day name
           schema:
             type: string
-          example: "Friday"
+            example: "Friday"
         - name: filters[start_at][start]
           in: query
           required: false
           description: A filter query of the start time starting
           schema:
             type: string
-          example: "2022-01-01 1:00:00"
+            example: "2022-01-01 1:00:00"
         - name: filters[start_at][end]
           in: query
           required: false
           description: A filter query of the start time ending
           schema:
             type: string
-          example: "2022-02-01 2:00:00"
+            example: "2022-02-01 2:00:00"
         - name: filters[end_at][start]
           in: query
           required: false
           description: A filter query of the end time starting
           schema:
             type: string
-          example: "2022-02-01 1:00:00"
+            example: "2022-02-01 1:00:00"
         - name: filters[end_at][end]
           in: query
           required: false
           description: A filter query of the end time ending
           schema:
             type: string
-          example: "2022-01-01 2:00:00"
+            example: "2022-01-01 2:00:00"
         - name: filters[ages]
           in: query
           required: false
           description: A filter query of the end time ending
           schema:
             type: integer
-          example: 21
+            example: 21
         - name: limit
           in: query
           required: false
           description: The limit on the number of results to return per page
           schema:
             type: integer
-          example: 25
+            example: 25
         - name: page
           in: query
           required: false
           description: The page number to return
           schema:
             type: integer
-          example: 1
+            example: 1
         - name: sort
           in: query
           required: false
           description: A column to be used to sort the query
           schema:
             type: string
-          example: name
+            example: name
         - name: direction
           in: query
           required: false
@@ -3684,7 +3723,7 @@ paths:
         schema:
           type: string
           readOnly: true
-        example: 1
+          example: 1
     get:
       tags:
         - series
@@ -3752,35 +3791,35 @@ paths:
           in: query
           schema:
             type: string
-          example: "techno"
+            example: "techno"
         - name: limit
           in: query
           required: false
           description: The limit on the number of results to return per page
           schema:
             type: integer
-          example: 25
+            example: 25
         - name: page
           in: query
           required: false
           description: The page number to return
           schema:
             type: integer
-          example: 1
+            example: 1
         - name: sort
           in: query
           required: false
           description: A column to be used to sort the query
           schema:
             type: string
-          example: name
+            example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-          example: asc
+            example: asc
       responses:
         "200":
           description: Successful response
@@ -3848,35 +3887,35 @@ paths:
           description: A filter query of the thread name
           schema:
             type: string
-          example: Thread name
+            example: Thread name
         - name: limit
           in: query
           required: false
           description: The limit on the number of results to return per page
           schema:
             type: integer
-          example: 25
+            example: 25
         - name: page
           in: query
           required: false
           description: The page number to return
           schema:
             type: integer
-          example: 1
+            example: 1
         - name: sort
           in: query
           required: false
           description: A column to be used to sort the query
           schema:
             type: string
-          example: name
+            example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-          example: asc
+            example: asc
       responses:
         "200":
           description: Successful response
@@ -3910,7 +3949,7 @@ paths:
             description: The unique identifier of a thread
             type: integer
             readOnly: true
-          example: 1
+            example: 1
       tags:
         - threads
       summary: Get Thread
@@ -3932,7 +3971,7 @@ paths:
             description: The unique identifier of a thread
             type: integer
             readOnly: true
-          example: 1
+            example: 1
       tags:
         - threads
       summary: Update Thread
@@ -3959,7 +3998,7 @@ paths:
             description: The unique identifier of a thread
             type: integer
             readOnly: true
-          example: 1
+            example: 1
       tags:
         - threads
       summary: Delete Thread
@@ -3980,7 +4019,7 @@ paths:
             description: The unique identifier of a thread
             type: integer
             readOnly: true
-          example: 1
+            example: 1
       tags:
         - threads
       summary: Get Posts in Thread
@@ -4020,7 +4059,7 @@ paths:
             description: The unique identifier of a thread
             type: integer
             readOnly: true
-          example: 1
+            example: 1
       tags:
         - threads
       summary: Get Post in Thread
@@ -4093,49 +4132,49 @@ paths:
           description: A filter query of the user status
           schema:
             type: string
-          example: Active
+            example: Active
         - name: filters[name]
           in: query
           required: false
           description: A filter query of the user name
           schema:
             type: string
-          example: Geoff
+            example: Geoff
         - name: filters[email]
           in: query
           required: false
           description: A filter query of the user email
           schema:
             type: string
-          example: geoff.maddock@gmail.com
+            example: geoff.maddock@gmail.com
         - name: limit
           in: query
           required: false
           description: The limit on the number of results to return per page
           schema:
             type: integer
-          example: 25
+            example: 25
         - name: page
           in: query
           required: false
           description: The page number to return
           schema:
             type: integer
-          example: 1
+            example: 1
         - name: sort
           in: query
           required: false
           description: A column to be used to sort the query
           schema:
             type: string
-          example: name
+            example: name
         - name: direction
           in: query
           required: false
           description: A string indicating the sort direction of the query (asc or desc)
           schema:
             type: string
-          example: asc
+            example: asc
       responses:
         "200":
           description: Successful response
@@ -4152,7 +4191,7 @@ paths:
         schema:
           type: integer
           readOnly: true
-        example: 1
+          example: 1
     get:
       tags:
         - users
