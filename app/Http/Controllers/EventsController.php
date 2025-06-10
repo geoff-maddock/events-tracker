@@ -1050,7 +1050,8 @@ class EventsController extends Controller
     }
 
     /**
-     * TODO This is not used in the UI - find where to add
+     * TODO https://github.com/geoff-maddock/events-tracker/issues/409
+     * This is not used in the UI - find where to add
      * Send a reminder to all users who are attending this event.
      *
      * @return RedirectResponse
@@ -1385,18 +1386,6 @@ class EventsController extends Controller
         ];
     }
 
-    protected function recursiveDump($obj) {
-        echo "<pre>";
-        print_r($obj);
-        echo "</pre>";
-        
-        if (is_object($obj) || is_array($obj)) {
-            foreach ($obj as $key => $value) {
-                $this->recursiveDump($value);
-            }
-        }
-    }
-    
     /**
      * Endpoint to post a single event to Instagram.
      */

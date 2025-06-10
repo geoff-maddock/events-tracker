@@ -134,6 +134,10 @@ class Event extends Model
         parent::boot();
 
         // TODO Fix the default after I resolve user setup in API
+
+        // This should use the service account user, a default value should not be needed here.
+        // In general, the case with no auth user should never happen
+
         static::creating(function ($event) {
             $user = Auth::user();
             $event->created_by = $user ? $user->id : 1;

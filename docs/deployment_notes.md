@@ -42,7 +42,7 @@ Follow these steps to configure and deploy the application
         ```
         - CREATE USER
         ```
-        CREATE USER 'stage_user'@'%' IDENTIFIED BY 'Momar129!!';
+        CREATE USER 'stage_user'@'%' IDENTIFIED BY 'ActualPassword';
         GRANT ALL ON stage_events_tracker.* TO 'stage_user'@'%';
         FLUSH PRIVILEGES; 
         ```
