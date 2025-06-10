@@ -3990,7 +3990,7 @@ paths:
                 $ref: "#/components/schemas/Thread"
     delete:
       parameters:
-        - name: forumId
+        - name: threadId
           description: The unique identifier of the thread
           in: path
           required: true
