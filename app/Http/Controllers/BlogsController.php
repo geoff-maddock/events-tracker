@@ -205,7 +205,8 @@ class BlogsController extends Controller
      */
     public function store(BlogRequest $request, Blog $blog): RedirectResponse
     {
-        // TODO change this to use the trust_blog permission to allow html
+        // TODO  https://github.com/geoff-maddock/events-tracker/issues/1412
+        // change this to use the trust_blog permission to allow html
         if (auth()->id() === config('app.superuser')) {
             $allow_html = 1;
         } else {
