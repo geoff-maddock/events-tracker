@@ -2,18 +2,18 @@
 
 namespace Database\Factories;
 
-use App\Models\EventType;
+use App\Models\Visibility;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class EventTypeFactory extends Factory
+class VisibilityFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = EventType::class;
+    protected $model = Visibility::class;
 
     /**
      * Define the model's default state.
