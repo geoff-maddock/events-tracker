@@ -19,7 +19,11 @@ class CheckBanned
     public function handle(Request $request, Closure $next)
     {
         if (auth()->check() && (auth()->user()->user_status_id == UserStatus::BANNED || auth()->user()->user_status_id == UserStatus::SUSPENDED)) {
+            // handles standard web logout
             Auth::logout();
+
+            // Deletes all tokens for the user - this fixes an API issue.  May need to break this out.
+            $request->user()->tokens()->delete(); 
 
             $request->session()->invalidate();
 
