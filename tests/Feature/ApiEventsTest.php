@@ -36,6 +36,7 @@ class ApiEventsTest extends TestCase
     public function testIndexEndpoint()
     {
         $user = User::factory()->create();
+        $user->user_status_id = 1; // Assuming 1 is the ID for active status
         $this->actingAs($user, 'sanctum');
 
         $response = $this->getJson('/api/events');
