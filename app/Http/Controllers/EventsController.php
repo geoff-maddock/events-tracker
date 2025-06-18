@@ -1128,8 +1128,10 @@ class EventsController extends Controller
 
             // build an array of future events based on tags the user follows
             $tags = $user->getTagsFollowing();
+
             if (count($tags) > 0) {
                 foreach ($tags as $tag) {
+                    /** @var \App\Models\Tag $tag */
                     if (count($tag->todaysEvents()) > 0) {
                         $interests[$tag->name] = $tag->todaysEvents();
                     }
@@ -1141,6 +1143,7 @@ class EventsController extends Controller
             if (count($series) > 0) {
                 foreach ($series as $s) {
                     // if the series does not have NO SCHEDULE AND CANCELLED AT IS NULL
+                    /** @var \App\Models\Series $s */
                     if ($s->occurrenceType->name !== 'No Schedule' && (null === $s->cancelled_at)) {
                         // add matches to list
                         $next_date = $s->nextOccurrenceDate()->format('Y-m-d');
@@ -2174,12 +2177,12 @@ class EventsController extends Controller
                     continue;
                 }
                 // if the user hasn't already been notified, then email them
-                if (!array_key_exists($user->user_id, $users)) {
+                if (!array_key_exists($user->id, $users)) {
                     Mail::to($user->email)
                         ->send(new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $entity));
-                    $users[$user->user_id] = $entity->name;
+                    $users[$user->id] = $entity->name;
                 } else {
-                    $users[$user->user_id] = $users[$user->user_id].', '.$entity->name;
+                    $users[$user->id] = $users[$user->id].', '.$entity->name;
                 }
             }
         }

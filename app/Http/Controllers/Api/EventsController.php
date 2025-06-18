@@ -805,12 +805,12 @@ class EventsController extends Controller
                     continue;
                 }
                 // if the user hasn't already been notified, then email them
-                if (!array_key_exists($user->user_id, $users)) {
+                if (!array_key_exists($user->id, $users)) {
                     Mail::to($user->email)
                         ->send(new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $entity));
-                    $users[$user->user_id] = $entity->name;
+                    $users[$user->id] = $entity->name;
                 } else {
-                    $users[$user->user_id] = $users[$user->user_id].', '.$entity->name;
+                    $users[$user->id] = $users[$user->id].', '.$entity->name;
                 }
             }
         }
@@ -823,9 +823,9 @@ class EventsController extends Controller
         $event->fill($request->input())->save();
 
         // TODO fix this after getting auth to work
-        // if (!$event->ownedBy($this->user)) {
-        //     $this->unauthorized($request);
-        // }
+        if (!$event->ownedBy($this->user)) {
+            $this->unauthorized($request);
+        }
 
         $tagArray = $request->input('tag_list', []);
         $syncArray = [];

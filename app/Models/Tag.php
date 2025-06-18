@@ -126,6 +126,8 @@ class Tag extends Eloquent
 
     /**
      * Return any events that match today for the start date.
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Event>
      */
     public function todaysEvents(): Collection
     {

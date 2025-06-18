@@ -442,6 +442,8 @@ class Entity extends Eloquent
 
     /**
      * Return any events that match today for the start date.
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Event>
      */
     public function todaysEvents(): Collection
     {
@@ -633,7 +635,7 @@ class Entity extends Eloquent
     /**
      * Returns the users that follow the entity.
      *
-     * @return Collection $follows
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\User>
      *
      **/
     public function followers(): Collection

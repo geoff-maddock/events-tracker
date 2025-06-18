@@ -598,6 +598,7 @@ class UsersController extends Controller
         // get the next x events they are attending
         $attendingEvents = $user->getAttendingToday()->take($show_count);
         foreach ($attendingEvents as $event) {
+            /** @var \App\Models\Event $event */
             $collectedIdList[] = $event->id;
         }
 
@@ -606,8 +607,10 @@ class UsersController extends Controller
         if (count($entities) > 0) {
             foreach ($entities as $entity) {
                 $entityEvents = [];
+                /** @var \App\Models\Entity $entity */
                 if (count($entity->todaysEvents()) > 0) {
                     foreach ($entity->todaysEvents() as $todaysEvent) {
+                        /** @var \App\Models\Event $todaysEvent */
                         if (!in_array($todaysEvent->id, $collectedIdList)) {
                             $entityEvents[] = $todaysEvent;
                             $collectedIdList[] = $todaysEvent->id;
@@ -624,6 +627,7 @@ class UsersController extends Controller
         if (count($tags) > 0) {
             foreach ($tags as $tag) {
                 $tagEvents = [];
+                /** @var \App\Models\Tag $tag */
                 if (count($tag->todaysEvents()) > 0) {
                     foreach ($tag->todaysEvents() as $todaysEvent) {
                         if (!in_array($todaysEvent->id, $collectedIdList)) {
@@ -641,6 +645,7 @@ class UsersController extends Controller
         // build an array of series that the user is following
         $series = $user->getSeriesFollowing();
         if (count($series) > 0) {
+            /** @var \App\Models\Series $s */
             foreach ($series as $s) {
                 // if the series does not have NO SCHEDULE AND CANCELLED AT IS NULL
                 if ($s->occurrenceType->name !== 'No Schedule' && (null === $s->cancelled_at)) {
@@ -679,6 +684,7 @@ class UsersController extends Controller
         // get the next x events they are attending
         $attendingEvents = $user->getAttendingFuture()->take($show_count);
         foreach ($attendingEvents as $event) {
+            /** @var \App\Models\Event $event */
             $attendingIdList[] = $event->id;
         }
 
@@ -687,8 +693,9 @@ class UsersController extends Controller
         if (count($entities) > 0) {
             foreach ($entities as $entity) {
                 $entityEvents = [];
-                if (count($entity->futureEvents()) > 0) {
-                    foreach ($entity->futureEvents() as $futureEvent) {
+                /** @var \App\Models\Entity $entity */
+                if ($entity->futureEvents()->isNotEmpty()) {
+                    foreach ($entity->futureEvents()->items() as $futureEvent) {
                         if (!in_array($futureEvent->id, $attendingIdList)) {
                             $entityEvents[] = $futureEvent;
                         }
@@ -704,7 +711,8 @@ class UsersController extends Controller
         if (count($tags) > 0) {
             foreach ($tags as $tag) {
                 $tagEvents = [];
-                if (count($tag->futureEvents()) > 0) {
+                /** @var \App\Models\Tag $tag */
+                if ($tag->futureEvents()->isNotEmpty()) {
                     foreach ($tag->futureEvents() as $futureEvent) {
                         if (!in_array($futureEvent->id, $attendingIdList)) {
                             $tagEvents[] = $futureEvent;
@@ -722,6 +730,7 @@ class UsersController extends Controller
         if (count($series) > 0) {
             foreach ($series as $s) {
                 // if the series does not have NO SCHEDULE AND CANCELLED AT IS NULL
+                /** @var \App\Models\Series $s */
                 if ($s->occurrenceType->name !== 'No Schedule' && (null === $s->cancelled_at)) {
                     // add matches to list
                     $seriesList[] = $s;
