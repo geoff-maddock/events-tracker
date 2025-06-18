@@ -82,6 +82,7 @@ class RssFeed
         ->appendTo($feed);
 
         foreach ($events as $event) {
+            /** @var \App\Models\Event $event */
             $item = new Item();
             $item
         ->title($event->name)

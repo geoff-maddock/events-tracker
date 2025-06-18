@@ -42,6 +42,7 @@ class AuthServiceProvider extends ServiceProvider
         // adds a gate for each permission name - checks whether the user has a group that matches one of the permission groups
         // disabling because this is causing an issue with php artisan when the database isn't initialized
         foreach ($this->getPermissions() as $permission) {
+            /** @var \App\Models\Permission $permission */
             Gate::define($permission->name, function ($user) use ($permission) {
                 return $user->hasGroup($permission->groups);
             });

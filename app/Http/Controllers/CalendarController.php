@@ -709,10 +709,12 @@ class CalendarController extends Controller
         });
 
         // get all the upcoming series events
+        /** @var \Illuminate\Database\Eloquent\Collection|\App\Models\Series[] $series */
         $series = $this->user->getSeriesFollowing();
 
         // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
+            /** @var \App\Models\Series $e */
             return (('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
         });
 

@@ -112,6 +112,7 @@ class TagsController extends Controller
         if (isset($this->user)) {
             $userTags = $this->user->getTagsFollowing();
             foreach ($userTags as $userTag) {
+                /** @var \App\Models\Tag $userTag */
                 $tagNames[] = $userTag->name;
             }
         }

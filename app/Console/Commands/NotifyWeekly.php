@@ -63,6 +63,7 @@ class NotifyWeekly extends Command
             // get the events they are attending in the next two weeks
             $attendingEvents = $user->getAttendingFuture()->where('start_at', '<=', Carbon::now()->addDays(14));
             foreach ($attendingEvents as $event) {
+                /** @var \App\Models\Event $event */
                 $attendingIdList[] = $event->id;
             }
 
@@ -70,10 +71,14 @@ class NotifyWeekly extends Command
             $entities = $user->getEntitiesFollowing();
             if (count($entities) > 0) {
                 foreach ($entities as $entity) {
+                    /** @var \App\Models\Entity $entity */
                     $entityEvents = [];
                     // get the future events for each followed entity
-                    if (count($entity->futureEvents()) > 0) {
-                        foreach ($entity->futureEvents() as $futureEvent) {
+                    /** @var \Illuminate\Pagination\LengthAwarePaginator $entityFutureEvents */
+                    $entityFutureEvents = $entity->futureEvents();
+                    if ($entityFutureEvents->total() > 0) {
+                        foreach ($entityFutureEvents->items() as $futureEvent) {
+                            /** @var \App\Models\Event $futureEvent */
                             if (!in_array($futureEvent->id, $attendingIdList)) {
                                 $entityEvents[] = $futureEvent;
                                 $attendingIdList[] = $futureEvent->id;
@@ -89,10 +94,14 @@ class NotifyWeekly extends Command
             $tags = $user->getTagsFollowing();
             if (count($tags) > 0) {
                 foreach ($tags as $tag) {
+                    /** @var \App\Models\Tag $tag */
                     $tagEvents = [];
                     // get the future events for each followed tag
-                    if (count($tag->futureEvents()) > 0) {
-                        foreach ($tag->futureEvents() as $futureEvent) {
+                    /** @var \Illuminate\Pagination\LengthAwarePaginator $tagFutureEvents */
+                    $tagFutureEvents = $tag->futureEvents();
+                    if ($tagFutureEvents->total() > 0) {
+                        foreach ($tagFutureEvents->items() as $futureEvent) {
+                            /** @var \App\Models\Event $futureEvent */
                             if (!in_array($futureEvent->id, $attendingIdList)) {
                                 $tagEvents[] = $futureEvent;
                                 $attendingIdList[] = $futureEvent->id;
@@ -109,6 +118,7 @@ class NotifyWeekly extends Command
             $series = $user->getSeriesFollowing();
             if (count($series) > 0) {
                 foreach ($series as $s) {
+                    /** @var \App\Models\Series $s */
                     // if the series does not have NO SCHEDULE AND CANCELLED AT IS NULL
                     if ($s->occurrenceType->name !== 'No Schedule' && (null === $s->cancelled_at)) {
                         // add matches to list

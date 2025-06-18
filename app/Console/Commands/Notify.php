@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Mail\DailyReminder;
 use App\Models\Activity;
+use App\Models\Event;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -58,6 +59,7 @@ class Notify extends Command
             // get the next x events they are attending
             $attendingEvents = $user->getAttendingToday()->take($show_count);
             foreach ($attendingEvents as $event) {
+                /** @var \App\Models\Event $event */
                 $collectedIdList[] = $event->id;
             }
 
@@ -65,9 +67,11 @@ class Notify extends Command
             $entities = $user->getEntitiesFollowing();
             if (count($entities) > 0) {
                 foreach ($entities as $entity) {
+                    /** @var \App\Models\Entity $entity */
                     $entityEvents = [];
                     if (count($entity->todaysEvents()) > 0) {
                         foreach ($entity->todaysEvents() as $todaysEvent) {
+                            /** @var \App\Models\Event $todaysEvent */
                             if (!in_array($todaysEvent->id, $collectedIdList)) {
                                 $entityEvents[] = $todaysEvent;
                                 $collectedIdList[] = $todaysEvent->id;
@@ -83,9 +87,11 @@ class Notify extends Command
             $tags = $user->getTagsFollowing();
             if (count($tags) > 0) {
                 foreach ($tags as $tag) {
+                    /** @var \App\Models\Tag $tag */
                     $tagEvents = [];
                     if (count($tag->todaysEvents()) > 0) {
                         foreach ($tag->todaysEvents() as $todaysEvent) {
+                            /** @var \App\Models\Event $todaysEvent */
                             if (!in_array($todaysEvent->id, $collectedIdList)) {
                                 $tagEvents[] = $todaysEvent;
                                 $collectedIdList[] = $todaysEvent->id;
@@ -102,6 +108,7 @@ class Notify extends Command
             $series = $user->getSeriesFollowing();
             if (count($series) > 0) {
                 foreach ($series as $s) {
+                    /** @var \App\Models\Series $s */
                     // if the series does not have NO SCHEDULE AND CANCELLED AT IS NULL
                     if ($s->occurrenceType->name !== 'No Schedule' && (null === $s->cancelled_at)) {
                         // add matches to list
