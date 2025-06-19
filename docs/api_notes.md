@@ -1,7 +1,7 @@
 # API Notes
 
 ## API Endpoints
-- Visit the API docs endpoint https://dev.arcane.city/api/docs for a full list of available endpoints.
+- Visit the API docs endpoint https://your-domain.com/api/docs for a full list of available endpoints.
 
 ### Documentation Generation
 - Generated using Swagger js referencing `public/postman` folder.
