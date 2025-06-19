@@ -126,8 +126,6 @@ return [
     'analytics' => env('GOOGLE_ANALYTICS', ''),
     'google_tags' => env('GOOGLE_TAGS', ''),
 
-    'frontend_url' => env('FRONTEND_URL', env('APP_URL', '')),
-
     'social_facebook' => env('SOCIAL_FACEBOOK', ''),
     'social_instagram' => env('SOCIAL_INSTAGRAM', ''),
     'social_twitter' => env('SOCIAL_TWITTER', ''),

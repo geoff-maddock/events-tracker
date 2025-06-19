@@ -941,7 +941,7 @@ class Event extends Model
 
         // add the arcane city URL
         if (strlen($format) < 258) {
-            $format .= ' '.rtrim(config('app.frontend_url'), '/').'/events/'.$this->id;
+            $format .= ' '.rtrim(config('app.app_url'), '/').'/events/'.$this->id;
         }
 
         // add the primary link
@@ -1020,7 +1020,7 @@ class Event extends Model
         $format .= "\n";
 
         // add the arcane city URL
-         $format .= ' '.rtrim(config('app.frontend_url'), '/').'/events/'.$this->id;
+         $format .= ' '.rtrim(config('app.app_url'), '/').'/events/'.$this->id;
 
        // add the primary link
        if ($this->primary_link) {
