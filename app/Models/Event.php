@@ -140,13 +140,13 @@ class Event extends Model
 
         static::creating(function ($event) {
             $user = Auth::user();
-            $event->created_by = $user ? $user->id : 1;
-            $event->updated_by = $user ? $user->id : 1;
+            $event->created_by = $user ? $user->id : env('APP_SUPERUSER', 1);
+            $event->updated_by = $user ? $user->id : env('APP_SUPERUSER', 1);
         });
 
         static::updating(function ($event) {
             $user = Auth::user();
-            $event->updated_by = $user ? $user->id : 1;
+            $event->updated_by = $user ? $user->id : env('APP_SUPERUSER', 1);
         });
     }
 
@@ -941,7 +941,7 @@ class Event extends Model
 
         // add the arcane city URL
         if (strlen($format) < 258) {
-            $format .= ' https://arcane.city/events/'.$this->id;
+            $format .= ' '.rtrim(config('app.app_url'), '/').'/events/'.$this->id;
         }
 
         // add the primary link
@@ -1019,8 +1019,8 @@ class Event extends Model
 
         $format .= "\n";
 
-       // add the arcane city URL
-        $format .= ' https://arcane.city/events/'.$this->id;
+        // add the arcane city URL
+         $format .= ' '.rtrim(config('app.app_url'), '/').'/events/'.$this->id;
 
        // add the primary link
        if ($this->primary_link) {

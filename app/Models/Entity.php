@@ -734,7 +734,7 @@ class Entity extends Eloquent
 
         // add the arcane city URL
         if (strlen($format) < 258) {
-            $format .= ' https://arcane.city/entities/'.$this->slug;
+            $format .= ' '.rtrim(config('app.app_url'), '/').'/entities/'.$this->slug;
         }
 
         // add the primary link
@@ -822,7 +822,7 @@ class Entity extends Eloquent
       $format .= " #".config('app.default_hashtag')."\n";
 
      // add the arcane city URL
-      $format .= " https://arcane.city/entities/".$this->slug."\n";
+      $format .= ' '.rtrim(config('app.app_url'), '/').'/entities/'.$this->slug."\n";
 
      // add the primary link
      $primaryLink = $this->primaryLink();
