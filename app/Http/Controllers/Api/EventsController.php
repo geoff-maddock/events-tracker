@@ -28,6 +28,7 @@ use App\Models\User;
 use App\Models\Visibility;
 use App\Notifications\EventPublished;
 use App\Services\Embeds\EmbedExtractor;
+use App\Services\ImageHandler;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
@@ -1342,5 +1343,43 @@ class EventsController extends Controller
         }
 
         return response()->json(array_values($photos));
+    }
+
+    /**
+     * Add a photo to an event.
+     */
+    public function addPhoto(int $id, Request $request, ImageHandler $imageHandler): JsonResponse
+    {
+        $this->validate($request, [
+            'file' => 'required|mimes:jpg,jpeg,png,gif,webp',
+        ]);
+
+        if ($event = Event::find($id)) {
+            $photo = $imageHandler->makePhoto($request->file('file'));
+
+            if (isset($event->photos) && 0 === count($event->photos)) {
+                $photo->is_primary = 1;
+            }
+
+            $photo->save();
+            $event->addPhoto($photo);
+
+            if ($event->start_at >= Carbon::now()) {
+                if (1 === count($event->photos)) {
+                    $this->notifyFollowing($event);
+                }
+            }
+
+            $photoData = [
+                'id' => $photo->id,
+                'name' => $photo->name,
+                'photo' => Storage::disk('external')->url($photo->getStoragePath()),
+                'thumbnail' => Storage::disk('external')->url($photo->getStorageThumbnail()),
+            ];
+
+            return response()->json($photoData, 201);
+        }
+
+        return response()->json([], 404);
     }
 }

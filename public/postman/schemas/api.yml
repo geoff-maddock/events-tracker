@@ -2199,10 +2199,12 @@ paths:
       summary: Delete Blog
       operationId: deleteBlogById
       responses:
-        "204":
+        "201":
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhotoResponse"
   /api/events:
     post:
       tags:
@@ -2505,10 +2507,12 @@ paths:
       summary: Delete Event
       operationId: deleteEventById
       responses:
-        "204":
+        "201":
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhotoResponse"
   /api/events/{slug}/embeds:
     get:
       parameters:
@@ -2597,6 +2601,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Photos"
+  /api/events/{id}/photos:
+    post:
+      parameters:
+        - name: id
+          description: The unique identifier of the event
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - events
+      summary: Add Event Photo
+      operationId: addEventPhotoById
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhotoResponse"
   /api/entities:
     post:
       tags:
