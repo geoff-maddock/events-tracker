@@ -2597,6 +2597,35 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Photos"
+  /api/events/{id}/photos:
+    post:
+      parameters:
+        - name: id
+          description: The unique identifier of the event
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - events
+      summary: Add Event Photo
+      operationId: addEventPhotoById
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "204":
+          description: Successful response
+          content:
+            application/json: {}
   /api/entities:
     post:
       tags:

@@ -28,6 +28,7 @@ use App\Models\User;
 use App\Models\Visibility;
 use App\Notifications\EventPublished;
 use App\Services\Embeds\EmbedExtractor;
+use App\Services\ImageHandler;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
