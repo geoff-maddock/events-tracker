@@ -2856,6 +2856,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Photos"
+  /api/entities/{id}/photos:
+    post:
+      parameters:
+        - name: id
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - entities
+      summary: Add Entity Photo
+      operationId: addEntityPhotoById
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhotoResponse"
   /api/entity-statuses:
     get:
       tags:

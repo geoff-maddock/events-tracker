@@ -661,7 +661,7 @@ class EntitiesController extends Controller
     /**
      * Add a photo to an entity.
      */
-    public function addPhoto(int $id, Request $request, ImageHandler $imageHandler): void
+    public function addPhoto(int $id, Request $request, ImageHandler $imageHandler): JsonResponse
     {
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif,webp',
@@ -683,7 +683,18 @@ class EntitiesController extends Controller
 
             // attach to entity
             $entity->addPhoto($photo);
+
+            $photoData = [
+                'id' => $photo->id,
+                'name' => $photo->name,
+                'photo' => Storage::disk('external')->url($photo->getStoragePath()),
+                'thumbnail' => Storage::disk('external')->url($photo->getStorageThumbnail()),
+            ];
+
+            return response()->json($photoData, 201);
         }
+
+        return response()->json([], 404);
     }
 
     protected function makePhoto(UploadedFile $file): Photo
