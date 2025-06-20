@@ -2575,6 +2575,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Photos"
+  /api/events/{slug}/all-photos:
+    get:
+      parameters:
+        - name: slug
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: string
+            readOnly: true
+            example: "strobe"
+      tags:
+        - events
+      summary: Get All Related Events Photos
+      operationId: getAllEventPhotosBySlug
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Photos"
   /api/entities:
     post:
       tags:
