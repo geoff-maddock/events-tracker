@@ -22,6 +22,7 @@ use App\Models\Tag;
 use App\Models\User;
 use App\Models\Visibility;
 use App\Services\ImageHandler;
+use Storage;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
@@ -723,7 +724,7 @@ class SeriesController extends Controller
     /**
      * Add a photo to a series.
      */
-    public function addPhoto(int $id, Request $request, ImageHandler $imageHandler): void
+    public function addPhoto(int $id, Request $request, ImageHandler $imageHandler): JsonResponse
     {
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif,webp',
@@ -746,7 +747,18 @@ class SeriesController extends Controller
 
             // attach to series
             $series->addPhoto($photo);
+
+            $photoData = [
+                'id' => $photo->id,
+                'name' => $photo->name,
+                'photo' => Storage::disk('external')->url($photo->getStoragePath()),
+                'thumbnail' => Storage::disk('external')->url($photo->getStorageThumbnail()),
+            ];
+
+            return response()->json($photoData, 201);
         }
+
+        return response()->json([], 404);
     }
 
     protected function makePhoto(UploadedFile $file): ?Photo
