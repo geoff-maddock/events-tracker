@@ -1310,4 +1310,37 @@ class EventsController extends Controller
 
         return response()->json($photos);
     }
+
+    public function allPhotos(?Event $event): JsonResponse
+    {
+        if (!$event) {
+            abort(404);
+        }
+
+        $photos = [];
+
+        $photoList = $event->photos()->get();
+        foreach ($photoList as $photo) {
+            $photos[$photo->id] = [
+                'id' => $photo->id,
+                'name' => $photo->name,
+                'photo' => Storage::disk('external')->url($photo->getStoragePath()),
+                'thumbnail' => Storage::disk('external')->url($photo->getStorageThumbnail()),
+            ];
+        }
+
+        $entities = $event->entities()->with('photos')->get();
+        foreach ($entities as $entity) {
+            foreach ($entity->photos as $photo) {
+                $photos[$photo->id] = [
+                    'id' => $photo->id,
+                    'name' => $photo->name,
+                    'photo' => Storage::disk('external')->url($photo->getStoragePath()),
+                    'thumbnail' => Storage::disk('external')->url($photo->getStorageThumbnail()),
+                ];
+            }
+        }
+
+        return response()->json(array_values($photos));
+    }
 }
