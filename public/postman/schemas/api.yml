@@ -3851,6 +3851,37 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /api/series/{id}/photos:
+    post:
+      parameters:
+        - name: id
+          description: The unique identifier of the series
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - series
+      summary: Add Series Photo
+      operationId: addSeriesPhotoById
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhotoResponse"
   /api/tags:
     post:
       tags:

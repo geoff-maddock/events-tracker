@@ -111,6 +111,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
 
     Route::get('series/reset', ['as' => 'series.reset', 'uses' => 'Api\SeriesController@reset']);
     Route::get('series/rpp-reset', ['as' => 'series.rppReset', 'uses' => 'Api\SeriesController@rppReset']);
+    Route::post('series/{id}/photos', 'Api\SeriesController@addPhoto');
     Route::resource('series', 'Api\SeriesController');
 
     Route::match(['get', 'post'], 'tags/filter', ['as' => 'tags.filter', 'uses' => 'Api\TagsController@filter']);
