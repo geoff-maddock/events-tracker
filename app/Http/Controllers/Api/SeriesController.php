@@ -730,11 +730,9 @@ class SeriesController extends Controller
             'file' => 'required|mimes:jpg,jpeg,png,gif,webp',
         ]);
 
-        $fileName = time().'_'.$request->file->getClientOriginalName();
-        $filePath = $request->file('file')->storePubliclyAs('photos', $fileName, 'external');
-
         // attach to series
         if ($series = Series::find($id)) {
+
             // make the photo object from the file in the request
             $photo = $imageHandler->makePhoto($request->file('file'));
 
