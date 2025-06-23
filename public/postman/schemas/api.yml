@@ -248,12 +248,12 @@ components:
           maxLength: 255
           description: The cannonical name of the photo
           example: Brillobox
-        path:
+        photo:
           type: string
           maxLength: 65535
           description: A link to a photo image
           example: https://some.url/imagelink.jpg
-        thumbnail_path:
+        thumbnail:
           type: string
           maxLength: 65535
           description: A link to a photo image thumbnail
@@ -2583,7 +2583,7 @@ paths:
     get:
       parameters:
         - name: slug
-          description: The unique identifier of the entity
+          description: The unique identifier of the event
           in: path
           required: true
           schema:
@@ -3851,6 +3851,28 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /api/series/{slug}/all-photos:
+    get:
+      parameters:
+        - name: slug
+          description: The unique identifier of the series
+          in: path
+          required: true
+          schema:
+            type: string
+            readOnly: true
+            example: "strobe"
+      tags:
+        - series
+      summary: Get All Related Series Photos
+      operationId: getAllSeriesPhotosBySlug
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Photos"
   /api/series/{id}/photos:
     post:
       parameters:
