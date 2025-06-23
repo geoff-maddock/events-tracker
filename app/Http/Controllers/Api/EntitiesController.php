@@ -687,8 +687,8 @@ class EntitiesController extends Controller
             $photoData = [
                 'id' => $photo->id,
                 'name' => $photo->name,
-                'photo' => Storage::disk('external')->url($photo->getStoragePath()),
-                'thumbnail' => Storage::disk('external')->url($photo->getStorageThumbnail()),
+                'path' => Storage::disk('external')->url($photo->getStoragePath()),
+                'thumbnail_path' => Storage::disk('external')->url($photo->getStorageThumbnail())
             ];
 
             return response()->json($photoData, 201);
@@ -957,8 +957,8 @@ class EntitiesController extends Controller
             $photos[] = [
                 'id' => $photo->id,
                 'name' => $photo->name,
-                'photo' => Storage::disk('external')->url($photo->getStoragePath()),
-                'thumbnail' => Storage::disk('external')->url($photo->getStorageThumbnail())
+                'path' => Storage::disk('external')->url($photo->getStoragePath()),
+                'thumbnail_path' => Storage::disk('external')->url($photo->getStorageThumbnail())
             ];
         }
 

@@ -749,8 +749,8 @@ class SeriesController extends Controller
             $photoData = [
                 'id' => $photo->id,
                 'name' => $photo->name,
-                'photo' => Storage::disk('external')->url($photo->getStoragePath()),
-                'thumbnail' => Storage::disk('external')->url($photo->getStorageThumbnail()),
+                'path' => Storage::disk('external')->url($photo->getStoragePath()),
+                'thumbnail_path' => Storage::disk('external')->url($photo->getStorageThumbnail())
             ];
 
             return response()->json($photoData, 201);
@@ -850,6 +850,30 @@ class SeriesController extends Controller
 
         return back();
     }
+
+    public function photos(?Series $series): JsonResponse
+    {
+        if (!$series) {
+            abort(404);
+        }
+
+        $photos = [];
+
+        // extract all the links from the series
+        $photoList = $series->photos()->get();
+
+        foreach ($photoList as $photo) {
+            $photos[] = [
+                'id' => $photo->id,
+                'name' => $photo->name,
+                'path' => Storage::disk('external')->url($photo->getStoragePath()),
+                'thumbnail_path' => Storage::disk('external')->url($photo->getStorageThumbnail())
+            ];
+        }
+
+        return response()->json($photos);
+    }
+
 
     /**
      * Get the default filters array.
