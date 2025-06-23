@@ -248,12 +248,12 @@ components:
           maxLength: 255
           description: The cannonical name of the photo
           example: Brillobox
-        photo:
+        path:
           type: string
           maxLength: 65535
           description: A link to a photo image
           example: https://some.url/imagelink.jpg
-        thumbnail:
+        thumbnail_path:
           type: string
           maxLength: 65535
           description: A link to a photo image thumbnail
