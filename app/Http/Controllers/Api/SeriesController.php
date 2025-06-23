@@ -270,6 +270,39 @@ class SeriesController extends Controller
         ];
     }
 
+    public function allPhotos(?Series $series): JsonResponse
+    {
+        if (!$series) {
+            abort(404);
+        }
+
+        $photos = [];
+
+        $photoList = $series->photos()->get();
+        foreach ($photoList as $photo) {
+            $photos[$photo->id] = [
+                'id' => $photo->id,
+                'name' => $photo->name,
+                'path' => Storage::disk('external')->url($photo->getStoragePath()),
+                'thumbnail_path' => Storage::disk('external')->url($photo->getStorageThumbnail()),
+            ];
+        }
+
+        $entities = $series->entities()->with('photos')->get();
+        foreach ($entities as $entity) {
+            foreach ($entity->photos as $photo) {
+                $photos[$photo->id] = [
+                    'id' => $photo->id,
+                    'name' => $photo->name,
+                    'path' => Storage::disk('external')->url($photo->getStoragePath()),
+                    'thumbnail_path' => Storage::disk('external')->url($photo->getStorageThumbnail()),
+                ];
+            }
+        }
+
+        return response()->json(array_values($photos));
+    }
+
     /**
      * @throws \Throwable
      */
