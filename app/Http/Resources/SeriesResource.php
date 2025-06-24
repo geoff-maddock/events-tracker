@@ -31,7 +31,7 @@ class SeriesResource extends JsonResource
             'occurrence_type' => $this->occurrenceType ? new MinimalResource($this->occurrenceType) : null,
             'occurrence_week' => $this->occurrenceWeek ? new MinimalResource($this->occurrenceWeek) : null,
             'occurrence_day' => $this->occurrenceDay ? new MinimalResource($this->occurrenceDay) : null,
-            'occurrence_repeat' => $this->occurrenceRepeat ? new MinimalResource($this->occurrenceRepeat) : null,
+            'occurrence_repeat' => $this->occurrenceRepeat,
             'is_benefit' => $this->is_benefit,
             'promoter' => $this->promoter ? new MinimalResource($this->promoter) : null,
             'venue' => $this->venue ? new MinimalResource($this->venue) : null,
