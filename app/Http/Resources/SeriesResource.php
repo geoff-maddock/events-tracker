@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\Series;
+use App\Http\Resources\MinimalResource;
 
 /**
  * @mixin \App\Models\Series
@@ -23,17 +24,17 @@ class SeriesResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'short' => $this->short,
-            'visibility' => $this->visibility,
+            'visibility' => $this->visibility ? new MinimalResource($this->visibility) : null,
             'description' => $this->description,
-            'event_status' => $this->eventStatus,
-            'event_type' => $this->eventType,
-            'occurrence_type' => $this->occurrenceType,
-            'occurrence_week' => $this->occurrenceWeek,
-            'occurrence_day' => $this->occurrenceDay,
-            'occurrence_repeat' => $this->occurrenceRepeat,
+            'event_status' => $this->eventStatus ? new MinimalResource($this->eventStatus) : null,
+            'event_type' => $this->eventType ? new MinimalResource($this->eventType) : null,
+            'occurrence_type' => $this->occurrenceType ? new MinimalResource($this->occurrenceType) : null,
+            'occurrence_week' => $this->occurrenceWeek ? new MinimalResource($this->occurrenceWeek) : null,
+            'occurrence_day' => $this->occurrenceDay ? new MinimalResource($this->occurrenceDay) : null,
+            'occurrence_repeat' => $this->occurrenceRepeat ? new MinimalResource($this->occurrenceRepeat) : null,
             'is_benefit' => $this->is_benefit,
-            'promoter' => $this->promoter,
-            'venue' => $this->venue,
+            'promoter' => $this->promoter ? new MinimalResource($this->promoter) : null,
+            'venue' => $this->venue ? new MinimalResource($this->venue) : null,
             'attending' => $this->attending,
             'like' => $this->like,
             'presale_price' => $this->presale_price,
@@ -45,8 +46,8 @@ class SeriesResource extends JsonResource
             'min_age' => $this->min_age,
             'primary_link' => $this->primary_link,
             'ticket_link' => $this->ticket_link,
-            'tags' => $this->tags,
-            'entities' => $this->entities,
+            'tags' => MinimalResource::collection($this->tags)->resolve(),
+            'entities' => MinimalResource::collection($this->entities)->resolve(),
             'created_by' => $this->created_by,
             'updated_by' => $this->updated_by,
             'created_at' => $this->created_at,

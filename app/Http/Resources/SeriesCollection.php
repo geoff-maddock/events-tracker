@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use App\Http\Resources\SeriesResource;
 
 /**
  * @mixin \Illuminate\Contracts\Pagination\LengthAwarePaginator
@@ -20,7 +21,7 @@ class SeriesCollection extends ResourceCollection
     {
         return [
             'current_page' => $this->currentPage(),
-            'data' => $this->collection->toArray(),
+            'data' => SeriesResource::collection($this->collection)->resolve(),
             'first_page_url' => $this->url(1),
             'from' => $this->firstItem(),
             'last_page' => $this->lastPage(),
