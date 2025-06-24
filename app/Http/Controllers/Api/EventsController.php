@@ -761,7 +761,6 @@ class EventsController extends Controller
             }
         }
 
-        // return response()->json($event);
         return response()->json(new EventResource($event));
     }
 

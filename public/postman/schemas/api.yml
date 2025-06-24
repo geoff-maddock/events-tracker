@@ -307,6 +307,9 @@ components:
           maxLength: 64
           description: The entity's username on twitter
           example: johnsmith
+        tag_list:
+          type: array
+          items: { "type": "integer" }
     EntityResponse:
       type: object
       properties:
@@ -594,6 +597,12 @@ components:
           readOnly: true
           example: 1
           description: Relation to the user table that defines the user who last updated the event
+        tag_list:
+          type: array
+          items: { "type": "integer" }
+        entity_list:
+          type: array
+          items: { "type": "integer" }
     Event:
       type: object
       required:
@@ -1341,7 +1350,7 @@ components:
           description: List of the current page of posts
           items:
             "$ref": "#/components/schemas/Post"
-    Series:
+    SeriesRequest:
       type: object
       required:
         - id
@@ -1490,6 +1499,12 @@ components:
           readOnly: true
           example: 1
           description: Relation to the user table that defines the user who last updated the series
+        tag_list:
+          type: array
+          items: { "type": "integer" }
+        entity_list:
+          type: array
+          items: { "type": "integer" }
     SeriesResponse:
       type: object
       properties:
@@ -3662,14 +3677,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Series"
+              $ref: "#/components/schemas/SeriesRequest"
       responses:
         "201":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Series"
+                $ref: "#/components/schemas/SeriesResponse"
     get:
       tags:
         - series
@@ -3833,7 +3848,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Series"
+              $ref: "#/components/schemas/SeriesRequest"
       responses:
         "200":
           description: Successful response
