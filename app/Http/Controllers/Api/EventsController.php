@@ -152,7 +152,16 @@ class EventsController extends Controller
         // get the events
         // @phpstan-ignore-next-line
         $events = $query->visible($this->user)
-            ->with('visibility', 'venue')
+            ->with([
+                'visibility',
+                'venue',
+                'eventStatus',
+                'eventType',
+                'promoter',
+                'series',
+                'tags',
+                'entities',
+            ])
             ->paginate($listResultSet->getLimit());
     
         return response()->json(new EventCollection($events));
@@ -215,7 +224,16 @@ class EventsController extends Controller
             })
             ->orderBy('start_at', 'ASC')
             ->orderBy('name', 'ASC')
-            ->with('visibility', 'venue')
+            ->with([
+                'visibility',
+                'venue',
+                'eventStatus',
+                'eventType',
+                'promoter',
+                'series',
+                'tags',
+                'entities',
+            ])
             ->paginate($listResultSet->getLimit());
         
 
