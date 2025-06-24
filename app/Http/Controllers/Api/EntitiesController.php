@@ -640,7 +640,7 @@ class EntitiesController extends Controller
         // add to activity log
         Activity::log($entity, $this->user, 2);
 
-        return response()->json($entity);
+        return response()->json(new EntityResource($entity));
     }
 
     /**

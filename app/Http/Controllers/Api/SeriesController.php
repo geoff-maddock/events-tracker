@@ -730,7 +730,7 @@ class SeriesController extends Controller
         // flash('Success', 'Your event template has been updated');
 
         //return redirect('series');
-        return response()->json($series);
+        return response()->json(new SeriesResource($series));
     }
 
     protected function unauthorized(SeriesRequest $request): RedirectResponse | Response
