@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use App\Http\Resources\EventResource;
 
 /**
  * @mixin \Illuminate\Contracts\Pagination\LengthAwarePaginator
@@ -20,7 +21,7 @@ class EventCollection extends ResourceCollection
     {
         return [
             'current_page' => $this->currentPage(),
-            'data' => $this->collection->toArray(),
+            'data' => EventResource::collection($this->collection)->resolve(),
             'first_page_url' => $this->url(1),
             'from' => $this->firstItem(),
             'last_page' => $this->lastPage(),

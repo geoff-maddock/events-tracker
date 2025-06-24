@@ -5,6 +5,9 @@ namespace App\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\Event;
 
+// Resource for minimal relationship data
+use App\Http\Resources\MinimalResource;
+
 /**
  * @mixin \App\Models\Event
  */
@@ -24,13 +27,13 @@ class EventResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'short' => $this->short,
-            'visibility' => $this->visibility,
+            'visibility' => new MinimalResource($this->visibility),
             'description' => $this->description,
-            'event_status' => $this->eventStatus,
-            'event_type' => $this->eventType,
+            'event_status' => new MinimalResource($this->eventStatus),
+            'event_type' => new MinimalResource($this->eventType),
             'is_benefit' => $this->is_benefit,
-            'promoter' => $this->promoter,
-            'venue' => $this->venue,
+            'promoter' => $this->promoter ? new MinimalResource($this->promoter) : null,
+            'venue' => $this->venue ? new MinimalResource($this->venue) : null,
             'attending' => $this->attending,
             'like' => $this->like,
             'presale_price' => $this->presale_price,
@@ -40,11 +43,11 @@ class EventResource extends JsonResource
             'start_at' => $this->start_at,
             'end_at' => $this->end_at,
             'min_age' => $this->min_age,
-            'series' => $this->series,
+            'series' => $this->series ? new MinimalResource($this->series) : null,
             'primary_link' => $this->primary_link,
             'ticket_link' => $this->ticket_link,
-            'tags' => $this->tags,
-            'entities' => EntityResource::collection($this->entities),
+            'tags' => MinimalResource::collection($this->whenLoaded('tags', $this->tags)),
+            'entities' => MinimalResource::collection($this->whenLoaded('entities', $this->entities)),
             'created_by' => $this->created_by,
             'updated_by' => $this->updated_by,
             'created_at' => $this->created_at,
