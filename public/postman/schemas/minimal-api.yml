@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Arcane City
   version: 1.0.0
-  description: REST API for working with Arcane City data
+  description: REST API for working with Arcane City data, minimal version
   contact:
     name: Geoff Maddock
     email: geoff.maddock@gmail.com
@@ -11,7 +11,6 @@ servers:
     description: Development data
 tags:
   - name: blogs
-  - name: default
   - name: entities
   - name: entity-statuses
   - name: entity-types
