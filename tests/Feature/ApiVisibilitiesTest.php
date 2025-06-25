@@ -63,7 +63,7 @@ class ApiVisibilitiesTest extends TestCase
         Visibility::factory()->create(['name' => 'Private']);
         $target = Visibility::factory()->create(['name' => 'Public']);
 
-        $response = $this->getJson('/api/visibilities/filter?name=Public');
+        $response = $this->getJson('/api/visibilities?filters[name]=Public');
 
         $response->assertStatus(200)
             ->assertJsonFragment(['name' => 'Public'])
