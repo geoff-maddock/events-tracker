@@ -29,6 +29,7 @@ tags:
   - name: tags
   - name: threads
   - name: users
+  - name: visibilities
 components:
   responses:
     NotFound:
@@ -1926,6 +1927,15 @@ components:
           format: date-time
           description: Date and time that the visibility was last updated
           readOnly: true
+    Visibilities:
+      allOf: [$ref: "#/components/schemas/Pagination"]
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of the current page of visibilities
+          items:
+            "$ref": "#/components/schemas/Visibility"
     Error:
       type: object
       required:
@@ -4387,3 +4397,74 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /api/visibilities:
+    get:
+      tags:
+        - visibilities
+      summary: Get Visibilities
+      operationId: getVisibilities
+      parameters:
+        - name: filters[name]
+          in: query
+          required: false
+          description: A filter query of the visibility name
+          schema:
+            type: string
+            example: Public
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+            example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+            example: 1
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+            example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+            example: asc
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Visibilities"
+  /api/visibilities/{visibilityId}:
+    parameters:
+      - name: visibilityId
+        description: The unique identifier of the visibility
+        in: path
+        required: true
+        schema:
+          type: integer
+          readOnly: true
+          example: 1
+    get:
+      tags:
+        - visibilities
+      summary: Get Visibility
+      operationId: getVisibilityById
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Visibility"
