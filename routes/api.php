@@ -137,6 +137,9 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('users/reset', ['as' => 'users.reset', 'uses' => 'Api\UsersController@reset']);
     Route::get('users/rpp-reset', ['as' => 'users.rppReset', 'uses' => 'Api\UsersController@rppReset']);
     Route::resource('users', 'Api\UsersController');
+
+    Route::match(['get', 'post'], 'visibilities/filter', ['as' => 'visibilities.filter', 'uses' => 'Api\VisibilitiesController@filter']);
+    Route::resource('visibilities', 'Api\VisibilitiesController')->only(['index', 'show']);
 });
 
 // routes protected by the shield middleware
