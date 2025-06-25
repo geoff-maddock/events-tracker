@@ -760,6 +760,54 @@ components:
           description: List of the current page of events
           items:
             $ref: "#/components/schemas/EventType"
+    Link:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        title:
+          type: string
+          maxLength: 255
+          description: The title attribute set on the link
+          example: This is the lazercrunk website.
+        text:
+          type: string
+          maxLength: 255
+          description: The display text for the link
+          example: Lazercrunk Website
+        url:
+          type: string
+          maxLength: 255
+          description: A url representing a link
+          example: https://lazercrunk.com
+        is_primary:
+          type: boolean
+          description: Flag indicating that the link is primary for it's related entity
+          example: true
+        created_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the entity type was created
+          readOnly: true
+        updated_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the entity type was last updated
+          readOnly: true
+    Links:
+      allOf: # Combines the BasicErrorModel and the inline model
+        - $ref: "#/components/schemas/Pagination"
+        - type: object
+          properties:
+            data:
+              type: array
+              items: { "$ref": "#/components/schemas/Link" }
     Location:
       type: object
       required:
@@ -925,6 +973,114 @@ components:
           example: 2018-03-20T09:12:28Z
           format: date-time
           description: Date and time that the entity type was last updated
+          readOnly: true
+    OccurrenceDay:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          maxLength: 255
+          description: A name of an occurrence day
+          example: Group
+        slug:
+          type: string
+          maxLength: 255
+          description: A unique identifier name for the occurrence day in kebab-case
+          example: octobers-lazercrunk-at-the-brillobox
+        short:
+          type: string
+          example: A multi-member occurrence
+          description: A brief description of the occurrence day
+          maxLength: 255
+        created_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the occurrence day was created
+          readOnly: true
+        updated_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the occurrence day was last updated
+          readOnly: true
+    OccurrenceType:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          maxLength: 255
+          description: A name of an occurrence type
+          example: Group
+        slug:
+          type: string
+          maxLength: 255
+          description: A unique identifier name for the occurrence type in kebab-case
+          example: octobers-lazercrunk-at-the-brillobox
+        short:
+          type: string
+          example: A multi-member occurrence
+          description: A brief description of the occurrence type
+          maxLength: 255
+        created_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time"
+          description: Date and time that the occurrence type was created
+          readOnly: true
+        updated_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the occurrence type was last updated
+          readOnly: true
+    OccurrenceWeek:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          maxLength: 255
+          description: A name of an occurrence week
+          example: Group
+        slug:
+          type: string
+          maxLength: 255
+          description: A unique identifier name for the occurrence week in kebab-case
+          example: octobers-lazercrunk-at-the-brillobox
+        short:
+          type: string
+          example: A multi-member occurrence
+          description: A brief description of the occurrence week
+          maxLength: 255
+        created_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the occurrence week was created
+          readOnly: true
+        updated_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the occurrence week was last updated
           readOnly: true
     Series:
       type: object
@@ -1670,19 +1826,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/Events"
   /api/events/{slug}:
+    parameters:
+      - name: slug
+        description: The unique identifier of the entity
+        in: path
+        required: true
+        schema:
+          type: string
+          example: cutups-event
     get:
-      parameters:
-        - name: slug
-          description: The unique identifier of the entity
-          in: path
-          required: true
-          schema:
-            type: string
-            example: cutups-event
       tags:
         - events
       summary: Get Event
-      operationId: getEventById
+      operationId: getEventBySlug
       responses:
         "200":
           description: Successful response
@@ -1691,19 +1847,10 @@ paths:
               schema:
                 $ref: "#/components/schemas/EventResponse"
     put:
-      parameters:
-        - name: slug
-          description: A unique string identifier of the event
-          in: path
-          required: true
-          schema:
-            type: string
-            readOnly: true
-            example: cutups-event
       tags:
         - events
       summary: Update Events
-      operationId: updateEventById
+      operationId: updateEventBySlug
       requestBody:
         content:
           application/json:
@@ -1717,16 +1864,16 @@ paths:
               schema:
                 $ref: "#/components/schemas/EventResponse"
   /api/events/{slug}/photos:
+    parameters:
+      - name: slug
+        description: The unique identifier of the entity
+        in: path
+        required: true
+        schema:
+          type: string
+          readOnly: true
+          example: strobe
     get:
-      parameters:
-        - name: slug
-          description: The unique identifier of the entity
-          in: path
-          required: true
-          schema:
-            type: string
-            readOnly: true
-            example: strobe
       tags:
         - events
       summary: Get Events Photos
@@ -1739,16 +1886,16 @@ paths:
               schema:
                 $ref: "#/components/schemas/Photos"
   /api/events/{slug}/all-photos:
+    parameters:
+      - name: slug
+        description: The unique identifier of the event
+        in: path
+        required: true
+        schema:
+          type: string
+          readOnly: true
+          example: strobe
     get:
-      parameters:
-        - name: slug
-          description: The unique identifier of the event
-          in: path
-          required: true
-          schema:
-            type: string
-            readOnly: true
-            example: strobe
       tags:
         - events
       summary: Get All Related Events Photos
@@ -1886,15 +2033,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/Entities"
   /api/entities/{slug}:
+    parameters:
+      - name: slug
+        description: The unique identifier of the entity
+        in: path
+        required: true
+        schema:
+          type: string
+        example: cutups
     get:
-      parameters:
-        - name: slug
-          description: The unique identifier of the entity
-          in: path
-          required: true
-          schema:
-            type: string
-          example: cutups
       tags:
         - entities
       summary: Get Entity
@@ -1907,14 +2054,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/EntityResponse"
     put:
-      parameters:
-        - name: slug
-          description: The unique identifier of the entity
-          in: path
-          required: true
-          schema:
-            type: string
-            example: cutups
       tags:
         - entities
       summary: Update Entity
@@ -1932,16 +2071,16 @@ paths:
               schema:
                 $ref: "#/components/schemas/EntityResponse"
   /api/entities/{slug}/photos:
+    parameters:
+      - name: slug
+        description: The unique identifier of the entity
+        in: path
+        required: true
+        schema:
+          type: string
+          readOnly: true
+          example: strobe
     get:
-      parameters:
-        - name: slug
-          description: The unique identifier of the entity
-          in: path
-          required: true
-          schema:
-            type: string
-            readOnly: true
-            example: strobe
       tags:
         - entities
       summary: Get Entity Photos
@@ -1954,16 +2093,16 @@ paths:
               schema:
                 $ref: "#/components/schemas/Photos"
   /api/entities/{id}/photos:
+    parameters:
+      - name: id
+        description: The unique identifier of the entity
+        in: path
+        required: true
+        schema:
+          type: integer
+          readOnly: true
+          example: 1
     post:
-      parameters:
-        - name: id
-          description: The unique identifier of the entity
-          in: path
-          required: true
-          schema:
-            type: integer
-            readOnly: true
-            example: 1
       tags:
         - entities
       summary: Add Entity Photo
@@ -1989,7 +2128,7 @@ paths:
       tags:
         - entity-types
       summary: Get Entity Types
-      operationId: updateEntityTypes
+      operationId: getEntityTypes
       parameters:
         - name: filters[name]
           in: query
@@ -2092,7 +2231,7 @@ paths:
       tags:
         - event-types
       summary: Get Event Types
-      operationId: updateEventTypes
+      operationId: getEventTypes
       parameters:
         - name: filters[name]
           in: query
@@ -2262,7 +2401,6 @@ paths:
         required: true
         schema:
           type: integer
-          readOnly: true
           example: 1
     get:
       tags:

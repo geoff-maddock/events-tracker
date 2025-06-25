@@ -3051,7 +3051,7 @@ paths:
       tags:
         - entity-types
       summary: Get Entity Types
-      operationId: updateEntityTypes
+      operationId: getEntityTypes
       parameters:
         - name: filters[name]
           in: query
