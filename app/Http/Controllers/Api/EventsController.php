@@ -728,7 +728,7 @@ class EventsController extends Controller
     public function store(EventRequest $request, Event $event): JsonResponse
     {
         // check who the authenticated user is
-        $this->user = auth('sanctum')->user();
+        $this->user = $request->user();
 
         $msg = '';
 
