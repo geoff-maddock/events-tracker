@@ -115,16 +115,6 @@ class Entity extends Eloquent
     public static function boot()
     {
         parent::boot();
-
-        // TODO Fix the default after I resolve user setup in API
-        static::creating(function ($entity) {
-            $entity->created_by = Auth::user() ? Auth::user()->id : 1;
-            $entity->updated_by = Auth::user() ? Auth::user()->id : 1;
-        });
-
-        static::updating(function ($entity) {
-            $entity->updated_by = Auth::user() ? Auth::user()->id : 1;
-        });
     }
 
     

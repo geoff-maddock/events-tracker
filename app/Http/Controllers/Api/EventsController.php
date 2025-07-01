@@ -727,12 +727,19 @@ class EventsController extends Controller
 
     public function store(EventRequest $request, Event $event): JsonResponse
     {
+        // check who the authenticated user is
+        $this->user = auth('sanctum')->user();
+
         $msg = '';
 
         $input = $request->all();
 
         // transform the slug passed in the request
         $input['slug'] = Str::slug($request->input('slug', '-'));
+        
+        // Set the user fields explicitly
+        $input['created_by'] = $this->user->id;
+        $input['updated_by'] = $this->user->id;
 
         // validation happening in EventRequest->rules
         $tagArray = $request->input('tag_list', []);
@@ -836,14 +843,19 @@ class EventsController extends Controller
 
     public function update(Event $event, EventRequest $request): JsonResponse
     {
-        $msg = '';
+        // Get the authenticated user
+        $this->user = $request->user();
 
-        $event->fill($request->input())->save();
-
-        // TODO fix this after getting auth to work
         if (!$event->ownedBy($this->user)) {
             $this->unauthorized($request);
         }
+
+        $msg = '';
+
+        $input = $request->input();
+        $input['updated_by'] = $this->user->id;
+        
+        $event->fill($input)->save();
 
         $tagArray = $request->input('tag_list', []);
         $syncArray = [];

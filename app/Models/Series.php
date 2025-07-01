@@ -128,17 +128,6 @@ class Series extends Eloquent
     public static function boot()
     {
         parent::boot();
-
-        static::creating(function ($series) {
-            $user = Auth::user();
-            $series->created_by = $user ? $user->id : 1;
-            $series->updated_by = $user ? $user->id : 1;
-        });
-
-        static::updating(function ($series) {
-            $user = Auth::user();
-            $series->updated_by = $user ? $user->id : 1;
-        });
     }
 
     protected $with = ['occurrenceType', 'occurrenceWeek', 'occurrenceDay'];

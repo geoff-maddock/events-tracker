@@ -15,6 +15,7 @@
 - To authenticate using basic auth, include the `Authorization` header with the value `Basic base64(username:password)`.
 - To authenticate using a user token, include the `Authorization` header with the value `Bearer your_user_token`.
 - To aquire a user token, you can use the `/api/auth/token` endpoint with basic auth credentials.
+  When requesting a token, include in the body a `token_name` key with the desired name for the token.
 
 ### Filtering Lists
 You can apply filters to routes using the following:

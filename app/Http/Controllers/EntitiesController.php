@@ -616,6 +616,10 @@ class EntitiesController extends Controller
         $input = $request->all();
 
         $input['slug'] = Str::slug($request->input('slug', '-'));
+        
+        // Set the user fields explicitly
+        $input['created_by'] = $this->user->id;
+        $input['updated_by'] = $this->user->id;
 
         $tagArray = $request->input('tag_list', []);
         $aliasArray = $request->input('alias_list', []);
@@ -783,6 +787,7 @@ class EntitiesController extends Controller
         $input = $request->all();
 
         $input['slug'] = Str::slug($request->input('slug', '-'));
+        $input['updated_by'] = $this->user->id;
 
         $entity->fill($input)->save();
 
