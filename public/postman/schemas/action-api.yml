@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
-  title: Arcane City
+  title: Arcane City - Action API
   version: 1.0.0
-  description: REST API for working with Arcane City data
+  description: REST API for working with Arcane City data from Open AI GPTs
   contact:
     name: Geoff Maddock
     email: geoff.maddock@gmail.com
@@ -141,6 +141,9 @@ components:
           maxLength: 64
           description: The entity's username on twitter
           example: johnsmith
+        tag_list:
+          type: array
+          items: { "type": "integer" }
     EntityResponse:
       type: object
       properties:
@@ -316,7 +319,7 @@ components:
           description: A unique identifier name for the event in kebab-case
           example: octobers-lazercrunk-at-the-brillobox
         short:
-          type: string
+          type: [string, "null"]
           example: a really fun dj night featuring performers from around the world
           description: A brief description of the event
           maxLength: 255
@@ -330,8 +333,7 @@ components:
           example: a really fun dj night featuring performers from around the world and locally playing new electronic music
           maxLength: 65535
         event_status_id:
-          type: integer
-          readOnly: true
+          type: [integer, "null"]
           example: 1
           description: Relation to the event type table that defines the status of the event
         event_type_id:
@@ -339,12 +341,11 @@ components:
           example: 1
           description: Relation to the event type table that defines the type of event
         promoter_id:
-          type: integer
-          readOnly: true
+          type: [string, "null"]
           example: 1
           description: Relation to the entity table that defines the promoter of the event
         venue_id:
-          type: integer
+          type: [integer, "null"]
           readOnly: true
           example: 1
           description: Relation to the entity table that defines the venue for the event
@@ -362,19 +363,19 @@ components:
           example: 10
         presale_price:
           description: The price for a presale price for the event
-          type: number
+          type: [number, "null"]
           example: 9.99
         door_price:
           description: The price of the show at the door
-          type: number
+          type: [number, "null"]
           example: 19.99
         soundcheck_at:
-          type: string
+          type: [string, "null"]
           example: 2018-03-20T09:12:28Z
           format: date-time
           description: Date and time that the event soundcheck is scheduled
         door_at:
-          type: string
+          type: [string, "null"]
           example: 2018-03-20T09:12:28Z
           format: date-time
           description: Date and time that the event doors are scheduled to open
@@ -384,13 +385,12 @@ components:
           format: date-time
           description: Date and time that the event starts
         end_at:
-          type: string
+          type: [string, "null"]
           example: 2018-03-20T09:12:28Z
           format: date-time
           description: Date and time that the event starts
         series_id:
-          type: integer
-          readOnly: true
+          type: [integer, "null"]
           example: 1
           description: Relation to the series table that defines the series for the event
         min_age:
@@ -398,41 +398,28 @@ components:
           type: integer
           example: 21
         primary_link:
-          type: string
+          type: [string, "null"]
           description: The primary URL related to this event
           example: http://lazercrunk.com/october-2022
           maxLength: 255
         ticket_link:
-          type: string
+          type: [string, "null"]
           description: The URL for buying a ticket to the event
           example: http://lazercrunk.com/october-2022/tickets
           maxLength: 255
-        created_at:
-          type: string
-          example: 2018-03-20T09:12:28Z
-          format: date-time
-          description: Date and time that the event was created
         cancelled_at:
           type: string
           example: 2018-03-20T09:12:28Z
           format: date-time
           description: Date and time that the event was cancelled
-        created_by:
-          type: integer
-          readOnly: true
-          example: 1
-          description: Relation to the user table that defines the user who created the event
-        updated_by:
-          type: integer
-          readOnly: true
-          example: 1
-          description: Relation to the user table that defines the user who last updated the event
+        tag_list:
+          type: array
+          items: { "type": "integer" }
+        entity_list:
+          type: array
+          items: { "type": "integer" }
     Event:
       type: object
-      required:
-        - id
-        - name
-        - slug
       properties:
         id:
           type: integer
@@ -719,10 +706,29 @@ components:
           format: date-time
           description: Date and time that the event status was last updated
           readOnly: true
-    EventType:
+    EventTypeRequest:
       type: object
       required:
         - name
+        - slug
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          description: A name of an event type
+          example: Concert
+        slug:
+          type: string
+          maxLength: 255
+          description: A unique identifier name for the event type in kebab-case
+          example: concert
+        short:
+          type: string
+          example: An event featuring live performances
+          description: A brief description of the event type
+          maxLength: 255
+    EventType:
+      type: object
       properties:
         id:
           type: integer
@@ -733,6 +739,16 @@ components:
           maxLength: 255
           description: A name of an event type
           example: Concert
+        slug:
+          type: string
+          maxLength: 255
+          description: A unique identifier name for the event type in kebab-case
+          example: concert
+        short:
+          type: string
+          example: An event featuring live performances
+          description: A brief description of the event type
+          maxLength: 255
         created_at:
           type: string
           example: 2018-03-20T09:12:28Z
@@ -1152,19 +1168,19 @@ components:
           example: 10
         presale_price:
           description: The price for a presale price for the series
-          type: number
+          type: [number, "null"]
           example: 9.99
         door_price:
           description: The price of the show at the door
-          type: number
+          type: [number, "null"]
           example: 19.99
         soundcheck_at:
-          type: string
+          type: [string, "null"]
           example: 2018-03-20T09:12:28Z
           format: date-time
           description: Date and time that the series soundcheck is scheduled
         door_at:
-          type: string
+          type: [string, "null"]
           example: 2018-03-20T09:12:28Z
           format: date-time
           description: Date and time that the series doors are scheduled to open
@@ -1174,7 +1190,7 @@ components:
           format: date-time
           description: Date and time that the series starts
         end_at:
-          type: string
+          type: [string, "null"]
           example: 2018-03-20T09:12:28Z
           format: date-time
           description: Date and time that the series ends
@@ -1183,12 +1199,12 @@ components:
           type: integer
           example: 21
         primary_link:
-          type: string
+          type: [string, "null"]
           description: The primary URL related to this series
           example: http://lazercrunk.com/october-2022
           maxLength: 255
         ticket_link:
-          type: string
+          type: [string, "null"]
           description: The URL for buying a ticket to the series
           example: http://lazercrunk.com/october-2022/tickets
           maxLength: 255
@@ -2262,7 +2278,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EventType"
+              $ref: "#/components/schemas/EventTypeRequest"
       responses:
         "201":
           description: Successful response
@@ -2298,7 +2314,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EventType"
+              $ref: "#/components/schemas/EventTypeRequest"
       responses:
         "200":
           description: Successful response

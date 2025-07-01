@@ -10,6 +10,12 @@
 - Currently requires a basic auth username and password to access the API.
 - You can also request a user token to access the API.
 
+### Authenticaion
+- You can query the API using basic auth or a user token.
+- To authenticate using basic auth, include the `Authorization` header with the value `Basic base64(username:password)`.
+- To authenticate using a user token, include the `Authorization` header with the value `Bearer your_user_token`.
+- To aquire a user token, you can use the `/api/auth/token` endpoint with basic auth credentials.
+
 ### Filtering Lists
 You can apply filters to routes using the following:
 
