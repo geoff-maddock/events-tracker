@@ -1501,6 +1501,10 @@ class EventsController extends Controller
 
         // transform the slug passed in the request
         $input['slug'] = Str::slug($request->input('slug', '-'));
+        
+        // Set the user fields explicitly
+        $input['created_by'] = $this->user->id;
+        $input['updated_by'] = $this->user->id;
 
         // validation happening in EventRequest->rules
         $tagArray = $request->input('tag_list', []);
@@ -1633,7 +1637,10 @@ class EventsController extends Controller
     {
         $msg = '';
 
-        $event->fill($request->input())->save();
+        $input = $request->input();
+        $input['updated_by'] = $this->user->id;
+
+        $event->fill($input)->save();
 
         if (!$event->ownedBy(auth()->user())) {
             $this->unauthorized($request);

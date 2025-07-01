@@ -568,8 +568,15 @@ class SeriesController extends Controller
 
     public function store(SeriesRequest $request, Series $series): JsonResponse
     {
+        // Get the authenticated user
+        $this->user = $request->user();
+
         $msg = '';
         $input = $request->all();
+        
+        // Set the user fields explicitly
+        $input['created_by'] = $this->user->id;
+        $input['updated_by'] = $this->user->id;
 
         $tagArray = $request->input('tag_list', []);
         $syncArray = [];
@@ -690,14 +697,21 @@ class SeriesController extends Controller
 
     public function update(Series $series, SeriesRequest $request): JsonResponse
     {
+        // Get the authenticated user
+        $this->user = $request->user();
+
         $msg = '';
 
-        $series->fill($request->input())->save();
+        $input = $request->input();
 
-        // TODO Revisit after auth is added
-        // if (!$series->ownedBy($this->user)) {
-        //     $this->unauthorized($request);
-        // }
+        if (!$series->ownedBy($this->user)) {
+            $this->unauthorized($request);
+        }
+
+        // Set the user fields explicitly
+        $input['updated_by'] = $this->user->id;
+
+        $series->fill($input)->save();
 
         $tagArray = $request->input('tag_list', []);
         $syncArray = [];
