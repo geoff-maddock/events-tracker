@@ -1913,6 +1913,14 @@ components:
             data:
               type: array
               items: { "$ref": "#/components/schemas/UserResponse" }
+    UserTokenRequest:
+      type: object
+      properties:
+        token_name:
+          type: string
+          description: User token name
+          example: arcane-city
+          maxLength: 255
     UserTokenResponse:
       type: object
       properties:
@@ -4261,6 +4269,11 @@ paths:
         - users
       summary: Create User Bearer Token
       operationId: createUserBearerToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserTokenRequest"
       responses:
         "200":
           description: Successful response
