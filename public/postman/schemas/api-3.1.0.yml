@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: Arcane City
   version: 2025.06.09
@@ -482,8 +482,7 @@ components:
           description: A unique identifier name for the event in kebab-case
           example: octobers-lazercrunk-at-the-brillobox
         short:
-          type: string
-          nullable: true
+          type: [string, "null"]
           example: a really fun dj night featuring performers from around the world
           description: A brief description of the event
           maxLength: 255
@@ -497,8 +496,7 @@ components:
           example: a really fun dj night featuring performers from around the world and locally playing new electronic music
           maxLength: 65535
         event_status_id:
-          type: string
-          nullable: true
+          type: [integer, "null"]
           example: 1
           description: Relation to the event type table that defines the status of the event
         event_type_id:
@@ -506,13 +504,11 @@ components:
           example: 1
           description: Relation to the event type table that defines the type of event
         promoter_id:
-          type: string
-          nullable: true
+          type: [string, "null"]
           example: 1
           description: Relation to the entity table that defines the promoter of the event
         venue_id:
-          type: integer
-          nullable: true
+          type: [integer, "null"]
           readOnly: true
           example: 1
           description: Relation to the entity table that defines the venue for the event
@@ -530,23 +526,19 @@ components:
           example: 10
         presale_price:
           description: The price for a presale price for the event
-          type: number
-          nullable: true
+          type: [number, "null"]
           example: 9.99
         door_price:
           description: The price of the show at the door
-          type: number
-          nullable: true
+          type: [number, "null"]
           example: 19.99
         soundcheck_at:
-          type: string
-          nullable: true
+          type: [string, "null"]
           example: 2018-03-20T09:12:28Z
           format: date-time
           description: Date and time that the event soundcheck is scheduled
         door_at:
-          type: string
-          nullable: true
+          type: [string, "null"]
           example: 2018-03-20T09:12:28Z
           format: date-time
           description: Date and time that the event doors are scheduled to open
@@ -556,14 +548,12 @@ components:
           format: date-time
           description: Date and time that the event starts
         end_at:
-          type: string
-          nullable: true
+          type: [string, "null"]
           example: 2018-03-20T09:12:28Z
           format: date-time
           description: Date and time that the event starts
         series_id:
-          type: integer
-          nullable: true
+          type: [integer, "null"]
           example: 1
           description: Relation to the series table that defines the series for the event
         min_age:
@@ -571,14 +561,12 @@ components:
           type: integer
           example: 21
         primary_link:
-          type: string
-          nullable: true
+          type: [string, "null"]
           description: The primary URL related to this event
           example: http://lazercrunk.com/october-2022
           maxLength: 255
         ticket_link:
-          type: string
-          nullable: true
+          type: [string, "null"]
           description: The URL for buying a ticket to the event
           example: http://lazercrunk.com/october-2022/tickets
           maxLength: 255
