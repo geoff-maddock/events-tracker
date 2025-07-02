@@ -1,6 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use App\Http\Resources\UserResource;
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     // validate the token
@@ -29,6 +30,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 Route::middleware('auth:sanctum')->get('tokens/test', function (Request $request) {
     return ['data' => 'token test'];
+});
+
+Route::middleware('auth:sanctum')->get('auth/me', function (Request $request) {
+    return response()->json(new UserResource($request->user()));
 });
 
 

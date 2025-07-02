@@ -4299,6 +4299,19 @@ paths:
                     type: string
                     description: Valid user token
                     example: ABCDEF12345
+  /api/auth/me:
+    get:
+      tags:
+        - users
+      summary: Get Authenticated User
+      operationId: getAuthenticatedUser
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
   /api/users:
     post:
       tags:
