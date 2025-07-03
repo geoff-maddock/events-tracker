@@ -75,7 +75,10 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::post('events/{id}/photos', 'Api\EventsController@addPhoto');
     Route::get('events/{event}/embeds', ['as' => 'events.embeds', 'uses' => 'Api\EventsController@embeds']);
     Route::get('events/{event}/minimal-embeds', ['as' => 'events.minimalEmbeds', 'uses' => 'Api\EventsController@minimalEmbeds']);
-    
+
+    Route::post('events/{event}/attend', 'Api\EventsController@attendJson');
+    Route::delete('events/{event}/attend', 'Api\EventsController@unattendJson');
+
     Route::resource('events', 'Api\EventsController');
 
     Route::get('entities/{entity}/photos', ['as' => 'entities.photos', 'uses' => 'Api\EntitiesController@photos']);

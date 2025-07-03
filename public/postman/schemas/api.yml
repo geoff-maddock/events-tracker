@@ -2834,6 +2834,47 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PhotoResponse"
+  /api/events/{id}/attend:
+    post:
+      parameters:
+        - name: id
+          description: The unique identifier of the event
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - events
+      summary: Attend Event
+      operationId: attendEventById
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventResponse"
+    delete:
+      parameters:
+        - name: id
+          description: The unique identifier of the event
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - events
+      summary: Unattend Event
+      operationId: unattendEventById
+      responses:
+        "204":
+          description: Successful response
+          content:
+            application/json: {}
   /api/entities:
     post:
       tags:
