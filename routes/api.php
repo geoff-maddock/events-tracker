@@ -142,6 +142,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::match(['get', 'post'], 'users/filter', ['as' => 'users.filter', 'uses' => 'Api\UsersController@filter']);
     Route::get('users/reset', ['as' => 'users.reset', 'uses' => 'Api\UsersController@reset']);
     Route::get('users/rpp-reset', ['as' => 'users.rppReset', 'uses' => 'Api\UsersController@rppReset']);
+    Route::get('users/{user}/events-attending', ['as' => 'users.events-attending', 'uses' => 'Api\UsersController@eventsAttending']);
     Route::resource('users', 'Api\UsersController');
 
     Route::match(['get', 'post'], 'visibilities/filter', ['as' => 'visibilities.filter', 'uses' => 'Api\VisibilitiesController@filter']);
