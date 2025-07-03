@@ -1028,6 +1028,44 @@ class EventsController extends Controller
         return back();
     }
 
+    /**
+     * Mark the authenticated user as attending an event and return JSON.
+     */
+    public function attendJson(Event $event, Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $response = new EventResponse();
+        $response->event()->associate($event);
+        $response->user()->associate($user);
+        $response->response_type_id = 1;
+        $response->save();
+
+        Activity::log($event, $user, 6);
+
+        return response()->json(new EventResource($event));
+    }
+
+    /**
+     * Remove the authenticated user's attendance from an event and return JSON.
+     */
+    public function unattendJson(Event $event, Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $response = EventResponse::where('event_id', $event->id)
+            ->where('user_id', $user->id)
+            ->where('response_type_id', 1)
+            ->first();
+
+        if ($response) {
+            $response->delete();
+            Activity::log($event, $user, 7);
+        }
+
+        return response()->json([], 204);
+    }
+
 
     /**
      * Display a listing of events that start on the specified day.
