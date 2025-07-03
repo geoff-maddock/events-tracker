@@ -33,6 +33,13 @@ class UserResource extends JsonResource
             'followed_entities' => MinimalResource::collection($this->getEntitiesFollowing()),
             'followed_series' => MinimalResource::collection($this->getSeriesFollowing()),
             'followed_threads' => MinimalResource::collection($this->getThreadsFollowing()),
+            'photos' => $this->photos->map(function ($photo) {
+                return [
+                    'id' => $photo->id,
+                    'path' => $photo->getPath(),
+                    'thumbnail_path' => $photo->getThumbnailPath(),
+                ];
+            })->toArray(),
         ];
     }
 }

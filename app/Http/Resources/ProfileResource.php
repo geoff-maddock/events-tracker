@@ -37,22 +37,6 @@ class ProfileResource extends JsonResource
             'setting_public_profile' => $this->setting_public_profile,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'links' => $this->links->map(function ($link) {
-                return [
-                    'id' => $link->id,
-                    'text' => $link->text,
-                    'url' => $link->url,
-                    'title' => $link->title,
-                    'is_primary' => $link->is_primary,
-                ];
-            })->toArray(),
-            'photos' => $this->photos->map(function ($photo) {
-                return [
-                    'id' => $photo->id,
-                    'path' => $photo->getPath(),
-                    'thumbnail_path' => $photo->getThumbnailPath(),
-                ];
-            })->toArray(),
         ];
     }
 }

@@ -20,7 +20,7 @@ class UserCollection extends ResourceCollection
     {
         return [
             'current_page' => $this->currentPage(),
-            'data' => $this->collection->toArray(),
+            'data' => UserResource::collection($this->collection)->resolve(),
             'first_page_url' => $this->url(1),
             'from' => $this->firstItem(),
             'last_page' => $this->lastPage(),
