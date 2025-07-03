@@ -13,6 +13,7 @@ use App\Mail\UserActivation;
 use App\Mail\UserSuspended;
 use App\Mail\UserUpdate;
 use App\Mail\WeeklyUpdate;
+use App\Http\Resources\EventCollection;
 use App\Models\Activity;
 use App\Models\Group;
 use App\Models\Photo;
@@ -746,6 +747,28 @@ class UsersController extends Controller
         }
 
         return back();
+    }
+
+    public function eventsAttending(User $user, Request $request): JsonResponse
+    {
+        $limit = (int) $request->input('limit', 25);
+
+        $events = $user->getAttending()
+            ->visible($this->user)
+            ->with([
+                'visibility',
+                'venue',
+                'eventStatus',
+                'eventType',
+                'promoter',
+                'series',
+                'tags',
+                'entities',
+            ])
+            ->orderBy('events.start_at', 'asc')
+            ->paginate($limit);
+
+        return response()->json(new EventCollection($events));
     }
 
     protected function getListControlOptions(): array

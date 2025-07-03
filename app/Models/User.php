@@ -337,6 +337,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
 
     /**
      * Return a list of events the user is attending.
+     * @return Builder<Event>
      */
     public function getAttending(): Builder
     {

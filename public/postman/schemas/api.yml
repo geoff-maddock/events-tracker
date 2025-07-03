@@ -4599,8 +4599,30 @@ paths:
       responses:
         "204":
           description: Successful response
+        content:
+          application/json: {}
+  /api/users/{userId}/events-attending:
+    get:
+      parameters:
+        - name: userId
+          description: The unique identifier of the user
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - users
+      summary: Get Events the User is Attending
+      operationId: getUserAttendingEvents
+      responses:
+        "200":
+          description: Successful response
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Events"
   /api/visibilities:
     get:
       tags:
