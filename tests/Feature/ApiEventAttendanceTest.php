@@ -20,7 +20,7 @@ class ApiEventAttendanceTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user, 'sanctum');
 
-        ResponseType::factory()->create(['id' => 1, 'name' => 'Attending']);
+        // ResponseType::factory()->create(['id' => 1, 'name' => 'Attending']);
 
         $event = Event::factory()->create();
 
@@ -40,7 +40,7 @@ class ApiEventAttendanceTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user, 'sanctum');
 
-        ResponseType::factory()->create(['id' => 1, 'name' => 'Attending']);
+        // ResponseType::factory()->create(['id' => 1, 'name' => 'Attending']);
 
         $event = Event::factory()->create();
 
@@ -66,7 +66,7 @@ class ApiEventAttendanceTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user, 'sanctum');
 
-        ResponseType::factory()->create(['id' => 1, 'name' => 'Attending']);
+        // ResponseType::factory()->create(['id' => 1, 'name' => 'Attending']);
 
         $event = Event::factory()->create();
 
