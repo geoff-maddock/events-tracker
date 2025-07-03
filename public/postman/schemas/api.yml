@@ -1810,6 +1810,89 @@ components:
           description: List of the current page of threads
           items:
             "$ref": "#/components/schemas/Thread"
+    ProfileResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+          description: Relation to the user table that owns the profile
+        bio:
+          type: string
+          maxLength: 65535
+          description: User provided biography text
+          example: Pittsburgh based DJ and promoter
+        alias:
+          type: string
+          maxLength: 255
+          description: Alternate display name for the profile
+          example: cutups
+        location:
+          type: string
+          maxLength: 255
+          description: Displayed location for the user
+          example: Pittsburgh, PA
+        visibility_id:
+          type: integer
+          example: 1
+          description: Relation to the visibility table that defines the visibility of the profile
+        facebook_username:
+          type: string
+          maxLength: 64
+          example: cutups
+        twitter_username:
+          type: string
+          maxLength: 64
+          example: cutups
+        instagram_username:
+          type: string
+          maxLength: 64
+          example: cutups
+        first_name:
+          type: string
+          maxLength: 255
+          example: Geoff
+        last_name:
+          type: string
+          maxLength: 255
+          example: Maddock
+        default_theme:
+          type: string
+          maxLength: 255
+          example: dark
+        setting_weekly_update:
+          type: integer
+          example: 1
+        setting_daily_update:
+          type: integer
+          example: 1
+        setting_instant_update:
+          type: integer
+          example: 1
+        setting_forum_update:
+          type: integer
+          example: 1
+        setting_public_profile:
+          type: integer
+          example: 1
+        created_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+        updated_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+        links:
+          type: array
+          items: { "$ref": "#/components/schemas/Link" }
+        photos:
+          type: array
+          items: { "$ref": "#/components/schemas/PhotoResponse" }
     User:
       type: object
       properties:
@@ -1860,6 +1943,20 @@ components:
           format: date-time
           description: Date and time that the user was last updated
           readOnly: true
+        profile:
+          $ref: "#/components/schemas/ProfileResponse"
+        followed_tags:
+          type: array
+          items: { "$ref": "#/components/schemas/Tag" }
+        followed_entities:
+          type: array
+          items: { "$ref": "#/components/schemas/EntityResponse" }
+        followed_series:
+          type: array
+          items: { "$ref": "#/components/schemas/SeriesResponse" }
+        followed_threads:
+          type: array
+          items: { "$ref": "#/components/schemas/Thread" }
     UserSimple:
       type: object
       properties:
