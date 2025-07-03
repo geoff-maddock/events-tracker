@@ -3,7 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\MinimalResource;
+use App\Http\Resources\MinimalSlugResource;
 use App\Http\Resources\ProfileResource;
 
 /**
@@ -29,10 +29,10 @@ class UserResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'profile' => new ProfileResource($this->whenLoaded('profile', $this->profile)),
-            'followed_tags' => MinimalResource::collection($this->getTagsFollowing()),
-            'followed_entities' => MinimalResource::collection($this->getEntitiesFollowing()),
-            'followed_series' => MinimalResource::collection($this->getSeriesFollowing()),
-            'followed_threads' => MinimalResource::collection($this->getThreadsFollowing()),
+            'followed_tags' => MinimalSlugResource::collection($this->getTagsFollowing()),
+            'followed_entities' => MinimalSlugResource::collection($this->getEntitiesFollowing()),
+            'followed_series' => MinimalSlugResource::collection($this->getSeriesFollowing()),
+            'followed_threads' => MinimalSlugResource::collection($this->getThreadsFollowing()),
             'photos' => $this->photos->map(function ($photo) {
                 return [
                     'id' => $photo->id,
