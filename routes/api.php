@@ -108,6 +108,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('links/reset', ['as' => 'links.reset', 'uses' => 'Api\LinksController@reset']);
     Route::get('links/rpp-reset', ['as' => 'links.rppReset', 'uses' => 'Api\LinksController@rppReset']);
     Route::resource('links', 'Api\LinksController');
+    Route::resource('menus', 'Api\MenusController');
 
     Route::match(['get', 'post'], 'locations/filter', ['as' => 'locations.filter', 'uses' => 'Api\LocationsController@filter']);
     Route::get('locations/reset', ['as' => 'locations.reset', 'uses' => 'Api\LocationsController@reset']);

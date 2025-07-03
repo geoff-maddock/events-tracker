@@ -23,6 +23,7 @@ tags:
   - name: event-types
   - name: forums
   - name: links
+  - name: menus
   - name: locations
   - name: posts
   - name: series
@@ -1049,6 +1050,59 @@ components:
             data:
               type: array
               items: { "$ref": "#/components/schemas/Link" }
+    Menu:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          maxLength: 255
+          description: Name of the menu
+          example: Main
+        slug:
+          type: string
+          maxLength: 255
+          description: A unique identifier name for the menu in kebab-case
+          example: main-menu
+        menu_parent_id:
+          type: integer
+          nullable: true
+          example: 1
+          description: Parent menu id
+        body:
+          type: string
+          description: Body of the menu
+          example: Menu body
+        visibility_id:
+          type: integer
+          example: 1
+          description: Relation to the visibility table
+        created_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the menu was created
+          readOnly: true
+        updated_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the menu was last updated
+          readOnly: true
+    Menus:
+      allOf:
+        - $ref: "#/components/schemas/Pagination"
+        - type: object
+          properties:
+            data:
+              type: array
+              items: { "$ref": "#/components/schemas/Menu" }
+
     Location:
       type: object
       required:
@@ -3538,6 +3592,112 @@ paths:
         - links
       summary: Delete Link
       operationId: deleteLinkById
+      responses:
+        "204":
+          description: Successful response
+          content:
+              application/json: {}
+  /api/menus:
+    get:
+      tags:
+        - menus
+      summary: Get Menus
+      operationId: getMenus
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+          example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+            example: 1
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+            example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+            example: asc
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Menus"
+    post:
+      tags:
+        - menus
+      summary: Create menu
+      operationId: createMenu
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Menu"
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json: {}
+  /api/menus/{menuId}:
+    parameters:
+      - name: menuId
+        description: The unique identifier of the menu
+        in: path
+        required: true
+        schema:
+          type: integer
+          readOnly: true
+          example: 1
+    get:
+      tags:
+        - menus
+      summary: Get Menu
+      operationId: getMenuById
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Menu"
+    patch:
+      tags:
+        - menus
+      summary: Update menu
+      operationId: updateMenuById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Menu"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Menu"
+    delete:
+      tags:
+        - menus
+      summary: Delete Menu
+      operationId: deleteMenuById
       responses:
         "204":
           description: Successful response
