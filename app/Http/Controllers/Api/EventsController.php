@@ -1035,13 +1035,20 @@ class EventsController extends Controller
     {
         $user = $request->user();
 
-        $response = new EventResponse();
-        $response->event()->associate($event);
-        $response->user()->associate($user);
-        $response->response_type_id = 1;
-        $response->save();
+        $response = EventResponse::where('event_id', $event->id)
+            ->where('user_id', $user->id)
+            ->where('response_type_id', 1)
+            ->first();
 
-        Activity::log($event, $user, 6);
+        if (!$response) {
+            $response = new EventResponse();
+            $response->event()->associate($event);
+            $response->user()->associate($user);
+            $response->response_type_id = 1;
+            $response->save();
+
+            Activity::log($event, $user, 6);
+        }
 
         return response()->json(new EventResource($event));
     }
