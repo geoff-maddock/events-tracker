@@ -88,19 +88,4 @@ class Profile extends Eloquent
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    /**
-     * The links that belong to the entity.
-     */
-    public function links(): BelongsToMany
-    {
-        return $this->belongsToMany(Link::class);
-    }
-
-    /**
-     * Get all of the entities photos.
-     */
-    public function photos(): BelongsToMany
-    {
-        return $this->belongsToMany(Photo::class)->withTimestamps();
-    }
 }

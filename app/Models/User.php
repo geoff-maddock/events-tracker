@@ -185,6 +185,15 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     }
 
     /**
+     * The links that belong to the entity.
+     */
+    public function links(): BelongsToMany
+    {
+        return $this->belongsToMany(Link::class);
+    }
+
+
+    /**
      * Return the count of events the user is attending.
      */
     public function getAttendingCountAttribute(): int

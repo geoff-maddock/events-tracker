@@ -3,7 +3,8 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Models\User;
+use App\Http\Resources\MinimalResource;
+use App\Http\Resources\ProfileResource;
 
 /**
  * @mixin \App\Models\User
@@ -14,7 +15,7 @@ class UserResource extends JsonResource
      * Transform the resource into an array.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+     * @return array<string, mixed>
      */
     public function toArray($request)
     {
@@ -26,7 +27,19 @@ class UserResource extends JsonResource
             'email_verified_at' => $this->email_verified_at,
             'last_active' => $this->lastActivity,
             'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at
-            ];
+            'updated_at' => $this->updated_at,
+            'profile' => new ProfileResource($this->whenLoaded('profile', $this->profile)),
+            'followed_tags' => MinimalResource::collection($this->getTagsFollowing()),
+            'followed_entities' => MinimalResource::collection($this->getEntitiesFollowing()),
+            'followed_series' => MinimalResource::collection($this->getSeriesFollowing()),
+            'followed_threads' => MinimalResource::collection($this->getThreadsFollowing()),
+            'photos' => $this->photos->map(function ($photo) {
+                return [
+                    'id' => $photo->id,
+                    'path' => $photo->getPath(),
+                    'thumbnail_path' => $photo->getThumbnailPath(),
+                ];
+            })->toArray(),
+        ];
     }
 }
