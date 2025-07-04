@@ -80,7 +80,6 @@ class EventsController extends Controller
 
     public function __construct(EventFilters $filter)
     {
-        // $this->middleware('verified', ['only' =>  'store', 'update']);
         $this->filter = $filter;
 
         // prefix for session storage
@@ -107,9 +106,8 @@ class EventsController extends Controller
             config('app.fb_graph_version')
         );
 
-        $this->facebook = Api::instance();
-
         $this->hasFilter = false;
+        $this->middleware('auth:sanctum');
         parent::__construct();
     }
 
@@ -1034,7 +1032,7 @@ class EventsController extends Controller
     public function attendJson(Event $event, Request $request): JsonResponse
     {
         $user = $request->user();
-
+        
         $response = EventResponse::where('event_id', $event->id)
             ->where('user_id', $user->id)
             ->where('response_type_id', 1)
