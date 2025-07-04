@@ -265,7 +265,7 @@ class EventInstagramController extends Controller
         }
 
         // get the instagram caption
-        $caption = urlEncode($event->getInstagramFormat());
+       // $caption = urlEncode($event->getInstagramFormat());
         $caption = $event->getInstagramFormat();
 
         // make the instagram api calls
