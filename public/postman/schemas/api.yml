@@ -2850,21 +2850,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PhotoResponse"
-  /api/events/{id}/attend:
+  /api/events/{slug}/attend:
     post:
       parameters:
-        - name: id
+        - name: slug
           description: The unique identifier of the event
           in: path
           required: true
           schema:
-            type: integer
+            type: string
             readOnly: true
-            example: 1
+            example: lazercrunk
       tags:
         - events
       summary: Attend Event
-      operationId: attendEventById
+      operationId: attendEventBySlug
       responses:
         "200":
           description: Successful response
@@ -2874,14 +2874,14 @@ paths:
                 $ref: "#/components/schemas/EventResponse"
     delete:
       parameters:
-        - name: id
+        - name: slug
           description: The unique identifier of the event
           in: path
           required: true
           schema:
-            type: integer
+            type: string
             readOnly: true
-            example: 1
+            example: lazercrunk
       tags:
         - events
       summary: Unattend Event
@@ -3750,7 +3750,7 @@ paths:
         "204":
           description: Successful response
           content:
-              application/json: {}
+            application/json: {}
   /api/menus:
     get:
       tags:
