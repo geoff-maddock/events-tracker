@@ -6,6 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\Event;
 
 // Resource for minimal relationship data
+use App\Http\Resources\MinimalUserResource;
 use App\Http\Resources\MinimalResource;
 
 /**
@@ -35,6 +36,7 @@ class EventResource extends JsonResource
             'promoter' => $this->promoter ? new MinimalResource($this->promoter) : null,
             'venue' => $this->venue ? new MinimalResource($this->venue) : null,
             'attending' => $this->attending,
+            'attendees' => MinimalUserResource::collection($this->attendees),
             'like' => $this->like,
             'presale_price' => $this->presale_price,
             'door_price' => $this->door_price,

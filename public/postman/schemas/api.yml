@@ -525,6 +525,10 @@ components:
           description: The number of users who marked that they are attending the event
           type: integer
           example: 10
+        attendees:
+          type: array
+          description: List of users attending the event
+          items: { "$ref": "#/components/schemas/MinimalUser" }
         like:
           description: The number of users who marked that they like the event
           type: integer
@@ -1973,6 +1977,18 @@ components:
           type: string
           description: Email address of the user
           example: john.smith@gmail.com
+          maxLength: 255
+    MinimalUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        username:
+          type: string
+          description: Name of the user
+          example: john.smith
           maxLength: 255
     UserResponse:
       type: object
