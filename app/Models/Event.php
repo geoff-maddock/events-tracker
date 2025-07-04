@@ -19,6 +19,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use App\Models\User;
 
 /**
  * App\Models\Event.
@@ -500,6 +501,14 @@ class Event extends Model
     {
         return $this->hasMany('App\Models\EventResponse');
     }
+    /**
+     * Users marked as attending this event.
+     */
+    public function attendees(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, "event_responses")->wherePivot("response_type_id", 1);
+    }
+
 
     /**
      * Get the count of users attending this event.
