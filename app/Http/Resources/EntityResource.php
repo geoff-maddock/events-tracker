@@ -39,7 +39,7 @@ class EntityResource extends JsonResource
                     'is_primary' => $link->is_primary,
                 ];
             })->toArray(),
-            'tags' => MinimalResource::collection($this->tags)->resolve(),
+            'tags' => MinimalSlugResource::collection($this->tags)->resolve(),
             'roles' => MinimalResource::collection($this->roles)->resolve(),
             'created_by' => $this->created_by,
             'updated_by' => $this->updated_by,
