@@ -103,7 +103,8 @@ class EventsController extends Controller
 
         // this is causing issues in some places, but do we need it?
         // $this->middleware('auth:sanctum');
-        
+        $this->middleware('auth:sanctum')->only(['attendJson', 'unattendJson']);
+
         parent::__construct();
     }
 
@@ -1032,8 +1033,6 @@ class EventsController extends Controller
      */
     public function attendJson(Event $event, Request $request): JsonResponse
     {
-        $this->middleware('auth:sanctum');
-
         $user = $request->user();
         
         $response = EventResponse::where('event_id', $event->id)
@@ -1059,8 +1058,6 @@ class EventsController extends Controller
      */
     public function unattendJson(Event $event, Request $request): JsonResponse
     {
-        $this->middleware('auth:sanctum');
-
         $user = $request->user();
 
         $response = EventResponse::where('event_id', $event->id)
