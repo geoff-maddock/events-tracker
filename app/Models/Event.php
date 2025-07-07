@@ -1013,7 +1013,7 @@ class Event extends Model
         $format .= "\n";
 
         // add the arcane city URL
-         $format .= ' '.rtrim(config('app.url'), '/').'/events/'.$this->id;
+         $format .= ' '.rtrim(config('app.url'), '/').'/events/'.$this->slug;
 
        // add the primary link
        if ($this->primary_link) {
