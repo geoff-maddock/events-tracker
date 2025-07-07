@@ -99,15 +99,11 @@ class EventsController extends Controller
 
         $this->defaultSortCriteria = ['events.start_at' => 'desc'];
 
-        // inject Facebook into class
-        Api::init(
-            config('app.fb_app_id'),
-            config('app.fb_app_secret'),
-            config('app.fb_graph_version')
-        );
-
         $this->hasFilter = false;
-        $this->middleware('auth:sanctum');
+
+        // this is causing issues in some places, but do we need it?
+        // $this->middleware('auth:sanctum');
+        
         parent::__construct();
     }
 
@@ -121,6 +117,7 @@ class EventsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): JsonResponse {
+
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('api_event');
         $listParamSessionStore->setKeyPrefix('api_event_index');

@@ -158,6 +158,7 @@ class SeriesController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ):  JsonResponse {
+
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_series');
         $listParamSessionStore->setKeyPrefix('internal_series_index');
