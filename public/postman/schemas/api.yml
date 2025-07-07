@@ -498,7 +498,7 @@ components:
           example: a really fun dj night featuring performers from around the world and locally playing new electronic music
           maxLength: 65535
         event_status_id:
-          type: string
+          type: integer
           nullable: true
           example: 1
           description: Relation to the event type table that defines the status of the event
@@ -507,14 +507,13 @@ components:
           example: 1
           description: Relation to the event type table that defines the type of event
         promoter_id:
-          type: string
+          type: integer
           nullable: true
           example: 1
           description: Relation to the entity table that defines the promoter of the event
         venue_id:
           type: integer
           nullable: true
-          readOnly: true
           example: 1
           description: Relation to the entity table that defines the venue for the event
         is_benefit:
@@ -529,10 +528,6 @@ components:
           type: array
           description: List of users attending the event
           items: { "$ref": "#/components/schemas/MinimalUser" }
-        like:
-          description: The number of users who marked that they like the event
-          type: integer
-          example: 10
         presale_price:
           description: The price for a presale price for the event
           type: number
@@ -658,10 +653,10 @@ components:
           type: boolean
           description: Flag indicating if the event is a benefit
           example: true
-        attending:
-          description: The number of users who marked that they are attending the event
-          type: integer
-          example: 10
+        attendees:
+          type: array
+          description: List of users attending the event
+          items: { "$ref": "#/components/schemas/MinimalUser" }
         like:
           description: The number of users who marked that they like the event
           type: integer
