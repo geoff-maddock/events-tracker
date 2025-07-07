@@ -943,6 +943,8 @@ class EventsController extends Controller
      */
     public function attend(int $id, Request $request): RedirectResponse | array
     {
+        $this->middleware('auth:sanctum');
+
         // check if there is a logged in user
         if (!$this->user) {
             flash()->error('Error', 'No user is logged in.');
@@ -988,6 +990,8 @@ class EventsController extends Controller
      */
     public function unattend(int $id, Request $request): RedirectResponse | array
     {
+        $this->middleware('auth:sanctum');
+
         // check if there is a logged in user
         if (!$this->user) {
             flash()->error('Error', 'No user is logged in.');
