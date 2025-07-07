@@ -1032,6 +1032,8 @@ class EventsController extends Controller
      */
     public function attendJson(Event $event, Request $request): JsonResponse
     {
+        $this->middleware('auth:sanctum');
+
         $user = $request->user();
         
         $response = EventResponse::where('event_id', $event->id)
@@ -1057,6 +1059,8 @@ class EventsController extends Controller
      */
     public function unattendJson(Event $event, Request $request): JsonResponse
     {
+        $this->middleware('auth:sanctum');
+
         $user = $request->user();
 
         $response = EventResponse::where('event_id', $event->id)
