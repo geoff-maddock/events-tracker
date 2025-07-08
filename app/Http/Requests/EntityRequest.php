@@ -30,6 +30,7 @@ class EntityRequest extends Request
             'short' => 'required|max:255',
             'description' => 'required',
             'entity_type_id' => 'required',
+            'entity_status_id' => 'required',
         ];
     }
 }

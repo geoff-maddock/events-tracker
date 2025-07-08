@@ -265,6 +265,8 @@ components:
       required:
         - name
         - slug
+        - entity_type_id
+        - entity_status_id
       properties:
         name:
           type: string
@@ -310,6 +312,12 @@ components:
           description: The entity's username on twitter
           example: johnsmith
         tag_list:
+          type: array
+          items: { "type": "integer" }
+        role_list:
+          type: array
+          items: { "type": "integer" }
+        alias_list:
           type: array
           items: { "type": "integer" }
     EntityResponse:
