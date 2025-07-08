@@ -6,6 +6,7 @@ use App\Models\UserStatus;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class CheckBanned
 {
@@ -18,16 +19,38 @@ class CheckBanned
      */
     public function handle(Request $request, Closure $next)
     {
-        if (auth()->check() && (auth()->user()->user_status_id == UserStatus::BANNED || auth()->user()->user_status_id == UserStatus::SUSPENDED)) {
-            // handles standard web logout
-            Auth::logout();
+    if (auth()->check() && (auth()->user()->user_status_id == UserStatus::BANNED || auth()->user()->user_status_id == UserStatus::SUSPENDED)) {
+        
+            // Get the user before logging out
+            $user = auth()->user();
+            
+            // Check if logout method exists on the current guard
+            if (method_exists(auth()->guard(), 'logout')) {
+                Auth::logout();
+            }
 
-            // Deletes all tokens for the user - this fixes an API issue.  May need to break this out.
-            $request->user()->tokens()->delete(); 
+            // Deletes all tokens for the user - this fixes an API issue
+            if ($user && method_exists($user, 'tokens')) {
+                // check that the user is a User model
+                if ($user instanceof User)
+                {
+                    // Delete all tokens associated with the user
+                    $user->tokens()->delete();
+                }
+            }
 
-            $request->session()->invalidate();
+            // Only invalidate session if it exists (not for API requests)
+            if ($request->hasSession()) {
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+            }
 
-            $request->session()->regenerateToken();
+            // For API requests, return JSON response instead of redirect
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Your Account is suspended, please contact Admin.'
+                ], 401);
+            }
 
             return redirect()->route('login')->with('error', 'Your Account is suspended, please contact Admin.');
         }
