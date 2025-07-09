@@ -31,6 +31,7 @@ tags:
   - name: tags
   - name: threads
   - name: users
+  - name: roles
   - name: visibilities
 components:
   responses:
@@ -1825,6 +1826,73 @@ components:
             data:
               type: array
               items: { "$ref": "#/components/schemas/Tag" }
+    Role:
+      type: object
+      required:
+        - name
+        - slug
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          maxLength: 255
+          description: Name of the role
+          example: Venue
+        slug:
+          type: string
+          maxLength: 255
+          description: A unique identifier name for the role in kebab-case
+          example: venue
+        short:
+          type: string
+          maxLength: 255
+          description: A brief description of the role
+          example: Event promoter
+        created_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the role was created
+          readOnly: true
+        updated_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the role was last updated
+          readOnly: true
+    RoleRequest:
+      type: object
+      required:
+        - name
+        - slug
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          description: Name of the role
+          example: Venue
+        slug:
+          type: string
+          maxLength: 255
+          description: A unique identifier name for the role in kebab-case
+          example: venue
+        short:
+          type: string
+          maxLength: 255
+          description: A brief description of the role
+          example: Event promoter
+    Roles:
+      allOf: [$ref: "#/components/schemas/Pagination"]
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of the current page of roles
+          items:
+            "$ref": "#/components/schemas/Role"
     Thread:
       type: object
       required:
@@ -4825,6 +4893,121 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserResponse"
+  /api/roles:
+    get:
+      tags:
+        - roles
+      summary: Get Roles
+      operationId: getRoles
+      parameters:
+        - name: filters[name]
+          in: query
+          required: false
+          description: A filter query of the role name
+          schema:
+            type: string
+            example: "dj"
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+            example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+            example: 1
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+            example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+            example: asc
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Roles"
+    post:
+      tags:
+        - roles
+      summary: Create Role
+      operationId: createRole
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleRequest"
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+  /api/roles/{roleId}:
+    parameters:
+      - name: roleId
+        description: The unique identifier of the role
+        in: path
+        required: true
+        schema:
+          type: integer
+          readOnly: true
+          example: 1
+    get:
+      tags:
+        - roles
+      summary: Get Role
+      operationId: getRoleById
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+    put:
+      tags:
+        - roles
+      summary: Update Role
+      operationId: updateRoleById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+    delete:
+      tags:
+        - roles
+      summary: Delete Role
+      operationId: deleteRoleById
+      responses:
+        "204":
+          description: Successful response
+          content:
+            application/json: {}
   /api/users:
     post:
       tags:

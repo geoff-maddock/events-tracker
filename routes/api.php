@@ -135,6 +135,11 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('tags/rpp-reset', ['as' => 'tags.rppReset', 'uses' => 'Api\TagsController@rppReset']);
     Route::resource('tags', 'Api\TagsController');
 
+    Route::match(['get', 'post'], 'roles/filter', ['as' => 'roles.filter', 'uses' => 'Api\RolesController@filter']);
+    Route::get('roles/reset', ['as' => 'roles.reset', 'uses' => 'Api\RolesController@reset']);
+    Route::get('roles/rpp-reset', ['as' => 'roles.rppReset', 'uses' => 'Api\RolesController@rppReset']);
+    Route::resource('roles', 'Api\RolesController');
+
 
     Route::match(['get', 'post'], 'posts/filter', ['as' => 'posts.filter', 'uses' => 'Api\PostsController@filter']);
     Route::get('posts/reset', ['as' => 'posts.reset', 'uses' => 'Api\PostsController@reset']);
