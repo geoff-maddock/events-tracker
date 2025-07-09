@@ -102,6 +102,11 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('event-types/rpp-reset', ['as' => 'event-types.rppReset', 'uses' => 'Api\EventTypesController@rppReset']);
     Route::resource('event-types', 'Api\EventTypesController');
 
+    Route::match(['get', 'post'], 'event-statuses/filter', ['as' => 'eventStatus.filter', 'uses' => 'Api\EventStatusesController@filter']);
+    Route::get('event-statuses/reset', ['as' => 'event-statuses.reset', 'uses' => 'Api\EventStatusesController@reset']);
+    Route::get('event-statuses/rpp-reset', ['as' => 'event-statuses.rppReset', 'uses' => 'Api\EventStatusesController@rppReset']);
+    Route::resource('event-statuses', 'Api\EventStatusesController');
+
     Route::match(['get', 'post'], 'forums/filter', ['as' => 'forums.filter', 'uses' => 'Api\ForumsController@filter']);
     Route::get('forums/reset', ['as' => 'forums.reset', 'uses' => 'Api\ForumsController@reset']);
     Route::get('forums/rpp-reset', ['as' => 'forums.rppReset', 'uses' => 'Api\ForumsController@rppReset']);
