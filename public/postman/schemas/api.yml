@@ -27,11 +27,11 @@ tags:
   - name: menus
   - name: locations
   - name: posts
+  - name: roles
   - name: series
   - name: tags
   - name: threads
   - name: users
-  - name: roles
   - name: visibilities
 components:
   responses:

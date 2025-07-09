@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
   title: Arcane City
   version: 2025.06.09
@@ -21,10 +21,13 @@ tags:
   - name: entity-types
   - name: events
   - name: event-types
+  - name: event-statuses
   - name: forums
   - name: links
+  - name: menus
   - name: locations
   - name: posts
+  - name: roles
   - name: series
   - name: tags
   - name: threads
@@ -264,6 +267,8 @@ components:
       required:
         - name
         - slug
+        - entity_type_id
+        - entity_status_id
       properties:
         name:
           type: string
@@ -311,6 +316,12 @@ components:
         tag_list:
           type: array
           items: { "type": "integer" }
+        role_list:
+          type: array
+          items: { "type": "integer" }
+        alias_list:
+          type: array
+          items: { "type": "integer" }
     EntityResponse:
       type: object
       properties:
@@ -340,9 +351,9 @@ components:
           description: Full description of the entity
           example: A two level bar and venue that specializes in indie music and vegetarian food
         entity_type:
-          $ref: "#/components/schemas/EntityType"
+          $ref: "#/components/schemas/EntityTypeResponse"
         entity_status:
-          $ref: "#/components/schemas/EntityStatus"
+          $ref: "#/components/schemas/EntityStatusResponse"
         created_by:
           $ref: "#/components/schemas/UserSimple"
         updated_by:
@@ -387,7 +398,7 @@ components:
           description: List of the current page of entities
           items:
             "$ref": "#/components/schemas/EntityResponse"
-    EntityType:
+    EntityTypeResponse:
       type: object
       required:
         - name
@@ -423,6 +434,30 @@ components:
           format: date-time
           description: Date and time that the entity type was last updated
           readOnly: true
+    EntityTypeRequest:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          maxLength: 255
+          description: A name of an entity type
+          example: Group
+        slug:
+          type: string
+          maxLength: 255
+          description: A unique identifier name for the entity type in kebab-case
+          example: group-slug
+        short:
+          type: string
+          example: A multi-member entity
+          description: A brief description of the entity type
+          maxLength: 255
     EntityTypes:
       allOf: [$ref: "#/components/schemas/Pagination"]
       type: object
@@ -431,8 +466,8 @@ components:
           type: array
           description: List of the current page of events
           items:
-            "$ref": "#/components/schemas/EntityType"
-    EntityStatus:
+            "$ref": "#/components/schemas/EntityTypeResponse"
+    EntityStatusResponse:
       type: object
       required:
         - name
@@ -459,10 +494,24 @@ components:
           format: date-time
           description: Date and time that the entity status was last updated
           readOnly: true
+    EntityStatusRequest:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          description: The unique identifier of an entity type
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          maxLength: 255
+          description: A name of an entity status
+          example: Active
     EventRequest:
       type: object
       required:
-        - id
         - name
         - slug
         - start_at
@@ -482,7 +531,8 @@ components:
           description: A unique identifier name for the event in kebab-case
           example: octobers-lazercrunk-at-the-brillobox
         short:
-          type: [string, "null"]
+          type: string
+          nullable: true
           example: a really fun dj night featuring performers from around the world
           description: A brief description of the event
           maxLength: 255
@@ -496,7 +546,8 @@ components:
           example: a really fun dj night featuring performers from around the world and locally playing new electronic music
           maxLength: 65535
         event_status_id:
-          type: [integer, "null"]
+          type: integer
+          nullable: true
           example: 1
           description: Relation to the event type table that defines the status of the event
         event_type_id:
@@ -504,12 +555,13 @@ components:
           example: 1
           description: Relation to the event type table that defines the type of event
         promoter_id:
-          type: [string, "null"]
+          type: integer
+          nullable: true
           example: 1
           description: Relation to the entity table that defines the promoter of the event
         venue_id:
-          type: [integer, "null"]
-          readOnly: true
+          type: integer
+          nullable: true
           example: 1
           description: Relation to the entity table that defines the venue for the event
         is_benefit:
@@ -520,25 +572,29 @@ components:
           description: The number of users who marked that they are attending the event
           type: integer
           example: 10
-        like:
-          description: The number of users who marked that they like the event
-          type: integer
-          example: 10
+        attendees:
+          type: array
+          description: List of users attending the event
+          items: { "$ref": "#/components/schemas/MinimalUser" }
         presale_price:
           description: The price for a presale price for the event
-          type: [number, "null"]
+          type: number
+          nullable: true
           example: 9.99
         door_price:
           description: The price of the show at the door
-          type: [number, "null"]
+          type: number
+          nullable: true
           example: 19.99
         soundcheck_at:
-          type: [string, "null"]
+          type: string
+          nullable: true
           example: 2018-03-20T09:12:28Z
           format: date-time
           description: Date and time that the event soundcheck is scheduled
         door_at:
-          type: [string, "null"]
+          type: string
+          nullable: true
           example: 2018-03-20T09:12:28Z
           format: date-time
           description: Date and time that the event doors are scheduled to open
@@ -548,12 +604,14 @@ components:
           format: date-time
           description: Date and time that the event starts
         end_at:
-          type: [string, "null"]
+          type: string
+          nullable: true
           example: 2018-03-20T09:12:28Z
           format: date-time
           description: Date and time that the event starts
         series_id:
-          type: [integer, "null"]
+          type: integer
+          nullable: true
           example: 1
           description: Relation to the series table that defines the series for the event
         min_age:
@@ -561,12 +619,14 @@ components:
           type: integer
           example: 21
         primary_link:
-          type: [string, "null"]
+          type: string
+          nullable: true
           description: The primary URL related to this event
           example: http://lazercrunk.com/october-2022
           maxLength: 255
         ticket_link:
-          type: [string, "null"]
+          type: string
+          nullable: true
           description: The URL for buying a ticket to the event
           example: http://lazercrunk.com/october-2022/tickets
           maxLength: 255
@@ -641,10 +701,10 @@ components:
           type: boolean
           description: Flag indicating if the event is a benefit
           example: true
-        attending:
-          description: The number of users who marked that they are attending the event
-          type: integer
-          example: 10
+        attendees:
+          type: array
+          description: List of users attending the event
+          items: { "$ref": "#/components/schemas/MinimalUser" }
         like:
           description: The number of users who marked that they like the event
           type: integer
@@ -751,9 +811,9 @@ components:
           example: a really fun dj night featuring performers from around the world and locally playing new electronic music
           maxLength: 65535
         event_status:
-          $ref: "#/components/schemas/EventStatus"
+          $ref: "#/components/schemas/EventStatusResponse"
         event_type:
-          $ref: "#/components/schemas/EventType"
+          $ref: "#/components/schemas/EventTypeResponse"
         promoter:
           $ref: "#/components/schemas/EntityResponse"
         venue:
@@ -845,7 +905,7 @@ components:
           description: List of the current page of events
           items:
             "$ref": "#/components/schemas/EventResponse"
-    EventStatus:
+    EventStatusResponse:
       type: object
       required:
         - name
@@ -871,6 +931,29 @@ components:
           format: date-time
           description: Date and time that the event status was last updated
           readOnly: true
+    EventStatusRequest:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          maxLength: 255
+          description: A name of an event status
+          example: Active
+    EventStatuses:
+      allOf: [$ref: "#/components/schemas/Pagination"]
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of the current page of event statueses
+          items:
+            "$ref": "#/components/schemas/EventStatusResponse"
     EventTypeRequest:
       type: object
       required:
@@ -892,7 +975,7 @@ components:
           example: An event featuring live performances
           description: A brief description of the event type
           maxLength: 255
-    EventType:
+    EventTypeResponse:
       type: object
       properties:
         id:
@@ -932,9 +1015,9 @@ components:
       properties:
         data:
           type: array
-          description: List of the current page of events
+          description: List of the current page of event types
           items:
-            "$ref": "#/components/schemas/EventType"
+            "$ref": "#/components/schemas/EventTypeResponse"
     Forum:
       type: object
       required:
@@ -1037,6 +1120,59 @@ components:
             data:
               type: array
               items: { "$ref": "#/components/schemas/Link" }
+    Menu:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          maxLength: 255
+          description: Name of the menu
+          example: Main
+        slug:
+          type: string
+          maxLength: 255
+          description: A unique identifier name for the menu in kebab-case
+          example: main-menu
+        menu_parent_id:
+          type: integer
+          nullable: true
+          example: 1
+          description: Parent menu id
+        body:
+          type: string
+          description: Body of the menu
+          example: Menu body
+        visibility_id:
+          type: integer
+          example: 1
+          description: Relation to the visibility table
+        created_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the menu was created
+          readOnly: true
+        updated_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the menu was last updated
+          readOnly: true
+    Menus:
+      allOf:
+        - $ref: "#/components/schemas/Pagination"
+        - type: object
+          properties:
+            data:
+              type: array
+              items: { "$ref": "#/components/schemas/Menu" }
+
     Location:
       type: object
       required:
@@ -1542,7 +1678,7 @@ components:
           example: a really fun monthly dj night featuring performers from around the world and locally playing new electronic music
           maxLength: 65535
         event_type:
-          $ref: "#/components/schemas/EventType"
+          $ref: "#/components/schemas/EventTypeResponse"
         occurrence_type:
           $ref: "#/components/schemas/OccurrenceType"
         occurrence_week:
@@ -1690,6 +1826,73 @@ components:
             data:
               type: array
               items: { "$ref": "#/components/schemas/Tag" }
+    Role:
+      type: object
+      required:
+        - name
+        - slug
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          maxLength: 255
+          description: Name of the role
+          example: Venue
+        slug:
+          type: string
+          maxLength: 255
+          description: A unique identifier name for the role in kebab-case
+          example: venue
+        short:
+          type: string
+          maxLength: 255
+          description: A brief description of the role
+          example: Event promoter
+        created_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the role was created
+          readOnly: true
+        updated_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the role was last updated
+          readOnly: true
+    RoleRequest:
+      type: object
+      required:
+        - name
+        - slug
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          description: Name of the role
+          example: Venue
+        slug:
+          type: string
+          maxLength: 255
+          description: A unique identifier name for the role in kebab-case
+          example: venue
+        short:
+          type: string
+          maxLength: 255
+          description: A brief description of the role
+          example: Event promoter
+    Roles:
+      allOf: [$ref: "#/components/schemas/Pagination"]
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of the current page of roles
+          items:
+            "$ref": "#/components/schemas/Role"
     Thread:
       type: object
       required:
@@ -1744,6 +1947,89 @@ components:
           description: List of the current page of threads
           items:
             "$ref": "#/components/schemas/Thread"
+    ProfileResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+          description: Relation to the user table that owns the profile
+        bio:
+          type: string
+          maxLength: 65535
+          description: User provided biography text
+          example: Pittsburgh based DJ and promoter
+        alias:
+          type: string
+          maxLength: 255
+          description: Alternate display name for the profile
+          example: cutups
+        location:
+          type: string
+          maxLength: 255
+          description: Displayed location for the user
+          example: Pittsburgh, PA
+        visibility_id:
+          type: integer
+          example: 1
+          description: Relation to the visibility table that defines the visibility of the profile
+        facebook_username:
+          type: string
+          maxLength: 64
+          example: cutups
+        twitter_username:
+          type: string
+          maxLength: 64
+          example: cutups
+        instagram_username:
+          type: string
+          maxLength: 64
+          example: cutups
+        first_name:
+          type: string
+          maxLength: 255
+          example: Geoff
+        last_name:
+          type: string
+          maxLength: 255
+          example: Maddock
+        default_theme:
+          type: string
+          maxLength: 255
+          example: dark
+        setting_weekly_update:
+          type: integer
+          example: 1
+        setting_daily_update:
+          type: integer
+          example: 1
+        setting_instant_update:
+          type: integer
+          example: 1
+        setting_forum_update:
+          type: integer
+          example: 1
+        setting_public_profile:
+          type: integer
+          example: 1
+        created_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+        updated_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+        links:
+          type: array
+          items: { "$ref": "#/components/schemas/Link" }
+        photos:
+          type: array
+          items: { "$ref": "#/components/schemas/PhotoResponse" }
     User:
       type: object
       properties:
@@ -1794,6 +2080,20 @@ components:
           format: date-time
           description: Date and time that the user was last updated
           readOnly: true
+        profile:
+          $ref: "#/components/schemas/ProfileResponse"
+        followed_tags:
+          type: array
+          items: { "$ref": "#/components/schemas/Tag" }
+        followed_entities:
+          type: array
+          items: { "$ref": "#/components/schemas/EntityResponse" }
+        followed_series:
+          type: array
+          items: { "$ref": "#/components/schemas/SeriesResponse" }
+        followed_threads:
+          type: array
+          items: { "$ref": "#/components/schemas/Thread" }
     UserSimple:
       type: object
       properties:
@@ -1810,6 +2110,18 @@ components:
           type: string
           description: Email address of the user
           example: john.smith@gmail.com
+          maxLength: 255
+    MinimalUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        username:
+          type: string
+          description: Name of the user
+          example: john.smith
           maxLength: 255
     UserResponse:
       type: object
@@ -1901,6 +2213,14 @@ components:
             data:
               type: array
               items: { "$ref": "#/components/schemas/UserResponse" }
+    UserTokenRequest:
+      type: object
+      properties:
+        token_name:
+          type: string
+          description: User token name
+          example: arcane-city
+          maxLength: 255
     UserTokenResponse:
       type: object
       properties:
@@ -2663,6 +2983,47 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PhotoResponse"
+  /api/events/{slug}/attend:
+    post:
+      parameters:
+        - name: slug
+          description: The unique identifier of the event
+          in: path
+          required: true
+          schema:
+            type: string
+            readOnly: true
+            example: lazercrunk
+      tags:
+        - events
+      summary: Attend Event
+      operationId: attendEventBySlug
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventResponse"
+    delete:
+      parameters:
+        - name: slug
+          description: The unique identifier of the event
+          in: path
+          required: true
+          schema:
+            type: string
+            readOnly: true
+            example: lazercrunk
+      tags:
+        - events
+      summary: Unattend Event
+      operationId: unattendEventBySlug
+      responses:
+        "204":
+          description: Successful response
+          content:
+            application/json: {}
   /api/entities:
     post:
       tags:
@@ -2976,7 +3337,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EntityStatus"
+              $ref: "#/components/schemas/EntityStatusRequest"
       responses:
         "201":
           description: Successful response
@@ -3004,7 +3365,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EntityStatus"
+                $ref: "#/components/schemas/EntityStatusResponse"
     put:
       parameters:
         - name: entityStatusId
@@ -3024,14 +3385,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EntityStatus"
+              $ref: "#/components/schemas/EntityStatusRequest"
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EntityStatus"
+                $ref: "#/components/schemas/EntityStatusResponse"
     delete:
       parameters:
         - name: entityStatusId
@@ -3110,7 +3471,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EntityType"
+              $ref: "#/components/schemas/EntityTypeRequest"
       responses:
         "201":
           description: Successful response
@@ -3137,7 +3498,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EntityType"
+                $ref: "#/components/schemas/EntityTypeResponse"
     put:
       tags:
         - entity-types
@@ -3147,14 +3508,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EntityType"
+              $ref: "#/components/schemas/EntityTypeRequest"
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EntityType"
+                $ref: "#/components/schemas/EntityTypeResponse"
     delete:
       tags:
         - entity-types
@@ -3223,7 +3584,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EventType"
+              $ref: "#/components/schemas/EventTypeRequest"
       responses:
         "201":
           description: Successful response
@@ -3250,7 +3611,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EventType"
+                $ref: "#/components/schemas/EventTypeResponse"
     put:
       tags:
         - event-types
@@ -3260,19 +3621,153 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EventType"
+              $ref: "#/components/schemas/EventTypeRequest"
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EventType"
+                $ref: "#/components/schemas/EventTypeResponse"
     delete:
       tags:
         - event-types
       summary: Delete Event Type
       operationId: deleteEventTypeById
+      responses:
+        "204":
+          description: Successful response
+          content:
+            application/json: {}
+  /api/event-statuses:
+    get:
+      tags:
+        - event-statuses
+      summary: Get Event Statuses
+      operationId: getEventStatuses
+      parameters:
+        - name: filters[name]
+          in: query
+          required: false
+          description: A filter query of the event status name
+          schema:
+            type: string
+            example: "Draft"
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+            example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+            example: 1
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+            example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+            example: asc
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pagination"
+    post:
+      tags:
+        - event-statuses
+      summary: Create event status
+      operationId: createEventStatus
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventStatusRequest"
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json: {}
+  /api/event-statuses/{eventStatusId}:
+    get:
+      parameters:
+        - name: eventStatusId
+          description: The unique identifier of the event status
+          in: path
+          required: true
+          schema:
+            description: The unique identifier of an event status
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - event-statuses
+      summary: Get EventStatus
+      operationId: getEventStatusById
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventStatusResponse"
+    put:
+      parameters:
+        - name: eventStatusId
+          description: The unique identifier of the event status
+          in: path
+          required: true
+          schema:
+            description: The unique identifier of an event status
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - event-statuses
+      summary: Update Event Status
+      operationId: updateEventStatusById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventStatusRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventStatusResponse"
+    delete:
+      parameters:
+        - name: eventStatusId
+          description: The unique identifier of the event status
+          in: path
+          required: true
+          schema:
+            description: The unique identifier of an event status
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - event-statuses
+      summary: Delete Event Status
+      operationId: deleteEventStatusById
       responses:
         "204":
           description: Successful response
@@ -3518,6 +4013,112 @@ paths:
         - links
       summary: Delete Link
       operationId: deleteLinkById
+      responses:
+        "204":
+          description: Successful response
+          content:
+            application/json: {}
+  /api/menus:
+    get:
+      tags:
+        - menus
+      summary: Get Menus
+      operationId: getMenus
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+          example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+            example: 1
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+            example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+            example: asc
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Menus"
+    post:
+      tags:
+        - menus
+      summary: Create menu
+      operationId: createMenu
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Menu"
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json: {}
+  /api/menus/{menuId}:
+    parameters:
+      - name: menuId
+        description: The unique identifier of the menu
+        in: path
+        required: true
+        schema:
+          type: integer
+          readOnly: true
+          example: 1
+    get:
+      tags:
+        - menus
+      summary: Get Menu
+      operationId: getMenuById
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Menu"
+    patch:
+      tags:
+        - menus
+      summary: Update menu
+      operationId: updateMenuById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Menu"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Menu"
+    delete:
+      tags:
+        - menus
+      summary: Delete Menu
+      operationId: deleteMenuById
       responses:
         "204":
           description: Successful response
@@ -4249,6 +4850,11 @@ paths:
         - users
       summary: Create User Bearer Token
       operationId: createUserBearerToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserTokenRequest"
       responses:
         "200":
           description: Successful response
@@ -4274,6 +4880,134 @@ paths:
                     type: string
                     description: Valid user token
                     example: ABCDEF12345
+  /api/auth/me:
+    get:
+      tags:
+        - users
+      summary: Get Authenticated User
+      operationId: getAuthenticatedUser
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+  /api/roles:
+    get:
+      tags:
+        - roles
+      summary: Get Roles
+      operationId: getRoles
+      parameters:
+        - name: filters[name]
+          in: query
+          required: false
+          description: A filter query of the role name
+          schema:
+            type: string
+            example: "dj"
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+            example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+            example: 1
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+            example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+            example: asc
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Roles"
+    post:
+      tags:
+        - roles
+      summary: Create Role
+      operationId: createRole
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleRequest"
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+  /api/roles/{roleId}:
+    parameters:
+      - name: roleId
+        description: The unique identifier of the role
+        in: path
+        required: true
+        schema:
+          type: integer
+          readOnly: true
+          example: 1
+    get:
+      tags:
+        - roles
+      summary: Get Role
+      operationId: getRoleById
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+    put:
+      tags:
+        - roles
+      summary: Update Role
+      operationId: updateRoleById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+    delete:
+      tags:
+        - roles
+      summary: Delete Role
+      operationId: deleteRoleById
+      responses:
+        "204":
+          description: Successful response
+          content:
+            application/json: {}
   /api/users:
     post:
       tags:
@@ -4403,6 +5137,28 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /api/users/{userId}/events-attending:
+    get:
+      parameters:
+        - name: userId
+          description: The unique identifier of the user
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - users
+      summary: Get Events the User is Attending
+      operationId: getUserAttendingEvents
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Events"
   /api/visibilities:
     get:
       tags:
