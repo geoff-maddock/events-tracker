@@ -350,9 +350,9 @@ components:
           description: Full description of the entity
           example: A two level bar and venue that specializes in indie music and vegetarian food
         entity_type:
-          $ref: "#/components/schemas/EntityType"
+          $ref: "#/components/schemas/EntityTypeResponse"
         entity_status:
-          $ref: "#/components/schemas/EntityStatus"
+          $ref: "#/components/schemas/EntityStatusResponse"
         created_by:
           $ref: "#/components/schemas/UserSimple"
         updated_by:
@@ -397,7 +397,7 @@ components:
           description: List of the current page of entities
           items:
             "$ref": "#/components/schemas/EntityResponse"
-    EntityType:
+    EntityTypeResponse:
       type: object
       required:
         - name
@@ -433,6 +433,30 @@ components:
           format: date-time
           description: Date and time that the entity type was last updated
           readOnly: true
+    EntityTypeRequest:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          maxLength: 255
+          description: A name of an entity type
+          example: Group
+        slug:
+          type: string
+          maxLength: 255
+          description: A unique identifier name for the entity type in kebab-case
+          example: group-slug
+        short:
+          type: string
+          example: A multi-member entity
+          description: A brief description of the entity type
+          maxLength: 255
     EntityTypes:
       allOf: [$ref: "#/components/schemas/Pagination"]
       type: object
@@ -441,8 +465,8 @@ components:
           type: array
           description: List of the current page of events
           items:
-            "$ref": "#/components/schemas/EntityType"
-    EntityStatus:
+            "$ref": "#/components/schemas/EntityTypeResponse"
+    EntityStatusResponse:
       type: object
       required:
         - name
@@ -469,10 +493,24 @@ components:
           format: date-time
           description: Date and time that the entity status was last updated
           readOnly: true
+    EntityStatusRequest:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          description: The unique identifier of an entity type
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          maxLength: 255
+          description: A name of an entity status
+          example: Active
     EventRequest:
       type: object
       required:
-        - id
         - name
         - slug
         - start_at
@@ -772,9 +810,9 @@ components:
           example: a really fun dj night featuring performers from around the world and locally playing new electronic music
           maxLength: 65535
         event_status:
-          $ref: "#/components/schemas/EventStatus"
+          $ref: "#/components/schemas/EventStatusResponse"
         event_type:
-          $ref: "#/components/schemas/EventType"
+          $ref: "#/components/schemas/EventTypeResponse"
         promoter:
           $ref: "#/components/schemas/EntityResponse"
         venue:
@@ -866,7 +904,7 @@ components:
           description: List of the current page of events
           items:
             "$ref": "#/components/schemas/EventResponse"
-    EventStatus:
+    EventStatusResponse:
       type: object
       required:
         - name
@@ -892,6 +930,29 @@ components:
           format: date-time
           description: Date and time that the event status was last updated
           readOnly: true
+    EventStatusRequest:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          maxLength: 255
+          description: A name of an event status
+          example: Active
+    EventStatuses:
+      allOf: [$ref: "#/components/schemas/Pagination"]
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of the current page of event statueses
+          items:
+            "$ref": "#/components/schemas/EventStatusResponse"
     EventTypeRequest:
       type: object
       required:
@@ -913,7 +974,7 @@ components:
           example: An event featuring live performances
           description: A brief description of the event type
           maxLength: 255
-    EventType:
+    EventTypeResponse:
       type: object
       properties:
         id:
@@ -953,9 +1014,9 @@ components:
       properties:
         data:
           type: array
-          description: List of the current page of events
+          description: List of the current page of event types
           items:
-            "$ref": "#/components/schemas/EventType"
+            "$ref": "#/components/schemas/EventTypeResponse"
     Forum:
       type: object
       required:
@@ -1616,7 +1677,7 @@ components:
           example: a really fun monthly dj night featuring performers from around the world and locally playing new electronic music
           maxLength: 65535
         event_type:
-          $ref: "#/components/schemas/EventType"
+          $ref: "#/components/schemas/EventTypeResponse"
         occurrence_type:
           $ref: "#/components/schemas/OccurrenceType"
         occurrence_week:
@@ -3208,7 +3269,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EntityStatus"
+              $ref: "#/components/schemas/EntityStatusRequest"
       responses:
         "201":
           description: Successful response
@@ -3236,7 +3297,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EntityStatus"
+                $ref: "#/components/schemas/EntityStatusResponse"
     put:
       parameters:
         - name: entityStatusId
@@ -3256,14 +3317,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EntityStatus"
+              $ref: "#/components/schemas/EntityStatusRequest"
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EntityStatus"
+                $ref: "#/components/schemas/EntityStatusResponse"
     delete:
       parameters:
         - name: entityStatusId
@@ -3342,7 +3403,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EntityType"
+              $ref: "#/components/schemas/EntityTypeRequest"
       responses:
         "201":
           description: Successful response
@@ -3369,7 +3430,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EntityType"
+                $ref: "#/components/schemas/EntityTypeResponse"
     put:
       tags:
         - entity-types
@@ -3379,14 +3440,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EntityType"
+              $ref: "#/components/schemas/EntityTypeRequest"
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EntityType"
+                $ref: "#/components/schemas/EntityTypeResponse"
     delete:
       tags:
         - entity-types
@@ -3455,7 +3516,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EventType"
+              $ref: "#/components/schemas/EventTypeRequest"
       responses:
         "201":
           description: Successful response
@@ -3482,7 +3543,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EventType"
+                $ref: "#/components/schemas/EventTypeResponse"
     put:
       tags:
         - event-types
@@ -3492,14 +3553,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EventType"
+              $ref: "#/components/schemas/EventTypeRequest"
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EventType"
+                $ref: "#/components/schemas/EventTypeResponse"
     delete:
       tags:
         - event-types
@@ -3568,7 +3629,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EventStatus"
+              $ref: "#/components/schemas/EventStatusRequest"
       responses:
         "201":
           description: Successful response
@@ -3596,7 +3657,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EventStatus"
+                $ref: "#/components/schemas/EventStatusResponse"
     put:
       parameters:
         - name: eventStatusId
@@ -3616,14 +3677,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EventStatus"
+              $ref: "#/components/schemas/EventStatusRequest"
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EventStatus"
+                $ref: "#/components/schemas/EventStatusResponse"
     delete:
       parameters:
         - name: eventStatusId
@@ -4891,8 +4952,8 @@ paths:
       responses:
         "204":
           description: Successful response
-        content:
-          application/json: {}
+          content:
+            application/json: {}
   /api/users/{userId}/events-attending:
     get:
       parameters:
