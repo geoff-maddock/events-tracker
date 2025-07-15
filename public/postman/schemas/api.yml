@@ -538,10 +538,12 @@ components:
           maxLength: 255
         visibility_id:
           type: integer
+          nullable: true
           example: 1
           description: Relation to the visibility table that defines the visibility of events
         description:
           type: string
+          nullable: true
           description: Full description of the event
           example: a really fun dj night featuring performers from around the world and locally playing new electronic music
           maxLength: 65535
@@ -567,7 +569,7 @@ components:
         is_benefit:
           type: boolean
           description: Flag indicating if the event is a benefit
-          example: true
+          example: false
         attending:
           description: The number of users who marked that they are attending the event
           type: integer
@@ -617,6 +619,7 @@ components:
         min_age:
           description: The minimum age requirement for the event in years
           type: integer
+          nullable: true
           example: 21
         primary_link:
           type: string

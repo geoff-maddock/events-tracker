@@ -395,7 +395,7 @@ components:
           description: Relation to the series table that defines the series for the event
         min_age:
           description: The minimum age requirement for the event in years
-          type: integer
+          type: [integer, "null"]
           example: 21
         primary_link:
           type: [string, "null"]
