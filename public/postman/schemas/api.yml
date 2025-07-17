@@ -33,6 +33,7 @@ tags:
   - name: threads
   - name: users
   - name: visibilities
+  - name: photos
 components:
   responses:
     NotFound:
@@ -5162,6 +5163,70 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Events"
+  /api/photos/{photoId}/set-primary:
+    post:
+      parameters:
+        - name: photoId
+          description: The unique identifier of the photo
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - photos
+      summary: Set Photo Primary
+      operationId: setPhotoPrimary
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhotoResponse"
+  /api/photos/{photoId}/unset-primary:
+    post:
+      parameters:
+        - name: photoId
+          description: The unique identifier of the photo
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - photos
+      summary: Unset Photo Primary
+      operationId: unsetPhotoPrimary
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhotoResponse"
+  /api/photos/{photoId}:
+    delete:
+      parameters:
+        - name: photoId
+          description: The unique identifier of the photo
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - photos
+      summary: Delete Photo
+      operationId: deletePhoto
+      responses:
+        "204":
+          description: Successful response
+          content:
+            application/json: {}
   /api/visibilities:
     get:
       tags:

@@ -160,6 +160,11 @@ Route::middleware('auth.either')->name('api.')->group(function () {
 
     Route::match(['get', 'post'], 'visibilities/filter', ['as' => 'visibilities.filter', 'uses' => 'Api\VisibilitiesController@filter']);
     Route::resource('visibilities', 'Api\VisibilitiesController')->only(['index', 'show']);
+
+    // photo management endpoints
+    Route::post('photos/{photo}/set-primary', 'Api\\PhotosController@setPrimary');
+    Route::post('photos/{photo}/unset-primary', 'Api\\PhotosController@unsetPrimary');
+    Route::delete('photos/{photo}', 'Api\\PhotosController@destroy');
 });
 
 // routes protected by the shield middleware
