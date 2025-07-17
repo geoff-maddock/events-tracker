@@ -263,6 +263,15 @@ components:
           maxLength: 65535
           description: A link to a photo image thumbnail
           example: https://some.url/tb-imagelink.jpg
+        is_primary:
+          type: boolean
+          description: Flag indicating if the photo is primary for the entity
+          example: true
+        created_by:
+          type: integer
+          readOnly: true
+          example: 1
+          description: Relation to the user table that defines the user who created the photo
     EntityRequest:
       type: object
       required:
