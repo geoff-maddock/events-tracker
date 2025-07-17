@@ -26,6 +26,7 @@ tags:
   - name: links
   - name: menus
   - name: locations
+  - name: photos
   - name: posts
   - name: roles
   - name: series
@@ -33,7 +34,6 @@ tags:
   - name: threads
   - name: users
   - name: visibilities
-  - name: photos
 components:
   responses:
     NotFound:
