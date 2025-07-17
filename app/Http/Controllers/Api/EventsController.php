@@ -1379,7 +1379,9 @@ class EventsController extends Controller
                 'id' => $photo->id,
                 'name' => $photo->name,
                 'path' => Storage::disk('external')->url($photo->getStoragePath()),
-                'thumbnail_path' => Storage::disk('external')->url($photo->getStorageThumbnail())
+                'thumbnail_path' => Storage::disk('external')->url($photo->getStorageThumbnail()),
+                'is_primary' => $photo->is_primary,
+                'created_by' => $photo->created_by,
             ];
         }
 
@@ -1401,6 +1403,8 @@ class EventsController extends Controller
                 'name' => $photo->name,
                 'path' => Storage::disk('external')->url($photo->getStoragePath()),
                 'thumbnail_path' => Storage::disk('external')->url($photo->getStorageThumbnail()),
+                'is_primary' => $photo->is_primary,
+                'created_by' => $photo->created_by,
             ];
         }
 
@@ -1412,6 +1416,8 @@ class EventsController extends Controller
                     'name' => $photo->name,
                     'path' => Storage::disk('external')->url($photo->getStoragePath()),
                     'thumbnail_path' => Storage::disk('external')->url($photo->getStorageThumbnail()),
+                    'is_primary' => $photo->is_primary,
+                    'created_by' => $photo->created_by,
                 ];
             }
         }
@@ -1449,6 +1455,8 @@ class EventsController extends Controller
                 'name' => $photo->name,
                 'path' => Storage::disk('external')->url($photo->getStoragePath()),
                 'thumbnail_path' => Storage::disk('external')->url($photo->getStorageThumbnail()),
+                'is_primary' => $photo->is_primary,
+                'created_by' => $photo->created_by,
             ];
 
             return response()->json($photoData, 201);
