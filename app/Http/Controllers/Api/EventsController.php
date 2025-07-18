@@ -1371,18 +1371,11 @@ class EventsController extends Controller
 
         $photos = [];
 
-        // extract all the links from the event
+        // extract all the photos from the event
         $photoList = $event->photos()->get();
 
         foreach ($photoList as $photo) {
-            $photos[] = [
-                'id' => $photo->id,
-                'name' => $photo->name,
-                'path' => Storage::disk('external')->url($photo->getStoragePath()),
-                'thumbnail_path' => Storage::disk('external')->url($photo->getStorageThumbnail()),
-                'is_primary' => $photo->is_primary,
-                'created_by' => $photo->created_by,
-            ];
+            $photos[] = $photo->getApiResponse();
         }
 
         return response()->json($photos);
@@ -1398,27 +1391,13 @@ class EventsController extends Controller
 
         $photoList = $event->photos()->get();
         foreach ($photoList as $photo) {
-            $photos[$photo->id] = [
-                'id' => $photo->id,
-                'name' => $photo->name,
-                'path' => Storage::disk('external')->url($photo->getStoragePath()),
-                'thumbnail_path' => Storage::disk('external')->url($photo->getStorageThumbnail()),
-                'is_primary' => $photo->is_primary,
-                'created_by' => $photo->created_by,
-            ];
+            $photos[$photo->id] = $photo->getApiResponse();
         }
 
         $entities = $event->entities()->with('photos')->get();
         foreach ($entities as $entity) {
             foreach ($entity->photos as $photo) {
-                $photos[$photo->id] = [
-                    'id' => $photo->id,
-                    'name' => $photo->name,
-                    'path' => Storage::disk('external')->url($photo->getStoragePath()),
-                    'thumbnail_path' => Storage::disk('external')->url($photo->getStorageThumbnail()),
-                    'is_primary' => $photo->is_primary,
-                    'created_by' => $photo->created_by,
-                ];
+                $photos[$photo->id] = $photo->getApiResponse(false);
             }
         }
 
@@ -1450,14 +1429,7 @@ class EventsController extends Controller
                 }
             }
 
-            $photoData = [
-                'id' => $photo->id,
-                'name' => $photo->name,
-                'path' => Storage::disk('external')->url($photo->getStoragePath()),
-                'thumbnail_path' => Storage::disk('external')->url($photo->getStorageThumbnail()),
-                'is_primary' => $photo->is_primary,
-                'created_by' => $photo->created_by,
-            ];
+            $photoData = $photo->getApiResponse();
 
             return response()->json($photoData, 201);
         }

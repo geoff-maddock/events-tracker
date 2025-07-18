@@ -266,4 +266,23 @@ class Photo extends Eloquent
     {
         return Storage::disk('external')->url($this->getStorageThumbnail());
     }
+
+    /**
+     * Get the photo data formatted for API responses.
+     */
+    public function getApiResponse($direct = true): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'path' => Storage::disk('external')->url($this->getStoragePath()),
+            'thumbnail_path' => Storage::disk('external')->url($this->getStorageThumbnail()),
+            'is_primary' => $this->is_primary,
+            'created_by' => $this->created_by,
+            'caption' => $this->caption,
+            'is_public' => $this->is_public,
+            'is_approved' => $this->is_approved,
+            'direct' => $direct
+        ];
+    }
 }

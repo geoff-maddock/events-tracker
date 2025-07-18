@@ -281,27 +281,13 @@ class SeriesController extends Controller
 
         $photoList = $series->photos()->get();
         foreach ($photoList as $photo) {
-            $photos[$photo->id] = [
-                'id' => $photo->id,
-                'name' => $photo->name,
-                'path' => Storage::disk('external')->url($photo->getStoragePath()),
-                'thumbnail_path' => Storage::disk('external')->url($photo->getStorageThumbnail()),
-                'is_primary' => $photo->is_primary,
-                'created_by' => $photo->created_by,
-            ];
+            $photos[$photo->id] = $photo->getApiResponse();
         }
 
         $entities = $series->entities()->with('photos')->get();
         foreach ($entities as $entity) {
             foreach ($entity->photos as $photo) {
-                $photos[$photo->id] = [
-                    'id' => $photo->id,
-                    'name' => $photo->name,
-                    'path' => Storage::disk('external')->url($photo->getStoragePath()),
-                    'thumbnail_path' => Storage::disk('external')->url($photo->getStorageThumbnail()),
-                    'is_primary' => $photo->is_primary,
-                    'created_by' => $photo->created_by,
-                ];
+                $photos[$photo->id] = $photo->getApiResponse(false);
             }
         }
 
@@ -798,14 +784,7 @@ class SeriesController extends Controller
             // attach to series
             $series->addPhoto($photo);
 
-            $photoData = [
-                'id' => $photo->id,
-                'name' => $photo->name,
-                'path' => Storage::disk('external')->url($photo->getStoragePath()),
-                'thumbnail_path' => Storage::disk('external')->url($photo->getStorageThumbnail()),
-                'is_primary' => $photo->is_primary,
-                'created_by' => $photo->created_by,
-            ];
+            $photoData = $photo->getApiResponse();
 
             return response()->json($photoData, 201);
         }
@@ -917,14 +896,7 @@ class SeriesController extends Controller
         $photoList = $series->photos()->get();
 
         foreach ($photoList as $photo) {
-            $photos[] = [
-                'id' => $photo->id,
-                'name' => $photo->name,
-                'path' => Storage::disk('external')->url($photo->getStoragePath()),
-                'thumbnail_path' => Storage::disk('external')->url($photo->getStorageThumbnail()),
-                'is_primary' => $photo->is_primary,
-                'created_by' => $photo->created_by,
-            ];
+            $photos[] = $photo->getApiResponse();
         }
 
         return response()->json($photos);
