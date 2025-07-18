@@ -3292,6 +3292,48 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PhotoResponse"
+  /api/entities/{slug}/follow:
+    post:
+      parameters:
+        - name: slug
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: string
+            readOnly: true
+            example: "strobe"
+      tags:
+        - entities
+      summary: Follow Entity
+      operationId: followEntityBySlug
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EntityResponse"
+  /api/entities/{slug}/unfollow:
+    post:
+      parameters:
+        - name: slug
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: string
+            readOnly: true
+            example: "strobe"
+      tags:
+        - entities
+      summary: Unfollow Entity
+      operationId: unfollowEntityBySlug
+      responses:
+        "204":
+          description: Successful response
+          content:
+            application/json: {}
   /api/entity-statuses:
     get:
       tags:
@@ -4549,6 +4591,48 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PhotoResponse"
+  /api/series/{slug}/follow:
+    post:
+      parameters:
+        - name: slug
+          description: The unique identifier of the series
+          in: path
+          required: true
+          schema:
+            type: string
+            readOnly: true
+            example: "strobe"
+      tags:
+        - series
+      summary: Follow Series
+      operationId: followSeriesBySlug
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SeriesResponse"
+  /api/series/{slug}/unfollow:
+    post:
+      parameters:
+        - name: slug
+          description: The unique identifier of the series
+          in: path
+          required: true
+          schema:
+            type: string
+            readOnly: true
+            example: "strobe"
+      tags:
+        - series
+      summary: Unfollow Series
+      operationId: unfollowSeriesBySlug
+      responses:
+        "204":
+          description: Successful response
+          content:
+            application/json: {}
   /api/tags:
     post:
       tags:

@@ -91,6 +91,13 @@ class SeriesController extends Controller
         $this->page = 1;
         $this->defaultSortCriteria = ['series.created_at' => 'desc'];
         $this->hasFilter = false;
+
+        $this->middleware('auth:sanctum')->only([
+            'store',
+            'followJson',
+            'unfollowJson',
+        ]);
+
         parent::__construct();
     }
 
@@ -882,6 +889,51 @@ class SeriesController extends Controller
         flash()->success('Success', 'You are no longer following the series - '.$series->name);
 
         return back();
+    }
+
+    /**
+     * Follow the series and return JSON.
+     */
+    public function followJson(Series $series, Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $follow = Follow::where('object_type', 'series')
+            ->where('object_id', $series->id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$follow) {
+            $follow = new Follow();
+            $follow->object_id = $series->id;
+            $follow->user_id = $user->id;
+            $follow->object_type = 'series';
+            $follow->save();
+
+            Activity::log($series, $user, 6);
+        }
+
+        return response()->json(new SeriesResource($series));
+    }
+
+    /**
+     * Unfollow the series and return JSON.
+     */
+    public function unfollowJson(Series $series, Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $follow = Follow::where('object_type', 'series')
+            ->where('object_id', $series->id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if ($follow) {
+            $follow->delete();
+            Activity::log($series, $user, 7);
+        }
+
+        return response()->json([], 204);
     }
 
     public function photos(?Series $series): JsonResponse

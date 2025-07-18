@@ -79,7 +79,13 @@ class EntitiesController extends Controller
 
         $this->hasFilter = false;
 
-        $this->middleware('auth:sanctum')->only(['attendJson', 'unattendJson', 'store']);
+        $this->middleware('auth:sanctum')->only([
+            'attendJson',
+            'unattendJson',
+            'store',
+            'followJson',
+            'unfollowJson',
+        ]);
 
         parent::__construct();
     }
@@ -800,6 +806,51 @@ class EntitiesController extends Controller
         flash()->success('Success', 'You are no longer following the entity - '.$entity->name);
 
         return back();
+    }
+
+    /**
+     * Follow the entity and return JSON.
+     */
+    public function followJson(Entity $entity, Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $follow = Follow::where('object_type', 'entity')
+            ->where('object_id', $entity->id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$follow) {
+            $follow = new Follow();
+            $follow->object_id = $entity->id;
+            $follow->user_id = $user->id;
+            $follow->object_type = 'entity';
+            $follow->save();
+
+            Activity::log($entity, $user, 6);
+        }
+
+        return response()->json(new EntityResource($entity));
+    }
+
+    /**
+     * Unfollow the entity and return JSON.
+     */
+    public function unfollowJson(Entity $entity, Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $follow = Follow::where('object_type', 'entity')
+            ->where('object_id', $entity->id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if ($follow) {
+            $follow->delete();
+            Activity::log($entity, $user, 7);
+        }
+
+        return response()->json([], 204);
     }
 
     /**

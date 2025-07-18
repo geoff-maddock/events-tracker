@@ -85,6 +85,8 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('entities/{entity}/embeds', ['as' => 'entities.embeds', 'uses' => 'Api\EntitiesController@embeds']);
     Route::get('entities/{entity}/minimal-embeds', ['as' => 'entities.minimalEmbeds', 'uses' => 'Api\EntitiesController@minimalEmbeds']);
     Route::post('entities/{id}/photos', 'Api\EntitiesController@addPhoto');
+    Route::post('entities/{entity}/follow', 'Api\EntitiesController@followJson')->middleware('auth:sanctum');
+    Route::post('entities/{entity}/unfollow', 'Api\EntitiesController@unfollowJson')->middleware('auth:sanctum');
     Route::resource('entities', 'Api\EntitiesController');
 
     Route::match(['get', 'post'], 'entity-types/filter', ['as' => 'entityType.filter', 'uses' => 'Api\EntityTypesController@filter']);
@@ -128,6 +130,8 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('series/{series}/photos', ['as' => 'series.photos', 'uses' => 'Api\SeriesController@photos']);
     Route::get('series/{series}/all-photos', ['as' => 'series.allPhotos', 'uses' => 'Api\SeriesController@allPhotos']);
     Route::post('series/{id}/photos', 'Api\SeriesController@addPhoto');
+    Route::post('series/{series}/follow', 'Api\SeriesController@followJson')->middleware('auth:sanctum');
+    Route::post('series/{series}/unfollow', 'Api\SeriesController@unfollowJson')->middleware('auth:sanctum');
     Route::resource('series', 'Api\SeriesController');
 
     Route::match(['get', 'post'], 'tags/filter', ['as' => 'tags.filter', 'uses' => 'Api\TagsController@filter']);
