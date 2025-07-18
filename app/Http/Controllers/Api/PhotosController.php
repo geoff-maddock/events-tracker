@@ -25,6 +25,41 @@ class PhotosController extends Controller
             return response()->json(['status' => 'Permission Denied'], 403);
         }
 
+        // get anything linked to this photo and unset their primary flag
+        // this includes users, entities, events, and series
+        $users = $photo->users;
+
+        foreach ($users as $user) {
+            foreach ($user->photos as $p) {
+                $p->is_primary = 0;
+                $p->save();
+            }
+        }
+
+        $entities = $photo->entities;
+        foreach ($entities as $entity) {
+            foreach ($entity->photos as $p) {
+                $p->is_primary = 0;
+                $p->save();
+            }
+        }
+
+        $events = $photo->events;
+        foreach ($events as $event) {
+            foreach ($event->photos as $p) {
+                $p->is_primary = 0;
+                $p->save();
+            }
+        }
+
+        $series = $photo->series;
+        foreach ($series as $s) {
+            foreach ($s->photos as $p) {
+                $p->is_primary = 0;
+                $p->save();
+            }
+        }
+
         $photo->is_primary = 1;
         $photo->save();
 
