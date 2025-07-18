@@ -79,7 +79,7 @@ class EntitiesController extends Controller
 
         $this->hasFilter = false;
 
-        $this->middleware('auth:sanctum')->only(['attendJson', 'unattendJson','store']);
+        $this->middleware('auth:sanctum')->only(['attendJson', 'unattendJson', 'store']);
 
         parent::__construct();
     }

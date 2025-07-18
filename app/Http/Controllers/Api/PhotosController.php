@@ -8,6 +8,14 @@ use Illuminate\Http\JsonResponse;
 
 class PhotosController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum')->only(['setPrimary', 'unsetPrimary', 'destroy']);
+
+        parent::__construct();
+    }
+
     /**
      * Set the photo as primary.
      */
