@@ -690,14 +690,7 @@ class EntitiesController extends Controller
             // attach to entity
             $entity->addPhoto($photo);
 
-            $photoData = [
-                'id' => $photo->id,
-                'name' => $photo->name,
-                'path' => Storage::disk('external')->url($photo->getStoragePath()),
-                'thumbnail_path' => Storage::disk('external')->url($photo->getStorageThumbnail()),
-                'is_primary' => $photo->is_primary,
-                'created_by' => $photo->created_by,
-            ];
+            $photoData = $photo->getApiResponse();
 
             return response()->json($photoData, 201);
         }
@@ -962,15 +955,7 @@ class EntitiesController extends Controller
         $photoList = $entity->photos()->get();
 
         foreach ($photoList as $photo) {
-            $photos[] = [
-                'id' => $photo->id,
-                'name' => $photo->name,
-                'path' => Storage::disk('external')->url($photo->getStoragePath()),
-                'thumbnail_path' => Storage::disk('external')->url($photo->getStorageThumbnail()),
-                'is_primary' => $photo->is_primary,
-                'created_by' => $photo->created_by,
-
-            ];
+            $photos[] = $photo->getApiResponse();
         }
 
         return response()->json($photos);
