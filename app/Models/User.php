@@ -122,6 +122,11 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
         return $this->hasMany(Event::class, 'created_by')->count();
     }
 
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = bcrypt($value);
+    }
+
     /**
      * A user can have many series.
      */
