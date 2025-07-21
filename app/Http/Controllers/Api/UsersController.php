@@ -310,6 +310,12 @@ class UsersController extends Controller
         $profile->user_id = $user->id;
         $profile->save();
 
+        // add to activity log
+        Activity::log($user, $this->user, 1);
+
+        // may need to return some different http responses based on request cases
+        // if the user already exists (email already exists), it will throw a validation exception
+
         return response()->json(new UserResource($user));
     }
 

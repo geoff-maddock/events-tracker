@@ -333,6 +333,9 @@ class UsersController extends Controller
         $profile->user_id = $user->id;
         $profile->save();
 
+        // add to activity log
+        Activity::log($user, $this->user, 1);
+
         flash('Success', 'Your user has been created!');
     }
 
