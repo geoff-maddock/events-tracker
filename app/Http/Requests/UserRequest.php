@@ -23,8 +23,13 @@ class UserRequest extends Request
      */
     public function rules()
     {
+        $user = $this->route('user');
+        $userId = ($user instanceof \App\Models\User) ? $user->id : null;
+
         return [
-            'name' => ['required','min:3','max:255', 'regex:/^[a-zA-Z0-9\s]+$/'],
+            'name' => ['required','min:6','max:255', 'regex:/^[a-zA-Z0-9\s._-]+$/'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $userId],
+            'password' => ['required', 'min:8', 'max:60'],
         ];
     }
 
@@ -32,9 +37,18 @@ class UserRequest extends Request
     {
         return [
             'name.required' => 'A user name is required',
-            'name.min' => 'A user name must be at least 3 characters',
+            'name.min' => 'A user name must be at least 6 characters',
             'name.max' => 'A user name must be less than 255 characters',
-            'name.regex' => 'A user name must be alphanumeric',
+            'name.regex' => 'A user name must contain only letters, numbers, spaces, periods, underscores, and dashes',
+
+            'email.required' => 'An email address is required',
+            'email.email' => 'Please provide a valid email address',
+            'email.max' => 'Email address must be less than 255 characters',
+            'email.unique' => 'This email address is already registered',
+
+            'password.required' => 'A password is required',
+            'password.min' => 'A password must be at least 8 characters',
+            'password.max' => 'A password must be less than 60 characters',
         ];
     }
  }
