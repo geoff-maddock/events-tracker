@@ -23,7 +23,8 @@ class UserRequest extends Request
      */
     public function rules()
     {
-        $userId = $this->route('user') ? $this->route('user')->id : null;
+        $user = $this->route('user');
+        $userId = ($user instanceof \App\Models\User) ? $user->id : null;
 
         return [
             'name' => ['required','min:6','max:255', 'regex:/^[a-zA-Z0-9\s._-]+$/'],
