@@ -62,6 +62,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('blogs/rpp-reset', ['as' => 'blogs.rppReset', 'uses' => 'Api\BlogsController@rppReset']);
     Route::resource('blogs', 'Api\BlogsController');
 
+    Route::get('events/attending', ['as' => 'events.attending', 'uses' => 'Api\EventsController@indexAttending']);
     Route::get('events/by-date/{year}/{month?}/{day?}', 'Api\EventsController@indexByDate')
     ->where('year', '[1-9][0-9][0-9][0-9]')
     ->where('month', '(0?[1-9]|1[012])')

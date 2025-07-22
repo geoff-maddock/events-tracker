@@ -9,6 +9,7 @@ use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
+use App\Filters\EventFilters;
 use App\Mail\UserActivation;
 use App\Mail\UserSuspended;
 use App\Mail\UserUpdate;
@@ -755,13 +756,34 @@ class UsersController extends Controller
         return back();
     }
 
-    public function eventsAttending(User $user, Request $request): JsonResponse
-    {
-        $limit = (int) $request->input('limit', 25);
+    public function eventsAttending(
+        User $user,
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        EventFilters $eventFilters
+    ): JsonResponse {
+        // initialize the list parameter session store for this route
+        $listParamSessionStore->setBaseIndex('api_user_event');
+        $listParamSessionStore->setKeyPrefix('api_user_event_index');
 
-        $events = $user->getAttending()
-            ->visible($this->user)
-            ->with([
+        // base query of events the user is attending
+        $baseQuery = $user->getAttending()
+            ->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')
+            ->leftJoin('entities as venue', 'events.venue_id', '=', 'venue.id')
+            ->leftJoin('entities as promoter', 'events.promoter_id', '=', 'promoter.id')
+            ->select('events.*');
+
+        $listEntityResultBuilder
+            ->setFilter($eventFilters)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['events.start_at' => 'asc']);
+
+        // build the result set with filters, sorting and limit
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+        $query = $listResultSet->getList();
+
+        $events = $query->with([
                 'visibility',
                 'venue',
                 'eventStatus',
@@ -771,8 +793,7 @@ class UsersController extends Controller
                 'tags',
                 'entities',
             ])
-            ->orderBy('events.start_at', 'asc')
-            ->paginate($limit);
+            ->paginate($listResultSet->getLimit());
 
         return response()->json(new EventCollection($events));
     }

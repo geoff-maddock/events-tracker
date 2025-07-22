@@ -103,7 +103,7 @@ class EventsController extends Controller
 
         // this is causing issues in some places, but do we need it?
         // $this->middleware('auth:sanctum');
-        $this->middleware('auth:sanctum')->only(['attendJson', 'unattendJson','store']);
+        $this->middleware('auth:sanctum')->only(['attendJson', 'unattendJson', 'store', 'update', 'destroy']);
 
         parent::__construct();
     }
@@ -160,6 +160,52 @@ class EventsController extends Controller
             ])
             ->paginate($listResultSet->getLimit());
     
+        return response()->json(new EventCollection($events));
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     */
+    public function indexAttending(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): JsonResponse {
+        // check who the authenticated user is
+        $this->user = $request->user();
+        if (!$this->user) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_attending');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = $this->user->getAttending()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
+
+        // set the default filter to starting today, can override
+        $defaultFilter = ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]];
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultFilters($defaultFilter)
+            ->setDefaultSort(['events.start_at' => 'asc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+        $query = $listResultSet->getList();
+
+        // get the events
+        $events = $query
+            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
+            ->paginate($listResultSet->getLimit());
+
         return response()->json(new EventCollection($events));
     }
 
