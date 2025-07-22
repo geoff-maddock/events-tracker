@@ -166,13 +166,12 @@ class EventsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return Response|View
      */
     public function indexAttending(
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ) {
+    ): JsonResponse {
         // check who the authenticated user is
         $this->user = $request->user();
         if (!$this->user) {
