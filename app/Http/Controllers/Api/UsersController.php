@@ -783,8 +783,7 @@ class UsersController extends Controller
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
         $query = $listResultSet->getList();
 
-        $events = $query->visible($this->user)
-            ->with([
+        $events = $query->with([
                 'visibility',
                 'venue',
                 'eventStatus',
