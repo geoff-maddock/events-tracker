@@ -4759,6 +4759,48 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /api/tags/{slug}/follow:
+    post:
+      parameters:
+        - name: slug
+          description: The unique identifier of the tag
+          in: path
+          required: true
+          schema:
+            type: string
+            readOnly: true
+            example: "strobe"
+      tags:
+        - tags
+      summary: Follow Tag
+      operationId: followTagBySlug
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tag"
+  /api/tags/{slug}/unfollow:
+    post:
+      parameters:
+        - name: slug
+          description: The unique identifier of the tag
+          in: path
+          required: true
+          schema:
+            type: string
+            readOnly: true
+            example: "strobe"
+      tags:
+        - tags
+      summary: Unfollow Tag
+      operationId: unfollowTagBySlug
+      responses:
+        "204":
+          description: Successful response
+          content:
+            application/json: {}
   /api/tags:
     post:
       tags:

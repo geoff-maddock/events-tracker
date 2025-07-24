@@ -341,6 +341,51 @@ class TagsController extends Controller
     }
 
     /**
+     * Follow the tag and return JSON.
+     */
+    public function followJson(Tag $tag, Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $follow = Follow::where('object_type', 'tag')
+            ->where('object_id', $tag->id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$follow) {
+            $follow = new Follow();
+            $follow->object_id = $tag->id;
+            $follow->user_id = $user->id;
+            $follow->object_type = 'tag';
+            $follow->save();
+
+            Activity::log($tag, $user, 6);
+        }
+
+        return response()->json(new TagResource($tag));
+    }
+
+    /**
+     * Unfollow the tag and return JSON.
+     */
+    public function unfollowJson(Tag $tag, Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $follow = Follow::where('object_type', 'tag')
+            ->where('object_id', $tag->id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if ($follow) {
+            $follow->delete();
+            Activity::log($tag, $user, 7);
+        }
+
+        return response()->json([], 204);
+    }
+
+    /**
      * Get the default sort array.
      *
      * @return array
