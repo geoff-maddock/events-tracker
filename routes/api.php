@@ -138,6 +138,8 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::match(['get', 'post'], 'tags/filter', ['as' => 'tags.filter', 'uses' => 'Api\TagsController@filter']);
     Route::get('tags/reset', ['as' => 'tags.reset', 'uses' => 'Api\TagsController@reset']);
     Route::get('tags/rpp-reset', ['as' => 'tags.rppReset', 'uses' => 'Api\TagsController@rppReset']);
+    Route::post('tags/{tag}/follow', 'Api\TagsController@followJson')->middleware('auth:sanctum');
+    Route::post('tags/{tag}/unfollow', 'Api\TagsController@unfollowJson')->middleware('auth:sanctum');
     Route::resource('tags', 'Api\TagsController');
 
     Route::match(['get', 'post'], 'roles/filter', ['as' => 'roles.filter', 'uses' => 'Api\RolesController@filter']);

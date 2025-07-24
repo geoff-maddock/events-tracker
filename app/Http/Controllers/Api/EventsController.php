@@ -103,7 +103,7 @@ class EventsController extends Controller
 
         // this is causing issues in some places, but do we need it?
         // $this->middleware('auth:sanctum');
-        $this->middleware('auth:sanctum')->only(['attendJson', 'unattendJson', 'store', 'update', 'destroy']);
+        $this->middleware('auth:sanctum')->only(['attendJson', 'unattendJson', 'store', 'update', 'destroy', 'indexAttending']);
 
         parent::__construct();
     }
