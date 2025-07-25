@@ -24,4 +24,8 @@ You can apply filters to routes using the following:
   - Example: `GET /api/events?filters[name]=Event Name`
 - To order by a specific field, use the field name as the key and the value as the value.
   - Example: `GET /api/events?sort=model.property&direction=asc`
+- To filter events by multiple tags you can provide a comma separated list or repeat the `filters[tag]` parameter.
+  - `GET /api/events?filters[tag]=music,art`
+  - When you need events that contain *all* of the supplied tags, use `filters[tag_all]` instead.
+  - `GET /api/events?filters[tag_all]=music,art`
 
