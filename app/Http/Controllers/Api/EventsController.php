@@ -236,6 +236,8 @@ class EventsController extends Controller
             ->setDefaultSort(['events.start_at' => 'asc']);
 
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        /** @var \Illuminate\Database\Eloquent\Builder<\App\Models\Event> $query */
         $query = $listResultSet->getList();
 
         $events = $query
