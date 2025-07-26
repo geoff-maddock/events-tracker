@@ -604,4 +604,50 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
 
         return $events;
     }
+
+    /**
+     * Return a query of future events related to followed entities, series or tags.
+     *
+     * @return Builder<Event>
+     */
+    public function getRecommendedEvents(): Builder
+    {
+        $tagIds = $this->getTagsFollowing()->pluck('id');
+        $entityIds = $this->getEntitiesFollowing()->pluck('id');
+        $seriesIds = $this->getSeriesFollowing()->pluck('id');
+
+        if ($tagIds->isEmpty() && $entityIds->isEmpty() && $seriesIds->isEmpty()) {
+            return Event::query()->whereRaw('1 = 0');
+        }
+
+        $events = Event::query()->where('start_at', '>=', Carbon::now());
+
+        $events->where(function ($query) use ($tagIds, $entityIds, $seriesIds) {
+            $added = false;
+            if ($tagIds->isNotEmpty()) {
+                $query->whereHas('tags', function ($q) use ($tagIds) {
+                    $q->whereIn('tags.id', $tagIds);
+                });
+                $added = true;
+            }
+
+            if ($entityIds->isNotEmpty()) {
+                $method = $added ? 'orWhereHas' : 'whereHas';
+                $query->{$method}('entities', function ($q) use ($entityIds) {
+                    $q->whereIn('entities.id', $entityIds);
+                });
+                $added = true;
+            }
+
+            if ($seriesIds->isNotEmpty()) {
+                if ($added) {
+                    $query->orWhereIn('series_id', $seriesIds);
+                } else {
+                    $query->whereIn('series_id', $seriesIds);
+                }
+            }
+        });
+
+        return $events->orderBy('events.start_at', 'asc');
+    }
 }
