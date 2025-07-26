@@ -63,6 +63,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::resource('blogs', 'Api\BlogsController');
 
     Route::get('events/attending', ['as' => 'events.attending', 'uses' => 'Api\EventsController@indexAttending']);
+    Route::get('events/recommended', ['as' => 'events.recommended', 'uses' => 'Api\EventsController@indexRecommended'])->middleware('auth:sanctum');
     Route::get('events/by-date/{year}/{month?}/{day?}', 'Api\EventsController@indexByDate')
     ->where('year', '[1-9][0-9][0-9][0-9]')
     ->where('month', '(0?[1-9]|1[012])')

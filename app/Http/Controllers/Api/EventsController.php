@@ -210,6 +210,45 @@ class EventsController extends Controller
     }
 
     /**
+     * Display a listing of recommended events for the authenticated user.
+     */
+    public function indexRecommended(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): JsonResponse {
+        $this->user = $request->user();
+        if (!$this->user) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_recommended');
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
+
+        $baseQuery = $this->user->getRecommendedEvents()
+            ->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')
+            ->select('events.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['events.start_at' => 'asc']);
+
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        /** @var \Illuminate\Database\Eloquent\Builder<\App\Models\Event> $query */
+        $query = $listResultSet->getList();
+
+        $events = $query
+            ->visible($this->user)
+            ->with('visibility', 'venue', 'tags', 'entities', 'series', 'eventType', 'threads')
+            ->paginate($listResultSet->getLimit());
+
+        return response()->json(new EventCollection($events));
+    }
+
+    /**
      * Display a listing of events by date.
      *
      * @throws \Throwable
