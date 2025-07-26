@@ -65,7 +65,6 @@ class SeriesFactory extends Factory
             'start_at' => now(),
             'end_at' => Carbon::now()->addHour(),
             'min_age' => $this->faker->randomElement([null, 18, 21]),
-            'series_id' => null,
             'primary_link' => $this->faker->url,
             'ticket_link' => $this->faker->url,
             'created_by' => User::factory()->create(),
