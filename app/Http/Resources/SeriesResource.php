@@ -56,6 +56,8 @@ class SeriesResource extends JsonResource
             'cancelled_at' => $this->cancelled_at,
             'primary_photo' => $this->getPrimaryPhotoPath(),
             'primary_photo_thumbnail' => $this->getPrimaryPhotoThumbnailPath(),
+            'next_event' => $this->nextEvent(),
+            'next_start_at' => $this->nextPlannedStartAt(),
         ];
     }
 }
