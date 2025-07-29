@@ -169,6 +169,15 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::match(['get', 'post'], 'visibilities/filter', ['as' => 'visibilities.filter', 'uses' => 'Api\VisibilitiesController@filter']);
     Route::resource('visibilities', 'Api\VisibilitiesController')->only(['index', 'show']);
 
+    Route::match(['get', 'post'], 'occurrence-types/filter', ['as' => 'occurrence-types.filter', 'uses' => 'Api\OccurrenceTypesController@filter']);
+    Route::resource('occurrence-types', 'Api\OccurrenceTypesController')->only(['index', 'show']);
+
+    Route::match(['get', 'post'], 'occurrence-weeks/filter', ['as' => 'occurrence-weeks.filter', 'uses' => 'Api\OccurrenceWeeksController@filter']);
+    Route::resource('occurrence-weeks', 'Api\OccurrenceWeeksController')->only(['index', 'show']);
+
+    Route::match(['get', 'post'], 'occurrence-days/filter', ['as' => 'occurrence-days.filter', 'uses' => 'Api\OccurrenceDaysController@filter']);
+    Route::resource('occurrence-days', 'Api\OccurrenceDaysController')->only(['index', 'show']);
+
     // photo management endpoints
     Route::post('photos/{photo}/set-primary', 'Api\\PhotosController@setPrimary');
     Route::post('photos/{photo}/unset-primary', 'Api\\PhotosController@unsetPrimary');
