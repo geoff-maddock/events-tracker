@@ -26,6 +26,9 @@ tags:
   - name: links
   - name: menus
   - name: locations
+  - name: occurrence-types
+  - name: occurrence-weeks
+  - name: occurrence-days
   - name: photos
   - name: posts
   - name: roles
@@ -1460,6 +1463,33 @@ components:
           format: date-time
           description: Date and time that the occurrence week was last updated
           readOnly: true
+    OccurrenceTypes:
+      allOf: [$ref: "#/components/schemas/Pagination"]
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of the current page of occurrence types
+          items:
+            "$ref": "#/components/schemas/OccurrenceType"
+    OccurrenceWeeks:
+      allOf: [$ref: "#/components/schemas/Pagination"]
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of the current page of occurrence weeks
+          items:
+            "$ref": "#/components/schemas/OccurrenceWeek"
+    OccurrenceDays:
+      allOf: [$ref: "#/components/schemas/Pagination"]
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of the current page of occurrence days
+          items:
+            "$ref": "#/components/schemas/OccurrenceDay"
     Post:
       type: object
       properties:
@@ -4416,6 +4446,219 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /api/occurrence-types:
+    get:
+      tags:
+        - occurrence-types
+      summary: Get Occurrence Types
+      operationId: getOccurrenceTypes
+      parameters:
+        - name: filters[name]
+          in: query
+          required: false
+          description: A filter query of the occurrence type name
+          schema:
+            type: string
+            example: Weekly
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+            example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+            example: 1
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+            example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+            example: asc
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OccurrenceTypes"
+  /api/occurrence-types/{occurrenceTypeId}:
+    parameters:
+      - name: occurrenceTypeId
+        description: The unique identifier of the occurrence type
+        in: path
+        required: true
+        schema:
+          type: integer
+          readOnly: true
+          example: 1
+    get:
+      tags:
+        - occurrence-types
+      summary: Get Occurrence Type
+      operationId: getOccurrenceTypeById
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OccurrenceType"
+  /api/occurrence-weeks:
+    get:
+      tags:
+        - occurrence-weeks
+      summary: Get Occurrence Weeks
+      operationId: getOccurrenceWeeks
+      parameters:
+        - name: filters[name]
+          in: query
+          required: false
+          description: A filter query of the occurrence week name
+          schema:
+            type: string
+            example: First
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+            example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+            example: 1
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+            example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+            example: asc
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OccurrenceWeeks"
+  /api/occurrence-weeks/{occurrenceWeekId}:
+    parameters:
+      - name: occurrenceWeekId
+        description: The unique identifier of the occurrence week
+        in: path
+        required: true
+        schema:
+          type: integer
+          readOnly: true
+          example: 1
+    get:
+      tags:
+        - occurrence-weeks
+      summary: Get Occurrence Week
+      operationId: getOccurrenceWeekById
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OccurrenceWeek"
+  /api/occurrence-days:
+    get:
+      tags:
+        - occurrence-days
+      summary: Get Occurrence Days
+      operationId: getOccurrenceDays
+      parameters:
+        - name: filters[name]
+          in: query
+          required: false
+          description: A filter query of the occurrence day name
+          schema:
+            type: string
+            example: Monday
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+            example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+            example: 1
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+            example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+            example: asc
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OccurrenceDays"
+  /api/occurrence-days/{occurrenceDayId}:
+    parameters:
+      - name: occurrenceDayId
+        description: The unique identifier of the occurrence day
+        in: path
+        required: true
+        schema:
+          type: integer
+          readOnly: true
+          example: 1
+    get:
+      tags:
+        - occurrence-days
+      summary: Get Occurrence Day
+      operationId: getOccurrenceDayById
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OccurrenceDay"
   /api/posts:
     get:
       tags:
