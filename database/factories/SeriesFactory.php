@@ -34,7 +34,7 @@ class SeriesFactory extends Factory
         return [
             'name' => $this->faker->name,
             'slug' => $this->faker->name,
-            'short' => $this->faker->paragraph,
+            'short' => $this->faker->text(100), // Limit to 100 characters instead of paragraph
             'description' => $this->faker->paragraph,
             'event_type_id' => random_int(1, 5),
             'visibility_id' => function () {
