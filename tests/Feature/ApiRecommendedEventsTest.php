@@ -64,7 +64,7 @@ class ApiRecommendedEventsTest extends TestCase
             ->assertJsonFragment(['id' => $eventTag->id])
             ->assertJsonFragment(['id' => $eventEntity->id])
             ->assertJsonFragment(['id' => $eventSeries->id])
-            ->assertJsonMissing(['id' => $otherEvent->id]);
+            ->assertJsonMissing(['name' => $otherEvent->name]);
     }
 }
 
