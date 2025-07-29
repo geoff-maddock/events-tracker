@@ -576,7 +576,7 @@ class Series extends Eloquent
     }
 
     /**
-     * Returns the date of the next occurrence of this event.
+     * Returns the next instantiated event related to this series.
      */
     public function nextEvent(): ?Event
     {
@@ -636,6 +636,27 @@ class Series extends Eloquent
     {
         return $this->cycleFromFoundedAt();
     }
+
+    /**
+     * Returns the date of the next occurrence of this template.
+     */
+    public function nextOccurrenceStartDate(): ?Carbon
+    {
+        return $this->cycleFromFoundedAt();
+    }
+
+    /**
+     * Returns the date of the next occurence, either actual or scheduled
+     */
+    public function nextPlannedStartAt(): ?Carbon
+    {
+        if ($this->nextEvent()) {
+            return $this->nextEvent()->start_at;
+        }
+
+        return $this->cycleFromFoundedAt();
+    }
+
 
     /**
      * Returns the end date time of the next occurrence of this template.
