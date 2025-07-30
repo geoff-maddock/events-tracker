@@ -31,9 +31,15 @@ class SeriesRequest extends Request
      */
     public function rules()
     {
+        $seriesSlug = $this->route('series')?->id ?? null;
+
         $rules = [
             'name' => 'required|min:3|max:255',
-            'slug' => Rule::unique('series')->ignore(isset($this->series) ? $this->series->id : ''),
+            'slug' => [
+                'required',
+                'string',
+                Rule::unique('series', 'slug')->ignore($seriesSlug),
+            ],
             'short' => 'required|min:3|max:255',
             'length' => 'integer',
             'event_type_id' => 'required',

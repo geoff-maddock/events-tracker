@@ -31,7 +31,7 @@ class EventRequest extends Request
             'slug' => [
                 'required',
                 'string',
-                Rule::unique('entities', 'slug')->ignore($eventSlug),
+                Rule::unique('events', 'slug')->ignore($eventSlug),
             ],
             'short' => 'max:255',
             'start_at' => 'required|date',
