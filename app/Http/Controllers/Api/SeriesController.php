@@ -96,6 +96,8 @@ class SeriesController extends Controller
             'store',
             'followJson',
             'unfollowJson',
+            'update',
+            'destroy',
         ]);
 
         parent::__construct();
@@ -695,8 +697,6 @@ class SeriesController extends Controller
 
     public function update(Series $series, SeriesRequest $request): JsonResponse
     {
-        // Get the authenticated user
-        $this->user = $request->user();
 
         $msg = '';
 

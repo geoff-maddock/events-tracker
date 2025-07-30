@@ -83,6 +83,8 @@ class EntitiesController extends Controller
             'attendJson',
             'unattendJson',
             'store',
+            'update',
+            'destroy',
             'followJson',
             'unfollowJson',
         ]);
