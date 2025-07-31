@@ -191,3 +191,7 @@ Route::middleware('shield')->name('shield.')->group(function () {
 // calendar routes - these are used by the web app for dynamic loading
 Route::get('calendar-events', 'EventsController@calendarEventsApi')->name('calendarEvents.api');
 Route::get('tag-calendar-events', 'EventsController@tagCalendarEventsApi')->name('tagCalendarEvents.api');
+
+// password reset endpoints
+Route::post('user/send-password-reset-email', 'Api\\PasswordResetController@sendPasswordResetEmail');
+Route::post('user/reset-password', 'Api\\PasswordResetController@resetPassword');
