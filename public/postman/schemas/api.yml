@@ -5779,6 +5779,56 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Events"
+  /api/events-recommended:
+    get:
+      parameters:
+        - name: userId
+          description: The unique identifier of the user
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+            example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+            example: 1
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+            example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+            example: asc
+      tags:
+        - users
+      summary: Get Events the User is Recommended
+      operationId: getUserRecommendedEvents
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Events"
   /api/photos/{photoId}/set-primary:
     post:
       parameters:
