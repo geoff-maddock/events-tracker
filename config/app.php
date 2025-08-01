@@ -131,6 +131,8 @@ return [
     'social_twitter' => env('SOCIAL_TWITTER', ''),
     'social_github' => env('SOCIAL_GITHUB', ''),
 
+    'password_reset_secret' => env('PASSWORD_RESET_SECRET'),
+
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers

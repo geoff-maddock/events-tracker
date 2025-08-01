@@ -2272,6 +2272,49 @@ components:
           description: Valid user token
           example: ABCDEF12345
           maxLength: 255
+    PasswordResetEmailRequest:
+      type: object
+      required:
+        - email
+        - secret
+      properties:
+        email:
+          type: string
+          description: Email address of the user
+          example: john.smith@gmail.com
+          maxLength: 255
+        secret:
+          type: string
+          description: Secret token validating the request
+    ResetPasswordRequest:
+      type: object
+      required:
+        - email
+        - password
+        - token
+        - secret
+      properties:
+        email:
+          type: string
+          description: Email address of the user
+          example: john.smith@gmail.com
+          maxLength: 255
+        password:
+          type: string
+          description: New password for the user
+          example: new-password
+        token:
+          type: string
+          description: Password reset token
+          example: ABCDEF12345
+        secret:
+          type: string
+          description: Secret token validating the request
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
     Visibility:
       type: object
       required:
@@ -5964,3 +6007,39 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Visibility"
+  /api/user/send-password-reset-email:
+    post:
+      tags:
+        - users
+      summary: Send Password Reset Email
+      operationId: sendPasswordResetEmail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordResetEmailRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+  /api/user/reset-password:
+    post:
+      tags:
+        - users
+      summary: Reset Password
+      operationId: resetPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPasswordRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
