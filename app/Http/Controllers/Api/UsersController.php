@@ -335,9 +335,6 @@ class UsersController extends Controller
             $user->groups()->sync($request->input('group_list', []));
         }
 
-        // get all the tabs from the session
-        // $tabs = $this->getTabs($request);
-
         // add to activity log
         Activity::log($user, $this->user, 2);
 
