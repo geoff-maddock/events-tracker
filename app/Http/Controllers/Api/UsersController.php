@@ -74,7 +74,6 @@ class UsersController extends Controller
 
     public function __construct(UserFilters $filter)
     {
-        // $this->middleware('verified', ['except' => ['index', 'show']]);
         $this->filter = $filter;
 
         // prefix for session storage
@@ -318,18 +317,21 @@ class UsersController extends Controller
     }
 
 
-    public function update(User $user, ProfileRequest $request): JsonResponse
+    public function update(User $user, Request $request): JsonResponse
     {
         $input = $request->all();
+        
+        // Extract user fields (exclude profile data)
+        $userFields = $request->except('profile');
+        
+        // Extract profile fields
+        $profileFields = $request->input('profile', []);
 
-        $input['setting_weekly_update'] = isset($input['setting_weekly_update']) ? 1 : 0;
-        $input['setting_daily_update'] = isset($input['setting_daily_update']) ? 1 : 0;
-        $input['setting_instant_update'] = isset($input['setting_instant_update']) ? 1 : 0;
-        $input['setting_forum_update'] = isset($input['setting_forum_update']) ? 1 : 0;
-        $input['setting_public_profile'] = isset($input['setting_public_profile']) ? 1 : 0;
-
-        $user->fill($input)->save();
-        $user->profile->fill($input)->save();
+        // Update user fields
+        $user->fill($userFields)->save();
+        
+        // Update profile fields
+        $user->profile->fill($profileFields)->save();
 
         if ($request->has('group_list')) {
             $user->groups()->sync($request->input('group_list', []));
