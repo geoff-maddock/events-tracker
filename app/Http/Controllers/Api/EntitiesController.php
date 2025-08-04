@@ -15,6 +15,8 @@ use App\Models\EntityStatus;
 use App\Models\EntityType;
 use App\Models\Follow;
 use App\Models\Photo;
+use App\Models\Link;
+use App\Models\Location;
 use App\Models\Role;
 use App\Models\Tag;
 use App\Models\User;
@@ -701,6 +703,52 @@ class EntitiesController extends Controller
             $photoData = $photo->getApiResponse();
 
             return response()->json($photoData, 201);
+        }
+
+        return response()->json([], 404);
+    }
+
+    /**
+     * Add a link to an entity.
+     */
+    public function addLink(int $id, Request $request): JsonResponse
+    {
+        $this->validate($request, [
+            'text' => ['required', 'min:3'],
+            'url' => ['required', 'min:3'],
+        ]);
+
+        if ($entity = Entity::find($id)) {
+            $input = $request->only(['text', 'url', 'title', 'is_primary']);
+            $input['is_primary'] = isset($input['is_primary']) ? 1 : 0;
+            $link = Link::create($input);
+            $entity->links()->attach($link->id);
+
+            return response()->json($link, 201);
+        }
+
+        return response()->json([], 404);
+    }
+
+    /**
+     * Add a location to an entity.
+     */
+    public function addLocation(int $id, Request $request): JsonResponse
+    {
+        $this->validate($request, [
+            'name' => ['required', 'min:3'],
+            'slug' => ['required', 'min:3'],
+            'city' => ['required', 'min:3'],
+            'visibility_id' => ['required'],
+            'location_type_id' => ['required'],
+        ]);
+
+        if ($entity = Entity::find($id)) {
+            $input = $request->all();
+            $input['entity_id'] = $id;
+            $location = Location::create($input);
+
+            return response()->json($location, 201);
         }
 
         return response()->json([], 404);
