@@ -29,6 +29,7 @@ class EntityResource extends JsonResource
             'entity_type' => $this->entityType ? new MinimalResource($this->entityType) : null,
             'facebook_username' => $this->facebook_username,
             'twitter_username' => $this->twitter_username,
+            'instagram_username' => $this->instagram_username,
             'started_at' => $this->started_at,
             'links' => $this->links->map(function ($link) {
                 return [
