@@ -2073,6 +2073,62 @@ components:
         photos:
           type: array
           items: { "$ref": "#/components/schemas/PhotoResponse" }
+    ProfileRequest:
+      type: object
+      properties:
+        bio:
+          type: string
+          maxLength: 65535
+          description: User provided biography text
+          example: Pittsburgh based DJ and promoter
+        alias:
+          type: string
+          maxLength: 255
+          description: Alternate display name for the profile
+          example: cutups
+        visibility_id:
+          type: integer
+          example: 1
+          description: Relation to the visibility table that defines the visibility of the profile
+        facebook_username:
+          type: string
+          maxLength: 64
+          example: cutups
+        twitter_username:
+          type: string
+          maxLength: 64
+          example: cutups
+        instagram_username:
+          type: string
+          maxLength: 64
+          example: cutups
+        first_name:
+          type: string
+          maxLength: 255
+          example: Geoff
+        last_name:
+          type: string
+          maxLength: 255
+          example: Maddock
+        default_theme:
+          type: string
+          maxLength: 255
+          example: dark
+        setting_weekly_update:
+          type: integer
+          example: 1
+        setting_daily_update:
+          type: integer
+          example: 1
+        setting_instant_update:
+          type: integer
+          example: 1
+        setting_forum_update:
+          type: integer
+          example: 1
+        setting_public_profile:
+          type: integer
+          example: 1
     User:
       type: object
       properties:
@@ -2248,6 +2304,29 @@ components:
           description: Token used to remember the user's logged in status
           example: ABCDEFGHI
           maxLength: 100
+    UserProfileRequest:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+          description: Name of the user
+          example: john.smith
+          maxLength: 255
+        email:
+          type: string
+          description: Email address of the user
+          example: john.smith@gmail.com
+          maxLength: 255
+        user_status_id:
+          type: integer
+          readOnly: true
+          example: 1
+          description: Relation to the user status table that defines the status of the user
+        profile:
+          $ref: "#/components/schemas/ProfileRequest"
     Users:
       allOf: # Combines the BasicErrorModel and the inline model
         - $ref: "#/components/schemas/Pagination"
@@ -5670,7 +5749,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/User"
+              $ref: "#/components/schemas/UserProfileRequest"
       responses:
         "200":
           description: Successful response
