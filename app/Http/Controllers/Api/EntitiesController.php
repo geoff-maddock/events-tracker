@@ -89,6 +89,8 @@ class EntitiesController extends Controller
             'destroy',
             'followJson',
             'unfollowJson',
+            'addLocation',
+            'addLink',
         ]);
 
         parent::__construct();
