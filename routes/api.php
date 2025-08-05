@@ -84,11 +84,15 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::resource('events', 'Api\EventsController');
 
     Route::get('entities/{entity}/photos', ['as' => 'entities.photos', 'uses' => 'Api\EntitiesController@photos']);
+    Route::get('entities/{entity}/links', ['as' => 'entities.links', 'uses' => 'Api\EntitiesController@links']);
+    Route::get('entities/{entity}/locations', ['as' => 'entities.locations', 'uses' => 'Api\EntitiesController@locations']);
+    Route::get('entities/{entity}/contacts', ['as' => 'entities.contacts', 'uses' => 'Api\EntitiesController@contacts']);
     Route::get('entities/{entity}/embeds', ['as' => 'entities.embeds', 'uses' => 'Api\EntitiesController@embeds']);
     Route::get('entities/{entity}/minimal-embeds', ['as' => 'entities.minimalEmbeds', 'uses' => 'Api\EntitiesController@minimalEmbeds']);
     Route::post('entities/{id}/photos', 'Api\EntitiesController@addPhoto');
     Route::post('entities/{id}/links', 'Api\EntitiesController@addLink');
     Route::post('entities/{id}/locations', 'Api\EntitiesController@addLocation');
+    Route::post('entities/{id}/contacts', 'Api\EntitiesController@addContact');
     Route::post('entities/{entity}/follow', 'Api\EntitiesController@followJson')->middleware('auth:sanctum');
     Route::post('entities/{entity}/unfollow', 'Api\EntitiesController@unfollowJson')->middleware('auth:sanctum');
     Route::resource('entities', 'Api\EntitiesController');

@@ -17,6 +17,7 @@ use App\Models\Follow;
 use App\Models\Photo;
 use App\Models\Link;
 use App\Models\Location;
+use App\Models\Contact;
 use App\Models\Role;
 use App\Models\Tag;
 use App\Models\User;
@@ -91,6 +92,7 @@ class EntitiesController extends Controller
             'unfollowJson',
             'addLocation',
             'addLink',
+            'addContact',
         ]);
 
         parent::__construct();
@@ -756,6 +758,31 @@ class EntitiesController extends Controller
         return response()->json([], 404);
     }
 
+    /**
+     * Add a contact to an entity.
+     */
+    public function addContact(int $id, Request $request): JsonResponse
+    {
+        $this->validate($request, [
+            'name' => ['required', 'min:3'],
+            'type' => ['required', 'min:3'],
+            'visibility_id' => ['required', 'integer'],
+            'email' => ['nullable', 'email'],
+            'phone' => ['nullable', 'string'],
+            'other' => ['nullable', 'string'],
+        ]);
+
+        if ($entity = Entity::find($id)) {
+            $input = $request->only(['name', 'email', 'phone', 'other', 'type', 'visibility_id']);
+            $contact = Contact::create($input);
+            $entity->contacts()->attach($contact->id);
+
+            return response()->json($contact, 201);
+        }
+
+        return response()->json([], 404);
+    }
+
     protected function makePhoto(UploadedFile $file): Photo
     {
         return Photo::named($file->getClientOriginalName())->makeThumbnail();
@@ -1044,6 +1071,39 @@ class EntitiesController extends Controller
         
         // converts array of embeds into json embed list
         return response()->json($embeds);
+    }
+
+    public function links(?Entity $entity): JsonResponse
+    {
+        if (!$entity) {
+            abort(404);
+        }
+
+        $links = $entity->links()->get();
+
+        return response()->json($links);
+    }
+
+    public function locations(?Entity $entity): JsonResponse
+    {
+        if (!$entity) {
+            abort(404);
+        }
+
+        $locations = $entity->locations()->get();
+
+        return response()->json($locations);
+    }
+
+    public function contacts(?Entity $entity): JsonResponse
+    {
+        if (!$entity) {
+            abort(404);
+        }
+
+        $contacts = $entity->contacts()->get();
+
+        return response()->json($contacts);
     }
 
     public function photos(?Entity $entity): JsonResponse

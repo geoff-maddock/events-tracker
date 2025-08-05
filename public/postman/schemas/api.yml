@@ -1136,6 +1136,69 @@ components:
             data:
               type: array
               items: { "$ref": "#/components/schemas/Link" }
+    Contact:
+      type: object
+      required:
+        - name
+        - type
+        - visibility_id
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          maxLength: 255
+          description: Name of the contact
+          example: John Doe
+        email:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: Email address of the contact
+          example: john@example.com
+        phone:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: Phone number of the contact
+          example: "555-555-5555"
+        other:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: Other contact information
+          example: "Discord: johndoe#1234"
+        type:
+          type: string
+          maxLength: 255
+          description: Type of contact
+          example: Email
+        visibility_id:
+          type: integer
+          description: The visibility id associated with the contact
+          example: 1
+        created_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time the contact was created
+          readOnly: true
+        updated_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time the contact was last updated
+          readOnly: true
+    Contacts:
+      allOf:
+        - $ref: "#/components/schemas/Pagination"
+        - type: object
+          properties:
+            data:
+              type: array
+              items: { "$ref": "#/components/schemas/Contact" }
     Menu:
       type: object
       required:
@@ -3539,6 +3602,72 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Photos"
+  /api/entities/{slug}/links:
+    get:
+      parameters:
+        - name: slug
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: string
+            readOnly: true
+            example: "strobe"
+      tags:
+        - entities
+      summary: Get Entity Links
+      operationId: getEntityLinksBySlug
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Links"
+  /api/entities/{slug}/locations:
+    get:
+      parameters:
+        - name: slug
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: string
+            readOnly: true
+            example: "strobe"
+      tags:
+        - entities
+      summary: Get Entity Locations
+      operationId: getEntityLocationsBySlug
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Location"
+  /api/entities/{slug}/contacts:
+    get:
+      parameters:
+        - name: slug
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: string
+            readOnly: true
+            example: "strobe"
+      tags:
+        - entities
+      summary: Get Entity Contacts
+      operationId: getEntityContactsBySlug
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contacts"
   /api/entities/{id}/photos:
     post:
       parameters:
@@ -3624,6 +3753,33 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Location"
+  /api/entities/{id}/contacts:
+    post:
+      parameters:
+        - name: id
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - entities
+      summary: Add Entity Contact
+      operationId: addEntityContactById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Contact"
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
   /api/entities/{slug}/follow:
     post:
       parameters:
