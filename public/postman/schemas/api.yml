@@ -1334,7 +1334,7 @@ components:
           type: integer
           description: Type of visibility
           example: 1
-        locatoin_type_id:
+        location_type_id:
           type: integer
           description: Type of location
           example: 1
