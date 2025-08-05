@@ -20,7 +20,7 @@ class ApiEntityLinksAndLocationsTest extends TestCase
     {
         $user = User::factory()->create();
         $entity = Entity::factory()->create();
-       Sanctum::actingAs($user);
+        Sanctum::actingAs($user);
 
         $payload = [
             'text' => 'Example',
