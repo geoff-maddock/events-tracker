@@ -20,7 +20,8 @@ class ApiEntityLinksAndLocationsTest extends TestCase
     {
         $user = User::factory()->create();
         $entity = Entity::factory()->create();
-        Sanctum::actingAs($user);
+        $user->user_status_id = 1; // Assuming 1 is the ID for active status
+        $this->actingAs($user, 'sanctum');
 
         $payload = [
             'text' => 'Example',
@@ -44,6 +45,7 @@ class ApiEntityLinksAndLocationsTest extends TestCase
         $entity = Entity::factory()->create();
         $visibility = Visibility::factory()->create();
         $locationType = LocationType::factory()->create();
+        $user->user_status_id = 1; // Assuming 1 is the ID for active status
         $this->actingAs($user, 'sanctum');
 
         $payload = [
