@@ -93,6 +93,9 @@ class EntitiesController extends Controller
             'addLocation',
             'addLink',
             'addContact',
+            'updateLocation',
+            'updateLink',
+            'updateContact',
         ]);
 
         parent::__construct();
@@ -735,6 +738,38 @@ class EntitiesController extends Controller
     }
 
     /**
+     * Update a link on an entity.
+     */
+    public function updateLink(int $id, int $linkId, Request $request): JsonResponse
+    {
+        $this->validate($request, [
+            'text' => ['sometimes', 'required', 'min:3'],
+            'url' => ['sometimes', 'required', 'min:3'],
+            'title' => ['nullable', 'string'],
+            'is_primary' => ['nullable', 'boolean'],
+        ]);
+
+        if ($entity = Entity::find($id)) {
+            $link = $entity->links()->find($linkId);
+            if ($link) {
+                if ($request->user()->id !== ($link->created_by ?? $entity->created_by)) {
+                    return response()->json([], 403);
+                }
+
+                $input = $request->only(['text', 'url', 'title', 'is_primary']);
+                if (array_key_exists('is_primary', $input)) {
+                    $input['is_primary'] = $input['is_primary'] ? 1 : 0;
+                }
+                $link->update($input);
+
+                return response()->json($link);
+            }
+        }
+
+        return response()->json([], 404);
+    }
+
+    /**
      * Add a location to an entity.
      */
     public function addLocation(int $id, Request $request): JsonResponse
@@ -750,9 +785,41 @@ class EntitiesController extends Controller
         if ($entity = Entity::find($id)) {
             $input = $request->all();
             $input['entity_id'] = $id;
-            $location = Location::create($input);
+            $location = new Location($input);
+            $location->created_by = $request->user()->id;
+            $location->save();
 
             return response()->json($location, 201);
+        }
+
+        return response()->json([], 404);
+    }
+
+    /**
+     * Update a location on an entity.
+     */
+    public function updateLocation(int $id, int $locationId, Request $request): JsonResponse
+    {
+        $this->validate($request, [
+            'name' => ['sometimes', 'required', 'min:3'],
+            'slug' => ['sometimes', 'required', 'min:3'],
+            'city' => ['sometimes', 'required', 'min:3'],
+            'visibility_id' => ['sometimes', 'required'],
+            'location_type_id' => ['sometimes', 'required'],
+        ]);
+
+        if ($entity = Entity::find($id)) {
+            $location = $entity->locations()->find($locationId);
+            if ($location) {
+                if ($request->user()->id !== ($location->created_by ?? $entity->created_by)) {
+                    return response()->json([], 403);
+                }
+
+                $input = $request->all();
+                $location->update($input);
+
+                return response()->json($location);
+            }
         }
 
         return response()->json([], 404);
@@ -778,6 +845,37 @@ class EntitiesController extends Controller
             $entity->contacts()->attach($contact->id);
 
             return response()->json($contact, 201);
+        }
+
+        return response()->json([], 404);
+    }
+
+    /**
+     * Update a contact on an entity.
+     */
+    public function updateContact(int $id, int $contactId, Request $request): JsonResponse
+    {
+        $this->validate($request, [
+            'name' => ['sometimes', 'required', 'min:3'],
+            'type' => ['sometimes', 'required', 'min:3'],
+            'visibility_id' => ['sometimes', 'required', 'integer'],
+            'email' => ['nullable', 'email'],
+            'phone' => ['nullable', 'string'],
+            'other' => ['nullable', 'string'],
+        ]);
+
+        if ($entity = Entity::find($id)) {
+            $contact = $entity->contacts()->find($contactId);
+            if ($contact) {
+                if ($request->user()->id !== ($contact->created_by ?? $entity->created_by)) {
+                    return response()->json([], 403);
+                }
+
+                $input = $request->only(['name', 'email', 'phone', 'other', 'type', 'visibility_id']);
+                $contact->update($input);
+
+                return response()->json($contact);
+            }
         }
 
         return response()->json([], 404);

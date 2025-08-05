@@ -3726,6 +3726,41 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Link"
+  /api/entities/{id}/links/{linkId}:
+    put:
+      parameters:
+        - name: id
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+        - name: linkId
+          description: The unique identifier of the link
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - entities
+      summary: Update Entity Link
+      operationId: updateEntityLinkById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Link"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Link"
   /api/entities/{id}/locations:
     post:
       parameters:
@@ -3753,6 +3788,41 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Location"
+  /api/entities/{id}/locations/{locationId}:
+    put:
+      parameters:
+        - name: id
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+        - name: locationId
+          description: The unique identifier of the location
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - entities
+      summary: Update Entity Location
+      operationId: updateEntityLocationById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LocationRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Location"
   /api/entities/{id}/contacts:
     post:
       parameters:
@@ -3775,6 +3845,41 @@ paths:
               $ref: "#/components/schemas/Contact"
       responses:
         "201":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+  /api/entities/{id}/contacts/{contactId}:
+    put:
+      parameters:
+        - name: id
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+        - name: contactId
+          description: The unique identifier of the contact
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - entities
+      summary: Update Entity Contact
+      operationId: updateEntityContactById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Contact"
+      responses:
+        "200":
           description: Successful response
           content:
             application/json:
