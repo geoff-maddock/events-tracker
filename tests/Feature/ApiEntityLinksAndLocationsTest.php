@@ -69,6 +69,9 @@ class ApiEntityLinksAndLocationsTest extends TestCase
     {
         $entity = Entity::factory()->create();
 
+        // Re-enable exception handling for this test
+        $this->withExceptionHandling();
+ 
         $linkResponse = $this->postJson("/api/entities/{$entity->id}/links", [
             'text' => 'Example',
             'url' => 'https://example.com',
