@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Visibility;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Laravel\Sanctum\Sanctum;
 
 class ApiEntityLinksAndLocationsTest extends TestCase
 {
@@ -19,7 +20,7 @@ class ApiEntityLinksAndLocationsTest extends TestCase
     {
         $user = User::factory()->create();
         $entity = Entity::factory()->create();
-        $this->actingAs($user, 'sanctum');
+       Sanctum::actingAs($user);
 
         $payload = [
             'text' => 'Example',
