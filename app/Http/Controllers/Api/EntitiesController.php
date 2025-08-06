@@ -8,6 +8,7 @@ use App\Http\Requests\EntityRequest;
 use App\Http\Resources\EntityCollection;
 use App\Http\Resources\EntityResource;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
+use App\Models\Action;
 use App\Models\Activity;
 use App\Models\Alias;
 use App\Models\Entity;
@@ -17,6 +18,7 @@ use App\Models\Follow;
 use App\Models\Photo;
 use App\Models\Link;
 use App\Models\Location;
+use App\Models\Contact;
 use App\Models\Role;
 use App\Models\Tag;
 use App\Models\User;
@@ -91,6 +93,13 @@ class EntitiesController extends Controller
             'unfollowJson',
             'addLocation',
             'addLink',
+            'addContact',
+            'updateLocation',
+            'updateLink',
+            'updateContact',
+            'deleteLink',
+            'deleteLocation',
+            'deleteContact',
         ]);
 
         parent::__construct();
@@ -726,7 +735,45 @@ class EntitiesController extends Controller
             $link = Link::create($input);
             $entity->links()->attach($link->id);
 
+            // add to activity log
+            Activity::log($link, $this->user, Action::CREATE);
+
             return response()->json($link, 201);
+        }
+
+        return response()->json([], 404);
+    }
+
+    /**
+     * Update a link on an entity.
+     */
+    public function updateLink(int $id, int $linkId, Request $request): JsonResponse
+    {
+        $this->validate($request, [
+            'text' => ['sometimes', 'required', 'min:3'],
+            'url' => ['sometimes', 'required', 'min:3'],
+            'title' => ['nullable', 'string'],
+            'is_primary' => ['nullable', 'boolean'],
+        ]);
+
+        if ($entity = Entity::find($id)) {
+            $link = $entity->links()->find($linkId);
+            if ($link) {
+                if ($request->user()->id !== ($link->created_by ?? $entity->created_by)) {
+                    return response()->json([], 403);
+                }
+
+                $input = $request->only(['text', 'url', 'title', 'is_primary']);
+                if (array_key_exists('is_primary', $input)) {
+                    $input['is_primary'] = $input['is_primary'] ? 1 : 0;
+                }
+                $link->update($input);
+
+                // add to activity log
+                Activity::log($link, $this->user, Action::UPDATE);
+
+                return response()->json($link);
+            }
         }
 
         return response()->json([], 404);
@@ -748,9 +795,180 @@ class EntitiesController extends Controller
         if ($entity = Entity::find($id)) {
             $input = $request->all();
             $input['entity_id'] = $id;
-            $location = Location::create($input);
+            $location = new Location($input);
+            $location->created_by = $request->user()->id;
+            $location->save();
+
+            // add a location to activity log
+            Activity::log($location, $this->user, Action::CREATE);
 
             return response()->json($location, 201);
+        }
+
+        return response()->json([], 404);
+    }
+
+    /**
+     * Update a location on an entity.
+     */
+    public function updateLocation(int $id, int $locationId, Request $request): JsonResponse
+    {
+        $this->validate($request, [
+            'name' => ['sometimes', 'required', 'min:3'],
+            'slug' => ['sometimes', 'required', 'min:3'],
+            'city' => ['sometimes', 'required', 'min:3'],
+            'visibility_id' => ['sometimes', 'required'],
+            'location_type_id' => ['sometimes', 'required'],
+        ]);
+
+        if ($entity = Entity::find($id)) {
+            $location = $entity->locations()->find($locationId);
+            if ($location) {
+                if ($request->user()->id !== ($location->created_by ?? $entity->created_by)) {
+                    return response()->json([], 403);
+                }
+
+                $input = $request->all();
+                $location->update($input);
+
+                // add to activity log
+                Activity::log($location, $this->user, Action::UPDATE);
+
+                return response()->json($location);
+            }
+        }
+
+        return response()->json([], 404);
+    }
+
+    /**
+     * Add a contact to an entity.
+     */
+    public function addContact(int $id, Request $request): JsonResponse
+    {
+        $this->validate($request, [
+            'name' => ['required', 'min:3'],
+            'type' => ['required', 'min:3'],
+            'visibility_id' => ['required', 'integer'],
+            'email' => ['nullable', 'email'],
+            'phone' => ['nullable', 'string'],
+            'other' => ['nullable', 'string'],
+        ]);
+
+        if ($entity = Entity::find($id)) {
+            $input = $request->only(['name', 'email', 'phone', 'other', 'type', 'visibility_id']);
+            $contact = Contact::create($input);
+            $entity->contacts()->attach($contact->id);
+
+            Activity::log($contact, $this->user, Action::CREATE);
+
+            return response()->json($contact, 201);
+        }
+
+        return response()->json([], 404);
+    }
+
+    /**
+     * Update a contact on an entity.
+     */
+    public function updateContact(int $id, int $contactId, Request $request): JsonResponse
+    {
+        $this->validate($request, [
+            'name' => ['sometimes', 'required', 'min:3'],
+            'type' => ['sometimes', 'required', 'min:3'],
+            'visibility_id' => ['sometimes', 'required', 'integer'],
+            'email' => ['nullable', 'email'],
+            'phone' => ['nullable', 'string'],
+            'other' => ['nullable', 'string'],
+        ]);
+
+        if ($entity = Entity::find($id)) {
+            $contact = $entity->contacts()->find($contactId);
+            if ($contact) {
+                if ($request->user()->id !== ($contact->created_by ?? $entity->created_by)) {
+                    return response()->json([], 403);
+                }
+
+                $input = $request->only(['name', 'email', 'phone', 'other', 'type', 'visibility_id']);
+                $contact->update($input);
+
+                Activity::log($contact, $this->user, Action::UPDATE);
+                return response()->json($contact);
+            }
+        }
+
+        return response()->json([], 404);
+    }
+
+    /**
+     * Delete a link from an entity.
+     */
+    public function deleteLink(int $id, int $linkId, Request $request): JsonResponse
+    {
+        if ($entity = Entity::find($id)) {
+            $link = $entity->links()->find($linkId);
+            if ($link) {
+                if ($request->user()->id !== ($link->created_by ?? $entity->created_by)) {
+                    return response()->json([], 403);
+                }
+
+                // add to activity log
+                Activity::log($link, $this->user, Action::DELETE);
+
+                $entity->links()->detach($linkId);
+                $link->delete();
+
+                return response()->json([], 204);
+            }
+        }
+
+        return response()->json([], 404);
+    }
+
+    /**
+     * Delete a location from an entity.
+     */
+    public function deleteLocation(int $id, int $locationId, Request $request): JsonResponse
+    {
+        if ($entity = Entity::find($id)) {
+            $location = $entity->locations()->find($locationId);
+            if ($location) {
+                if ($request->user()->id !== ($location->created_by ?? $entity->created_by)) {
+                    return response()->json([], 403);
+                }
+
+                // add to activity log
+                Activity::log($location, $this->user, Action::DELETE);
+
+                $location->delete();
+
+                return response()->json([], 204);
+            }
+        }
+
+        return response()->json([], 404);
+    }
+
+    /**
+     * Delete a contact from an entity.
+     */
+    public function deleteContact(int $id, int $contactId, Request $request): JsonResponse
+    {
+        if ($entity = Entity::find($id)) {
+            $contact = $entity->contacts()->find($contactId);
+            if ($contact) {
+                if ($request->user()->id !== ($contact->created_by ?? $entity->created_by)) {
+                    return response()->json([], 403);
+                }
+
+                // add to activity log
+                Activity::log($contact, $this->user, Action::DELETE);
+
+                $entity->contacts()->detach($contactId);
+                $contact->delete();
+
+                return response()->json([], 204);
+            }
         }
 
         return response()->json([], 404);
@@ -1044,6 +1262,39 @@ class EntitiesController extends Controller
         
         // converts array of embeds into json embed list
         return response()->json($embeds);
+    }
+
+    public function links(?Entity $entity): JsonResponse
+    {
+        if (!$entity) {
+            abort(404);
+        }
+
+        $links = $entity->links()->get();
+
+        return response()->json($links);
+    }
+
+    public function locations(?Entity $entity): JsonResponse
+    {
+        if (!$entity) {
+            abort(404);
+        }
+
+        $locations = $entity->locations()->get();
+
+        return response()->json($locations);
+    }
+
+    public function contacts(?Entity $entity): JsonResponse
+    {
+        if (!$entity) {
+            abort(404);
+        }
+
+        $contacts = $entity->contacts()->get();
+
+        return response()->json($contacts);
     }
 
     public function photos(?Entity $entity): JsonResponse
