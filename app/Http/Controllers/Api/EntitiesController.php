@@ -8,6 +8,7 @@ use App\Http\Requests\EntityRequest;
 use App\Http\Resources\EntityCollection;
 use App\Http\Resources\EntityResource;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
+use App\Models\Action;
 use App\Models\Activity;
 use App\Models\Alias;
 use App\Models\Entity;
@@ -734,6 +735,9 @@ class EntitiesController extends Controller
             $link = Link::create($input);
             $entity->links()->attach($link->id);
 
+            // add to activity log
+            Activity::log($link, $this->user, Action::CREATE);
+
             return response()->json($link, 201);
         }
 
@@ -765,6 +769,9 @@ class EntitiesController extends Controller
                 }
                 $link->update($input);
 
+                // add to activity log
+                Activity::log($link, $this->user, Action::UPDATE);
+
                 return response()->json($link);
             }
         }
@@ -791,6 +798,9 @@ class EntitiesController extends Controller
             $location = new Location($input);
             $location->created_by = $request->user()->id;
             $location->save();
+
+            // add a location to activity log
+            Activity::log($location, $this->user, Action::CREATE);
 
             return response()->json($location, 201);
         }
@@ -821,6 +831,9 @@ class EntitiesController extends Controller
                 $input = $request->all();
                 $location->update($input);
 
+                // add to activity log
+                Activity::log($location, $this->user, Action::UPDATE);
+
                 return response()->json($location);
             }
         }
@@ -846,6 +859,8 @@ class EntitiesController extends Controller
             $input = $request->only(['name', 'email', 'phone', 'other', 'type', 'visibility_id']);
             $contact = Contact::create($input);
             $entity->contacts()->attach($contact->id);
+
+            Activity::log($contact, $this->user, Action::CREATE);
 
             return response()->json($contact, 201);
         }
@@ -877,6 +892,7 @@ class EntitiesController extends Controller
                 $input = $request->only(['name', 'email', 'phone', 'other', 'type', 'visibility_id']);
                 $contact->update($input);
 
+                Activity::log($contact, $this->user, Action::UPDATE);
                 return response()->json($contact);
             }
         }
@@ -895,6 +911,9 @@ class EntitiesController extends Controller
                 if ($request->user()->id !== ($link->created_by ?? $entity->created_by)) {
                     return response()->json([], 403);
                 }
+
+                // add to activity log
+                Activity::log($link, $this->user, Action::DELETE);
 
                 $entity->links()->detach($linkId);
                 $link->delete();
@@ -918,6 +937,9 @@ class EntitiesController extends Controller
                     return response()->json([], 403);
                 }
 
+                // add to activity log
+                Activity::log($location, $this->user, Action::DELETE);
+
                 $location->delete();
 
                 return response()->json([], 204);
@@ -938,6 +960,9 @@ class EntitiesController extends Controller
                 if ($request->user()->id !== ($contact->created_by ?? $entity->created_by)) {
                     return response()->json([], 403);
                 }
+
+                // add to activity log
+                Activity::log($contact, $this->user, Action::DELETE);
 
                 $entity->contacts()->detach($contactId);
                 $contact->delete();
