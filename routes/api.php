@@ -96,6 +96,9 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::put('entities/{id}/links/{linkId}', 'Api\EntitiesController@updateLink');
     Route::put('entities/{id}/locations/{locationId}', 'Api\EntitiesController@updateLocation');
     Route::put('entities/{id}/contacts/{contactId}', 'Api\EntitiesController@updateContact');
+    Route::delete('entities/{id}/links/{linkId}', 'Api\EntitiesController@deleteLink');
+    Route::delete('entities/{id}/locations/{locationId}', 'Api\EntitiesController@deleteLocation');
+    Route::delete('entities/{id}/contacts/{contactId}', 'Api\EntitiesController@deleteContact');
     Route::post('entities/{entity}/follow', 'Api\EntitiesController@followJson')->middleware('auth:sanctum');
     Route::post('entities/{entity}/unfollow', 'Api\EntitiesController@unfollowJson')->middleware('auth:sanctum');
     Route::resource('entities', 'Api\EntitiesController');

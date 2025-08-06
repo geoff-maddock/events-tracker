@@ -96,6 +96,9 @@ class EntitiesController extends Controller
             'updateLocation',
             'updateLink',
             'updateContact',
+            'deleteLink',
+            'deleteLocation',
+            'deleteContact',
         ]);
 
         parent::__construct();
@@ -875,6 +878,71 @@ class EntitiesController extends Controller
                 $contact->update($input);
 
                 return response()->json($contact);
+            }
+        }
+
+        return response()->json([], 404);
+    }
+
+    /**
+     * Delete a link from an entity.
+     */
+    public function deleteLink(int $id, int $linkId, Request $request): JsonResponse
+    {
+        if ($entity = Entity::find($id)) {
+            $link = $entity->links()->find($linkId);
+            if ($link) {
+                if ($request->user()->id !== ($link->created_by ?? $entity->created_by)) {
+                    return response()->json([], 403);
+                }
+
+                $entity->links()->detach($linkId);
+                $link->delete();
+
+                return response()->json([], 204);
+            }
+        }
+
+        return response()->json([], 404);
+    }
+
+    /**
+     * Delete a location from an entity.
+     */
+    public function deleteLocation(int $id, int $locationId, Request $request): JsonResponse
+    {
+        if ($entity = Entity::find($id)) {
+            $location = $entity->locations()->find($locationId);
+            if ($location) {
+                if ($request->user()->id !== ($location->created_by ?? $entity->created_by)) {
+                    return response()->json([], 403);
+                }
+
+                $location->delete();
+
+                return response()->json([], 204);
+            }
+        }
+
+        return response()->json([], 404);
+    }
+
+    /**
+     * Delete a contact from an entity.
+     */
+    public function deleteContact(int $id, int $contactId, Request $request): JsonResponse
+    {
+        if ($entity = Entity::find($id)) {
+            $contact = $entity->contacts()->find($contactId);
+            if ($contact) {
+                if ($request->user()->id !== ($contact->created_by ?? $entity->created_by)) {
+                    return response()->json([], 403);
+                }
+
+                $entity->contacts()->detach($contactId);
+                $contact->delete();
+
+                return response()->json([], 204);
             }
         }
 

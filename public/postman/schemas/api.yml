@@ -3761,6 +3761,33 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Link"
+    delete:
+      parameters:
+        - name: id
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+        - name: linkId
+          description: The unique identifier of the link
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - entities
+      summary: Delete Entity Link
+      operationId: deleteEntityLinkById
+      responses:
+        "204":
+          description: Successful response
+          content:
+            application/json: {}
   /api/entities/{id}/locations:
     post:
       parameters:
@@ -3823,6 +3850,33 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Location"
+    delete:
+      parameters:
+        - name: id
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+        - name: locationId
+          description: The unique identifier of the location
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - entities
+      summary: Delete Entity Location
+      operationId: deleteEntityLocationById
+      responses:
+        "204":
+          description: Successful response
+          content:
+            application/json: {}
   /api/entities/{id}/contacts:
     post:
       parameters:
@@ -3885,6 +3939,33 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Contact"
+    delete:
+      parameters:
+        - name: id
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+        - name: contactId
+          description: The unique identifier of the contact
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - entities
+      summary: Delete Entity Contact
+      operationId: deleteEntityContactById
+      responses:
+        "204":
+          description: Successful response
+          content:
+            application/json: {}
   /api/entities/{slug}/follow:
     post:
       parameters:
