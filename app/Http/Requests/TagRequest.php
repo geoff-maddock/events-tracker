@@ -21,6 +21,8 @@ class TagRequest extends Request
         return [
             'name' => 'required|min:3|max:16',
             'slug' => Rule::unique('tags')->ignore(isset($this->tag) ? $this->tag->id : ''),
+            'tag_type_id' => 'nullable|exists:tag_types,id',
+            'description' => 'nullable|string',
         ];
     }
 }

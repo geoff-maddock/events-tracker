@@ -1785,7 +1785,6 @@ components:
       type: object
       required:
         - name
-        - tag_type_id
       properties:
         id:
           type: integer
@@ -1801,9 +1800,14 @@ components:
           maxLength: 255
           description: A unique identifier name for the tag in kebab-case
           example: post-punk
+        description:
+          type: string
+          nullable: true
+          description: Full description of the tag
+          example: "A genre focused on bass-heavy breakbeats"
         tag_type_id:
           type: integer
-          readOnly: true
+          nullable: true
           example: 1
           description: Relation to the tag type table that defines the type of tag
         created_at:

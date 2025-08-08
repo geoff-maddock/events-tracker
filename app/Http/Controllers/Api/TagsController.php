@@ -218,30 +218,21 @@ class TagsController extends Controller
      */
     public function store(Request $request, Tag $tag): JsonResponse
     {
-        // get the request
-        $input = $request->all();
+        $input = $request->only(['name', 'slug', 'tag_type_id', 'description']);
 
-        if (!$input['slug']) {
-            $slug = Str::slug($input['name'], '-');
-        } else {
-            $slug = $input['slug'];
-        }
+        $input['slug'] = $input['slug'] ?? Str::slug($input['name'], '-');
 
-        $tagObject = Tag::where('slug', '=', $slug)->first();
+        $tagObject = Tag::where('slug', '=', $input['slug'])->first();
 
-        // if the tag name does not exist, create
         if (!$tagObject) {
             $tagObject = $tag->create($input);
 
             flash()->success('Success', sprintf('You added a new tag %s.', $tagObject->name));
 
-            // add to activity log
             Activity::log($tagObject, $this->user, 1);
-        } else {
-            // flash()->error('Error', sprintf('The tag %s already exists.', $input['name']));
         }
 
-        return response()->json($tagObject);
+        return response()->json(new TagResource($tagObject));
     }
 
     /**
@@ -435,10 +426,8 @@ class TagsController extends Controller
      */
     public function update(Tag $tag, Request $request): JsonResponse
     {
-        $msg = '';
+        $tag->fill($request->only(['name', 'slug', 'tag_type_id', 'description']))->save();
 
-        $tag->fill($request->input())->save();
-
-        return response()->json($tag);
+        return response()->json(new TagResource($tag));
     }
 }

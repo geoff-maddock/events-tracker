@@ -1254,7 +1254,6 @@ components:
       type: object
       required:
         - name
-        - tag_type_id
       properties:
         id:
           type: integer
@@ -1273,6 +1272,7 @@ components:
         tag_type_id:
           type: integer
           readOnly: true
+          nullable: true
           example: 1
           description: Relation to the tag type table that defines the type of tag
         created_at:

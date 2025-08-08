@@ -16,6 +16,7 @@ use Illuminate\Support\Collection;
  * @property int|null $user_id
  * @property string   $name
  * @property string   $slug
+ * @property string|null $description
  * @property TagType  $tagType
  * @property int|null $tag_type_id
  * @property DateTime $created_at
@@ -25,7 +26,7 @@ class Tag extends Eloquent
     use HasFactory;
 
     protected $fillable = [
-        'name', 'tag_type_id', 'slug',
+        'name', 'tag_type_id', 'slug', 'description',
     ];
 
     public function getRouteKeyName()
