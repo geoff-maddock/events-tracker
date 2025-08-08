@@ -30,6 +30,7 @@ class TagFactory extends Factory
             'tag_type_id' => function () {
                 return TagType::all()->random()->id;
             },
+            'description' => $this->faker->sentence,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
         ];

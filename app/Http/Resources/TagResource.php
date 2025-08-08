@@ -22,9 +22,11 @@ class TagResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
+            'description' => $this->description,
+            'tag_type_id' => $this->tag_type_id,
             'tag_type' => $this->tagType,
             'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at
+            'updated_at' => $this->updated_at,
             ];
     }
 }

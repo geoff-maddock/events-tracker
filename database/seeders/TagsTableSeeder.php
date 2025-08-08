@@ -18,18 +18,21 @@ class TagsTableSeeder extends Seeder
             'name' => 'Jungle',
             'tag_type_id' => $type->id,
             'slug' => 'jungle',
+            'description' => 'Jungle genre',
         ]);
 
         Tag::create([
             'name' => 'Club Music',
             'tag_type_id' => $type->id,
             'slug' => 'club-music',
+            'description' => 'Club Music genre',
         ]);
 
         Tag::create([
             'name' => 'Footwork',
             'tag_type_id' => $type->id,
             'slug' => 'footwork',
+            'description' => 'Footwork genre',
         ]);
     }
 }
