@@ -280,6 +280,7 @@ components:
       required:
         - name
         - slug
+        - description
         - entity_type_id
         - entity_status_id
       properties:
