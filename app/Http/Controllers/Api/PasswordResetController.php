@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Action;
+use App\Models\Activity;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
@@ -24,6 +27,20 @@ class PasswordResetController extends Controller
         }
 
         $status = Password::broker()->sendResetLink(['email' => $data['email']]);
+
+        if ($status === Password::RESET_LINK_SENT) {
+            $user = User::where('email', $data['email'])->first();
+
+            $activity = new Activity();
+            $activity->user_id = $user?->id;
+            $activity->object_table = 'User';
+            $activity->object_id = $user?->id;
+            $activity->object_name = $data['email'];
+            $activity->action_id = Action::PASSWORD_RESET_REQUEST;
+            $activity->message = 'Password reset link requested for ' . $data['email'];
+            $activity->ip_address = $request->ip();
+            $activity->save();
+        }
 
         $code = $status === Password::RESET_LINK_SENT ? 200 : 400;
 

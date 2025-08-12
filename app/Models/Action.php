@@ -21,8 +21,15 @@ class Action extends Eloquent
     const LOGOUT = 5;
     const FOLLOW = 6;
     const UNFOLLOW = 7;
-    const LOCK = 8;
-    const UNLOCK = 9;
+    const ATTENDING = 8;
+    const UNATTENDING = 9;
+    const ACTIVATE = 10;
+    const SUSPEND = 11;
+    const REMINDER = 12;
+    const IMPERSONATE = 13;
+    const FAILED_LOGIN = 14;
+    const NOTIFICATION = 15;
+    const INSTAGRAM_POST = 16;
 
     // Additional actions
     const PASSWORD_RESET_REQUEST = 17;
