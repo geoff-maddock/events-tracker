@@ -30,14 +30,14 @@ tags:
   - name: occurrence-weeks
   - name: occurrence-days
   - name: photos
-    - name: posts
-    - name: roles
-    - name: series
-    - name: tags
-    - name: tag-types
-    - name: threads
-    - name: users
-    - name: visibilities
+  - name: posts
+  - name: roles
+  - name: series
+  - name: tags
+  - name: tag-types
+  - name: threads
+  - name: users
+  - name: visibilities
 components:
   responses:
     NotFound:
@@ -1930,52 +1930,52 @@ components:
           format: date-time
           description: Date and time that the tag was last updated
           readOnly: true
-      Tags:
-        allOf: # Combines the BasicErrorModel and the inline model
-          - $ref: "#/components/schemas/Pagination"
-          - type: object
-            properties:
-              data:
-                type: array
-                items: { "$ref": "#/components/schemas/Tag" }
-      TagType:
-        type: object
-        required:
-          - name
-        properties:
-          id:
-            type: integer
-            readOnly: true
-            example: 1
-          name:
-            type: string
-            example: Genre
-          created_at:
-            type: string
-            example: "2018-03-20T09:12:28Z"
-            format: date-time
-            description: Date and time that the tag type was created
-            readOnly: true
-          updated_at:
-            type: string
-            example: "2018-03-20T09:12:28Z"
-            format: date-time
-            description: Date and time that the tag type was last updated
-            readOnly: true
-      TagTypes:
-        allOf: [$ref: "#/components/schemas/Pagination"]
-        type: object
-        properties:
-          data:
-            type: array
-            description: List of the current page of tag types
-            items:
-              "$ref": "#/components/schemas/TagType"
-      Role:
-        type: object
-        required:
-          - name
-          - slug
+    Tags:
+      allOf: # Combines the BasicErrorModel and the inline model
+        - $ref: "#/components/schemas/Pagination"
+        - type: object
+          properties:
+            data:
+              type: array
+              items: { "$ref": "#/components/schemas/Tag" }
+    TagType:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          example: Genre
+        created_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the tag type was created
+          readOnly: true
+        updated_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the tag type was last updated
+          readOnly: true
+    TagTypes:
+      allOf: [$ref: "#/components/schemas/Pagination"]
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of the current page of tag types
+          items:
+            "$ref": "#/components/schemas/TagType"
+    Role:
+      type: object
+      required:
+        - name
+        - slug
       properties:
         id:
           type: integer
