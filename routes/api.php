@@ -154,6 +154,9 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::post('tags/{tag}/follow', 'Api\TagsController@followJson')->middleware('auth:sanctum');
     Route::post('tags/{tag}/unfollow', 'Api\TagsController@unfollowJson')->middleware('auth:sanctum');
     Route::resource('tags', 'Api\TagsController');
+    Route::match(['get', 'post'], 'tag-types/filter', ['as' => 'tag-types.filter', 'uses' => 'Api\TagTypesController@filter']);
+    Route::resource('tag-types', 'Api\TagTypesController')->only(['index', 'show']);
+
 
     Route::match(['get', 'post'], 'roles/filter', ['as' => 'roles.filter', 'uses' => 'Api\RolesController@filter']);
     Route::get('roles/reset', ['as' => 'roles.reset', 'uses' => 'Api\RolesController@reset']);
