@@ -24,6 +24,10 @@ class Action extends Eloquent
     const LOCK = 8;
     const UNLOCK = 9;
 
+    // Additional actions
+    const PASSWORD_RESET_REQUEST = 17;
+    const PASSWORD_RESET = 18;
+
     /**
      * The storage format of the model's date columns.
      *
