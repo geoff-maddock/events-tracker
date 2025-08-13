@@ -2189,21 +2189,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Tags"
-  /api/tags/{tagId}:
+  /api/tags/{slug}:
     get:
       parameters:
-        - name: tagId
+        - name: slug
           description: The unique identifier of the tag
           in: path
           required: true
           schema:
-            type: integer
+            type: string
             readOnly: true
-            example: 1
+            example: "strobe"
       tags:
         - tags
-      summary: Get one Tag by ID
-      operationId: getTagById
+      summary: Get one Tag by Slug
+      operationId: getTagBySlug
       responses:
         "200":
           description: Successful response
@@ -2213,18 +2213,18 @@ paths:
                 $ref: "#/components/schemas/Tag"
     put:
       parameters:
-        - name: tagId
+        - name: slug
           description: The unique identifier of the tag
           in: path
           required: true
           schema:
-            type: integer
+            type: string
             readOnly: true
-            example: 1
+            example: "strobe"
       tags:
         - tags
-      summary: Update Tag by ID
-      operationId: updateTagById
+      summary: Update Tag by Slug
+      operationId: updateTagBySlug
       requestBody:
         content:
           application/json:
@@ -2237,18 +2237,18 @@ paths:
             application/json: {}
     delete:
       parameters:
-        - name: tagId
+        - name: slug
           description: The unique identifier of the tag
           in: path
           required: true
           schema:
-            type: integer
+            type: string
             readOnly: true
-            example: 1
+            example: "strobe"
       tags:
         - tags
-      summary: Delete Tag by ID
-      operationId: deleteTagById
+      summary: Delete Tag by Slug
+      operationId: deleteTagBySlug
       responses:
         "204":
           description: Successful response

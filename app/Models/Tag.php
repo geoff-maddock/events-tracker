@@ -13,7 +13,8 @@ use Illuminate\Support\Collection;
 
 /**
  * @property int      $id
- * @property int|null $user_id
+ * @property int|null $created_by
+ * @property int|null $updated_by
  * @property string   $name
  * @property string   $slug
  * @property string|null $description

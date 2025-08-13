@@ -2719,20 +2719,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Tags"
-  /api/tags/{tagId}:
+  /api/tags/{slug}:
     get:
       tags:
         - tags
       summary: Get one Tag
-      operationId: getTagById
+      operationId: getTagBySlug
       parameters:
-        - name: tagId
+        - name: slug
           description: The unique identifier of the tag
           in: path
           required: true
           schema:
-            type: integer
-            example: 1
+            type: string
+            example: "strobe"
       responses:
         "200":
           description: Successful response
@@ -2744,7 +2744,7 @@ paths:
       tags:
         - tags
       summary: Update Tag
-      operationId: updateTagById
+      operationId: updateTagBySlug
       requestBody:
         content:
           application/json:
@@ -2752,6 +2752,16 @@ paths:
               $ref: "#/components/schemas/Tag"
       responses:
         "200":
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - tags
+      summary: Delete Tag
+      operationId: deleteTagBySlug
+      responses:
+        "204":
           description: Successful response
           content:
             application/json: {}

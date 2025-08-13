@@ -153,7 +153,8 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('tags/rpp-reset', ['as' => 'tags.rppReset', 'uses' => 'Api\TagsController@rppReset']);
     Route::post('tags/{tag}/follow', 'Api\TagsController@followJson')->middleware('auth:sanctum');
     Route::post('tags/{tag}/unfollow', 'Api\TagsController@unfollowJson')->middleware('auth:sanctum');
-    Route::resource('tags', 'Api\TagsController');
+    Route::delete('tags/{tag}', 'Api\TagsController@destroy');
+    Route::resource('tags', 'Api\TagsController')->except(['destroy']);
     Route::match(['get', 'post'], 'tag-types/filter', ['as' => 'tag-types.filter', 'uses' => 'Api\TagTypesController@filter']);
     Route::resource('tag-types', 'Api\TagTypesController')->only(['index', 'show']);
 
