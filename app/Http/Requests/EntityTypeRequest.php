@@ -30,6 +30,7 @@ class EntityTypeRequest extends Request
             'slug' => [
                 'required',
                 'string',
+                'regex:/^[a-z0-9-]+$/',
                 Rule::unique('entity_types', 'slug')->ignore($entityTypeId),
             ],
             'short' => 'required|min:3|max:255',

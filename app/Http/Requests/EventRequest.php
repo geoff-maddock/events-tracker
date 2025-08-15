@@ -31,6 +31,7 @@ class EventRequest extends Request
             'slug' => [
                 'required',
                 'string',
+                'regex:/^[a-z0-9-]+$/',
                 Rule::unique('events', 'slug')->ignore($eventSlug),
             ],
             'short' => 'max:255',

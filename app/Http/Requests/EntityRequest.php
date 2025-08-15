@@ -25,6 +25,7 @@ class EntityRequest extends Request
             'slug' => [
                 'required',
                 'string',
+                'regex:/^[a-z0-9-]+$/',
                 Rule::unique('entities', 'slug')->ignore($entitySlug),
             ],
             'short' => 'required|max:255',

@@ -30,6 +30,7 @@ class EventTypeRequest extends Request
             'slug' => [
                 'required',
                 'string',
+                'regex:/^[a-z0-9-]+$/',
                 Rule::unique('event_types', 'slug')->ignore($eventTypeId),
             ],
         ];

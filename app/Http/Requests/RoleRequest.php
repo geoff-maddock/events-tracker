@@ -26,6 +26,7 @@ class RoleRequest extends Request
             'slug' => [
                 'required',
                 'string',
+                'regex:/^[a-z0-9-]+$/',
                 Rule::unique('roles', 'slug')->ignore($roleId),
             ],
             'short' => 'nullable|max:255',

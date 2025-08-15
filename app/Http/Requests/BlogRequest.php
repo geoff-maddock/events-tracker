@@ -25,7 +25,7 @@ class BlogRequest extends Request
     {
         return [
             'name' => 'required|min:3|max:255',
-            'slug' => 'required|min:3|max:255|unique:blogs,slug',
+            'slug' => 'required|min:3|max:255|regex:/^[a-z0-9-]+$/|unique:blogs,slug',
             'body' => 'required|min:3|max:65535',
             'visibility_id' => 'required|integer',
             'content_type_id' => 'required|integer',

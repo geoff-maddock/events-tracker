@@ -28,7 +28,7 @@ class LocationRequest extends Request
     {
         return [
             'name' => 'required|min:3',
-            'slug' => 'required|min:3',
+            'slug' => 'required|min:3|regex:/^[a-z0-9-]+$/',
             'city' => 'required|min:3',
             'visibility_id' => 'required',
             'location_type_id' => 'required',

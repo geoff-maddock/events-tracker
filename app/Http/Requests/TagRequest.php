@@ -20,7 +20,11 @@ class TagRequest extends Request
     {
         return [
             'name' => 'required|min:3|max:16',
-            'slug' => Rule::unique('tags')->ignore(isset($this->tag) ? $this->tag->id : ''),
+            'slug' => [
+                'nullable',
+                'regex:/^[a-z0-9-]+$/',
+                Rule::unique('tags')->ignore(isset($this->tag) ? $this->tag->id : ''),
+            ],
             'tag_type_id' => 'nullable|exists:tag_types,id',
             'description' => 'nullable|string',
         ];
