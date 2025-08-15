@@ -145,6 +145,15 @@ components:
           description: The entity's username on twitter
           example: johnsmith
         tag_list:
+          description: An array of Tag PK ids related to the event
+          type: array
+          items: { "type": "integer" }
+        role_list:
+          description: An array of Role PK ids related to the event
+          type: array
+          items: { "type": "integer" }
+        alias_list:
+          description: An array of Alias PK ids related to the event
           type: array
           items: { "type": "integer" }
     EntityResponse:
@@ -302,7 +311,6 @@ components:
     EventRequest:
       type: object
       required:
-        - id
         - name
         - slug
         - start_at
@@ -416,9 +424,11 @@ components:
           format: date-time
           description: Date and time that the event was cancelled
         tag_list:
+          description: An array of Tag PK ids related to the event
           type: array
           items: { "type": "integer" }
         entity_list:
+          description: An array of Entity PK ids related to the event
           type: array
           items: { "type": "integer" }
     Event:
