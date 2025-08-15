@@ -61,7 +61,7 @@ class EntitiesTest extends TestCase
 
         // add an entity created by that user
         $entity = Entity::factory()
-            ->create(['created_by' => $user->id]);
+            ->create(['created_by' => $user->id, 'slug' => 'my-entity']);
 
         // try to edit the entity as the user who created
         $this->actingAs($user)
@@ -98,6 +98,7 @@ class EntitiesTest extends TestCase
         $this->signIn();
 
         $entity = Entity::factory()->make();
+        $entity->slug = 'new-entity';
 
         $response = $this->post('/entities', $entity->toArray());
 
