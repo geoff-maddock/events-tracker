@@ -23,7 +23,7 @@ class MenuRequest extends Request
     {
         return [
             'name' => 'required|min:3',
-            'slug' => 'required|min:3',
+            'slug' => 'required|min:3|regex:/^[a-z0-9-]+$/',
             'body' => 'required',
             'visibility_id' => 'required',
         ];

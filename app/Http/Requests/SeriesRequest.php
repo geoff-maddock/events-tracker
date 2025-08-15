@@ -38,6 +38,7 @@ class SeriesRequest extends Request
             'slug' => [
                 'required',
                 'string',
+                'regex:/^[a-z0-9-]+$/',
                 Rule::unique('series', 'slug')->ignore($seriesSlug),
             ],
             'short' => 'required|min:3|max:255',

@@ -786,7 +786,7 @@ class EntitiesController extends Controller
     {
         $this->validate($request, [
             'name' => ['required', 'min:3'],
-            'slug' => ['required', 'min:3'],
+            'slug' => ['required', 'min:3', 'regex:/^[a-z0-9-]+$/'],
             'city' => ['required', 'min:3'],
             'visibility_id' => ['required'],
             'location_type_id' => ['required'],
@@ -815,7 +815,7 @@ class EntitiesController extends Controller
     {
         $this->validate($request, [
             'name' => ['sometimes', 'required', 'min:3'],
-            'slug' => ['sometimes', 'required', 'min:3'],
+            'slug' => ['sometimes', 'required', 'min:3', 'regex:/^[a-z0-9-]+$/'],
             'city' => ['sometimes', 'required', 'min:3'],
             'visibility_id' => ['sometimes', 'required'],
             'location_type_id' => ['sometimes', 'required'],
