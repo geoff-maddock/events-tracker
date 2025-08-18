@@ -159,7 +159,31 @@ class EventsController extends Controller
                 'entities',
             ])
             ->paginate($listResultSet->getLimit());
-    
+
+        return response()->json(new EventCollection($events));
+    }
+
+    /**
+     * Display a listing of the most popular events.
+     */
+    public function popular(Request $request): JsonResponse
+    {
+        $days = (int) $request->get('days', 30);
+        $limit = (int) $request->get('limit', 30);
+        $from = Carbon::now()->subDays($days);
+
+        $query = Event::query()
+            ->withCount([
+                'attendees as attendees_count' => function ($q) use ($from) {
+                    $q->where('event_responses.created_at', '>=', $from);
+                },
+            ])
+            ->filter($this->filter);
+
+        $events = $query
+            ->orderByDesc('attendees_count')
+            ->paginate($limit);
+
         return response()->json(new EventCollection($events));
     }
 

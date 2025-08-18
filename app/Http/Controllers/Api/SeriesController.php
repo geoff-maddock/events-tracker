@@ -22,6 +22,7 @@ use App\Models\Tag;
 use App\Models\User;
 use App\Models\Visibility;
 use App\Services\ImageHandler;
+use Carbon\Carbon;
 use Storage;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
@@ -192,6 +193,34 @@ class SeriesController extends Controller
         $series = $query
             ->with('occurrenceType', 'visibility', 'tags')
             ->paginate($listResultSet->getLimit());
+
+        return response()->json(new SeriesCollection($series));
+    }
+
+    /**
+     * Display a listing of the most popular series.
+     */
+    public function popular(Request $request): JsonResponse
+    {
+        $days = (int) $request->get('days', 30);
+        $limit = (int) $request->get('limit', 30);
+        $from = Carbon::now()->subDays($days);
+
+        $query = Series::query()->filter($this->filter)
+            ->leftJoin('events', function ($join) use ($from) {
+                $join->on('series.id', '=', 'events.series_id')
+                    ->where('events.start_at', '>=', $from);
+            })
+            ->leftJoin('event_responses', function ($join) {
+                $join->on('events.id', '=', 'event_responses.event_id')
+                    ->where('event_responses.response_type_id', 1);
+            })
+            ->select('series.*', DB::raw('COUNT(event_responses.id) as attendees_count'))
+            ->groupBy('series.id');
+
+        $series = $query
+            ->orderByDesc('attendees_count')
+            ->paginate($limit);
 
         return response()->json(new SeriesCollection($series));
     }

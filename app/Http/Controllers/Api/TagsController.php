@@ -144,6 +144,33 @@ class TagsController extends Controller
     }
 
     /**
+     * Display a listing of the most popular tags.
+     */
+    public function popular(Request $request): JsonResponse
+    {
+        $days = (int) $request->get('days', 30);
+        $limit = (int) $request->get('limit', 30);
+        $from = Carbon::now()->subDays($days);
+
+        $query = Tag::query()
+            ->withCount([
+                'events as events_count' => function ($q) use ($from) {
+                    $q->where('start_at', '>=', $from);
+                },
+                'follows as follows_count' => function ($q) use ($from) {
+                    $q->where('created_at', '>=', $from);
+                },
+            ])
+            ->filter($this->filter);
+
+        $tags = $query
+            ->orderBy(DB::raw('events_count + follows_count'), 'desc')
+            ->paginate($limit);
+
+        return response()->json(new TagCollection($tags));
+    }
+
+    /**
      * Show the application dataAjax.
      */
     public function dataAjax(Request $request): JsonResponse

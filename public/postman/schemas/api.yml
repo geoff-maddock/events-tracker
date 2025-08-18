@@ -3108,6 +3108,41 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Events"
+  /api/events/popular:
+    get:
+      tags:
+        - events
+      summary: Get Most Popular Events
+      operationId: getPopularEvents
+      parameters:
+        - name: days
+          in: query
+          required: false
+          description: Number of days to consider when calculating popularity
+          schema:
+            type: integer
+            default: 30
+        - name: limit
+          in: query
+          required: false
+          description: Limit of results to return
+          schema:
+            type: integer
+            default: 30
+        - name: filters[name]
+          in: query
+          required: false
+          description: A filter query of the event name
+          schema:
+            type: string
+            example: "Lazercrunk"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Events"
   /api/events/by-date/{year}:
     get:
       parameters:
@@ -3508,6 +3543,41 @@ paths:
           schema:
             type: string
             example: asc
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Entities"
+  /api/entities/popular:
+    get:
+      tags:
+        - entities
+      summary: Get Most Popular Entities
+      operationId: getPopularEntities
+      parameters:
+        - name: days
+          in: query
+          required: false
+          description: Number of days to consider when calculating popularity
+          schema:
+            type: integer
+            default: 30
+        - name: limit
+          in: query
+          required: false
+          description: Limit of results to return
+          schema:
+            type: integer
+            default: 30
+        - name: filters[name]
+          in: query
+          required: false
+          description: A filter query of the entity name
+          schema:
+            type: string
+            example: "cutups"
       responses:
         "200":
           description: Successful response
@@ -5419,6 +5489,41 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Seriess"
+  /api/series/popular:
+    get:
+      tags:
+        - series
+      summary: Get Most Popular Series
+      operationId: getPopularSeries
+      parameters:
+        - name: days
+          in: query
+          required: false
+          description: Number of days to consider when calculating popularity
+          schema:
+            type: integer
+            default: 30
+        - name: limit
+          in: query
+          required: false
+          description: Limit of results to return
+          schema:
+            type: integer
+            default: 30
+        - name: filters[name]
+          in: query
+          required: false
+          description: A filter query of the series name
+          schema:
+            type: string
+            example: "Lazercrunk"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Seriess"
   /api/series/{slug}:
     parameters:
       - name: slug
@@ -5662,6 +5767,41 @@ paths:
           schema:
             type: string
             example: asc
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tags"
+  /api/tags/popular:
+    get:
+      tags:
+        - tags
+      summary: Get Most Popular Tags
+      operationId: getPopularTags
+      parameters:
+        - name: days
+          in: query
+          required: false
+          description: Number of days to consider when calculating popularity
+          schema:
+            type: integer
+            default: 30
+        - name: limit
+          in: query
+          required: false
+          description: Limit of results to return
+          schema:
+            type: integer
+            default: 30
+        - name: filters[name]
+          in: query
+          required: false
+          description: A filter query of the tag name
+          schema:
+            type: string
+            example: "techno"
       responses:
         "200":
           description: Successful response

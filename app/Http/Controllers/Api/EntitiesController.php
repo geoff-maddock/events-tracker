@@ -153,7 +153,35 @@ class EntitiesController extends Controller
 
         return response()->json(new EntityCollection($entities));
     }
-    
+
+
+    /**
+     * Display a listing of the most popular entities.
+     */
+    public function popular(Request $request): JsonResponse
+    {
+        $days = (int) $request->get('days', 30);
+        $limit = (int) $request->get('limit', 30);
+        $from = Carbon::now()->subDays($days);
+
+        $query = Entity::query()
+            ->withCount([
+                'events as events_count' => function ($q) use ($from) {
+                    $q->where('start_at', '>=', $from);
+                },
+                'follows as follows_count' => function ($q) use ($from) {
+                    $q->where('created_at', '>=', $from);
+                },
+            ])
+            ->filter($this->filter);
+
+        $entities = $query
+            ->orderBy(DB::raw('events_count + follows_count'), 'desc')
+            ->paginate($limit);
+
+        return response()->json(new EntityCollection($entities));
+    }
+
 
     /**
      * Display a listing of the resource that the user is following.

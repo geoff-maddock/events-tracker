@@ -64,6 +64,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
 
     Route::get('events/attending', ['as' => 'events.attending', 'uses' => 'Api\EventsController@indexAttending']);
     Route::get('events/recommended', ['as' => 'events.recommended', 'uses' => 'Api\EventsController@indexRecommended'])->middleware('auth:sanctum');
+    Route::get('events/popular', ['as' => 'events.popular', 'uses' => 'Api\EventsController@popular']);
     Route::get('events/by-date/{year}/{month?}/{day?}', 'Api\EventsController@indexByDate')
     ->where('year', '[1-9][0-9][0-9][0-9]')
     ->where('month', '(0?[1-9]|1[012])')
@@ -101,6 +102,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::delete('entities/{id}/contacts/{contactId}', 'Api\EntitiesController@deleteContact');
     Route::post('entities/{entity}/follow', 'Api\EntitiesController@followJson')->middleware('auth:sanctum');
     Route::post('entities/{entity}/unfollow', 'Api\EntitiesController@unfollowJson')->middleware('auth:sanctum');
+    Route::get('entities/popular', ['as' => 'entities.popular', 'uses' => 'Api\EntitiesController@popular']);
     Route::resource('entities', 'Api\EntitiesController');
 
     Route::match(['get', 'post'], 'entity-types/filter', ['as' => 'entityType.filter', 'uses' => 'Api\EntityTypesController@filter']);
@@ -146,6 +148,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::post('series/{id}/photos', 'Api\SeriesController@addPhoto');
     Route::post('series/{series}/follow', 'Api\SeriesController@followJson')->middleware('auth:sanctum');
     Route::post('series/{series}/unfollow', 'Api\SeriesController@unfollowJson')->middleware('auth:sanctum');
+    Route::get('series/popular', ['as' => 'series.popular', 'uses' => 'Api\SeriesController@popular']);
     Route::resource('series', 'Api\SeriesController');
 
     Route::match(['get', 'post'], 'tags/filter', ['as' => 'tags.filter', 'uses' => 'Api\TagsController@filter']);
@@ -154,6 +157,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::post('tags/{tag}/follow', 'Api\TagsController@followJson')->middleware('auth:sanctum');
     Route::post('tags/{tag}/unfollow', 'Api\TagsController@unfollowJson')->middleware('auth:sanctum');
     Route::delete('tags/{tag}', 'Api\TagsController@destroy');
+    Route::get('tags/popular', ['as' => 'tags.popular', 'uses' => 'Api\TagsController@popular']);
     Route::resource('tags', 'Api\TagsController')->except(['destroy']);
     Route::match(['get', 'post'], 'tag-types/filter', ['as' => 'tag-types.filter', 'uses' => 'Api\TagTypesController@filter']);
     Route::resource('tag-types', 'Api\TagTypesController')->only(['index', 'show']);
