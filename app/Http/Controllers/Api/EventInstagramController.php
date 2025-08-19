@@ -276,7 +276,7 @@ class EventInstagramController extends Controller
         ]);
     }
 
-    private function publishCarousel(Event $event, Instagram $instagram, string &$errorMessage): ?string
+    private function publishCarousel(Event $event, Instagram $instagram, string &$errorMessage): ?int
     {
         // get the instagram account
         if (!$instagram->getIgUserId()) {

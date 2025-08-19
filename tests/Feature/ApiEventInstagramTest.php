@@ -31,8 +31,6 @@ class ApiEventInstagramTest extends TestCase
         $event = Event::factory()->create();
 
         Photo::factory()->create([
-            'photoable_type' => Event::class,
-            'photoable_id' => $event->id,
             'is_primary' => 1,
             'path' => 'test.jpg',
             'thumbnail' => 'test_thumb.jpg',
