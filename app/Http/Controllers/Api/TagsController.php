@@ -255,15 +255,21 @@ class TagsController extends Controller
 
         $input['slug'] = $input['slug'] ?? Str::slug($input['name'], '-');
 
-        $tagObject = Tag::where('slug', '=', $input['slug'])->first();
+        // ensure the slug is available for validation
+        $request->merge(['slug' => $input['slug']]);
 
-        if (!$tagObject) {
-            $tagObject = $tag->create($input);
+        $this->validate($request, [
+            'name' => 'required|min:3|max:16',
+            'slug' => 'required|regex:/^[a-z0-9-]+$/|unique:tags,slug',
+            'tag_type_id' => 'nullable|exists:tag_types,id',
+            'description' => 'nullable|string',
+        ]);
 
-            flash()->success('Success', sprintf('You added a new tag %s.', $tagObject->name));
+        $tagObject = $tag->create($input);
 
-            Activity::log($tagObject, $this->user, 1);
-        }
+        flash()->success('Success', sprintf('You added a new tag %s.', $tagObject->name));
+
+        Activity::log($tagObject, $this->user, 1);
 
         return response()->json(new TagResource($tagObject));
     }
