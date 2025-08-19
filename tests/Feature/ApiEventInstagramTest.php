@@ -30,24 +30,26 @@ class ApiEventInstagramTest extends TestCase
 
         $event = Event::factory()->create();
 
-        Photo::factory()->create([
-            'is_primary' => 1,
-            'path' => 'test.jpg',
-            'thumbnail' => 'test_thumb.jpg',
-            'created_by' => $user->id,
-            'updated_by' => $user->id,
-        ]);
+        // create a primary photo and attach it to the event so getPrimaryPhoto() succeeds
+        $photo = Photo::factory()->create([
+                'is_primary' => 1,
+                'path' => 'test.jpg',
+                'thumbnail' => 'test_thumb.jpg',
+                'created_by' => $user->id,
+                'updated_by' => $user->id,
+            ]);
+        $event->photos()->attach($photo->id);
 
         Storage::shouldReceive('disk')->with('external')->andReturnSelf()->byDefault();
         Storage::shouldReceive('url')->andReturn('http://example.com/test.jpg')->byDefault();
 
         $instagram = Mockery::mock(Instagram::class);
-        $instagram->shouldReceive('getIgUserId')->andReturn('123');
+        $instagram->shouldReceive('getIgUserId')->andReturn(123);
         $instagram->shouldReceive('getPageAccessToken')->andReturn('token');
-        $instagram->shouldReceive('uploadCarouselPhoto')->andReturn('container');
+        $instagram->shouldReceive('uploadCarouselPhoto')->andReturn(111);
         $instagram->shouldReceive('checkStatus')->andReturn(true);
-        $instagram->shouldReceive('createCarousel')->andReturn('carousel');
-        $instagram->shouldReceive('publishMedia')->andReturn('published');
+        $instagram->shouldReceive('createCarousel')->andReturn(999);
+        $instagram->shouldReceive('publishMedia')->andReturn(555);
 
         $this->app->instance(Instagram::class, $instagram);
 
@@ -56,7 +58,7 @@ class ApiEventInstagramTest extends TestCase
         $response->assertStatus(200)
                  ->assertJson([
                      'success' => true,
-                     'id' => 'published',
+                     'id' => 555,
                  ]);
     }
 }
