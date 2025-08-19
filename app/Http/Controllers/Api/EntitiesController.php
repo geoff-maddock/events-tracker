@@ -179,6 +179,12 @@ class EntitiesController extends Controller
             ->orderBy(DB::raw('events_count + follows_count'), 'desc')
             ->paginate($limit);
 
+        $entities->getCollection()->transform(function ($entity) {
+            $entity->popularity_score = $entity->events_count + $entity->follows_count;
+
+            return $entity;
+        });
+
         return response()->json(new EntityCollection($entities));
     }
 

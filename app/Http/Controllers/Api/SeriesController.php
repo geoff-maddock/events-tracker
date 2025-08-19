@@ -222,6 +222,12 @@ class SeriesController extends Controller
             ->orderByDesc('attendees_count')
             ->paginate($limit);
 
+        $series->getCollection()->transform(function ($item) {
+            $item->popularity_score = $item->attendees_count;
+
+            return $item;
+        });
+
         return response()->json(new SeriesCollection($series));
     }
 

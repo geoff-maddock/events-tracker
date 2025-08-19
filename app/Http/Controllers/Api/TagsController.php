@@ -167,6 +167,12 @@ class TagsController extends Controller
             ->orderBy(DB::raw('events_count + follows_count'), 'desc')
             ->paginate($limit);
 
+        $tags->getCollection()->transform(function ($tag) {
+            $tag->popularity_score = $tag->events_count + $tag->follows_count;
+
+            return $tag;
+        });
+
         return response()->json(new TagCollection($tags));
     }
 

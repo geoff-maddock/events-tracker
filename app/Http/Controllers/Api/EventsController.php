@@ -184,6 +184,12 @@ class EventsController extends Controller
             ->orderByDesc('attendees_count')
             ->paginate($limit);
 
+        $events->getCollection()->transform(function ($event) {
+            $event->popularity_score = $event->attendees_count;
+
+            return $event;
+        });
+
         return response()->json(new EventCollection($events));
     }
 

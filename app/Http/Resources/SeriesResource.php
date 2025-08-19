@@ -19,7 +19,7 @@ class SeriesResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
+        $data = [
             'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
@@ -59,5 +59,11 @@ class SeriesResource extends JsonResource
             'next_event' => $this->nextEvent(),
             'next_start_at' => $this->nextPlannedStartAt(),
         ];
+
+        if (isset($this->popularity_score)) {
+            $data['popularity_score'] = $this->popularity_score;
+        }
+
+        return $data;
     }
 }
