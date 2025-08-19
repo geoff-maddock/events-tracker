@@ -15,6 +15,15 @@ class EventFilters extends QueryFilter
         }
     }
 
+    public function description(?string $value = null): Builder
+    {
+        if (isset($value)) {
+            return $this->builder->where('events.description', 'like', '%'.$value.'%');
+        } else {
+            return $this->builder;
+        }
+    }
+
     public function venue(?string $value = null): Builder
     {
         if (isset($value)) {

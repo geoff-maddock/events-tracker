@@ -15,6 +15,14 @@ class TagFilters extends QueryFilter
         }
     }
 
+    public function description(?string $value = null): Builder
+    {
+        if (isset($value)) {
+            return $this->builder->where('tags.description', 'like', '%'.$value.'%');
+        } else {
+            return $this->builder;
+        }
+    }
 
     public function tag_type(?string $value = null): Builder
     {

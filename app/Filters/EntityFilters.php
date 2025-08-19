@@ -15,6 +15,15 @@ class EntityFilters extends QueryFilter
         }
     }
 
+    public function description(?string $value = null): Builder
+    {
+        if (isset($value)) {
+            return $this->builder->where('entities.description', 'like', '%'.$value.'%');
+        } else {
+            return $this->builder;
+        }
+    }
+
     public function entity_status(?string $value = null): Builder
     {
         if (isset($value)) {
