@@ -262,6 +262,21 @@ components:
           maxLength: 65535
           description: A link to a photo image thumbnail
           example: https://some.url/tb-imagelink.jpg
+    InstagramPostResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indicates if the Instagram post succeeded
+          example: true
+        id:
+          type: string
+          nullable: true
+          description: Instagram media identifier returned on success
+        message:
+          type: string
+          nullable: true
+          description: Error message when the post fails
     EntityRequest:
       type: object
       required:
@@ -2987,6 +3002,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PhotoResponse"
+  /api/events/{id}/instagram-post:
+    post:
+      parameters:
+        - name: id
+          description: The unique identifier of the event
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - events
+      summary: Post Event to Instagram
+      operationId: postEventToInstagramById
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstagramPostResponse"
   /api/events/{slug}/attend:
     post:
       parameters:
