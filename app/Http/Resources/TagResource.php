@@ -18,7 +18,7 @@ class TagResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
+        $data = [
             'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
@@ -28,7 +28,13 @@ class TagResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'created_by' => $this->created_by,
-            'updated_by' => $this->updated_by
-            ];
+            'updated_by' => $this->updated_by,
+        ];
+
+        if (isset($this->popularity_score)) {
+            $data['popularity_score'] = $this->popularity_score;
+        }
+
+        return $data;
     }
 }
