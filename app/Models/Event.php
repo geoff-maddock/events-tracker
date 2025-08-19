@@ -83,6 +83,7 @@ use App\Models\User;
  * @property \App\Models\User                                                                                          $user
  * @property \App\Models\Entity|null                                                                                   $venue
  * @property \App\Models\Visibility|null                                                                               $visibility
+ * @property int|null                                                                                                  $popularity_score
  * @mixin \Illuminate\Database\Eloquent\Relations\Relation
  * @method static Builder|Event filter(\App\Filters\QueryFilter $filters)
  * @method static Builder|Event future()

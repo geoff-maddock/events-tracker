@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Builder;
+use App\Filters\TagFilters;
 
 /**
  * @property int      $id
@@ -21,6 +23,7 @@ use Illuminate\Support\Collection;
  * @property TagType  $tagType
  * @property int|null $tag_type_id
  * @property DateTime $created_at
+ * @property int|null $popularity_score
  */
 class Tag extends Eloquent
 {
@@ -161,5 +164,13 @@ class Tag extends Eloquent
         arsort($total);
 
         return array_slice($total, 0, 5);
+    }
+
+    /**
+     * Apply TagFilters to the query.
+     */
+    public function scopeFilter(Builder $query, TagFilters $filters): Builder
+    {
+        return $filters->apply($query);
     }
 }

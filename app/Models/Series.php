@@ -5,7 +5,6 @@ namespace App\Models;
 use Carbon\Carbon;
 use DateTime;
 use Storage;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,6 +15,8 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Database\Eloquent\Builder;
+use App\Filters\SeriesFilters;
 
 /**
  * App\Models\Series.
@@ -74,6 +75,8 @@ use Illuminate\Support\Facades\Date;
  * @property User|null                                                     $user
  * @property \App\Models\Entity|null                                       $venue
  * @property \App\Models\Visibility|null                                   $visibility
+ * @property int|null                                                      $attendees_count
+ * @property int|null                                                      $popularity_score
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Series active()
  * @method static \Illuminate\Database\Eloquent\Builder|Series future()
@@ -900,5 +903,13 @@ class Series extends Eloquent
         }                    
 
         return null;
+    }
+
+    /**
+     * Apply SeriesFilters to the query.
+     */
+    public function scopeFilter(Builder $query, SeriesFilters $filters): Builder
+    {
+        return $filters->apply($query);
     }
 }

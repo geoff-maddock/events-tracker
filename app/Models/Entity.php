@@ -68,6 +68,8 @@ use Storage;
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Thread[]   $threads
  * @property int|null                                                        $threads_count
  * @property \App\Models\User                                                $user
+ * @property int|null                                                        $popularity_score
+
  *
  * @method static Builder|Entity active()
  * @method static Builder|Entity filter(\App\Filters\QueryFilter $filters)
