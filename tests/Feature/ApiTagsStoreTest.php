@@ -13,6 +13,13 @@ class ApiTagsStoreTest extends TestCase
 
     protected $seed = true;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // Re-enable exception handling for these tests so we can assert on 422 responses
+        $this->withExceptionHandling();
+    }
+
     /** @test */
     public function it_returns_validation_error_when_slug_already_exists(): void
     {
