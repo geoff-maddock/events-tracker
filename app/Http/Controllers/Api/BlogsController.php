@@ -83,7 +83,7 @@ class BlogsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
+    ): JsonResponse {
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_blog');
         $listParamSessionStore->setKeyPrefix('internal_blog_index');
