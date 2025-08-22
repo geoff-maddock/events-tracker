@@ -55,7 +55,9 @@ class EntityResource extends JsonResource
                     'path' => $photo->getPath(),
                     'thumbnail_path' => $photo->getThumbnailPath(),
                 ];
-            })->toArray(),
+            },
+            )->toArray(),
+            'aliases' => MinimalResource::collection($this->aliases)->resolve(),
         ];
 
         if (isset($this->popularity_score)) {
