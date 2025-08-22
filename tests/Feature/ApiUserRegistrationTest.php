@@ -4,8 +4,9 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Models\UserStatus;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class ApiUserRegistrationTest extends TestCase
@@ -17,7 +18,7 @@ class ApiUserRegistrationTest extends TestCase
     /** @test */
     public function it_can_register_a_new_user_via_api()
     {
-        Mail::fake();
+        Notification::fake();
 
         $userData = [
             'name' => 'Test User',
@@ -47,12 +48,10 @@ class ApiUserRegistrationTest extends TestCase
         ]);
 
         // Assert verification email was sent
-        Mail::assertSent(\App\Mail\UserRegistration::class, function ($mail) {
-            return $mail->hasTo('test@example.com');
-        });
+        $user = User::where('email', 'test@example.com')->first();
+        Notification::assertSentTo($user, VerifyEmail::class);
 
         // Assert profile was created
-        $user = User::where('email', 'test@example.com')->first();
         $this->assertNotNull($user->profile);
     }
 
@@ -151,7 +150,7 @@ class ApiUserRegistrationTest extends TestCase
     /** @test */
     public function it_creates_user_with_pending_status()
     {
-        Mail::fake();
+        Notification::fake();
 
         $userData = [
             'name' => 'Test User',

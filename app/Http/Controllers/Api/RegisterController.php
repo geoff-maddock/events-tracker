@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Mail\UserRegistration;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Profile;
 use App\Http\Resources\UserResource;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -38,8 +37,8 @@ class RegisterController extends Controller
         // Create the user
         $user = $this->create($request->all());
 
-        // Send verification email
-        $this->sendVerificationEmail($user);
+        // Fire the Registered event to trigger email verification
+        event(new Registered($user));
 
         return response()->json([
             'message' => 'User registered successfully. Please check your email to verify your account.',
@@ -97,21 +96,5 @@ class RegisterController extends Controller
         $profile->save();
 
         return $user;
-    }
-
-    /**
-     * Send verification email to the newly registered user.
-     *
-     * @param User $user
-     * @return void
-     */
-    protected function sendVerificationEmail(User $user): void
-    {
-        $reply_email = config('app.noreplyemail');
-        $admin_email = config('app.admin');
-        $site = config('app.app_name');
-        $url = config('app.url');
-
-        Mail::to($user->email)->send(new UserRegistration($url, $site, $admin_email, $reply_email, $user));
     }
 }
