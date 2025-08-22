@@ -8,11 +8,16 @@ class EntityFilters extends QueryFilter
 {
     public function name(?string $value = null): Builder
     {
-        if (isset($value)) {
-            return $this->builder->where('entities.name', 'like', '%'.$value.'%');
-        } else {
+        if (!isset($value)) {
             return $this->builder;
         }
+
+        return $this->builder->where(function ($query) use ($value) {
+            $query->where('entities.name', 'like', '%'.$value.'%')
+                ->orWhereHas('aliases', function ($q) use ($value) {
+                    $q->where('name', '=', $value);
+                });
+        });
     }
 
     public function description(?string $value = null): Builder
