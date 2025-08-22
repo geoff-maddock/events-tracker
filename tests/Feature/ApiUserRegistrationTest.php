@@ -47,7 +47,7 @@ class ApiUserRegistrationTest extends TestCase
         ]);
 
         // Assert verification email was sent
-        Mail::assertSent(\App\Mail\UserActivation::class, function ($mail) {
+        Mail::assertSent(\App\Mail\UserRegistration::class, function ($mail) {
             return $mail->hasTo('test@example.com');
         });
 

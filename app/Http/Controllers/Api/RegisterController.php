@@ -3,15 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Mail\UserActivation;
+use App\Mail\UserRegistration;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Profile;
-use App\Models\Activity;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -87,11 +85,12 @@ class RegisterController extends Controller
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+            'password' => $data['password'], // Model automatically hashes it
             'user_status_id' => UserStatus::PENDING,
-            'email_verified_at' => null,
         ]);
 
+        // email_verified_at will be null by default
+        
         // Create an empty profile for the user
         $profile = new Profile();
         $profile->user_id = $user->id;
@@ -113,6 +112,6 @@ class RegisterController extends Controller
         $site = config('app.app_name');
         $url = config('app.url');
 
-        Mail::to($user->email)->send(new UserActivation($url, $site, $admin_email, $reply_email, $user));
+        Mail::to($user->email)->send(new UserRegistration($url, $site, $admin_email, $reply_email, $user));
     }
 }
