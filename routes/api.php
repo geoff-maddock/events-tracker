@@ -213,6 +213,9 @@ Route::middleware('shield')->name('shield.')->group(function () {
 Route::get('calendar-events', 'EventsController@calendarEventsApi')->name('calendarEvents.api');
 Route::get('tag-calendar-events', 'EventsController@tagCalendarEventsApi')->name('tagCalendarEvents.api');
 
+// user registration endpoint
+Route::post('register', 'Api\\RegisterController@register');
+
 // password reset endpoints
 Route::post('user/send-password-reset-email', 'Api\\PasswordResetController@sendPasswordResetEmail');
 Route::post('user/reset-password', 'Api\\PasswordResetController@resetPassword');
