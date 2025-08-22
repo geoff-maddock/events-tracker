@@ -97,4 +97,50 @@ class EntityFilters extends QueryFilter
             return $this->builder;
         }
     }
+
+    public function created_at(array | string | null $value = null): Builder
+    {
+        // if not an array, do not process
+
+        if (isset($value)) {
+            if (!is_array($value)) {
+                return $this->builder;
+            }
+
+            if (isset($value['start']) && $start = $value['start']) {
+                $this->builder->whereDate('entities.created_at', '>=', $start);
+            }
+
+            if (isset($value['end']) && $end = $value['end']) {
+                $this->builder->whereDate('entities.created_at', '<=', $end);
+            }
+
+            return $this->builder;
+        } else {
+            return $this->builder;
+        }
+    }
+
+    public function started_at(array | string | null $value = null): Builder
+    {
+        // if not an array, do not process
+
+        if (isset($value)) {
+            if (!is_array($value)) {
+                return $this->builder;
+            }
+
+            if (isset($value['start']) && $start = $value['start']) {
+                $this->builder->whereDate('entities.started_at', '>=', $start);
+            }
+
+            if (isset($value['end']) && $end = $value['end']) {
+                $this->builder->whereDate('entities.started_at', '<=', $end);
+            }
+
+            return $this->builder;
+        } else {
+            return $this->builder;
+        }
+    }
 }
