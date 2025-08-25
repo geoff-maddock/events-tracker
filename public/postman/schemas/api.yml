@@ -37,6 +37,7 @@ tags:
   - name: tag-types
   - name: threads
   - name: users
+  - name: user-registration
   - name: visibilities
 components:
   responses:
@@ -2464,6 +2465,44 @@ components:
           description: Relation to the user status table that defines the status of the user
         profile:
           $ref: "#/components/schemas/ProfileRequest"
+    UserRegistrationRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+        - g-recaptcha-response
+      properties:
+        name:
+          type: string
+          minLength: 3
+          maxLength: 255
+          description: The name of the user
+          example: John Doe
+        email:
+          type: string
+          format: email
+          maxLength: 255
+          description: The email address of the user (must be unique)
+          example: johndoe@example.com
+        password:
+          type: string
+          minLength: 8
+          description: The password of the user
+          example: password123
+        g-recaptcha-response:
+          type: string
+          description: The captcha verification token
+          example: 03AGdBq24PBsPFf8...
+    UserRegistrationResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: User registered successfully. Please check your email to verify your account.
+        user:
+          $ref: "#/components/schemas/UserSimple"
     Users:
       allOf: # Combines the BasicErrorModel and the inline model
         - $ref: "#/components/schemas/Pagination"
@@ -6226,6 +6265,44 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserResponse"
+  /api/register:
+    post:
+      tags:
+        - user-registration
+      summary: Register New User
+      operationId: registerUser
+      description: Create a new user account without requiring authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegistrationRequest"
+      responses:
+        "201":
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserRegistrationResponse"
+        "422":
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Validation failed
+                  errors:
+                    type: object
+                    description: Detailed validation errors for each field
+                    example:
+                      name: ["A name is required"]
+                      email: ["This email address is already registered"]
+                      password: ["A password must be at least 8 characters"]
+                      g-recaptcha-response: ["Please complete the captcha verification"]
   /api/roles:
     get:
       tags:
