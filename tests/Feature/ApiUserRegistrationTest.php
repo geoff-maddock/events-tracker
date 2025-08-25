@@ -8,12 +8,23 @@ use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
+use Illuminate\Support\Facades\Validator;
 
 class ApiUserRegistrationTest extends TestCase
 {
     use RefreshDatabase;
 
     protected $seed = true;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // In tests, make the "captcha" rule a no-op.
+        Validator::extend('captcha', fn () => true);
+        Validator::extend('g-recaptcha-response.required', fn () => true);
+        Validator::extend('g-recaptcha-response.captcha', fn () => true);
+    }
 
     /** @test */
     public function it_can_register_a_new_user_via_api()
