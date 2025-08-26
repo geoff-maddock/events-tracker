@@ -54,7 +54,7 @@
 
 @section('scripts.footer')
 <script type="text/javascript">
-    $('input.delete').on('click', function(e){
+    $('button.delete').on('click', function(e){
         e.preventDefault();
         const form = $(this).parents('form');
         Swal.fire({
