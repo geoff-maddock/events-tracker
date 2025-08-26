@@ -111,7 +111,7 @@
         myDropzone.options.addPhotosForm.init();
 
     })
-    $('input.delete').on('click', function(e) {
+    $('button.delete').on('click', function(e) {
         e.preventDefault();
         const form = $(this).parents('form');
         Swal.fire({
