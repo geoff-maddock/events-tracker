@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Profile;
@@ -11,6 +12,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class RegisterController extends Controller
@@ -39,6 +41,9 @@ class RegisterController extends Controller
 
         // Fire the Registered event to trigger email verification
         event(new Registered($user));
+
+        // add an activity log that a new user was added
+        Activity::log($user, null, 1, sprintf('New user registered: %s', $user->email));
 
         return response()->json([
             'message' => 'User registered successfully. Please check your email to verify your account.',
@@ -84,7 +89,7 @@ class RegisterController extends Controller
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'password' => $data['password'], // Model automatically hashes it
+            'password' => $data['password'],
             'user_status_id' => UserStatus::PENDING,
         ]);
 
