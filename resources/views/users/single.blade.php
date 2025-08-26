@@ -16,7 +16,7 @@
 		<a href="{!! route('users.edit', ['user' => $user->id]) !!}"><i class="bi bi-pencil-fill card-actions"></i></a>
 
 		<span class="card-actions">
-    		{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning card-actions py-0 my-0 icon', $user, 'DELETE', 'Delete the user', NULL, 'py-0 my-0 delete') !!}
+    		{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning card-actions py-0 my-0 icon', $user, 'DELETE', 'Delete the user', NULL, 'py-0 my-0', 'delete') !!}
 		</span>
 
 		@can('grant_access')
