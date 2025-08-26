@@ -66,7 +66,7 @@ class VerificationController extends Controller
         }
 
         // Optional: auto-login after verification
-        // Auth::login($user);
+        Auth::login($user);
 
         return redirect($this->redirectPath())->with('verified', true);
     }
