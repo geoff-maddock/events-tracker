@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\VerifiesEmails;
+use Illuminate\Http\Request;
+use Illuminate\Auth\Events\Verified;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class VerificationController extends Controller
 {
@@ -38,5 +42,32 @@ class VerificationController extends Controller
         $this->middleware('auth')->only('resend');
         $this->middleware('signed')->only('verify');
         $this->middleware('throttle:6,1')->only('verify', 'resend');
+    }
+
+        // Override the trait method to not rely on $request->user()
+    public function verify(Request $request)
+    {
+        $userId = (int) $request->route('id');
+        $hash = (string) $request->route('hash');
+
+        $user = User::findOrFail($userId);
+
+        // Validate the email hash from the URL
+        if (! hash_equals($hash, sha1($user->getEmailForVerification()))) {
+            return redirect()->route('login')->with('status', 'Invalid verification link.');
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return redirect($this->redirectPath())->with('status', 'Email already verified.');
+        }
+
+        if ($user->markEmailAsVerified()) {
+            event(new Verified($user));
+        }
+
+        // Optional: auto-login after verification
+        // Auth::login($user);
+
+        return redirect($this->redirectPath())->with('verified', true);
     }
 }
