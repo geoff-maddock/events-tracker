@@ -410,33 +410,34 @@
 
             }
         })
-        $('button.delete').on('click', function(e){
-        e.preventDefault();
-        var form = $(this).parents('form');
-        Swal.fire({
-                title: "Are you sure?",
-                text: "You will not be able to recover this user!",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                preConfirm: function() {
-                        return new Promise(function(resolve) {
-                            setTimeout(function() {
-                                resolve()
-                            }, 2000)
-                        })
-                    }
-            }).then(result => {
-            if (result.value) {
-                // handle Confirm button click
-                // result.value will contain `true` or the input value
-                form.submit();
-            } else {
-                // handle dismissals
-                // result.dismiss can be 'cancel', 'overlay', 'esc' or 'timer'
-                console.log('cancelled confirm')
-            }
+        $('input.delete').on('click', function(e){
+            e.preventDefault();
+            var form = $(this).parents('form');
+            Swal.fire({
+                    title: "Are you sure?",
+                    text: "You will not be able to recover this user!",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    preConfirm: function() {
+                            return new Promise(function(resolve) {
+                                setTimeout(function() {
+                                    resolve()
+                                }, 2000)
+                            })
+                        }
+                }).then(result => {
+                if (result.value) {
+                    // handle Confirm button click
+                    // result.value will contain `true` or the input value
+                    form.submit();
+                } else {
+                    // handle dismissals
+                    // result.dismiss can be 'cancel', 'overlay', 'esc' or 'timer'
+                    console.log('cancelled confirm')
+                }
         });
+        
     })
     </script>
 @stop
