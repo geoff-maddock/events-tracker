@@ -208,27 +208,35 @@ Keyword Tags
 <script>
 $(document).ready(function(){
     $('[data-toggle="tooltip"]').tooltip();
+	$('button.delete').on('click', function(e){
+	e.preventDefault();
+	const form = $(this).parents('form');
+	Swal.fire({
+		title: "Are you sure?",
+		text: "You will not be able to recover this tag!",
+		type: "warning",
+		showCancelButton: true,
+		confirmButtonColor: "#DD6B55",
+		confirmButtonText: "Yes, delete it!",
+		preConfirm: function() {
+			return new Promise(function(resolve) {
+				setTimeout(function() {
+					resolve()
+				}, 2000)
+			})
+		}
+	}).then(result => {
+		if (result.value) {
+			// handle Confirm button click
+			// result.value will contain `true` or the input value
+			form.submit();
+		} else {
+			// handle dismissals
+			// result.dismiss can be 'cancel', 'overlay', 'esc' or 'timer'
+			console.log('Cancelled confirm')
+		}
+	});
+})
 });
-</script>
-<script type="text/javascript">
-    $('button.delete').on('click', function(e){
-        e.preventDefault();
-        var form = $(this).parents('form');
-        Swal.fire({
-                title: "Are you sure?",
-                text: "You will not be able to recover this event!",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, delete it!",
-                closeOnConfirm: true
-            },
-            function(isConfirm){
-                if (isConfirm)
-                {
-                    form.submit();
-                };
-            });
-    })
 </script>
 @stop

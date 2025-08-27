@@ -19,6 +19,42 @@
 	{!! Form::close() !!}
 
 	{!! delete_form(['blogs.destroy', $blog->slug]) !!}
-
+	<br>
 	{!! link_to_route('blogs.index','Return to list') !!}
+@stop
+
+@section('scripts.footer')
+<script>
+    window.Dropzone["autoDiscover"] = false;
+
+    $('input.delete').on('click', function(e){
+        e.preventDefault();
+        const form = $(this).parents('form');
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You will not be able to recover this blog!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, delete it!",
+            preConfirm: function() {
+                return new Promise(function(resolve) {
+                    setTimeout(function() {
+                        resolve()
+                    }, 2000)
+                })
+            }
+        }).then(result => {
+            if (result.value) {
+                // handle Confirm button click
+                // result.value will contain `true` or the input value
+                form.submit();
+            } else {
+                // handle dismissals
+                // result.dismiss can be 'cancel', 'overlay', 'esc' or 'timer'
+                console.log('Cancelled confirm')
+            }
+        });
+    })
+</script>
 @stop

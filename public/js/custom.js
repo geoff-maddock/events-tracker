@@ -39,6 +39,7 @@ var App = (function () {
         $('button.delete').on('click', function (e) {
             var form = $(this).parents('form');
             var type = $(this).data('type');
+            console.log('set up delete confirm');
             e.preventDefault();
             Swal.fire({
                 title: "Are you sure?",
@@ -75,7 +76,7 @@ var App = (function () {
             e.preventDefault();
             var form = null;
             var type = $(this).data('type');
-            console.log('a setupConfirm function called')
+            console.log('a.confirm: setupConfirm function called')
             Swal.fire({
                 title: "Are you sure?",
                 type: "warning",
@@ -110,7 +111,7 @@ var App = (function () {
             e.preventDefault();
             var form = $(this).parents('form');
             var type = $(this).data('type');
-            console.log('button setupConfirm function called')
+            console.log('button.confirm setupConfirm function called')
             Swal.fire({
                 title: "Are you sure?",
                 type: "warning",

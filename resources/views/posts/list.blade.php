@@ -53,7 +53,7 @@
 			<div class="btn-group" role="group" aria-label="...">
 			@if ($signedIn && (($post->ownedBy($user) && $post->isRecent()) || $user->hasGroup('super_admin')))
 				<a href="{!! route('posts.edit', ['post' => $post->id]) !!}" class="btn btn-sm btn-default" title="Edit this post.">Edit <i class="bi bi-pencil-fill icon"></i></a>
-				{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $post, 'DELETE', 'Delete the post', NULL, 'delete') !!}
+				{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $post, 'DELETE', 'Delete the post', NULL, 'py-0 my-0', 'confirm') !!}
 			@endif
             @if ($signedIn)
                 @if ($like = $post->likedBy($user))

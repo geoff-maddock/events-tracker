@@ -110,7 +110,7 @@
 
     });
 
-    $('button.delete').on('click', function(e){
+    $('input.delete').on('click', function(e){
         e.preventDefault();
         const form = $(this).parents('form');
         Swal.fire({
