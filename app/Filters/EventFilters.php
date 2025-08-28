@@ -171,4 +171,13 @@ class EventFilters extends QueryFilter
             return $this->builder;
         }
     }
+
+    public function is_benefit(?string $value = null): Builder
+    {
+        if (isset($value)) {
+            return $this->builder->where('events.is_benefit', '=', $value);
+        } else {
+            return $this->builder;
+        }
+    }
 }
