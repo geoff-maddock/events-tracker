@@ -197,4 +197,15 @@ class EventFilters extends QueryFilter
 
         return $this->builder;
     }
+
+    public function min_age(mixed $value = null): Builder
+    {
+        if (isset($value)) {
+            return $this->builder->where('events.min_age', '>=', $value);
+        } else {
+            return $this->builder;
+        }
+
+        return $this->builder;
+    }
 }
