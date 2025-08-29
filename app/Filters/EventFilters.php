@@ -180,4 +180,21 @@ class EventFilters extends QueryFilter
             return $this->builder;
         }
     }
+
+    public function door_price(mixed $value = null): Builder
+    {
+        if (!isset($value) || !is_array($value)) {
+            return $this->builder;
+        }
+
+        if (array_key_exists('min', $value) && is_numeric($value['min'])) {
+            $this->builder->where('events.door_price', '>=', (float) $value['min']);
+        }
+
+        if (array_key_exists('max', $value) && is_numeric($value['max'])) {
+            $this->builder->where('events.door_price', '<=', (float) $value['max']);
+        }
+
+        return $this->builder;
+    }
 }
