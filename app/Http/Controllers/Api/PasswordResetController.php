@@ -26,10 +26,7 @@ class PasswordResetController extends Controller
             return response()->json(['message' => 'Invalid secret'], 401);
         }
 
-        // if the frontend-url is sent in the request, pass that in
-        $frontendUrl = $request->input('frontend-url');
-
-        $status = Password::broker()->sendResetLink(['email' => $data['email'], 'frontend-url' => $frontendUrl]);
+        $status = Password::broker()->sendResetLink(['email' => $data['email']]);
 
         if ($status === Password::RESET_LINK_SENT) {
             $user = User::where('email', $data['email'])->first();
