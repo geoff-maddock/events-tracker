@@ -9,6 +9,7 @@ use App\Policies\PostPolicy;
 use App\Policies\ThreadPolicy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Gate;
 use Schema;
 
@@ -52,6 +53,14 @@ class AuthServiceProvider extends ServiceProvider
             if ($user->hasGroup('admin')) {
                 return true;
             }
+        });
+
+        ResetPassword::createUrlUsing(function ($notifiable, string $token) {
+            // Prefer the per-request value your API accepts, fallback to config/app.php
+            $base = request()->input('frontend-url') ?? config('app.frontend_url', config('app.url'));
+            $base = rtrim($base, '/');
+
+            return $base.'/reset-password?token='.$token.'&email='.urlencode($notifiable->getEmailForPasswordReset());
         });
     }
 
