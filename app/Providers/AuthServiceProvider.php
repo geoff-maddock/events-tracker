@@ -60,7 +60,7 @@ class AuthServiceProvider extends ServiceProvider
             $base = request()->input('frontend-url') ?? config('app.frontend_url', config('app.url'));
             $base = rtrim($base, '/');
 
-            return $base.'/reset-password?token='.$token.'&email='.urlencode($notifiable->getEmailForPasswordReset());
+            return $base.'/password/reset/'.$token.'?email='.urlencode($notifiable->getEmailForPasswordReset());
         });
     }
 
