@@ -73,6 +73,20 @@ class PasswordResetController extends Controller
             $user->save();
         });
 
+        // add an activity log
+        if ($status === Password::PASSWORD_RESET) {
+            $user = User::where('email', $data['email'])->first();
+            $activity = new Activity();
+            $activity->user_id = $user?->id;
+            $activity->object_table = 'User';
+            $activity->object_id = $user?->id;
+            $activity->object_name = $data['email'];
+            $activity->action_id = Action::PASSWORD_RESET;
+            $activity->message = 'Password reset for ' . $data['email'];
+            $activity->ip_address = $request->ip();
+            $activity->save();
+        }
+
         $code = $status === Password::PASSWORD_RESET ? 200 : 400;
 
         return response()->json(['message' => __($status)], $code);
