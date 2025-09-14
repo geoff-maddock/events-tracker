@@ -34,7 +34,7 @@ class EventResource extends JsonResource
             'event_type' => new MinimalResource($this->eventType),
             'is_benefit' => $this->is_benefit,
             'promoter' => $this->promoter ? new MinimalSlugResource($this->promoter) : null,
-            'venue' => $this->venue ? new MinimalSlugResource($this->venue) : null,
+            'venue' => $this->venue ? new VenueResource($this->venue) : null,
             'attending' => $this->attending,
             'attendees' => MinimalUserResource::collection($this->attendees),
             'like' => $this->like,
