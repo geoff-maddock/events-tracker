@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\EventRequest;
 use App\Http\Resources\EventCollection;
 use App\Http\Resources\EventResource;
+use App\Http\Resources\MinimalResource;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Mail\FollowingUpdate;
 use App\Models\Activity;
@@ -1165,7 +1166,7 @@ class EventsController extends Controller
             Activity::log($event, $user, 6);
         }
 
-        return response()->json(new EventResource($event));
+        return response()->json(new MinimalResource($event));
     }
 
     /**
