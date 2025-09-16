@@ -35,6 +35,7 @@ class VenueResource extends JsonResource
             'updated_by' => $this->updated_by,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'primary_link' => $this->primaryLink(),
             'primary_photo' => $this->getPrimaryPhotoPath(),
             'primary_photo_thumbnail' => $this->getPrimaryPhotoThumbnailPath(),
             'primary_location' => $this->getPrimaryLocation()        ];
