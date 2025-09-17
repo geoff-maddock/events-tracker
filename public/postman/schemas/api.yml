@@ -5948,6 +5948,42 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /api/tags/{slug}/related-tags:
+    parameters:
+      - name: slug
+        description: The unique identifier of the tag
+        in: path
+        required: true
+        schema:
+          type: string
+          readOnly: true
+          example: "strobe"
+    get:
+      tags:
+        - tags
+      summary: Get Related Tags
+      operationId: getRelatedTags
+      description: Returns tags that are related to the specified tag based on co-occurrence in events
+      responses:
+        "200":
+          description: Successful response containing related tags with their occurrence counts
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+                  description: The number of times this tag appears with the specified tag
+                example:
+                  "house": 5
+                  "electronic": 3
+                  "dance": 2
+        "404":
+          description: Tag not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /api/tag-types:
     get:
       tags:
