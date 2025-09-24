@@ -66,6 +66,9 @@ class ApiTagsRelatedTagsTest extends TestCase
     /** @test */
     public function it_returns_404_for_non_existent_tag(): void
     {
+        // Ensure exceptions are handled so the test can assert the 404 response
+        $this->withExceptionHandling();
+
         $user = User::factory()->create(['user_status_id' => 1]);
         $this->actingAs($user, 'sanctum');
 
