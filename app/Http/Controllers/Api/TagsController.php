@@ -461,6 +461,16 @@ class TagsController extends Controller
     }
 
     /**
+     * Return related tags for a specified tag.
+     */
+    public function relatedTags(Tag $tag): JsonResponse
+    {
+        $relatedTags = $tag->relatedTags();
+
+        return response()->json($relatedTags);
+    }
+
+    /**
      * Update the specified resource in storage.
      */
     public function update(Tag $tag, Request $request): JsonResponse
