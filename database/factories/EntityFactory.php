@@ -26,7 +26,7 @@ class EntityFactory extends Factory
         return [
             'name' => $this->faker->name,
             'slug' => $this->faker->name,
-            'short' => $this->faker->text(254),
+            'short' => $this->faker->text(100),
             'description' => $this->faker->text(254),
             'entity_type_id' => function () {
                 return EntityType::all()->random()->id;
