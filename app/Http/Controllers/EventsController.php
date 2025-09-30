@@ -48,7 +48,7 @@ use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use App\Services\Calendar\ICalBuilder;
-
+use App\Services\Embeds\OembedExtractor;
 
 class EventsController extends Controller
 {
@@ -1408,12 +1408,12 @@ class EventsController extends Controller
         return $blacklist;
     }
 
-    public function show(?Event $event, EmbedExtractor $embedExtractor): string
+    public function show(?Event $event, OembedExtractor $oembedExtractor): string
     {
         if (!$event) {
             abort(404);
         }
-        $embeds = $embedExtractor->getEmbedsForEvent($event);
+        $embeds = $oembedExtractor->getEmbedsForEvent($event);
 
         $thread = Thread::where('event_id', '=', $event->id)->first();
 
@@ -1434,7 +1434,7 @@ class EventsController extends Controller
      *
      * @throws \Throwable
      */
-    public function loadEmbeds(int $id, EmbedExtractor $embedExtractor, Request $request): RedirectResponse | array
+    public function loadEmbeds(int $id, OEmbedExtractor $oembedExtractor, Request $request): RedirectResponse | array
     {
         // load the event
         if (!$event = Event::with('entities.links')->find($id)) {
@@ -1443,12 +1443,13 @@ class EventsController extends Controller
             return back();
         }
 
-        // extract all the links from the event body and convert into embeds
-        $embedExtractor->setLayout("medium");
-        $embeds = $embedExtractor->getEmbedsForEvent($event);
 
         // handle the request if ajax
         if ($request->ajax()) {
+            // extract all the links from the event body and convert into embeds
+            $oembedExtractor->setLayout("medium");
+            $embeds = $oembedExtractor->getEmbedsForEvent($event);
+
             return [
                 'Message' => 'Added embeds to event page.',
                 'Success' => view('embeds.playlist')
@@ -1466,7 +1467,7 @@ class EventsController extends Controller
      *
      * @throws \Throwable
      */
-    public function loadMinimalEmbeds(int $id, EmbedExtractor $embedExtractor, Request $request): RedirectResponse | array
+    public function loadMinimalEmbeds(int $id, OEmbedExtractor $embedExtractor, Request $request): RedirectResponse | array
     {
         // load the event
         if (!$event = Event::with('entities.links')->find($id)) {
@@ -1475,12 +1476,36 @@ class EventsController extends Controller
             return back();
         }
 
-        // extract all the links from the event body and convert into embeds
-        $embedExtractor->setLayout("small");
-        $embeds = $embedExtractor->getEmbedsForEvent($event);
-
         // handle the request if ajax
         if ($request->ajax()) {
+            // extract all the links from the event body and convert into embeds
+            $embedExtractor->setLayout("small");
+            $embeds = $embedExtractor->getEmbedsForEvent($event, "small");
+         
+            // smallest
+            // <iframe width="100%" height="20" scrolling="no" frameborder="no" allow="autoplay" 
+            //src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A2167078362&color=%23ff5500&inverse=false
+            //&auto_play=false&show_user=true"></iframe>
+            //<div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;
+            // font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;">
+            //<a href="https://soundcloud.com/cutups" title="cutups" target="_blank" style="color: #cccccc; text-decoration: none;">cutups</a> · 
+            //<a href="https://soundcloud.com/cutups/cutups-bloodbath-illusions-xxiii-mix" title="Cutups - Bloodbath [ILLUSIONS XXIII mix]" target="_blank" 
+            //style="color: #cccccc; text-decoration: none;">Cutups - Bloodbath [ILLUSIONS XXIII mix]</a></div>
+
+            // looks like the most relevant param is 
+
+            // medium 
+            // <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" 
+            // src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A2167078362&color=%23ff5500&auto_play=false&
+            // hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe>
+            // <div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;
+            // font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;">
+            //<a href="https://soundcloud.com/cutups" title="cutups" target="_blank" style="color: #cccccc; text-decoration: none;">cutups</a> · 
+            //<a href="https://soundcloud.com/cutups/cutups-bloodbath-illusions-xxiii-mix" title="Cutups - Bloodbath [ILLUSIONS XXIII mix]" target="_blank" 
+            //style="color: #cccccc; text-decoration: none;">Cutups - Bloodbath [ILLUSIONS XXIII mix]</a></div>
+
+
+
             return [
                 'Message' => 'Added embeds to event page.',
                 'Success' => view('embeds.minimal-playlist')
