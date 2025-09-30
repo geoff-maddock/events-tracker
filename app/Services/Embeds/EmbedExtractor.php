@@ -118,6 +118,8 @@ class EmbedExtractor
             }
         }
 
+        // dd($links);
+
         // convert the event's links into embeds when they contain embeddable audio
         foreach ($links as $link) {
             // soundcloud
@@ -125,9 +127,14 @@ class EmbedExtractor
                 // it's a soundcloud link, so request info
                 $ripple->request($link);
 
+                dump($link);
+                dump($ripple->embed());
                 $embeds[] = sprintf($this->config["soundcloud_layout"], $ripple->embed().$this->config["soundcloud"]);
             }
         }
+
+        dump($links);
+        dd($embeds);
 
         return $embeds;
     }
@@ -150,6 +157,7 @@ class EmbedExtractor
             };
             $urls[] = $link->url;
         }
+        // dd($urls);
         // now that we have the URLs, extract the embeds from them
         return $this->extractEmbedsFromUrls($urls, $size);
     }

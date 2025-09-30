@@ -700,6 +700,10 @@ class EntitiesController extends Controller
         $futureEvents = $entity->futureEvents(5);
         $pastEvents = $entity->pastEvents(5);
 
+        $embeds = $embedExtractor->getEmbedsForEntity($entity);
+
+    //    dd($embeds);
+
         return view('entities.show', compact('entity', 'threads', 'embeds', 'tracks','futureEvents','pastEvents'));
     }
 
