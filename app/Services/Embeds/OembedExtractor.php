@@ -157,18 +157,18 @@ class OembedExtractor
     {
         $oembedUrl = 'https://soundcloud.com/oembed';
         
-        // build the request URL
-        $queryParams = http_build_query([
+        // build the POST data
+        $postData = http_build_query([
             'format' => 'json',
             'url' => $url
         ]);
 
-        $requestUrl = $oembedUrl . '?' . $queryParams;
-
         // make the curl request
         $ch = curl_init();
         curl_setopt_array($ch, [
-            CURLOPT_URL => $requestUrl,
+            CURLOPT_URL => $oembedUrl,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $postData,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_TIMEOUT => 10,
@@ -200,18 +200,18 @@ class OembedExtractor
     {
         $oembedUrl = 'https://bandcamp.com/EmbeddedPlayer/oembed';
         
-        // build the request URL
-        $queryParams = http_build_query([
+        // build the POST data
+        $postData = http_build_query([
             'format' => 'json',
             'url' => $url
         ]);
 
-        $requestUrl = $oembedUrl . '?' . $queryParams;
-
         // make the curl request
         $ch = curl_init();
         curl_setopt_array($ch, [
-            CURLOPT_URL => $requestUrl,
+            CURLOPT_URL => $oembedUrl,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $postData,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_TIMEOUT => 10,
