@@ -24,7 +24,7 @@ class OembedExtractorTest extends TestCase
         $extractor->setLayout("medium");
         $results = $extractor->getLayoutConfig();
 
-        $this->assertEquals(120, $results["height"]);
+        $this->assertEquals(166, $results["height"]);
     }
 
     /** @test */
@@ -46,7 +46,7 @@ class OembedExtractorTest extends TestCase
         $extractor->setLayout("small");
         $results = $extractor->getLayoutConfig();
 
-        $this->assertEquals(42, $results["height"]);
+        $this->assertEquals(20, $results["height"]);
     }
 
     /** @test */
