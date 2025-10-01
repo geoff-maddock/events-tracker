@@ -150,7 +150,16 @@ class OembedExtractor
             // if it's a soundcloud link
             if (strpos($url, "soundcloud.com") !== false) {
                 $embed = $this->getEmbedsFromSoundcloudUrl($url);
+
                 if ($embed !== null) {
+
+                    // process the embed based on the size
+                    // for small, we need to change visual=true to visual=false
+                    if ($this->size === "small") {
+                        $embed = str_replace("visual=true", "visual=false&color=%160d18&inverse=true", $embed);
+                        $embed = str_replace("frameborder=\"no\"", "style=\"border: 0; width: 100%; height: 24px; margin-bottom: -7px; padding: 2px; background-color: #333333; color: #cccccc;\"", $embed);
+                    }
+
                     $embeds[] = $embed;
                 }
             }
@@ -369,46 +378,5 @@ class OembedExtractor
         return array_unique($urls);
     }
 
-    // /**
-    //  * Get embed HTML from Bandcamp using oEmbed API
-    //  */
-    // protected function getEmbedFromBandcampUrl(string $url): ?string
-    // {
-    //     $oembedUrl = 'https://bandcamp.com/EmbeddedPlayer/oembed';
-        
-    //     // build the POST data
-    //     $postData = http_build_query([
-    //         'format' => 'json',
-    //         'url' => $url
-    //     ]);
 
-    //     // make the curl request
-    //     $ch = curl_init();
-    //     curl_setopt_array($ch, [
-    //         CURLOPT_URL => $oembedUrl,
-    //         CURLOPT_POST => true,
-    //         CURLOPT_POSTFIELDS => $postData,
-    //         CURLOPT_RETURNTRANSFER => true,
-    //         CURLOPT_FOLLOWLOCATION => true,
-    //         CURLOPT_TIMEOUT => 10,
-    //         CURLOPT_CONNECTTIMEOUT => 10,
-    //         CURLOPT_USERAGENT => 'Geoff-Maddock/Events-Tracker BrowserKit',
-    //     ]);
-
-    //     $response = curl_exec($ch);
-    //     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    //     curl_close($ch);
-
-    //     // if request was successful
-    //     if ($response !== false && $httpCode === 200) {
-    //         $data = json_decode($response, true);
-            
-    //         // if there's an html key in the response, return it
-    //         if (isset($data['html'])) {
-    //             return $data['html'];
-    //         }
-    //     }
-
-    //     return null;
-    // }
 }
