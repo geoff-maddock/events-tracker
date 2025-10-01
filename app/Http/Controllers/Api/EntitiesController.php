@@ -23,7 +23,7 @@ use App\Models\Role;
 use App\Models\Tag;
 use App\Models\User;
 use App\Notifications\EventPublished;
-use App\Services\Embeds\EmbedExtractor;
+use App\Services\Embeds\OembedExtractor;
 use App\Services\ImageHandler;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
@@ -630,7 +630,7 @@ class EntitiesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Entity $entity, EmbedExtractor $embedExtractor): JsonResponse
+    public function show(Entity $entity): JsonResponse
     {
         app('redirect')->setIntendedUrl(url()->current());
 
@@ -1239,7 +1239,7 @@ class EntitiesController extends Controller
         ];
     }
 
-    public function embeds(?Entity $entity,  EmbedExtractor $embedExtractor): JsonResponse
+    public function embeds(?Entity $entity,  OembedExtractor $embedExtractor): JsonResponse
     {
         if (!$entity) {
             abort(404);
@@ -1268,7 +1268,7 @@ class EntitiesController extends Controller
         return response()->json($embeds);
     }
 
-    public function minimalEmbeds(?Entity $entity,  EmbedExtractor $embedExtractor): JsonResponse
+    public function minimalEmbeds(?Entity $entity,  OembedExtractor $embedExtractor): JsonResponse
     {
         if (!$entity) {
             abort(404);
