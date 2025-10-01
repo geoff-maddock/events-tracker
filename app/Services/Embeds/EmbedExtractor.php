@@ -42,6 +42,7 @@ class EmbedExtractor
 
         //$theme = 'dark';
         $css = 'bgcol=333333/linkcol=0f91ff';
+        
         // if ($theme == 'light') {
         //     $css = 'bgcol=ffffff/linkcol=0687f5';
         // } else {

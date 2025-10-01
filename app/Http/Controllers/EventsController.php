@@ -25,8 +25,6 @@ use App\Models\Thread;
 use App\Models\User;
 use App\Models\Visibility;
 use App\Notifications\EventPublished;
-use App\Services\Embeds\EmbedExtractor;
-use App\Services\Integrations\Instagram;
 use App\Services\ImageHandler;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
@@ -41,14 +39,13 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Http\File as HttpFile;
 use Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use App\Services\Calendar\ICalBuilder;
-
+use App\Services\Embeds\OembedExtractor;
 
 class EventsController extends Controller
 {
@@ -1408,12 +1405,12 @@ class EventsController extends Controller
         return $blacklist;
     }
 
-    public function show(?Event $event, EmbedExtractor $embedExtractor): string
+    public function show(?Event $event, OembedExtractor $oembedExtractor): string
     {
         if (!$event) {
             abort(404);
         }
-        $embeds = $embedExtractor->getEmbedsForEvent($event);
+        $embeds = $oembedExtractor->getEmbedsForEvent($event);
 
         $thread = Thread::where('event_id', '=', $event->id)->first();
 
@@ -1434,7 +1431,7 @@ class EventsController extends Controller
      *
      * @throws \Throwable
      */
-    public function loadEmbeds(int $id, EmbedExtractor $embedExtractor, Request $request): RedirectResponse | array
+    public function loadEmbeds(int $id, OEmbedExtractor $oembedExtractor, Request $request): RedirectResponse | array
     {
         // load the event
         if (!$event = Event::with('entities.links')->find($id)) {
@@ -1443,12 +1440,13 @@ class EventsController extends Controller
             return back();
         }
 
-        // extract all the links from the event body and convert into embeds
-        $embedExtractor->setLayout("medium");
-        $embeds = $embedExtractor->getEmbedsForEvent($event);
 
         // handle the request if ajax
         if ($request->ajax()) {
+            // extract all the links from the event body and convert into embeds
+            $oembedExtractor->setLayout("medium");
+            $embeds = $oembedExtractor->getEmbedsForEvent($event);
+
             return [
                 'Message' => 'Added embeds to event page.',
                 'Success' => view('embeds.playlist')
@@ -1466,7 +1464,7 @@ class EventsController extends Controller
      *
      * @throws \Throwable
      */
-    public function loadMinimalEmbeds(int $id, EmbedExtractor $embedExtractor, Request $request): RedirectResponse | array
+    public function loadMinimalEmbeds(int $id, OEmbedExtractor $embedExtractor, Request $request): RedirectResponse | array
     {
         // load the event
         if (!$event = Event::with('entities.links')->find($id)) {
@@ -1475,12 +1473,12 @@ class EventsController extends Controller
             return back();
         }
 
-        // extract all the links from the event body and convert into embeds
-        $embedExtractor->setLayout("small");
-        $embeds = $embedExtractor->getEmbedsForEvent($event);
-
         // handle the request if ajax
         if ($request->ajax()) {
+            // extract all the links from the event body and convert into embeds
+            $embedExtractor->setLayout("small");
+            $embeds = $embedExtractor->getEmbedsForEvent($event, "small");
+
             return [
                 'Message' => 'Added embeds to event page.',
                 'Success' => view('embeds.minimal-playlist')

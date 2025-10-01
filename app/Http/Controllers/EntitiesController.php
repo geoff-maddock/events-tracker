@@ -16,7 +16,7 @@ use App\Models\Role;
 use App\Models\Tag;
 use App\Models\User;
 use App\Notifications\EventPublished;
-use App\Services\Embeds\EmbedExtractor;
+use App\Services\Embeds\OembedExtractor;
 use App\Services\ImageHandler;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\Integrations\Instagram;
@@ -677,7 +677,7 @@ class EntitiesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Entity $entity, EmbedExtractor $embedExtractor): View
+    public function show(Entity $entity, OembedExtractor $embedExtractor): View
     {
         app('redirect')->setIntendedUrl(url()->current());
 
@@ -708,7 +708,7 @@ class EntitiesController extends Controller
      *
      * @throws \Throwable
      */
-    public function loadEmbeds(int $id, EmbedExtractor $embedExtractor, Request $request): RedirectResponse | array
+    public function loadEmbeds(int $id, OembedExtractor $embedExtractor, Request $request): RedirectResponse | array
     {
         // load the entity
         if (!$entity = Entity::find($id)) {
@@ -739,7 +739,7 @@ class EntitiesController extends Controller
      *
      * @throws \Throwable
      */
-    public function loadMinimalEmbeds(int $id, EmbedExtractor $embedExtractor, Request $request): RedirectResponse | array
+    public function loadMinimalEmbeds(int $id, OembedExtractor $embedExtractor, Request $request): RedirectResponse | array
     {
         // load the entity
         if (!$entity = Entity::find($id)) {
