@@ -17,7 +17,7 @@ use App\Models\Series;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\Visibility;
-use App\Services\Embeds\EmbedExtractor;
+use App\Services\Embeds\OembedExtractor;
 use App\Services\ImageHandler;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
@@ -605,7 +605,7 @@ class SeriesController extends Controller
             ->with($this->getSeriesFormOptions());
     }
 
-    public function show(Series $series, EmbedExtractor $embedExtractor): View
+    public function show(Series $series, OembedExtractor $embedExtractor): View
     {
         $events = $series->events()->paginate($this->childLimit);
         $threads = $series->threads()->paginate($this->childLimit);
@@ -928,7 +928,7 @@ class SeriesController extends Controller
      *
      * @throws \Throwable
      */
-    public function loadEmbeds(int $id, EmbedExtractor $embedExtractor, Request $request): RedirectResponse | array
+    public function loadEmbeds(int $id, OembedExtractor $embedExtractor, Request $request): RedirectResponse | array
     {
         // load the series
         if (!$series = Series::find($id)) {
@@ -960,7 +960,7 @@ class SeriesController extends Controller
      *
      * @throws \Throwable
      */
-    public function loadMinimalEmbeds(int $id, EmbedExtractor $embedExtractor, Request $request): RedirectResponse | array
+    public function loadMinimalEmbeds(int $id, OembedExtractor $embedExtractor, Request $request): RedirectResponse | array
     {
         // load the series
         if (!$series = Series::find($id)) {

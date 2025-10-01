@@ -28,7 +28,7 @@ use App\Models\Thread;
 use App\Models\User;
 use App\Models\Visibility;
 use App\Notifications\EventPublished;
-use App\Services\Embeds\EmbedExtractor;
+use App\Services\Embeds\OembedExtractor;
 use App\Services\ImageHandler;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
@@ -760,7 +760,7 @@ class EventsController extends Controller
     }
 
 
-    public function show(?Event $event, EmbedExtractor $embedExtractor): JsonResponse
+    public function show(?Event $event, OembedExtractor $embedExtractor): JsonResponse
     {
         if (!$event) {
             abort(404);
@@ -778,7 +778,7 @@ class EventsController extends Controller
     }
 
 
-    public function embeds(?Event $event,  EmbedExtractor $embedExtractor): JsonResponse
+    public function embeds(?Event $event,  OembedExtractor $embedExtractor): JsonResponse
     {
         if (!$event) {
             abort(404);
@@ -807,7 +807,7 @@ class EventsController extends Controller
         return response()->json($embeds);
     }
 
-    public function minimalEmbeds(?Event $event,  EmbedExtractor $embedExtractor): JsonResponse
+    public function minimalEmbeds(?Event $event, OembedExtractor $embedExtractor): JsonResponse
     {
         if (!$event) {
             abort(404);
