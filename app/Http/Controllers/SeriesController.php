@@ -937,12 +937,12 @@ class SeriesController extends Controller
             return back();
         }
 
-        // extract all the links from the series body and convert into embeds
-        $embedExtractor->setLayout("medium");
-        $embeds = $embedExtractor->getEmbedsForSeries($series);
-
         // handle the request if ajax
         if ($request->ajax()) {
+            // extract all the links from the series body and convert into embeds
+            $embedExtractor->setLayout("medium");
+            $embeds = $embedExtractor->getEmbedsForSeries($series);
+
             return [
                 'Message' => 'Added embeds to series page.',
                 'Success' => view('embeds.playlist')
