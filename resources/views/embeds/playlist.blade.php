@@ -1,4 +1,5 @@
 @if (isset($embeds) && count($embeds) > 0)
+
 <div class="row">
     <div class="col-lg-12">
         <div class="card bg-dark">
@@ -14,7 +15,9 @@
         </div>
     </div>
 </div>
+
 @else
+
     @if (isset($event))
         <div id="playlist-{{ $event->id}}" class="playlist-id" data-url="/events/{{ $event->id }}/load-embeds">
             <div class="card-body">
@@ -25,7 +28,7 @@
 			</div>
         </div>
     @endif
-    @if (isset($series))
+    {{-- @if (isset($series))
     <div id="playlist-{{ $series->id}}" class="playlist-id" data-url="/series/{{ $series->id }}/load-embeds">
         <div class="card-body">
             <div class="load-spinner">
@@ -34,7 +37,7 @@
             </div>
         </div>
     </div>
-    @endif
+    @endif --}}
     @if (isset($entity))
         <div id="playlist-{{ $entity->id}}" class="playlist-id" data-url="/entities/{{ $entity->id }}/load-embeds">
             <div class="card-body">

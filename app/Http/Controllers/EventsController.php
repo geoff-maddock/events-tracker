@@ -1431,7 +1431,7 @@ class EventsController extends Controller
      *
      * @throws \Throwable
      */
-    public function loadEmbeds(int $id, OEmbedExtractor $oembedExtractor, Request $request): RedirectResponse | array
+    public function loadEmbeds(int $id, OembedExtractor $oembedExtractor, Request $request): RedirectResponse | array
     {
         // load the event
         if (!$event = Event::with('entities.links')->find($id)) {
@@ -1464,7 +1464,7 @@ class EventsController extends Controller
      *
      * @throws \Throwable
      */
-    public function loadMinimalEmbeds(int $id, OEmbedExtractor $embedExtractor, Request $request): RedirectResponse | array
+    public function loadMinimalEmbeds(int $id, OembedExtractor $embedExtractor, Request $request): RedirectResponse | array
     {
         // load the event
         if (!$event = Event::with('entities.links')->find($id)) {
