@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Builder;
 
 class TagFilters extends QueryFilter
 {
-
     public function id(?string $value = null): Builder
     {
         $values = is_array($value) ? $value : array_filter(explode(',', (string) $value));

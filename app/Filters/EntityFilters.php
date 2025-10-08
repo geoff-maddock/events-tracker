@@ -6,6 +6,22 @@ use Illuminate\Database\Eloquent\Builder;
 
 class EntityFilters extends QueryFilter
 {
+
+    public function id(?string $value = null): Builder
+    {
+        $values = is_array($value) ? $value : array_filter(explode(',', (string) $value));
+
+        if (count($values) > 1) {
+            return $this->builder->whereIn('entities.id', $values);
+        }
+
+        if (isset($value)) {
+            return $this->builder->where('entities.id', '=', $value);
+        } else {
+            return $this->builder;
+        }
+    }
+
     public function name(?string $value = null): Builder
     {
         if (!isset($value)) {
