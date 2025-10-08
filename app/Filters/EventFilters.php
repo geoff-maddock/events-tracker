@@ -6,6 +6,15 @@ use Illuminate\Database\Eloquent\Builder;
 
 class EventFilters extends QueryFilter
 {
+    public function id(?string $value = null): Builder
+    {
+        if (isset($value)) {
+            return $this->builder->where('events.id', '=', $value);
+        } else {
+            return $this->builder;
+        }
+    }
+
     public function name(?string $value = null): Builder
     {
         if (isset($value)) {
