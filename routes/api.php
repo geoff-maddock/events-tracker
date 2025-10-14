@@ -217,6 +217,12 @@ Route::get('tag-calendar-events', 'EventsController@tagCalendarEventsApi')->name
 // user registration endpoint
 Route::post('register', 'Api\\RegisterController@register');
 
+// email verification endpoint
+Route::get('email/verify/{id}/{hash}', 'Api\\EmailVerificationController@verify')
+    ->middleware('signed')
+    ->middleware('throttle:6,1')
+    ->name('api.verification.verify');
+
 // password reset endpoints
 Route::post('user/send-password-reset-email', 'Api\\PasswordResetController@sendPasswordResetEmail');
 Route::post('user/reset-password', 'Api\\PasswordResetController@resetPassword');
