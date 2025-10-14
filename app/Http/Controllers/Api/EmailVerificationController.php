@@ -33,7 +33,13 @@ class EmailVerificationController extends Controller
         $userId = (int) $request->route('id');
         $hash = (string) $request->route('hash');
 
-        $user = User::findOrFail($userId);
+        $user = User::find($userId);
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not found.'
+            ], 404);
+        }
 
         // Validate the email hash from the URL
         if (! hash_equals($hash, sha1($user->getEmailForVerification()))) {
