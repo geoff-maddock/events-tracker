@@ -6,11 +6,11 @@ use App\Listeners\ActivateVerifiedUserListener;
 use App\Listeners\LogFailedLogin;
 use App\Listeners\LogSuccessfulLogin;
 use App\Listeners\RouterMatchedListener;
+use App\Listeners\SendCustomEmailVerificationNotification;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
-use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Routing\Events\RouteMatched;
 
@@ -32,7 +32,7 @@ class EventServiceProvider extends ServiceProvider
             LogFailedLogin::class,
         ],
         Registered::class => [
-            SendEmailVerificationNotification::class,
+            SendCustomEmailVerificationNotification::class,
         ],
         Verified::class => [
             ActivateVerifiedUserListener::class,

@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
 
 class RegisterController extends Controller
@@ -39,6 +40,15 @@ class RegisterController extends Controller
         // Create the user
         $user = $this->create($request->all());
 
+        // Store frontend-url in cache if provided (expires in 1 hour)
+        if ($request->has('frontend-url')) {
+            Cache::put(
+                'frontend-url:' . $user->id,
+                $request->input('frontend-url'),
+                now()->addHour()
+            );
+        }
+
         // Fire the Registered event to trigger email verification
         event(new Registered($user));
 
@@ -63,7 +73,8 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'min:3', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8'],
-            'g-recaptcha-response' => 'required|captcha'
+            'g-recaptcha-response' => 'required|captcha',
+            'frontend-url' => ['nullable', 'string', 'url', 'max:255']
         ], [
             'name.required' => 'A name is required',
             'name.min' => 'A name must be at least 3 characters',
@@ -74,7 +85,9 @@ class RegisterController extends Controller
             'password.required' => 'A password is required',
             'password.min' => 'A password must be at least 8 characters',
             'g-recaptcha-response.required' => 'Please complete the captcha verification',
-            'g-recaptcha-response.captcha' => 'Captcha verification failed'
+            'g-recaptcha-response.captcha' => 'Captcha verification failed',
+            'frontend-url.url' => 'The frontend URL must be a valid URL',
+            'frontend-url.max' => 'The frontend URL must be less than 255 characters'
         ]);
     }
 
