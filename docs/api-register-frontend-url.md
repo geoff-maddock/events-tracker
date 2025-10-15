@@ -49,7 +49,7 @@ POST /api/register
 
 When `frontend-url` is provided:
 1. The parameter is validated to ensure it's a valid URL
-2. The URL is temporarily stored in the cache (expires after 1 hour)
+2. The URL is passed through to the email verification process
 3. When the verification email is sent, the verification link will use the provided `frontend-url` as the base URL
 4. The verification link will be in the format: `https://myapp.example.com/email/verify/{id}/{hash}`
 
@@ -135,4 +135,4 @@ function EmailVerificationHandler() {
 - The `frontend-url` is only used for generating the email verification link
 - The URL is NOT stored permanently with the user record
 - The verification link includes a signed signature to prevent tampering
-- The cached frontend-url expires after 1 hour if not used
+- The frontend-url is only used during the registration request and is not persisted

@@ -13,7 +13,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
 
 class RegisterController extends Controller
@@ -40,16 +39,12 @@ class RegisterController extends Controller
         // Create the user
         $user = $this->create($request->all());
 
-        // Store frontend-url in cache if provided (expires in 1 hour)
-        if ($request->has('frontend-url')) {
-            Cache::put(
-                'frontend-url:' . $user->id,
-                $request->input('frontend-url'),
-                now()->addHour()
-            );
-        }
-
         // Fire the Registered event to trigger email verification
+        // Store frontend-url in user instance temporarily if provided
+        if ($request->has('frontend-url')) {
+            $user->frontendUrl = $request->input('frontend-url');
+        }
+        
         event(new Registered($user));
 
         // add an activity log that a new user was added

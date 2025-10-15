@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
@@ -88,11 +87,6 @@ class ApiRegisterTest extends TestCase
             'email' => 'testfrontend@example.com',
             'name' => 'Test User With Frontend',
         ]);
-
-        // Verify that the frontend URL was stored in cache
-        $user = User::where('email', 'testfrontend@example.com')->first();
-        // Note: The cache would be cleared after sending the email, 
-        // so we can't test for its presence here in the same request
     }
 
     public function testRegisterWithInvalidFrontendUrl()
