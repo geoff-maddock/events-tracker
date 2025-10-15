@@ -40,6 +40,11 @@ class RegisterController extends Controller
         $user = $this->create($request->all());
 
         // Fire the Registered event to trigger email verification
+        // Store frontend-url in user instance temporarily if provided
+        if ($request->has('frontend-url')) {
+            $user->frontendUrl = $request->input('frontend-url');
+        }
+        
         event(new Registered($user));
 
         // add an activity log that a new user was added
@@ -63,7 +68,8 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'min:3', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8'],
-            'g-recaptcha-response' => 'required|captcha'
+            'g-recaptcha-response' => 'required|captcha',
+            'frontend-url' => ['nullable', 'string', 'url', 'max:255']
         ], [
             'name.required' => 'A name is required',
             'name.min' => 'A name must be at least 3 characters',
@@ -74,7 +80,9 @@ class RegisterController extends Controller
             'password.required' => 'A password is required',
             'password.min' => 'A password must be at least 8 characters',
             'g-recaptcha-response.required' => 'Please complete the captcha verification',
-            'g-recaptcha-response.captcha' => 'Captcha verification failed'
+            'g-recaptcha-response.captcha' => 'Captcha verification failed',
+            'frontend-url.url' => 'The frontend URL must be a valid URL',
+            'frontend-url.max' => 'The frontend URL must be less than 255 characters'
         ]);
     }
 
