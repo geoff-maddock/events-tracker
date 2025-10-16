@@ -10,6 +10,8 @@ use App\Policies\ThreadPolicy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Gate;
 use Schema;
 
@@ -61,6 +63,14 @@ class AuthServiceProvider extends ServiceProvider
             $base = rtrim($base, '/');
 
             return $base.'/password/reset/'.$token.'?email='.urlencode($notifiable->getEmailForPasswordReset());
+        });
+
+        VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
+            $url = $notifiable->frontendUrl ?? $url;
+            return (new MailMessage)
+                ->subject('Verify Email Address')
+                ->line('Click the button below to verify your email address.')
+                ->action('Verify Email Address', $url);
         });
     }
 
