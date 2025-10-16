@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Gate;
 use Schema;
@@ -65,13 +66,38 @@ class AuthServiceProvider extends ServiceProvider
             return $base.'/password/reset/'.$token.'?email='.urlencode($notifiable->getEmailForPasswordReset());
         });
 
-        VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
-            $url = $notifiable->frontendUrl ?? $url;
-            return (new MailMessage)
-                ->subject('Verify Email Address')
-                ->line('Click the button below to verify your email address.')
-                ->action('Verify Email Address', $url);
+        VerifyEmail::createUrlUsing(function ($notifiable) {
+            // Build and return your verification URL as needed
+            // This example creates a signed URL to a named route 'verification.verify'
+            if (isset($notifiable->frontendUrl)) {
+                $base = rtrim($notifiable->frontendUrl, '/');
+                // You might want to store the frontend URL in the notifiable (user) instance
+                // when the user is created or during the request that triggers the email
+                // verification notification.
+            } else {
+                $base = config('app.frontend_url', config('app.url'));
+            }
+
+            $verifyURL =  URL::temporarySignedRoute(
+                'verification.verify', // Replace with your desired route name
+                now()->addMinutes(60), // Link expiration time
+                [
+                    'id' => $notifiable->getKey(),
+                    'hash' => sha1($notifiable->getEmailForVerification()),
+                ],
+                false
+            );
+
+            return $base.$verifyURL;
         });
+
+        // VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
+        //     $url = $notifiable->frontendUrl ?? $url;
+        //     return (new MailMessage)
+        //         ->subject('Verify Email Address')
+        //         ->line('Click the button below to verify your email address.')
+        //         ->action('Verify Email Address', $url);
+        // });
     }
 
     protected function getPermissions(): Collection
