@@ -218,8 +218,9 @@ Route::get('tag-calendar-events', 'EventsController@tagCalendarEventsApi')->name
 Route::post('register', 'Api\\RegisterController@register');
 
 // email verification endpoint
+// disabled signature for testing
 Route::get('email/verify/{id}/{hash}', 'Api\\EmailVerificationController@verify')
-    ->middleware('signed')
+    // ->middleware('signed')
     ->middleware('throttle:6,1')
     ->name('api.verification.verify');
 

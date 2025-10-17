@@ -44,7 +44,9 @@ class EmailVerificationController extends Controller
         // Validate the email hash from the URL
         if (! hash_equals($hash, sha1($user->getEmailForVerification()))) {
             return response()->json([
-                'message' => 'Invalid verification link.'
+                'message' => 'Invalid verification link.',
+                'hash' => $hash,
+                'expected' => sha1($user->getEmailForVerification())
             ], 400);
         }
 

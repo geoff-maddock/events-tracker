@@ -102,6 +102,8 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     protected $fillable = ['name', 'email', 'password', 'user_status_id'];
 
+    public $frontendUrl = null;
+
     /**
      * Always hydrate these relationships.
      */
