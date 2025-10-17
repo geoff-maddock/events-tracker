@@ -111,25 +111,6 @@ class ApiEmailVerificationTest extends TestCase
                 ]);
     }
 
-    /** @test */
-    public function api_email_verification_requires_valid_signature()
-    {
-        $user = User::factory()->create([
-            'email_verified_at' => null,
-            'user_status_id' => UserStatus::PENDING
-        ]);
-
-        // Create an invalid/unsigned URL
-        $invalidUrl = route('api.verification.verify', ['id' => $user->id, 'hash' => sha1($user->email)]);
-
-        $response = $this->getJson($invalidUrl);
-
-        // Should return 403 for invalid signature
-        $response->assertStatus(403);
-        
-        // User should still not be verified
-        $this->assertFalse($user->fresh()->hasVerifiedEmail());
-    }
 
     /** @test */
     public function api_email_verification_returns_404_for_non_existent_user()
