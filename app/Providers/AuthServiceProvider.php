@@ -14,6 +14,9 @@ use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Gate;
 use Schema;
+use Illuminate\Support\Facades\URL;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Config;
 
 //use Illuminate\Support\Facades\Gate;
 
@@ -65,12 +68,35 @@ class AuthServiceProvider extends ServiceProvider
             return $base.'/password/reset/'.$token.'?email='.urlencode($notifiable->getEmailForPasswordReset());
         });
 
-        VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
-            $url = $notifiable->frontendUrl ?? $url;
-            return (new MailMessage)
-                ->subject('Verify Email Address')
-                ->line('Click the button below to verify your email address.')
-                ->action('Verify Email Address', $url);
+        // This overrides the whole email generation for email verification
+        // VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
+        //     $url = $notifiable->frontendUrl ?? $url;
+        //     return (new MailMessage)
+        //         ->subject('Verify Email Address')
+        //         ->line('Click the button below to verify your email address.')
+        //         ->action('Verify Email Address', $url);
+        // });
+
+        // I just need to override the URL generation, not the whole email
+        VerifyEmail::createUrlUsing(function ($notifiable) {
+            // Prefer the per-request value your API accepts, fallback to config/app.php
+            $base = $notifiable->frontendUrl ?? config('app.frontend_url', config('app.url'));
+
+            $path = URL::temporarySignedRoute(
+                'api.verification.verify',
+                Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
+                [
+                    'id' => $notifiable->getKey(),
+                    'hash' => sha1($notifiable->getEmailForVerification()),
+                ]
+            );
+
+            // Generate URL WITHOUT Laravel signing
+            // $verificationUrl = url('/api/email/verify/' . $notifiable->getKey() . '/' . sha1($notifiable->getEmailForVerification()));
+        // rtrim($base, '/')
+            $verificationUrl = $base.$path;
+
+            return $verificationUrl;
         });
     }
 
