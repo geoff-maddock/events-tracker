@@ -258,6 +258,22 @@ class EventInstagramController extends Controller
             return response()->json(['success' => false, 'message' => 'No such event'], 404);
         }
 
+        // Authorization checks
+        $user = $request->user();
+        
+        // Check if event is public
+        if ($event->visibility_id !== \App\Models\Visibility::VISIBILITY_PUBLIC) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+        }
+        
+        // Check if user owns the event OR has admin permission
+        $isOwner = $event->created_by === $user->id;
+        $isAdmin = $user->hasGroup('admin') || $user->hasGroup('super_admin');
+        
+        if (!$isOwner && !$isAdmin) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+        }
+
         $errorMessage = '';
         $result = $this->publishCarousel($event, $instagram, $errorMessage);
 
