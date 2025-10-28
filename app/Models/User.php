@@ -384,14 +384,9 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     public function getEntitiesFollowing(): Collection
     {
-        $entities = Entity::join('follows', 'entities.id', '=', 'follows.object_id')
-            ->where('follows.object_type', '=', 'entity')
-            ->where('follows.user_id', '=', $this->id)
+        return $this->getFollowingEntities()
             ->orderBy('follows.created_at', 'desc')
-            ->select('entities.*')
             ->get();
-
-        return $entities;
     }
 
     /**

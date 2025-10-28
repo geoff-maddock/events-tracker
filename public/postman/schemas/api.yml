@@ -3756,7 +3756,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Entities"
-        "403":
+        "401":
           description: Unauthorized - authentication required
           content:
             application/json:
