@@ -16,9 +16,10 @@ class ApiEntityFollowingTest extends TestCase
 
     public function testGuestCannotAccessFollowingEndpoint()
     {
-        $response = $this->getJson('/api/entities/following');
-
-        $response->assertStatus(401);
+        $this->expectException(\Illuminate\Auth\AuthenticationException::class);
+        
+        $this->withoutExceptionHandling()
+            ->getJson('/api/entities/following');
     }
 
     public function testAuthenticatedUserCanGetFollowingEntities()
@@ -29,25 +30,31 @@ class ApiEntityFollowingTest extends TestCase
         $followedEntity = Entity::factory()->create([
             'name' => 'Followed Entity',
             'slug' => 'followed-entity',
+            'entity_status_id' => 2, // Active status
         ]);
 
         $notFollowedEntity = Entity::factory()->create([
             'name' => 'Not Followed Entity',
             'slug' => 'not-followed-entity',
+            'entity_status_id' => 2, // Active status
         ]);
 
-        // Create a follow relationship
+        // Create a follow relationship - note: must refresh user to get fresh instance
         Follow::create([
             'user_id' => $user->id,
             'object_id' => $followedEntity->id,
             'object_type' => 'entity',
         ]);
 
+        // Re-authenticate to ensure fresh user instance
+        $user->refresh();
+        $this->actingAs($user, 'sanctum');
+
         $response = $this->getJson('/api/entities/following');
 
         $response->assertStatus(200)
-            ->assertJsonFragment(['name' => 'Followed Entity'])
-            ->assertJsonMissing(['name' => 'Not Followed Entity']);
+            ->assertJsonPath('data.0.name', 'Followed Entity')
+            ->assertJsonPath('total', 1);
     }
 
     public function testFollowingEndpointRespectsFilters()
@@ -58,11 +65,13 @@ class ApiEntityFollowingTest extends TestCase
         $entity1 = Entity::factory()->create([
             'name' => 'Alpha Entity',
             'slug' => 'alpha-entity',
+            'entity_status_id' => 2, // Active status
         ]);
 
         $entity2 = Entity::factory()->create([
             'name' => 'Beta Entity',
             'slug' => 'beta-entity',
+            'entity_status_id' => 2, // Active status
         ]);
 
         // Follow both entities
@@ -78,12 +87,16 @@ class ApiEntityFollowingTest extends TestCase
             'object_type' => 'entity',
         ]);
 
+        // Re-authenticate to ensure fresh user instance
+        $user->refresh();
+        $this->actingAs($user, 'sanctum');
+
         // Filter by name
         $response = $this->getJson('/api/entities/following?filters[name]=Alpha');
 
         $response->assertStatus(200)
-            ->assertJsonFragment(['name' => 'Alpha Entity'])
-            ->assertJsonMissing(['name' => 'Beta Entity']);
+            ->assertJsonPath('data.0.name', 'Alpha Entity')
+            ->assertJsonPath('total', 1);
     }
 
     public function testFollowingEndpointReturnsPaginatedResults()
@@ -96,6 +109,7 @@ class ApiEntityFollowingTest extends TestCase
             $entity = Entity::factory()->create([
                 'name' => "Entity {$i}",
                 'slug' => "entity-{$i}",
+                'entity_status_id' => 2, // Active status
             ]);
 
             Follow::create([
@@ -105,6 +119,10 @@ class ApiEntityFollowingTest extends TestCase
             ]);
         }
 
+        // Re-authenticate to ensure fresh user instance
+        $user->refresh();
+        $this->actingAs($user, 'sanctum');
+
         $response = $this->getJson('/api/entities/following?limit=5');
 
         $response->assertStatus(200)
@@ -112,10 +130,20 @@ class ApiEntityFollowingTest extends TestCase
                 'data' => [
                     '*' => ['id', 'name', 'slug']
                 ],
-                'links',
-                'meta' => ['total', 'per_page', 'current_page']
+                'current_page',
+                'first_page_url',
+                'from',
+                'last_page',
+                'last_page_url',
+                'next_page_url',
+                'path',
+                'per_page',
+                'prev_page_url',
+                'to',
+                'total'
             ]);
 
         $this->assertEquals(5, count($response->json('data')));
+        $this->assertEquals(10, $response->json('total'));
     }
 }
