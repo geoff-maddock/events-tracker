@@ -40,11 +40,11 @@ class VerificationController extends Controller
     public function __construct()
     {
         $this->middleware('auth')->only('resend');
-        $this->middleware('signed')->only('verify');
+        // $this->middleware('signed')->only('verify');
         $this->middleware('throttle:6,1')->only('verify', 'resend');
     }
 
-        // Override the trait method to not rely on $request->user()
+    // Override the trait method to not rely on $request->user()
     public function verify(Request $request)
     {
         $userId = (int) $request->route('id');
