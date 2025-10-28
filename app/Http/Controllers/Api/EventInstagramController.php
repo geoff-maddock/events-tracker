@@ -259,7 +259,12 @@ class EventInstagramController extends Controller
         }
 
         // Authorization checks
-        $user = $request->user();
+        $user = $this->user;
+
+        // if the user does not exist, unauthorized
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+        }
         
         // Check if event is public
         if ($event->visibility_id !== \App\Models\Visibility::VISIBILITY_PUBLIC) {
