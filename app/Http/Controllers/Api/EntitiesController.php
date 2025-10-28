@@ -91,6 +91,7 @@ class EntitiesController extends Controller
             'destroy',
             'followJson',
             'unfollowJson',
+            'indexFollowingJson',
             'addLocation',
             'addLink',
             'addContact',
@@ -188,6 +189,54 @@ class EntitiesController extends Controller
         return response()->json(new EntityCollection($entities));
     }
 
+    /**
+     * Display a listing of entities that the authenticated user is following.
+     *
+     * @throws \Throwable
+     */
+    public function indexFollowingJson(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): JsonResponse {
+        // check who the authenticated user is
+        $this->user = $request->user();
+        if (!$this->user) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_entity');
+        $listParamSessionStore->setKeyPrefix('internal_entity_following');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only entity entities are returned
+        $baseQuery = $this->user->getFollowingEntities()
+            ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
+            ->leftJoin('entity_statuses', 'entities.entity_status_id', '=', 'entity_statuses.id')
+            ->select('entities.*')
+            ->withCount('follows');
+
+        // set the default filter to active
+        $defaultFilter = ['entity_status' => 'Active'];
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultFilters($defaultFilter)
+            ->setDefaultSort($this->defaultSortCriteria);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+        $query = $listResultSet->getList();
+
+        // get the entities
+        $entities = $query->paginate($listResultSet->getLimit());
+
+        return response()->json(new EntityCollection($entities));
+    }
 
     /**
      * Display a listing of the resource that the user is following.

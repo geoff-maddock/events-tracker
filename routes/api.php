@@ -104,6 +104,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::post('entities/{entity}/follow', 'Api\EntitiesController@followJson')->middleware('auth:sanctum');
     Route::post('entities/{entity}/unfollow', 'Api\EntitiesController@unfollowJson')->middleware('auth:sanctum');
     Route::get('entities/popular', ['as' => 'entities.popular', 'uses' => 'Api\EntitiesController@popular']);
+    Route::get('entities/following', ['as' => 'entities.following', 'uses' => 'Api\EntitiesController@indexFollowingJson'])->middleware('auth:sanctum');
     Route::resource('entities', 'Api\EntitiesController');
 
     Route::match(['get', 'post'], 'entity-types/filter', ['as' => 'entityType.filter', 'uses' => 'Api\EntityTypesController@filter']);

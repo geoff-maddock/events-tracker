@@ -3677,6 +3677,91 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Entities"
+  /api/entities/following:
+    get:
+      tags:
+        - entities
+      summary: Get Entities Followed by Authenticated User
+      operationId: getFollowingEntities
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: filters[name]
+          in: query
+          required: false
+          description: A filter query of the entity name
+          schema:
+            type: string
+            example: "cutups"
+        - name: filters[role]
+          in: query
+          required: false
+          description: A filter query of the role name
+          schema:
+            type: string
+            example: "dj"
+        - name: filters[tag]
+          in: query
+          required: false
+          description: A filter query of related tag
+          schema:
+            type: string
+            example: "jungle"
+        - name: filters[entity_status]
+          in: query
+          required: false
+          description: A filter query of related entity status name
+          schema:
+            type: string
+            example: "Active"
+        - name: filters[entity_type]
+          in: query
+          required: false
+          description: A filter query of related entity type name
+          schema:
+            type: string
+            example: "Individual"
+        - name: limit
+          in: query
+          required: false
+          description: The limit on the number of results to return per page
+          schema:
+            type: integer
+            example: 25
+        - name: page
+          in: query
+          required: false
+          description: The page number to return
+          schema:
+            type: integer
+            example: 1
+        - name: sort
+          in: query
+          required: false
+          description: A column to be used to sort the query
+          schema:
+            type: string
+            example: name
+        - name: direction
+          in: query
+          required: false
+          description: A string indicating the sort direction of the query (asc or desc)
+          schema:
+            type: string
+            example: asc
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Entities"
+        "401":
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /api/entities/{slug}:
     get:
       parameters:
