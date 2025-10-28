@@ -367,6 +367,19 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     }
 
     /**
+     * Return a query builder for entities the user is following.
+     */
+    public function getFollowingEntities(): Builder
+    {
+        $entities = Entity::join('follows', 'entities.id', '=', 'follows.object_id')
+            ->where('follows.object_type', '=', 'entity')
+            ->where('follows.user_id', '=', $this->id)
+            ->select('entities.*');
+
+        return $entities;
+    }
+
+    /**
      * Return a list of entities the user is following.
      */
     public function getEntitiesFollowing(): Collection
