@@ -17,7 +17,7 @@ class ApiEventInstagramTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected bool $seed = false;
+    protected bool $seed = true;
 
     protected function tearDown(): void
     {
@@ -79,6 +79,10 @@ class ApiEventInstagramTest extends TestCase
             'created_by' => $user->id,
         ]);
 
+        // Mock Instagram even though it shouldn't be called
+        $instagram = Mockery::mock(Instagram::class);
+        $this->app->instance(Instagram::class, $instagram);
+
         $response = $this->postJson('/api/events/'.$event->id.'/instagram-post');
 
         $response->assertStatus(401)
@@ -99,6 +103,10 @@ class ApiEventInstagramTest extends TestCase
             'visibility_id' => Visibility::VISIBILITY_PUBLIC,
             'created_by' => $owner->id,
         ]);
+
+        // Mock Instagram even though it shouldn't be called
+        $instagram = Mockery::mock(Instagram::class);
+        $this->app->instance(Instagram::class, $instagram);
 
         $response = $this->postJson('/api/events/'.$event->id.'/instagram-post');
 
