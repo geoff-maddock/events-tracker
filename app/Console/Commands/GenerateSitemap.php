@@ -67,6 +67,11 @@ class GenerateSitemap extends Command
                     return;
                 }
 
+                // skip upcoming events links
+                if (strpos($url->path(), '/events/upcoming') !== false) {
+                    return;
+                }
+
                 // skip upcoming links
                 if (strpos($url->path(), '/upcoming') !== false) {
                     return;
