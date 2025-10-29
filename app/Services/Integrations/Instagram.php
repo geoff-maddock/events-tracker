@@ -127,6 +127,50 @@ class Instagram
         return true;
     }
 
+    /**
+     * Check status of multiple containers in batch
+     * More efficient than checking each container individually
+     * 
+     * @param array $igContainerIds Array of container IDs to check
+     * @return bool True if all containers are finished, false otherwise
+     */
+    public function checkBatchStatus(array $igContainerIds): bool
+    {
+        if (empty($igContainerIds)) {
+            return true;
+        }
+
+        $maxAttempts = 5;
+        $attempt = 0;
+        $sleepTime = 3; // Reduced from 5 to 3 seconds for faster checking
+
+        while ($attempt < $maxAttempts) {
+            $allFinished = true;
+            
+            foreach ($igContainerIds as $igContainerId) {
+                $params = [];
+                $endpoint = 'https://graph.facebook.com/'.$this->apiVersion.'/'.$igContainerId.'?fields=status_code,status&access_token='.$this->pageAccessToken;
+                $response = $this->makeApiCall($endpoint, 'GET', $params);
+
+                if (!isset($response['data']['status_code']) || 'FINISHED' !== $response['data']['status_code']) {
+                    $allFinished = false;
+                    break; // Exit early if any container isn't finished
+                }
+            }
+
+            if ($allFinished) {
+                return true;
+            }
+
+            $attempt++;
+            if ($attempt < $maxAttempts) {
+                sleep($sleepTime);
+            }
+        }
+
+        return false;
+    }
+
     public function publishMedia(int $igContainerId): bool | int
     {
         $params = [];
