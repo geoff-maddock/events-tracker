@@ -67,6 +67,11 @@ class GenerateSitemap extends Command
                     return;
                 }
 
+                // skip upcoming events links
+                if (strpos($url->path(), '/events/upcoming') !== false) {
+                    return;
+                }
+
                 // skip upcoming links
                 if (strpos($url->path(), '/upcoming') !== false) {
                     return;
@@ -127,6 +132,16 @@ class GenerateSitemap extends Command
                 return $url;
             })
             ->shouldCrawl(function (UriInterface $url) {
+                // Skip events/add links
+                if (strpos($url->getPath(), '/events/add') !== false) {
+                    return false;
+                }
+
+                // Skip events/upcoming links
+                if (strpos($url->getPath(), '/events/upcoming') !== false) {
+                    return false;
+                }
+
                 // Links present on the photos page won't be added to the
                 // sitemap unless they are present on a crawlable page.
                 if (strpos($url->getPath(), '/photos') !== false) {
