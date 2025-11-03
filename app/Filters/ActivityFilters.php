@@ -15,6 +15,24 @@ class ActivityFilters extends QueryFilter
         }
     }
 
+    public function user_id(?string $value = null): Builder
+    {
+        if (isset($value)) {
+            return $this->builder->where('activities.user_id', '=', $value);
+        } else {
+            return $this->builder;
+        }
+    }
+
+    public function object_id(?string $value = null): Builder
+    {
+        if (isset($value)) {
+            return $this->builder->where('activities.object_id', '=', $value);
+        } else {
+            return $this->builder;
+        }
+    }
+
     public function object_table(?string $value = null): Builder
     {
         if (isset($value)) {
