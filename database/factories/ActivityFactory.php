@@ -31,12 +31,10 @@ class ActivityFactory extends Factory
             'child_object_table' => null,
             'child_object_id' => null,
             'child_object_name' => null,
-            'action_id' => random_int(1, 5),
+            'action_id' => $this->faker->numberBetween(1, 5),
             'message' => $this->faker->sentence,
             'changes' => null,
             'ip_address' => $this->faker->ipv4,
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
         ];
     }
 }
