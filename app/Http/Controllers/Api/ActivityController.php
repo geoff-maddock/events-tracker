@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Filters\ActivityFilters;
 use App\Http\Resources\ActivityCollection;
+use App\Http\Resources\ActivityResource;
 use App\Http\Requests\SeriesRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Action;
 use App\Models\Activity;
 use App\Models\User;
 use App\Services\SessionStore\ListParameterSessionStore;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -115,7 +117,7 @@ class ActivityController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
+    ): JsonResponse {
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_activity');
         $listParamSessionStore->setKeyPrefix('internal_activity_index');
@@ -141,6 +143,14 @@ class ActivityController extends Controller
         $activities = $query->paginate($listResultSet->getLimit());
 
         return response()->json(new ActivityCollection($activities));
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Activity $activity): JsonResponse
+    {
+        return response()->json(new ActivityResource($activity));
     }
 
     protected function unauthorized(SeriesRequest $request): Response | RedirectResponse
