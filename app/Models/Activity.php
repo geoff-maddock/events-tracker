@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Auth\Events\Failed;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -58,6 +59,8 @@ use Illuminate\Support\Str;
  */
 class Activity extends Eloquent
 {
+    use HasFactory;
+
     public const DEFAULT_SHOW_COUNT = 100;
 
     /**

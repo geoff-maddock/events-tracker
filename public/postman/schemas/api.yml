@@ -2747,9 +2747,9 @@ paths:
           required: true
           schema:
             description: The unique identifier of an activity
-            type: string
+            type: integer
             readOnly: true
-            example: about-arcane-city
+            example: 1
       tags:
         - activities
       summary: Get Activity
