@@ -20,7 +20,7 @@ class ActivityResource extends JsonResource
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'user_full_name' => $this->user ? $this->user->full_name : null,
+            'user_full_name' => $this->user ? $this->user->full_name : "Unknown",
             'object_table' => $this->object_table,
             'object_id' => $this->object_id,
             'object_name' => $this->object_name,
