@@ -148,10 +148,17 @@ class TagsController extends Controller
      */
     public function popular(Request $request): JsonResponse
     {
+        $style = (string) $request->get('style', 'past');
         $days = (int) $request->get('days', 30);
         $limit = (int) $request->get('limit', 30);
-        $from = Carbon::now()->subDays($days);
 
+        if ($style == 'past') {
+            $from = Carbon::now()->subDays($days);
+
+        } else {
+            $from = Carbon::now()->addDays($days);
+        }
+        
         $query = Tag::query()
             ->withCount([
                 'events as events_count' => function ($q) use ($from) {
