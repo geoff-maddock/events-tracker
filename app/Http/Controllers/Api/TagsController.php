@@ -152,23 +152,49 @@ class TagsController extends Controller
         $days = (int) $request->get('days', 30);
         $limit = (int) $request->get('limit', 30);
 
-        if ($style == 'past') {
-            $from = Carbon::now()->subDays($days);
-
-        } else {
-            $from = Carbon::now()->addDays($days);
+        switch ($style) {
+            case 'past':
+                $from = Carbon::now()->subDays($days);
+                $query = Tag::query()
+                ->withCount([
+                    'events as events_count' => function ($q) use ($from) {
+                        $q->where('start_at', '>=', $from)->where('start_at', '<=', Carbon::now());
+                    },
+                    'follows as follows_count' => function ($q) use ($from) {
+                        $q->where('created_at', '>=', $from)->where('created_at', '<=', Carbon::now());
+                    },
+                ])
+                ->filter($this->filter);
+                break;
+            
+            case 'future':
+                $from = Carbon::now()->addDays($days);
+                $query = Tag::query()
+                ->withCount([
+                    'events as events_count' => function ($q) use ($from) {
+                        $q->where('start_at', '<=', $from)->where('start_at', '>=', Carbon::now());
+                    },
+                    'follows as follows_count' => function ($q) {
+                        $q->where('created_at', '>=', Carbon::now()->subDays(7))->where('created_at', '<=', Carbon::now());
+                    },
+                ])
+                ->filter($this->filter);
+                break;
+            
+            default:
+                $from = Carbon::now()->addDays($days);
+                $query = Tag::query()
+                ->withCount([
+                    'events as events_count' => function ($q) use ($from) {
+                        $q->where('start_at', '<=', $from);
+                    },
+                    'follows as follows_count' => function ($q) use ($from) {
+                        $q->where('created_at', '<=', $from);
+                    },
+                ])
+                ->filter($this->filter);
+                break;
         }
-        
-        $query = Tag::query()
-            ->withCount([
-                'events as events_count' => function ($q) use ($from) {
-                    $q->where('start_at', '>=', $from);
-                },
-                'follows as follows_count' => function ($q) use ($from) {
-                    $q->where('created_at', '>=', $from);
-                },
-            ])
-            ->filter($this->filter);
 
         $tags = $query
             ->orderBy(DB::raw('events_count + follows_count'), 'desc')
