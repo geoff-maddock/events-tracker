@@ -176,7 +176,7 @@ class Event extends Model
 
     public function resolveRouteBinding($value, $field = null)
     {
-        return $this->with('photos', 'entities')->where('slug', $value)->orWhere('id', $value)->firstOrFail();
+        return $this->with('photos', 'entities.links')->where('slug', $value)->orWhere('id', $value)->firstOrFail();
     }
 
 
