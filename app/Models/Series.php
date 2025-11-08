@@ -133,6 +133,11 @@ class Series extends Eloquent
         parent::boot();
     }
 
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->with('entities.links')->where('slug', $value)->orWhere('id', $value)->firstOrFail();
+    }
+
     protected $with = ['occurrenceType', 'occurrenceWeek', 'occurrenceDay'];
 
     protected $fillable = [

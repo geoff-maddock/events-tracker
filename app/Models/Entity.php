@@ -119,6 +119,11 @@ class Entity extends Eloquent
         parent::boot();
     }
 
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->with('links')->where('slug', $value)->orWhere('id', $value)->firstOrFail();
+    }
+
     
     /**
      * Return a collection of entities with the role venue.

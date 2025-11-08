@@ -209,4 +209,53 @@ class ApiEventEmbedsTest extends TestCase
             );
         }
     }
+
+    /**
+     * Test that entity embeds endpoint returns consistent results.
+     *
+     * @return void
+     */
+    public function testEntityEmbedsReturnsConsistentResults()
+    {
+        // Create an entity with links
+        $entity = Entity::factory()->create(['name' => 'Test Artist']);
+
+        $link = Link::firstOrCreate([
+            'url' => 'https://testartist.bandcamp.com/album/test',
+            'text' => 'Test Album',
+            'is_primary' => true,
+        ]);
+
+        $entity->links()->syncWithoutDetaching([$link->id]);
+
+        // Make multiple calls to the embeds endpoint
+        $responses = [];
+        for ($i = 0; $i < 5; $i++) {
+            $response = $this->getJson("/api/entities/{$entity->slug}/embeds");
+            $response->assertStatus(200)
+                ->assertJsonStructure([
+                    'data',
+                    'total',
+                    'current_page',
+                    'per_page',
+                ]);
+
+            $responses[] = $response->json();
+        }
+
+        // Verify all responses are identical
+        $firstResponse = $responses[0];
+        foreach ($responses as $index => $response) {
+            $this->assertEquals(
+                $firstResponse['total'],
+                $response['total'],
+                "Entity embeds response {$index} differs from first response"
+            );
+            $this->assertEquals(
+                $firstResponse['data'],
+                $response['data'],
+                "Entity embeds data {$index} differs from first response"
+            );
+        }
+    }
 }
