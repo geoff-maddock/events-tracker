@@ -50,7 +50,7 @@ class Location extends Eloquent
     }
 
     /**
-     * Returns visible events.
+     * Returns visible locations.
      */
     public function scopeVisible(Builder $query, ?User $user): Builder
     {
