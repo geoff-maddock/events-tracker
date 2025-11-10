@@ -34,4 +34,14 @@ class UserFilters extends QueryFilter
             return $this->builder;
         }
     }
+
+    public function is_verified(?string $value = null): Builder
+    {
+        if (isset($value)) {
+            // where not null
+            return $this->builder->where('users.email_verified_at', '!=', null);
+        } else {
+            return $this->builder;
+        }
+    }
 }
