@@ -326,7 +326,7 @@ class EventInstagramController extends Controller
             return null;
         }
 
-        Log::info('Carousel photo uploaded: '.$id);
+        Log::info('Initial Carousel photo uploaded: '.$id);
 
         // add other photos related to the event to the carousel
         foreach ($event->getOtherPhotos() as $otherPhotos) {

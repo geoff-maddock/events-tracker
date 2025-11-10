@@ -107,7 +107,7 @@ class Instagram
     public function checkStatus(int $igContainerId): bool
     {
         $finished = false;
-        $maxCount = 5;
+        $maxCount = 15;
         $count = 0;
         while (!$finished) {
             $params = [];
@@ -121,7 +121,7 @@ class Instagram
             if ($count > $maxCount) {
                 return false;
             }
-            sleep(5);
+            sleep(3);
         }
 
         return true;
