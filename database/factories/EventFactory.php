@@ -28,7 +28,6 @@ class EventFactory extends Factory
             'name' => $this->faker->name,
             'slug' => $this->faker->slug(),
             'short' => $this->faker->name,
-            'short' => $this->faker->paragraph,
             'description' => $this->faker->paragraph,
             'visibility_id' => random_int(1, 3),
             'event_status_id' => random_int(1, 3),
