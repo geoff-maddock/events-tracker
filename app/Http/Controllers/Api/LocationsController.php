@@ -125,6 +125,7 @@ class LocationsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): JsonResponse {
+        // dd('index');
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_location');
         $listParamSessionStore->setKeyPrefix('internal_location_index');
@@ -134,6 +135,7 @@ class LocationsController extends Controller
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = Location::query()
+                    ->leftJoin('entities', 'locations.entity_id', '=', 'entities.id')
                     ->select('locations.*')
         ;
 
@@ -148,10 +150,15 @@ class LocationsController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
+        // dd the sql
+        // dd($query->toSql(), $query->getBindings());
+
         // get the events
         // @phpstan-ignore-next-line
-        $events = $query->paginate($listResultSet->getLimit());
+        $locations = $query->paginate($listResultSet->getLimit());
 
-        return response()->json(new LocationCollection($events));
+        // dd($locations);
+
+        return response()->json(new LocationCollection($locations));
     }
 }

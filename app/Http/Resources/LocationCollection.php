@@ -3,7 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use \Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use App\Http\Resources\LocationResource;
 
 /**
  * @mixin \Illuminate\Contracts\Pagination\LengthAwarePaginator
@@ -20,7 +20,7 @@ class LocationCollection extends ResourceCollection
     {
         return [
             'current_page' => $this->currentPage(),
-            'data' => $this->collection->toArray(),
+            'data' => LocationResource::collection($this->collection)->resolve(),
             'first_page_url' => $this->url(1),
             'from' => $this->firstItem(),
             'last_page' => $this->lastPage(),

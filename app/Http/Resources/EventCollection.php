@@ -3,7 +3,6 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use App\Http\Resources\EventResource;
 
 /**

@@ -3,7 +3,6 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Models\Location;
 
 /**
  * @mixin \App\Models\Location
@@ -37,6 +36,7 @@ class LocationResource extends JsonResource
         'entity_id' => $this->entity_id,
         'capacity' => $this->capacity,
         'map_url' => $this->map_url,
+        'entity' => $this->entity ? new MinimalSlugResource($this->entity) : null,
         ];
     }
 }
