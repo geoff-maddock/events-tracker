@@ -315,7 +315,7 @@ class EventInstagramController extends Controller
         // make the instagram api calls
         $igContainerIds = [];
 
-        // upload the image
+        // upload the primary image
         try {
             $id = $instagram->uploadCarouselPhoto($imageUrl);
             $igContainerIds[] = $id;
@@ -326,7 +326,7 @@ class EventInstagramController extends Controller
             return null;
         }
 
-        Log::info('Carousel photo uploaded: '.$id);
+        Log::info('Initial Carousel photo uploaded: '.$id);
 
         // add other photos related to the event to the carousel
         foreach ($event->getOtherPhotos() as $otherPhotos) {
@@ -339,25 +339,14 @@ class EventInstagramController extends Controller
 
             try {
                 $igContainerId = $instagram->uploadCarouselPhoto($imageUrl);
+                $igContainerIds[] = $igContainerId;
+                Log::info('Added container id: '.$igContainerId);
             } catch (Exception $e) {
                 Log::info('Carousel photo error: '. $e->getMessage());
                 $errorMessage = 'There was an error posting to Instagram.  Please try again.';
 
                 return null;
             }
-
-            // check the container status every 5 seconds until status_code is FINISHED
-            if ($instagram->checkStatus($igContainerId) === false) {
-                Log::info('Error checking status of carousel photo');
-                $errorMessage = 'There was an error posting to Instagram.  Please try again.';
-
-                return null;
-            }
-
-            $igContainerIds[] = $igContainerId;
-            Log::info('Added container id: '.$igContainerId);
-
-            Log::info('Carousel photo uploaded: '.$id);
         }
 
         // only do this if there are any other related photos
@@ -377,25 +366,24 @@ class EventInstagramController extends Controller
                     // upload the image
                     try {
                         $igContainerId = $instagram->uploadCarouselPhoto($imageUrl);
+                        $igContainerIds[] = $igContainerId;
+                        Log::info('Added container id: '.$igContainerId);
                     } catch (Exception $e) {
                         Log::info('Error uploading carousel photo');
                         $errorMessage = 'There was an error posting to Instagram.  Please try again.';
 
                         return null;
                     }
-
-                    // check the container status every 5 seconds until status_code is FINISHED
-                    if ($instagram->checkStatus($igContainerId) === false) {
-                        Log::info('Error checking status of carousel photo');
-                        $errorMessage = 'There was an error posting to Instagram.  Please try again.';
-
-                        return null;
-                    }
-
-                    $igContainerIds[] = $igContainerId;
-                    Log::info('Added container id: '.$igContainerId);
                 }
             }
+        }
+
+        // Check status of all uploaded photos in batch (more efficient than individual checks)
+        if ($instagram->checkBatchStatus($igContainerIds) === false) {
+            Log::info('Error checking batch status of carousel photos');
+            $errorMessage = 'There was an error posting to Instagram.  Please try again.';
+
+            return null;
         }
 
         // create a carousel container
@@ -408,7 +396,7 @@ class EventInstagramController extends Controller
             return null;
         }
 
-        // check the container status every 5 seconds until status_code is FINISHED
+        // check the carousel container status
         if ($instagram->checkStatus($igCarouselId) === false) {
             $errorMessage = 'There was an error posting to Instagram.  Please try again.';
 
@@ -502,21 +490,13 @@ class EventInstagramController extends Controller
 
             try {
                 $igContainerId = $instagram->uploadCarouselPhoto($imageUrl);
+                $igContainerIds[] = $igContainerId;
+                Log::info('Added container id: '.$igContainerId);
             } catch (Exception $e) {
                 flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
                 Log::info('Carousel photo error: '. $e->getMessage());
                 return back();
             }
-
-            // check the container status every 5 seconds until status_code is FINISHED
-            if ($instagram->checkStatus($igContainerId) === false) {
-                flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
-                Log::info('Error checking status of carousel photo');
-                return back();
-            }
-
-            $igContainerIds[] = $igContainerId;
-            Log::info('Added container id: '.$igContainerId);
 
             Log::info('Carousel photo uploaded: '.$id);
         }
@@ -539,23 +519,22 @@ class EventInstagramController extends Controller
                     // upload the image
                     try {
                         $igContainerId = $instagram->uploadCarouselPhoto($imageUrl);
+                        $igContainerIds[] = $igContainerId;
+                        Log::info('Added container id: '.$igContainerId);
                     } catch (Exception $e) {
                         flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
                         Log::info('Error uploading carousel photo');
                         return back();
                     }
-
-                    // check the container status every 5 seconds until status_code is FINISHED
-                    if ($instagram->checkStatus($igContainerId) === false) {
-                        flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
-                        Log::info('Error checking status of carousel photo');
-                        return back();
-                    }
-
-                    $igContainerIds[] = $igContainerId;
-                    Log::info('Added container id: '.$igContainerId);
                 }
             }
+        }
+
+        // Check status of all uploaded photos in batch (more efficient than individual checks)
+        if ($instagram->checkBatchStatus($igContainerIds) === false) {
+            flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
+            Log::info('Error checking batch status of carousel photos');
+            return back();
         }
 
         // create a carousel container
@@ -567,7 +546,7 @@ class EventInstagramController extends Controller
             return back();
         }
 
-        // check the container status every 5 seconds until status_code is FINISHED
+        // check the carousel container status
         if ($instagram->checkStatus($igCarouselId) === false) {
             flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
 
@@ -654,7 +633,7 @@ class EventInstagramController extends Controller
 
         Log::info('Carousel photo uploaded: '.$id);
 
-        // get info from the events
+        // get info from the events and upload all photos
         foreach ($events as $event) {
             // get the image URL
             $photo = $event->getPrimaryPhoto();
@@ -687,21 +666,20 @@ class EventInstagramController extends Controller
             // upload the image
             try {
                 $igContainerId = $instagram->uploadCarouselPhoto($imageUrl);
+                $igContainerIds[] = $igContainerId;
+                Log::info('Added container id: '.$igContainerId);
             } catch (Exception $e) {
                 flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
                 Log::info('Error uploading carousel photo');
                 return back();
             }
+        }
 
-            // check the container status every 5 seconds until status_code is FINISHED
-            if ($instagram->checkStatus($igContainerId) === false) {
-                flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
-                Log::info('Error checking status of carousel photo');
-                return back();
-            }
-
-            $igContainerIds[] = $igContainerId;
-            Log::info('Added container id: '.$igContainerId);
+        // Check status of all uploaded photos in batch (more efficient than individual checks)
+        if ($instagram->checkBatchStatus($igContainerIds) === false) {
+            flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
+            Log::info('Error checking batch status');
+            return back();
         }
 
         Log::info('Looped through events');
@@ -718,7 +696,7 @@ class EventInstagramController extends Controller
             return back();
         }
 
-        // check the container status every 5 seconds until status_code is FINISHED
+        // check the carousel container status
         if ($instagram->checkStatus($igContainerId) === false) {
             flash()->error('Error', 'There was an error posting carousel to Instagram.  Please try again.');
             Log::info('Error checking status');
