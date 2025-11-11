@@ -24,7 +24,7 @@
 		"league/flysystem-aws-s3-v3": "^3.0",
 		"jamband/ripple": "^0.10.3",
 		"intervention/image": "^2.7",
-		"spatie/laravel-sitemap": "^6.2",
+		"spatie/laravel-sitemap": "^7.0",
 		"laravel/tinker": "^2.7",
 		"predis/predis": "^2.0",
 		"laravel/sanctum": "^3.2",
