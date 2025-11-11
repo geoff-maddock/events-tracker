@@ -91,7 +91,6 @@ class OembedExtractor
         $regex = "/\b(?:(?:https|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i";
         preg_match_all($regex, $body, $result, PREG_PATTERN_ORDER);
         $urls = $result[0];
-        
         // collect any URLs from related entities
         foreach ($event->entities as $entity) {
             foreach ($entity->links as $link) {
@@ -102,8 +101,12 @@ class OembedExtractor
             }
         }
 
+        // dump($urls);
+
         // extract embeds from URLs
-        return $this->extractEmbedsFromUrls($urls, $size);
+        $embeds = $this->extractEmbedsFromUrls($urls, $size);
+        // dd($embeds);
+        return $embeds;
     }
 
     /**
@@ -170,6 +173,7 @@ class OembedExtractor
                 if ($temp !== null) {
                     $embeds = array_merge($embeds, $temp);
                 }
+                // dump('tried bandcamp '.$url);
             }
         }
 
@@ -245,12 +249,15 @@ class OembedExtractor
     }
 
 
-    protected function getEmbedsFromBandcampUrl(string $url, int $depth = 1, string $size = 'medium'): ?array
+    protected function  getEmbedsFromBandcampUrl(string $url, int $depth = 1, string $size = 'medium'): ?array
     {
+
+        // dump($depth);
         // prevent an infinite loop
         if ($depth > 2) {
             return [];
         }
+        
         // reset the response
         $this->provider->setResponse(null);
 
@@ -271,11 +278,12 @@ class OembedExtractor
                 
             // if there is a matching meta tag on the page
             if (null !== $content) {
-
+                // dump("found embed in meta for ".$url);
                 // convert content based on size
                 $content = $this->convertBandcampMetaOgVideo($content);
                 $embeds[] = sprintf($this->config['bandcamp_layout'], $content);
             } else {
+                // dump("no embed in meta for ".$url);
                 // no embed in meta, so might be container
                 $containerUrls = $this->getUrlsFromContainer($url);
 
@@ -284,11 +292,27 @@ class OembedExtractor
                     if ($containerCount > $this::CONTAINER_LIMIT) {
                         break;
                     }
+
+                    // check if the url contains a ? or # character, if so, skip it
+                    if (strpos($containerUrl, '?') !== false || strpos($containerUrl, '#') !== false) {
+                        // dump("skipping container with query string ".$containerUrl);
+                        continue;
+                    }
+                    
+                    // Add a small delay between requests to avoid rate limiting
+                    if ($containerCount > 1) {
+                        usleep(500000); // 500ms delay
+                    }
+                    
                     // if there is an embed, add it to the array
                     $temp = $this->getEmbedsFromBandcampUrl($containerUrl, $depth + 1, $size);
+
                     if (count($temp) > 0) {
+                        // dump("found embed in container ".$containerUrl);
                         $embeds = array_merge($embeds, $temp);
                         $containerCount++;
+                    } else {
+                        // dump("no embed in container ".$containerUrl);
                     }
                 }
             }
@@ -305,10 +329,37 @@ class OembedExtractor
 
         $httpClient = new \GuzzleHttp\Client();
 
-        try {
-            $response = $httpClient->get($containerUrl);
-        } catch (Exception $e) {
-            // if there was an exception, don't process further
+        // Retry logic for rate limiting
+        $maxRetries = 3;
+        $retryDelay = 1; // Start with 1 second
+        $response = null;
+
+        for ($attempt = 0; $attempt < $maxRetries; $attempt++) {
+            try {
+                $response = $httpClient->get($containerUrl);
+                break; // Success, exit retry loop
+            } catch (\GuzzleHttp\Exception\ClientException $e) {
+                // Check if it's a 429 rate limit error
+                if ($e->hasResponse() && $e->getResponse()->getStatusCode() === 429) {
+                    if ($attempt < $maxRetries - 1) {
+                        // dump("Rate limited on {$containerUrl}, retrying in {$retryDelay} seconds (attempt " . ($attempt + 1) . "/{$maxRetries})");
+                        sleep($retryDelay);
+                        $retryDelay *= 2; // Exponential backoff
+                        continue;
+                    }
+                }
+                // If not 429 or max retries reached, log and return
+                // dump("error fetching container URL ".$containerUrl.": ".$e->getMessage());
+                return [];
+            } catch (Exception $e) {
+                // Other exceptions, don't process further
+                // dump("error fetching container URL ".$containerUrl.": ".$e->getMessage());
+                return [];
+            }
+        }
+
+        if ($response === null) {
+            // dump("Failed to fetch container URL after {$maxRetries} attempts: ".$containerUrl);
             return [];
         }
 
