@@ -1011,6 +1011,17 @@ class Event extends Model
        // add default hashtag
         $format .= ' #'.config('app.default_hashtag');
 
+        // add additional handles/tags from config
+        $additionalHandles = config('app.instagram_additional_handles');
+        if (!empty($additionalHandles)) {
+            $handles = array_map('trim', explode(',', $additionalHandles));
+            foreach ($handles as $handle) {
+                if (!empty($handle)) {
+                    $format .= ' '.$handle;
+                }
+            }
+        }
+
         $format .= "\n";
 
         // add the arcane city URL
