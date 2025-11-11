@@ -39,7 +39,11 @@ class UserFilters extends QueryFilter
     {
         if (isset($value)) {
             // where not null
-            return $this->builder->where('users.email_verified_at', '!=', null);
+            if ($value === 'true') {
+                return $this->builder->whereNotNull('users.email_verified_at');
+            } else {
+                return $this->builder->whereNull('users.email_verified_at');
+            }
         } else {
             return $this->builder;
         }
