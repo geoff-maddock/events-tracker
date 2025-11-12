@@ -11,7 +11,7 @@ use App\Http\Resources\PermissionResource;
 /**
  * @mixin \App\Models\User
  */
-class UserResource extends JsonResource
+class AuthUserResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -35,6 +35,8 @@ class UserResource extends JsonResource
             'followed_entities' => MinimalSlugResource::collection($this->getEntitiesFollowing()),
             'followed_series' => MinimalSlugResource::collection($this->getSeriesFollowing()),
             'followed_threads' => MinimalSlugResource::collection($this->getThreadsFollowing()),
+            'groups' => GroupResource::collection($this->groups),
+            'permissions' => PermissionResource::collection($this->getPermissions()),
             'photos' => $this->photos->map(function ($photo) {
                 return [
                     'id' => $photo->id,
