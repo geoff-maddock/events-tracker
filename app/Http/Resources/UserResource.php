@@ -5,6 +5,8 @@ namespace App\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\MinimalSlugResource;
 use App\Http\Resources\ProfileResource;
+use App\Http\Resources\GroupResource;
+use App\Http\Resources\PermissionResource;
 
 /**
  * @mixin \App\Models\User
@@ -33,6 +35,8 @@ class UserResource extends JsonResource
             'followed_entities' => MinimalSlugResource::collection($this->getEntitiesFollowing()),
             'followed_series' => MinimalSlugResource::collection($this->getSeriesFollowing()),
             'followed_threads' => MinimalSlugResource::collection($this->getThreadsFollowing()),
+            'roles' => GroupResource::collection($this->groups),
+            'permissions' => PermissionResource::collection($this->permissions()),
             'photos' => $this->photos->map(function ($photo) {
                 return [
                     'id' => $photo->id,

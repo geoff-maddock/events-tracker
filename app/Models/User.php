@@ -535,6 +535,16 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     }
 
     /**
+     * Get all permissions for the user through their groups.
+     */
+    public function permissions(): Collection
+    {
+        return $this->groups->map(function ($group) {
+            return $group->permissions;
+        })->flatten()->unique('id');
+    }
+
+    /**
      * Fetch the last published post for the user.
      */
     public function lastPost(): HasOne
