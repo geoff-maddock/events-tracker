@@ -384,7 +384,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     public function getEntitiesFollowing(): Collection
     {
         return $this->getFollowingEntities()
-            ->orderBy('follows.created_at', 'desc')
+            ->orderBy('entities.name', 'asc')
             ->get();
     }
 
@@ -396,7 +396,6 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
         $entities = Entity::join('follows', 'entities.id', '=', 'follows.object_id')
             ->where('follows.object_type', '=', 'entity')
             ->where('follows.user_id', '=', $this->id)
-            ->orderBy('follows.created_at', 'desc')
             ->select('entities.*')
             ->count();
 
@@ -441,7 +440,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
         $series = Series::join('follows', 'series.id', '=', 'follows.object_id')
             ->where('follows.object_type', '=', 'series')
             ->where('follows.user_id', '=', $this->id)
-            ->orderBy('follows.created_at', 'desc')
+            ->orderBy('series.name', 'asc')
             ->select('series.*')
             ->get();
 
