@@ -9,7 +9,7 @@ use App\Http\Resources\GroupResource;
 use App\Http\Resources\PermissionResource;
 
 /**
- * @mixin \App\Models\User
+ * @mixin \App\Models\AuthUser
  */
 class AuthUserResource extends JsonResource
 {
