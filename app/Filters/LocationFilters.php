@@ -159,4 +159,19 @@ class LocationFilters extends QueryFilter
         }
     }
 
+    public function search(?string $value = null): Builder
+    {
+        if (isset($value)) {
+            return $this->builder->where(function ($query) use ($value) {
+                $query->where('locations.name', 'like', '%'.$value.'%')
+                    ->orWhere('locations.address_one', 'like', '%'.$value.'%')
+                    ->orWhere('locations.city', 'like', '%'.$value.'%')
+                    ->orWhere('locations.neighborhood', 'like', '%'.$value.'%')
+                    ->orWhere('locations.country', 'like', '%'.$value.'%');
+            });
+        } else {
+            return $this->builder;
+        }
+    }
+
 }
