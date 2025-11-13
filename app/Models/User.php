@@ -7,7 +7,6 @@ use Illuminate\Auth\MustVerifyEmail;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Database\Eloquent\Builder;
@@ -532,6 +531,16 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     public function groups(): BelongsToMany
     {
         return $this->belongsToMany(Group::class);
+    }
+
+    /**
+     * Get all permissions for the user through their groups.
+     */
+    public function getPermissions(): SupportCollection
+    {
+        return $this->groups->map(function ($group) {
+            return $group->permissions;
+        })->flatten()->unique('id');
     }
 
     /**
