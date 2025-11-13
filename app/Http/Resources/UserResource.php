@@ -5,8 +5,6 @@ namespace App\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\MinimalSlugResource;
 use App\Http\Resources\ProfileResource;
-use App\Http\Resources\GroupResource;
-use App\Http\Resources\PermissionResource;
 
 /**
  * @mixin \App\Models\User

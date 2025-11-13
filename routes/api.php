@@ -33,8 +33,9 @@ Route::middleware('auth:sanctum')->get('tokens/test', function (Request $request
 });
 
 Route::middleware('auth:sanctum')->get('auth/me', function (Request $request) {
-    $user = $request->user()->load(['groups.permissions']);
-    return new AuthUserResource($user);
+    // $user = $request->user()->load(['groups.permissions']);
+    // return new AuthUserResource($user);
+    return response()->json(new AuthUserResource($request->user()));
 });
 
 

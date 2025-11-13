@@ -62,7 +62,6 @@ class ApiAuthMeTest extends TestCase
         // Assert the response structure
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'data' => [
                     'id',
                     'name',
                     'email',
@@ -80,16 +79,15 @@ class ApiAuthMeTest extends TestCase
                             'slug',
                         ],
                     ],
-                ],
-            ]);
+                ]);
 
         // Assert specific group data
-        $response->assertJsonPath('data.groups.0.id', $group->id)
-            ->assertJsonPath('data.groups.0.name', 'Admin')
-            ->assertJsonPath('data.groups.0.slug', 'admin');
+        $response->assertJsonPath('groups.0.id', $group->id)
+            ->assertJsonPath('groups.0.name', 'Admin')
+            ->assertJsonPath('groups.0.slug', 'admin');
 
         // Assert specific permission data
-        $response->assertJsonCount(2, 'data.permissions')
+        $response->assertJsonCount(2, 'permissions')
             ->assertJsonFragment([
                 'id' => $permission1->id,
                 'name' => 'Edit Events',
@@ -120,8 +118,8 @@ class ApiAuthMeTest extends TestCase
 
         // Assert the response has empty groups and permissions
         $response->assertStatus(200)
-            ->assertJsonPath('data.groups', [])
-            ->assertJsonPath('data.permissions', []);
+            ->assertJsonPath('groups', [])
+            ->assertJsonPath('permissions', []);
     }
 
     /** @test */
@@ -193,10 +191,10 @@ class ApiAuthMeTest extends TestCase
 
         // Assert that permissions are deduplicated (should only see edit_event once)
         $response->assertStatus(200)
-            ->assertJsonCount(2, 'data.permissions'); // Should have 2 unique permissions
+            ->assertJsonCount(2, 'permissions'); // Should have 2 unique permissions
 
         // Verify the shared permission appears only once
-        $permissions = $response->json('data.permissions');
+        $permissions = $response->json('permissions');
         $editEventCount = collect($permissions)->where('slug', 'edit_event')->count();
         $this->assertEquals(1, $editEventCount, 'Shared permission should appear only once');
     }
