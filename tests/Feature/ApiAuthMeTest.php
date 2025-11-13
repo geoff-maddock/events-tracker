@@ -62,7 +62,6 @@ class ApiAuthMeTest extends TestCase
         // Assert the response structure
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'data' => [
                     'id',
                     'name',
                     'email',
@@ -80,16 +79,15 @@ class ApiAuthMeTest extends TestCase
                             'slug',
                         ],
                     ],
-                ],
-            ]);
+                ]);
 
         // Assert specific group data
-        $response->assertJsonPath('data.groups.0.id', $group->id)
-            ->assertJsonPath('data.groups.0.name', 'Admin')
-            ->assertJsonPath('data.groups.0.slug', 'admin');
+        $response->assertJsonPath('groups.0.id', $group->id)
+            ->assertJsonPath('groups.0.name', 'Admin')
+            ->assertJsonPath('groups.0.slug', 'admin');
 
         // Assert specific permission data
-        $response->assertJsonCount(2, 'data.permissions')
+        $response->assertJsonCount(2, 'permissions')
             ->assertJsonFragment([
                 'id' => $permission1->id,
                 'name' => 'Edit Events',
@@ -120,8 +118,8 @@ class ApiAuthMeTest extends TestCase
 
         // Assert the response has empty groups and permissions
         $response->assertStatus(200)
-            ->assertJsonPath('data.groups', [])
-            ->assertJsonPath('data.permissions', []);
+            ->assertJsonPath('groups', [])
+            ->assertJsonPath('permissions', []);
     }
 
     /** @test */
@@ -137,67 +135,67 @@ class ApiAuthMeTest extends TestCase
         $response->assertStatus(401);
     }
 
-    // /** @test */
-    // public function it_deduplicates_permissions_from_multiple_groups()
-    // {
-    //     // Create a user
-    //     $user = User::factory()->create([
-    //         'name' => 'Multi Group User',
-    //         'email' => 'multigroup@example.com',
-    //         'user_status_id' => 2, // Active status
-    //     ]);
+    /** @test */
+    public function it_deduplicates_permissions_from_multiple_groups()
+    {
+        // Create a user
+        $user = User::factory()->create([
+            'name' => 'Multi Group User',
+            'email' => 'multigroup@example.com',
+            'user_status_id' => 2, // Active status
+        ]);
 
-    //     // Create two groups
-    //     $group1 = Group::create([
-    //         'name' => 'group1',
-    //         'label' => 'Group 1',
-    //         'level' => 50,
-    //         'description' => 'First group',
-    //     ]);
+        // Create two groups
+        $group1 = Group::create([
+            'name' => 'group1',
+            'label' => 'Group 1',
+            'level' => 50,
+            'description' => 'First group',
+        ]);
 
-    //     $group2 = Group::create([
-    //         'name' => 'group2',
-    //         'label' => 'Group 2',
-    //         'level' => 60,
-    //         'description' => 'Second group',
-    //     ]);
+        $group2 = Group::create([
+            'name' => 'group2',
+            'label' => 'Group 2',
+            'level' => 60,
+            'description' => 'Second group',
+        ]);
 
-    //     // Create a shared permission
-    //     $sharedPermission = Permission::create([
-    //         'name' => 'edit_event',
-    //         'label' => 'Edit Events',
-    //         'description' => 'Can edit events',
-    //         'level' => 10,
-    //     ]);
+        // Create a shared permission
+        $sharedPermission = Permission::create([
+            'name' => 'edit_event',
+            'label' => 'Edit Events',
+            'description' => 'Can edit events',
+            'level' => 10,
+        ]);
 
-    //     // Create a unique permission for group 2
-    //     $uniquePermission = Permission::create([
-    //         'name' => 'delete_event',
-    //         'label' => 'Delete Events',
-    //         'description' => 'Can delete events',
-    //         'level' => 20,
-    //     ]);
+        // Create a unique permission for group 2
+        $uniquePermission = Permission::create([
+            'name' => 'delete_event',
+            'label' => 'Delete Events',
+            'description' => 'Can delete events',
+            'level' => 20,
+        ]);
 
-    //     // Assign the shared permission to both groups
-    //     $group1->permissions()->attach($sharedPermission->id);
-    //     $group2->permissions()->attach([$sharedPermission->id, $uniquePermission->id]);
+        // Assign the shared permission to both groups
+        $group1->permissions()->attach($sharedPermission->id);
+        $group2->permissions()->attach([$sharedPermission->id, $uniquePermission->id]);
 
-    //     // Assign both groups to user
-    //     $user->groups()->attach([$group1->id, $group2->id]);
+        // Assign both groups to user
+        $user->groups()->attach([$group1->id, $group2->id]);
 
-    //     // Authenticate as the user
-    //     $this->actingAs($user, 'sanctum');
+        // Authenticate as the user
+        $this->actingAs($user, 'sanctum');
 
-    //     // Make request to /auth/me endpoint
-    //     $response = $this->getJson('/api/auth/me');
+        // Make request to /auth/me endpoint
+        $response = $this->getJson('/api/auth/me');
 
-    //     // Assert that permissions are deduplicated (should only see edit_event once)
-    //     $response->assertStatus(200)
-    //         ->assertJsonCount(2, 'data.permissions'); // Should have 2 unique permissions
+        // Assert that permissions are deduplicated (should only see edit_event once)
+        $response->assertStatus(200)
+            ->assertJsonCount(2, 'permissions'); // Should have 2 unique permissions
 
-    //     // Verify the shared permission appears only once
-    //     $permissions = $response->json('data.permissions');
-    //     $editEventCount = collect($permissions)->where('slug', 'edit_event')->count();
-    //     $this->assertEquals(1, $editEventCount, 'Shared permission should appear only once');
-    // }
+        // Verify the shared permission appears only once
+        $permissions = $response->json('permissions');
+        $editEventCount = collect($permissions)->where('slug', 'edit_event')->count();
+        $this->assertEquals(1, $editEventCount, 'Shared permission should appear only once');
+    }
 }
