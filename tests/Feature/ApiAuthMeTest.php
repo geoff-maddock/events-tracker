@@ -127,8 +127,11 @@ class ApiAuthMeTest extends TestCase
     /** @test */
     public function it_requires_authentication()
     {
+        // Re-enable exception handling for this test to properly handle 401 response
+        $this->withExceptionHandling();
+        
         // Make request without authentication
-        $response = $this->getJson('/api/auth/me');
+        $response = $this->json('GET', '/api/auth/me');
 
         // Assert unauthorized response
         $response->assertStatus(401);
