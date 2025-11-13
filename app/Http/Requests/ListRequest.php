@@ -34,6 +34,32 @@ class ListRequest
         return $filters ? $filters : null;
     }
 
+    /**
+     * Check if the filters parameter is using the new advanced query syntax.
+     * Returns true if filters is a string (new format), false if array (legacy format).
+     */
+    public function hasAdvancedFilters(): bool
+    {
+        $filters = $this->request->get('filters');
+        
+        return is_string($filters);
+    }
+
+    /**
+     * Get the advanced filter query string.
+     * Returns null if using legacy array format.
+     */
+    public function getAdvancedFilterQuery(): ?string
+    {
+        $filters = $this->request->get('filters');
+        
+        if (is_string($filters)) {
+            return $filters;
+        }
+        
+        return null;
+    }
+
     public function getIsEmptyFilter(): bool
     {
         $filters = $this->request->get('filters');

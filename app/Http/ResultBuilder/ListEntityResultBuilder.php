@@ -99,7 +99,18 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
             $this->queryBuilder = $this->filter->applyFilters($this->queryBuilder, $this->parentFilter);
         }
 
-        // Apply user form filters
+        // Check for advanced filter syntax
+        if ($this->listQueryParameters->hasAdvancedFilters()) {
+            $advancedFilterQuery = $this->listQueryParameters->getAdvancedFilterQuery();
+            if ($advancedFilterQuery) {
+                $this->queryBuilder = $this->filter->applyAdvancedFilter($this->queryBuilder, $advancedFilterQuery);
+                $this->userFilters = ['_advanced' => $advancedFilterQuery]; // Store for display purposes
+                $this->isEmptyFilter = false;
+                return;
+            }
+        }
+
+        // Apply user form filters (legacy format)
         $this->userFilters = $this->listQueryParameters->getFilters();
         $this->isEmptyFilter = $this->listQueryParameters->getIsEmptyFilter();
 
