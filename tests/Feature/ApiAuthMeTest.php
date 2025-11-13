@@ -15,7 +15,7 @@ class ApiAuthMeTest extends TestCase
     protected $seed = true;
 
     /** @test */
-    public function it_returns_user_data_with_roles_and_permissions()
+    public function it_returns_user_data_with_groups_and_permissions()
     {
         // Create a user
         $user = User::factory()->create([
@@ -24,7 +24,7 @@ class ApiAuthMeTest extends TestCase
             'user_status_id' => 2, // Active status
         ]);
 
-        // Create a group (role) with permissions
+        // Create a group with permissions
         $group = Group::create([
             'name' => 'admin',
             'label' => 'Admin',
@@ -66,7 +66,7 @@ class ApiAuthMeTest extends TestCase
                     'id',
                     'name',
                     'email',
-                    'roles' => [
+                    'groups' => [
                         '*' => [
                             'id',
                             'name',
@@ -83,10 +83,10 @@ class ApiAuthMeTest extends TestCase
                 ],
             ]);
 
-        // Assert specific role data
-        $response->assertJsonPath('data.roles.0.id', $group->id)
-            ->assertJsonPath('data.roles.0.name', 'Admin')
-            ->assertJsonPath('data.roles.0.slug', 'admin');
+        // Assert specific group data
+        $response->assertJsonPath('data.groups.0.id', $group->id)
+            ->assertJsonPath('data.groups.0.name', 'Admin')
+            ->assertJsonPath('data.groups.0.slug', 'admin');
 
         // Assert specific permission data
         $response->assertJsonCount(2, 'data.permissions')
@@ -103,7 +103,7 @@ class ApiAuthMeTest extends TestCase
     }
 
     /** @test */
-    public function it_returns_empty_roles_and_permissions_for_user_without_groups()
+    public function it_returns_empty_groups_and_permissions_for_user_without_groups()
     {
         // Create a user without any groups
         $user = User::factory()->create([
@@ -118,9 +118,9 @@ class ApiAuthMeTest extends TestCase
         // Make request to /auth/me endpoint
         $response = $this->getJson('/api/auth/me');
 
-        // Assert the response has empty roles and permissions
+        // Assert the response has empty groups and permissions
         $response->assertStatus(200)
-            ->assertJsonPath('data.roles', [])
+            ->assertJsonPath('data.groups', [])
             ->assertJsonPath('data.permissions', []);
     }
 
