@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Photo;
 use Illuminate\Http\UploadedFile;
 use Intervention\Image\Facades\Image;
+use Illuminate\Http\File;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 
@@ -15,12 +17,22 @@ class ImageHandler
 {
     const CONTAINER_LIMIT = 4;
 
+    // Maximum file size in bytes (500 KB)
+    const MAX_FILE_SIZE = 500 * 1024;
 
     // Make a photo based on the passed in file
     public function makePhoto(UploadedFile $file): Photo
     {
         // store the file with a unique name based on time
         $fileName = time().'_'.$file->getClientOriginalName();
+
+        // check if the file size exceeds the limit
+        $fileSize = $file->getSize();
+        
+        if ($fileSize > self::MAX_FILE_SIZE) {
+            // compress the image before storing
+            $file = $this->compressImage($file, $fileName);
+        }
 
         // from here, this file has been stored publicly under it's unique name and original format
         $filePath = $file->storePubliclyAs('photos', $fileName, 'external');
@@ -32,6 +44,59 @@ class ImageHandler
         $webp = $photo->makeWebp();
 
         return $photo->makeThumbnail();
+    }
+
+    /**
+     * Compress an image to reduce file size
+     * 
+     * @param UploadedFile $file The file to compress
+     * @param string $fileName The target filename
+     * @return File The compressed image file
+     */
+    private function compressImage(UploadedFile $file, string $fileName): File
+    {
+        // Load the image using Intervention Image
+        $image = Image::make($file->getRealPath());
+        
+        // Get original dimensions
+        $width = $image->width();
+        $height = $image->height();
+        
+        // Calculate new dimensions to reduce file size
+        // Reduce to 80% if dimensions are large
+        $maxDimension = 2000;
+        if ($width > $maxDimension || $height > $maxDimension) {
+            $image->resize($maxDimension, $maxDimension, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+        }
+        
+        // Determine the file extension and format
+        $extension = strtolower($file->getClientOriginalExtension());
+        $quality = 80;
+        
+        // Create a temporary file path
+        $tempPath = sys_get_temp_dir() . '/' . $fileName;
+        
+        // Encode and save the image with compression
+        if (in_array($extension, ['jpg', 'jpeg'])) {
+            $image->encode('jpg', $quality)->save($tempPath);
+        } elseif ($extension === 'png') {
+            // PNG uses compression level 0-9, convert quality percentage
+            $image->encode('png', 8)->save($tempPath);
+        } elseif ($extension === 'webp') {
+            $image->encode('webp', $quality)->save($tempPath);
+        } else {
+            // For other formats, convert to JPEG
+            $image->encode('jpg', $quality)->save($tempPath);
+        }
+        
+        // Clean up the intervention image
+        $image->destroy();
+        
+        // Return a new File instance for the compressed image
+        return new File($tempPath);
     }
     
 
