@@ -31,11 +31,15 @@ class ImageHandler
         
         if ($fileSize > self::MAX_FILE_SIZE) {
             // compress the image before storing
-            $file = $this->compressImage($file, $fileName);
+            $compressedFile = $this->compressImage($file, $fileName);
+            // Store the compressed file
+            $filePath = Storage::disk('external')->putFileAs('photos', $compressedFile, $fileName, 'public');
+            // Clean up temporary file
+            @unlink($compressedFile->getPathname());
+        } else {
+            // from here, this file has been stored publicly under it's unique name and original format
+            $filePath = $file->storePubliclyAs('photos', $fileName, 'external');
         }
-
-        // from here, this file has been stored publicly under it's unique name and original format
-        $filePath = $file->storePubliclyAs('photos', $fileName, 'external');
         
         // sets all the photo private name and path values
         $photo = Photo::named($fileName);
