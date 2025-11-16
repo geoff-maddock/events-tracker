@@ -131,6 +131,8 @@ return [
     'social_twitter' => env('SOCIAL_TWITTER', ''),
     'social_github' => env('SOCIAL_GITHUB', ''),
 
+    'instagram_additional_handles' => env('INSTAGRAM_ADDITIONAL_HANDLES', ''),
+
     'password_reset_secret' => env('PASSWORD_RESET_SECRET'),
 
     /*
