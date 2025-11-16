@@ -2,6 +2,8 @@
 
 namespace App\Filters;
 
+use App\Services\FilterQueryParser;
+use App\Services\FilterQueryApplier;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
@@ -40,6 +42,30 @@ abstract class QueryFilter
         }
 
         return $this->builder;
+    }
+
+    /**
+     * Apply advanced filter query string to the builder.
+     *
+     * @param Builder $builder The query builder instance
+     * @param string $filterQuery The advanced filter query string
+     * @return Builder The modified query builder
+     */
+    public function applyAdvancedFilter(Builder $builder, string $filterQuery): Builder
+    {
+        $parser = new FilterQueryParser();
+        $applier = new FilterQueryApplier();
+        
+        try {
+            $parsedFilter = $parser->parse($filterQuery);
+            return $applier->apply($builder, $parsedFilter);
+        } catch (\InvalidArgumentException $e) {
+            // Log the error and return builder unchanged
+            \Log::warning('Invalid filter query: ' . $e->getMessage(), [
+                'query' => $filterQuery
+            ]);
+            return $builder;
+        }
     }
 
     public function filters(): array

@@ -27,6 +27,7 @@
 ### Filtering Lists
 You can apply filters to routes using the following:
 
+#### Legacy Filter Format (Array-based)
 - To filter by a specific field, use the field name as the key and the value as the value.
   - Example: `GET /api/events?filters[name]=Event Name`
 - To order by a specific field, use the field name as the key and the value as the value.
@@ -35,4 +36,75 @@ You can apply filters to routes using the following:
   - `GET /api/events?filters[tag]=music,art`
   - When you need events that contain *all* of the supplied tags, use `filters[tag_all]` instead.
   - `GET /api/events?filters[tag_all]=music,art`
+
+#### Advanced Filter Format (Query-based)
+The API now supports advanced filtering with a more powerful query syntax. This allows for complex filtering with comparison operators, logical operators, and grouped conditions.
+
+**Supported Operators:**
+- `EQ` - Equal to
+- `NEQ` - Not equal to
+- `GT` - Greater than
+- `GTE` - Greater than or equal to
+- `LT` - Less than
+- `LTE` - Less than or equal to
+- `LIKE` - Pattern matching (use SQL wildcards like `%`)
+- `IN` - Value in list
+- `NOT IN` - Value not in list
+
+**Logical Operators:**
+- `AND` - Both conditions must be true
+- `OR` - Either condition must be true
+- Parentheses `()` can be used to group conditions
+
+**Examples:**
+
+Simple equality:
+```
+GET /api/events?filters=events.name EQ "Rock Concert"
+```
+
+Comparison operators:
+```
+GET /api/events?filters=events.min_age GT 18
+GET /api/events?filters=events.door_price LTE 20
+GET /api/events?filters=events.name LIKE "%concert%"
+```
+
+IN operator:
+```
+GET /api/events?filters=events.name IN ("Event 1", "Event 2", "Event 3")
+```
+
+NOT IN operator:
+```
+GET /api/events?filters=event_types.name NOT IN (archived, deleted)
+```
+
+AND conditions:
+```
+GET /api/events?filters=events.name LIKE "%Rock%" AND events.min_age GTE 21
+```
+
+OR conditions:
+```
+GET /api/events?filters=events.name EQ "Jazz Night" OR events.name EQ "Blues Night"
+```
+
+Grouped conditions:
+```
+GET /api/events?filters=(events.name LIKE "%Rock%" OR events.name LIKE "%Jazz%") AND events.min_age EQ 18
+```
+
+Complex nested conditions:
+```
+GET /api/events?filters=(event_types.name EQ "Concert" AND events.min_age GT 18) OR (event_types.name EQ "Festival" AND events.door_price LT 50)
+```
+
+**Notes:**
+- String values with spaces should be quoted (single or double quotes)
+- Numeric values do not need quotes
+- Column names can include table prefixes (e.g., `events.name`, `event_types.name`)
+- Filters are URL-encoded, so spaces become `%20` in the actual URL
+- Invalid filter queries will be logged and ignored, returning unfiltered results
+- The legacy array-based filter format is still supported for backward compatibility
 

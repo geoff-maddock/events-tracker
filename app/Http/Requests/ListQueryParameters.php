@@ -53,6 +53,13 @@ class ListQueryParameters
         $filters = $this->defaultFilters;
 
         if (!is_null($this->listRequest->getFilters())) {
+            // Check if using advanced filter syntax (string format)
+            if ($this->listRequest->hasAdvancedFilters()) {
+                // For advanced filters, return empty array as they are handled separately
+                return [];
+            }
+            
+            // Legacy array format
             $filters = $this->stripEmptyFields($this->listRequest->getFilters());
             $filters = $this->stripIsEmptyField($filters);
         } elseif (!is_null($this->listParamStore->getFilters())) {
@@ -61,6 +68,26 @@ class ListQueryParameters
         $this->listParamStore->setFilters($filters);
 
         return $filters;
+    }
+
+    /**
+     * Get the advanced filter query string if present.
+     */
+    public function getAdvancedFilterQuery(): ?string
+    {
+        if ($this->listRequest->hasAdvancedFilters()) {
+            return $this->listRequest->getAdvancedFilterQuery();
+        }
+        
+        return null;
+    }
+
+    /**
+     * Check if using advanced filter syntax.
+     */
+    public function hasAdvancedFilters(): bool
+    {
+        return $this->listRequest->hasAdvancedFilters();
     }
 
     public function getSortDirection(): ?string
