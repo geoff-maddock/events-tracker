@@ -49,9 +49,13 @@ $embeds = $extractor->getEmbedsForSeries($series, 'small');
 
 ## Size Options
 
-- **small**: Height of 42px
-- **medium** (default): Height of 120px
-- **large**: Height of 300px
+All sizes use normalized height and width parameters that are passed directly to the oEmbed APIs:
+
+- **small**: Height of 42px, Width of 400px
+- **medium** (default): Height of 120px, Width of 400px
+- **large**: Height of 300px, Width of 400px
+
+The size configuration is consistently applied to both SoundCloud and Bandcamp embeds through the oEmbed API parameters.
 
 ## API Endpoints Used
 
@@ -61,6 +65,8 @@ $embeds = $extractor->getEmbedsForSeries($series, 'small');
 - Parameters:
   - `format`: 'json'
   - `url`: The SoundCloud URL
+  - `maxheight`: Height based on size configuration
+  - `maxwidth`: Width based on size configuration
 
 ### Bandcamp oEmbed API
 - Endpoint: `https://bandcamp.com/EmbeddedPlayer/oembed`
@@ -68,6 +74,8 @@ $embeds = $extractor->getEmbedsForSeries($series, 'small');
 - Parameters:
   - `format`: 'json'
   - `url`: The Bandcamp URL
+  - `maxheight`: Height based on size configuration
+  - `maxwidth`: Width based on size configuration
 
 ## Response Format
 
@@ -84,7 +92,22 @@ Both APIs return a JSON response with an `html` key containing the embed code. T
 
 The `OembedExtractor` service differs from the existing `EmbedExtractor` service in the following ways:
 
-1. **API-based**: Uses official oEmbed APIs instead of scraping and the Ripple library
-2. **Simpler**: No container/playlist detection - focuses on individual tracks/albums
+1. **API-based**: Uses official oEmbed APIs instead of web scraping and the Ripple library
+2. **Simpler**: No Provider dependency or DOM parsing - pure oEmbed API calls
 3. **Direct embed codes**: Returns the embed HTML directly from the provider's API
 4. **More reliable**: Uses standardized oEmbed protocol supported by the platforms
+5. **Normalized sizing**: Consistent size configuration across all embed types using standard width/height parameters
+
+## Implementation Details
+
+### No Provider Dependency
+
+The service no longer requires a `Provider` instance for DOM parsing or web scraping. Instead, it makes direct HTTP requests using cURL to the oEmbed API endpoints.
+
+### Pure oEmbed API Approach
+
+Both SoundCloud and Bandcamp embeds are retrieved through their respective oEmbed APIs, ensuring:
+- Standard response format (JSON with `html` field)
+- Consistent error handling
+- Simplified code without complex DOM parsing logic
+- Better maintainability
