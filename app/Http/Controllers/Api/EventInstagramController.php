@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\Auth;
 use App\Filters\EventFilters;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
@@ -55,6 +56,7 @@ class EventInstagramController extends Controller
     public function __construct(EventFilters $filter)
     {
         $this->middleware('verified', ['only' => ['create', 'edit', 'duplicate','store', 'update', 'indexAttending']]);
+
         $this->filter = $filter;
 
         // prefix for session storage
@@ -254,12 +256,11 @@ class EventInstagramController extends Controller
 
     public function postCarouselToInstagramApi(int $id, Instagram $instagram, Request $request): JsonResponse
     {
+        $user = Auth::guard('sanctum')->user() ?? Auth::user();
+
         if (!$event = Event::find($id)) {
             return response()->json(['success' => false, 'message' => 'No such event'], 404);
         }
-
-        // Authorization checks
-        $user = $this->user;
 
         // if the user does not exist, unauthorized
         if (!$user) {
@@ -289,7 +290,7 @@ class EventInstagramController extends Controller
             ], 400);
         }
 
-        Activity::log($event, $request->user(), 16);
+        Activity::log($event, $user, 16);
 
         return response()->json([
             'success' => true,
