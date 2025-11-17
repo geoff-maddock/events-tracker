@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\Auth;
 use App\Filters\EventFilters;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
@@ -55,6 +56,7 @@ class EventInstagramController extends Controller
     public function __construct(EventFilters $filter)
     {
         $this->middleware('verified', ['only' => ['create', 'edit', 'duplicate','store', 'update', 'indexAttending']]);
+
         $this->filter = $filter;
 
         // prefix for session storage
@@ -254,8 +256,28 @@ class EventInstagramController extends Controller
 
     public function postCarouselToInstagramApi(int $id, Instagram $instagram, Request $request): JsonResponse
     {
+        $user = Auth::guard('sanctum')->user() ?? Auth::user();
+
         if (!$event = Event::find($id)) {
             return response()->json(['success' => false, 'message' => 'No such event'], 404);
+        }
+
+        // if the user does not exist, unauthorized
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+        }
+        
+        // Check if event is public
+        if ($event->visibility_id !== \App\Models\Visibility::VISIBILITY_PUBLIC) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+        }
+        
+        // Check if user owns the event OR has admin permission
+        $isOwner = $event->created_by === $user->id;
+        $isAdmin = $user->hasGroup('admin') || $user->hasGroup('super_admin');
+        
+        if (!$isOwner && !$isAdmin) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
         }
 
         $errorMessage = '';
@@ -268,7 +290,7 @@ class EventInstagramController extends Controller
             ], 400);
         }
 
-        Activity::log($event, $request->user(), 16);
+        Activity::log($event, $user, 16);
 
         return response()->json([
             'success' => true,
