@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\AdminTest;
+use App\Console\Commands\AutomateInstagramPosts;
 use App\Console\Commands\Notify;
 use App\Console\Commands\NotifyWeekly;
 use App\Console\Commands\UserCleanup;
@@ -22,6 +23,7 @@ class Kernel extends ConsoleKernel
         AdminTest::class,
         NotifyWeekly::class,
         UserCleanup::class,
+        AutomateInstagramPosts::class,
     ];
 
     /**
@@ -50,6 +52,15 @@ class Kernel extends ConsoleKernel
 
         // update the sitemap once per week
         $schedule->command('sitemap:generate')->weekly()->sundays()->timezone('America/New_York')->at('5:00');
+
+        // HOURLY
+        // automate Instagram posts for events
+        // runs every hour, Monday through Friday, from 9 AM to 5 PM (Eastern Time)
+        $schedule->command('instagram:autopost')
+            ->hourly()
+            ->timezone('America/New_York')
+            ->between('9:00', '17:00')
+            ->weekdays();
     }
 
     /**
