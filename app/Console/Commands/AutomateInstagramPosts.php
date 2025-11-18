@@ -246,3 +246,4 @@ class AutomateInstagramPosts extends Command
         }
     }
 }
+
