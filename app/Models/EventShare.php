@@ -20,7 +20,7 @@ class EventShare extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'event_id',
@@ -33,7 +33,7 @@ class EventShare extends Model
     /**
      * The attributes that should be cast.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'created_at' => 'datetime',

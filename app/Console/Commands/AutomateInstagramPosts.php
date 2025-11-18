@@ -86,7 +86,6 @@ class AutomateInstagramPosts extends Command
     protected function getEventsToPost()
     {
         $today = Carbon::today();
-        $fiveDaysFromNow = Carbon::today()->addDays(5);
 
         // Get all public events that haven't been posted yet or need a reminder post
         $events = Event::where('visibility_id', \App\Models\Visibility::VISIBILITY_PUBLIC)
@@ -94,7 +93,7 @@ class AutomateInstagramPosts extends Command
             ->whereHas('eventType') // Ensure event has a type
             ->orderBy('start_at', 'ASC')
             ->get()
-            ->filter(function ($event) use ($today, $fiveDaysFromNow) {
+            ->filter(function ($event) use ($today) {
                 // Check if event has a primary photo (required for Instagram)
                 if (!$event->getPrimaryPhoto()) {
                     return false;
