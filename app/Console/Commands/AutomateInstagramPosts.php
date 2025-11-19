@@ -50,8 +50,8 @@ class AutomateInstagramPosts extends Command
         $totalEvents = $events->count();
         $this->info("Found {$totalEvents} event(s) eligible for posting.");
 
-        // Calculate how many to post: 5 or 1/8th of total, whichever is greater
-        $batchSize = max(5, (int) ceil($totalEvents / 8));
+        // Calculate how many to post: 3 or 1/12th of total, whichever is greater
+        $batchSize = max(3, (int) ceil($totalEvents / 12));
         $this->info("Will attempt to post {$batchSize} event(s) in this batch.");
 
         // Take the batch to post
