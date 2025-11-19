@@ -19,10 +19,11 @@ class CheckBanned
      */
     public function handle(Request $request, Closure $next)
     {
-    if (auth()->check() && (auth()->user()->user_status_id == UserStatus::BANNED || auth()->user()->user_status_id == UserStatus::SUSPENDED)) {
+        // Get the authenticated user
+        $user = auth()->user();
         
-            // Get the user before logging out
-            $user = auth()->user();
+        // Check if user exists and is banned or suspended
+        if ($user && ($user->user_status_id == UserStatus::BANNED || $user->user_status_id == UserStatus::SUSPENDED)) {
             
             // Check if logout method exists on the current guard
             if (method_exists(auth()->guard(), 'logout')) {
