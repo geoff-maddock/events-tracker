@@ -108,20 +108,20 @@ class AutomateInstagramPosts extends Command
 
                 $shareCount = $shares->count();
 
-                // Rule 1: Never posted before and created today - post once
-                if ($shareCount === 0 && $event->created_at->isToday()) {
+                // Rule 1: Never posted before
+                if ($shareCount === 0) {
                     return true;
                 }
 
-                // Rule 2: Event is 5 days away and was created at least 7 days before the event
-                // and has only been posted once before
-                $eventDate = $event->start_at;
-                $daysUntilEvent = $today->diffInDays($eventDate, false);
+                // Rule 2: If it's been more than 7 days since the last share, 
+                // and the event is less than 30 days away, share it again
+                $lastShare = $shares->first(); // Most recent share (ordered by posted_at DESC)
                 
-                if ($daysUntilEvent === 5 && $shareCount === 1) {
-                    $createdDaysBeforeEvent = $event->created_at->diffInDays($eventDate, false);
+                if ($lastShare && $lastShare->posted_at) {
+                    $daysSinceLastShare = $lastShare->posted_at->diffInDays($today, false);
+                    $daysUntilEvent = $today->diffInDays($event->start_at, false);
                     
-                    if ($createdDaysBeforeEvent >= 7) {
+                    if ($daysSinceLastShare > 7 && $daysUntilEvent < 30) {
                         return true;
                     }
                 }
