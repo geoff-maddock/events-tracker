@@ -43,18 +43,18 @@ class OembedExtractor
             case "large":
                 $config["height"] = 300;
                 $config["bandcamp"] = sprintf('/size=large/%s/tracklist=false/transparent=true/', $css);
-                $config["bandcamp_layout"] = '<iframe style="border: 0; width: 100%%; height: 300px;" src="%s" allowfullscreen seamless></iframe>';
+                $config["bandcamp_layout"] = '<iframe style="border: 0; width: 100%%; height: 300px;" src="%s" allowfullscreen seamless title="Bandcamp audio player"></iframe>';
                 break;
             case "small":
                 $config["height"] = 20;
                 $config["bandcamp"] = sprintf('/size=small/%s/transparent=true/', $css);
-                $config["bandcamp_layout"] = '<iframe style="border: 0; width: 100%%; height: 42px; margin-bottom: -7px;" src="%s" allowfullscreen seamless></iframe>';
+                $config["bandcamp_layout"] = '<iframe style="border: 0; width: 100%%; height: 42px; margin-bottom: -7px;" src="%s" allowfullscreen seamless title="Bandcamp audio player"></iframe>';
  
                 break;
             default:
                 $config["height"] = 166;
                 $config["bandcamp"] = sprintf('/size=large/%s/tracklist=false/artwork=small/transparent=true/',$css);
-                $config["bandcamp_layout"] = '<iframe style="border: 0; width: 100%%; height: 120px;" src="%s" allowfullscreen seamless></iframe>';
+                $config["bandcamp_layout"] = '<iframe style="border: 0; width: 100%%; height: 120px;" src="%s" allowfullscreen seamless title="Bandcamp audio player"></iframe>';
         }
 
         return $config;
