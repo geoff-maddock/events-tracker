@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('created_by')->nullable()->index();
             $table->timestamp('created_at')->nullable();
             $table->timestamp('posted_at')->nullable();
+            $table->timestamp('updated_at')->nullable();
             
             $table->engine = 'InnoDB';
             $table->charset = 'utf8mb4';

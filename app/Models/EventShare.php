@@ -38,6 +38,7 @@ class EventShare extends Model
     protected $casts = [
         'created_at' => 'datetime',
         'posted_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     /**
