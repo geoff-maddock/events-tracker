@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Console\Commands\AdminTest;
 use App\Console\Commands\AutomateInstagramPosts;
+use App\Console\Commands\InitializeEventShares;
 use App\Console\Commands\Notify;
 use App\Console\Commands\NotifyWeekly;
 use App\Console\Commands\UserCleanup;
@@ -24,6 +25,7 @@ class Kernel extends ConsoleKernel
         NotifyWeekly::class,
         UserCleanup::class,
         AutomateInstagramPosts::class,
+        InitializeEventShares::class,
     ];
 
     /**
