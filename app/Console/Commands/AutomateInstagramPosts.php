@@ -113,11 +113,17 @@ class AutomateInstagramPosts extends Command
                     return true;
                 }
 
+
+
                 // Rule 2: If it's been more than 7 days since the last share, 
                 // and the event is less than 30 days away, share it again
                 $lastShare = $shares->first(); // Most recent share (ordered by posted_at DESC)
                 
                 if ($lastShare && $lastShare->posted_at) {
+
+                    // output the last posted date and shareCount for debugging in one log statement
+                    $this->info("Last posted event #{$event->id} on {$lastShare->posted_at}, share count: {$shareCount}");
+
                     $daysSinceLastShare = $lastShare->posted_at->diffInDays($today, false);
                     $daysUntilEvent = $today->diffInDays($event->start_at, false);
                     
