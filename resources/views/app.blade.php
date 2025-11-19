@@ -52,7 +52,7 @@
 	@if (config('app.google_tags') !== "")
 	<!-- Google Tag Manager (noscript) -->
 	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ config('app.google_tags')}}"
-	height="0" width="0" class="d-none"></iframe></noscript>
+	height="0" width="0" class="d-none" title="Google Tag Manager"></iframe></noscript>
 	<!-- End Google Tag Manager (noscript) -->
 	@endif
 	<script src="{{ asset('/js/global-config.js') }}"></script>

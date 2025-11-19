@@ -54,20 +54,20 @@ class EmbedExtractor
             case "large":
                 $config["bandcamp"] = sprintf('/size=large/%s/tracklist=false/transparent=true/', $css);
                 $config["soundcloud"] = '&color=%23ff5500&inverse=true&auto_play=true&show_user=true';
-                $config["bandcamp_layout"] = '<iframe style="border: 0; width: 100%%; height: 300px;" src="%s" allowfullscreen seamless></iframe>';
-                $config["soundcloud_layout"] = '<iframe style="border: 0; width: 100%%; height: 300px;" src="%s" allowfullscreen seamless></iframe>';
+                $config["bandcamp_layout"] = '<iframe style="border: 0; width: 100%%; height: 300px;" src="%s" allowfullscreen seamless title="Bandcamp audio player"></iframe>';
+                $config["soundcloud_layout"] = '<iframe style="border: 0; width: 100%%; height: 300px;" src="%s" allowfullscreen seamless title="SoundCloud audio player"></iframe>';
                 break;
             case "small":
                 $config["bandcamp"] = sprintf('/size=small/%s/transparent=true/', $css);
                 $config["soundcloud"] = '&color=%160d18&inverse=true&auto_play=true&show_user=true';
-                $config["bandcamp_layout"] = '<iframe style="border: 0; width: 100%%; height: 42px; margin-bottom: -7px;" src="%s" allowfullscreen seamless></iframe>';
-                $config["soundcloud_layout"] = '<iframe style="border: 0; width: 100%%; height: 24px; margin-bottom: -7px; padding: 2px; background-color: #333333; color: #cccccc;" src="%s" allowfullscreen seamless></iframe>';
+                $config["bandcamp_layout"] = '<iframe style="border: 0; width: 100%%; height: 42px; margin-bottom: -7px;" src="%s" allowfullscreen seamless title="Bandcamp audio player"></iframe>';
+                $config["soundcloud_layout"] = '<iframe style="border: 0; width: 100%%; height: 24px; margin-bottom: -7px; padding: 2px; background-color: #333333; color: #cccccc;" src="%s" allowfullscreen seamless title="SoundCloud audio player"></iframe>';
                break;
             default:
                 $config["bandcamp"] = sprintf('/size=large/%s/tracklist=false/artwork=small/transparent=true/',$css);
                 $config["soundcloud"] = '&color=%23ff5500&inverse=true&auto_play=true&show_user=true';
-                $config["bandcamp_layout"] = '<iframe style="border: 0; width: 100%%; height: 120px;" src="%s" allowfullscreen seamless></iframe>';
-                $config["soundcloud_layout"] = '<iframe style="border: 0; width: 100%%; height: 120px;" src="%s" allowfullscreen seamless></iframe>';
+                $config["bandcamp_layout"] = '<iframe style="border: 0; width: 100%%; height: 120px;" src="%s" allowfullscreen seamless title="Bandcamp audio player"></iframe>';
+                $config["soundcloud_layout"] = '<iframe style="border: 0; width: 100%%; height: 120px;" src="%s" allowfullscreen seamless title="SoundCloud audio player"></iframe>';
         }
 
         return $config;
