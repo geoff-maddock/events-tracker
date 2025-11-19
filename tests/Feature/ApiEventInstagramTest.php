@@ -155,8 +155,9 @@ class ApiEventInstagramTest extends TestCase
         $instagram->shouldReceive('getIgUserId')->andReturn(123);
         $instagram->shouldReceive('getPageAccessToken')->andReturn('token');
         $instagram->shouldReceive('uploadCarouselPhoto')->andReturn(111);
-        $instagram->shouldReceive('checkStatus')->andReturn(true);
+        $instagram->shouldReceive('checkBatchStatus')->andReturn(true);
         $instagram->shouldReceive('createCarousel')->andReturn(999);
+        $instagram->shouldReceive('checkStatus')->andReturn(true);
         $instagram->shouldReceive('publishMedia')->andReturn(555);
 
         $this->app->instance(Instagram::class, $instagram);
@@ -207,8 +208,9 @@ class ApiEventInstagramTest extends TestCase
         $instagram->shouldReceive('getIgUserId')->andReturn(123);
         $instagram->shouldReceive('getPageAccessToken')->andReturn('token');
         $instagram->shouldReceive('uploadCarouselPhoto')->andReturn(111);
-        $instagram->shouldReceive('checkStatus')->andReturn(true);
+        $instagram->shouldReceive('checkBatchStatus')->andReturn(true);
         $instagram->shouldReceive('createCarousel')->andReturn(999);
+        $instagram->shouldReceive('checkStatus')->andReturn(true);
         $instagram->shouldReceive('publishMedia')->andReturn(555);
 
         $this->app->instance(Instagram::class, $instagram);
