@@ -110,10 +110,10 @@ class AutomateInstagramPosts extends Command
 
                 // Rule 1: Never posted before
                 if ($shareCount === 0) {
+                    $this->info("AutomateInstagramPosts: Event #{$event->id} has never been posted.");
+                    Log::info("AutomateInstagramPosts: Event #{$event->id} has never been posted.");
                     return true;
                 }
-
-
 
                 // Rule 2: If it's been more than 7 days since the last share, 
                 // and the event is less than 30 days away, share it again
@@ -123,6 +123,7 @@ class AutomateInstagramPosts extends Command
 
                     // output the last posted date and shareCount for debugging in one log statement
                     $this->info("Last posted event #{$event->id} on {$lastShare->posted_at}, share count: {$shareCount}");
+                    Log::info("AutomateInstagramPosts: Last posted event #{$event->id} on {$lastShare->posted_at}, share count: {$shareCount}");
 
                     $daysSinceLastShare = $lastShare->posted_at->diffInDays($today, false);
                     $daysUntilEvent = $today->diffInDays($event->start_at, false);
