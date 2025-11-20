@@ -135,7 +135,7 @@
 						@endif
 
 
-						@if ($signedIn && $entity->ownedBy($user))
+						@if ($signedIn && ($entity->ownedBy($user) || $user->hasGroup('super_admin'))
 						<a href="{!! route('entities.locations.edit', ['entity' => $entity->slug, 'location' => $location->id]) !!}" title="Edit this location.">
 							<i class="bi bi-pencil"></i>
 						</a>
@@ -178,7 +178,7 @@
 			@endunless
 
 
-			@if ($user && Auth::user()->id == ($entity->user ? $entity->user?->id : null))
+			@if ($user && ((Auth::user()->id == ($entity->user ? $entity->user?->id : null)) || $user->hasGroup('super_admin')))
 				<div class="my-2"><a href="{!! route('entities.contacts.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Contact</a></div>
 			@endif
 			
@@ -208,7 +208,7 @@
 					@endforeach
 			@endunless
 
-			@if ($user && Auth::user()->id == ($entity->user ? $entity->user?->id : null))
+			@if ($user && ((Auth::user()->id == ($entity->user ? $entity->user?->id : null)) || $user->hasGroup('super_admin')))
 					<div>
 							<a href="{!! route('entities.links.create', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Add Link</a>
 					</div><br>
