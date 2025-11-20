@@ -520,6 +520,11 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
         return $this->groups->contains('name', $group);
     }
 
+    public function hasPermission(string $permission): bool
+    {
+        return $this->getPermissions()->contains('name', $permission);
+    }
+
     public function assignGroup(string $group): Model
     {
         return $this->groups()->save(
