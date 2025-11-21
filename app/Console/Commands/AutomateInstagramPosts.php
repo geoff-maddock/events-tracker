@@ -50,8 +50,8 @@ class AutomateInstagramPosts extends Command
         $totalEvents = $events->count();
         $this->info("Found {$totalEvents} event(s) eligible for posting.");
 
-        // Calculate how many to post: 3 or 1/12th of total, whichever is greater
-        $batchSize = max(3, (int) ceil($totalEvents / 12));
+        // Calculate how many to post: 3 or 1/16th of total, whichever is greater
+        $batchSize = max(3, (int) ceil($totalEvents / 16));
         $this->info("Will attempt to post {$batchSize} event(s) in this batch.");
 
         // Take the batch to post
@@ -110,7 +110,6 @@ class AutomateInstagramPosts extends Command
 
                 // Rule 1: Never posted before
                 if ($shareCount === 0) {
-                    $this->info("AutomateInstagramPosts: Event #{$event->id} has never been posted.");
                     Log::info("AutomateInstagramPosts: Event #{$event->id} has never been posted.");
                     return true;
                 }
@@ -122,7 +121,6 @@ class AutomateInstagramPosts extends Command
                 if ($lastShare && $lastShare->posted_at) {
 
                     // output the last posted date and shareCount for debugging in one log statement
-                    $this->info("Last posted event #{$event->id} on {$lastShare->posted_at}, share count: {$shareCount}");
                     Log::info("AutomateInstagramPosts: Last posted event #{$event->id} on {$lastShare->posted_at}, share count: {$shareCount}");
 
                     $daysSinceLastShare = $lastShare->posted_at->diffInDays($today, false);

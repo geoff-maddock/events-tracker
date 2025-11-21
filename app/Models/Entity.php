@@ -574,7 +574,7 @@ class Entity extends Eloquent
      *
      * @phpstan-return HasMany<Location>
      */
-    public function locations(): ?HasMany
+    public function locations(): HasMany
     {
         return $this->hasMany(Location::class)->with('visibility');
     }

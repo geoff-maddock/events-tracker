@@ -80,7 +80,7 @@ class Tag extends Eloquent
     /**
      * A tag has one type.
      */
-    public function tagType(): HasOne
+    public function tagType(): BelongsTo
     {
         return $this->belongsTo(TagType::class);
     }
