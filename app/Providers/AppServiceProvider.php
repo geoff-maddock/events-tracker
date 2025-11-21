@@ -39,15 +39,16 @@ class AppServiceProvider extends ServiceProvider
             'thread' => Thread::class,
         ]);
 
-        if ($this->app->environment('local', 'development')) {
-            DB::listen(function ($query) {
-                Log::channel('sql')->debug($query->sql, [
-                    'bindings'    => $query->bindings,
-                    'time_ms'     => $query->time,
-                    'connection'  => $query->connectionName,
-                ]);
-            });
-        }
+        // disable logging of queries unless in local/development
+        // if ($this->app->environment('local', 'development')) {
+        //     DB::listen(function ($query) {
+        //         Log::channel('sql')->debug($query->sql, [
+        //             'bindings'    => $query->bindings,
+        //             'time_ms'     => $query->time,
+        //             'connection'  => $query->connectionName,
+        //         ]);
+        //     });
+        // }
 
         // get the user, set the theme and pass to the view
         View::composer('*', function ($view) {
