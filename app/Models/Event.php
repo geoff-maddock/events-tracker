@@ -558,7 +558,7 @@ class Event extends Model
      */
     public function getAgeFormatAttribute(): string
     {
-        if (!isset($this->min_age)) {
+        if (is_null($this->min_age)) {
             return '';
         }
 
