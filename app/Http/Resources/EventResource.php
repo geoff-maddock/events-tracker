@@ -45,6 +45,7 @@ class EventResource extends JsonResource
             'start_at' => $this->start_at,
             'end_at' => $this->end_at,
             'min_age' => $this->min_age,
+            'age_format' => $this->age_format,
             'series' => $this->series ? new MinimalSlugResource($this->series) : null,
             'primary_link' => $this->primary_link,
             'ticket_link' => $this->ticket_link,
