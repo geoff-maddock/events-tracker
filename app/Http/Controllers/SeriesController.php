@@ -230,7 +230,7 @@ class SeriesController extends Controller
 
         // get the series
         $series = $query
-            ->with('visibility', 'venue','tags', 'entities','eventType','threads','occurrenceType','occurrenceWeek','occurrenceDay')
+            ->with('visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos', 'upcomingEvent','occurrenceType','occurrenceWeek','occurrenceDay')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session

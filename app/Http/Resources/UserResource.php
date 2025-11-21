@@ -29,10 +29,10 @@ class UserResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'profile' => new ProfileResource($this->whenLoaded('profile', $this->profile)),
-            'followed_tags' => MinimalSlugResource::collection($this->getTagsFollowing()),
-            'followed_entities' => MinimalSlugResource::collection($this->getEntitiesFollowing()),
-            'followed_series' => MinimalSlugResource::collection($this->getSeriesFollowing()),
-            'followed_threads' => MinimalSlugResource::collection($this->getThreadsFollowing()),
+            'followed_tags' => MinimalSlugResource::collection($this->relationLoaded('followedTags') ? $this->followedTags : $this->getTagsFollowing()),
+            'followed_entities' => MinimalSlugResource::collection($this->relationLoaded('followedEntities') ? $this->followedEntities : $this->getEntitiesFollowing()),
+            'followed_series' => MinimalSlugResource::collection($this->relationLoaded('followedSeries') ? $this->followedSeries : $this->getSeriesFollowing()),
+            'followed_threads' => MinimalSlugResource::collection($this->relationLoaded('followedThreads') ? $this->followedThreads : $this->getThreadsFollowing()),
             'photos' => $this->photos->map(function ($photo) {
                 return [
                     'id' => $photo->id,

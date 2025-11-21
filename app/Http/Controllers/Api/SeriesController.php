@@ -191,7 +191,7 @@ class SeriesController extends Controller
 
         // get the events
         $series = $query
-            ->with('occurrenceType', 'visibility', 'tags')
+            ->with('occurrenceType', 'visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos', 'upcomingEvent')
             ->paginate($listResultSet->getLimit());
 
         return response()->json(new SeriesCollection($series));
@@ -219,6 +219,7 @@ class SeriesController extends Controller
             ->groupBy('series.id');
 
         $series = $query
+            ->with(['visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos', 'upcomingEvent'])
             ->orderByDesc('attendees_count')
             ->paginate($limit);
 
@@ -267,7 +268,7 @@ class SeriesController extends Controller
 
         // get the events
         $series = $query
-            ->with('occurrenceType', 'visibility', 'tags')
+            ->with(['occurrenceType','visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos', 'upcomingEvent'])
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -369,7 +370,7 @@ class SeriesController extends Controller
 
         // get the events
         $series = $query
-            ->with('occurrenceType', 'visibility', 'tags')
+            ->with(['occurrenceType', 'visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos', 'upcomingEvent'])
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -429,7 +430,7 @@ class SeriesController extends Controller
 
         // get the events
         $series = $query
-            ->with('occurrenceType', 'visibility', 'tags')
+            ->with(['occurrenceType', 'visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos', 'upcomingEvent'])
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -489,7 +490,7 @@ class SeriesController extends Controller
         // get the events
         // @phpstan-ignore-next-line
         $series = $query->visible($this->user)
-            ->with('occurrenceType', 'visibility', 'tags')
+            ->with(['occurrenceType', 'visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos', 'upcomingEvent'])
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -549,7 +550,7 @@ class SeriesController extends Controller
 
         // get the events
         $series = $query
-            ->with('occurrenceType', 'visibility', 'tags')
+            ->with(['occurrenceType', 'visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos', 'upcomingEvent'])
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session

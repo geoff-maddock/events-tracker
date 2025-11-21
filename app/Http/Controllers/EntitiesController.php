@@ -99,9 +99,10 @@ class EntitiesController extends Controller
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = Entity::query()
-        ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
-        ->select('entities.*')
-        ->withCount('follows')
+            ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
+            ->select('entities.*')
+            ->with(['entityStatus', 'entityType', 'links', 'tags', 'roles', 'photos', 'locations', 'aliases'])
+            ->withCount('follows')
         ;
 
         // set the default filter to active
@@ -114,6 +115,7 @@ class EntitiesController extends Controller
             ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
             ->select('entities.*')
             ->where('entity_status_id', '<>', EntityStatus::UNLISTED)
+            ->with(['entityStatus', 'entityType', 'links', 'tags', 'roles', 'photos', 'locations', 'aliases'])
             ->withCount('follows')
             ;
     
@@ -121,6 +123,7 @@ class EntitiesController extends Controller
             $baseQuery = Entity::query()
             ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
             ->select('entities.*')
+            ->with(['entityStatus', 'entityType', 'links', 'tags', 'roles', 'photos', 'locations', 'aliases'])
             ->withCount('follows')
             ;    
         }

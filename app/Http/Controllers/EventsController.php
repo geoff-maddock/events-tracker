@@ -147,7 +147,28 @@ class EventsController extends Controller
         // get the events
         // @phpstan-ignore-next-line
         $events = $query->visible($this->user)
-            ->with('visibility', 'venue', 'tags','entities')
+            ->with([
+                'visibility',
+                'venue.links',
+                'venue.photos',
+                'venue.locations',
+                'venue.entityStatus',
+                'venue.entityType',
+                'eventStatus',
+                'eventType',
+                'promoter.links',
+                'promoter.photos',
+                'promoter.locations',
+                'promoter.entityStatus',
+                'promoter.entityType',
+                'series',
+                'tags',
+                'entities',
+                'photos',
+                'attendees' => function ($q) {
+                    $q->where('response_type_id', 1);
+                },
+            ])
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session

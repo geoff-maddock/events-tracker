@@ -128,6 +128,7 @@ class EntitiesController extends Controller
                         ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
                         ->leftJoin('entity_statuses', 'entities.entity_status_id', '=', 'entity_statuses.id')
                         ->select('entities.*')
+                        ->with(['entityStatus', 'entityType', 'links', 'tags', 'roles', 'photos', 'locations', 'aliases'])
                         ->withCount('follows')
         ;
 
@@ -166,6 +167,7 @@ class EntitiesController extends Controller
         $from = Carbon::now()->subDays($days);
 
         $query = Entity::query()
+            ->with(['entityStatus', 'entityType', 'links', 'tags', 'roles', 'photos', 'locations', 'aliases'])
             ->withCount([
                 'events as events_count' => function ($q) use ($from) {
                     $q->where('start_at', '>=', $from);
@@ -217,6 +219,7 @@ class EntitiesController extends Controller
             ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
             ->leftJoin('entity_statuses', 'entities.entity_status_id', '=', 'entity_statuses.id')
             ->select('entities.*')
+            ->with(['entityStatus', 'entityType', 'links', 'tags', 'roles', 'photos', 'locations', 'aliases'])
             ->withCount('follows');
 
         // set the default filter to active
@@ -258,12 +261,11 @@ class EntitiesController extends Controller
         $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        //$baseQuery = Entity::query()->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')->select('entities.*');
-
         $baseQuery = Entity::join('follows', 'entities.id', '=', 'follows.object_id')
         ->where('follows.object_type', '=', 'entity')
         ->where('follows.user_id', '=', $this->user->id)
-        ->select('entities.*');
+        ->select('entities.*')
+        ->with(['entityStatus', 'entityType', 'links', 'tags', 'roles', 'photos', 'locations', 'aliases']);
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -312,7 +314,10 @@ class EntitiesController extends Controller
      */
     public function getBaseQuery(): Builder
     {
-        return Entity::query()->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')->select('entities.*');
+        return Entity::query()
+            ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
+            ->select('entities.*')
+            ->with(['entityStatus', 'entityType', 'links', 'tags', 'roles', 'photos', 'locations', 'aliases']);
     }
 
     /**
@@ -552,7 +557,10 @@ class EntitiesController extends Controller
         $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Entity::getByAlias($alias)->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')->select('entities.*');
+        $baseQuery = Entity::getByAlias($alias)
+            ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
+            ->select('entities.*')
+            ->with(['entityStatus', 'entityType', 'links', 'tags', 'roles', 'photos', 'locations', 'aliases']);
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -600,7 +608,9 @@ class EntitiesController extends Controller
      */
     public function indexSlug(string $slug)
     {
-        $entity = Entity::getBySlug(strtolower($slug))->firstOrFail();
+        $entity = Entity::getBySlug(strtolower($slug))
+        ->with(['entityStatus', 'entityType', 'links', 'tags', 'roles', 'photos', 'locations', 'aliases'])
+        ->firstOrFail();
 
         return view('entities.show')
             ->with(compact('entity'))
@@ -681,6 +691,8 @@ class EntitiesController extends Controller
      */
     public function show(Entity $entity): JsonResponse
     {
+        $entity->load(['entityStatus', 'entityType', 'links', 'tags', 'roles', 'photos', 'locations', 'aliases']);
+
         app('redirect')->setIntendedUrl(url()->current());
 
         return response()->json(new EntityResource($entity));
@@ -1182,6 +1194,8 @@ class EntitiesController extends Controller
 
             Activity::log($entity, $user, 6);
         }
+        
+        $entity->load(['entityStatus', 'entityType', 'links', 'tags', 'roles', 'photos', 'locations', 'aliases']);
 
         return response()->json(new EntityResource($entity));
     }

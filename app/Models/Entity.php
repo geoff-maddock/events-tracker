@@ -447,6 +447,9 @@ class Entity extends Eloquent
      */
     public function primaryLink(): ?Link
     {
+        if ($this->relationLoaded('links')) {
+            return $this->links->sortBy('created_at')->firstWhere('is_primary', 1);
+        }
         return $this->links()->where('is_primary', '=', 1)->orderBy('created_at', 'ASC')->first();
     }
 
@@ -518,6 +521,9 @@ class Entity extends Eloquent
      **/
     public function getPrimaryPhoto(): ?Photo
     {
+        if ($this->relationLoaded('photos')) {
+            return $this->photos->firstWhere('is_primary', 1);
+        }
         // get a list of events that start on the passed date
         $primary = $this->photos()->where('photos.is_primary', '=', '1')->first();
 
@@ -554,6 +560,9 @@ class Entity extends Eloquent
      **/
     public function getPrimaryLocation(): ?Location
     {
+        if ($this->relationLoaded('locations')) {
+            return $this->locations->first();
+        }
         // get a list of locations
         $primary = $this->locations->first();
 
@@ -565,7 +574,7 @@ class Entity extends Eloquent
      *
      * @phpstan-return HasMany<Location>
      */
-    public function locations(): ?HasMany
+    public function locations(): HasMany
     {
         return $this->hasMany(Location::class)->with('visibility');
     }

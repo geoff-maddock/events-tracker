@@ -76,7 +76,9 @@ class ActivityController extends Controller
         $listParamSessionStore->setIndexTab(action([ActivityController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Activity::query()->select('activities.*');
+        $baseQuery = Activity::query()
+            ->select('activities.*')
+            ->with(['user.profile', 'action']);
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -126,7 +128,9 @@ class ActivityController extends Controller
         $listParamSessionStore->setIndexTab(action([ActivityController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Activity::query()->select('activities.*');
+        $baseQuery = Activity::query()
+            ->select('activities.*')
+            ->with(['user.profile', 'action']);
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
