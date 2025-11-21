@@ -137,7 +137,9 @@ class TagsController extends Controller
         $query = $listResultSet->getList();
 
         // get the tags
-        $tags = $query->paginate($listResultSet->getLimit());
+        $tags = $query
+                ->with(['tagType'])
+                ->paginate($listResultSet->getLimit());
 
         // return view('tags.index', compact('series', 'entities', 'events', 'tag', 'tags', 'userTags', 'latestTags'));
         return response()->json(new TagCollection($tags));
@@ -198,6 +200,7 @@ class TagsController extends Controller
 
         $tags = $query
             ->orderBy(DB::raw('events_count + follows_count'), 'desc')
+            ->with(['tagType'])
             ->paginate($limit);
 
         $tags->getCollection()->transform(function ($tag) {

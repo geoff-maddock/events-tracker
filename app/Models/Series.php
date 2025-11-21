@@ -583,6 +583,15 @@ class Series extends Eloquent
      */
     public function nextEvent(): ?Event
     {
+        if ($this->cancelled_at) {
+            return null;
+        }
+
+        // Use eager loaded relationship if available
+        if ($this->relationLoaded('upcomingEvent')) {
+            return $this->upcomingEvent;
+        }
+
         $event = null;
 
         if (null == $this->cancelled_at) {
@@ -593,6 +602,14 @@ class Series extends Eloquent
         }
 
         return $event;
+    }
+
+    /**
+     * The next upcoming event.
+     */
+    public function upcomingEvent(): HasOne
+    {
+        return $this->hasOne(Event::class)->where('start_at', '>=', Carbon::now())->orderBy('start_at', 'asc');
     }
 
     /**
@@ -800,6 +817,11 @@ class Series extends Eloquent
      **/
     public function getPrimaryPhoto(): ?Photo
     {
+        // Use eager loaded photos if available
+        if ($this->relationLoaded('photos')) {
+            return $this->photos->firstWhere('is_primary', 1);
+        }
+
         // get a list of events that start on the passed date
         return $this->photos()->where('photos.is_primary', '=', '1')->first();
     }

@@ -135,6 +135,7 @@ class UsersController extends Controller
 
         // get the users
         $users = $query
+            ->with(['profile', 'status', 'lastActivity', 'followedTags', 'followedEntities', 'followedSeries', 'followedThreads', 'photos'])
             ->paginate($listResultSet->getLimit());
 
         return response()->json(new UserCollection($users));
@@ -181,6 +182,7 @@ class UsersController extends Controller
 
         // get the users
         $users = $query
+            ->with(['profile', 'status', 'lastActivity', 'followedTags', 'followedEntities', 'followedSeries', 'followedThreads', 'photos'])
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session

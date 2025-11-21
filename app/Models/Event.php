@@ -418,41 +418,33 @@ class Event extends Model
     /**
      * An event has one promoter.
      */
-    public function promoter(): HasOne
+    public function promoter(): BelongsTo
     {
-        return $this->hasOne(Entity::class, 'id', 'promoter_id');
+        return $this->belongsTo(Entity::class, 'promoter_id');
     }
 
     /**
      * An event has one venue.
      */
-    public function venue(): HasOne
+    public function venue(): BelongsTo
     {
-        return $this->hasOne('App\Models\Entity', 'id', 'venue_id');
+        return $this->belongsTo(Entity::class, 'venue_id');
     }
 
     /**
      * An event has one type.
      */
-    public function eventType(): HasOne
+    public function eventType(): BelongsTo
     {
-        return $this->hasOne('App\Models\EventType', 'id', 'event_type_id');
+        return $this->belongsTo(EventType::class, 'event_type_id');
     }
 
     /**
      * An event has one status.
      */
-    public function eventStatus(): HasOne
+    public function eventStatus(): BelongsTo
     {
-        return $this->hasOne('App\Models\EventStatus', 'id', 'event_status_id');
-    }
-
-    /**
-     * Get all of the events photos.
-     */
-    public function photos(): BelongsToMany
-    {
-        return $this->belongsToMany('App\Models\Photo')->withTimestamps();
+        return $this->belongsTo(EventStatus::class, 'event_status_id');
     }
 
     /**
@@ -474,9 +466,9 @@ class Event extends Model
     /**
      * An event has one series.
      */
-    public function series(): HasOne
+    public function series(): BelongsTo
     {
-        return $this->hasOne(Series::class, 'id', 'series_id');
+        return $this->belongsTo(Series::class, 'series_id');
     }
 
     /**
@@ -772,11 +764,24 @@ class Event extends Model
     }
 
     /**
+     * Get all of the events photos.
+     */
+    public function photos(): BelongsToMany
+    {
+        return $this->belongsToMany('App\Models\Photo')->withTimestamps();
+    }
+
+    /**
      * Return the primary photo for this event.
      *
      **/
     public function getPrimaryPhoto(): ?Photo
     {
+        // check if the relation is loaded
+        if ($this->relationLoaded('photos')) {
+            return $this->photos->firstWhere('is_primary', 1);
+        }
+
         // gets the first photo related to this event
         return $this->photos()->where('photos.is_primary', '=', '1')->first();
     }

@@ -11,12 +11,12 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Gate;
 use Schema;
 use Illuminate\Support\Facades\URL;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Cache;
 
 //use Illuminate\Support\Facades\Gate;
 
@@ -94,10 +94,12 @@ class AuthServiceProvider extends ServiceProvider
         // doing this check to make sure the table exists
         // since it's in a provider, it might be called by php artisan before the db is migrated
 
-        if (!Schema::hasTable('permissions')) {
-            return new Collection([]);
-        }
+        return Cache::remember('permissions_with_groups', 3600, function () {
+            if (!Schema::hasTable('permissions')) {
+                return new Collection([]);
+            }
 
-        return Permission::with('groups')->get();
+            return Permission::with('groups')->get();
+        });
     }
 }

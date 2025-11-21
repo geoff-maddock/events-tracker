@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,6 +38,16 @@ class AppServiceProvider extends ServiceProvider
             'post' => Post::class,
             'thread' => Thread::class,
         ]);
+
+        if ($this->app->environment('local', 'development')) {
+            DB::listen(function ($query) {
+                Log::channel('sql')->debug($query->sql, [
+                    'bindings'    => $query->bindings,
+                    'time_ms'     => $query->time,
+                    'connection'  => $query->connectionName,
+                ]);
+            });
+        }
 
         // get the user, set the theme and pass to the view
         View::composer('*', function ($view) {

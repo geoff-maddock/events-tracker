@@ -493,6 +493,16 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     }
 
     /**
+     * Return the tags the user is following.
+     */
+    public function followedTags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, 'follows', 'user_id', 'object_id')
+            ->wherePivot('object_type', 'tag')
+            ->orderBy('tags.name', 'asc');
+    }
+
+    /**
      * Events that were created by the user.
      */
     public function createdEvents(): Collection
@@ -560,7 +570,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     public function lastActivity(): HasOne
     {
-        return $this->hasOne(Activity::class, 'user_id')->latest();
+        return $this->hasOne(Activity::class, 'user_id')->latestOfMany();
     }
 
     /**
@@ -596,6 +606,36 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     public function getGroupListAttribute(): array
     {
         return $this->groups->pluck('id')->all();
+    }
+
+        /**
+     * Return the entities the user is following.
+     */
+    public function followedEntities(): BelongsToMany
+    {
+        return $this->belongsToMany(Entity::class, 'follows', 'user_id', 'object_id')
+            ->wherePivot('object_type', 'entity')
+            ->orderBy('entities.name', 'asc');
+    }
+
+    /**
+     * Return the series the user is following.
+     */
+    public function followedSeries(): BelongsToMany
+    {
+        return $this->belongsToMany(Series::class, 'follows', 'user_id', 'object_id')
+            ->wherePivot('object_type', 'series')
+            ->orderBy('series.name', 'asc');
+    }
+
+    /**
+     * Return the threads the user is following.
+     */
+    public function followedThreads(): BelongsToMany
+    {
+        return $this->belongsToMany(Thread::class, 'follows', 'user_id', 'object_id')
+            ->wherePivot('object_type', 'thread')
+            ->orderBy('follows.created_at', 'desc');
     }
 
     /**

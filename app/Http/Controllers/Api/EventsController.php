@@ -148,16 +148,28 @@ class EventsController extends Controller
 
         // get the events
         // @phpstan-ignore-next-line
-        $events = $query->visible($this->user)
+        $events = $query
             ->with([
                 'visibility',
-                'venue',
+                'venue.links',
+                'venue.photos',
+                'venue.locations',
+                'venue.entityStatus',
+                'venue.entityType',
                 'eventStatus',
                 'eventType',
-                'promoter',
+                'promoter.links',
+                'promoter.photos',
+                'promoter.locations',
+                'promoter.entityStatus',
+                'promoter.entityType',
                 'series',
                 'tags',
                 'entities',
+                'photos',
+                'attendees' => function ($q) {
+                    $q->where('response_type_id', 1);
+                },
             ])
             ->paginate($listResultSet->getLimit());
 
@@ -182,6 +194,25 @@ class EventsController extends Controller
             ->filter($this->filter);
 
         $events = $query
+            ->with([
+                'visibility',
+                'venue.links',
+                'venue.photos',
+                'venue.locations',
+                'venue.entityStatus',
+                'venue.entityType',
+                'eventStatus',
+                'eventType',
+                'promoter.links',
+                'promoter.photos',
+                'promoter.locations',
+                'promoter.entityStatus',
+                'promoter.entityType',
+                'series',
+                'tags',
+                'entities',
+                'photos',
+            ])
             ->orderByDesc('attendees_count')
             ->paginate($limit);
 
@@ -766,13 +797,33 @@ class EventsController extends Controller
             abort(404);
         }
 
-        $thread = Thread::where('event_id', '=', $event->id)->first();
+        $event->load([
+                'visibility',
+                'venue.links',
+                'venue.photos',
+                'venue.locations',
+                'venue.entityStatus',
+                'venue.entityType',
+                'eventStatus',
+                'eventType',
+                'promoter.links',
+                'promoter.photos',
+                'promoter.locations',
+                'promoter.entityStatus',
+                'promoter.entityType',
+                'series',
+                'tags',
+                'entities',
+                'photos',
+        ]);
 
-        // check blacklist status
-        $blacklist = $this->checkBlackList($event);
+        // None of this is actually loaded, so commenting out for now
 
-        // extract all the links from the event body and convert into embeds
-        $embeds = $embedExtractor->getEmbedsForEvent($event);
+        // $thread = Thread::where('event_id', '=', $event->id)->first();
+        // // check blacklist status
+        // $blacklist = $this->checkBlackList($event);
+        // // extract all the links from the event body and convert into embeds
+        // $embeds = $embedExtractor->getEmbedsForEvent($event);
 
         return response()->json(new EventResource($event));
     }

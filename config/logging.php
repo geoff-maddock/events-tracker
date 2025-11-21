@@ -76,6 +76,12 @@ return [
             'driver' => 'errorlog',
             'level' => 'debug',
         ],
+        // Log channel for SQL queries
+        // 'sql' => [
+        //     'driver' => 'single',
+        //     'path' => storage_path('logs/sql.log'),
+        //     'level' => 'debug',
+        // ],
     ],
 
 ];
