@@ -38,7 +38,7 @@ Here is a reminder from <a href="{{ $url }}">{{ $url }}</a> about these upcoming
 	@endif
 
  	@if ($event->min_age)
-	{{ $event->min_age }}
+	{{ $event->age_format }}
 	@endif
 
 	<br>
