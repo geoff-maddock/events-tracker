@@ -553,6 +553,23 @@ class Event extends Model
     }
 
     /**
+     * Get the formatted age requirement for the event.
+     * Returns "All Ages" for 0, or age with "+" suffix for non-zero values.
+     */
+    public function getAgeFormatAttribute(): string
+    {
+        if (!isset($this->min_age)) {
+            return '';
+        }
+
+        if ($this->min_age == 0) {
+            return 'All Ages';
+        }
+
+        return $this->min_age.'+';
+    }
+
+    /**
      * Get the default end time of the event.  If no end time is set, use the default length to determine end time.
      */
     public function getDefaultEndTimeAttribute(): ?Carbon
