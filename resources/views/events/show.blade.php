@@ -93,12 +93,7 @@
 	</b>
 	<br>
 	@if (isset($event->min_age))
-
-		@if ($event->min_age == 0) 
-			All Ages
-		@else 
-		{{ is_int($event->min_age) ? $event->min_age.'+' :  $event->min_age  }}
-		@endif
+		{{ $event->age_format }}
 	@endif
 
 	

@@ -391,6 +391,23 @@ class Series extends Eloquent
     }
 
     /**
+     * Get the formatted age requirement for the series.
+     * Returns "All Ages" for 0, or age with "+" suffix for non-zero values.
+     */
+    public function getAgeFormatAttribute(): string
+    {
+        if (is_null($this->min_age)) {
+            return '';
+        }
+
+        if ($this->min_age == 0) {
+            return 'All Ages';
+        }
+
+        return $this->min_age.'+';
+    }
+
+    /**
      * Return a collection of series with the passed tag.
      * @return Builder<Series>
      **/

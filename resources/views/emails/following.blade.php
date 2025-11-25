@@ -33,7 +33,7 @@ You might be interested in this new event because you are following <b>{!! $obje
 	@endif
 
  	@if ($event->min_age)
-	{{ $event->min_age }}
+	{{ $event->age_format }}
 	@endif
 
 	<br>

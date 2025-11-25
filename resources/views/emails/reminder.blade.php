@@ -34,7 +34,7 @@ Here is a reminder about this event that you are attending.
 	@endif
 
  	@if ($event->min_age)
-	{{ $event->min_age }}
+	{{ $event->age_format }}
 	@endif
 
 	<br>

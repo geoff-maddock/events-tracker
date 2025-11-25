@@ -37,7 +37,7 @@ Good morning!
 		@endif
 
 		@if ($event->min_age)
-		{{ $event->min_age }}
+		{{ $event->age_format }}
 		@endif
 
 		<br>
