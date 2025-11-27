@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
+use Illuminate\Http\JsonResponse;
 use Str;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -84,12 +85,13 @@ class PostsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
+    ): JsonResponse {
         // if the gate does not allow this user to show a forum redirect to home
         if (Gate::denies('show_forum')) {
             flash()->error('Unauthorized', 'Your cannot view the forum');
 
-            return redirect()->back();
+            // return unauthorized response
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         // initialized listParamSessionStore with base index key
@@ -130,10 +132,10 @@ class PostsController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
-        // get the threads
-        $threads = $query->paginate($listResultSet->getLimit());
+        // get the posts
+        $posts = $query->paginate($listResultSet->getLimit());
 
-        return response()->json(new PostCollection($threads));
+        return response()->json(new PostCollection($posts));
     }
 
     /**

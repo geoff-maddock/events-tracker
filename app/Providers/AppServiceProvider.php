@@ -39,6 +39,7 @@ class AppServiceProvider extends ServiceProvider
             'thread' => Thread::class,
         ]);
 
+        // SQL LOGGING
         // disable logging of queries unless in local/development
         // if ($this->app->environment('local', 'development')) {
         //     DB::listen(function ($query) {

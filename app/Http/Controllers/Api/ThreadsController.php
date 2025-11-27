@@ -21,6 +21,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View as ViewView;
+use Illuminate\Http\JsonResponse;
 use App\Filters\PostFilters;
 use App\Http\Resources\PostCollection;
 use App\Models\Post;
@@ -90,12 +91,12 @@ class ThreadsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
+    ): JsonResponse {
         // if the gate does not allow this user to show a thread redirect to home
         if (Gate::denies('show_thread')) {
             flash()->error('Unauthorized', 'Your cannot view the thread index');
 
-            return redirect()->back();
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         // initialized listParamSessionStore with base index key
@@ -107,7 +108,9 @@ class ThreadsController extends Controller
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = Thread::query()
-        ->select('threads.*');
+            ->with(['visibility', 'forum', 'user', 'tags', 'threadCategory', 'lastPost'])
+            ->withCount('posts')
+            ->select('threads.*');
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -124,6 +127,7 @@ class ThreadsController extends Controller
         // get the threads
         $threads = $query->paginate($listResultSet->getLimit());
 
+        // return threads collection response
         return response()->json(new ThreadCollection($threads));
     }
 
@@ -166,7 +170,8 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility')
+            ->with(['visibility', 'forum', 'user', 'tags', 'threadCategory', 'lastPost'])
+            ->withCount('posts')
             ->paginate(1000000);
 
         // saves the updated session
@@ -234,7 +239,8 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility')
+            ->with(['visibility', 'forum', 'user', 'tags', 'threadCategory', 'lastPost'])
+            ->withCount('posts')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session

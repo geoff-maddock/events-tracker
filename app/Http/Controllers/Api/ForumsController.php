@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -90,12 +91,12 @@ class ForumsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
+    ): JsonResponse {
         // if the gate does not allow this user to show a forum redirect to home
         if (Gate::denies('show_forum')) {
             flash()->error('Unauthorized', 'Your cannot view the forum index');
 
-            return redirect()->back();
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         // initialized listParamSessionStore with base index key
@@ -107,7 +108,8 @@ class ForumsController extends Controller
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = Forum::query()
-        ->select('forums.*');
+            ->with(['visibility', 'threadsCount'])
+            ->select('forums.*');
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -121,7 +123,7 @@ class ForumsController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
-        // get the blogs
+        // get the forums
         $forums = $query->paginate($listResultSet->getLimit());
 
         return response()->json(new ForumCollection($forums));
@@ -166,7 +168,7 @@ class ForumsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $forums = $query->visible($this->user)
-            ->with('visibility')
+            ->with(['visibility', 'threadsCount'])
             ->paginate(1000000);
 
         // saves the updated session
@@ -234,7 +236,7 @@ class ForumsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $forums = $query->visible($this->user)
-            ->with('visibility')
+            ->with(['visibility', 'threadsCount'])
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session

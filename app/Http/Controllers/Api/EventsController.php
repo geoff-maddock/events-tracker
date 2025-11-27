@@ -265,7 +265,29 @@ class EventsController extends Controller
 
         // get the events
         $events = $query
-            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
+            ->with([
+                'visibility',
+                'venue.links',
+                'venue.photos',
+                'venue.locations',
+                'venue.entityStatus',
+                'venue.entityType',
+                'eventStatus',
+                'eventType',
+                'promoter.links',
+                'promoter.photos',
+                'promoter.locations',
+                'promoter.entityStatus',
+                'promoter.entityType',
+                'series',
+                'tags',
+                'entities',
+                'photos',
+                'attendees' => function ($q) {
+                    $q->where('response_type_id', 1);
+                },
+                'threads'
+            ])
             ->paginate($listResultSet->getLimit());
 
         return response()->json(new EventCollection($events));
@@ -304,7 +326,29 @@ class EventsController extends Controller
 
         $events = $query
             ->visible($this->user)
-            ->with('visibility', 'venue', 'tags', 'entities', 'series', 'eventType', 'threads')
+            ->with([
+                'visibility',
+                'venue.links',
+                'venue.photos',
+                'venue.locations',
+                'venue.entityStatus',
+                'venue.entityType',
+                'eventStatus',
+                'eventType',
+                'promoter.links',
+                'promoter.photos',
+                'promoter.locations',
+                'promoter.entityStatus',
+                'promoter.entityType',
+                'series',
+                'tags',
+                'entities',
+                'photos',
+                'attendees' => function ($q) {
+                    $q->where('response_type_id', 1);
+                },
+                'threads'
+            ])
             ->paginate($listResultSet->getLimit());
 
         return response()->json(new EventCollection($events));
@@ -369,13 +413,25 @@ class EventsController extends Controller
             ->orderBy('name', 'ASC')
             ->with([
                 'visibility',
-                'venue',
+                'venue.links',
+                'venue.photos',
+                'venue.locations',
+                'venue.entityStatus',
+                'venue.entityType',
                 'eventStatus',
                 'eventType',
-                'promoter',
+                'promoter.links',
+                'promoter.photos',
+                'promoter.locations',
+                'promoter.entityStatus',
+                'promoter.entityType',
                 'series',
                 'tags',
                 'entities',
+                'photos',
+                'attendees' => function ($q) {
+                    $q->where('response_type_id', 1);
+                },
             ])
             ->paginate($listResultSet->getLimit());
         
@@ -816,14 +872,6 @@ class EventsController extends Controller
                 'entities',
                 'photos',
         ]);
-
-        // None of this is actually loaded, so commenting out for now
-
-        // $thread = Thread::where('event_id', '=', $event->id)->first();
-        // // check blacklist status
-        // $blacklist = $this->checkBlackList($event);
-        // // extract all the links from the event body and convert into embeds
-        // $embeds = $embedExtractor->getEmbedsForEvent($event);
 
         return response()->json(new EventResource($event));
     }
