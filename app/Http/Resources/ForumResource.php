@@ -19,13 +19,14 @@ class ForumResource extends JsonResource
     public function toArray($request)
     {
         return [
-        'id' => $this->id,
-        'name' => $this->name,
-        'slug' => $this->slug,
-        'description' => $this->description,
-        'visibility_id' => $this->visibility_id,
-        'created_at' => $this->created_at,
-        'updated_at' => $this->updated_at
+            'id' => $this->id,
+            'name' => $this->name,
+            'slug' => $this->slug,
+            'description' => $this->description,
+            'visibility' => $this->visibility ? new MinimalResource($this->visibility) : null,
+            'threads_count' => $this->threads_count,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at
         ];
     }
 }

@@ -177,6 +177,14 @@ class Thread extends Eloquent
     }
 
     /**
+     * The last post that belongs to the thread.
+     */
+    public function lastPost(): HasOne
+    {
+        return $this->hasOne(Post::class)->latestOfMany();
+    }
+
+    /**
      * Add a post to a thread.
      */
     public function addPost(array $post): Post
@@ -189,6 +197,10 @@ class Thread extends Eloquent
      */
     public function getLastPostAtAttribute(): DateTime
     {
+        if ($this->relationLoaded('lastPost') && $this->lastPost) {
+            return $this->lastPost->created_at;
+        }
+
         $post = $this->posts()->orderBy('created_at', 'desc')->first();
 
         if (isset($post)) {
@@ -378,6 +390,10 @@ class Thread extends Eloquent
      */
     public function getPostCountAttribute(): int
     {
+        if (isset($this->attributes['posts_count'])) {
+            return (int) $this->attributes['posts_count'];
+        }
+
         $posts = $this->posts->count();
 
         return $posts;

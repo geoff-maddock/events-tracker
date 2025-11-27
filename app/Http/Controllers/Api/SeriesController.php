@@ -23,7 +23,6 @@ use App\Models\User;
 use App\Models\Visibility;
 use App\Services\ImageHandler;
 use Carbon\Carbon;
-use Storage;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
@@ -191,7 +190,11 @@ class SeriesController extends Controller
 
         // get the events
         $series = $query
-            ->with('occurrenceType', 'visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos', 'upcomingEvent')
+            ->with(['occurrenceType', 'occurrenceWeek', 'occurrenceDay', 'visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos' => function ($query) {
+                $query->where('photos.is_primary', '=', 1);
+            }, 'upcomingEvent' => function ($query) {
+                $query->with(['venue.links', 'promoter.links', 'entities', 'tags', 'photos', 'series', 'eventType', 'eventStatus', 'visibility']);
+            }])
             ->paginate($listResultSet->getLimit());
 
         return response()->json(new SeriesCollection($series));
@@ -219,7 +222,11 @@ class SeriesController extends Controller
             ->groupBy('series.id');
 
         $series = $query
-            ->with(['visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos', 'upcomingEvent'])
+            ->with(['occurrenceType', 'occurrenceWeek', 'occurrenceDay', 'visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos' => function ($query) {
+                $query->where('photos.is_primary', '=', 1);
+            }, 'upcomingEvent' => function ($query) {
+                $query->with(['venue.links', 'promoter.links', 'entities', 'tags', 'photos', 'series', 'eventType', 'eventStatus', 'visibility']);
+            }])
             ->orderByDesc('attendees_count')
             ->paginate($limit);
 
@@ -268,7 +275,11 @@ class SeriesController extends Controller
 
         // get the events
         $series = $query
-            ->with(['occurrenceType','visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos', 'upcomingEvent'])
+            ->with(['occurrenceType', 'occurrenceWeek', 'occurrenceDay', 'visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos' => function ($query) {
+                $query->where('photos.is_primary', '=', 1);
+            }, 'upcomingEvent' => function ($query) {
+                $query->with(['venue.links', 'promoter.links', 'entities', 'tags', 'photos', 'series', 'eventType', 'eventStatus', 'visibility']);
+            }])
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -346,7 +357,7 @@ class SeriesController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
+    ): JsonResponse {
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_series');
         $listParamSessionStore->setKeyPrefix('internal_series_cancelled');
@@ -370,7 +381,11 @@ class SeriesController extends Controller
 
         // get the events
         $series = $query
-            ->with(['occurrenceType', 'visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos', 'upcomingEvent'])
+            ->with(['occurrenceType', 'occurrenceWeek', 'occurrenceDay', 'visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos' => function ($query) {
+                $query->where('photos.is_primary', '=', 1);
+            }, 'upcomingEvent' => function ($query) {
+                $query->with(['venue.links', 'promoter.links', 'entities', 'tags', 'photos', 'series', 'eventType', 'eventStatus', 'visibility']);
+            }])
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -378,21 +393,8 @@ class SeriesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('series.index')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                    'slug' => 'Cancelled',
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('series'))
-            ->render();
+        return response()->json(new SeriesCollection($series));
+
     }
 
     /**
@@ -404,7 +406,7 @@ class SeriesController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
+    ): JsonResponse {
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_series');
         $listParamSessionStore->setKeyPrefix('internal_series_cancelled');
@@ -430,7 +432,11 @@ class SeriesController extends Controller
 
         // get the events
         $series = $query
-            ->with(['occurrenceType', 'visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos', 'upcomingEvent'])
+            ->with(['occurrenceType', 'occurrenceWeek', 'occurrenceDay', 'visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos' => function ($query) {
+                $query->where('photos.is_primary', '=', 1);
+            }, 'upcomingEvent' => function ($query) {
+                $query->with(['venue.links', 'promoter.links', 'entities', 'tags', 'photos', 'series', 'eventType', 'eventStatus', 'visibility']);
+            }])
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -438,21 +444,7 @@ class SeriesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('series.index')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                    'slug' => 'Week',
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('series'))
-            ->render();
+        return response()->json(new SeriesCollection($series));
     }
 
     /**
@@ -490,7 +482,11 @@ class SeriesController extends Controller
         // get the events
         // @phpstan-ignore-next-line
         $series = $query->visible($this->user)
-            ->with(['occurrenceType', 'visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos', 'upcomingEvent'])
+            ->with(['occurrenceType', 'occurrenceWeek', 'occurrenceDay', 'visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos' => function ($query) {
+                $query->where('photos.is_primary', '=', 1);
+            }, 'upcomingEvent' => function ($query) {
+                $query->with(['venue.links', 'promoter.links', 'entities', 'tags', 'photos', 'series', 'eventType', 'eventStatus', 'visibility']);
+            }])
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -550,7 +546,11 @@ class SeriesController extends Controller
 
         // get the events
         $series = $query
-            ->with(['occurrenceType', 'visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos', 'upcomingEvent'])
+            ->with(['occurrenceType', 'occurrenceWeek', 'occurrenceDay', 'visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos' => function ($query) {
+                $query->where('photos.is_primary', '=', 1);
+            }, 'upcomingEvent' => function ($query) {
+                $query->with(['venue.links', 'promoter.links', 'entities', 'tags', 'photos', 'series', 'eventType', 'eventStatus', 'visibility']);
+            }])
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -682,7 +682,7 @@ class SeriesController extends Controller
 
         // get the events
         $series = $query
-            ->with('occurrenceType', 'visibility', 'tags')
+            ->with(['occurrenceType', 'visibility', 'tags', 'eventType', 'venue', 'entities'])
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
