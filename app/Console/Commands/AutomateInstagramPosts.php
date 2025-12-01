@@ -88,8 +88,13 @@ class AutomateInstagramPosts extends Command
         $today = Carbon::today();
 
         // Get all public events that haven't been posted yet or need a reminder post
+        // Exclude events with do_not_repost flag set
         $events = Event::where('visibility_id', \App\Models\Visibility::VISIBILITY_PUBLIC)
             ->where('start_at', '>=', $today) // Only future events
+            ->where(function ($query) {
+                $query->where('do_not_repost', false)
+                    ->orWhereNull('do_not_repost');
+            })
             ->whereHas('eventType') // Ensure event has a type
             ->orderBy('start_at', 'ASC')
             ->get()

@@ -212,6 +212,16 @@
 		['class' =>'form-control select2 form-background', 'data-placeholder' => '']) !!}
 		{!! $errors->first('created_by','<span class="help-block">:message</span>') !!}
 	</div>
+
+	<div class="form-group col-md-3">
+		<div class="form-check mt-4">
+			{!! Form::hidden('do_not_repost', 0) !!}
+			{!! Form::checkbox('do_not_repost', 1, (isset($event->do_not_repost) ? $event->do_not_repost : false), 
+			['class' => 'form-check-input', 'id' => 'do_not_repost']) !!}
+			{!! Form::label('do_not_repost', 'Do not repost on socials', ['class' => 'form-check-label']) !!}
+			{!! $errors->first('do_not_repost','<span class="help-block">:message</span>') !!}
+		</div>
+	</div>
 </div>
 
 

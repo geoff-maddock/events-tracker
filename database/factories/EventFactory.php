@@ -33,6 +33,7 @@ class EventFactory extends Factory
             'event_status_id' => random_int(1, 3),
             'event_type_id' => random_int(1, 5),
             'is_benefit' => $this->faker->boolean(),
+            'do_not_repost' => false,
             'promoter_id' => Entity::factory()->promoter()->create(),
             'venue_id' => Entity::factory()->venue()->create(),
             'attending' => random_int(0, 100),
