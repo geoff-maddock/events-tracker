@@ -7,6 +7,7 @@ use App\Filters\EventFilters;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\Event;
+use App\Models\EventShare;
 use App\Services\Integrations\Instagram;
 use App\Services\ImageHandler;
 use Carbon\Carbon;
@@ -218,6 +219,15 @@ class EventInstagramController extends Controller
         // log the post to instagram
         Activity::log($event, $this->user, 16);
 
+        // log the share to event_shares table
+        EventShare::create([
+            'event_id' => $event->id,
+            'platform' => 'instagram',
+            'platform_id' => (string) $result,
+            'created_by' => $this->user?->id,
+            'posted_at' => Carbon::now(),
+        ]);
+
         // post was successful
         flash()->success('Success', 'Successfully published to Instagram, returned id: '.$result);
 
@@ -248,6 +258,15 @@ class EventInstagramController extends Controller
         }
 
         Activity::log($event, $this->user, 16);
+
+        // log the share to event_shares table
+        EventShare::create([
+            'event_id' => $event->id,
+            'platform' => 'instagram',
+            'platform_id' => (string) $result,
+            'created_by' => $this->user?->id,
+            'posted_at' => Carbon::now(),
+        ]);
 
         flash()->success('Success', 'Successfully published to Instagram, returned id: '.$result);
 
@@ -291,6 +310,15 @@ class EventInstagramController extends Controller
         }
 
         Activity::log($event, $user, 16);
+
+        // log the share to event_shares table
+        EventShare::create([
+            'event_id' => $event->id,
+            'platform' => 'instagram',
+            'platform_id' => (string) $result,
+            'created_by' => $user->id,
+            'posted_at' => Carbon::now(),
+        ]);
 
         return response()->json([
             'success' => true,
@@ -587,6 +615,15 @@ class EventInstagramController extends Controller
         // log the post to instagram
         Activity::log($event, $this->user, 16);
 
+        // log the share to event_shares table
+        EventShare::create([
+            'event_id' => $event->id,
+            'platform' => 'instagram',
+            'platform_id' => (string) $result,
+            'created_by' => $this->user?->id,
+            'posted_at' => Carbon::now(),
+        ]);
+
         // post was successful
         flash()->success('Success', 'Successfully published to Instagram, returned id: '.$result);
 
@@ -731,6 +768,17 @@ class EventInstagramController extends Controller
             flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
             Log::info('Error publishing media');
             return back();
+        }
+
+        // log the share to event_shares table for each event in the week post
+        foreach ($events as $event) {
+            EventShare::create([
+                'event_id' => $event->id,
+                'platform' => 'instagram',
+                'platform_id' => (string) $result,
+                'created_by' => $this->user?->id,
+                'posted_at' => Carbon::now(),
+            ]);
         }
 
         // post was successful
