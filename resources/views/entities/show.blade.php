@@ -135,7 +135,7 @@
 						@endif
 
 
-						@if ($signedIn && ($entity->ownedBy($user) || $user->hasGroup('super_admin'))
+						@if ($signedIn && ($entity->ownedBy($user) || $user->hasGroup('super_admin')))
 						<a href="{!! route('entities.locations.edit', ['entity' => $entity->slug, 'location' => $location->id]) !!}" title="Edit this location.">
 							<i class="bi bi-pencil"></i>
 						</a>
