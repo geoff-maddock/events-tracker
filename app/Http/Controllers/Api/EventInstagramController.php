@@ -451,10 +451,10 @@ class EventInstagramController extends Controller
      * Log a share to the event_shares table.
      *
      * @param Event $event The event that was shared
-     * @param int|bool $platformId The ID returned from Instagram
+     * @param int $platformId The ID returned from Instagram (must be a valid integer, not false)
      * @param int|null $userId The ID of the user who created the share
      */
-    private function logEventShare(Event $event, int|bool $platformId, ?int $userId): void
+    private function logEventShare(Event $event, int $platformId, ?int $userId): void
     {
         EventShare::create([
             'event_id' => $event->id,
