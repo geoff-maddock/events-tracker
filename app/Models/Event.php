@@ -54,6 +54,7 @@ use App\Models\User;
  * @property \Illuminate\Support\Carbon                                                                                $created_at
  * @property \Illuminate\Support\Carbon                                                                                $updated_at
  * @property \Illuminate\Support\Carbon|null                                                                           $cancelled_at
+ * @property bool                                                                                                       $do_not_repost
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[]                                            $comments
  * @property int|null                                                                                                  $comments_count
  * @property \App\Models\User                                                                                          $creator
@@ -162,6 +163,7 @@ class Event extends Model
         'start_at',
         'end_at',
         'cancelled_at',
+        'do_not_repost',
         'min_age',
         'created_by',
     ];
@@ -171,7 +173,8 @@ class Event extends Model
         'door_at' => 'datetime',
         'start_at' => 'datetime',
         'end_at' => 'datetime',
-        'cancelled_at' => 'datetime'
+        'cancelled_at' => 'datetime',
+        'do_not_repost' => 'boolean'
     ];
 
     public function resolveRouteBinding($value, $field = null)

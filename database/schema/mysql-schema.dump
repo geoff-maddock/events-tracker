@@ -686,6 +686,7 @@ CREATE TABLE `events` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `cancelled_at` timestamp NULL DEFAULT NULL,
+  `do_not_repost` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `events_event_status_id` (`event_status_id`),
   KEY `events_promoter_id` (`promoter_id`),
