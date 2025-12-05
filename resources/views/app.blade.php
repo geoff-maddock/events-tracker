@@ -113,7 +113,7 @@
 						name="keyword" 
 						title="Search" 
 						aria-label="Search" 
-						value="{{ isset($slug) ? $slug : '' }}">
+						value="{{ isset($search) ? $search : '' }}">
 				</form>
 			</div>
 

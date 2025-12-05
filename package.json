@@ -11,6 +11,7 @@
     },
     "devDependencies": {
         "@popperjs/core": "^2.11.6",
+        "@tailwindcss/line-clamp": "^0.4.4",
         "autoprefixer": "^10.4.17",
         "axios": "^1.12.1",
         "bootstrap": "5.2.3",
