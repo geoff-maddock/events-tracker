@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\AdminActivitySummary;
 use App\Console\Commands\AdminTest;
 use App\Console\Commands\AutomateInstagramPosts;
 use App\Console\Commands\InitializeEventShares;
@@ -22,6 +23,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Notify::class,
         AdminTest::class,
+        AdminActivitySummary::class,
         NotifyWeekly::class,
         UserCleanup::class,
         AutomateInstagramPosts::class,
@@ -36,6 +38,13 @@ class Kernel extends ConsoleKernel
         // WEEKLY
         // schedule weekly update email of events each user is attending or interested in
         $schedule->command('notifyWeekly')->weekly()->mondays()->timezone('America/New_York')->at('5:00');
+
+        // schedule weekly admin activity summary (7 days)
+        $schedule->command('admin:activity-summary 7')->weekly()->mondays()->timezone('America/New_York')->at('6:00');
+
+        // MONTHLY
+        // schedule monthly admin activity summary (30 days) on the first of each month
+        $schedule->command('admin:activity-summary 30')->monthly()->timezone('America/New_York')->at('6:00');
 
         // DAILY
         // schedule daily user cleanup process
