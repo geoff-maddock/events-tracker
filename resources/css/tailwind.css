@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom component classes for shadcn-style UI */
+@layer components {
+  /* Button styles */
+  .btn-primary-tw {
+    @apply px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-hover transition-colors font-medium;
+  }
+  
+  .btn-secondary-tw {
+    @apply px-4 py-2 bg-dark-card text-white rounded-md hover:bg-dark-border transition-colors font-medium border border-dark-border;
+  }
+
+  .btn-outline-tw {
+    @apply px-4 py-2 bg-transparent text-white rounded-md hover:bg-dark-surface transition-colors font-medium border border-dark-border;
+  }
+
+  /* Card styles */
+  .card-tw {
+    @apply bg-dark-surface rounded-lg overflow-hidden shadow-lg border border-dark-border;
+  }
+
+  .card-hover-tw {
+    @apply hover:border-primary/50 hover:shadow-primary/10 transition-all duration-200;
+  }
+
+  /* Form inputs */
+  .form-input-tw {
+    @apply w-full px-3 py-2 bg-dark-card border border-dark-border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+  }
+
+  .form-select-tw {
+    @apply w-full px-3 py-2 bg-dark-card border border-dark-border rounded-md text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+  }
+
+  /* Badge/Tag styles */
+  .badge-tw {
+    @apply inline-flex items-center px-2 py-1 text-xs font-medium rounded-md;
+  }
+
+  .badge-primary-tw {
+    @apply bg-primary/20 text-primary border border-primary/30;
+  }
+
+  .badge-secondary-tw {
+    @apply bg-dark-card text-gray-300 border border-dark-border;
+  }
+
+  .badge-accent-tw {
+    @apply bg-accent/20 text-accent border border-accent/30;
+  }
+
+  /* Sidebar navigation */
+  .nav-item-tw {
+    @apply flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-dark-card rounded-md transition-colors;
+  }
+
+  .nav-item-active-tw {
+    @apply text-primary bg-dark-card;
+  }
+
+  /* Event card specific styles */
+  .event-card-tw {
+    @apply card-tw card-hover-tw flex flex-col;
+  }
+
+  .event-card-image-tw {
+    @apply w-full h-48 object-cover bg-dark-card;
+  }
+
+  .event-card-content-tw {
+    @apply p-4 flex flex-col flex-grow;
+  }
+
+  .event-card-title-tw {
+    @apply text-lg font-semibold text-white hover:text-primary transition-colors;
+  }
+
+  .event-card-meta-tw {
+    @apply text-sm text-gray-400;
+  }
+
+  /* Theme toggle */
+  .theme-toggle-tw {
+    @apply flex items-center gap-2 px-3 py-2 bg-dark-card border border-dark-border rounded-md cursor-pointer hover:bg-dark-border transition-colors;
+  }
+}
+
+/* Light mode overrides */
+:root {
+  --tw-bg-opacity: 1;
+}
+
+.light .card-tw {
+  @apply bg-white border-gray-200;
+}
+
+.light .form-input-tw,
+.light .form-select-tw {
+  @apply bg-white border-gray-300 text-gray-900 placeholder-gray-500;
+}
+
+.light .badge-secondary-tw {
+  @apply bg-gray-100 text-gray-700 border-gray-300;
+}
+
+.light .nav-item-tw {
+  @apply text-gray-700 hover:text-gray-900 hover:bg-gray-100;
+}
+
+.light .nav-item-active-tw {
+  @apply text-primary bg-gray-100;
+}
+
+/* Scrollbar styling for dark mode */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  @apply bg-dark-bg;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  @apply bg-dark-border rounded-full;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-500;
+}
