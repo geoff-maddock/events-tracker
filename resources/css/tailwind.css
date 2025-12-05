@@ -86,6 +86,11 @@
   .theme-toggle-tw {
     @apply flex items-center gap-2 px-3 py-2 bg-dark-card border border-dark-border rounded-md cursor-pointer hover:bg-dark-border transition-colors;
   }
+
+  /* Sidebar */
+  .sidebar-tw {
+    @apply bg-dark-surface border-r border-dark-border;
+  }
 }
 
 /* Light mode overrides */
@@ -94,7 +99,7 @@
 }
 
 .light .card-tw {
-  @apply bg-white border-gray-200;
+  @apply bg-white border-gray-200 shadow-md;
 }
 
 .light .form-input-tw,
@@ -111,7 +116,24 @@
 }
 
 .light .nav-item-active-tw {
-  @apply text-primary bg-gray-100;
+  @apply text-primary bg-blue-50;
+}
+
+.light .sidebar-tw,
+.light .sidebar {
+  @apply bg-white border-gray-200;
+}
+
+.light .theme-toggle-tw {
+  @apply bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200;
+}
+
+.light .event-card-title-tw {
+  @apply text-gray-900;
+}
+
+.light .event-card-content-tw {
+  @apply text-gray-700;
 }
 
 /* Scrollbar styling for dark mode */
