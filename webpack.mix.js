@@ -14,6 +14,11 @@ mix.js('resources/assets/js/app.js', 'public/js')
     .sourceMaps()
     ;
 
+// build Tailwind CSS
+mix.postCss('resources/css/tailwind.css', 'public/css', [
+    require('tailwindcss'),
+    require('autoprefixer'),
+]);
 
 // build dark theme
 // use the app.css above

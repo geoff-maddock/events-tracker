@@ -18,19 +18,19 @@
 	<title>@yield('title','Event Guide') • {{ config('app.app_name')}}</title>
 	
 	<link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/apple-icon-180x180.png">
-  	<link rel="alternate" type="application/rss+xml" href="{{ url('rss') }}"
-    	    title="RSS Feed {{ config('app.app_name')}}">
+	<link rel="apple-touch-icon" href="/apple-icon-180x180.png">
+	<link rel="alternate" type="application/rss+xml" href="{{ url('rss') }}"
+		title="RSS Feed {{ config('app.app_name')}}">
 
-	<!-- Tailwind CSS (New UI) -->
+	<!-- Tailwind CSS -->
 	<link href="{{ asset('/css/tailwind.css') }}" rel="stylesheet">
 
-    <!-- Legacy Bootstrap CSS for backward compatibility -->
-    @if ($theme !== config('app.default_theme'))
-    	<link href="{{ asset('/css/light.css') }}" rel="stylesheet">
+	<!-- Keep existing theme CSS for components not yet migrated -->
+	@if ($theme !== config('app.default_theme'))
+		<link href="{{ asset('/css/light.css') }}" rel="stylesheet">
 	@else
 		<link href="{{ asset('/css/dark.css') }}" rel="stylesheet">
-    @endif
+	@endif
 
 	@yield('select2.include')
 
@@ -50,7 +50,7 @@
 	@if (config('app.google_tags') !== "")
 	@include ('partials.analytics')
 	@endif
-
+	
 	<style>
 		/* Dark mode base styles */
 		.dark body {
@@ -84,7 +84,7 @@
 		}
 	</style>
 </head>
-<body id="event-repo" class="{{ $theme === config('app.default_theme') ? 'dark' : 'light' }}">
+<body class="{{ $theme === config('app.default_theme') ? 'dark' : 'light' }}">
 	@if (config('app.google_tags') !== "")
 	<!-- Google Tag Manager (noscript) -->
 	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ config('app.google_tags')}}"
@@ -104,6 +104,9 @@
 		
 		<!-- Main Content -->
 		<div class="flex-1 flex flex-col main-content">
+			<!-- Top Bar -->
+			@include('partials.topbar-tw')
+			
 			<!-- Mobile Search -->
 			<div class="md:hidden p-4">
 				<form role="search" action="/search">
@@ -118,7 +121,7 @@
 			</div>
 
 			<!-- Main Content Area -->
-			<main id="app-content" class="flex-1 p-4 md:p-6 overflow-auto">
+			<main class="flex-1 p-4 md:p-6 overflow-auto">
 				@yield('content')
 				<event-list></event-list>
 			</main>
@@ -129,10 +132,10 @@
 	<script src="{{ asset('/js/jquery-3.5.1.min.js') }}"></script>
 	<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox.min.js"></script>
-    <script src="{{ asset('/js/jquery.ba-throttle-debounce.min.js') }}"></script>
+	<script src="{{ asset('/js/jquery.ba-throttle-debounce.min.js') }}"></script>
 	<script src="{{ asset('/js/auto-submit.js') }}"></script>
 	<script src="{{ asset('/js/custom.js') }}"></script>
-
+	
 	<!-- Theme Toggle Script -->
 	<script>
 		function toggleTheme() {
@@ -171,7 +174,7 @@
 			}
 		});
 	</script>
-
+	
 	@yield('scripts.footer')
 	@yield('footer')
 	@include('flash')

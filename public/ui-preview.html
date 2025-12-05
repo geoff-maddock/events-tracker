@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UI Preview - Events Tracker</title>
+    <link href="/css/tailwind.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+    <link href="https://fonts.bunny.net/css?family=nunito:400,600,700,800" rel="stylesheet" />
+    <style>
+        .dark body {
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+        .light body {
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        .dark .sidebar {
+            background-color: #1e293b;
+            border-right: 1px solid #334155;
+        }
+        .light .sidebar {
+            background-color: #ffffff;
+            border-right: 1px solid #e2e8f0;
+        }
+        .dark .main-content {
+            background-color: #0f172a;
+        }
+        .light .main-content {
+            background-color: #f8fafc;
+        }
+        .light .text-white {
+            color: #1e293b !important;
+        }
+        .light .text-gray-300 {
+            color: #4b5563 !important;
+        }
+        .light .text-gray-400 {
+            color: #6b7280 !important;
+        }
+        .light .border-dark-border {
+            border-color: #e5e7eb !important;
+        }
+        .light .bg-dark-card {
+            background-color: #f3f4f6 !important;
+        }
+        .light .bg-dark-surface {
+            background-color: #ffffff !important;
+        }
+    </style>
+</head>
+<body class="dark">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="sidebar hidden md:flex md:flex-col md:w-64 min-h-screen">
+            <!-- Logo/Brand -->
+            <div class="p-4 border-b border-dark-border">
+                <a href="#" class="flex items-center gap-2">
+                    <span class="text-xl font-bold text-white">Arcane City</span>
+                </a>
+                <span class="text-xs text-gray-400">pittsburgh events guide</span>
+            </div>
+
+            <!-- Search -->
+            <div class="p-4">
+                <div class="relative">
+                    <input type="text" 
+                        class="w-full pl-10 pr-4 py-2 bg-dark-card border border-dark-border rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" 
+                        placeholder="Search">
+                    <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 px-4 py-2 space-y-1 overflow-y-auto">
+                <a href="#" class="nav-item-tw">
+                    <i class="bi bi-broadcast text-lg"></i>
+                    <span>Your Radar</span>
+                </a>
+
+                <a href="#" class="nav-item-tw nav-item-active-tw">
+                    <i class="bi bi-calendar-event text-lg"></i>
+                    <span>Event Listings</span>
+                </a>
+
+                <div class="ml-8 space-y-1 mt-1">
+                    <a href="#" class="nav-item-tw text-sm">
+                        <i class="bi bi-grid text-sm"></i>
+                        <span>Event Grid</span>
+                    </a>
+                </div>
+
+                <a href="#" class="nav-item-tw">
+                    <i class="bi bi-calendar3 text-lg"></i>
+                    <span>Event Calendar</span>
+                </a>
+
+                <a href="#" class="nav-item-tw">
+                    <i class="bi bi-calendar-check text-lg"></i>
+                    <span>Your Calendar</span>
+                </a>
+
+                <a href="#" class="nav-item-tw">
+                    <i class="bi bi-people text-lg"></i>
+                    <span>Entity Listings</span>
+                </a>
+
+                <div class="ml-8 space-y-1 mt-1">
+                    <a href="#" class="nav-item-tw text-sm">
+                        <i class="bi bi-person-heart text-sm"></i>
+                        <span>Your Entities</span>
+                    </a>
+                </div>
+
+                <a href="#" class="nav-item-tw">
+                    <i class="bi bi-collection text-lg"></i>
+                    <span>Series Listings</span>
+                </a>
+
+                <a href="#" class="nav-item-tw">
+                    <i class="bi bi-tags text-lg"></i>
+                    <span>Tags</span>
+                </a>
+
+                <a href="#" class="nav-item-tw">
+                    <i class="bi bi-person text-lg"></i>
+                    <span>Users</span>
+                </a>
+
+                <a href="#" class="nav-item-tw">
+                    <i class="bi bi-search text-lg"></i>
+                    <span>Search</span>
+                </a>
+
+                <div class="border-t border-dark-border my-4"></div>
+
+                <a href="#" class="nav-item-tw">
+                    <i class="bi bi-info-circle text-lg"></i>
+                    <span>About</span>
+                </a>
+
+                <a href="#" class="nav-item-tw">
+                    <i class="bi bi-chat-dots text-lg"></i>
+                    <span>Blogs</span>
+                </a>
+
+                <a href="#" class="nav-item-tw">
+                    <i class="bi bi-question-circle text-lg"></i>
+                    <span>Help</span>
+                </a>
+
+                <a href="#" class="nav-item-tw">
+                    <i class="bi bi-shield-check text-lg"></i>
+                    <span>Privacy</span>
+                </a>
+            </nav>
+
+            <!-- User Section -->
+            <div class="p-4 border-t border-dark-border">
+                <a href="#" class="nav-item-tw">
+                    <i class="bi bi-person-circle text-lg"></i>
+                    <span>My Account</span>
+                </a>
+                <a href="#" class="nav-item-tw mt-1">
+                    <i class="bi bi-box-arrow-right text-lg"></i>
+                    <span>Log out</span>
+                </a>
+            </div>
+
+            <!-- Theme Toggle -->
+            <div class="p-4 border-t border-dark-border">
+                <button onclick="toggleTheme()" class="theme-toggle-tw w-full justify-center">
+                    <i class="bi bi-moon-fill"></i>
+                    <span>Toggle Light Mode</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col" style="background-color: #0f172a;">
+            <!-- Main Content Area -->
+            <main class="flex-1 p-4 md:p-6 overflow-auto">
+                <!-- Page Header -->
+                <div class="mb-6">
+                    <h1 class="text-3xl font-bold text-primary mb-2">Event Listings</h1>
+                    <p class="text-gray-400">Discover and explore upcoming events.</p>
+                </div>
+
+                <!-- Create Event Button -->
+                <div class="mb-6">
+                    <a href="#" class="inline-flex items-center px-4 py-2 bg-dark-card border border-dark-border text-white rounded-lg hover:bg-dark-border transition-colors">
+                        <i class="bi bi-plus-lg mr-2"></i>
+                        Create Event
+                    </a>
+                </div>
+
+                <!-- Filters Section -->
+                <div class="mb-6">
+                    <button class="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors">
+                        <i class="bi bi-funnel mr-2"></i>
+                        <span>Show Filters</span>
+                        <i class="bi bi-chevron-down ml-2"></i>
+                    </button>
+                    
+                    <div class="inline-flex items-center gap-2 ml-4">
+                        <span class="badge-tw badge-primary-tw">
+                            Date from 12/5/2025
+                            <button class="ml-1 hover:text-white">&times;</button>
+                        </span>
+                        <button class="inline-flex items-center px-3 py-1 text-sm text-gray-300 hover:text-white border border-dark-border rounded-lg">
+                            Clear All <i class="bi bi-x ml-1"></i>
+                        </button>
+                        <button class="inline-flex items-center px-3 py-1 text-sm text-gray-300 hover:text-white border border-dark-border rounded-lg">
+                            Reset <i class="bi bi-arrow-clockwise ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Bar -->
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+                    <div class="text-sm text-gray-400">
+                        Showing 26 to 50 of 96 results
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <select class="form-select-tw text-sm py-1">
+                            <option>25 per page</option>
+                            <option>50 per page</option>
+                            <option>100 per page</option>
+                        </select>
+                        <span class="text-gray-400 text-sm">Sort by:</span>
+                        <select class="form-select-tw text-sm py-1">
+                            <option>Date</option>
+                            <option>Name</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center gap-1">
+                        <span class="px-3 py-1 text-gray-300">&lt; Previous</span>
+                        <a href="#" class="px-3 py-1 text-gray-300 hover:bg-dark-card rounded">1</a>
+                        <a href="#" class="px-3 py-1 bg-primary text-white rounded">2</a>
+                        <a href="#" class="px-3 py-1 text-gray-300 hover:bg-dark-card rounded">3</a>
+                        <a href="#" class="px-3 py-1 text-gray-300 hover:bg-dark-card rounded">4</a>
+                        <span class="px-3 py-1 text-gray-300">Next &gt;</span>
+                    </div>
+                </div>
+
+                <!-- Events Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <!-- Event Card 1 -->
+                    <article class="event-card-tw group">
+                        <div class="relative overflow-hidden">
+                            <div class="w-full h-48 bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
+                                <div class="text-center text-white p-4">
+                                    <h3 class="text-xl font-bold">THE LAST DANCE</h3>
+                                    <p class="text-sm">SUNDAY, DECEMBER 7TH • 3PM TO 9PM</p>
+                                    <p class="text-sm">ALLEGHENY RIVERTRAIL PARK</p>
+                                </div>
+                            </div>
+                            <div class="absolute top-2 right-2">
+                                <button class="p-2 bg-dark-bg/80 rounded-full hover:bg-dark-bg transition-colors">
+                                    <i class="bi bi-star text-gray-400 hover:text-primary text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="event-card-content-tw">
+                            <h3 class="event-card-title-tw mb-2">The Last Dance</h3>
+                            <p class="text-sm text-gray-400 mb-3">All-ages outdoor dance party at Allegheny Rivertrail Park with local DJs, food, and a mobile sauna.</p>
+                            <div class="mb-3">
+                                <span class="text-sm text-gray-300">Pop-up</span>
+                            </div>
+                            <div class="space-y-2 text-sm text-gray-400 mb-4">
+                                <div class="flex items-center gap-2">
+                                    <i class="bi bi-calendar3"></i>
+                                    <span>Sunday, December 7, 2025 at 3:00 PM EST</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="bi bi-geo-alt"></i>
+                                    <span>Allegheny Rivertrail Park</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="bi bi-person-badge"></i>
+                                    <span>All Ages</span>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-1 mb-2">
+                                <a href="#" class="badge-tw badge-primary-tw text-xs">Allegheny Rivertrail Park <i class="bi bi-box-arrow-up-right ml-1 text-[10px]"></i></a>
+                                <a href="#" class="badge-tw badge-primary-tw text-xs">Trace Brewing <i class="bi bi-box-arrow-up-right ml-1 text-[10px]"></i></a>
+                            </div>
+                            <div class="flex flex-wrap gap-1 mt-auto pt-2">
+                                <a href="#" class="badge-tw badge-secondary-tw text-xs">Disco</a>
+                                <a href="#" class="badge-tw badge-secondary-tw text-xs">Hip Hop</a>
+                                <a href="#" class="badge-tw badge-secondary-tw text-xs">House</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Event Card 2 -->
+                    <article class="event-card-tw group">
+                        <div class="relative overflow-hidden">
+                            <div class="w-full h-48 bg-gray-800 flex items-center justify-center">
+                                <div class="text-center text-white p-4">
+                                    <h3 class="text-lg font-bold">DEATH METAL PUNX VOL. 1</h3>
+                                    <p class="text-sm">DEC 7 2025</p>
+                                </div>
+                            </div>
+                            <div class="absolute top-2 right-2">
+                                <button class="p-2 bg-dark-bg/80 rounded-full hover:bg-dark-bg transition-colors">
+                                    <i class="bi bi-star text-gray-400 hover:text-primary text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="event-card-content-tw">
+                            <h3 class="event-card-title-tw mb-2">Death Metal Punx Vol. 1: Kontusion, Death Gasp, Gutgash, Moisty</h3>
+                            <p class="text-sm text-gray-400 mb-3">Death metal punx night feat. Kontusion, Death Gasp, Gutgash, Moiser at Polish Hell Oubliette.</p>
+                            <div class="mb-3">
+                                <span class="text-sm text-gray-300">Concert</span>
+                            </div>
+                            <div class="space-y-2 text-sm text-gray-400 mb-4">
+                                <div class="flex items-center gap-2">
+                                    <i class="bi bi-calendar3"></i>
+                                    <span>Sunday, December 7, 2025 at 7:00 PM EST</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="bi bi-geo-alt"></i>
+                                    <span>Polish Hell Oubliette</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="bi bi-person-badge"></i>
+                                    <span>All Ages</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="bi bi-currency-dollar"></i>
+                                    <span>Door: $15.00</span>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-1 mt-auto pt-2">
+                                <a href="#" class="badge-tw badge-secondary-tw text-xs">Metal</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Event Card 3 -->
+                    <article class="event-card-tw group">
+                        <div class="relative overflow-hidden">
+                            <div class="w-full h-48 bg-gray-700 flex items-center justify-center">
+                                <div class="text-center text-white p-4">
+                                    <h3 class="text-lg font-bold">COLD CALL / DEAD AGAINST</h3>
+                                </div>
+                            </div>
+                            <div class="absolute top-2 right-2">
+                                <button class="p-2 bg-dark-bg/80 rounded-full hover:bg-dark-bg transition-colors">
+                                    <i class="bi bi-star-fill text-primary text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="event-card-content-tw">
+                            <h3 class="event-card-title-tw mb-2">Cold Call / Dead Against / Selfish Act / Mono Maniac / Hostile Manner</h3>
+                            <p class="text-sm text-gray-400 mb-3">Pittsburgh and Buffalo hardcore bands converge at The New Low.</p>
+                            <div class="mb-3">
+                                <span class="text-sm text-gray-300">Concert</span>
+                            </div>
+                            <div class="space-y-2 text-sm text-gray-400 mb-4">
+                                <div class="flex items-center gap-2">
+                                    <i class="bi bi-calendar3"></i>
+                                    <span>Sunday, December 7, 2025 at 7:00 PM EST</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="bi bi-geo-alt"></i>
+                                    <span>The New Low</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="bi bi-person-badge"></i>
+                                    <span>All Ages</span>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-1 mb-2">
+                                <a href="#" class="badge-tw badge-primary-tw text-xs">Dead Against <i class="bi bi-box-arrow-up-right ml-1 text-[10px]"></i></a>
+                                <a href="#" class="badge-tw badge-primary-tw text-xs">The New Low <i class="bi bi-box-arrow-up-right ml-1 text-[10px]"></i></a>
+                            </div>
+                            <div class="flex flex-wrap gap-1 mt-auto pt-2">
+                                <a href="#" class="badge-tw badge-secondary-tw text-xs">DIY</a>
+                                <a href="#" class="badge-tw badge-secondary-tw text-xs">Hardcore</a>
+                                <a href="#" class="badge-tw badge-secondary-tw text-xs">Metal</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Event Card 4 -->
+                    <article class="event-card-tw group">
+                        <div class="relative overflow-hidden">
+                            <div class="w-full h-48 bg-blue-900 flex items-center justify-center">
+                                <div class="text-center text-white p-4">
+                                    <h3 class="text-lg font-bold">ELECTRONIC MUSIC SENIOR STUDIO CONCERT</h3>
+                                    <p class="text-sm">SUNDAY 12.07.2025</p>
+                                </div>
+                            </div>
+                            <div class="absolute top-2 right-2">
+                                <button class="p-2 bg-dark-bg/80 rounded-full hover:bg-dark-bg transition-colors">
+                                    <i class="bi bi-star text-gray-400 hover:text-primary text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="event-card-content-tw">
+                            <h3 class="event-card-title-tw mb-2">Electronic Music Senior Studio Concert</h3>
+                            <p class="text-sm text-gray-400 mb-3">A concert featuring senior electronic music students.</p>
+                            <div class="mb-3">
+                                <span class="text-sm text-gray-300">Concert by Electronic Music at Carnegie Mellon University</span>
+                            </div>
+                            <div class="space-y-2 text-sm text-gray-400 mb-4">
+                                <div class="flex items-center gap-2">
+                                    <i class="bi bi-calendar3"></i>
+                                    <span>Sunday, December 7, 2025 at 7:30 PM EST</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="bi bi-geo-alt"></i>
+                                    <span>WQED Studio A</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="bi bi-person-badge"></i>
+                                    <span>All Ages</span>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-1 mb-2">
+                                <a href="#" class="badge-tw badge-primary-tw text-xs">WQED Studio A <i class="bi bi-box-arrow-up-right ml-1 text-[10px]"></i></a>
+                                <a href="#" class="badge-tw badge-primary-tw text-xs">Electronic Music at Carnegie Mellon University <i class="bi bi-box-arrow-up-right ml-1 text-[10px]"></i></a>
+                            </div>
+                            <div class="flex flex-wrap gap-1 mt-auto pt-2">
+                                <a href="#" class="badge-tw badge-secondary-tw text-xs">Electronic</a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const body = document.body;
+            const isDark = html.classList.contains('dark');
+            
+            if (isDark) {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                body.classList.remove('dark');
+                body.classList.add('light');
+                body.style.backgroundColor = '#f8fafc';
+                body.style.color = '#1e293b';
+            } else {
+                html.classList.remove('light');
+                html.classList.add('dark');
+                body.classList.remove('light');
+                body.classList.add('dark');
+                body.style.backgroundColor = '#0f172a';
+                body.style.color = '#e2e8f0';
+            }
+        }
+    </script>
+</body>
+</html>

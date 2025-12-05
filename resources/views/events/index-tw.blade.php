@@ -250,7 +250,7 @@ Events @include('events.title-crumbs')
 
 <!-- Pagination (bottom) -->
 <div class="mt-6">
-	{!! $events->onEachSide(2)->links('vendor.pagination.tailwind') !!}
+	{!! $events->onEachSide(2)->links() !!}
 </div>
 @else
 <div class="text-center py-12">
@@ -275,7 +275,7 @@ Events @include('events.title-crumbs')
 		@endforeach
 	</div>
 	<div class="mt-6">
-		{!! $past_events->onEachSide(2)->links('vendor.pagination.tailwind') !!}
+		{!! $past_events->onEachSide(2)->links() !!}
 	</div>
 </div>
 @endif
@@ -292,7 +292,7 @@ Events @include('events.title-crumbs')
 		@endforeach
 	</div>
 	<div class="mt-6">
-		{!! $future_events->onEachSide(2)->links('vendor.pagination.tailwind') !!}
+		{!! $future_events->onEachSide(2)->links() !!}
 	</div>
 </div>
 @endif
