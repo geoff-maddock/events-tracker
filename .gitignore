@@ -9,10 +9,13 @@
 /public/storage
 /public/js/app.js
 /public/js/app.js.LICENSE.txt
+/public/js/app.js.map
 /public/css/app.css
+/public/css/app.css.map
 /public/css/dark.css
 /public/css/light.css
 /public/css/tailwind.css
+/public/css/tailwind.css.map
 /public/backup
 /public/google*.html
 /vendor
