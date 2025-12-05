@@ -412,6 +412,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
             ->where('follows.user_id', '=', $this->id)
             ->orderBy('tags.name', 'asc')
             ->select('tags.*')
+            ->withCount(['events', 'series', 'entities', 'threads'])
             ->get();
 
         return $tags;

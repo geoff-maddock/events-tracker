@@ -18,17 +18,17 @@
                     @endif
 			@endif
 		</span>
-		@if (count($tag->events) > 0)
-		<span class="badge rounded-pill bg-dark">{!! link_to_route('events.tag', 'Events', [$tag->slug], ['class' => 'item-title']) !!} {{ $tag->events ? count($tag->events) : 0 }}</span>
+		@if ($tag->events_count > 0)
+		<span class="badge rounded-pill bg-dark">{!! link_to_route('events.tag', 'Events', [$tag->slug], ['class' => 'item-title']) !!} {{ $tag->events_count }}</span>
 		@endif
-		@if (count($tag->series) > 0)
-			<span class="badge rounded-pill bg-dark">{!! link_to_route('series.tag', 'Series', [$tag->slug], ['class' => 'item-title']) !!}  {{ $tag->series ? count($tag->series) : 0 }}</span>
+		@if ($tag->series_count > 0)
+			<span class="badge rounded-pill bg-dark">{!! link_to_route('series.tag', 'Series', [$tag->slug], ['class' => 'item-title']) !!}  {{ $tag->series_count }}</span>
 		@endif
-		@if (count($tag->entities) > 0)
-		<span class="badge rounded-pill bg-dark">{!! link_to_route('entities.tag', 'Entities', [$tag->slug], ['class' => 'item-title']) !!} {{ $tag->entities ? count($tag->entities) : 0}}</span>
+		@if ($tag->entities_count > 0)
+		<span class="badge rounded-pill bg-dark">{!! link_to_route('entities.tag', 'Entities', [$tag->slug], ['class' => 'item-title']) !!} {{ $tag->entities_count }}</span>
 		@endif
-		@if (count($tag->threads) > 0)
-		<span class="badge rounded-pill bg-dark">{!! link_to_route('threads.tag', 'Threads', [$tag->slug], ['class' => 'item-title']) !!} {{ $tag->threads ? count($tag->threads) : 0 }}</span>
+		@if ($tag->threads_count > 0)
+		<span class="badge rounded-pill bg-dark">{!! link_to_route('threads.tag', 'Threads', [$tag->slug], ['class' => 'item-title']) !!} {{ $tag->threads_count }}</span>
 		@endif
 	</li>
 
