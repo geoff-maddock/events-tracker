@@ -309,6 +309,8 @@ class UsersController extends Controller
             return redirect('users/'.$user->id);
         }
 
+        // dd($user->getTagsFollowing());
+
         $token = \Password::getRepository()->create($user);
 
         return view('users.show', compact('user', 'tabs', 'token'));

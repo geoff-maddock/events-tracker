@@ -249,6 +249,7 @@
                                         </li>
                                     </ul>
                                     <div class="card-body">
+
                                     @include('tags.list', ['tags' => $user->getTagsFollowing()])
                                     </div>
                                     @break
