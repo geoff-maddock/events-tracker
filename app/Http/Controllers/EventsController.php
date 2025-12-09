@@ -1443,7 +1443,7 @@ class EventsController extends Controller
         // $embeds = $embedExtractor->getEmbedsForEvent($event);
         // $embeds = [];
 
-        return view('events.show', compact('event', 'embeds'))->with(['thread' => $thread, 'blacklist' => $blacklist])->render();
+        return view('events.show-tw', compact('event', 'embeds'))->with(['thread' => $thread, 'blacklist' => $blacklist])->render();
     }
 
 

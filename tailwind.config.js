@@ -6,6 +6,16 @@ module.exports = {
     './resources/js/**/*.js',
     './resources/js/**/*.vue',
   ],
+  safelist: [
+    'grid-cols-1',
+    'grid-cols-2',
+    'grid-cols-3',
+    'lg:grid-cols-1',
+    'lg:grid-cols-2',
+    'lg:grid-cols-3',
+    'lg:col-span-1',
+    'lg:col-span-2',
+  ],
   theme: {
     extend: {
       colors: {
