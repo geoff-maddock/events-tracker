@@ -102,12 +102,14 @@
         <div class="border-t border-dark-border my-4"></div>
 
         <!-- Menu Items -->
+        @if (isset($menus) && $menus->isNotEmpty())
         @foreach ($menus as $menu)
         <a href="{{ url('/menus/'.$menu->id.'/content') }}" class="nav-item-tw">
             <i class="bi bi-info-circle text-lg"></i>
             <span>{{ $menu->name }}</span>
         </a>
         @endforeach
+        @endif
 
         <!-- Help Section -->
         <a href="{{ url('/about') }}" class="nav-item-tw {{ Request::is('about') ? 'nav-item-active-tw' : '' }}">
