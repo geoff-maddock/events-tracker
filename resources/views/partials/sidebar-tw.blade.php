@@ -25,7 +25,7 @@
     </div>
 
     <!-- Navigation -->
-    <nav class="flex-1 px-4 py-2 space-y-1 overflow-y-auto">
+    <nav class="px-4 py-2 space-y-1">
         <!-- Your Radar -->
         <a href="{{ url('/events/attending') }}" class="nav-item-tw {{ Request::is('events/attending') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-broadcast text-lg"></i>
