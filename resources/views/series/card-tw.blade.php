@@ -30,7 +30,7 @@
                 <i class="bi bi-dash-circle-fill text-primary text-lg"></i>
             </a>
             @else
-            <a href="{!! route('series.follow', ['id' => $series->id']) !!}" 
+            <a href="{!! route('series.follow', ['id' => $series->id]) !!}" 
                 data-target="#series-card-{{ $series->id }}" 
                 class="ajax-action p-2 bg-dark-bg/80 rounded-full hover:bg-dark-bg transition-colors"
                 title="Click to follow">
