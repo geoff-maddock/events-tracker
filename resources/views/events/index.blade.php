@@ -269,7 +269,7 @@ Events @include('events.title-crumbs')
 	<h2 class="text-2xl font-bold text-primary mb-6">
 		<a href="{{ url('/events/past') }}" class="hover:text-primary-hover">Past Events</a>
 	</h2>
-	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+	<div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
 		@foreach ($past_events as $event)
 		@include('events.card-tw', ['event' => $event])
 		@endforeach
@@ -286,7 +286,7 @@ Events @include('events.title-crumbs')
 	<h2 class="text-2xl font-bold text-primary mb-6">
 		<a href="{{ url('/events/future') }}" class="hover:text-primary-hover">Future Events</a>
 	</h2>
-	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+	<div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
 		@foreach ($future_events as $event)
 		@include('events.card-tw', ['event' => $event])
 		@endforeach

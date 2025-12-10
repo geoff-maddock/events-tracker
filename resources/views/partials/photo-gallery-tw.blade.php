@@ -1,5 +1,5 @@
 @php
-	// Accept either 'photos' or 'event' parameter
+	// Accept either 'photos', 'event', or 'entity' parameter
 	$galleryPhotos = $photos ?? collect();
 	
 	// If an event is provided, gather all photos (event photos + entity primary photos)
@@ -7,6 +7,11 @@
 		$eventPhotos = $event->photos;
 		$entityPhotos = $event->entities->flatMap->photos->where('is_primary', true);
 		$galleryPhotos = $eventPhotos->concat($entityPhotos);
+	}
+	
+	// If an entity is provided, use entity photos
+	if (isset($entity)) {
+		$galleryPhotos = $entity->photos;
 	}
 @endphp
 

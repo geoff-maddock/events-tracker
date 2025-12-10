@@ -158,7 +158,7 @@ class EntitiesController extends Controller
         ->orderBy('events_count', 'desc')
         ->paginate(6);
 
-        return view('entities.index')
+        return view('entities.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -221,7 +221,7 @@ class EntitiesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('entities.index')
+        return view('entities.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -291,7 +291,7 @@ class EntitiesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('entities.index')
+        return view('entities.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -349,7 +349,7 @@ class EntitiesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('entities.index')
+        return view('entities.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -409,7 +409,7 @@ class EntitiesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('entities.index')
+        return view('entities.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -510,7 +510,7 @@ class EntitiesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('entities.index')
+        return view('entities.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -566,7 +566,7 @@ class EntitiesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('entities.index')
+        return view('entities.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -703,7 +703,7 @@ class EntitiesController extends Controller
         $futureEvents = $entity->futureEvents(5);
         $pastEvents = $entity->pastEvents(5);
 
-        return view('entities.show', compact('entity', 'threads', 'embeds', 'tracks','futureEvents','pastEvents'));
+        return view('entities.show-tw', compact('entity', 'threads', 'embeds', 'tracks','futureEvents','pastEvents'));
     }
 
     /**

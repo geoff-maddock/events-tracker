@@ -4,11 +4,12 @@
 
 /* Custom component classes for shadcn-style UI */
 @layer components {
+
   /* Button styles */
   .btn-primary-tw {
     @apply px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-hover transition-colors font-medium;
   }
-  
+
   .btn-secondary-tw {
     @apply px-4 py-2 bg-dark-card text-white rounded-md hover:bg-dark-border transition-colors font-medium border border-dark-border;
   }
@@ -63,6 +64,11 @@
 
   /* Event card specific styles */
   .event-card-tw {
+    @apply card-tw card-hover-tw flex flex-col;
+  }
+
+  /* Entity card specific styles */
+  .entity-card-tw {
     @apply card-tw card-hover-tw flex flex-col;
   }
 

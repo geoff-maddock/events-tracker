@@ -15,9 +15,14 @@ module.exports = {
     'lg:grid-cols-3',
     'lg:col-span-1',
     'lg:col-span-2',
+    'lg:grid-cols-[2fr,1fr]',
   ],
   theme: {
     extend: {
+      screens: {
+        '2xl': '1600px',
+        '3xl': '2000px',
+      },
       colors: {
         // Custom dark theme colors matching the design mockup
         'dark-bg': '#0f172a',
