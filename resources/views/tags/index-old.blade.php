@@ -1,0 +1,242 @@
+@extends('app')
+
+@section('title')
+@if (isset($tag))
+Keyword Tag • {{ $tag }}
+@else
+Keyword Tags
+@endif
+@endsection
+
+@section('content')
+
+<h1 class="display-crumbs text-primary">Keywords	@include('tags.crumbs')</h1>
+
+<div id="action-menu" class="mb-2">
+	<a href="{{ url('/tags') }}" class="btn btn-info">Show all tags</a>
+	<a href="{!! URL::route('tags.create') !!}" class="btn btn-primary">Add a tag</a>
+</div>
+
+	<div class="row">
+		<div class="col-lg-2">
+			<div class="card surface">
+				<h5 class="card-header bg-primary">Keywords
+					<a href="#" class="float-end"><i class="bi bi-question-octagon-fill" data-toggle="tooltip" data-placement="bottom" role="tooltip" title="Click on a keyword tag name in the left panel to find all related events or entites.  Click on the plus next to the tag to follow, minus to unfollow."></i></a>
+					<a href="#" class="float-end px-1" title="Show / Hide" ><i class="bi bi-eye-fill toggler" id="tag-list-close-box" data-bs-target="#tag-list" data-bs-toggle="collapse" aria-expanded="false" aria-controls="tag-list" aria-label="Tag list toggle" role="button"></i></a>
+				</h5>
+
+				<div class="card-body collapsible collapse show" id="tag-list">
+					<div class="row d-flex align-items-start">
+					<div class="col-1 sticky-top pt-3 ps-3">
+						<ul class="list-click">
+							<li><a href="#A">A</a></li>
+							<li><a href="#B">B</a></li>
+							<li><a href="#C">C</a></li>
+							<li><a href="#D">D</a></li>
+							<li><a href="#E">E</a></li>
+							<li><a href="#F">F</a></li>
+							<li><a href="#G">G</a></li>
+							<li><a href="#H">H</a></li>
+							<li><a href="#I">I</a></li>
+							<li><a href="#J">J</a></li>
+							<li><a href="#K">K</a></li>
+							<li><a href="#L">L</a></li>
+							<li><a href="#M">M</a></li>
+							<li><a href="#N">N</a></li>
+							<li><a href="#O">O</a></li>
+							<li><a href="#P">P</a></li>
+							<li><a href="#Q">Q</a></li>
+							<li><a href="#R">R</a></li>
+							<li><a href="#S">S</a></li>
+							<li><a href="#T">T</a></li>
+							<li><a href="#U">U</a></li>
+							<li><a href="#V">V</a></li>
+							<li><a href="#W">W</a></li>
+							<li><a href="#X">X</a></li>
+							<li><a href="#Y">Y</a></li>
+							<li><a href="#Z">Z</a></li>
+						</ul>
+					</div>
+					<div class="col-10">
+						<ul>
+							@if ($signedIn)
+							@php 
+								$following = $user->getTagsFollowing();
+							@endphp 
+							@endif
+						@foreach ($tags as $t)
+							@if (isset($tag) && (strtolower($slug) === strtolower($t->slug)))
+								<?php $match = $t;?>
+								<li class='vertical-list selected'><a href="/tags/{{ $t->slug }}" title="Click to show all related events and entities." name="{{ $t->name[0] }}">{{ $t->name }}</a>
+									@if ($signedIn)
+										@if ($following->contains($t))
+										<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" title="Click to unfollow"><i class="bi bi-check-circle-fill  text-info"></i></a>
+										@else
+										<a href="{!! route('tags.follow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" title="Click to follow"><i class="bi bi-plus-circle text-warning"></i></a>
+										@endif
+									@endif
+								</li>
+							@else
+								<li class='vertical-list'><a href="/tags/{{ $t->slug }}"  name="{{ $t->name[0] }}">{{ $t->name }}</a>
+									@if ($signedIn)
+										@if ($following->contains($t))
+										<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" title="Click to unfollow"><i class="bi bi-check-circle-fill text-info"></i></a>
+										@else
+										<a href="{!! route('tags.follow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" title="Click to follow"><i class="bi bi-plus-circle text-warning"></i></a>
+										@endif
+									@endif
+								</li>
+							@endif
+						@endforeach
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-lg-10">
+	@if (!isset($tag))
+		<div class="card surface my-2">
+				<h5 class="card-header bg-primary">Info</h5>
+				<div class="card-body">
+					Click on a <b>keyword</b> tag name in the left panel to find all related events or entites.
+					@if (Auth::guest())
+					<br> <a href="{{ url('/login') }}" class="link-danger">Log in</a> so you can subscribe to tags for updates.
+					@else
+					<br>Click on the <b>plus</b> next to the tag to follow, <b>minus</b> to unfollow.
+					@endif
+				</div>
+		</div>
+	@endif
+
+	@if (isset($latestTags) )
+
+		<div class="card surface my-2">
+				<h5 class="card-header bg-primary">Recently Popular Tags
+					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#tag-popular" data-bs-toggle="collapse" aria-label="Popular tag toggle" aria-expanded="false" aria-controls="tag-popular" role="button"></i></a>
+				</h5>
+				<div class="card-body collapsible collapse show" id="tag-popular">
+					@include('tags.list', ['tags' => $latestTags])
+				</div>
+		</div>
+	@endif
+
+	@if (!isset($match) && isset($userTags))
+
+		<div class="card surface my-2">
+				<h5 class="card-header bg-primary">Tags You Follow
+					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-followed-close-box" data-bs-target="#tag-followed" data-bs-toggle="collapse" aria-label="Followed tag toggle" aria-expanded="false" aria-controls="tag-followed" role="button"></i></a>
+				</h5>
+				<div class="card-body collapsible collapse show" id="tag-followed">
+					@include('tags.list', ['tags' => $userTags])
+				</div>
+		</div>
+
+		<div class="card surface my-2">
+				<h5 class="card-header bg-primary">Entities
+					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-entity-close-box" data-bs-target="#tag-entity" data-bs-toggle="collapse" aria-label="Entity tag toggle" aria-expanded="false" aria-controls="tag-entity" role="button"></i></a>
+				</h5>
+				<div class="card-body collapsible collapse show" id="tag-entity">
+					@include('entities.list', ['entities' => $entities])
+					{!! $entities->onEachSide(2)->links() !!}
+				</div>
+		</div>
+	@endif
+
+
+	@if (isset($match) )
+		<div class="card surface my-2">
+				<h5 class="card-header bg-primary">Tags
+					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-followed-close-box" data-bs-target="#tag-followed" data-bs-toggle="collapse" aria-label="Followed tag toggle" aria-expanded="false" aria-controls="tag-followed" role="button"></i></a>
+				</h5>
+
+				<div class="card-body collapsible collapse show" id="tag-followed">
+					<ul class='event-list'>
+						@include('tags.single', ['tag' => $match])
+					</ul>
+				</div>
+
+		</div>
+
+		<div class="card surface my-2">
+			<h5 class="card-header bg-primary">Entities
+				<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-entity-close-box" data-bs-target="#tag-entity" data-bs-toggle="collapse" aria-label="Entity tag toggle" aria-expanded="false" aria-controls="tag-entity" role="button"></i></a>
+			</h5>
+			<div class="card-body collapsible collapse show" id="tag-entity">
+					@include('entities.list', ['entities' => $entities])
+					{!! $entities->onEachSide(2)->links() !!}
+			</div>
+		</div>
+		@endif
+
+
+		@if (isset($series) && count($series) > 0)
+		<div class="card surface my-2">
+			<h5 class="card-header bg-primary">Series
+				<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-series-close-box" data-bs-target="#tag-series" data-bs-toggle="collapse" aria-label="Series tag toggle" aria-expanded="false" aria-controls="tag-series" role="button"></i></a>				
+			</h5>
+			<div class="card-body collapsible collapse show" id="tag-series">
+				@include('series.vertical-list', ['series' => $series])
+			</div>
+		</div>
+		@endif
+
+		@if (isset($events) && count($events) > 0)
+		<div class="card surface my-2">
+			<h5 class="card-header bg-primary">Events
+				<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-events-close-box" data-bs-target="#tag-events" data-bs-toggle="collapse" aria-label="Events tag toggle" aria-expanded="false" aria-controls="tag-events" role="button"></i></a>				
+				@if (isset($tag))
+					<a href="{!! route('calendar.tag', ['tag' => $slug]) !!}" title="{{ $tag.' Calendar' }}"><i class='bi bi-calendar-plus text-warning float-end'></i></a>
+				@endif
+			</h5>
+
+			<div class="card-body collapsible collapse show" id="tag-events">
+				@include('events.list', ['events' => $events])
+				{!! $events->onEachSide(2)->links() !!}
+			</div>
+		</div>
+		@endif
+	</div>
+
+</div>
+
+@stop
+
+@section('scripts.footer')
+@parent
+<script>
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+	$('button.delete').on('click', function(e){
+	e.preventDefault();
+	const form = $(this).parents('form');
+	Swal.fire({
+		title: "Are you sure?",
+		text: "You will not be able to recover this tag!",
+		type: "warning",
+		showCancelButton: true,
+		confirmButtonColor: "#DD6B55",
+		confirmButtonText: "Yes, delete it!",
+		preConfirm: function() {
+			return new Promise(function(resolve) {
+				setTimeout(function() {
+					resolve()
+				}, 2000)
+			})
+		}
+	}).then(result => {
+		if (result.value) {
+			// handle Confirm button click
+			// result.value will contain `true` or the input value
+			form.submit();
+		} else {
+			// handle dismissals
+			// result.dismiss can be 'cancel', 'overlay', 'esc' or 'timer'
+			console.log('Cancelled confirm')
+		}
+	});
+})
+});
+</script>
+@stop
