@@ -33,8 +33,10 @@
                     @else
                         {{ $paginator->count() }}
                     @endif
-                    {!! __('of') !!}
-                    <span class="font-medium text-gray-200">{{ $paginator->total() }}</span>
+                    @if (method_exists($paginator, 'total'))
+                        {!! __('of') !!}
+                        <span class="font-medium text-gray-200">{{ $paginator->total() }}</span>
+                    @endif
                     {!! __('results') !!}
                 </p>
             </div>
