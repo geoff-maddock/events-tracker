@@ -621,4 +621,24 @@ Route::resource('tags', 'TagsController');
 Route::get('rss', 'EventsController@rss');
 Route::get('rss/tag/{tag}', 'EventsController@rssTags');
 
+// Semantic alternate routes for entities by role
+// These routes provide cleaner URLs for common entity types
+// Index routes: /venue, /artist, /dj, etc. - lists entities by role
+Route::get('venue', 'EntitiesController@indexRoles')->defaults('role', 'venue')->name('venue.index');
+Route::get('artist', 'EntitiesController@indexRoles')->defaults('role', 'artist')->name('artist.index');
+Route::get('dj', 'EntitiesController@indexRoles')->defaults('role', 'dj')->name('dj.index');
+Route::get('producer', 'EntitiesController@indexRoles')->defaults('role', 'producer')->name('producer.index');
+Route::get('promoter', 'EntitiesController@indexRoles')->defaults('role', 'promoter')->name('promoter.index');
+Route::get('shop', 'EntitiesController@indexRoles')->defaults('role', 'shop')->name('shop.index');
+Route::get('band', 'EntitiesController@indexRoles')->defaults('role', 'band')->name('band.index');
+
+// Detail routes: /venue/{slug}, /artist/{slug}, etc. - shows specific entity
+Route::get('venue/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults('role', 'venue')->name('venue.show');
+Route::get('artist/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults('role', 'artist')->name('artist.show');
+Route::get('dj/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults('role', 'dj')->name('dj.show');
+Route::get('producer/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults('role', 'producer')->name('producer.show');
+Route::get('promoter/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults('role', 'promoter')->name('promoter.show');
+Route::get('shop/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults('role', 'shop')->name('shop.show');
+Route::get('band/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults('role', 'band')->name('band.show');
+
 Auth::routes();
