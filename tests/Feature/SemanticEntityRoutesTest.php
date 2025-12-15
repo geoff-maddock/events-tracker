@@ -42,7 +42,7 @@ class SemanticEntityRoutesTest extends TestCase
         $this->actingAs($user);
 
         // Create a venue entity
-        $venueRole = Role::where('slug', 'venue')->first();
+        $venueRole = Role::where('slug', 'venue')->firstOrFail();
         $venue = Entity::factory()->create([
             'name' => 'Brillobox',
             'slug' => 'brillobox',
@@ -50,7 +50,7 @@ class SemanticEntityRoutesTest extends TestCase
         $venue->roles()->attach($venueRole);
 
         // Create a DJ entity
-        $djRole = Role::where('slug', 'dj')->first();
+        $djRole = Role::where('slug', 'dj')->firstOrFail();
         $dj = Entity::factory()->create([
             'name' => 'Cutups',
             'slug' => 'cutups',
@@ -77,7 +77,7 @@ class SemanticEntityRoutesTest extends TestCase
         $this->actingAs($user);
 
         // Create a venue entity
-        $venueRole = Role::where('slug', 'venue')->first();
+        $venueRole = Role::where('slug', 'venue')->firstOrFail();
         $venue = Entity::factory()->create([
             'name' => 'Brillobox',
             'slug' => 'brillobox',
@@ -98,8 +98,8 @@ class SemanticEntityRoutesTest extends TestCase
         $this->actingAs($user);
 
         // Create an entity with both artist and producer roles
-        $artistRole = Role::where('slug', 'artist')->first();
-        $producerRole = Role::where('slug', 'producer')->first();
+        $artistRole = Role::where('slug', 'artist')->firstOrFail();
+        $producerRole = Role::where('slug', 'producer')->firstOrFail();
         
         $entity = Entity::factory()->create([
             'name' => 'Multi Role Artist',
