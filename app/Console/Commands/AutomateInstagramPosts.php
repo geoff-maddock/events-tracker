@@ -176,9 +176,13 @@ class AutomateInstagramPosts extends Command
             $igContainerIds = [];
 
             // Upload the primary image as a carousel item
-            $igContainerId = $instagram->uploadCarouselPhoto($imageUrl);
-            $igContainerIds[] = $igContainerId;
-            Log::info("AutomateInstagramPosts: Uploaded primary photo for event #{$event->id}, container ID: {$igContainerId}");
+            try {
+                $igContainerId = $instagram->uploadCarouselPhoto($imageUrl);
+                $igContainerIds[] = $igContainerId;
+                Log::info("AutomateInstagramPosts: Uploaded primary photo for event #{$event->id}, container ID: {$igContainerId}");
+            } catch (Exception $e) {
+                throw new Exception("Failed to upload primary photo: {$e->getMessage()}");
+            }
 
             // Add other photos related to the event to the carousel
             foreach ($event->getOtherPhotos() as $otherPhoto) {
@@ -223,6 +227,10 @@ class AutomateInstagramPosts extends Command
             }
 
             // Check status of all uploaded photos in batch
+            if (empty($igContainerIds)) {
+                throw new Exception('No photos were successfully uploaded');
+            }
+            
             if ($instagram->checkBatchStatus($igContainerIds) === false) {
                 throw new Exception('Instagram batch status check failed');
             }
