@@ -143,7 +143,7 @@ class AutomateInstagramPosts extends Command
     }
 
     /**
-     * Post an event to Instagram.
+     * Post an event to Instagram as a carousel with multiple images.
      *
      * @param Event $event
      * @param Instagram $instagram
@@ -152,7 +152,7 @@ class AutomateInstagramPosts extends Command
     protected function postEventToInstagram(Event $event, Instagram $instagram): array
     {
         try {
-            // Get the image URL
+            // Get the primary image URL
             $photo = $event->getPrimaryPhoto();
 
             if (!$photo) {
@@ -172,16 +172,72 @@ class AutomateInstagramPosts extends Command
                 throw new Exception('Could not generate Instagram caption');
             }
 
-            // Upload the image
-            $igContainerId = $instagram->uploadPhoto($imageUrl, urlEncode($caption));
+            // Collect all image container IDs for the carousel
+            $igContainerIds = [];
 
-            // Check the container status
-            if ($instagram->checkStatus($igContainerId) === false) {
-                throw new Exception('Instagram container status check failed');
+            // Upload the primary image as a carousel item
+            $igContainerId = $instagram->uploadCarouselPhoto($imageUrl);
+            $igContainerIds[] = $igContainerId;
+            Log::info("AutomateInstagramPosts: Uploaded primary photo for event #{$event->id}, container ID: {$igContainerId}");
+
+            // Add other photos related to the event to the carousel
+            foreach ($event->getOtherPhotos() as $otherPhoto) {
+                $otherImageUrl = Storage::disk('external')->url($otherPhoto->getStoragePath());
+
+                if (!$otherImageUrl) {
+                    Log::info("AutomateInstagramPosts: No image url found for other photo on event #{$event->id}");
+                    continue;
+                }
+
+                try {
+                    $otherContainerId = $instagram->uploadCarouselPhoto($otherImageUrl);
+                    $igContainerIds[] = $otherContainerId;
+                    Log::info("AutomateInstagramPosts: Uploaded other photo for event #{$event->id}, container ID: {$otherContainerId}");
+                } catch (Exception $e) {
+                    Log::warning("AutomateInstagramPosts: Error uploading other photo for event #{$event->id}: {$e->getMessage()}");
+                    // Continue with other photos even if one fails
+                }
             }
 
-            // Publish the image
-            $result = $instagram->publishMedia($igContainerId);
+            // Add primary photos from related entities to the carousel
+            foreach ($event->entities as $entity) {
+                foreach ($entity->photos as $entityPhoto) {
+                    if ($entityPhoto->is_primary) {
+                        $entityImageUrl = Storage::disk('external')->url($entityPhoto->getStoragePath());
+
+                        if (!$entityImageUrl) {
+                            Log::info("AutomateInstagramPosts: No image url found for entity photo on event #{$event->id}");
+                            continue;
+                        }
+
+                        try {
+                            $entityContainerId = $instagram->uploadCarouselPhoto($entityImageUrl);
+                            $igContainerIds[] = $entityContainerId;
+                            Log::info("AutomateInstagramPosts: Uploaded entity photo for event #{$event->id}, container ID: {$entityContainerId}");
+                        } catch (Exception $e) {
+                            Log::warning("AutomateInstagramPosts: Error uploading entity photo for event #{$event->id}: {$e->getMessage()}");
+                            // Continue with other photos even if one fails
+                        }
+                    }
+                }
+            }
+
+            // Check status of all uploaded photos in batch
+            if ($instagram->checkBatchStatus($igContainerIds) === false) {
+                throw new Exception('Instagram batch status check failed');
+            }
+
+            // Create the carousel container with all uploaded photos
+            $igCarouselId = $instagram->createCarousel($igContainerIds, $caption);
+            Log::info("AutomateInstagramPosts: Created carousel for event #{$event->id}, carousel ID: {$igCarouselId}");
+
+            // Check the carousel container status
+            if ($instagram->checkStatus($igCarouselId) === false) {
+                throw new Exception('Instagram carousel status check failed');
+            }
+
+            // Publish the carousel
+            $result = $instagram->publishMedia($igCarouselId);
             
             if ($result === false) {
                 throw new Exception('Failed to publish media to Instagram');
@@ -196,7 +252,7 @@ class AutomateInstagramPosts extends Command
                 'posted_at' => Carbon::now(),
             ]);
 
-            Log::info("AutomateInstagramPosts: Successfully posted event #{$event->id}, Instagram ID: {$result}");
+            Log::info("AutomateInstagramPosts: Successfully posted event #{$event->id} with " . count($igContainerIds) . " images, Instagram ID: {$result}");
 
             return [
                 'success' => true,
