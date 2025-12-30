@@ -56,7 +56,7 @@
 
 <!-- Upcoming Events Section -->
 <section id="upcoming-events">
-	@include('pages.4days')
+	@include('events.4days-tw')
 </section>
 
 @stop

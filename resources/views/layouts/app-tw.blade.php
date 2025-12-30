@@ -22,15 +22,15 @@
 	<link rel="alternate" type="application/rss+xml" href="{{ url('rss') }}"
 		title="RSS Feed {{ config('app.app_name')}}">
 
-	<!-- Tailwind CSS -->
-	<link href="{{ asset('/css/tailwind.css') }}" rel="stylesheet">
-
-	<!-- Keep existing theme CSS for components not yet migrated -->
+	<!-- Keep existing theme CSS for components not yet migrated - MUST load before Tailwind -->
 	@if ($theme !== config('app.default_theme'))
 		<link href="{{ asset('/css/light.css') }}" rel="stylesheet">
 	@else
 		<link href="{{ asset('/css/dark.css') }}" rel="stylesheet">
 	@endif
+
+	<!-- Tailwind CSS - load AFTER legacy CSS to override -->
+	<link href="{{ asset('/css/tailwind.css') }}" rel="stylesheet">
 
 	@yield('select2.include')
 

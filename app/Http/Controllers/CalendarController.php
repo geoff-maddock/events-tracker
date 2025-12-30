@@ -233,7 +233,7 @@ class CalendarController extends Controller
         }
         $day = Carbon::parse($day);
 
-        return view('events.day')
+        return view('events.day-tw')
             ->with([
                 'day' => $day,
                 'position' => 0,

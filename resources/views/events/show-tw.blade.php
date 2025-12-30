@@ -51,14 +51,39 @@
 									@endif
 								@endif
 								
-								@if ($user && $event->user && (Auth::user()->id == $event->user->id || $user->id == Config::get('app.superuser') ) )
 								<div class="relative inline-block text-left">
-									<button type="button" class="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors" title="More actions">
+									<button type="button" 
+										id="event-menu-button"
+										class="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors" 
+										title="Actions">
 										<i class="bi bi-three-dots text-xl"></i>
 									</button>
-									<!-- Dropdown menu would go here -->
+
+									<div id="event-actions-menu" class="hidden absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-dark-card border border-dark-border ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+										<div class="py-1" role="menu" aria-orientation="vertical">
+											@if ($user && $event->user && (Auth::user()->id == $event->user->id || $user->hasGroup('super_admin')))
+												<a href="{!! route('events.edit', ['event' => $event->id]) !!}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-surface hover:text-white transition-colors" role="menuitem">
+													<i class="bi bi-pencil mr-2"></i>Edit Event
+												</a>
+												<a href="{!! route('events.createSeries', ['id' => $event->id]) !!}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-surface hover:text-white transition-colors" role="menuitem">
+													<i class="bi bi-collection mr-2"></i>Create Series from Event
+												</a>
+												<div class="border-t border-dark-border my-1"></div>
+												<form action="{!! route('events.destroy', ['event' => $event->id]) !!}" method="POST" class="block">
+													@csrf
+													@method('DELETE')
+													<button type="submit" class="delete w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-dark-surface hover:text-red-300 transition-colors" role="menuitem">
+														<i class="bi bi-trash mr-2"></i>Delete Event
+													</button>
+												</form>
+												<div class="border-t border-dark-border my-1"></div>
+											@endif
+											<a href="{!! URL::route('events.index') !!}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-surface hover:text-white transition-colors" role="menuitem">
+												<i class="bi bi-list mr-2"></i>Return to list
+											</a>
+										</div>
+									</div>
 								</div>
-								@endif
 							</div>
 						</div>
 
@@ -307,6 +332,25 @@ $(document).ready(function(){
                 form.submit();
             }
         });
+    });
+
+    // Event actions dropdown toggle
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuButton = document.getElementById('event-menu-button');
+        const menu = document.getElementById('event-actions-menu');
+
+        if (menuButton && menu) {
+            menuButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                menu.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!menu.contains(e.target) && !menuButton.contains(e.target)) {
+                    menu.classList.add('hidden');
+                }
+            });
+        }
     });
 </script>
 

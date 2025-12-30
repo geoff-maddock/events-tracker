@@ -477,7 +477,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.grid')
+        return view('events.grid-tw')
         ->with(array_merge(
             [
                 'limit' => $listResultSet->getLimit(),
@@ -659,7 +659,7 @@ class EventsController extends Controller
 
         // handle the request if ajax
         if ($request->ajax()) {
-            return view('events.4daysAjax')
+            return view('events.4daysAjax-tw')
                     ->with([
                         'date' => $date,
                         'window' => $this->defaultWindow,
@@ -671,7 +671,7 @@ class EventsController extends Controller
                     ->render();
         }
 
-        return view('events.upcoming')
+        return view('events.upcoming-tw')
         ->with([
             'date' => $date,
             'window' => $this->defaultWindow,
@@ -716,7 +716,7 @@ class EventsController extends Controller
 
         // handle the request if ajax
         if ($request->ajax()) {
-            return view('events.addDays')
+            return view('events.addDays-tw')
                     ->with([
                         'date' => $date,
                         'window' => $this->defaultWindow,
@@ -1114,7 +1114,7 @@ class EventsController extends Controller
         }
         $day = Carbon::parse($day);
 
-        return view('events.day')
+        return view('events.day-tw')
             ->with([
                 'day' => $day,
                 'position' => 0,

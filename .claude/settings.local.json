@@ -1,0 +1,21 @@
+{
+    "permissions": {
+        "allow": [
+            "Bash(sed:*)",
+            "Bash(npx create-react-router@latest . --template remix-run/react-router/templates/basic --yes)",
+            "Bash(npm install)",
+            "Bash(npm install:*)",
+            "Bash(cat:*)",
+            "Bash(python3:*)",
+            "Bash(npx openapi-typescript:*)",
+            "Bash(npx tailwindcss:*)",
+            "Bash(npm run type-check:*)",
+            "Bash(npm run build:*)",
+            "mcp__plugin_playwright_playwright__browser_navigate",
+            "mcp__plugin_playwright_playwright__browser_close",
+            "Bash(curl:*)"
+        ],
+        "deny": [],
+        "ask": []
+    }
+}

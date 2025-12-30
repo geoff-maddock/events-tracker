@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: 'class',
+  important: true, // Add !important to all utilities to override Bootstrap
   content: [
     './resources/views/**/*.blade.php',
     './resources/js/**/*.js',
@@ -13,9 +14,32 @@ module.exports = {
     'lg:grid-cols-1',
     'lg:grid-cols-2',
     'lg:grid-cols-3',
+    'lg:grid-cols-4',
+    'xl:grid-cols-4',
+    '2xl:grid-cols-4',
     'lg:col-span-1',
     'lg:col-span-2',
     'lg:grid-cols-[2fr,1fr]',
+    // Dark mode classes for theme toggle
+    'dark:bg-dark-surface',
+    'dark:bg-dark-card',
+    'dark:bg-dark-bg',
+    'dark:bg-dark-border',
+    'dark:border-dark-border',
+    'dark:text-gray-100',
+    'dark:text-gray-300',
+    'dark:text-gray-400',
+    'dark:text-white',
+    'dark:hover:bg-dark-border',
+    'dark:hover:text-white',
+    'bg-white',
+    'bg-gray-100',
+    'border-gray-200',
+    'text-gray-900',
+    'text-gray-600',
+    'text-gray-500',
+    'hover:bg-gray-200',
+    'hover:text-gray-900',
   ],
   theme: {
     extend: {

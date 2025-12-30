@@ -46,13 +46,31 @@
 						@endif
 					@endif
 					
-					@if ($user && (Auth::user()->id === $entity->user?->id || $user->hasGroup('super_admin')))
 					<div class="relative inline-block text-left">
-						<button type="button" class="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors" title="More actions">
+						<button type="button" 
+                            id="entity-menu-button"
+                            class="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors" 
+                            title="Actions">
 							<i class="bi bi-three-dots text-xl"></i>
 						</button>
+
+                        <div id="entity-actions-menu" class="hidden absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-dark-card border border-dark-border ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+                            <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                                @if ($user && (Auth::user()->id === ($entity->user ? $entity->user?->id : null) || $user->hasGroup('super_admin')))
+                                    <a href="{!! route('entities.edit', ['entity' => $entity->slug]) !!}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-surface hover:text-white transition-colors" role="menuitem">
+                                        <i class="bi bi-pencil mr-2"></i>Edit Entity
+                                    </a>
+                                    <a href="{{ url('events/related-to/'.$entity->slug) }}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-surface hover:text-white transition-colors" role="menuitem">
+                                        <i class="bi bi-calendar-event mr-2"></i>Show Related Events
+                                    </a>
+                                    <div class="border-t border-dark-border my-1"></div>
+                                @endif
+                                <a href="{!! URL::route('entities.index') !!}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-surface hover:text-white transition-colors" role="menuitem">
+                                    <i class="bi bi-list mr-2"></i>Return to list
+                                </a>
+                            </div>
+                        </div>
 					</div>
-					@endif
 				</div>
 			</div>
 
@@ -423,5 +441,25 @@ $(document).ready(function(){
 })
 </script>
 @endif
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuButton = document.getElementById('entity-menu-button');
+        const menu = document.getElementById('entity-actions-menu');
+
+        if (menuButton && menu) {
+            menuButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                menu.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!menu.contains(e.target) && !menuButton.contains(e.target)) {
+                    menu.classList.add('hidden');
+                }
+            });
+        }
+    });
+</script>
 
 @stop

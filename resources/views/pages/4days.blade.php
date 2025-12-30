@@ -27,6 +27,7 @@
 		@for ($offset = 0; $offset < 4; $offset++)
 		<?php $day = \Carbon\Carbon::parse($date)->addDay($offset); ?>
 			<section class="day">
+				OK HI
 				@include('events.day', ['day' => $day, 'position' => $offset ])
 			</section>
 		@endfor

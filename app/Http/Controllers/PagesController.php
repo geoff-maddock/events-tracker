@@ -352,7 +352,7 @@ class PagesController extends Controller
 
         // handle the request if ajax
         if ($request->ajax()) {
-            return view('pages.4daysAjax')
+            return view('events.4daysAjax-tw')
                     ->with([
                         'date' => $date,
                         'window' => $this->defaultWindow,
