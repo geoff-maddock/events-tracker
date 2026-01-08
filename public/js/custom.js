@@ -32,7 +32,10 @@ var App = (function () {
     };
 
     var initTooltip = function () {
-        $('[data-toggle="tooltip"]').tooltip();
+        // Only initialize tooltips if Bootstrap tooltip function exists
+        if (typeof $.fn.tooltip === 'function') {
+            $('[data-toggle="tooltip"]').tooltip();
+        }
     };
 
     var setupDeleteConfirm = function () {
@@ -158,13 +161,15 @@ var App = (function () {
             });
         });
 
-        // enable tooltips
-        $(target).tooltip({
-            selector: '.tip',
-            container: 'body',
-            html: true,
-            delay: { show: 500 }
-        });
+        // enable tooltips (only if Bootstrap tooltip function exists)
+        if (typeof $.fn.tooltip === 'function') {
+            $(target).tooltip({
+                selector: '.tip',
+                container: 'body',
+                html: true,
+                delay: { show: 500 }
+            });
+        }
 
     };
 

@@ -4,7 +4,7 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
-import 'bootstrap';
+// Note: Alpine.js is loaded via CDN in the layout file
 import Visibility from './utilities/visibility';
 
 // used for dates

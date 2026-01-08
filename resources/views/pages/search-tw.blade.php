@@ -8,31 +8,31 @@
 <div class="mb-6">
 	<h1 class="text-3xl font-bold text-primary mb-2">Search Results</h1>
 	@if(isset($search))
-	<p class="text-gray-400">Results for: <span class="text-white font-semibold">"{{ $search }}"</span></p>
+	<p class="text-muted-foreground">Results for: <span class="text-foreground font-semibold">"{{ $search }}"</span></p>
 	@endif
 </div>
 
 <!-- Action Menu -->
 <div class="mb-6 flex flex-wrap gap-2">
-	<a href="{!! URL::route('events.index') !!}" class="inline-flex items-center px-3 py-2 bg-dark-surface border border-dark-border text-gray-300 rounded-lg hover:bg-dark-card transition-colors text-sm">
+	<a href="{!! URL::route('events.index') !!}" class="inline-flex items-center px-3 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-card transition-colors text-sm">
 		Event Index
 	</a>
-	<a href="{!! URL::route('calendar') !!}" class="inline-flex items-center px-3 py-2 bg-dark-surface border border-dark-border text-gray-300 rounded-lg hover:bg-dark-card transition-colors text-sm">
+	<a href="{!! URL::route('calendar') !!}" class="inline-flex items-center px-3 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-card transition-colors text-sm">
 		Event Calendar
 	</a>
-	<a href="{!! URL::route('events.create') !!}" class="inline-flex items-center px-3 py-2 bg-dark-card border border-dark-border text-white rounded-lg hover:bg-dark-border transition-colors text-sm">
+	<a href="{!! URL::route('events.create') !!}" class="inline-flex items-center px-3 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors text-sm">
 		<i class="bi bi-plus-lg mr-2"></i>
 		Add Event
 	</a>
-	<a href="{!! URL::route('series.create') !!}" class="inline-flex items-center px-3 py-2 bg-dark-card border border-dark-border text-white rounded-lg hover:bg-dark-border transition-colors text-sm">
+	<a href="{!! URL::route('series.create') !!}" class="inline-flex items-center px-3 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors text-sm">
 		<i class="bi bi-plus-lg mr-2"></i>
 		Add Series
 	</a>
-	<a href="{!! URL::route('entities.create') !!}" class="inline-flex items-center px-3 py-2 bg-dark-card border border-dark-border text-white rounded-lg hover:bg-dark-border transition-colors text-sm">
+	<a href="{!! URL::route('entities.create') !!}" class="inline-flex items-center px-3 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors text-sm">
 		<i class="bi bi-plus-lg mr-2"></i>
 		Add Entity
 	</a>
-	<a href="{!! URL::route('threads.create') !!}" class="inline-flex items-center px-3 py-2 bg-dark-card border border-dark-border text-white rounded-lg hover:bg-dark-border transition-colors text-sm">
+	<a href="{!! URL::route('threads.create') !!}" class="inline-flex items-center px-3 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors text-sm">
 		<i class="bi bi-plus-lg mr-2"></i>
 		Add Thread
 	</a>
@@ -42,12 +42,12 @@
 	<!-- Entities Results -->
 	@if (isset($entities) && $entitiesCount > 0)
 	<div class="card-tw">
-		<div class="p-4 border-b border-dark-border flex items-center justify-between">
+		<div class="p-4 border-b border-border flex items-center justify-between">
 			<div class="flex items-center gap-3">
-				<h2 class="text-xl font-semibold text-white">Entities</h2>
-				<span class="badge-tw bg-dark-card text-white">{{ $entitiesCount }}</span>
+				<h2 class="text-xl font-semibold text-foreground">Entities</h2>
+				<span class="badge-tw bg-card text-foreground">{{ $entitiesCount }}</span>
 			</div>
-			<button class="text-gray-400 hover:text-white" onclick="toggleSection('search-entities')">
+			<button class="text-muted-foreground hover:text-foreground" onclick="toggleSection('search-entities')">
 				<i class="bi bi-eye-fill"></i>
 			</button>
 		</div>
@@ -64,20 +64,20 @@
 	</div>
 	@else
 	<div class="card-tw p-6 text-center">
-		<i class="bi bi-people text-4xl text-gray-600 mb-3"></i>
-		<p class="text-gray-400">No matching entities found.</p>
+		<i class="bi bi-people text-4xl text-muted-foreground/60 mb-3"></i>
+		<p class="text-muted-foreground">No matching entities found.</p>
 	</div>
 	@endif
 
 	<!-- Tags Results -->
 	@if (isset($tags) && $tagsCount > 0)
 	<div class="card-tw">
-		<div class="p-4 border-b border-dark-border flex items-center justify-between">
+		<div class="p-4 border-b border-border flex items-center justify-between">
 			<div class="flex items-center gap-3">
-				<h2 class="text-xl font-semibold text-white">Tags</h2>
-				<span class="badge-tw bg-dark-card text-white">{{ $tagsCount }}</span>
+				<h2 class="text-xl font-semibold text-foreground">Tags</h2>
+				<span class="badge-tw bg-card text-foreground">{{ $tagsCount }}</span>
 			</div>
-			<button class="text-gray-400 hover:text-white" onclick="toggleSection('search-tags')">
+			<button class="text-muted-foreground hover:text-foreground" onclick="toggleSection('search-tags')">
 				<i class="bi bi-eye-fill"></i>
 			</button>
 		</div>
@@ -99,12 +99,12 @@
 	<!-- Events Results -->
 	@if (isset($events) && count($events) > 0)
 	<div class="card-tw">
-		<div class="p-4 border-b border-dark-border flex items-center justify-between">
+		<div class="p-4 border-b border-border flex items-center justify-between">
 			<div class="flex items-center gap-3">
-				<h2 class="text-xl font-semibold text-white">Events</h2>
-				<span class="badge-tw bg-dark-card text-white">{{ $eventsCount }}</span>
+				<h2 class="text-xl font-semibold text-foreground">Events</h2>
+				<span class="badge-tw bg-card text-foreground">{{ $eventsCount }}</span>
 			</div>
-			<button class="text-gray-400 hover:text-white" onclick="toggleSection('search-events')">
+			<button class="text-muted-foreground hover:text-foreground" onclick="toggleSection('search-events')">
 				<i class="bi bi-eye-fill"></i>
 			</button>
 		</div>
@@ -121,20 +121,20 @@
 	</div>
 	@else
 	<div class="card-tw p-6 text-center">
-		<i class="bi bi-calendar-x text-4xl text-gray-600 mb-3"></i>
-		<p class="text-gray-400">No matching events found.</p>
+		<i class="bi bi-calendar-x text-4xl text-muted-foreground/60 mb-3"></i>
+		<p class="text-muted-foreground">No matching events found.</p>
 	</div>
 	@endif
 
 	<!-- Series Results -->
 	@if (isset($series) && count($series) > 0)
 	<div class="card-tw">
-		<div class="p-4 border-b border-dark-border flex items-center justify-between">
+		<div class="p-4 border-b border-border flex items-center justify-between">
 			<div class="flex items-center gap-3">
-				<h2 class="text-xl font-semibold text-white">Series</h2>
-				<span class="badge-tw bg-dark-card text-white">{{ $seriesCount }}</span>
+				<h2 class="text-xl font-semibold text-foreground">Series</h2>
+				<span class="badge-tw bg-card text-foreground">{{ $seriesCount }}</span>
 			</div>
-			<button class="text-gray-400 hover:text-white" onclick="toggleSection('search-series')">
+			<button class="text-muted-foreground hover:text-foreground" onclick="toggleSection('search-series')">
 				<i class="bi bi-eye-fill"></i>
 			</button>
 		</div>
@@ -154,12 +154,12 @@
 	<!-- Threads Results -->
 	@if (isset($threads) && count($threads) > 0)
 	<div class="card-tw">
-		<div class="p-4 border-b border-dark-border flex items-center justify-between">
+		<div class="p-4 border-b border-border flex items-center justify-between">
 			<div class="flex items-center gap-3">
-				<h2 class="text-xl font-semibold text-white">Threads</h2>
-				<span class="badge-tw bg-dark-card text-white">{{ $threadsCount }}</span>
+				<h2 class="text-xl font-semibold text-foreground">Threads</h2>
+				<span class="badge-tw bg-card text-foreground">{{ $threadsCount }}</span>
 			</div>
-			<button class="text-gray-400 hover:text-white" onclick="toggleSection('search-threads')">
+			<button class="text-muted-foreground hover:text-foreground" onclick="toggleSection('search-threads')">
 				<i class="bi bi-eye-fill"></i>
 			</button>
 		</div>

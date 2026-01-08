@@ -5,21 +5,21 @@
         <div class="mb-4">
             @if ($user->profile && $user->profile->avatar)
             <a href="{{ route('users.show', [$user->id]) }}">
-                <img src="{{ Storage::disk('external')->url($user->profile->getStorageThumbnail()) }}" 
-                    alt="{{ $user->name }}" 
-                    class="w-24 h-24 rounded-full object-cover border-2 border-dark-border hover:border-primary transition-colors">
+                <img src="{{ Storage::disk('external')->url($user->profile->getStorageThumbnail()) }}"
+                    alt="{{ $user->name }}"
+                    class="w-24 h-24 rounded-full object-cover border-2 border-border hover:border-primary transition-colors">
             </a>
             @else
             <a href="{{ route('users.show', [$user->id]) }}">
-                <div class="w-24 h-24 rounded-full bg-dark-card flex items-center justify-center border-2 border-dark-border hover:border-primary transition-colors">
-                    <i class="bi bi-person text-4xl text-gray-500"></i>
+                <div class="w-24 h-24 rounded-full bg-card flex items-center justify-center border-2 border-border hover:border-primary transition-colors">
+                    <i class="bi bi-person text-4xl text-muted-foreground/50"></i>
                 </div>
             </a>
             @endif
         </div>
 
         <!-- User Name -->
-        <h3 class="text-lg font-semibold text-white hover:text-primary transition-colors mb-2">
+        <h3 class="text-lg font-semibold text-foreground hover:text-primary transition-colors mb-2">
             <a href="{{ route('users.show', [$user->id]) }}">{{ $user->name }}</a>
         </h3>
 
@@ -34,11 +34,11 @@
 
         <!-- User Bio/Description -->
         @if ($user->profile && $user->profile->bio)
-        <p class="text-sm text-gray-400 mb-3 line-clamp-3">{{ $user->profile->bio }}</p>
+        <p class="text-sm text-muted-foreground mb-3 line-clamp-3">{{ $user->profile->bio }}</p>
         @endif
 
         <!-- User Stats -->
-        <div class="flex items-center justify-center gap-4 text-sm text-gray-400 mb-3">
+        <div class="flex items-center justify-center gap-4 text-sm text-muted-foreground mb-3">
             <!-- Joined Date -->
             <div class="flex items-center gap-1" title="Member since">
                 <i class="bi bi-calendar3"></i>
@@ -71,7 +71,7 @@
             </span>
             @endforeach
             @if ($user->groups->count() > 3)
-            <span class="text-xs text-gray-500">+{{ $user->groups->count() - 3 }}</span>
+            <span class="text-xs text-muted-foreground/50">+{{ $user->groups->count() - 3 }}</span>
             @endif
         </div>
         @endunless
@@ -79,18 +79,18 @@
 
     <!-- Card Footer - Actions -->
     @if ($signedIn)
-    <div class="px-4 py-3 border-t border-dark-border flex items-center justify-center gap-3">
+    <div class="px-4 py-3 border-t border-border flex items-center justify-center gap-3">
         <!-- View Profile Button -->
-        <a href="{{ route('users.show', [$user->id]) }}" 
-            class="text-gray-400 hover:text-primary transition-colors"
+        <a href="{{ route('users.show', [$user->id]) }}"
+            class="text-muted-foreground hover:text-primary transition-colors"
             title="View profile">
             <i class="bi bi-person-circle"></i>
         </a>
 
         <!-- Edit Button (only for own profile or admin) -->
         @if ($user->id == $signedIn->id || $signedIn->hasGroup('super_admin'))
-        <a href="{{ route('users.edit', [$user->id]) }}" 
-            class="text-gray-400 hover:text-primary transition-colors"
+        <a href="{{ route('users.edit', [$user->id]) }}"
+            class="text-muted-foreground hover:text-primary transition-colors"
             title="Edit profile">
             <i class="bi bi-pencil"></i>
         </a>

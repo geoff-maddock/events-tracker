@@ -145,9 +145,9 @@ class TagsController extends Controller
                     ->simplePaginate($this->limit);
 
         // get a list of all tags
-        $tags = Tag::orderBy('name', 'ASC')->get();
+        $tags = Tag::orderBy('name', 'ASC')->paginate(20);
 
-        return view('tags.index', compact('series', 'entities', 'events', 'tag', 'tags', 'userTags', 'latestTags'));
+        return view('tags.index-tw', compact('series', 'entities', 'events', 'tag', 'tags', 'userTags', 'latestTags'));
     }
 
     /**

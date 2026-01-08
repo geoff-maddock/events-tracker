@@ -1,0 +1,42 @@
+/* Select2 Tailwind Theme */
+.select2-container--tailwind .select2-selection--single,
+.select2-container--tailwind .select2-selection--multiple {
+    @apply h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors;
+}
+
+.select2-container--tailwind.select2-container--focus .select2-selection {
+    @apply outline-none ring-1 ring-ring;
+}
+
+.select2-container--tailwind .select2-selection__rendered {
+    @apply text-foreground;
+}
+
+.select2-container--tailwind .select2-selection__placeholder {
+    @apply text-muted-foreground;
+}
+
+.select2-container--tailwind .select2-dropdown {
+    @apply border border-input bg-popover text-popover-foreground rounded-md shadow-md;
+}
+
+.select2-container--tailwind .select2-results__option {
+    @apply px-3 py-2 text-sm transition-colors;
+}
+
+.select2-container--tailwind .select2-results__option--highlighted {
+    @apply bg-accent text-accent-foreground;
+}
+
+.select2-container--tailwind .select2-results__option--selected {
+    @apply bg-primary text-primary-foreground;
+}
+
+/* Dark mode adjustments */
+.dark .select2-container--tailwind .select2-selection {
+    @apply bg-transparent;
+}
+
+.dark .select2-container--tailwind .select2-dropdown {
+    @apply bg-popover border-border;
+}

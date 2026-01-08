@@ -1,256 +1,181 @@
-@extends('app')
+@extends('layouts.app-tw')
 
-@section('title')
-@if (isset($tag))
-Keyword Tag • {{ $tag }}
-@else
-Keyword Tags
-@endif
-@endsection
+@section('title', 'Tags')
 
 @section('content')
 
-<div class="flex flex-col lg:flex-row gap-6">
-	<!-- Left Sidebar - Tag List -->
-	<div class="w-full lg:w-64 flex-shrink-0">
-		<div class="card-tw sticky top-4">
-			<!-- Header -->
-			<div class="p-4 border-b border-dark-border flex items-center justify-between">
-				<h2 class="text-lg font-bold text-white">Keywords</h2>
-				<button id="tag-list-toggle" class="text-gray-400 hover:text-white">
-					<i class="bi bi-eye-fill"></i>
-				</button>
+<div class="flex flex-col gap-6">
+	<!-- Page Header -->
+	<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+		<h1 class="text-2xl font-bold text-foreground">
+			Tags
+			<span class="text-muted-foreground text-lg font-normal">(all tagged tags)</span>
+		</h1>
+		@if ($signedIn)
+		<a href="{!! URL::route('tags.create') !!}" class="inline-flex items-center px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
+			<i class="bi bi-plus-lg mr-2"></i>
+			Add Tag
+		</a>
+		@endif
+	</div>
+
+	<!-- Popular Tags Section -->
+	@if (isset($latestTags) && count($latestTags) > 0)
+	<div class="bg-card border border-border rounded-lg">
+		<button id="popular-tags-toggle" class="w-full p-4 flex items-center justify-between text-left hover:bg-accent/50 transition-colors rounded-t-lg">
+			<div class="flex items-center gap-2">
+				<i class="bi bi-chevron-down transition-transform" id="popular-chevron"></i>
+				<h2 class="text-lg font-semibold text-foreground">Popular Tags</h2>
 			</div>
-
-			<!-- Alphabetical Navigation + Tag List -->
-			<div id="tag-list-content" class="p-4">
-				<!-- Alphabet Quick Links -->
-				<div class="grid grid-cols-6 gap-1 mb-4 text-xs">
-					@foreach(range('A', 'Z') as $letter)
-					<a href="#{{ $letter }}" class="text-center py-1 px-2 text-gray-400 hover:text-primary hover:bg-dark-card rounded transition-colors">{{ $letter }}</a>
-					@endforeach
-				</div>
-
-				<!-- Tag List -->
-				<div class="space-y-1 max-h-96 overflow-y-auto">
-					@if ($signedIn)
-					@php 
-						$following = $user->getTagsFollowing();
-					@endphp 
-					@endif
-
-					@foreach ($tags as $t)
-					<div class="flex items-center justify-between py-1 {{ (isset($tag) && (strtolower($slug) === strtolower($t->slug))) ? 'bg-dark-card rounded px-2' : '' }}" id="{{ $t->name[0] }}">
-						<a href="/tags/{{ $t->slug }}" 
-							class="flex-1 text-sm {{ (isset($tag) && (strtolower($slug) === strtolower($t->slug))) ? 'text-primary font-semibold' : 'text-gray-300 hover:text-white' }}"
-							title="Click to show all related events and entities">
-							{{ $t->name }}
+		</button>
+		<div id="popular-tags-content" class="p-4 border-t border-border">
+			<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+				@foreach($latestTags as $t)
+					@php
+						$event = $t->events()->visible($user ?? null)->latest('start_at')->first();
+						$photo = $event ? $event->getPrimaryPhoto() : null;
+					@endphp
+					<div class="relative group">
+						<a href="/tags/{{ $t->slug }}" class="block aspect-square bg-card border border-border rounded-lg overflow-hidden hover:border-primary transition-colors">
+							@if($photo)
+								<img src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}" alt="{{ $t->name }}" class="w-full h-full object-cover">
+							@else
+								<div class="w-full h-full flex items-center justify-center bg-muted">
+									<i class="bi bi-tag text-4xl text-muted-foreground/30"></i>
+								</div>
+							@endif
+							<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+								<div class="absolute bottom-0 left-0 right-0 p-2 text-white text-sm font-medium">
+									{{ $t->name }}
+								</div>
+							</div>
 						</a>
+					</div>
+				@endforeach
+			</div>
+		</div>
+	</div>
+	@endif
+
+	<!-- Nice Filters Section (Placeholder for future) -->
+	<div class="bg-card border border-border rounded-lg">
+		<button id="filters-toggle" class="w-full p-4 flex items-center justify-between text-left hover:bg-accent/50 transition-colors rounded-t-lg">
+			<div class="flex items-center gap-2">
+				<i class="bi bi-chevron-right transition-transform" id="filters-chevron"></i>
+				<h2 class="text-lg font-semibold text-foreground">Nice Filters</h2>
+			</div>
+		</button>
+		<div id="filters-content" class="hidden p-4 border-t border-border">
+			<p class="text-muted-foreground text-sm">Filters coming soon...</p>
+		</div>
+	</div>
+
+	<!-- Pagination and Sorting Controls -->
+	<div class="flex flex-wrap items-center justify-between gap-4 text-sm">
+		<div class="flex items-center gap-2 text-muted-foreground">
+			<span>{{ $tags->total() }} tags</span>
+		</div>
+		<div class="flex items-center gap-4">
+			<div class="flex items-center gap-2">
+				<span class="text-muted-foreground">20 per page</span>
+			</div>
+			<div class="flex items-center gap-2">
+				<span class="text-muted-foreground">Sort by:</span>
+				<span class="text-foreground">Name</span>
+			</div>
+			@if(isset($tags) && method_exists($tags, 'hasPages') && $tags->hasPages())
+			<div class="flex items-center gap-2">
+				@if($tags->hasMorePages())
+				<a href="{{ $tags->nextPageUrl() }}" class="text-muted-foreground hover:text-foreground">Next &gt;</a>
+				@endif
+			</div>
+			@endif
+		</div>
+	</div>
+
+	<!-- Tags Grid -->
+	<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+		@foreach ($tags as $tag)
+			@php
+				$event = $tag->events()->visible($user ?? null)->latest('start_at')->first();
+				$photo = $event ? $event->getPrimaryPhoto() : null;
+				$following = $signedIn ? ($user->getTagsFollowing()->contains($tag)) : false;
+			@endphp
+			<div class="bg-card border border-border rounded-lg overflow-hidden hover:border-primary transition-colors group">
+				<!-- Tag Image -->
+				<a href="/tags/{{ $tag->slug }}" class="block aspect-square relative overflow-hidden">
+					@if($photo)
+						<img src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}" alt="{{ $tag->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+					@else
+						<div class="w-full h-full flex items-center justify-center bg-muted">
+							<i class="bi bi-tag text-4xl text-muted-foreground/30"></i>
+						</div>
+					@endif
+				</a>
+
+				<!-- Tag Info -->
+				<div class="p-3">
+					<div class="flex items-start justify-between gap-2">
+						<div class="flex-1 min-w-0">
+							<a href="/tags/{{ $tag->slug }}" class="block font-medium text-foreground hover:text-primary truncate text-sm">
+								{{ $tag->name }}
+							</a>
+						</div>
 						@if ($signedIn)
-							@if ($following->contains($t))
-							<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" 
-								data-target="#tag-{{ $t->id }}" 
-								title="Click to unfollow"
-								class="ml-2 text-primary hover:text-primary-hover">
-								<i class="bi bi-check-circle-fill"></i>
+							@if ($following)
+							<a href="{!! route('tags.unfollow', ['id' => $tag->id]) !!}"
+								title="Unfollow"
+								class="flex-shrink-0 text-primary hover:text-primary/70 transition-colors">
+								<i class="bi bi-heart-fill"></i>
 							</a>
 							@else
-							<a href="{!! route('tags.follow', ['id' => $t->id]) !!}" 
-								data-target="#tag-{{ $t->id }}" 
-								title="Click to follow"
-								class="ml-2 text-gray-500 hover:text-primary">
-								<i class="bi bi-plus-circle"></i>
+							<a href="{!! route('tags.follow', ['id' => $tag->id]) !!}"
+								title="Follow"
+								class="flex-shrink-0 text-muted-foreground hover:text-primary transition-colors">
+								<i class="bi bi-heart"></i>
 							</a>
 							@endif
 						@endif
 					</div>
-					@endforeach
 				</div>
 			</div>
-		</div>
+		@endforeach
 	</div>
 
-	<!-- Main Content Area -->
-	<div class="flex-1">
-		<!-- Page Header -->
-		<div class="mb-6">
-			<h1 class="text-3xl font-bold text-primary mb-2">Keyword Tags</h1>
-			<p class="text-gray-400">Browse and follow tags to discover related content.</p>
-		</div>
-
-		<!-- Action Menu -->
-		<div class="mb-6 flex flex-wrap gap-2">
-			<a href="{{ url('/tags') }}" class="inline-flex items-center px-3 py-2 bg-dark-surface border border-dark-border text-gray-300 rounded-lg hover:bg-dark-card transition-colors text-sm">
-				Show All Tags
-			</a>
-			<a href="{!! URL::route('tags.create') !!}" class="inline-flex items-center px-4 py-2 bg-dark-card border border-dark-border text-white rounded-lg hover:bg-dark-border transition-colors">
-				<i class="bi bi-plus-lg mr-2"></i>
-				Add Tag
-			</a>
-		</div>
-
-		<!-- Info Card (when no tag selected) -->
-		@if (!isset($tag))
-		<div class="card-tw mb-6">
-			<div class="p-4 border-b border-dark-border">
-				<h2 class="text-lg font-semibold text-white">Info</h2>
-			</div>
-			<div class="p-4 text-gray-300">
-				<p>Click on a <strong class="text-white">keyword</strong> tag name in the left panel to find all related events or entities.</p>
-				@if (Auth::guest())
-				<p class="mt-2"><a href="{{ url('/login') }}" class="text-primary hover:text-primary-hover">Log in</a> so you can subscribe to tags for updates.</p>
-				@else
-				<p class="mt-2">Click on the <strong class="text-white">plus</strong> next to the tag to follow, <strong class="text-white">check</strong> to unfollow.</p>
-				@endif
-			</div>
-		</div>
-		@endif
-
-		<!-- Recently Popular Tags -->
-		@if (isset($latestTags))
-		<div class="card-tw mb-6">
-			<div class="p-4 border-b border-dark-border flex items-center justify-between">
-				<h2 class="text-lg font-semibold text-white">Recently Popular Tags</h2>
-				<button class="text-gray-400 hover:text-white" onclick="toggleSection('tag-popular')">
-					<i class="bi bi-eye-fill"></i>
-				</button>
-			</div>
-			<div id="tag-popular" class="p-4">
-				<div class="flex flex-wrap gap-2">
-					@foreach($latestTags as $t)
-					<a href="/tags/{{ $t->slug }}" class="badge-tw badge-primary-tw hover:bg-primary/30">
-						{{ $t->name }}
-					</a>
-					@endforeach
-				</div>
-			</div>
-		</div>
-		@endif
-
-		<!-- Tags You Follow -->
-		@if (!isset($match) && isset($userTags) && count($userTags) > 0)
-		<div class="card-tw mb-6">
-			<div class="p-4 border-b border-dark-border flex items-center justify-between">
-				<h2 class="text-lg font-semibold text-white">Tags You Follow</h2>
-				<button class="text-gray-400 hover:text-white" onclick="toggleSection('tag-followed')">
-					<i class="bi bi-eye-fill"></i>
-				</button>
-			</div>
-			<div id="tag-followed" class="p-4">
-				<div class="flex flex-wrap gap-2">
-					@foreach($userTags as $t)
-					<a href="/tags/{{ $t->slug }}" class="badge-tw badge-primary-tw hover:bg-primary/30">
-						{{ $t->name }}
-					</a>
-					@endforeach
-				</div>
-			</div>
-		</div>
-
-		<!-- Entities for followed tags -->
-		<div class="card-tw mb-6">
-			<div class="p-4 border-b border-dark-border flex items-center justify-between">
-				<h2 class="text-lg font-semibold text-white">Entities</h2>
-				<button class="text-gray-400 hover:text-white" onclick="toggleSection('tag-entity')">
-					<i class="bi bi-eye-fill"></i>
-				</button>
-			</div>
-			<div id="tag-entity" class="p-4">
-				@if(isset($entities) && count($entities) > 0)
-				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-					@foreach ($entities as $entity)
-					@include('entities.card-tw', ['entity' => $entity])
-					@endforeach
-				</div>
-				<div class="mt-4">
-					{!! $entities->onEachSide(2)->links('vendor.pagination.tailwind') !!}
-				</div>
-				@else
-				<p class="text-gray-400 text-center py-8">No entities found.</p>
-				@endif
-			</div>
-		</div>
-		@endif
-
-		<!-- Selected Tag Content -->
-		@if (isset($match))
-		<div class="space-y-6">
-			<!-- Tag Info -->
-			<div class="card-tw">
-				<div class="p-4 border-b border-dark-border">
-					<h2 class="text-2xl font-semibold text-white">{{ $match->name }}</h2>
-				</div>
-				<div class="p-4 text-gray-300">
-					@if($match->tag_definition)
-					<p>{{ $match->tag_definition }}</p>
-					@endif
-				</div>
-			</div>
-
-			<!-- Related Events -->
-			@if(isset($events) && count($events) > 0)
-			<div class="card-tw">
-				<div class="p-4 border-b border-dark-border flex items-center justify-between">
-					<h2 class="text-lg font-semibold text-white">Related Events</h2>
-					<button class="text-gray-400 hover:text-white" onclick="toggleSection('tag-events')">
-						<i class="bi bi-eye-fill"></i>
-					</button>
-				</div>
-				<div id="tag-events" class="p-4">
-					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-						@foreach ($events as $event)
-						@include('events.card-tw', ['event' => $event])
-						@endforeach
-					</div>
-					<div class="mt-4">
-						{!! $events->onEachSide(2)->links('vendor.pagination.tailwind') !!}
-					</div>
-				</div>
-			</div>
+	<!-- Bottom Pagination -->
+	@if(isset($tags) && method_exists($tags, 'hasPages') && $tags->hasPages())
+	<div class="flex justify-center">
+		<div class="flex items-center gap-2">
+			@if(!$tags->onFirstPage())
+			<a href="{{ $tags->previousPageUrl() }}" class="px-3 py-1 text-muted-foreground hover:text-foreground">&lt; Previous</a>
 			@endif
 
-			<!-- Related Entities -->
-			@if(isset($entities) && count($entities) > 0)
-			<div class="card-tw">
-				<div class="p-4 border-b border-dark-border flex items-center justify-between">
-					<h2 class="text-lg font-semibold text-white">Related Entities</h2>
-					<button class="text-gray-400 hover:text-white" onclick="toggleSection('tag-entities')">
-						<i class="bi bi-eye-fill"></i>
-					</button>
-				</div>
-				<div id="tag-entities" class="p-4">
-					<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-						@foreach ($entities as $entity)
-						@include('entities.card-tw', ['entity' => $entity])
-						@endforeach
-					</div>
-					<div class="mt-4">
-						{!! $entities->onEachSide(2)->links('vendor.pagination.tailwind') !!}
-					</div>
-				</div>
-			</div>
+			@if($tags->hasMorePages())
+			<a href="{{ $tags->nextPageUrl() }}" class="px-3 py-1 text-muted-foreground hover:text-foreground">Next &gt;</a>
 			@endif
 		</div>
-		@endif
 	</div>
+	@endif
 </div>
 
 @stop
 
 @section('footer')
 <script>
-	// Toggle tag list visibility
-	document.getElementById('tag-list-toggle')?.addEventListener('click', function() {
-		const content = document.getElementById('tag-list-content');
+	// Popular tags toggle
+	document.getElementById('popular-tags-toggle')?.addEventListener('click', function() {
+		const content = document.getElementById('popular-tags-content');
+		const chevron = document.getElementById('popular-chevron');
 		content.classList.toggle('hidden');
+		chevron.classList.toggle('rotate-180');
 	});
 
-	// Toggle section visibility
-	function toggleSection(sectionId) {
-		const section = document.getElementById(sectionId);
-		if (section) {
-			section.classList.toggle('hidden');
-		}
-	}
+	// Filters toggle
+	document.getElementById('filters-toggle')?.addEventListener('click', function() {
+		const content = document.getElementById('filters-content');
+		const chevron = document.getElementById('filters-chevron');
+		content.classList.toggle('hidden');
+		chevron.classList.toggle('rotate-90');
+	});
 </script>
 @endsection

@@ -35,3 +35,6 @@ workspace.code-workspace
 phpstan.neon
 /public/sitemap*.xml
 *.code-workspace
+
+# ignore the context files
+context

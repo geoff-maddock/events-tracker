@@ -176,7 +176,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -406,7 +406,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -1431,6 +1431,15 @@ class EventsController extends Controller
         if (!$event) {
             abort(404);
         }
+
+        // Eager load relationships needed for the view
+        $event->load([
+            'photos',
+            'entities.photos' => function ($query) {
+                $query->where('photos.is_primary', true);
+            }
+        ]);
+
         $embeds = $oembedExtractor->getEmbedsForEvent($event);
 
         $thread = Thread::where('event_id', '=', $event->id)->first();

@@ -286,12 +286,19 @@
 
 @if ($user && (Auth::user()->id === $event->user?->id || $user->hasGroup('super_admin') ))
 <script>
-window.Dropzone.autoDiscover = true;
 $(document).ready(function(){
+	// Wait for Dropzone to be available
+	function initDropzone() {
+		if (typeof window.Dropzone === 'undefined') {
+			console.log('Waiting for Dropzone to load...');
+			setTimeout(initDropzone, 100);
+			return;
+		}
 
-	var myDropzone = new window.Dropzone('#myDropzone', {
-        dictDefaultMessage: "Add a picture (Max size 5MB)"
-    });
+		window.Dropzone.autoDiscover = false;
+		var myDropzone = new window.Dropzone('#myDropzone', {
+			dictDefaultMessage: "Add a picture (Max size 5MB)"
+		});
 
     $('div.dz-default.dz-message').css({'color': '#000000', 'opacity': 1, 'background-image': 'none'});
 
@@ -326,8 +333,11 @@ $(document).ready(function(){
 		success: console.log('Upload successful')
 	};
 
-	myDropzone.options.addPhotosForm.init();
+		myDropzone.options.addPhotosForm.init();
+	}
 
+	// Start trying to initialize Dropzone
+	initDropzone();
 })
 </script>
 @endif

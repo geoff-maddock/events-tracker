@@ -3,18 +3,18 @@
     <!-- Event Image -->
     <div class="relative overflow-hidden">
         @if ($primary = $event->getPrimaryPhoto())
-        <a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}" 
+        <a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
             data-title="{!! $event->start_at->format('l F jS Y') !!} - {{ $event->name }} @ {{ $event->venue ? $event->venue->name : '' }}"
             data-lightbox="{{ $primary->path }}">
-            <img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}" 
-                alt="{{ $event->name }}" 
-                class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+            <img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}"
+                alt="{{ $event->name }}"
+                class="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300">
         </a>
         @else
-        <a href="/images/event-placeholder.png" 
+        <a href="/images/event-placeholder.png"
             data-lightbox="event-{{ $event->id }}">
-            <div class="w-full h-48 bg-dark-card flex items-center justify-center">
-                <i class="bi bi-calendar-event text-4xl text-gray-600"></i>
+            <div class="w-full aspect-square bg-card flex items-center justify-center">
+                <i class="bi bi-calendar-event text-4xl text-muted-foreground"></i>
             </div>
         </a>
         @endif
@@ -23,18 +23,18 @@
         @if ($signedIn)
         <div class="absolute top-2 right-2">
             @if ($response = $event->getEventResponse($user))
-            <a href="{!! route('events.unattend', ['id' => $event->id]) !!}" 
-                data-target="#event-card-{{ $event->id }}" 
-                class="ajax-action p-2 bg-dark-bg/80 rounded-full hover:bg-dark-bg transition-colors"
+            <a href="{!! route('events.unattend', ['id' => $event->id]) !!}"
+                data-target="#event-card-{{ $event->id }}"
+                class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
                 title="{{ $response->responseType->name }}">
                 <i class="bi bi-star-fill text-primary text-lg"></i>
             </a>
             @else
-            <a href="{!! route('events.attend', ['id' => $event->id]) !!}" 
-                data-target="#event-card-{{ $event->id }}" 
-                class="ajax-action p-2 bg-dark-bg/80 rounded-full hover:bg-dark-bg transition-colors"
+            <a href="{!! route('events.attend', ['id' => $event->id]) !!}"
+                data-target="#event-card-{{ $event->id }}"
+                class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
                 title="Click to mark as attending">
-                <i class="bi bi-star text-gray-400 hover:text-primary text-lg"></i>
+                <i class="bi bi-star text-muted-foreground hover:text-primary text-lg"></i>
             </a>
             @endif
         </div>
@@ -61,18 +61,18 @@
 
         <!-- Short Description -->
         @if ($event->short)
-        <p class="text-sm text-gray-400 mb-3 line-clamp-2">{{ $event->short }}</p>
+        <p class="text-sm text-muted-foreground mb-3 line-clamp-2">{{ $event->short }}</p>
         @endif
 
         <!-- Event Type -->
         <div class="mb-3">
-            <a href="/events/type/{{ $event->eventType->slug }}" class="text-sm text-gray-300 hover:text-primary">
+            <a href="/events/type/{{ $event->eventType->slug }}" class="text-sm text-muted-foreground hover:text-primary">
                 {{ $event->eventType->name }}
             </a>
         </div>
 
         <!-- Event Meta Info -->
-        <div class="space-y-2 text-sm text-gray-400 mb-4">
+        <div class="space-y-2 text-sm text-muted-foreground mb-4">
             <!-- Date & Time -->
             <div class="flex items-center gap-2">
                 <i class="bi bi-calendar3"></i>
@@ -90,7 +90,7 @@
                 <i class="bi bi-geo-alt"></i>
                 <a href="/entities/{{ $event->venue->slug }}" class="hover:text-primary">{{ $event->venue->name }}</a>
                 @if ($event->venue->getPrimaryLocationMap())
-                <a href="{{ $event->venue->getPrimaryLocationMap() }}" target="_blank" rel="noopener" title="{{ $event->venue->getPrimaryLocationAddress() }}" class="text-primary hover:text-primary-hover">
+                <a href="{{ $event->venue->getPrimaryLocationMap() }}" target="_blank" rel="noopener" title="{{ $event->venue->getPrimaryLocationAddress() }}" class="text-primary hover:text-primary/90">
                     <i class="bi bi-box-arrow-up-right text-xs"></i>
                 </a>
                 @endif
@@ -141,24 +141,24 @@
         @unless ($event->tags->isEmpty())
         <div class="flex flex-wrap gap-1 mt-auto pt-2">
             @foreach ($event->tags->take(5) as $tag)
-            <a href="/tags/{{ $tag->slug }}" class="badge-tw badge-secondary-tw text-xs hover:bg-dark-border">
+            <a href="/tags/{{ $tag->slug }}" class="badge-tw badge-secondary-tw text-xs hover:bg-accent">
                 {{ $tag->name }}
             </a>
             @endforeach
             @if ($event->tags->count() > 5)
-            <span class="text-xs text-gray-500">+{{ $event->tags->count() - 5 }} more</span>
+            <span class="text-xs text-muted-foreground">+{{ $event->tags->count() - 5 }} more</span>
             @endif
         </div>
         @endunless
     </div>
 
     <!-- Card Footer Actions -->
-    <div class="px-4 py-3 border-t border-dark-border flex items-center justify-between">
+    <div class="px-4 py-3 border-t border-border flex items-center justify-between">
         <div class="flex items-center gap-2">
             <!-- Edit Button -->
             @if ($signedIn && ($event->ownedBy($user) || $user->hasGroup('super_admin')))
-            <a href="{{ route('events.edit', ['event' => $event->slug]) }}" 
-                class="text-gray-400 hover:text-primary transition-colors"
+            <a href="{{ route('events.edit', ['event' => $event->slug]) }}"
+                class="text-muted-foreground hover:text-primary transition-colors"
                 title="Edit this event">
                 <i class="bi bi-pencil"></i>
             </a>
@@ -166,8 +166,8 @@
 
             <!-- Thread Link -->
             @if ($thread = $event->threads->first())
-            <a href="{{ route('threads.show', ['thread' => $thread->id]) }}" 
-                class="text-gray-400 hover:text-primary transition-colors"
+            <a href="{{ route('threads.show', ['thread' => $thread->id]) }}"
+                class="text-muted-foreground hover:text-primary transition-colors"
                 title="View discussion">
                 <i class="bi bi-chat"></i>
             </a>
@@ -176,7 +176,7 @@
             <!-- External Link -->
             @if ($link = $event->primary_link)
             <a href="{{ $link }}" target="_blank" rel="noopener"
-                class="text-gray-400 hover:text-primary transition-colors"
+                class="text-muted-foreground hover:text-primary transition-colors"
                 title="External link">
                 <i class="bi bi-link-45deg"></i>
             </a>
@@ -185,7 +185,7 @@
             <!-- Ticket Link -->
             @if ($ticket = $event->ticket_link)
             <a href="{{ $ticket }}" target="_blank" rel="noopener"
-                class="text-gray-400 hover:text-primary transition-colors"
+                class="text-muted-foreground hover:text-primary transition-colors"
                 title="Buy tickets">
                 <i class="bi bi-ticket-perforated"></i>
             </a>
@@ -194,7 +194,7 @@
 
         <!-- Series Link -->
         @if (!empty($event->series_id))
-        <a href="/series/{{ $event?->series?->slug }}" class="text-xs text-gray-400 hover:text-primary">
+        <a href="/series/{{ $event?->series?->slug }}" class="text-xs text-muted-foreground hover:text-primary">
             Part of {{ $event?->series?->name }}
         </a>
         @endif

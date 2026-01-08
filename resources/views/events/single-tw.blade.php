@@ -1,19 +1,19 @@
-<li id="event-{{ $event->id }}" class="group relative flex flex-col sm:flex-row gap-4 p-4 bg-white dark:bg-dark-card rounded-lg border border-gray-200 dark:border-dark-border hover:border-primary dark:hover:border-primary transition-colors mb-4 shadow-sm dark:shadow-none">
+<li id="event-{{ $event->id }}" class="group relative flex flex-col sm:flex-row gap-4 p-4 bg-card rounded-lg border border-border hover:border-primary transition-colors mb-4 shadow-sm">
     <!-- Thumbnail -->
     <div class="flex-shrink-0">
         @if ($primary = $event->getPrimaryPhoto())
-        <a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}" 
+        <a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
             data-title="{!! $event->start_at->format('l F jS Y') !!} <a href='/events/{{ $event->slug }}'>{{ $event->name }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ $event->venue ? $event->venue->name : '' }}</a>"
             data-lightbox="{{ $primary->path }}"
-            class="block w-24 h-24 rounded overflow-hidden border border-gray-200 dark:border-dark-border group-hover:border-primary transition-colors">
+            class="block aspect-square w-28 rounded-lg overflow-hidden border border-border group-hover:border-primary transition-colors">
             <img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}" alt="{{ $event->name }}" class="w-full h-full object-cover">
         </a>
         @else
-        <a href="/images/event-placeholder.png" 
+        <a href="/images/event-placeholder.png"
             data-title="{!! $event->start_at->format('l F jS Y') !!} <a href='/events/{{ $event->slug }}'>{{ $event->name }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ $event->venue ? $event->venue->name : '' }}</a>"
             data-lightbox="/images/event-placeholder.png"
-            class="block w-24 h-24 rounded overflow-hidden border border-gray-200 dark:border-dark-border group-hover:border-primary transition-colors">
-            <img src="/images/event-placeholder.png" alt="{{ $event->name }}" class="w-full h-full object-cover">
+            class="block aspect-square w-28 rounded-lg overflow-hidden border border-border group-hover:border-primary transition-colors bg-card flex items-center justify-center">
+            <i class="bi bi-calendar-event text-4xl text-muted-foreground/40"></i>
         </a>
         @endif
     </div>
@@ -29,8 +29,8 @@
                 @endif
                 
                 <!-- Date -->
-                <a href='/events/by-date/{!! $event->start_at->format('Y') !!}/{!! $event->start_at->format('m') !!}/{!! $event->start_at->format('d') !!}' 
-                   class="text-sm text-primary hover:text-primary-hover font-medium">
+                <a href='/events/by-date/{!! $event->start_at->format('Y') !!}/{!! $event->start_at->format('m') !!}/{!! $event->start_at->format('d') !!}'
+                   class="text-sm text-primary hover:text-primary/90 font-medium">
                     {!! $event->start_at->format('D F jS Y') !!}
                 </a>
             </div>
@@ -39,31 +39,31 @@
             <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 @if ($signedIn && ($event->ownedBy($user) || $user->hasGroup('super_admin')))
                 <a href="{!! route('events.edit', ['event' => $event->slug]) !!}"
-                    class="text-gray-400 hover:text-primary transition-colors"
+                    class="text-muted-foreground hover:text-primary transition-colors"
                     title="Edit this event">
                     <i class="bi bi-pencil-fill"></i>
                 </a>
                 @endif
 
                 @if ($thread = $event->threads->first())
-                <a href="{!! route('threads.show', ['thread' => $thread->id]) !!}" 
-                   class="text-gray-400 hover:text-primary transition-colors"
+                <a href="{!! route('threads.show', ['thread' => $thread->id]) !!}"
+                   class="text-muted-foreground hover:text-primary transition-colors"
                    title="Show related thread">
                     <i class="bi bi-chat-fill"></i>
                 </a>
                 @endif
 
                 @if ($link = $event->primary_link)
-                <a href="{{ $link }}" 
-                   class="text-gray-400 hover:text-primary transition-colors"
+                <a href="{{ $link }}"
+                   class="text-muted-foreground hover:text-primary transition-colors"
                    title="External link" target="_blank" rel="noopener">
                     <i class="bi bi-link-45deg text-xl"></i>
                 </a>
                 @endif
-                
+
                 @if ($ticket = $event->ticket_link)
-                <a href="{{ $ticket }}" 
-                   class="text-gray-400 hover:text-primary transition-colors"
+                <a href="{{ $ticket }}"
+                   class="text-muted-foreground hover:text-primary transition-colors"
                    title="Ticket link" target="_blank" rel="noopener">
                     <i class="bi bi-ticket-fill"></i>
                 </a>
@@ -71,14 +71,14 @@
 
                 @if ($signedIn)
                     @if ($response = $event->getEventResponse($user))
-                    <a href="{!! route('events.unattend', ['id' => $event->id]) !!}" 
-                       class="text-primary hover:text-red-500 transition-colors"
+                    <a href="{!! route('events.unattend', ['id' => $event->id]) !!}"
+                       class="text-primary hover:text-destructive transition-colors"
                        title="Unattend">
                         <i class="bi bi-check-circle-fill"></i>
                     </a>
                     @else
-                    <a href="{!! route('events.attend', ['id' => $event->id]) !!}" 
-                       class="text-gray-400 hover:text-primary transition-colors"
+                    <a href="{!! route('events.attend', ['id' => $event->id]) !!}"
+                       class="text-muted-foreground hover:text-primary transition-colors"
                        title="Attend">
                         <i class="bi bi-check-circle"></i>
                     </a>
@@ -88,7 +88,7 @@
         </div>
 
         <!-- Title -->
-        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">
+        <h3 class="text-xl font-bold text-foreground mb-1">
             <a href='/events/{{ $event->slug }}' class="hover:text-primary transition-colors">
                 {{ $event->name }}
             </a>
@@ -96,8 +96,8 @@
 
         <!-- Venue -->
         @if ($event->venue)
-        <div class="text-gray-600 dark:text-gray-300 mb-2">
-            <span class="text-gray-400 dark:text-gray-500">@</span> 
+        <div class="text-muted-foreground mb-2">
+            <span class="text-muted-foreground/70">@</span>
             <a href='/entities/{{ $event->venue->slug }}' class="hover:text-primary transition-colors">
                 {{ $event->venue->name }}
             </a>
@@ -105,7 +105,7 @@
         @endif
 
         <!-- Time & Price -->
-        <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 dark:text-gray-400 mb-2">
+        <div class="flex flex-wrap items-center gap-3 text-sm text-muted-foreground mb-2">
             @if ($event->start_at)
             <span class="flex items-center gap-1">
                 <i class="bi bi-clock"></i>
@@ -132,12 +132,12 @@
         @unless ($event->tags->isEmpty())
         <div class="flex flex-wrap gap-1">
             @foreach ($event->tags->take(3) as $tag)
-            <a href="/events/tag/{{ $tag->slug }}" class="badge-tw badge-secondary-tw text-xs hover:bg-gray-200 dark:hover:bg-dark-border">
+            <a href="/events/tag/{{ $tag->slug }}" class="badge-tw badge-secondary-tw text-xs hover:bg-accent">
                 {{ $tag->name }}
             </a>
             @endforeach
             @if ($event->tags->count() > 3)
-            <span class="text-xs text-gray-500 self-center">+{{ $event->tags->count() - 3 }}</span>
+            <span class="text-xs text-muted-foreground self-center">+{{ $event->tags->count() - 3 }}</span>
             @endif
         </div>
         @endunless

@@ -1,25 +1,25 @@
 <!-- Sidebar Navigation -->
-<aside class="sidebar hidden md:flex md:flex-col md:w-64 min-h-screen">
+<aside class="sidebar hidden md:flex md:flex-col md:w-64 min-h-screen bg-card border-r border-border">
     <!-- Logo/Brand -->
-    <div class="p-4 border-b border-dark-border">
+    <div class="p-4 border-b border-border">
         <a href="{{ url('/') }}" class="flex items-center gap-2">
-            <span class="text-xl font-bold text-white dark:text-white light:text-gray-900">{{ config('app.app_name') }}</span>
+            <span class="text-xl font-bold text-foreground">{{ config('app.app_name') }}</span>
         </a>
-        <span class="text-xs text-gray-400">{{ config('app.app_tagline', 'pittsburgh events guide') }}</span>
+        <span class="text-xs text-muted-foreground">{{ config('app.app_tagline', 'pittsburgh events guide') }}</span>
     </div>
 
     <!-- Search -->
     <div class="p-4">
         <form role="search" action="/search">
             <div class="relative">
-                <input type="text" 
-                    class="w-full pl-10 pr-4 py-2 bg-dark-card border border-dark-border rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" 
-                    placeholder="Search" 
-                    name="keyword" 
-                    title="Search" 
-                    aria-label="Search" 
+                <input type="text"
+                    class="w-full pl-10 pr-4 py-2 bg-transparent border border-input rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                    placeholder="Search"
+                    name="keyword"
+                    title="Search"
+                    aria-label="Search"
                     value="{{ isset($search) ? $search : '' }}">
-                <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"></i>
             </div>
         </form>
     </div>
@@ -99,7 +99,7 @@
         </a>
 
         <!-- Divider -->
-        <div class="border-t border-dark-border my-4"></div>
+        <div class="border-t border-border my-4"></div>
 
         <!-- Menu Items -->
         @if (isset($menus) && $menus->isNotEmpty())
@@ -136,7 +136,7 @@
     </nav>
 
     <!-- User Section -->
-    <div class="p-4 border-t border-dark-border">
+    <div class="p-4 border-t border-border">
         @if (Auth::guest())
         <a href="{{ url('/login') }}" class="nav-item-tw">
             <i class="bi bi-person-circle text-lg"></i>
@@ -147,12 +147,12 @@
             <span>Register</span>
         </a>
         @else
-        <div class="flex items-center gap-3 px-3 py-2 text-gray-300">
+        <div class="flex items-center gap-3 px-3 py-2 text-muted-foreground">
             <i class="bi bi-person-circle text-lg"></i>
-            <a href="{{ url('/users/'.Auth::user()->id) }}" class="hover:text-white">{{ Auth::user()->name }}</a>
+            <a href="{{ url('/users/'.Auth::user()->id) }}" class="hover:text-foreground">{{ Auth::user()->name }}</a>
         </div>
-        <a href="{{ route('logout') }}" 
-            onclick="event.preventDefault(); document.getElementById('sidebar-logout-form').submit();" 
+        <a href="{{ route('logout') }}"
+            onclick="event.preventDefault(); document.getElementById('sidebar-logout-form').submit();"
             class="nav-item-tw mt-1">
             <i class="bi bi-box-arrow-right text-lg"></i>
             <span>Log out</span>
@@ -162,18 +162,13 @@
     </div>
 
     <!-- Theme Toggle -->
-    <div class="p-4 border-t border-dark-border">
-        <button onclick="toggleTheme()" class="theme-toggle-tw w-full justify-center">
-            <i class="bi bi-moon-fill dark:block hidden"></i>
-            <i class="bi bi-sun-fill dark:hidden block"></i>
-            <span class="dark:hidden">Toggle Dark Mode</span>
-            <span class="hidden dark:inline">Toggle Light Mode</span>
-        </button>
+    <div class="p-4 border-t border-border">
+        <x-theme-toggle />
     </div>
 </aside>
 
 <!-- Mobile Menu Button -->
-<button id="mobile-menu-toggle" class="md:hidden fixed bottom-4 left-4 z-50 p-3 bg-primary text-white rounded-full shadow-lg hover:bg-primary-hover transition-colors">
+<button id="mobile-menu-toggle" class="md:hidden fixed bottom-4 left-4 z-50 p-3 bg-accent text-foreground border-2 border-primary rounded-full shadow-lg hover:bg-accent/80 transition-colors">
     <i class="bi bi-list text-xl"></i>
 </button>
 
@@ -181,18 +176,18 @@
 <div id="mobile-sidebar-overlay" class="hidden md:hidden fixed inset-0 bg-black/50 z-40" onclick="closeMobileSidebar()"></div>
 
 <!-- Mobile Sidebar -->
-<aside id="mobile-sidebar" class="sidebar fixed inset-y-0 left-0 z-50 w-64 transform -translate-x-full transition-transform duration-200 ease-in-out md:hidden">
+<aside id="mobile-sidebar" class="sidebar fixed inset-y-0 left-0 z-50 w-64 transform -translate-x-full transition-transform duration-200 ease-in-out md:hidden bg-card border-r border-border">
     <!-- Close button -->
-    <button onclick="closeMobileSidebar()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+    <button onclick="closeMobileSidebar()" class="absolute top-4 right-4 text-muted-foreground hover:text-foreground">
         <i class="bi bi-x-lg text-xl"></i>
     </button>
-    
+
     <!-- Logo/Brand -->
-    <div class="p-4 border-b border-dark-border">
+    <div class="p-4 border-b border-border">
         <a href="{{ url('/') }}" class="flex items-center gap-2">
-            <span class="text-xl font-bold text-white">{{ config('app.app_name') }}</span>
+            <span class="text-xl font-bold text-foreground">{{ config('app.app_name') }}</span>
         </a>
-        <span class="text-xs text-gray-400">{{ config('app.app_tagline', 'pittsburgh events guide') }}</span>
+        <span class="text-xs text-muted-foreground">{{ config('app.app_tagline', 'pittsburgh events guide') }}</span>
     </div>
 
     <!-- Same navigation as desktop -->
@@ -229,13 +224,8 @@
     </nav>
 
     <!-- Theme Toggle -->
-    <div class="p-4 border-t border-dark-border">
-        <button onclick="toggleTheme()" class="theme-toggle-tw w-full justify-center">
-            <i class="bi bi-moon-fill dark:block hidden"></i>
-            <i class="bi bi-sun-fill dark:hidden block"></i>
-            <span class="dark:hidden">Toggle Dark Mode</span>
-            <span class="hidden dark:inline">Toggle Light Mode</span>
-        </button>
+    <div class="p-4 border-t border-border">
+        <x-theme-toggle />
     </div>
 </aside>
 

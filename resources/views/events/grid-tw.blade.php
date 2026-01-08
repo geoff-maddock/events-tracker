@@ -1,4 +1,4 @@
-@extends('app')
+@extends('layouts.app-tw')
 
 @section('title', 'Events - Grid')
 
@@ -7,7 +7,7 @@
 <div class="flex flex-col gap-6">
     <!-- Header & Actions -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+        <h1 class="text-2xl font-bold text-foreground flex items-center gap-2">
             Events
             @include('events.crumbs-tw')
         </h1>
@@ -15,100 +15,184 @@
     </div>
 
     <!-- Filters Section -->
-    <div class="bg-dark-surface rounded-lg border border-dark-border p-4">
-        <div class="flex justify-between items-center mb-4">
-            <button id="filters-toggle-btn" class="flex items-center gap-2 text-primary hover:text-primary-hover font-medium transition-colors">
-                <i id="filters-icon" class="bi {{ $hasFilter ? 'bi-chevron-up' : 'bi-chevron-down' }}"></i>
-                Filters
-            </button>
-            
-            <!-- Sort Controls (Visible on Desktop) -->
-            <div class="hidden lg:flex items-center gap-3">
-                <a href="{{ action('EventsController@rppReset') }}" class="text-gray-400 hover:text-white transition-colors" title="Reset">
-                    <i class="bi bi-arrow-clockwise"></i>
-                </a>
-                <!-- We'll use the existing form structure but styled -->
-                <form action="{{ url()->current() }}" method="GET" class="flex items-center gap-2">
-                    {!! Form::select('limit', $limitOptions, ($limit ?? 24), ['class' =>'bg-dark-card border border-dark-border text-white text-sm rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary auto-submit']) !!}
-                    {!! Form::select('sort', $sortOptions, ($sort ?? 'events.start_at'), ['class' =>'bg-dark-card border border-dark-border text-white text-sm rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary auto-submit'])!!}
-                    {!! Form::select('direction', $directionOptions, ($direction ?? 'desc'), ['class' =>'bg-dark-card border border-dark-border text-white text-sm rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary auto-submit']) !!}
-                </form>
-            </div>
+    <div class="mb-6">
+        <button id="filters-toggle-btn" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border-2 border-primary rounded-lg hover:bg-accent/80 transition-colors">
+            <i class="bi bi-funnel mr-2"></i>
+            <span id="filters-toggle-text">@if($hasFilter) Hide @else Show @endif Filters</span>
+            <i class="bi bi-chevron-down ml-2 transition-transform @if($hasFilter) rotate-180 @endif" id="filters-chevron"></i>
+        </button>
+
+        <!-- Active Filters / Reset -->
+        @if($hasFilter)
+        <div class="inline-flex items-center gap-2 ml-4">
+            <a href="{{ url()->action('EventsController@rppReset') }}?key={!! $key ?? '' !!}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg">
+                Clear All <i class="bi bi-x ml-1"></i>
+            </a>
         </div>
+        @endif
+    </div>
 
-        <!-- Filter Form -->
-        <div id="filters-content" class="{{ $hasFilter ? '' : 'hidden' }} transition-all duration-300">
-            {!! Form::open(['route' => ['events.grid'], 'name' => 'filters', 'method' => 'POST']) !!}
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-                <!-- Name -->
-                <div class="space-y-1">
-                    <label class="text-sm font-medium text-gray-300">Name</label>
-                    {!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL), [
-                        'class' => 'w-full px-3 py-2 bg-dark-card border border-dark-border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
-                        'placeholder' => 'Event name'
-                    ]) !!}
-                </div>
+    <!-- Filter Panel -->
+    <div id="filter-panel" class="@if(!$hasFilter) hidden @endif bg-card border border-border rounded-lg p-4 mb-6">
+        {!! Form::open(['route' => ['events.grid'], 'name' => 'filters', 'method' => 'POST']) !!}
 
-                <!-- Venue -->
-                <div class="space-y-1">
-                    <label class="text-sm font-medium text-gray-300">Venue</label>
-                    {!! Form::select('filter_venue', $venueOptions, (isset($filters['venue']) ? $filters['venue'] : NULL), [
-                        'class' => 'w-full px-3 py-2 bg-dark-card border border-dark-border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent select2',
-                        'placeholder' => 'Select a venue'
-                    ]) !!}
-                </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+            <!-- Name Filter -->
+            <div>
+                <label for="filter_name" class="block text-sm font-medium text-muted-foreground mb-1">Name</label>
+                <input type="text"
+                    name="filters[name]"
+                    id="filter_name"
+                    value="{{ $filters['name'] ?? '' }}"
+                    class="form-input-tw"
+                    placeholder="Event name...">
+            </div>
 
-                <!-- Tag -->
-                <div class="space-y-1">
-                    <label class="text-sm font-medium text-gray-300">Tag</label>
-                    {!! Form::select('filter_tag', $tagOptions, (isset($filters['tag']) ? $filters['tag'] : NULL), [
-                        'class' => 'w-full px-3 py-2 bg-dark-card border border-dark-border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent select2',
-                        'placeholder' => 'Select a tag'
-                    ]) !!}
-                </div>
+            <!-- Venue Filter -->
+            <div>
+                <label for="filter_venue" class="block text-sm font-medium text-muted-foreground mb-1">Venue</label>
+                {!! Form::select('filter_venue', $venueOptions, ($filters['venue'] ?? null),
+                [
+                    'data-theme' => 'bootstrap-5',
+                    'class' => 'form-select-tw select2',
+                    'data-placeholder' => 'Select a venue',
+                    'name' => 'filters[venue]',
+                    'id' => 'filter_venue'
+                ])
+                !!}
+            </div>
 
-                <!-- Related Entity -->
-                <div class="space-y-1">
-                    <label class="text-sm font-medium text-gray-300">Related Entity</label>
-                    {!! Form::select('filter_related', $relatedOptions, (isset($filters['related']) ? $filters['related'] : NULL), [
-                        'class' => 'w-full px-3 py-2 bg-dark-card border border-dark-border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent select2',
-                        'placeholder' => 'Select an entity'
-                    ]) !!}
-                </div>
+            <!-- Tag Filter -->
+            <div>
+                <label for="filter_tag" class="block text-sm font-medium text-muted-foreground mb-1">Tag</label>
+                {!! Form::select('filter_tag', $tagOptions, ($filters['tag'] ?? null),
+                [
+                    'data-theme' => 'bootstrap-5',
+                    'class' => 'form-select-tw select2',
+                    'data-placeholder' => 'Select a tag',
+                    'name' => 'filters[tag]',
+                    'id' => 'filter_tag'
+                ])
+                !!}
+            </div>
 
-                <!-- Type -->
-                <div class="space-y-1">
-                    <label class="text-sm font-medium text-gray-300">Type</label>
-                    {!! Form::select('filter_event_type', $eventTypeOptions, (isset($filters['event_type']) ? $filters['event_type'] : NULL), [
-                        'class' => 'w-full px-3 py-2 bg-dark-card border border-dark-border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent select2',
-                        'placeholder' => 'Select a type'
-                    ]) !!}
-                </div>
+            <!-- Related Entity Filter -->
+            <div>
+                <label for="filter_related" class="block text-sm font-medium text-muted-foreground mb-1">Related Entity</label>
+                {!! Form::select('filter_related', $relatedOptions, ($filters['related'] ?? null),
+                [
+                    'data-theme' => 'bootstrap-5',
+                    'class' => 'form-select-tw select2',
+                    'data-placeholder' => 'Select an entity',
+                    'name' => 'filters[related]',
+                    'id' => 'filter_related'
+                ])
+                !!}
+            </div>
 
-                <!-- Date Range -->
-                <div class="space-y-1">
-                    <label class="text-sm font-medium text-gray-300">Date Range</label>
-                    <div class="flex gap-2">
-                        {!! Form::date('start_at[start]', (isset($filters['start_at']['start']) ? $filters['start_at']['start'] : NULL), [
-                            'class' => 'w-full px-2 py-2 bg-dark-card border border-dark-border rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-                        ]) !!}
-                        {!! Form::date('start_at[end]', (isset($filters['start_at']['end']) ? $filters['start_at']['end'] : NULL), [
-                            'class' => 'w-full px-2 py-2 bg-dark-card border border-dark-border rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-                        ]) !!}
+            <!-- Event Type Filter -->
+            <div>
+                <label for="filter_event_type" class="block text-sm font-medium text-muted-foreground mb-1">Type</label>
+                {!! Form::select('filter_event_type', $eventTypeOptions, ($filters['event_type'] ?? null),
+                [
+                    'data-theme' => 'bootstrap-5',
+                    'class' => 'form-select-tw select2',
+                    'data-placeholder' => 'Select a type',
+                    'name' => 'filters[event_type]',
+                    'id' => 'filter_event_type'
+                ])
+                !!}
+            </div>
+
+            <!-- Date Range Filter -->
+            <div>
+                <label class="block text-sm font-medium text-muted-foreground mb-1">Start Date</label>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-muted-foreground w-12">From:</span>
+                        <input type="date"
+                            name="filters[start_at][start]"
+                            value="{{ $filters['start_at']['start'] ?? '' }}"
+                            class="form-input-tw flex-1">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-muted-foreground w-12">To:</span>
+                        <input type="date"
+                            name="filters[start_at][end]"
+                            value="{{ $filters['start_at']['end'] ?? '' }}"
+                            class="form-input-tw flex-1">
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="flex gap-3 pt-4 border-t border-dark-border mt-4">
-                <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors font-medium">
-                    Apply Filters
-                </button>
-                <a href="{{ route('events.reset', ['redirect' => 'events.grid', 'key' => 'internal_event_grid']) }}" class="px-4 py-2 bg-dark-card text-white border border-dark-border rounded-lg hover:bg-dark-border transition-colors font-medium">
-                    Reset
-                </a>
-            </div>
+        <!-- Filter Actions -->
+        <div class="flex gap-2 mt-4">
+            <button type="submit" class="px-4 py-2 bg-accent text-foreground border-2 border-primary rounded-lg hover:bg-accent/80 transition-colors">
+                Apply
+            </button>
             {!! Form::close() !!}
+            {!! Form::open(['route' => ['events.reset'], 'method' => 'GET']) !!}
+            {!! Form::hidden('redirect', 'events.grid') !!}
+            {!! Form::hidden('key', 'internal_event_grid') !!}
+            <button type="submit" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
+                Reset
+            </button>
+            {!! Form::close() !!}
+        </div>
+    </div>
+
+    <!-- Results Bar -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+        <!-- Results Count -->
+        <div class="text-sm text-muted-foreground">
+            @if(isset($events))
+            Showing {{ $events->firstItem() ?? 0 }} to {{ $events->lastItem() ?? 0 }} of {{ $events->total() }} results
+            @endif
+        </div>
+
+        <!-- Sort Controls & Pagination -->
+        <div class="flex flex-wrap items-center gap-4">
+            <form action="{{ url()->current() }}" method="GET" class="flex items-center gap-2">
+                <select name="limit" class="form-select-tw text-sm py-1 auto-submit">
+                    @foreach($limitOptions as $value => $label)
+                    <option value="{{ $value }}" {{ ($limit ?? 24) == $value ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
+                </select>
+                <span class="text-muted-foreground text-sm">Sort by:</span>
+                <select name="sort" class="form-select-tw text-sm py-1 auto-submit">
+                    @foreach($sortOptions as $value => $label)
+                    <option value="{{ $value }}" {{ ($sort ?? 'events.start_at') == $value ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
+                </select>
+                <select name="direction" class="form-select-tw text-sm py-1 auto-submit">
+                    @foreach($directionOptions as $value => $label)
+                    <option value="{{ $value }}" {{ ($direction ?? 'desc') == $value ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </form>
+
+            <!-- Pagination -->
+            @if(isset($events) && $events->hasPages())
+            <div class="flex items-center gap-1">
+                <span class="text-muted-foreground mr-1 hidden lg:inline">|</span>
+                @if($events->onFirstPage())
+                <span class="px-3 py-1 text-muted-foreground/50 cursor-not-allowed">&lt; Previous</span>
+                @else
+                <a href="{{ $events->previousPageUrl() }}" class="px-3 py-1 text-muted-foreground hover:text-foreground">&lt; Previous</a>
+                @endif
+
+                @foreach($events->getUrlRange(max(1, $events->currentPage() - 2), min($events->lastPage(), $events->currentPage() + 2)) as $page => $url)
+                <a href="{{ $url }}" class="px-3 py-1 rounded {{ $page == $events->currentPage() ? 'bg-accent text-foreground border-2 border-primary' : 'text-muted-foreground hover:bg-card' }}">{{ $page }}</a>
+                @endforeach
+
+                @if($events->hasMorePages())
+                <a href="{{ $events->nextPageUrl() }}" class="px-3 py-1 text-muted-foreground hover:text-foreground">Next &gt;</a>
+                @else
+                <span class="px-3 py-1 text-muted-foreground/50 cursor-not-allowed">Next &gt;</span>
+                @endif
+            </div>
+            @endif
         </div>
     </div>
 
@@ -134,14 +218,10 @@
                 ])
             @endforeach
         </div>
-        
-        <div class="mt-6">
-            {!! $events->render() !!}
-        </div>
     @else
-        <div class="text-center py-12 bg-dark-surface rounded-lg border border-dark-border">
-            <i class="bi bi-calendar-x text-4xl text-gray-500 mb-3 block"></i>
-            <p class="text-gray-400">No events found matching your criteria.</p>
+        <div class="text-center py-12 bg-card rounded-lg border border-border">
+            <i class="bi bi-calendar-x text-4xl text-muted-foreground/50 mb-3 block"></i>
+            <p class="text-muted-foreground">No events found matching your criteria.</p>
         </div>
     @endif
 </div>
@@ -150,30 +230,20 @@
 
 @section('footer')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const toggleBtn = document.getElementById('filters-toggle-btn');
-        const content = document.getElementById('filters-content');
-        const icon = document.getElementById('filters-icon');
+    // Filter toggle functionality
+    document.getElementById('filters-toggle-btn')?.addEventListener('click', function() {
+        const panel = document.getElementById('filter-panel');
+        const text = document.getElementById('filters-toggle-text');
+        const chevron = document.getElementById('filters-chevron');
 
-        if(toggleBtn && content && icon) {
-            toggleBtn.addEventListener('click', function() {
-                content.classList.toggle('hidden');
-                if(content.classList.contains('hidden')) {
-                    icon.classList.remove('bi-chevron-up');
-                    icon.classList.add('bi-chevron-down');
-                } else {
-                    icon.classList.remove('bi-chevron-down');
-                    icon.classList.add('bi-chevron-up');
-                }
-            });
-        }
-        
-        // Initialize Select2 if available
-        if (typeof jQuery !== 'undefined' && jQuery.fn.select2) {
-            jQuery('.select2').select2({
-                theme: "bootstrap-5",
-                width: '100%'
-            });
+        panel.classList.toggle('hidden');
+
+        if (panel.classList.contains('hidden')) {
+            text.textContent = 'Show Filters';
+            chevron.classList.remove('rotate-180');
+        } else {
+            text.textContent = 'Hide Filters';
+            chevron.classList.add('rotate-180');
         }
     });
 </script>

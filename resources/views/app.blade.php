@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="{{ $theme === config('app.default_theme') ? 'dark' : 'light' }}">
+<html lang="en">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,7 +16,15 @@
 	<meta name="theme-color" content="#0f172a"/>
 	<meta name="csrf-token" content="{{ csrf_token() }}">
 	<title>@yield('title','Event Guide') • {{ config('app.app_name')}}</title>
-	
+
+	<!-- Theme initialization script - must run before page renders to prevent flash -->
+	<script>
+		(function() {
+			const theme = localStorage.getItem('theme') || '{{ $theme ?? config("app.default_theme") }}';
+			document.documentElement.classList.add(theme);
+		})();
+	</script>
+
 	<link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/apple-icon-180x180.png">
   	<link rel="alternate" type="application/rss+xml" href="{{ url('rss') }}"
@@ -25,12 +33,14 @@
 	<!-- Tailwind CSS (New UI) -->
 	<link href="{{ asset('/css/tailwind.css') }}" rel="stylesheet">
 
-    <!-- Legacy Bootstrap CSS for backward compatibility -->
-    @if ($theme !== config('app.default_theme'))
-    	<link href="{{ asset('/css/light.css') }}" rel="stylesheet">
-	@else
-		<link href="{{ asset('/css/dark.css') }}" rel="stylesheet">
-    @endif
+    <!-- Legacy Bootstrap CSS for backward compatibility - loaded based on localStorage -->
+	<script>
+		(function() {
+			const theme = localStorage.getItem('theme') || '{{ $theme ?? config("app.default_theme") }}';
+			const cssFile = theme === '{{ config("app.default_theme") }}' ? 'dark.css' : 'light.css';
+			document.write('<link href="{{ asset("/css/") }}/' + cssFile + '" rel="stylesheet">');
+		})();
+	</script>
 
 	@yield('select2.include')
 
@@ -57,34 +67,41 @@
 			background-color: #0f172a;
 			color: #e2e8f0;
 		}
-		
+
 		.light body {
 			background-color: #f8fafc;
 			color: #1e293b;
 		}
-		
+
 		/* Sidebar styles */
 		.sidebar {
 			background-color: #1e293b;
 			border-right: 1px solid #334155;
 		}
-		
+
 		.light .sidebar {
 			background-color: #ffffff;
 			border-right: 1px solid #e2e8f0;
 		}
-		
+
 		/* Main content area */
 		.main-content {
 			background-color: #0f172a;
 		}
-		
+
 		.light .main-content {
 			background-color: #f8fafc;
 		}
 	</style>
 </head>
-<body id="event-repo" class="{{ $theme === config('app.default_theme') ? 'dark' : 'light' }}">
+<body id="event-repo">
+	<script>
+		// Set body theme class from localStorage
+		(function() {
+			const theme = localStorage.getItem('theme') || '{{ $theme ?? config("app.default_theme") }}';
+			document.body.classList.add(theme);
+		})();
+	</script>
 	@if (config('app.google_tags') !== "")
 	<!-- Google Tag Manager (noscript) -->
 	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ config('app.google_tags')}}"

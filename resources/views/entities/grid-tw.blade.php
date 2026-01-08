@@ -6,7 +6,7 @@
 </div>
 @else
 <div class="text-center py-8">
-	<i class="bi bi-building text-4xl text-gray-600 mb-2"></i>
-	<p class="text-gray-400">No entities found.</p>
+	<i class="bi bi-building text-4xl text-muted-foreground/60 mb-2"></i>
+	<p class="text-muted-foreground">No entities found.</p>
 </div>
 @endif

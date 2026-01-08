@@ -238,7 +238,7 @@ class SeriesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('series.index')
+        return view('series.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),

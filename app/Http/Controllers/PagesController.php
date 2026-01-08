@@ -344,6 +344,11 @@ class PagesController extends Controller
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([PagesController::class, 'home']));
 
+        // default to today if no date provided
+        if (empty($date)) {
+            $date = Carbon::now('America/New_York')->format('Y-m-d');
+        }
+
         // use the window to get the last date and set the criteria between
         $next_day = Carbon::parse($date)->addDays(1);
         $next_day_window = Carbon::parse($date)->addDays($this->defaultWindow);
@@ -364,7 +369,7 @@ class PagesController extends Controller
                     ->render();
         }
 
-        return view('pages.home')
+        return view('pages.home-tw')
                     ->with(
                         [
                             'date' => $date,

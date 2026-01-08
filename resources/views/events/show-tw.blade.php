@@ -251,14 +251,14 @@
 			<div class="rounded-lg border border-dark-border bg-card shadow p-2 pt-2 space-y-4">
 						<form action="/events/{{ $event->id }}/photos" class="dropzone border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-600 transition-colors" id="myDropzone" method="POST">
 							<input type="hidden" name="_token" value="{{ csrf_token() }}">
-							<i class="bi bi-cloud-upload text-3xl text-gray-400 mb-2"></i>
-							<p class="text-sm text-gray-500 dark:text-gray-400">Add a picture (Max size 5MB)</p>
 						</form>
 					</div>
 					@endif
 
                     <!-- Photos Section -->
-                    @include('partials.photo-gallery-tw', ['event' => $event, 'lightboxGroup' => 'event-gallery'])					
+                    @include('partials.photo-gallery-tw', ['event' => $event, 'lightboxGroup' => 'event-gallery'])		
+					
+					
                     <!-- Audio Section -->
 					@include('embeds.playlist-tw', ['event' => $event])
 
@@ -271,26 +271,47 @@
 
 @if ($user && (Auth::user()->id === $event->user?->id || $user->hasGroup('super_admin') ))
 <script>
-window.Dropzone.autoDiscover = true;
 $(document).ready(function(){
+	// Wait for Dropzone to be available
+	var attempts = 0;
+	var maxAttempts = 50; // 5 seconds max
 
-	var myDropzone = new window.Dropzone('#myDropzone', {
-        dictDefaultMessage: "Add a picture (Max size 5MB)"
-    });
+	function initDropzone() {
+		attempts++;
 
-    $('div.dz-default.dz-message').css({'color': '#9ca3af', 'opacity': 1, 'background-image': 'none'});
+		if (typeof window.Dropzone === 'undefined') {
+			if (attempts >= maxAttempts) {
+				console.error('Dropzone failed to load after ' + (maxAttempts * 100) + 'ms');
+				console.log('Checking what is available:', {
+					hasWindow: typeof window !== 'undefined',
+					hasDropzone: typeof window.Dropzone,
+					hasSwal: typeof window.Swal,
+					appJsLoaded: typeof window.Visibility
+				});
+				return;
+			}
+			console.log('Waiting for Dropzone to load... (attempt ' + attempts + ')');
+			setTimeout(initDropzone, 100);
+			return;
+		}
 
-	myDropzone.options.addPhotosForm = {
+		console.log('Dropzone loaded successfully!');
+		window.Dropzone.autoDiscover = false;
+		var myDropzone = new window.Dropzone('#myDropzone', {
+			dictDefaultMessage: "Add a picture (Max size 5MB)"
+		});
+
+		$('div.dz-default.dz-message').css({'color': '#9ca3af', 'opacity': 1, 'background-image': 'none'});
+
+		myDropzone.options.addPhotosForm = {
 		maxFilesize: 5,
 		accept: ['.jpg','.png','.gif'],
         dictDefaultMessage: "Drop a file here to add a picture",
 		init: function () {
 				myDropzone.on("success", function (file) {
-	                location.href = 'events/{{ $event->id }}';
 	                location.reload();
 	            });
 	            myDropzone.on("successmultiple", function (file) {
-	                location.href = 'events/{{ $event->id }}';
 	                location.reload();
 	            });
 				myDropzone.on("error", function (file, message) {
@@ -302,16 +323,18 @@ $(document).ready(function(){
 						confirmButtonColor: "#6366f1",
 						confirmButtonText: "Ok",
 				}).then(result => {
-					location.href = 'events/{{ $event->id }}';
-	                location.reload();
+					location.reload();
 					});
 				});
 	        },
 		success: console.log('Upload successful')
 	};
 
-	myDropzone.options.addPhotosForm.init();
+		myDropzone.options.addPhotosForm.init();
+	}
 
+	// Start trying to initialize Dropzone
+	initDropzone();
 })
 </script>
 @endif

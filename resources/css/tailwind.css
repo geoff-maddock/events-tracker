@@ -1,39 +1,101 @@
+@import './select2-tailwind.css';
+@import '../../node_modules/dropzone/dist/dropzone.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Custom component classes for shadcn-style UI */
+@layer base {
+  :root {
+    /* Light theme - Arcane City colors */
+    --background: 0 0% 98%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* Dark theme - Arcane City colors */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Legacy custom component classes - will be migrated to Blade components */
 @layer components {
 
   /* Button styles */
   .btn-primary-tw {
-    @apply px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-hover transition-colors font-medium;
+    @apply px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors font-medium;
   }
 
   .btn-secondary-tw {
-    @apply px-4 py-2 bg-dark-card text-white rounded-md hover:bg-dark-border transition-colors font-medium border border-dark-border;
+    @apply px-4 py-2 bg-card text-card-foreground rounded-md hover:bg-accent transition-colors font-medium border border-border;
   }
 
   .btn-outline-tw {
-    @apply px-4 py-2 bg-transparent text-white rounded-md hover:bg-dark-surface transition-colors font-medium border border-dark-border;
+    @apply px-4 py-2 bg-transparent border border-input rounded-md hover:bg-accent hover:text-accent-foreground transition-colors font-medium;
   }
 
   /* Card styles */
   .card-tw {
-    @apply bg-dark-surface rounded-lg overflow-hidden shadow-lg border border-dark-border;
+    @apply bg-card rounded-lg overflow-hidden shadow-lg border border-border;
   }
 
   .card-hover-tw {
-    @apply hover:border-primary/50 hover:shadow-primary/10 transition-all duration-200;
+    @apply hover:shadow-xl transition-all duration-200;
   }
 
   /* Form inputs */
   .form-input-tw {
-    @apply w-full px-3 py-2 bg-dark-card border border-dark-border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+    @apply w-full px-3 py-2 bg-transparent border border-input rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent;
   }
 
   .form-select-tw {
-    @apply w-full px-3 py-2 bg-dark-card border border-dark-border rounded-md text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+    @apply w-full px-3 py-2 bg-transparent border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent;
   }
 
   /* Badge/Tag styles */
@@ -46,20 +108,20 @@
   }
 
   .badge-secondary-tw {
-    @apply bg-dark-card text-gray-300 border border-dark-border;
+    @apply bg-secondary text-secondary-foreground border border-border;
   }
 
   .badge-accent-tw {
-    @apply bg-accent/20 text-accent border border-accent/30;
+    @apply bg-accent/20 text-accent-foreground border border-accent/30;
   }
 
   /* Sidebar navigation */
   .nav-item-tw {
-    @apply flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-dark-card rounded-md transition-colors;
+    @apply flex items-center gap-3 px-3 py-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors;
   }
 
   .nav-item-active-tw {
-    @apply text-primary bg-dark-card;
+    @apply text-foreground bg-accent;
   }
 
   /* Event card specific styles */
@@ -73,7 +135,7 @@
   }
 
   .event-card-image-tw {
-    @apply w-full h-48 object-cover bg-dark-card;
+    @apply w-full h-48 object-cover bg-card;
   }
 
   .event-card-content-tw {
@@ -81,65 +143,22 @@
   }
 
   .event-card-title-tw {
-    @apply text-lg font-semibold text-white hover:text-primary transition-colors;
+    @apply text-lg font-semibold text-foreground hover:text-primary transition-colors;
   }
 
   .event-card-meta-tw {
-    @apply text-sm text-gray-400;
+    @apply text-sm text-muted-foreground;
   }
 
   /* Theme toggle */
   .theme-toggle-tw {
-    @apply flex items-center gap-2 px-3 py-2 bg-dark-card border border-dark-border rounded-md cursor-pointer hover:bg-dark-border transition-colors;
+    @apply flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-md cursor-pointer hover:bg-accent transition-colors;
   }
 
   /* Sidebar */
   .sidebar-tw {
-    @apply bg-dark-surface border-r border-dark-border;
+    @apply bg-card border-r border-border;
   }
-}
-
-/* Light mode overrides */
-:root {
-  --tw-bg-opacity: 1;
-}
-
-.light .card-tw {
-  @apply bg-white border-gray-200 shadow-md;
-}
-
-.light .form-input-tw,
-.light .form-select-tw {
-  @apply bg-white border-gray-300 text-gray-900 placeholder-gray-500;
-}
-
-.light .badge-secondary-tw {
-  @apply bg-gray-100 text-gray-700 border-gray-300;
-}
-
-.light .nav-item-tw {
-  @apply text-gray-700 hover:text-gray-900 hover:bg-gray-100;
-}
-
-.light .nav-item-active-tw {
-  @apply text-primary bg-blue-50;
-}
-
-.light .sidebar-tw,
-.light .sidebar {
-  @apply bg-white border-gray-200;
-}
-
-.light .theme-toggle-tw {
-  @apply bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200;
-}
-
-.light .event-card-title-tw {
-  @apply text-gray-900;
-}
-
-.light .event-card-content-tw {
-  @apply text-gray-700;
 }
 
 /* Scrollbar styling for dark mode */
@@ -149,13 +168,13 @@
 }
 
 .dark ::-webkit-scrollbar-track {
-  @apply bg-dark-bg;
+  @apply bg-background;
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  @apply bg-dark-border rounded-full;
+  @apply bg-border rounded-full;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-500;
+  @apply bg-muted;
 }

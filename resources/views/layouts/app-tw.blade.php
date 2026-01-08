@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="{{ $theme === config('app.default_theme') ? 'dark' : 'light' }}">
+<html lang="en">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,20 +16,21 @@
 	<meta name="theme-color" content="#0f172a"/>
 	<meta name="csrf-token" content="{{ csrf_token() }}">
 	<title>@yield('title','Event Guide') • {{ config('app.app_name')}}</title>
-	
+
+	<!-- Theme initialization script - must run before page renders to prevent flash -->
+	<script>
+		(function() {
+			const theme = localStorage.getItem('theme') || '{{ $theme ?? config("app.default_theme") }}';
+			document.documentElement.classList.add(theme);
+		})();
+	</script>
+
 	<link rel="manifest" href="/manifest.json">
 	<link rel="apple-touch-icon" href="/apple-icon-180x180.png">
 	<link rel="alternate" type="application/rss+xml" href="{{ url('rss') }}"
 		title="RSS Feed {{ config('app.app_name')}}">
 
-	<!-- Keep existing theme CSS for components not yet migrated - MUST load before Tailwind -->
-	@if ($theme !== config('app.default_theme'))
-		<link href="{{ asset('/css/light.css') }}" rel="stylesheet">
-	@else
-		<link href="{{ asset('/css/dark.css') }}" rel="stylesheet">
-	@endif
-
-	<!-- Tailwind CSS - load AFTER legacy CSS to override -->
+	<!-- Tailwind CSS with Arcane City design system -->
 	<link href="{{ asset('/css/tailwind.css') }}" rel="stylesheet">
 
 	@yield('select2.include')
@@ -50,41 +51,15 @@
 	@if (config('app.google_tags') !== "")
 	@include ('partials.analytics')
 	@endif
-	
-	<style>
-		/* Dark mode base styles */
-		.dark body {
-			background-color: #0f172a;
-			color: #e2e8f0;
-		}
-		
-		.light body {
-			background-color: #f8fafc;
-			color: #1e293b;
-		}
-		
-		/* Sidebar styles */
-		.sidebar {
-			background-color: #1e293b;
-			border-right: 1px solid #334155;
-		}
-		
-		.light .sidebar {
-			background-color: #ffffff;
-			border-right: 1px solid #e2e8f0;
-		}
-		
-		/* Main content area */
-		.main-content {
-			background-color: #0f172a;
-		}
-		
-		.light .main-content {
-			background-color: #f8fafc;
-		}
-	</style>
 </head>
-<body class="{{ $theme === config('app.default_theme') ? 'dark' : 'light' }}">
+<body>
+	<script>
+		// Set body theme class from localStorage
+		(function() {
+			const theme = localStorage.getItem('theme') || '{{ $theme ?? config("app.default_theme") }}';
+			document.body.classList.add(theme);
+		})();
+	</script>
 	@if (config('app.google_tags') !== "")
 	<!-- Google Tag Manager (noscript) -->
 	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ config('app.google_tags')}}"
@@ -98,36 +73,42 @@
 	</div>
 	<div id="flash" class="flash"></div>
 
-	<div class="flex min-h-screen">
+	<div class="flex min-h-screen bg-background">
 		<!-- Sidebar -->
 		@include('partials.sidebar-tw')
-		
+
 		<!-- Main Content -->
-		<div class="flex-1 flex flex-col main-content">
+		<div class="flex-1 flex flex-col bg-background">
 			<!-- Top Bar -->
 			@include('partials.topbar-tw')
-			
+
 			<!-- Mobile Search -->
-			<div class="md:hidden p-4">
+			<div class="md:hidden p-4 bg-background border-b border-border">
 				<form role="search" action="/search">
-					<input type="text" 
-						class="w-full px-4 py-2 bg-dark-card border border-dark-border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary" 
-						placeholder="Search events, venues, artists..." 
-						name="keyword" 
-						title="Search" 
-						aria-label="Search" 
+					<input type="text"
+						class="w-full px-4 py-2 bg-transparent border border-input rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+						placeholder="Search events, venues, artists..."
+						name="keyword"
+						title="Search"
+						aria-label="Search"
 						value="{{ isset($search) ? $search : '' }}">
 				</form>
 			</div>
 
 			<!-- Main Content Area -->
-			<main class="flex-1 p-4 md:p-6 overflow-auto">
+			<main class="flex-1 p-4 md:p-6 overflow-auto bg-background">
 				@yield('content')
 				<event-list></event-list>
 			</main>
 		</div>
 	</div>
 
+	<!-- Alpine.js for reactive components -->
+	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+	<!-- Webpack bundles must load in correct order: manifest -> vendor -> app -->
+	<script src="{{ asset('/js/manifest.js') }}"></script>
+	<script src="{{ asset('/js/vendor.js') }}"></script>
 	<script src="{{ asset('/js/app.js') }}"></script>
 	<script src="{{ asset('/js/jquery-3.5.1.min.js') }}"></script>
 	<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
@@ -135,45 +116,6 @@
 	<script src="{{ asset('/js/jquery.ba-throttle-debounce.min.js') }}"></script>
 	<script src="{{ asset('/js/auto-submit.js') }}"></script>
 	<script src="{{ asset('/js/custom.js') }}"></script>
-	
-	<!-- Theme Toggle Script -->
-	<script>
-		function toggleTheme() {
-			const html = document.documentElement;
-			const body = document.body;
-			const isDark = html.classList.contains('dark');
-			
-			if (isDark) {
-				html.classList.remove('dark');
-				html.classList.add('light');
-				body.classList.remove('dark');
-				body.classList.add('light');
-				localStorage.setItem('theme', 'light');
-				// Update server-side theme
-				fetch('/theme/light', { method: 'GET' });
-			} else {
-				html.classList.remove('light');
-				html.classList.add('dark');
-				body.classList.remove('light');
-				body.classList.add('dark');
-				localStorage.setItem('theme', 'dark');
-				fetch('/theme/dark', { method: 'GET' });
-			}
-		}
-		
-		// Initialize theme from localStorage
-		document.addEventListener('DOMContentLoaded', function() {
-			const savedTheme = localStorage.getItem('theme');
-			if (savedTheme) {
-				const html = document.documentElement;
-				const body = document.body;
-				html.classList.remove('dark', 'light');
-				body.classList.remove('dark', 'light');
-				html.classList.add(savedTheme);
-				body.classList.add(savedTheme);
-			}
-		});
-	</script>
 	
 	@yield('scripts.footer')
 	@yield('footer')
