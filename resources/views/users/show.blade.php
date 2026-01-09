@@ -38,7 +38,12 @@
 				</a>
 			    @endif
 
-                <a href="{{ url('/password/reset') }}" class="btn btn-primary">Reset Password</a>
+                @if (Auth::user()->id == $user->id)
+                    <a href="{{ url('/password/reset') }}" class="btn btn-primary">Reset Password</a>
+                @endif
+                @can('grant_access')
+                    <a href="{!! route('users.showResetPassword', ['id' => $user->id]) !!}" class="btn btn-primary">Reset User Password</a>
+                @endcan
                 @can('impersonate_user')
                 <a href="{!! route('user.impersonate', ['user' => $user->id]) !!}" title="Impersonate user"  class="btn btn-primary confirm">
                     Impersonate

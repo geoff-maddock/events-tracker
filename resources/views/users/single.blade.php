@@ -45,6 +45,11 @@
 				</a>
 			@endif
 		@endcan
+		@can('grant_access')
+			<a href="{!! route('users.showResetPassword', ['id' => $user->id]) !!}" class="confirm">
+				<i class="bi bi-key-fill card-actions" title='Reset user password'></i>
+			</a>
+		@endcan
 	@endif
 
 	<ul class="list d-inline">
