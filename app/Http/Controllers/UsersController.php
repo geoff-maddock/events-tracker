@@ -11,6 +11,7 @@ use App\Mail\UserActivation;
 use App\Mail\UserSuspended;
 use App\Mail\UserUpdate;
 use App\Mail\WeeklyUpdate;
+use App\Models\Action;
 use App\Models\Activity;
 use App\Models\Group;
 use App\Models\Profile;
@@ -871,7 +872,7 @@ class UsersController extends Controller
         $user->save();
 
         // add to activity log
-        Activity::log($user, $this->user, 2);
+        Activity::log($user, $this->user, Action::PASSWORD_RESET);
 
         Log::info('User '.$user->name.' password was reset by admin '.$this->user->name);
 
