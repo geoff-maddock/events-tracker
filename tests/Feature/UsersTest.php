@@ -26,4 +26,39 @@ class UsersTest extends TestCase
         $post->created_by = $user->id;
         $this->assertEquals($post->id, $user->lastPost->id);
     }
+
+    /** @test */
+    public function an_admin_can_access_password_reset_form()
+    {
+        // Create an admin user with grant_access permission
+        $admin = User::factory()->create();
+        $admin->groups()->attach(1); // Assuming group ID 1 has grant_access permission
+        
+        // Create a regular user
+        $user = User::factory()->create();
+        
+        $this->actingAs($admin);
+        
+        $response = $this->get(route('users.showResetPassword', ['id' => $user->id]));
+        
+        $response->assertStatus(200);
+        $response->assertSee('Reset Password');
+    }
+
+    /** @test */
+    public function a_non_admin_cannot_access_password_reset_form()
+    {
+        // Create a regular user without admin permissions
+        $regularUser = User::factory()->create();
+        
+        // Create another user whose password would be reset
+        $targetUser = User::factory()->create();
+        
+        $this->actingAs($regularUser);
+        
+        $response = $this->get(route('users.showResetPassword', ['id' => $targetUser->id]));
+        
+        // Should be redirected back with an error
+        $response->assertRedirect();
+    }
 }
