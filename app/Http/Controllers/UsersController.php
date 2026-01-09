@@ -846,13 +846,6 @@ class UsersController extends Controller
      */
     public function showResetPassword(int $id): View|RedirectResponse
     {
-        // check if there is a logged in user
-        if (!$this->user) {
-            flash()->error('Error', 'No user is logged in.');
-
-            return back();
-        }
-
         if (!$user = User::find($id)) {
             flash()->error('Error', 'No such user');
 
@@ -867,13 +860,6 @@ class UsersController extends Controller
      */
     public function resetPassword(int $id, AdminPasswordResetRequest $request): RedirectResponse
     {
-        // check if there is a logged in user
-        if (!$this->user) {
-            flash()->error('Error', 'No user is logged in.');
-
-            return back();
-        }
-
         if (!$user = User::find($id)) {
             flash()->error('Error', 'No such user');
 
