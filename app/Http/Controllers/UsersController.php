@@ -853,13 +853,6 @@ class UsersController extends Controller
             return back();
         }
 
-        // check if the logged in user has permission
-        if (!$this->user->can('grant_access')) {
-            flash()->error('Error', 'You do not have permission to reset user passwords.');
-
-            return back();
-        }
-
         if (!$user = User::find($id)) {
             flash()->error('Error', 'No such user');
 
@@ -877,13 +870,6 @@ class UsersController extends Controller
         // check if there is a logged in user
         if (!$this->user) {
             flash()->error('Error', 'No user is logged in.');
-
-            return back();
-        }
-
-        // check if the logged in user has permission
-        if (!$this->user->can('grant_access')) {
-            flash()->error('Error', 'You do not have permission to reset user passwords.');
 
             return back();
         }

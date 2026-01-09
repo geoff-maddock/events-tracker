@@ -156,12 +156,12 @@ Route::get('users/{id}/delete', [
 Route::get('users/{id}/reset-password', [
     'as' => 'users.showResetPassword',
     'uses' => 'UsersController@showResetPassword',
-]);
+])->middleware('can:grant_access');
 
 Route::post('users/{id}/reset-password', [
     'as' => 'users.resetPassword',
     'uses' => 'UsersController@resetPassword',
-]);
+])->middleware('can:grant_access');
 
 Route::post('purge', 'UsersController@purge')->name('users.purge');
 
