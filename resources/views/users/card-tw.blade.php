@@ -88,7 +88,7 @@
         </a>
 
         <!-- Edit Button (only for own profile or admin) -->
-        @if ($user->id == $signedIn->id || $signedIn->hasGroup('super_admin'))
+        @if (Auth::user()->id == $user->id || Auth::user()->hasGroup('super_admin'))
         <a href="{{ route('users.edit', [$user->id]) }}"
             class="text-muted-foreground hover:text-primary transition-colors"
             title="Edit profile">

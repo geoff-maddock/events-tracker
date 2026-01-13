@@ -133,7 +133,7 @@ class UsersController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('users.index')
+        return view('users.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -197,7 +197,7 @@ class UsersController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('users.index')
+        return view('users.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),

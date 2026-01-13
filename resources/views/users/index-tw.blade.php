@@ -1,4 +1,4 @@
-@extends('app')
+@extends('layouts.app-tw')
 
 @section('title','Users')
 
@@ -10,11 +10,14 @@
 
 @section('content')
 
-<!-- Page Header -->
-<div class="mb-6">
-	<h1 class="text-3xl font-bold text-primary mb-2">Users</h1>
-	<p class="text-muted-foreground">Public user directory</p>
-</div>
+<div class="flex flex-col gap-6">
+	<!-- Page Header -->
+	<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+		<div>
+			<h1 class="text-2xl font-bold text-foreground">Users</h1>
+			<p class="text-muted-foreground">Public user directory</p>
+		</div>
+	</div>
 
 <!-- Filters Section -->
 <div class="mb-6">
@@ -100,21 +103,21 @@
 
 	<!-- Sort Controls & Pagination -->
 	<div class="flex flex-wrap items-center gap-4">
-		<form action="{{ url()->action('UsersController@filter') }}" method="GET" class="flex items-center gap-2">
-			<select name="rpp" class="form-select-tw text-sm py-1 auto-submit">
-				@foreach($rppOptions as $value => $label)
-				<option value="{{ $value }}" {{ ($rpp ?? 25) == $value ? 'selected' : '' }}>{{ $label }}</option>
+		<form action="{{ url()->current() }}" method="GET" class="flex items-center gap-2">
+			<select name="limit" class="form-select-tw text-sm py-1 auto-submit">
+				@foreach($limitOptions as $value => $label)
+				<option value="{{ $value }}" {{ ($limit ?? 25) == $value ? 'selected' : '' }}>{{ $label }}</option>
 				@endforeach
 			</select>
 			<span class="text-muted-foreground text-sm">Sort by:</span>
-			<select name="sortBy" class="form-select-tw text-sm py-1 auto-submit">
+			<select name="sort" class="form-select-tw text-sm py-1 auto-submit">
 				@foreach($sortOptions as $value => $label)
-				<option value="{{ $value }}" {{ ($sortBy ?? 'name') == $value ? 'selected' : '' }}>{{ $label }}</option>
+				<option value="{{ $value }}" {{ ($sort ?? 'users.name') == $value ? 'selected' : '' }}>{{ $label }}</option>
 				@endforeach
 			</select>
-			<select name="sortDirection" class="form-select-tw text-sm py-1 auto-submit">
+			<select name="direction" class="form-select-tw text-sm py-1 auto-submit">
 				@foreach($directionOptions as $value => $label)
-				<option value="{{ $value }}" {{ ($sortDirection ?? 'asc') == $value ? 'selected' : '' }}>{{ $label }}</option>
+				<option value="{{ $value }}" {{ ($direction ?? 'asc') == $value ? 'selected' : '' }}>{{ $label }}</option>
 				@endforeach
 			</select>
 		</form>
@@ -143,19 +146,20 @@
 	</div>
 </div>
 
-<!-- Users Grid -->
-@if (isset($users) && count($users) > 0)
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-	@foreach ($users as $user)
-	@include('users.card-tw', ['user' => $user])
-	@endforeach
+	<!-- Users Grid -->
+	@if (isset($users) && count($users) > 0)
+	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+		@foreach ($users as $user)
+		@include('users.card-tw', ['user' => $user])
+		@endforeach
+	</div>
+	@else
+	<div class="text-center py-12 bg-card rounded-lg border border-border">
+		<i class="bi bi-people text-4xl text-muted-foreground/50 mb-3 block"></i>
+		<p class="text-muted-foreground">No users found.</p>
+	</div>
+	@endif
 </div>
-@else
-<div class="text-center py-12">
-	<i class="bi bi-people text-6xl text-muted-foreground/60 mb-4"></i>
-	<p class="text-muted-foreground">No users found.</p>
-</div>
-@endif
 
 @stop
 

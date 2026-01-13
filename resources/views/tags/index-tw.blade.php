@@ -29,7 +29,7 @@
 			</div>
 		</button>
 		<div id="popular-tags-content" class="p-4 border-t border-border">
-			<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+			<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
 				@foreach($latestTags as $t)
 					@php
 						$event = $t->events()->visible($user ?? null)->latest('start_at')->first();
@@ -57,16 +57,32 @@
 	</div>
 	@endif
 
-	<!-- Nice Filters Section (Placeholder for future) -->
+	<!-- Filters Section -->
 	<div class="bg-card border border-border rounded-lg">
 		<button id="filters-toggle" class="w-full p-4 flex items-center justify-between text-left hover:bg-accent/50 transition-colors rounded-t-lg">
 			<div class="flex items-center gap-2">
-				<i class="bi bi-chevron-right transition-transform" id="filters-chevron"></i>
-				<h2 class="text-lg font-semibold text-foreground">Nice Filters</h2>
+				<i class="bi bi-chevron-{{ isset($hasFilter) && $hasFilter ? 'down' : 'right' }} transition-transform" id="filters-chevron"></i>
+				<h2 class="text-lg font-semibold text-foreground">Filters</h2>
 			</div>
+			@if(isset($hasFilter) && $hasFilter)
+			<a href="{{ url('/tags') }}" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
+				Clear filters
+			</a>
+			@endif
 		</button>
-		<div id="filters-content" class="hidden p-4 border-t border-border">
-			<p class="text-muted-foreground text-sm">Filters coming soon...</p>
+		<div id="filters-content" class="{{ isset($hasFilter) && $hasFilter ? '' : 'hidden' }} p-4 border-t border-border">
+			<form method="GET" action="{{ url('/tags') }}" class="flex gap-2">
+				<div class="flex-1">
+					<input type="text"
+						name="search"
+						value="{{ $search ?? '' }}"
+						placeholder="Search tags by name..."
+						class="form-input-tw w-full">
+				</div>
+				<button type="submit" class="px-4 py-2 bg-accent text-foreground border-2 border-primary rounded-lg hover:bg-accent/80 transition-colors">
+					<i class="bi bi-search"></i>
+				</button>
+			</form>
 		</div>
 	</div>
 
@@ -174,8 +190,16 @@
 	document.getElementById('filters-toggle')?.addEventListener('click', function() {
 		const content = document.getElementById('filters-content');
 		const chevron = document.getElementById('filters-chevron');
-		content.classList.toggle('hidden');
-		chevron.classList.toggle('rotate-90');
+
+		if (content.classList.contains('hidden')) {
+			content.classList.remove('hidden');
+			chevron.classList.remove('bi-chevron-right');
+			chevron.classList.add('bi-chevron-down');
+		} else {
+			content.classList.add('hidden');
+			chevron.classList.remove('bi-chevron-down');
+			chevron.classList.add('bi-chevron-right');
+		}
 	});
 </script>
 @endsection
