@@ -9,7 +9,7 @@
 
 @section('content')
 
-<div class="max-w-4xl mx-auto">
+<div class="max-w-7xl mx-auto">
     <!-- Header -->
     <div class="mb-6">
         <h1 class="text-3xl font-bold text-foreground mb-2">Edit Thread</h1>

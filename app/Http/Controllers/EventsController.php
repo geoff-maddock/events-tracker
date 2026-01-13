@@ -2511,7 +2511,7 @@ class EventsController extends Controller
             ]
         );
 
-        return view('events.createSeries', compact('series'))
+        return view('events.createSeries-tw', compact('series'))
         ->with($this->getSeriesFormOptions())
         ->with(['event' => $event]);
     }

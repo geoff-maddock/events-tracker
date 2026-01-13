@@ -49,7 +49,7 @@ Entities @include('entities.title-crumbs')
 
 <!-- Filters Section -->
 <div class="mb-6">
-	<button id="filters-toggle-btn" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border-2 border-primary rounded-lg hover:bg-accent/80 transition-colors">
+	<button id="filters-toggle-btn" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
 		<i class="bi bi-funnel mr-2"></i>
 		<span id="filters-toggle-text">@if($hasFilter) Hide @else Show @endif Filters</span>
 		<i class="bi bi-chevron-down ml-2 transition-transform @if($hasFilter) rotate-180 @endif" id="filters-chevron"></i>
@@ -140,7 +140,7 @@ Entities @include('entities.title-crumbs')
 
 	<!-- Filter Actions -->
 	<div class="mt-4 flex gap-2">
-		<button type="submit" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border-2 border-primary rounded-lg hover:bg-accent/80 transition-colors">
+		<button type="submit" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
 			<i class="bi bi-check-lg mr-2"></i>
 			Apply Filters
 		</button>

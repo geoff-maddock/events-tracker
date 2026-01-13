@@ -314,12 +314,12 @@ class PagesController extends Controller
 
     public function help(): View
     {
-        return view('pages.help');
+        return view('pages.help-tw');
     }
 
     public function about(): View
     {
-        return view('pages.about');
+        return view('pages.about-tw');
     }
 
     public function privacy(): View
@@ -330,6 +330,11 @@ class PagesController extends Controller
     public function tos(): View
     {
         return view('pages.tos');
+    }
+
+    public function allModules(): View
+    {
+        return view('pages.all-modules-tw');
     }
 
     public function home(

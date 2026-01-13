@@ -13,9 +13,13 @@ import Visibility from './utilities/visibility';
 // sweet alert used for flash messages / alerts 
 window.Swal = require('sweetalert2');
 
-// dropzone used for file uploading 
+// dropzone used for file uploading
 const { Dropzone } = require("dropzone");
 window.Dropzone = Dropzone;
+
+// flatpickr for date/time picking
+import flatpickr from "flatpickr";
+window.flatpickr = flatpickr;
 
 // init visibility
 Visibility.init('#event-repo');

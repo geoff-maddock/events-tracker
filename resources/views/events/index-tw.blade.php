@@ -52,7 +52,7 @@ Events @include('events.title-crumbs')
 
 <!-- Filters Section -->
 <div class="mb-6">
-	<button id="filters-toggle-btn" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border-2 border-primary rounded-lg hover:bg-accent/80 transition-colors">
+	<button id="filters-toggle-btn" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
 		<i class="bi bi-funnel mr-2"></i>
 		<span id="filters-toggle-text">Show Filters</span>
 		<i class="bi bi-chevron-down ml-2 transition-transform" id="filters-chevron"></i>
@@ -173,7 +173,7 @@ Events @include('events.title-crumbs')
 
 	<!-- Filter Actions -->
 	<div class="flex gap-2 mt-4">
-		<button type="submit" class="px-4 py-2 bg-accent text-foreground border-2 border-primary rounded-lg hover:bg-accent/80 transition-colors">
+		<button type="submit" class="px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
 			Apply
 		</button>
 		{!! Form::close() !!}
@@ -228,7 +228,7 @@ Events @include('events.title-crumbs')
 		@endif
 
 		@foreach($events->getUrlRange(max(1, $events->currentPage() - 2), min($events->lastPage(), $events->currentPage() + 2)) as $page => $url)
-		<a href="{{ $url }}" class="px-3 py-1 rounded {{ $page == $events->currentPage() ? 'bg-accent text-foreground border-2 border-primary' : 'text-muted-foreground hover:bg-card' }}">{{ $page }}</a>
+		<a href="{{ $url }}" class="px-3 py-1 rounded {{ $page == $events->currentPage() ? 'bg-accent text-foreground border border-primary' : 'text-muted-foreground hover:bg-card' }}">{{ $page }}</a>
 		@endforeach
 
 		@if($events->hasMorePages())

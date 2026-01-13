@@ -99,7 +99,7 @@ class PermissionsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('permissions.index')
+        return view('permissions.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -152,7 +152,7 @@ class PermissionsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('permissions.index')
+        return view('permissions.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -227,7 +227,7 @@ class PermissionsController extends Controller
      */
     public function create(): View
     {
-        return view('permissions.create')
+        return view('permissions.create-tw')
             ->with($this->getFormOptions());
     }
 
@@ -266,7 +266,7 @@ class PermissionsController extends Controller
 
         $groups = Group::orderBy('name')->pluck('name', 'id')->all();
 
-        return view('permissions.edit', compact('permission'))
+        return view('permissions.edit-tw', compact('permission'))
         ->with($this->getFormOptions());
     }
 

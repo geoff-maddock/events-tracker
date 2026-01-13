@@ -276,7 +276,7 @@ class UsersController extends Controller
      **/
     public function create(): View
     {
-        return view('users.create')->with($this->getFormOptions());
+        return view('users.create-tw')->with($this->getFormOptions());
     }
 
     public function setTabs(Request $request): void
@@ -345,7 +345,7 @@ class UsersController extends Controller
     {
         $this->middleware('auth');
 
-        return view('users.edit', compact('user'))
+        return view('users.edit-tw', compact('user'))
             ->with($this->getFormOptions());
     }
 

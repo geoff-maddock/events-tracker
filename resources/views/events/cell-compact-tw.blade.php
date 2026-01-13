@@ -1,7 +1,7 @@
 <div class="flex flex-col group">
     <!-- Date bar or placeholder to maintain alignment -->
     @if ($showDateBar)
-        <div class="text-xs font-medium px-2 py-1 text-center mb-1 rounded-sm {{ $isWeekend ? 'bg-amber-500 text-white' : 'bg-accent text-foreground' }}">
+        <div class="text-xs font-medium px-2 py-1 text-center mb-1 rounded-sm {{ $isWeekend ? 'badge-tw badge-warning-tw' : 'bg-accent text-foreground' }}">
             {{ $dateLabel }}
         </div>
     @else
@@ -39,7 +39,7 @@
             @if ($event->tags->count() > 0)
                 <div class="flex flex-wrap gap-1 justify-center">
                     @foreach ($event->tags->take(2) as $tag)
-                        <span class="text-[10px] bg-blue-600 px-1.5 py-0.5 rounded">
+                        <span class="badge-tw badge-primary-tw text-xs">
                             {{ $tag->name }}
                         </span>
                     @endforeach

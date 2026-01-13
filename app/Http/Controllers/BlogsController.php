@@ -114,7 +114,7 @@ class BlogsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('blogs.index')
+        return view('blogs.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -169,7 +169,7 @@ class BlogsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('blogs.index')
+        return view('blogs.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -194,7 +194,7 @@ class BlogsController extends Controller
         $blog->contentType = ContentType::find(ContentType::PLAIN_TEXT);
         $blog->visibility = Visibility::find(Visibility::VISIBILITY_PUBLIC);
 
-        return view('blogs.create', compact('blog'))
+        return view('blogs.create-tw', compact('blog'))
             ->with($this->getFormOptions());
     }
 
@@ -279,7 +279,7 @@ class BlogsController extends Controller
     {
         $this->middleware('auth');
 
-        return view('blogs.edit', compact('blog'))
+        return view('blogs.edit-tw', compact('blog'))
             ->with($this->getFormOptions());
     }
 

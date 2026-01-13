@@ -151,12 +151,12 @@
                 name="soundcheck_at"
                 label="Soundcheck At"
                 :error="$errors->first('soundcheck_at')">
-                <x-ui.input
-                    type="datetime-local"
+                <x-ui.datetime-picker
                     name="soundcheck_at"
                     id="soundcheck_at"
-                    :value="old('soundcheck_at', isset($event->soundcheck_at) ? $event->soundcheck_at->format('Y-m-d\TH:i') : '')"
-                    :hasError="$errors->has('soundcheck_at')" />
+                    :value="old('soundcheck_at', isset($event->soundcheck_at) ? $event->soundcheck_at->format('Y-m-d H:i') : '')"
+                    :hasError="$errors->has('soundcheck_at')"
+                    placeholder="Select soundcheck time" />
             </x-ui.form-group>
         </div>
 
@@ -165,12 +165,12 @@
                 name="door_at"
                 label="Doors Open"
                 :error="$errors->first('door_at')">
-                <x-ui.input
-                    type="datetime-local"
+                <x-ui.datetime-picker
                     name="door_at"
                     id="door_at"
-                    :value="old('door_at', isset($event->door_at) ? $event->door_at->format('Y-m-d\TH:i') : '')"
-                    :hasError="$errors->has('door_at')" />
+                    :value="old('door_at', isset($event->door_at) ? $event->door_at->format('Y-m-d H:i') : '')"
+                    :hasError="$errors->has('door_at')"
+                    placeholder="Select door time" />
             </x-ui.form-group>
         </div>
     </div>
@@ -192,12 +192,12 @@
                     </button>
                 </div>
             </template>
-            <x-ui.input
-                type="datetime-local"
+            <x-ui.datetime-picker
                 name="start_at"
                 id="start_at"
-                :value="old('start_at', isset($event->start_at) ? $event->start_at->format('Y-m-d\TH:i') : '')"
-                :hasError="$errors->has('start_at')" />
+                :value="old('start_at', isset($event->start_at) ? $event->start_at->format('Y-m-d H:i') : '')"
+                :hasError="$errors->has('start_at')"
+                placeholder="Select start date and time" />
         </x-ui.form-group>
     </div>
 
@@ -206,12 +206,12 @@
             name="end_at"
             label="End At"
             :error="$errors->first('end_at')">
-            <x-ui.input
-                type="datetime-local"
+            <x-ui.datetime-picker
                 name="end_at"
                 id="end_at"
-                :value="old('end_at', isset($event->end_at) ? $event->end_at->format('Y-m-d\TH:i') : '')"
-                :hasError="$errors->has('end_at')" />
+                :value="old('end_at', isset($event->end_at) ? $event->end_at->format('Y-m-d H:i') : '')"
+                :hasError="$errors->has('end_at')"
+                placeholder="Select end date and time" />
         </x-ui.form-group>
     </div>
 
@@ -220,12 +220,12 @@
             name="cancelled_at"
             label="Cancelled At"
             :error="$errors->first('cancelled_at')">
-            <x-ui.input
-                type="datetime-local"
+            <x-ui.datetime-picker
                 name="cancelled_at"
                 id="cancelled_at"
-                :value="old('cancelled_at', isset($event->cancelled_at) ? $event->cancelled_at->format('Y-m-d\TH:i') : '')"
-                :hasError="$errors->has('cancelled_at')" />
+                :value="old('cancelled_at', isset($event->cancelled_at) ? $event->cancelled_at->format('Y-m-d H:i') : '')"
+                :hasError="$errors->has('cancelled_at')"
+                placeholder="Select cancellation date" />
         </x-ui.form-group>
     </div>
 </div>

@@ -17,7 +17,7 @@
 
         <!-- Price Badge -->
         @if ($event->door_price)
-            <div class="absolute bottom-2 left-2 bg-green-600 text-white text-xs px-2 py-1 rounded-md font-medium shadow-sm">
+            <div class="absolute bottom-2 left-2 badge-tw badge-success-tw text-xs shadow-sm">
                 ${{ $event->door_price }}
             </div>
         @endif
@@ -52,7 +52,7 @@
         @if ($event->tags->count() > 0)
             <div class="mt-auto pt-2 flex flex-wrap gap-1">
                 @foreach ($event->tags->take(3) as $tag)
-                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-card text-muted-foreground border border-border">
+                    <span class="badge-tw badge-secondary-tw text-xs">
                         {{ $tag->name }}
                     </span>
                 @endforeach

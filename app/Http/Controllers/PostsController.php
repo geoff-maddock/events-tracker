@@ -434,7 +434,7 @@ class PostsController extends Controller
     {
         $this->middleware('auth');
 
-        return view('posts.edit', compact('post'))->with($this->getFormOptions());
+        return view('posts.edit-tw', compact('post'))->with($this->getFormOptions());
     }
 
     protected function getFormOptions(): array

@@ -9,7 +9,7 @@
 
 @section('content')
 
-<div class="max-w-4xl mx-auto">
+<div class="max-w-7xl mx-auto">
     <h1 class="text-3xl font-bold text-foreground mb-6">Add a New Event</h1>
 
     <form method="POST" action="{{ route('events.store') }}" class="space-y-6">
@@ -30,4 +30,28 @@
 
 @section('scripts.footer')
 <script src="{{ asset('/js/facebook-event.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all flatpickr date/time pickers
+    const dateTimePickers = document.querySelectorAll('[data-flatpickr]');
+
+    dateTimePickers.forEach(function(picker) {
+        const enableTime = picker.getAttribute('data-enable-time') === 'true';
+        const dateFormat = picker.getAttribute('data-date-format') || 'Y-m-d H:i';
+        const altFormat = picker.getAttribute('data-alt-format') || 'F j, Y at h:i K';
+        const minDate = picker.getAttribute('data-min-date');
+        const maxDate = picker.getAttribute('data-max-date');
+
+        flatpickr(picker, {
+            enableTime: enableTime,
+            dateFormat: dateFormat,
+            altInput: true,
+            altFormat: altFormat,
+            time_24hr: false,
+            minDate: minDate,
+            maxDate: maxDate,
+        });
+    });
+});
+</script>
 @stop

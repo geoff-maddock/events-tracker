@@ -610,7 +610,7 @@ class SeriesController extends Controller
         $events = $series->events()->paginate($this->childLimit);
         $threads = $series->threads()->paginate($this->childLimit);
 
-        return view('series.show', compact('series', 'events', 'threads'));
+        return view('series.show-tw', compact('series', 'events', 'threads'));
     }
 
     public function store(SeriesRequest $request, Series $series): RedirectResponse
@@ -741,7 +741,7 @@ class SeriesController extends Controller
             'length' => 0,
         ]);
 
-        return view('series.createOccurrence', compact('seriesOptions', 'userOptions', 'event'))
+        return view('series.createOccurrence-tw', compact('seriesOptions', 'userOptions', 'event'))
         ->with($this->getSeriesFormOptions())
         ->with(['series' => $series]);
     }

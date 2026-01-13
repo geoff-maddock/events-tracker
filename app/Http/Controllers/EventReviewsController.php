@@ -42,7 +42,7 @@ class EventReviewsController extends Controller
      */
     public function create(Event $event): View
     {
-        return view('reviews.create', compact('event'))
+        return view('reviews.create-tw', compact('event'))
             ->with($this->getFormOptions());
     }
 
@@ -104,9 +104,9 @@ class EventReviewsController extends Controller
      */
     public function edit(Event $event, EventReview $eventReview): View
     {
-        $reviewTypes = ['' => ''] + ReviewType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $reviewTypeOptions = ['' => ''] + ReviewType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('reviews.edit', compact('event', 'eventReview', 'reviewTypes'));
+        return view('reviews.edit-tw', compact('event', 'eventReview', 'reviewTypeOptions'));
     }
 
     /**

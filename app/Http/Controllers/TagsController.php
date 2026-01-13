@@ -280,7 +280,7 @@ class TagsController extends Controller
 
         $tagTypes = TagType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('tags.edit', compact('tag', 'tagTypes'));
+        return view('tags.edit-tw', compact('tag', 'tagTypes'));
     }
 
     /**
@@ -290,7 +290,7 @@ class TagsController extends Controller
     {
         $tagTypes = TagType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('tags.create', compact('tagTypes'));
+        return view('tags.create-tw', compact('tagTypes'));
     }
 
     /**

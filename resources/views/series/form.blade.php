@@ -313,7 +313,7 @@
                 type="text"
                 name="length"
                 id="length"
-                :value="old('length', $series->length ?? '')"
+                :value="old('length', isset($series) && $series->exists ? $series->getRawOriginal('length') : '')"
                 placeholder="2.5"
                 :hasError="$errors->has('length')" />
         </x-ui.form-group>

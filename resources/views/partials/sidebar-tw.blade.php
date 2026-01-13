@@ -120,7 +120,7 @@
         @isset ($hasForum)
         <a href="{{ url('/threads') }}" class="nav-item-tw {{ Request::is('threads') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-chat-dots text-lg"></i>
-            <span>Blogs</span>
+            <span>Forum</span>
         </a>
         @endisset
 

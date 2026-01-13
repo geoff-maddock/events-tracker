@@ -68,6 +68,7 @@ Route::get('privacy', 'PagesController@privacy');
 Route::get('tos', 'PagesController@tos');
 
 Route::get('help', 'PagesController@help');
+Route::get('all-modules', 'PagesController@allModules')->name('pages.allModules');
 
 Route::get('calendar', 'CalendarController@index')->name('calendar');
 Route::get('calendar/by-date/{year}/{month?}/{day?}', 'CalendarController@indexByDate')->name('calendar.byDate')

@@ -98,7 +98,7 @@ class GroupsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('groups.index')
+        return view('groups.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -151,7 +151,7 @@ class GroupsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('groups.index')
+        return view('groups.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -211,7 +211,7 @@ class GroupsController extends Controller
      */
     public function create(): View
     {
-        return view('groups.create')
+        return view('groups.create-tw')
             ->with($this->getFormOptions());
     }
 
@@ -249,7 +249,7 @@ class GroupsController extends Controller
     {
         $this->middleware('auth');
 
-        return view('groups.edit', compact('group'))
+        return view('groups.edit-tw', compact('group'))
           ->with($this->getFormOptions());
     }
 

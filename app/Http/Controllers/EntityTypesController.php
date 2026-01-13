@@ -104,7 +104,7 @@ class EntityTypesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('entityTypes.index')
+        return view('entityTypes.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -161,7 +161,7 @@ class EntityTypesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('entityTypes.index')
+        return view('entityTypes.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -237,7 +237,7 @@ class EntityTypesController extends Controller
      */
     public function create(): View
     {
-        return view('entityTypes.create');
+        return view('entityTypes.create-tw');
     }
 
     /**
@@ -268,7 +268,7 @@ class EntityTypesController extends Controller
     {
         $this->middleware('auth');
 
-        return view('entityTypes.edit', compact('entityType'));
+        return view('entityTypes.edit-tw', compact('entityType'));
     }
 
     /**

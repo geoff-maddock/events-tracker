@@ -41,12 +41,12 @@
 							<div class="flex items-center gap-2">
 								@if ($signedIn)
 									@if ($response = $event->getEventResponse($user))
-										<a href="{!! route('events.unattend', ['id' => $event->id]) !!}" class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800" title="You're attending">
-											<i class="bi bi-star-fill text-yellow-500 text-xl"></i>
+										<a href="{!! route('events.unattend', ['id' => $event->id]) !!}" class="p-2 rounded-md hover:bg-accent" title="You're attending">
+											<i class="bi bi-star-fill text-primary text-xl"></i>
 										</a>
 									@else
-										<a href="{!! route('events.attend', ['id' => $event->id]) !!}" class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800" title="Mark as attending">
-											<i class="bi bi-star text-gray-400 text-xl"></i>
+										<a href="{!! route('events.attend', ['id' => $event->id]) !!}" class="p-2 rounded-md hover:bg-accent" title="Mark as attending">
+											<i class="bi bi-star text-muted-foreground text-xl"></i>
 										</a>
 									@endif
 								@endif
@@ -89,7 +89,7 @@
 
 						@if ($event->visibility->name !== 'Public')
 						<div class="mb-4">
-							<span class="inline-flex items-center px-3 py-1 bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 rounded-lg text-sm border border-yellow-500/30">
+							<span class="badge-tw badge-warning-tw inline-flex items-center px-3 py-1 rounded-lg text-sm">
 								<i class="bi bi-exclamation-triangle mr-2"></i>
 								{{ $event->visibility->name }}
 								@if ($event->visibility->name == 'Cancelled' && $event->cancelled_at)
@@ -229,7 +229,7 @@
 						@foreach ($event->entities as $entity)
 						<a href="/entities/{{ $entity->slug }}" class="badge-tw badge-primary-tw text-xs hover:bg-primary/30">
 							{{ $entity->name }}
-							<i class="bi bi-box-arrow-up-right ml-1 text-[10px]"></i>
+							<i class="bi bi-box-arrow-up-right ml-1 text-xs"></i>
 						</a>
 						@endforeach
 					</div>

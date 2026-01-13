@@ -76,7 +76,7 @@
 
 			@if ($entity->entityStatus->name !== 'Active')
 			<div class="mb-4">
-				<span class="inline-flex items-center px-3 py-1 bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 rounded-lg text-sm border border-yellow-500/30">
+				<span class="badge-tw badge-warning-tw inline-flex items-center px-3 py-1 rounded-lg text-sm">
 					<i class="bi bi-exclamation-triangle mr-2"></i>
 					{{ $entity->entityStatus->name }}
 				</span>
@@ -117,7 +117,7 @@
 				<i class="bi bi-calendar-event"></i>
 				Related Events
 			</h3>
-			<a href="{{ url('events/related-to/'.$entity->slug) }}" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border-2 border-primary rounded-lg hover:bg-accent/80 transition-colors">
+			<a href="{{ url('events/related-to/'.$entity->slug) }}" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
 				View All Related Events
 			</a>
 		</div>

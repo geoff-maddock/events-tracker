@@ -109,7 +109,7 @@ class CategoriesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('categories.index')
+        return view('categories.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -163,7 +163,7 @@ class CategoriesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('categories.index')
+        return view('categories.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -186,7 +186,7 @@ class CategoriesController extends Controller
     {
         $category = new ThreadCategory();
 
-        return view('categories.create', compact('category'))
+        return view('categories.create-tw', compact('category'))
             ->with($this->getFormOptions());
     }
 
@@ -228,7 +228,7 @@ class CategoriesController extends Controller
     {
         $this->middleware('auth');
 
-        return view('categories.edit', compact('category'))
+        return view('categories.edit-tw', compact('category'))
             ->with($this->getFormOptions());
     }
 

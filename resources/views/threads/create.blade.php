@@ -9,7 +9,7 @@
 
 @section('content')
 
-<div class="max-w-4xl mx-auto">
+<div class="max-w-7xl mx-auto">
     <h1 class="text-3xl font-bold text-foreground mb-6">Add a New Thread</h1>
 
     <div class="bg-card rounded-lg border border-border shadow-sm p-6">

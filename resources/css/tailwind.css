@@ -1,5 +1,6 @@
 @import './select2-tailwind.css';
 @import '../../node_modules/dropzone/dist/dropzone.css';
+@import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 @tailwind base;
 @tailwind components;
@@ -91,11 +92,16 @@
 
   /* Form inputs */
   .form-input-tw {
-    @apply w-full px-3 py-2 bg-transparent border border-input rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent;
+    @apply w-full px-3 py-2 bg-input border border-input rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent;
   }
 
   .form-select-tw {
-    @apply w-full px-3 py-2 bg-transparent border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent;
+    @apply w-full px-3 py-2 bg-input border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent;
+  }
+
+  /* Select dropdown options styling for dark mode */
+  select option {
+    @apply bg-card text-foreground;
   }
 
   /* Badge/Tag styles */
@@ -113,6 +119,22 @@
 
   .badge-accent-tw {
     @apply bg-accent/20 text-accent-foreground border border-accent/30;
+  }
+
+  .badge-destructive-tw {
+    @apply bg-destructive/20 text-destructive border border-destructive/30;
+  }
+
+  .badge-warning-tw {
+    @apply bg-yellow-500/20 text-yellow-700 dark:text-yellow-300 border border-yellow-500/30;
+  }
+
+  .badge-success-tw {
+    @apply bg-green-600/20 text-green-700 dark:text-green-300 border border-green-600/30;
+  }
+
+  .badge-info-tw {
+    @apply bg-blue-600/20 text-blue-700 dark:text-blue-300 border border-blue-600/30;
   }
 
   /* Sidebar navigation */
@@ -177,4 +199,70 @@
 
 .dark ::-webkit-scrollbar-thumb:hover {
   @apply bg-muted;
+}
+
+/* Flatpickr Dark Mode Styling */
+.dark .flatpickr-calendar {
+  @apply bg-card border-border shadow-xl;
+}
+
+.dark .flatpickr-months {
+  @apply bg-card;
+}
+
+.dark .flatpickr-current-month {
+  @apply text-foreground;
+}
+
+.dark .flatpickr-month {
+  @apply text-foreground;
+}
+
+.dark .flatpickr-weekday {
+  @apply text-muted-foreground;
+}
+
+.dark .flatpickr-day {
+  @apply text-foreground border-border;
+}
+
+.dark .flatpickr-day:hover {
+  @apply bg-accent text-foreground;
+}
+
+.dark .flatpickr-day.today {
+  @apply border-primary;
+}
+
+.dark .flatpickr-day.selected {
+  @apply bg-primary text-primary-foreground border-primary;
+}
+
+.dark .flatpickr-time {
+  @apply bg-card border-border;
+}
+
+.dark .flatpickr-time input {
+  @apply bg-input text-foreground;
+}
+
+.dark .flatpickr-time input:hover {
+  @apply bg-accent;
+}
+
+.dark .numInputWrapper:hover {
+  @apply bg-accent;
+}
+
+/* Light mode overrides */
+.flatpickr-calendar {
+  @apply bg-card border-border shadow-lg;
+}
+
+.flatpickr-day.selected {
+  @apply bg-primary text-primary-foreground border-primary;
+}
+
+.flatpickr-day:hover {
+  @apply bg-accent;
 }

@@ -43,14 +43,14 @@
         <!-- Visibility Badge -->
         @if ($series->visibility->name !== 'Public')
         <div class="absolute top-2 left-2">
-            <span class="badge-tw bg-yellow-500/80 text-primary-foreground">{{ $series->visibility->name }}</span>
+            <span class="badge-tw badge-warning-tw">{{ $series->visibility->name }}</span>
         </div>
         @endif
 
         <!-- Cancelled Badge -->
         @if ($series->cancelled_at != NULL)
         <div class="absolute top-2 left-2">
-            <span class="badge-tw bg-red-500/80 text-primary-foreground">Cancelled</span>
+            <span class="badge-tw badge-destructive-tw">Cancelled</span>
         </div>
         @endif
     </div>
@@ -120,7 +120,7 @@
             @foreach ($series->entities->take(3) as $entity)
             <a href="/entities/{{ $entity->slug }}" class="badge-tw badge-primary-tw text-xs hover:bg-primary/30">
                 {{ $entity->name }}
-                <i class="bi bi-box-arrow-up-right ml-1 text-[10px]"></i>
+                <i class="bi bi-box-arrow-up-right ml-1 text-xs"></i>
             </a>
             @endforeach
             @if ($series->entities->count() > 3)

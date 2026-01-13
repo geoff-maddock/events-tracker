@@ -79,7 +79,7 @@
 						placeholder="Search tags by name..."
 						class="form-input-tw w-full">
 				</div>
-				<button type="submit" class="px-4 py-2 bg-accent text-foreground border-2 border-primary rounded-lg hover:bg-accent/80 transition-colors">
+				<button type="submit" class="px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
 					<i class="bi bi-search"></i>
 				</button>
 			</form>

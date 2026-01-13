@@ -1,42 +1,164 @@
 /* Select2 Tailwind Theme */
-.select2-container--tailwind .select2-selection--single,
+
+/* Single Select */
+.select2-container--tailwind .select2-selection--single {
+    @apply h-10 w-full rounded-lg border border-input bg-input px-3 py-2 text-base shadow-sm transition-colors;
+}
+
+/* Multiple Select Container */
 .select2-container--tailwind .select2-selection--multiple {
-    @apply h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors;
+    @apply min-h-[2.5rem] w-full rounded-lg border border-input bg-input px-2 py-1 text-base shadow-sm transition-colors;
 }
 
+/* Focus State */
 .select2-container--tailwind.select2-container--focus .select2-selection {
-    @apply outline-none ring-1 ring-ring;
+    @apply outline-none ring-2 ring-ring border-transparent;
 }
 
+/* Rendered Selection Area (where tags appear) */
 .select2-container--tailwind .select2-selection__rendered {
-    @apply text-foreground;
+    @apply text-foreground flex flex-wrap gap-1 items-center p-0 m-0;
 }
 
+/* Individual Selected Tag/Choice */
+.select2-container--tailwind .select2-selection__choice {
+    @apply inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md;
+    @apply bg-primary/20 text-primary border border-primary/30;
+    @apply m-0;
+}
+
+/* Remove Button (X) on Tags */
+.select2-container--tailwind .select2-selection__choice__remove {
+    @apply text-primary/70 hover:text-primary font-bold ml-1;
+    @apply cursor-pointer;
+    order: 2;
+}
+
+.select2-container--tailwind .select2-selection__choice__remove:hover {
+    @apply text-primary;
+}
+
+/* Search Input Field inside Multi-Select */
+.select2-container--tailwind .select2-search--inline {
+    @apply inline-block m-0;
+}
+
+.select2-container--tailwind .select2-search--inline .select2-search__field {
+    @apply bg-transparent border-0 outline-none text-foreground placeholder:text-muted-foreground;
+    @apply px-1 py-1 m-0;
+    min-width: 120px;
+}
+
+.select2-container--tailwind .select2-search--inline .select2-search__field:focus {
+    @apply outline-none ring-0 border-0;
+}
+
+/* Placeholder */
 .select2-container--tailwind .select2-selection__placeholder {
     @apply text-muted-foreground;
 }
 
+/* Arrow Indicator for Single Select */
+.select2-container--tailwind .select2-selection__arrow {
+    @apply h-full right-3;
+}
+
+/* Dropdown Container */
 .select2-container--tailwind .select2-dropdown {
-    @apply border border-input bg-popover text-popover-foreground rounded-md shadow-md;
+    @apply border border-border bg-card text-foreground rounded-lg shadow-lg mt-1;
+    @apply z-50;
 }
 
+/* Search Input in Dropdown */
+.select2-container--tailwind .select2-search--dropdown {
+    @apply p-2;
+}
+
+.select2-container--tailwind .select2-search--dropdown .select2-search__field {
+    @apply w-full px-3 py-2 rounded-md border border-input bg-input text-foreground;
+    @apply placeholder:text-muted-foreground;
+}
+
+.select2-container--tailwind .select2-search--dropdown .select2-search__field:focus {
+    @apply outline-none ring-2 ring-ring border-transparent;
+}
+
+/* Results Container */
+.select2-container--tailwind .select2-results {
+    @apply text-foreground;
+}
+
+.select2-container--tailwind .select2-results__options {
+    @apply max-h-60 overflow-y-auto;
+}
+
+/* Individual Result Option */
 .select2-container--tailwind .select2-results__option {
-    @apply px-3 py-2 text-sm transition-colors;
+    @apply px-3 py-2 text-sm transition-colors cursor-pointer;
 }
 
+/* Highlighted Option (hover/keyboard navigation) */
 .select2-container--tailwind .select2-results__option--highlighted {
     @apply bg-accent text-accent-foreground;
 }
 
+/* Selected Option */
 .select2-container--tailwind .select2-results__option--selected {
-    @apply bg-primary text-primary-foreground;
+    @apply bg-primary/10 text-primary font-medium;
+}
+
+/* Disabled Option */
+.select2-container--tailwind .select2-results__option--disabled {
+    @apply text-muted-foreground cursor-not-allowed opacity-50;
+}
+
+/* Loading Message */
+.select2-container--tailwind .select2-results__message {
+    @apply px-3 py-2 text-sm text-muted-foreground;
+}
+
+/* No Results Message */
+.select2-container--tailwind .select2-results__option--no-results {
+    @apply px-3 py-2 text-sm text-muted-foreground;
+}
+
+/* Clear All Button (if enabled) */
+.select2-container--tailwind .select2-selection__clear {
+    @apply text-muted-foreground hover:text-foreground;
+    @apply cursor-pointer font-bold;
 }
 
 /* Dark mode adjustments */
-.dark .select2-container--tailwind .select2-selection {
-    @apply bg-transparent;
+.dark .select2-container--tailwind .select2-selection--single,
+.dark .select2-container--tailwind .select2-selection--multiple {
+    @apply bg-input border-input;
 }
 
 .dark .select2-container--tailwind .select2-dropdown {
-    @apply bg-popover border-border;
+    @apply bg-card border-border;
+}
+
+.dark .select2-container--tailwind .select2-search--dropdown .select2-search__field {
+    @apply bg-input border-input;
+}
+
+/* Prevent overflow and ensure tags wrap properly */
+.select2-container--tailwind .select2-selection--multiple .select2-selection__rendered {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    width: 100% !important;
+    padding: 0 !important;
+}
+
+/* Ensure container expands with content */
+.select2-container--tailwind .select2-selection--multiple {
+    height: auto !important;
+    min-height: 2.5rem !important;
+}
+
+/* Limit dropdown width to container */
+.select2-container--tailwind .select2-dropdown {
+    width: auto !important;
+    min-width: 100%;
 }

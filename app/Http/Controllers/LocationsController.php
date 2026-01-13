@@ -61,7 +61,7 @@ class LocationsController extends Controller
         $locationTypes = LocationType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('locations.create', compact('entity'))
+        return view('locations.create-tw', compact('entity'))
             ->with($this->getFormOptions());
     }
 
@@ -109,7 +109,7 @@ class LocationsController extends Controller
         $locationTypes = ['' => ''] + LocationType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('locations.edit', compact('entity', 'location'))->with($this->getFormOptions());
+        return view('locations.edit-tw', compact('entity', 'location'))->with($this->getFormOptions());
     }
 
     /**

@@ -1,4 +1,4 @@
-@extends('app')
+@extends('layouts.app-tw')
 
 @section('title', 'About')
 
@@ -95,11 +95,11 @@
 			<div>
 				<h2 class="text-2xl font-semibold text-foreground mb-3">Stay Connected</h2>
 				<div class="flex flex-wrap gap-4">
-					<a href="{{ route('help') }}" class="text-primary hover:text-primary/90 flex items-center gap-2">
+					<a href="{{ url('/help') }}" class="text-primary hover:text-primary/90 flex items-center gap-2">
 						<i class="bi bi-question-circle"></i>
 						<span>Help & FAQ</span>
 					</a>
-					<a href="{{ route('privacy') }}" class="text-primary hover:text-primary/90 flex items-center gap-2">
+					<a href="{{ url('/privacy') }}" class="text-primary hover:text-primary/90 flex items-center gap-2">
 						<i class="bi bi-shield-check"></i>
 						<span>Privacy Policy</span>
 					</a>
