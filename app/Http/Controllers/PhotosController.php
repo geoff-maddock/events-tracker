@@ -129,7 +129,7 @@ class PhotosController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('photos.index')
+        return view('photos.index-tw')
         ->with(array_merge(
             [
                 'limit' => $listResultSet->getLimit(),
@@ -255,7 +255,7 @@ class PhotosController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('photos.index')
+        return view('photos.index-tw')
         ->with(array_merge(
             [
                 'limit' => $listResultSet->getLimit(),

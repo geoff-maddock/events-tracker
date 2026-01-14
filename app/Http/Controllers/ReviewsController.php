@@ -134,7 +134,7 @@ class ReviewsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('reviews.index')
+        return view('reviews.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -188,7 +188,7 @@ class ReviewsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('reviews.index')
+        return view('reviews.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -256,7 +256,7 @@ class ReviewsController extends Controller
 
     public function show(EventReview $review): View
     {
-        return view('reviews.show', compact('review'));
+        return view('reviews.show-tw', compact('review'));
     }
 
     public function store(EventRequest $request, Event $event): RedirectResponse

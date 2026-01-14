@@ -130,20 +130,20 @@
 	<!-- Sort Controls & Pagination -->
 	<div class="flex flex-wrap items-center gap-4">
 		<form action="{{ url()->current() }}" method="GET" class="flex items-center gap-2">
-			<select name="rpp" class="form-select-tw text-sm py-1 auto-submit">
-				@foreach($rppOptions as $value => $label)
-				<option value="{{ $value }}" {{ ($rpp ?? 25) == $value ? 'selected' : '' }}>{{ $label }}</option>
+			<select name="limit" class="form-select-tw text-sm py-1 auto-submit">
+				@foreach($limitOptions as $value => $label)
+				<option value="{{ $value }}" {{ ($limit ?? 10) == $value ? 'selected' : '' }}>{{ $label }}</option>
 				@endforeach
 			</select>
 			<span class="text-muted-foreground text-sm">Sort by:</span>
-			<select name="sortBy" class="form-select-tw text-sm py-1 auto-submit">
+			<select name="sort" class="form-select-tw text-sm py-1 auto-submit">
 				@foreach($sortOptions as $value => $label)
-				<option value="{{ $value }}" {{ ($sortBy ?? 'threads.created_at') == $value ? 'selected' : '' }}>{{ $label }}</option>
+				<option value="{{ $value }}" {{ ($sort ?? 'threads.created_at') == $value ? 'selected' : '' }}>{{ $label }}</option>
 				@endforeach
 			</select>
-			<select name="sortDirection" class="form-select-tw text-sm py-1 auto-submit">
+			<select name="direction" class="form-select-tw text-sm py-1 auto-submit">
 				@foreach($directionOptions as $value => $label)
-				<option value="{{ $value }}" {{ ($sortDirection ?? 'desc') == $value ? 'selected' : '' }}>{{ $label }}</option>
+				<option value="{{ $value }}" {{ ($direction ?? 'desc') == $value ? 'selected' : '' }}>{{ $label }}</option>
 				@endforeach
 			</select>
 		</form>

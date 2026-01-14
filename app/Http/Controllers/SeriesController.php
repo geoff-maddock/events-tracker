@@ -872,7 +872,7 @@ class SeriesController extends Controller
         if ($request->ajax()) {
             return [
                 'Message' => 'You are now following the series - '.$series->name,
-                'Success' => view('series.single')
+                'Success' => view('series.single-tw')
                     ->with(compact('series'))
                     ->render(),
             ];
@@ -912,7 +912,7 @@ class SeriesController extends Controller
         if ($request->ajax()) {
             return [
                 'Message' => 'You are no longer following the series - '.$series->name,
-                'Success' => view('series.single')
+                'Success' => view('series.single-tw')
                     ->with(compact('series'))
                     ->render(),
             ];

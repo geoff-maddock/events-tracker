@@ -1188,7 +1188,7 @@ class EventsController extends Controller
         if ($request->ajax()) {
             return [
                 'Message' => 'You are now attending the event - '.$event->name,
-                'Success' => view('events.single')
+                'Success' => view('events.single-tw')
                     ->with(compact('event'))
                     ->with('month', '')
                     ->render(),
@@ -1232,7 +1232,7 @@ class EventsController extends Controller
         if ($request->ajax()) {
             return [
                 'Message' => 'You are no longer attending the event - '.$event->name,
-                'Success' => view('events.single')
+                'Success' => view('events.single-tw')
                     ->with(compact('event'))
                     ->with('month', '')
                     ->render(),

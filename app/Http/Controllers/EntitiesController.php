@@ -938,7 +938,7 @@ class EntitiesController extends Controller
         if ($request->ajax()) {
             return [
                 'Message' => 'You are now following the entity - '.$entity->name,
-                'Success' => view('entities.single')
+                'Success' => view('entities.single-tw')
                     ->with(compact('entity'))
                     ->render(),
             ];
@@ -981,7 +981,7 @@ class EntitiesController extends Controller
         if ($request->ajax()) {
             return [
                 'Message' => 'You are no longer following the entity - '.$entity->name,
-                'Success' => view('entities.single')
+                'Success' => view('entities.single-tw')
                     ->with(compact('entity'))
                     ->render(),
             ];

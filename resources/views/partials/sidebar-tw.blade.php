@@ -47,16 +47,18 @@
         </div>
 
         <!-- Calendar -->
-        <a href="{{ url('/calendar') }}" class="nav-item-tw {{ Request::is('calendar') ? 'nav-item-active-tw' : '' }}">
-            <i class="bi bi-calendar3 text-lg"></i>
-            <span>Event Calendar</span>
-        </a>
-
-        <!-- Your Calendar -->
-        <a href="{{ url('/calendar/attending') }}" class="nav-item-tw {{ Request::is('calendar/attending') ? 'nav-item-active-tw' : '' }}">
-            <i class="bi bi-calendar-check text-lg"></i>
-            <span>Your Calendar</span>
-        </a>
+        <div class="pt-2">
+            <a href="{{ url('/calendar') }}" class="nav-item-tw {{ Request::is('calendar') && !Request::is('calendar/attending') ? 'nav-item-active-tw' : '' }}">
+                <i class="bi bi-calendar3 text-lg"></i>
+                <span>Event Calendar</span>
+            </a>
+            <div class="ml-8 space-y-1 mt-1">
+                <a href="{{ url('/calendar/attending') }}" class="nav-item-tw text-sm {{ Request::is('calendar/attending') ? 'nav-item-active-tw' : '' }}">
+                    <i class="bi bi-calendar-check text-sm"></i>
+                    <span>Your Calendar</span>
+                </a>
+            </div>
+        </div>
 
         <!-- Entity Listings -->
         <div class="pt-2">
@@ -202,10 +204,18 @@
             <span>Event Listings</span>
         </a>
 
-        <a href="{{ url('/calendar') }}" class="nav-item-tw {{ Request::is('calendar') ? 'nav-item-active-tw' : '' }}">
-            <i class="bi bi-calendar3 text-lg"></i>
-            <span>Event Calendar</span>
-        </a>
+        <div class="pt-2">
+            <a href="{{ url('/calendar') }}" class="nav-item-tw {{ Request::is('calendar') && !Request::is('calendar/attending') ? 'nav-item-active-tw' : '' }}">
+                <i class="bi bi-calendar3 text-lg"></i>
+                <span>Event Calendar</span>
+            </a>
+            <div class="ml-8 space-y-1 mt-1">
+                <a href="{{ url('/calendar/attending') }}" class="nav-item-tw text-sm {{ Request::is('calendar/attending') ? 'nav-item-active-tw' : '' }}">
+                    <i class="bi bi-calendar-check text-sm"></i>
+                    <span>Your Calendar</span>
+                </a>
+            </div>
+        </div>
 
         <a href="{{ url('/entities') }}" class="nav-item-tw {{ Request::is('entities') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-people text-lg"></i>

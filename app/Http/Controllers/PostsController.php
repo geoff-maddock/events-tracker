@@ -129,7 +129,7 @@ class PostsController extends Controller
             return $posts;
         }
 
-        return view('posts.index')
+        return view('posts.index-tw')
         ->with(array_merge(
             [
                 'limit' => $listResultSet->getLimit(),
@@ -197,7 +197,7 @@ class PostsController extends Controller
             return $posts;
         }
 
-        return view('posts.index')
+        return view('posts.index-tw')
         ->with(array_merge(
             [
                 'limit' => $listResultSet->getLimit(),
@@ -264,7 +264,7 @@ class PostsController extends Controller
             return $posts;
         }
 
-        return view('posts.index')
+        return view('posts.index-tw')
         ->with(array_merge(
             [
                 'limit' => $listResultSet->getLimit(),

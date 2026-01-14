@@ -135,7 +135,7 @@ class ThreadsController extends Controller
             return $threads;
         }
 
-        return view('threads.index')
+        return view('threads.index-tw')
                 ->with(array_merge(
                     [
                         'limit' => $listResultSet->getLimit(),
@@ -201,7 +201,7 @@ class ThreadsController extends Controller
             return $threads;
         }
 
-        return view('threads.index')
+        return view('threads.index-tw')
                 ->with(array_merge(
                     [
                         'limit' => $listResultSet->getLimit(),
@@ -266,7 +266,7 @@ class ThreadsController extends Controller
             return $threads;
         }
 
-        return view('threads.index')
+        return view('threads.index-tw')
         ->with(array_merge(
             [
                 'limit' => $listResultSet->getLimit(),
@@ -368,7 +368,7 @@ class ThreadsController extends Controller
             return $threads;
         }
 
-        return view('threads.index')
+        return view('threads.index-tw')
         ->with(array_merge(
             [
                 'limit' => $listResultSet->getLimit(),
@@ -428,7 +428,7 @@ class ThreadsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('threads.index')
+        return view('threads.index-tw')
         ->with(array_merge(
             [
                 'limit' => $listResultSet->getLimit(),
@@ -487,7 +487,7 @@ class ThreadsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('threads.index')
+        return view('threads.index-tw')
         ->with(array_merge(
             [
                 'limit' => $listResultSet->getLimit(),
@@ -548,7 +548,7 @@ class ThreadsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('threads.index')
+        return view('threads.index-tw')
         ->with(array_merge(
             [
                 'limit' => $listResultSet->getLimit(),
@@ -609,7 +609,7 @@ class ThreadsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('threads.index')
+        return view('threads.index-tw')
         ->with(array_merge(
             [
                 'limit' => $listResultSet->getLimit(),
@@ -771,7 +771,7 @@ class ThreadsController extends Controller
         ++$thread->views;
         $thread->save();
 
-        return view('threads.show', compact('thread', 'tags'));
+        return view('threads.show-tw', compact('thread', 'tags'));
     }
 
     public function lock(int $id): RedirectResponse
