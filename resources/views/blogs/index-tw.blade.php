@@ -92,7 +92,7 @@
 
 	<!-- Pagination -->
 	<div class="mb-4">
-		{!! $blogs->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links() !!}
+		{!! $blogs->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links('vendor.pagination.tailwind') !!}
 	</div>
 
 	<!-- Blogs List -->
@@ -100,7 +100,7 @@
 
 	<!-- Pagination -->
 	<div class="mt-4">
-		{!! $blogs->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links() !!}
+		{!! $blogs->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links('vendor.pagination.tailwind') !!}
 	</div>
 </div>
 

@@ -125,7 +125,7 @@
 		<div>
 			<!-- Top Pagination -->
 			<div class="mb-4">
-				{!! $reviews->appends(['sort' => $sort, 'limit' => $limit, 'direction' => $direction])->links() !!}
+				{!! $reviews->appends(['sort' => $sort, 'limit' => $limit, 'direction' => $direction])->links('vendor.pagination.tailwind') !!}
 			</div>
 
 			<!-- Reviews -->
@@ -133,7 +133,7 @@
 
 			<!-- Bottom Pagination -->
 			<div class="mt-4">
-				{!! $reviews->appends(['sort' => $sort, 'limit' => $limit, 'direction' => $direction])->links() !!}
+				{!! $reviews->appends(['sort' => $sort, 'limit' => $limit, 'direction' => $direction])->links('vendor.pagination.tailwind') !!}
 			</div>
 		</div>
 	@else

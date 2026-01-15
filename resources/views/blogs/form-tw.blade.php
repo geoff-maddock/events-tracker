@@ -119,12 +119,15 @@
     <select
         name="entity_list[]"
         id="entity_list"
-        class="form-control select2 {{ $errors->has('entities') ? 'border-destructive' : '' }}"
+        class="select2"
+        data-theme="tailwind"
         data-placeholder="Choose a related artist, producer, dj"
         data-tags="false"
         multiple>
         @foreach($entityOptions as $id => $name)
-            <option value="{{ $id }}">{{ $name }}</option>
+            <option value="{{ $id }}" {{ in_array($id, old('entity_list', isset($blog) ? $blog->entities->pluck('id')->toArray() : [])) ? 'selected' : '' }}>
+                {{ $name }}
+            </option>
         @endforeach
     </select>
 </x-ui.form-group>
@@ -138,12 +141,15 @@
     <select
         name="tag_list[]"
         id="tag_list"
-        class="form-control select2 {{ $errors->has('tags') ? 'border-destructive' : '' }}"
+        class="select2"
+        data-theme="tailwind"
         data-placeholder="Choose a tag"
         data-tags="true"
         multiple>
         @foreach($tagOptions as $id => $name)
-            <option value="{{ $id }}">{{ $name }}</option>
+            <option value="{{ $id }}" {{ in_array($id, old('tag_list', isset($blog) ? $blog->tags->pluck('id')->toArray() : [])) ? 'selected' : '' }}>
+                {{ $name }}
+            </option>
         @endforeach
     </select>
 </x-ui.form-group>

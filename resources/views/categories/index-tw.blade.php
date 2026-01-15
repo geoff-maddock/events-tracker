@@ -77,7 +77,7 @@
 
 	<!-- Pagination -->
 	<div class="mb-4">
-		{!! $categories->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links() !!}
+		{!! $categories->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links('vendor.pagination.tailwind') !!}
 	</div>
 
 	<!-- Categories List -->
@@ -85,7 +85,7 @@
 
 	<!-- Pagination -->
 	<div class="mt-4">
-		{!! $categories->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links() !!}
+		{!! $categories->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links('vendor.pagination.tailwind') !!}
 	</div>
 </div>
 

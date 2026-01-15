@@ -19,7 +19,16 @@
       "Bash(php artisan view:clear:*)",
       "Bash(php artisan:*)",
       "Bash(ls:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(find:*)",
+      "Bash(for view in indexPhoto feed briefText event-calendar create edit indexWeek)",
+      "Bash(do)",
+      "Bash(if [ -f \"/var/www/dev-events/resources/views/events/$view-tw.blade.php\" ])",
+      "Bash(then)",
+      "Bash(echo:*)",
+      "Bash(else)",
+      "Bash(fi)",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []

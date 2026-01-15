@@ -311,7 +311,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -609,7 +609,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(array_merge(
                 [
                     'slug' => 'Future',
@@ -728,7 +728,7 @@ class EventsController extends Controller
                     ->render();
         }
 
-        return view('events.upcoming')
+        return view('events.upcoming-tw')
         ->with([
             'date' => $date,
             'window' => $this->defaultWindow,
@@ -794,7 +794,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -854,7 +854,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -916,7 +916,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
         ->with(array_merge(
             [
                 'slug' => 'Attending',
@@ -972,7 +972,7 @@ class EventsController extends Controller
             ->with('visibility', 'venue','eventType','entities','tags')
             ->paginate(1000);
 
-        return view('events.feed', compact('events'));
+        return view('events.feed-tw', compact('events'));
     }
 
     /**
@@ -983,7 +983,7 @@ class EventsController extends Controller
         // set number of results per page
         $events = Event::getByTag(ucfirst($tag))->future()->simplePaginate(10000);
 
-        return view('events.feed', compact('events'));
+        return view('events.feed-tw', compact('events'));
     }
 
     /**
@@ -1953,7 +1953,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(
                 array_merge(
                     [
@@ -2034,7 +2034,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(
                 array_merge(
                     [
@@ -2103,7 +2103,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(
                 array_merge(
                     [
@@ -2177,7 +2177,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(
                 array_merge(
                     [
@@ -2255,7 +2255,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(
                 array_merge(
                     [
@@ -2335,7 +2335,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(
                 array_merge(
                     [
@@ -2588,7 +2588,7 @@ class EventsController extends Controller
             ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
 
-        return view('events.feed', compact('events'));
+        return view('events.feed-tw', compact('events'));
     }
 
     public function exportAttending(
@@ -2627,7 +2627,7 @@ class EventsController extends Controller
             ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
 
-        return view('events.feed', compact('events'));
+        return view('events.feed-tw', compact('events'));
     }
 
 
@@ -2692,7 +2692,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.indexUserAttending')
+        return view('events.indexUserAttending-tw')
         ->with(array_merge(
             [
                 'slug' => 'Attending',

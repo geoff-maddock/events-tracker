@@ -45,7 +45,7 @@
 
 	<!-- Pagination -->
 	<div class="mb-4">
-		{!! $menus->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links() !!}
+		{!! $menus->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links('vendor.pagination.tailwind') !!}
 	</div>
 
 	<!-- Menus List -->
@@ -53,7 +53,7 @@
 
 	<!-- Pagination -->
 	<div class="mt-4">
-		{!! $menus->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links() !!}
+		{!! $menus->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links('vendor.pagination.tailwind') !!}
 	</div>
 </div>
 

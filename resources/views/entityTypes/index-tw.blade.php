@@ -45,7 +45,7 @@
 
 	<!-- Pagination -->
 	<div class="mb-4">
-		{!! $entityTypes->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links() !!}
+		{!! $entityTypes->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links('vendor.pagination.tailwind') !!}
 	</div>
 
 	<!-- Entity Types List -->
@@ -53,7 +53,7 @@
 
 	<!-- Pagination -->
 	<div class="mt-4">
-		{!! $entityTypes->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links() !!}
+		{!! $entityTypes->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links('vendor.pagination.tailwind') !!}
 	</div>
 </div>
 

@@ -240,7 +240,7 @@
 
 			<!-- Pagination -->
 			<div class="px-4 py-3 border-t border-border">
-				{!! $posts->onEachSide(2)->links() !!}
+				{!! $posts->onEachSide(2)->links('vendor.pagination.tailwind') !!}
 			</div>
 		</div>
 	@else

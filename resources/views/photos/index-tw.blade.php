@@ -158,7 +158,7 @@
 
 		<!-- Pagination -->
 		<div class="flex justify-center mt-6">
-			{!! $photos->links() !!}
+			{!! $photos->links('vendor.pagination.tailwind') !!}
 		</div>
 	@else
 		<div class="text-center py-12 bg-card rounded-lg border border-border">

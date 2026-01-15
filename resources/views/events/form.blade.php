@@ -344,7 +344,9 @@
                 data-tags="false"
                 multiple>
                 @foreach($entityOptions as $id => $name)
-                    <option value="{{ $id }}">{{ $name }}</option>
+                    <option value="{{ $id }}" {{ in_array($id, old('entity_list', isset($event) ? $event->entities->pluck('id')->toArray() : [])) ? 'selected' : '' }}>
+                        {{ $name }}
+                    </option>
                 @endforeach
             </select>
         </x-ui.form-group>
@@ -377,7 +379,9 @@
                 data-tags="false"
                 multiple>
                 @foreach($tagOptions as $id => $name)
-                    <option value="{{ $id }}">{{ $name }}</option>
+                    <option value="{{ $id }}" {{ in_array($id, old('tag_list', isset($event) ? $event->tags->pluck('id')->toArray() : [])) ? 'selected' : '' }}>
+                        {{ $name }}
+                    </option>
                 @endforeach
             </select>
         </x-ui.form-group>

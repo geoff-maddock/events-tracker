@@ -313,7 +313,7 @@ class UsersController extends Controller
 
         $token = \Password::getRepository()->create($user);
 
-        return view('users.show', compact('user', 'tabs', 'token'));
+        return view('users.show-tw', compact('user', 'tabs', 'token'));
     }
 
     public function profile(User $user, Request $request): RedirectResponse
@@ -374,7 +374,7 @@ class UsersController extends Controller
 
         flash('Success', 'The user has been updated');
 
-        return view('users.show', compact('user', 'tabs'));
+        return view('users.show-tw', compact('user', 'tabs'));
     }
 
     /**

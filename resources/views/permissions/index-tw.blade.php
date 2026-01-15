@@ -45,7 +45,7 @@
 
 	<!-- Pagination -->
 	<div class="mb-4">
-		{!! $permissions->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links() !!}
+		{!! $permissions->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links('vendor.pagination.tailwind') !!}
 	</div>
 
 	<!-- Permissions List -->
@@ -53,7 +53,7 @@
 
 	<!-- Pagination -->
 	<div class="mt-4">
-		{!! $permissions->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links() !!}
+		{!! $permissions->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links('vendor.pagination.tailwind') !!}
 	</div>
 </div>
 

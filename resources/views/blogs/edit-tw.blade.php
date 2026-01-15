@@ -2,9 +2,14 @@
 
 @section('title', 'Edit Blog')
 
+@section('select2.include')
+<!-- Select2 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+@endsection
+
 @section('content')
 
-<div class="max-w-4xl mx-auto">
+<div class="max-w-7xl mx-auto">
 	<!-- Page Header -->
 	<div class="mb-6">
 		<h1 class="text-3xl font-bold text-primary mb-2">Edit Blog</h1>
@@ -45,18 +50,20 @@
 
 @section('scripts.footer')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+$(document).ready(function() {
 	// Initialize Select2 for tags and entities
 	$('#tag_list').select2({
+		theme: 'tailwind',
+		width: '100%',
 		placeholder: 'Choose a tag',
-		tags: true,
-		theme: 'tailwind'
+		tags: true
 	});
 
 	$('#entity_list').select2({
+		theme: 'tailwind',
+		width: '100%',
 		placeholder: 'Choose a related artist, producer, dj',
-		tags: false,
-		theme: 'tailwind'
+		tags: false
 	});
 });
 </script>

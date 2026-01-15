@@ -594,7 +594,7 @@ class EntitiesController extends Controller
     {
         $entity = Entity::getBySlug(strtolower($slug))->firstOrFail();
 
-        return view('entities.show')
+        return view('entities.show-tw')
             ->with(compact('entity'))
             ->render();
     }

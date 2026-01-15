@@ -118,7 +118,7 @@
 
 					<!-- Pagination -->
 					<div class="flex justify-center">
-						{!! $events->links() !!}
+						{!! $events->links('vendor.pagination.tailwind') !!}
 					</div>
 				@else
 					<div class="text-center py-12">
