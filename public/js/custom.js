@@ -158,6 +158,7 @@ var App = (function () {
                 tags: $this.data('tags'),
                 allowClear: true,
                 width: '100%',
+                theme: $this.data('theme') || 'tailwind',
             });
         });
 

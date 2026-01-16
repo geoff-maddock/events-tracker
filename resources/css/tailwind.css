@@ -99,9 +99,24 @@
     @apply w-full px-3 py-2 bg-input border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent;
   }
 
+  /* Native select styling */
+  select {
+    @apply bg-card text-foreground;
+  }
+
   /* Select dropdown options styling for dark mode */
   select option {
     @apply bg-card text-foreground;
+  }
+
+  .dark select {
+    background-color: hsl(240 3.7% 15.9%);
+    color: hsl(0 0% 98%);
+  }
+
+  .dark select option {
+    background-color: hsl(240 3.7% 15.9%);
+    color: hsl(0 0% 98%);
   }
 
   /* Badge/Tag styles */

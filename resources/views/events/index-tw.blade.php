@@ -31,7 +31,6 @@ Events @include('events.title-crumbs')
 @section('select2.include')
 <!-- Select2 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.1.1/dist/select2-bootstrap-5-theme.min.css" />
 @endsection
 
 @section('content')
@@ -98,7 +97,7 @@ Events @include('events.title-crumbs')
 			<label for="filter_venue" class="block text-sm font-medium text-muted-foreground mb-1">Venue</label>
 			{!! Form::select('filter_venue', $venueOptions, ($filters['venue'] ?? null),
 			[
-				'data-theme' => 'bootstrap-5',
+				'data-theme' => 'tailwind',
 				'class' => 'form-select-tw select2',
 				'data-placeholder' => 'Select a venue',
 				'name' => 'filters[venue]',
@@ -112,7 +111,7 @@ Events @include('events.title-crumbs')
 			<label for="filter_tag" class="block text-sm font-medium text-muted-foreground mb-1">Tag</label>
 			{!! Form::select('filter_tag', $tagOptions, ($filters['tag'] ?? null),
 			[
-				'data-theme' => 'bootstrap-5',
+				'data-theme' => 'tailwind',
 				'class' => 'form-select-tw select2',
 				'data-placeholder' => 'Select a tag',
 				'name' => 'filters[tag]',
@@ -126,7 +125,7 @@ Events @include('events.title-crumbs')
 			<label for="filter_related" class="block text-sm font-medium text-muted-foreground mb-1">Related Entity</label>
 			{!! Form::select('filter_related', $relatedOptions, ($filters['related'] ?? null),
 			[
-				'data-theme' => 'bootstrap-5',
+				'data-theme' => 'tailwind',
 				'class' => 'form-select-tw select2',
 				'data-placeholder' => 'Select an entity',
 				'name' => 'filters[related]',
@@ -140,7 +139,7 @@ Events @include('events.title-crumbs')
 			<label for="filter_event_type" class="block text-sm font-medium text-muted-foreground mb-1">Type</label>
 			{!! Form::select('filter_event_type', $eventTypeOptions, ($filters['event_type'] ?? null),
 			[
-				'data-theme' => 'bootstrap-5',
+				'data-theme' => 'tailwind',
 				'class' => 'form-select-tw select2',
 				'data-placeholder' => 'Select a type',
 				'name' => 'filters[event_type]',

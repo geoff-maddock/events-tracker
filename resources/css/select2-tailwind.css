@@ -128,18 +128,40 @@
     @apply cursor-pointer font-bold;
 }
 
-/* Dark mode adjustments */
+/* Dark mode adjustments - explicit colors for reliability */
 .dark .select2-container--tailwind .select2-selection--single,
 .dark .select2-container--tailwind .select2-selection--multiple {
-    @apply bg-input border-input;
+    background-color: hsl(240 3.7% 15.9%) !important;
+    border-color: hsl(240 3.7% 15.9%) !important;
+    color: hsl(0 0% 98%) !important;
+}
+
+.dark .select2-container--tailwind .select2-selection__rendered {
+    color: hsl(0 0% 98%) !important;
 }
 
 .dark .select2-container--tailwind .select2-dropdown {
-    @apply bg-card border-border;
+    background-color: hsl(240 10% 3.9%) !important;
+    border-color: hsl(240 3.7% 15.9%) !important;
+}
+
+.dark .select2-container--tailwind .select2-results__option {
+    color: hsl(0 0% 98%) !important;
+}
+
+.dark .select2-container--tailwind .select2-results__option--highlighted {
+    background-color: hsl(240 3.7% 15.9%) !important;
+    color: hsl(0 0% 98%) !important;
 }
 
 .dark .select2-container--tailwind .select2-search--dropdown .select2-search__field {
-    @apply bg-input border-input;
+    background-color: hsl(240 3.7% 15.9%) !important;
+    border-color: hsl(240 3.7% 15.9%) !important;
+    color: hsl(0 0% 98%) !important;
+}
+
+.dark .select2-container--tailwind .select2-search--inline .select2-search__field {
+    color: hsl(0 0% 98%) !important;
 }
 
 /* Prevent overflow and ensure tags wrap properly */
