@@ -254,7 +254,7 @@ class PermissionsController extends Controller
      */
     public function show(Permission $permission): View
     {
-        return view('permissions.show', compact('permission'));
+        return view('permissions.show-tw', compact('permission'));
     }
 
     /**

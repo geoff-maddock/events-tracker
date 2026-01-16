@@ -28,7 +28,15 @@
       "Bash(echo:*)",
       "Bash(else)",
       "Bash(fi)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(for dir in blogs categories groups forums links locations menus comments contacts permissions photos)",
+      "Bash(do echo \"=== $dir ===\" head -1 /var/www/dev-events/resources/views/$dir/create.blade.php /var/www/dev-events/resources/views/$dir/edit.blade.php)",
+      "Bash(for dir in categories groups forums links locations menus comments contacts permissions photos)",
+      "Bash(do echo \"=== $dir ===\" if [ -d \"/var/www/dev-events/resources/views/$dir\" ])",
+      "Bash(then ls /var/www/dev-events/resources/views/$dir/*.blade.php)",
+      "Bash(xargs:*)",
+      "Bash(if [ -f \"/var/www/dev-events/resources/views/$dir/show-tw.blade.php\" ])",
+      "Bash(elif [ -f \"/var/www/dev-events/resources/views/$dir/show.blade.php\" ])"
     ],
     "deny": [],
     "ask": []

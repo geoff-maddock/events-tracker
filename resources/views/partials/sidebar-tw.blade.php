@@ -26,11 +26,13 @@
 
     <!-- Navigation -->
     <nav class="px-4 py-2 space-y-1">
-        <!-- Your Radar -->
-        <a href="{{ url('/events/attending') }}" class="nav-item-tw {{ Request::is('events/attending') ? 'nav-item-active-tw' : '' }}">
+        <!-- Your Radar (logged in users only) -->
+        @auth
+        <a href="{{ route('radar') }}" class="nav-item-tw {{ Request::is('radar') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-broadcast text-lg"></i>
             <span>Your Radar</span>
         </a>
+        @endauth
 
         <!-- Events Section -->
         <div class="pt-4">
@@ -52,12 +54,14 @@
                 <i class="bi bi-calendar3 text-lg"></i>
                 <span>Event Calendar</span>
             </a>
+            @auth
             <div class="ml-8 space-y-1 mt-1">
                 <a href="{{ url('/calendar/attending') }}" class="nav-item-tw text-sm {{ Request::is('calendar/attending') ? 'nav-item-active-tw' : '' }}">
                     <i class="bi bi-calendar-check text-sm"></i>
                     <span>Your Calendar</span>
                 </a>
             </div>
+            @endauth
         </div>
 
         <!-- Entity Listings -->
@@ -66,12 +70,14 @@
                 <i class="bi bi-people text-lg"></i>
                 <span>Entity Listings</span>
             </a>
+            @auth
             <div class="ml-8 space-y-1 mt-1">
                 <a href="{{ url('/entities/following') }}" class="nav-item-tw text-sm {{ Request::is('entities/following') ? 'nav-item-active-tw' : '' }}">
                     <i class="bi bi-person-heart text-sm"></i>
                     <span>Your Entities</span>
                 </a>
             </div>
+            @endauth
         </div>
 
         <!-- Series Listings -->
@@ -194,10 +200,12 @@
 
     <!-- Same navigation as desktop -->
     <nav class="flex-1 px-4 py-2 space-y-1 overflow-y-auto">
-        <a href="{{ url('/events/attending') }}" class="nav-item-tw {{ Request::is('events/attending') ? 'nav-item-active-tw' : '' }}">
+        @auth
+        <a href="{{ route('radar') }}" class="nav-item-tw {{ Request::is('radar') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-broadcast text-lg"></i>
             <span>Your Radar</span>
         </a>
+        @endauth
 
         <a href="{{ url('/events') }}" class="nav-item-tw {{ Request::is('events') && !Request::is('events/*') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-calendar-event text-lg"></i>
@@ -209,18 +217,30 @@
                 <i class="bi bi-calendar3 text-lg"></i>
                 <span>Event Calendar</span>
             </a>
+            @auth
             <div class="ml-8 space-y-1 mt-1">
                 <a href="{{ url('/calendar/attending') }}" class="nav-item-tw text-sm {{ Request::is('calendar/attending') ? 'nav-item-active-tw' : '' }}">
                     <i class="bi bi-calendar-check text-sm"></i>
                     <span>Your Calendar</span>
                 </a>
             </div>
+            @endauth
         </div>
 
-        <a href="{{ url('/entities') }}" class="nav-item-tw {{ Request::is('entities') ? 'nav-item-active-tw' : '' }}">
-            <i class="bi bi-people text-lg"></i>
-            <span>Entity Listings</span>
-        </a>
+        <div class="pt-2">
+            <a href="{{ url('/entities') }}" class="nav-item-tw {{ Request::is('entities') ? 'nav-item-active-tw' : '' }}">
+                <i class="bi bi-people text-lg"></i>
+                <span>Entity Listings</span>
+            </a>
+            @auth
+            <div class="ml-8 space-y-1 mt-1">
+                <a href="{{ url('/entities/following') }}" class="nav-item-tw text-sm {{ Request::is('entities/following') ? 'nav-item-active-tw' : '' }}">
+                    <i class="bi bi-person-heart text-sm"></i>
+                    <span>Your Entities</span>
+                </a>
+            </div>
+            @endauth
+        </div>
 
         <a href="{{ url('/series') }}" class="nav-item-tw {{ Request::is('series') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-collection text-lg"></i>

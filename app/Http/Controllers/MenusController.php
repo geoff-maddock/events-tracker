@@ -240,7 +240,7 @@ class MenusController extends Controller
      */
     public function show(Menu $menu): View
     {
-        return view('menus.show', compact('menu'));
+        return view('menus.show-tw', compact('menu'));
     }
 
     /**
@@ -257,7 +257,7 @@ class MenusController extends Controller
 
         // todo - confirm the menu is visible
 
-        return view('menus.content', compact('menu'));
+        return view('menus.content-tw', compact('menu'));
     }
 
     /**

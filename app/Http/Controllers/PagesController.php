@@ -6,6 +6,7 @@ use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Entity;
 use App\Models\EntityStatus;
 use App\Models\Event;
+use App\Models\Menu;
 use App\Models\Series;
 use App\Models\Tag;
 use App\Models\Thread;
@@ -319,17 +320,52 @@ class PagesController extends Controller
 
     public function about(): View
     {
-        return view('pages.about-tw');
+        $menu = Menu::with('blogs.contentType')->find(1);
+
+        return view('pages.about-tw', compact('menu'));
     }
 
     public function privacy(): View
     {
-        return view('pages.privacy');
+        return view('pages.privacy-tw');
     }
 
     public function tos(): View
     {
-        return view('pages.tos');
+        return view('pages.tos-tw');
+    }
+
+    public function radar(Request $request): View
+    {
+        $user = $request->user();
+
+        // Get events the user is attending (future only)
+        $attendingEvents = $user->getAttendingFuture();
+
+        // Get recommended events based on followed entities, tags, and series
+        $recommendedEvents = $user->getRecommendedEvents()
+            ->with(['venue', 'tags', 'entities', 'eventType'])
+            ->take(12)
+            ->get();
+
+        // Get recently added events
+        $recentEvents = Event::where('start_at', '>=', Carbon::now())
+            ->with(['venue', 'tags', 'entities', 'eventType'])
+            ->orderBy('created_at', 'desc')
+            ->take(8)
+            ->get();
+
+        // Check if user has followed content for showing recommendations section
+        $hasFollowedContent = $user->getTagsFollowing()->isNotEmpty()
+            || $user->getEntitiesFollowing()->isNotEmpty()
+            || $user->getSeriesFollowing()->isNotEmpty();
+
+        return view('pages.radar-tw', compact(
+            'attendingEvents',
+            'recommendedEvents',
+            'recentEvents',
+            'hasFollowedContent'
+        ));
     }
 
     public function allModules(): View
@@ -457,7 +493,7 @@ class PagesController extends Controller
             ->where('primary_link', 'like', '%facebook%')
             ->get();
 
-        return view('pages.tools', compact('events'));
+        return view('pages.tools-tw', compact('events'));
     }
 
     /**

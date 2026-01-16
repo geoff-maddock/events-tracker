@@ -98,7 +98,7 @@ class LocationsController extends Controller
      */
     public function show(Entity $entity, Location $location): View
     {
-        return view('locations.show', compact('entity', 'location'));
+        return view('locations.show-tw', compact('entity', 'location'));
     }
 
     /**

@@ -61,7 +61,7 @@ class ContactsController extends Controller
      */
     public function show(Entity $entity, Contact $contact): View
     {
-        return view('contacts.show', compact('entity', 'contact'));
+        return view('contacts.show-tw', compact('entity', 'contact'));
     }
 
     /**

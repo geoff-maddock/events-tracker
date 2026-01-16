@@ -239,7 +239,7 @@ class GroupsController extends Controller
      */
     public function show(Group $group): View
     {
-        return view('groups.show', compact('group'));
+        return view('groups.show-tw', compact('group'));
     }
 
     /**

@@ -548,7 +548,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.indexPhoto')
+        return view('events.indexPhoto-tw')
         ->with(array_merge(
             [
                 'limit' => $listResultSet->getLimit(),
@@ -1195,7 +1195,7 @@ class EventsController extends Controller
     public function renderCalendar(Collection $events, $series = null, $tag = null): View
     {
         // Change this to instead pass in the json EventsList directly here and render, that way I can just pass anything to this function to display the calendar
-        return view('events.event-calendar');
+        return view('events.event-calendar-tw');
     }
 
     /**
@@ -2367,7 +2367,7 @@ class EventsController extends Controller
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
-        return view('events.indexWeek', compact('events'));
+        return view('events.indexWeek-tw', compact('events'));
     }
 
     /**

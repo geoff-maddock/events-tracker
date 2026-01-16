@@ -216,7 +216,7 @@ class TagsController extends Controller
 
         $tags = Tag::orderBy('name', 'ASC')->get();
 
-        return view('tags.index', compact('series', 'entities', 'events', 'tag', 'tags'));
+        return view('tags.index-tw', compact('series', 'entities', 'events', 'tag', 'tags'));
     }
 
     /**
@@ -363,7 +363,7 @@ class TagsController extends Controller
         if ($request->ajax()) {
             return [
                 'Message' => 'You are now following the tag - '.$object->name,
-                'Success' => view('tags.link')
+                'Success' => view('tags.link-tw')
                     ->with(compact('tag'))
                     ->render(),
             ];
@@ -407,7 +407,7 @@ class TagsController extends Controller
         if ($request->ajax()) {
             return [
                 'Message' => 'You are no longer following the tag - '.$tag->name,
-                'Success' => view('tags.link')
+                'Success' => view('tags.link-tw')
                     ->with(compact('tag'))
                     ->render(),
             ];

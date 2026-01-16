@@ -95,13 +95,15 @@
                         {{ $thread->event->name }}
                     </a>
                 </div>
-                @elseif ($thread->series)
+                @elseif ($thread->series->isNotEmpty())
                 <div class="flex items-center gap-2 text-sm text-muted-foreground">
                     <i class="bi bi-collection"></i>
                     <span>Related to</span>
-                    <a href="{{ route('series.show', [$thread->series->slug]) }}" class="text-primary hover:text-primary/90">
-                        {{ $thread->series->name }}
-                    </a>
+                    @foreach ($thread->series->take(3) as $s)
+                        <a href="{{ route('series.show', [$s->slug]) }}" class="text-primary hover:text-primary/90">
+                            {{ $s->name }}
+                        </a>@if (!$loop->last), @endif
+                    @endforeach
                 </div>
                 @endif
             </div>

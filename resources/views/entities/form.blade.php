@@ -183,7 +183,7 @@
                 multiple
                 :hasError="$errors->has('roles')">
                 @foreach($roleOptions as $id => $name)
-                    <option value="{{ $id }}">{{ $name }}</option>
+                    <option value="{{ $id }}" {{ in_array($id, old('role_list', isset($entity) ? $entity->roles->pluck('id')->toArray() : [])) ? 'selected' : '' }}>{{ $name }}</option>
                 @endforeach
             </x-ui.select>
         </x-ui.form-group>
@@ -204,7 +204,7 @@
                 multiple
                 :hasError="$errors->has('tags')">
                 @foreach($tagOptions as $id => $name)
-                    <option value="{{ $id }}">{{ $name }}</option>
+                    <option value="{{ $id }}" {{ in_array($id, old('tag_list', isset($entity) ? $entity->tags->pluck('id')->toArray() : [])) ? 'selected' : '' }}>{{ $name }}</option>
                 @endforeach
             </x-ui.select>
         </x-ui.form-group>
@@ -228,7 +228,7 @@
                 multiple
                 :hasError="$errors->has('aliases')">
                 @foreach($aliasOptions as $id => $name)
-                    <option value="{{ $id }}">{{ $name }}</option>
+                    <option value="{{ $id }}" {{ in_array($id, old('alias_list', isset($entity) ? $entity->aliases->pluck('id')->toArray() : [])) ? 'selected' : '' }}>{{ $name }}</option>
                 @endforeach
             </x-ui.select>
         </x-ui.form-group>

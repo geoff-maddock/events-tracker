@@ -304,7 +304,7 @@ class CalendarController extends Controller
         // converts array of events into json event list
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'related', 'initialDate'));
+        return view('events.event-calendar-tw', compact('eventList', 'related', 'initialDate'));
     }
 
     /**
@@ -368,7 +368,7 @@ class CalendarController extends Controller
         // converts array of events into json event list
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'tag', 'initialDate'));
+        return view('events.event-calendar-tw', compact('eventList', 'tag', 'initialDate'));
     }
 
     /**
@@ -429,7 +429,7 @@ class CalendarController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'initialDate'));
+        return view('events.event-calendar-tw', compact('eventList', 'initialDate'));
     }
 
     /**
@@ -493,7 +493,7 @@ class CalendarController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'initialDate'));
+        return view('events.event-calendar-tw', compact('eventList', 'initialDate'));
     }
 
     /**
@@ -548,7 +548,7 @@ class CalendarController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.dynamic-tag-event-calendar', compact('eventList'));
+        return view('events.dynamic-tag-event-calendar-tw', compact('eventList'));
     }
 
     /**
@@ -560,7 +560,7 @@ class CalendarController extends Controller
     public function renderCalendar(Collection $events, $series = null, $tag = null): View
     {
         // Change this to instead pass in the json EventsList directly here and render, that way I can just pass anything to this function to display the calendar
-        return view('events.event-calendar');
+        return view('events.event-calendar-tw');
     }
 
     /**
@@ -758,7 +758,7 @@ class CalendarController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'slug', 'initialDate'));
+        return view('events.event-calendar-tw', compact('eventList', 'slug', 'initialDate'));
     }
 
     /**
@@ -824,7 +824,7 @@ class CalendarController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'slug','initialDate'));
+        return view('events.event-calendar-tw', compact('eventList', 'slug','initialDate'));
     }
 
     /**
@@ -889,7 +889,7 @@ class CalendarController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'slug','initialDate'));
+        return view('events.event-calendar-tw', compact('eventList', 'slug','initialDate'));
     }
 
     /**
@@ -953,7 +953,7 @@ class CalendarController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'slug','initialDate'));
+        return view('events.event-calendar-tw', compact('eventList', 'slug','initialDate'));
     }
  
 }

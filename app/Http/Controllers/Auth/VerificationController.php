@@ -26,6 +26,19 @@ class VerificationController extends Controller
     use VerifiesEmails;
 
     /**
+     * Show the email verification notice.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     */
+    public function show(Request $request)
+    {
+        return $request->user()->hasVerifiedEmail()
+            ? redirect($this->redirectPath())
+            : view('auth.verify-tw');
+    }
+
+    /**
      * Where to redirect users after verification.
      *
      * @var string

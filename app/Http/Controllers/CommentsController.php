@@ -85,7 +85,7 @@ class CommentsController extends Controller
      */
     public function show(Entity $entity, Comment $comment): View
     {
-        return view('comments.show', compact('entity', 'comment'));
+        return view('comments.show-tw', compact('entity', 'comment'));
     }
 
     /**

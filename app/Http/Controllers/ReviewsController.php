@@ -250,7 +250,7 @@ class ReviewsController extends Controller
     {
         $events = Event::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('reviews.create', compact('events'))
+        return view('reviews.create-tw', compact('events'))
             ->with($this->getFormOptions());
     }
 
@@ -369,7 +369,7 @@ class ReviewsController extends Controller
         $this->middleware('auth');
 
         // moved necessary lists into AppServiceProvider
-        return view('reviews.edit', compact('review'))
+        return view('reviews.edit-tw', compact('review'))
             ->with($this->getFormOptions());
     }
 

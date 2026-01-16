@@ -90,7 +90,7 @@ class LinksController extends Controller
      */
     public function show(Entity $entity, Link $link): View
     {
-        return view('links.show', compact('entity', 'link'));
+        return view('links.show-tw', compact('entity', 'link'));
     }
 
     /**

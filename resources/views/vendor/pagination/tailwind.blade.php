@@ -60,30 +60,32 @@
                         </a>
                     @endif
 
-                    {{-- Pagination Elements --}}
-                    @foreach ($elements as $element)
-                        {{-- "Three Dots" Separator --}}
-                        @if (is_string($element))
-                            <span aria-disabled="true">
-                                <span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-muted-foreground/50 bg-card border border-border cursor-default">{{ $element }}</span>
-                            </span>
-                        @endif
+                    {{-- Pagination Elements (only for LengthAwarePaginator) --}}
+                    @if (isset($elements))
+                        @foreach ($elements as $element)
+                            {{-- "Three Dots" Separator --}}
+                            @if (is_string($element))
+                                <span aria-disabled="true">
+                                    <span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-muted-foreground/50 bg-card border border-border cursor-default">{{ $element }}</span>
+                                </span>
+                            @endif
 
-                        {{-- Array Of Links --}}
-                        @if (is_array($element))
-                            @foreach ($element as $page => $url)
-                                @if ($page == $paginator->currentPage())
-                                    <span aria-current="page">
-                                        <span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-primary-foreground bg-primary border border-primary cursor-default">{{ $page }}</span>
-                                    </span>
-                                @else
-                                    <a href="{{ $url }}" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-muted-foreground bg-card border border-border hover:bg-accent hover:text-foreground focus:z-10 focus:outline-none focus:ring-2 focus:ring-ring transition-colors" aria-label="{{ __('Go to page :page', ['page' => $page]) }}">
-                                        {{ $page }}
-                                    </a>
-                                @endif
-                            @endforeach
-                        @endif
-                    @endforeach
+                            {{-- Array Of Links --}}
+                            @if (is_array($element))
+                                @foreach ($element as $page => $url)
+                                    @if ($page == $paginator->currentPage())
+                                        <span aria-current="page">
+                                            <span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-primary-foreground bg-primary border border-primary cursor-default">{{ $page }}</span>
+                                        </span>
+                                    @else
+                                        <a href="{{ $url }}" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-muted-foreground bg-card border border-border hover:bg-accent hover:text-foreground focus:z-10 focus:outline-none focus:ring-2 focus:ring-ring transition-colors" aria-label="{{ __('Go to page :page', ['page' => $page]) }}">
+                                            {{ $page }}
+                                        </a>
+                                    @endif
+                                @endforeach
+                            @endif
+                        @endforeach
+                    @endif
 
                     {{-- Next Page Link --}}
                     @if ($paginator->hasMorePages())

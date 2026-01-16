@@ -218,7 +218,7 @@ class CategoriesController extends Controller
     */
     public function show(ThreadCategory $category): View
     {
-        return view('categories.show', compact('category'));
+        return view('categories.show-tw', compact('category'));
     }
 
     /**
