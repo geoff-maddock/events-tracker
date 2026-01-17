@@ -81,7 +81,7 @@
 
 @section('footer')
 <script>
-    // check the current viewport size
+    // Check the current viewport size for initial view
     function checkViewport() {
         if (window.innerWidth < 768) {
             return 'timeGridDay';
@@ -92,14 +92,23 @@
         }
     }
 
+    // Calculate available height for calendar
+    function getCalendarHeight() {
+        // Get viewport height and subtract space for header, toolbar, padding
+        var viewportHeight = window.innerHeight;
+        var offset = 200; // Space for header, nav, margins, padding
+        var minHeight = 500; // Minimum height
+        var calculatedHeight = viewportHeight - offset;
+        return Math.max(calculatedHeight, minHeight);
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
             headerToolbar: { center: 'dayGridMonth,timeGridWeek,timeGridDay' },
             initialView: checkViewport(),
             events: {!! $eventList !!},
-            height: 'auto',
-            aspectRatio: window.innerWidth >= 1536 ? 2.2 : (window.innerWidth >= 1280 ? 2.0 : 1.8),
+            height: getCalendarHeight(),
             initialDate: '{{ $initialDate }}',
             eventDisplay: 'block',
             eventTimeFormat: {
@@ -109,6 +118,15 @@
             },
         });
         calendar.render();
+
+        // Update calendar height on window resize
+        var resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(function() {
+                calendar.setOption('height', getCalendarHeight());
+            }, 150);
+        });
     });
 </script>
 @endsection
