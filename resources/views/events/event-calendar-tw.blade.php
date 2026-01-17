@@ -18,13 +18,21 @@
     .fc .fc-button-primary {
         background-color: hsl(var(--primary));
         border-color: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
     }
     .fc .fc-button-primary:hover {
         background-color: hsl(var(--primary) / 0.9);
+        color: hsl(var(--primary-foreground));
     }
     .fc .fc-button-primary:not(:disabled).fc-button-active,
     .fc .fc-button-primary:not(:disabled):active {
         background-color: hsl(var(--primary) / 0.8);
+        color: hsl(var(--primary-foreground));
+    }
+    .fc .fc-button-primary:disabled {
+        background-color: hsl(var(--muted));
+        border-color: hsl(var(--border));
+        color: hsl(var(--muted-foreground));
     }
     .fc .fc-col-header-cell-cushion,
     .fc .fc-daygrid-day-number {
@@ -49,7 +57,7 @@
 @endsection
 
 @section('content')
-<div class="max-w-7xl mx-auto">
+<div class="w-full">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
         <h1 class="text-3xl font-bold text-foreground">
             Events Calendar
@@ -91,7 +99,7 @@
             initialView: checkViewport(),
             events: {!! $eventList !!},
             height: 'auto',
-            aspectRatio: 1.8,
+            aspectRatio: window.innerWidth >= 1536 ? 2.2 : (window.innerWidth >= 1280 ? 2.0 : 1.8),
             initialDate: '{{ $initialDate }}',
             eventDisplay: 'block',
             eventTimeFormat: {
