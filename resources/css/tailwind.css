@@ -281,3 +281,87 @@
 .flatpickr-day:hover {
   @apply bg-accent;
 }
+
+/* SweetAlert2 Dark Mode Styling */
+.dark .swal2-popup {
+  background-color: hsl(240 10% 3.9%) !important;
+  color: hsl(0 0% 98%) !important;
+  border: 1px solid hsl(240 3.7% 15.9%) !important;
+}
+
+.dark .swal2-title {
+  color: hsl(0 0% 98%) !important;
+}
+
+.dark .swal2-html-container,
+.dark .swal2-content {
+  color: hsl(240 5% 64.9%) !important;
+}
+
+.dark .swal2-confirm {
+  background-color: hsl(0 62.8% 30.6%) !important;
+  color: hsl(0 0% 98%) !important;
+}
+
+.dark .swal2-cancel {
+  background-color: hsl(240 3.7% 15.9%) !important;
+  color: hsl(0 0% 98%) !important;
+  border: 1px solid hsl(240 3.7% 15.9%) !important;
+}
+
+.dark .swal2-cancel:hover {
+  background-color: hsl(240 3.7% 20%) !important;
+}
+
+.dark .swal2-icon.swal2-warning {
+  border-color: hsl(45 93% 47%) !important;
+  color: hsl(45 93% 47%) !important;
+}
+
+.dark .swal2-icon.swal2-error {
+  border-color: hsl(0 62.8% 50%) !important;
+}
+
+.dark .swal2-icon.swal2-error [class^='swal2-x-mark-line'] {
+  background-color: hsl(0 62.8% 50%) !important;
+}
+
+.dark .swal2-icon.swal2-success {
+  border-color: hsl(142 76% 36%) !important;
+  color: hsl(142 76% 36%) !important;
+}
+
+.dark .swal2-icon.swal2-success [class^='swal2-success-line'] {
+  background-color: hsl(142 76% 36%) !important;
+}
+
+.dark .swal2-icon.swal2-success .swal2-success-ring {
+  border-color: hsl(142 76% 36% / 0.3) !important;
+}
+
+.dark .swal2-icon.swal2-info {
+  border-color: hsl(217 91% 60%) !important;
+  color: hsl(217 91% 60%) !important;
+}
+
+.dark .swal2-close {
+  color: hsl(240 5% 64.9%) !important;
+}
+
+.dark .swal2-close:hover {
+  color: hsl(0 0% 98%) !important;
+}
+
+/* Light mode SweetAlert2 - ensure consistent styling */
+.swal2-popup {
+  @apply bg-card text-foreground border border-border;
+}
+
+.swal2-title {
+  @apply text-foreground;
+}
+
+.swal2-html-container,
+.swal2-content {
+  @apply text-muted-foreground;
+}

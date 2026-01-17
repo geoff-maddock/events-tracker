@@ -357,7 +357,7 @@ class ForumsController extends Controller
         // pass a slug for the forum
         $slug = $forum->description;
 
-        return view('threads.index')
+        return view('threads.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),

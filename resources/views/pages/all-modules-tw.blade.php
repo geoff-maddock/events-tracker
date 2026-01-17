@@ -26,6 +26,7 @@
 					['name' => 'Entities', 'url' => '/entities', 'icon' => 'bi-people', 'description' => 'Artists, venues, promoters'],
 					['name' => 'Events', 'url' => '/events', 'icon' => 'bi-calendar-event', 'description' => 'Concerts and club nights'],
 					['name' => 'Photos', 'url' => '/photos', 'icon' => 'bi-images', 'description' => 'Browse event photos'],
+					['name' => 'Popular', 'url' => '/popular', 'icon' => 'bi-graph-up-arrow', 'description' => 'Popular events, entities, and tags'],
 					['name' => 'Posts', 'url' => '/posts', 'icon' => 'bi-file-text', 'description' => 'Community posts'],
 					['name' => 'Reviews', 'url' => '/reviews', 'icon' => 'bi-star', 'description' => 'Event reviews'],
 					['name' => 'Series', 'url' => '/series', 'icon' => 'bi-collection', 'description' => 'Recurring event series'],

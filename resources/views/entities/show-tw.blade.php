@@ -13,7 +13,7 @@
 
 <!-- Back Button -->
 <div class="mb-6">
-	<a href="{{ URL::previous() }}" class="inline-flex items-center gap-2 px-3 py-2 text-sm border rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+	<a href="{{ URL::previous() }}" class="inline-flex items-center gap-2 px-3 py-2 text-sm border rounded-lg hover:bg-accent transition-colors">
 		<i class="bi bi-arrow-left"></i>
 		<span>Back</span>
 	</a>
@@ -33,23 +33,23 @@
 					@if ($signedIn)
 						@if ($follow = $entity->followedBy($user))
 						<a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}" 
-							class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800" 
+							class="p-2 rounded-md hover:bg-accent" 
 							title="Following - click to unfollow">
 							<i class="bi bi-star-fill text-yellow-500 text-xl"></i>
 						</a>
 						@else
 						<a href="{!! route('entities.follow', ['id' => $entity->id]) !!}" 
-							class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800" 
+							class="p-2 rounded-md hover:bg-accent" 
 							title="Click to follow">
-							<i class="bi bi-star text-gray-400 text-xl"></i>
+							<i class="bi bi-star text-muted-foreground text-xl"></i>
 						</a>
 						@endif
 					@endif
 					
 					<div class="relative inline-block text-left">
-						<button type="button" 
+						<button type="button"
                             id="entity-menu-button"
-                            class="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors" 
+                            class="p-1 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
                             title="Actions">
 							<i class="bi bi-three-dots text-xl"></i>
 						</button>
@@ -57,15 +57,23 @@
                         <div id="entity-actions-menu" class="hidden absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-card border border-border ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
                             <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                                 @if ($user && (Auth::user()->id === ($entity->user ? $entity->user?->id : null) || $user->hasGroup('super_admin')))
-                                    <a href="{!! route('entities.edit', ['entity' => $entity->slug]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-card hover:text-foreground transition-colors" role="menuitem">
+                                    <a href="{!! route('entities.edit', ['entity' => $entity->slug]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
                                         <i class="bi bi-pencil mr-2"></i>Edit Entity
                                     </a>
-                                    <a href="{{ url('events/related-to/'.$entity->slug) }}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-card hover:text-foreground transition-colors" role="menuitem">
+                                    <a href="{{ url('events/related-to/'.$entity->slug) }}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
                                         <i class="bi bi-calendar-event mr-2"></i>Show Related Events
                                     </a>
                                     <div class="border-t border-border my-1"></div>
+                                    <form action="{!! route('entities.destroy', ['entity' => $entity->slug]) !!}" method="POST" class="block">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="delete w-full text-left px-4 py-2 text-sm text-destructive hover:bg-accent hover:text-destructive transition-colors" role="menuitem" data-type="entity">
+                                            <i class="bi bi-trash mr-2"></i>Delete Entity
+                                        </button>
+                                    </form>
+                                    <div class="border-t border-border my-1"></div>
                                 @endif
-                                <a href="{!! URL::route('entities.index') !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-card hover:text-foreground transition-colors" role="menuitem">
+                                <a href="{!! URL::route('entities.index') !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
                                     <i class="bi bi-list mr-2"></i>Return to list
                                 </a>
                             </div>

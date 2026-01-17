@@ -146,6 +146,74 @@ class PostsController extends Controller
     }
 
     /**
+     * Display a listing of all posts (no pagination limit).
+     */
+    public function indexAll(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // if the gate does not allow this user to show a forum redirect to home
+        if (Gate::denies('show_forum')) {
+            flash()->error('Unauthorized', 'Your cannot view the forum');
+
+            return redirect()->back();
+        }
+
+        // initialized listParamSessionStore with base index key
+        $listParamSessionStore->setBaseIndex('internal_post');
+        $listParamSessionStore->setKeyPrefix('internal_post_index');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([PostsController::class, 'index']));
+
+        $baseQuery = Post::query()
+        ->leftJoin('users', 'posts.created_by', '=', 'users.id')
+        ->select('posts.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['posts.created_at' => 'desc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        /* @phpstan-ignore-next-line */
+        $posts = $query->visible($this->user)
+            ->with('visibility')
+            ->paginate(1000000);
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        // return json only
+        if (request()->wantsJson()) {
+            return $posts;
+        }
+
+        return view('posts.index-tw')
+        ->with(array_merge(
+            [
+                'limit' => $listResultSet->getLimit(),
+                'sort' => $listResultSet->getSort(),
+                'direction' => $listResultSet->getSortDirection(),
+                'hasFilter' => $this->hasFilter,
+                'filters' => $listResultSet->getFilters(),
+            ],
+            $this->getFilterOptions(),
+            $this->getListControlOptions()
+        ))
+        ->with(compact('posts'))
+        ->render();
+    }
+
+    /**
      * Filter a list of posts.
      */
     public function filter(

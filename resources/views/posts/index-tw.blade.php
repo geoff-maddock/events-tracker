@@ -63,7 +63,8 @@
 				<label for="filter_user" class="block text-sm font-medium text-muted-foreground mb-1">User</label>
 				{!! Form::select('filter_user', $userOptions, ($filters['user'] ?? null),
 				[
-					'data-theme' => 'bootstrap-5',
+					'data-theme' => 'tailwind',
+					'data-allow-clear' => 'true',
 					'class' => 'form-select-tw select2',
 					'data-placeholder' => 'Select a user',
 					'name' => 'filters[user]',
@@ -77,7 +78,8 @@
 				<label for="filter_tag" class="block text-sm font-medium text-muted-foreground mb-1">Tag</label>
 				{!! Form::select('filter_tag', $tagOptions, ($filters['tag'] ?? null),
 				[
-					'data-theme' => 'bootstrap-5',
+					'data-theme' => 'tailwind',
+					'data-allow-clear' => 'true',
 					'class' => 'form-select-tw select2',
 					'data-placeholder' => 'Select a tag',
 					'name' => 'filters[tag]',

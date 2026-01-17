@@ -2,11 +2,6 @@
 
 @section('title','Forum')
 
-@section('select2.include')
-<!-- Select2 -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.1.1/dist/select2-bootstrap-5-theme.min.css" />
-@endsection
 
 @section('content')
 
@@ -71,6 +66,8 @@
 			[
 				'class' => 'form-select-tw select2',
 				'data-placeholder' => 'Select a user',
+				'data-theme' => 'tailwind',
+				'data-allow-clear' => 'true',
 				'name' => 'filters[user]',
 				'id' => 'filter_user'
 			])
@@ -84,6 +81,8 @@
 			[
 				'class' => 'form-select-tw select2',
 				'data-placeholder' => 'Select a tag',
+				'data-theme' => 'tailwind',
+				'data-allow-clear' => 'true',
 				'name' => 'filters[tag]',
 				'id' => 'filter_tag'
 			])
@@ -97,6 +96,8 @@
 			[
 				'class' => 'form-select-tw select2',
 				'data-placeholder' => 'Select a series',
+				'data-theme' => 'tailwind',
+				'data-allow-clear' => 'true',
 				'name' => 'filters[series]',
 				'id' => 'filter_series'
 			])

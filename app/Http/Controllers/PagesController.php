@@ -373,6 +373,45 @@ class PagesController extends Controller
         return view('pages.all-modules-tw');
     }
 
+    public function popular(Request $request): View
+    {
+        $user = $request->user();
+
+        // Get popular events - upcoming events with most attendees
+        $popularEvents = Event::where('start_at', '>=', Carbon::now())
+            ->withCount('attendees')
+            ->with(['venue', 'tags', 'entities', 'eventType'])
+            ->orderBy('attendees_count', 'desc')
+            ->take(12)
+            ->get();
+
+        // Get popular entities - entities with most followers (using subquery since followers() returns Collection)
+        $popularEntities = Entity::whereHas('entityStatus', function ($query) {
+                $query->where('name', 'Active');
+            })
+            ->select('entities.*')
+            ->selectSub(
+                'SELECT COUNT(*) FROM follows WHERE follows.object_type = "entity" AND follows.object_id = entities.id',
+                'followers_count'
+            )
+            ->with(['entityType', 'roles', 'tags'])
+            ->orderBy('followers_count', 'desc')
+            ->take(12)
+            ->get();
+
+        // Get popular tags - tags with most events
+        $popularTags = Tag::withCount('events')
+            ->orderBy('events_count', 'desc')
+            ->take(24)
+            ->get();
+
+        return view('pages.popular-tw', compact(
+            'popularEvents',
+            'popularEntities',
+            'popularTags'
+        ));
+    }
+
     public function home(
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
