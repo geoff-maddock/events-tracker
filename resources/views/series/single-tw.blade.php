@@ -94,9 +94,7 @@
         @unless ($series->tags->isEmpty())
         <div class="flex flex-wrap gap-1">
             @foreach ($series->tags->take(3) as $tag)
-            <a href="/series/tag/{{ $tag->slug }}" class="badge-tw badge-secondary-tw text-xs hover:bg-accent">
-                {{ $tag->name }}
-            </a>
+                <x-tag-badge :tag="$tag" context="series" />
             @endforeach
             @if ($series->tags->count() > 3)
             <span class="text-xs text-muted-foreground self-center">+{{ $series->tags->count() - 3 }}</span>

@@ -52,13 +52,7 @@
 				<span class="text-sm font-medium text-muted-foreground mr-2">Tags:</span>
 				<div class="inline-flex flex-wrap gap-1">
 					@foreach ($post->tags as $tag)
-						<a href="/posts/tag/{{ $tag->slug }}"
-						   class="badge-tw badge-secondary-tw text-xs hover:bg-dark-border">
-							{{ $tag->name }}
-							<a href="{!! route('tags.show', ['tag' => $tag->slug]) !!}" title="Show this tag." class="ml-1">
-								<i class="bi bi-link-45deg text-primary"></i>
-							</a>
-						</a>
+						<x-tag-badge :tag="$tag" context="posts" />
 					@endforeach
 				</div>
 			</div>

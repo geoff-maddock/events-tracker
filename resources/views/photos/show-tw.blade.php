@@ -61,9 +61,7 @@
                         <label class="text-sm font-medium text-muted-foreground">Related Entities</label>
                         <div class="flex flex-wrap gap-2 mt-2">
                             @foreach ($photo->entities as $entity)
-                                <a href="{{ route('entities.show', ['entity' => $entity->slug]) }}" class="badge-tw badge-secondary-tw">
-                                    {{ $entity->name }}
-                                </a>
+                                <x-entity-badge :entity="$entity" context="photos" variant="secondary" />
                             @endforeach
                         </div>
                     </div>

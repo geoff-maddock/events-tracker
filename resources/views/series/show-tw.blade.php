@@ -305,10 +305,7 @@
 				@unless ($series->entities->isEmpty())
 				<div class="flex flex-wrap gap-2 border-t border-border pt-4">
 					@foreach ($series->entities as $entity)
-					<a href="/entities/{{ $entity->slug }}" class="badge-tw badge-primary-tw text-xs hover:bg-primary/30">
-						{{ $entity->name }}
-						<i class="bi bi-box-arrow-up-right ml-1 text-xs"></i>
-					</a>
+						<x-entity-badge :entity="$entity" context="series" />
 					@endforeach
 				</div>
 				@endunless
@@ -317,9 +314,7 @@
 				@unless ($series->tags->isEmpty())
 				<div class="flex flex-wrap gap-2">
 					@foreach ($series->tags as $tag)
-						<a href="/tags/{{ $tag->slug }}" class="badge-tw badge-secondary-tw text-xs hover:bg-dark-border">
-							{{ $tag->name }}
-						</a>
+						<x-tag-badge :tag="$tag" context="series" />
 					@endforeach
 				</div>
 				@endunless

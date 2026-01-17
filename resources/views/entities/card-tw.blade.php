@@ -93,9 +93,7 @@
 		@unless ($entity->tags->isEmpty())
 		<div class="flex flex-wrap gap-1.5">
 			@foreach ($entity->tags as $tag)
-			<a href="/tags/{{ $tag->name }}" class="badge-tw badge-secondary-tw text-xs hover:bg-accent">
-				{{ $tag->name }}
-			</a>
+				<x-tag-badge :tag="$tag" context="entities" />
 			@endforeach
 		</div>
 		@endunless

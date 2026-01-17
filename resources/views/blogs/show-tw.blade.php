@@ -65,9 +65,7 @@
 					<div class="flex flex-wrap items-center gap-2">
 						<span class="text-sm font-semibold text-foreground">Entities:</span>
 						@foreach ($blog->entities as $entity)
-							<a href="/entities/{{ $entity->slug }}" class="badge-tw badge-secondary-tw">
-								{{ $entity->name }}
-							</a>
+							<x-entity-badge :entity="$entity" context="blogs" variant="secondary" />
 						@endforeach
 					</div>
 				</div>

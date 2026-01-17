@@ -227,10 +227,7 @@
 				<div class="space-y-2">
 					<div class="flex flex-wrap gap-2">
 						@foreach ($event->entities as $entity)
-						<a href="/entities/{{ $entity->slug }}" class="badge-tw badge-primary-tw text-xs hover:bg-primary/30">
-							{{ $entity->name }}
-							<i class="bi bi-box-arrow-up-right ml-1 text-xs"></i>
-						</a>
+							<x-entity-badge :entity="$entity" context="events" />
 						@endforeach
 					</div>
 				</div>
@@ -238,9 +235,7 @@
 				@unless ($event->tags->isEmpty())
 				<div class="flex flex-wrap gap-2">
 					@foreach ($event->tags as $tag)
-					<a href="/tags/{{ $tag->name }}" class="badge-tw badge-secondary-tw text-xs hover:bg-accent">
-						{{ $tag->name }}
-					</a>
+						<x-tag-badge :tag="$tag" context="events" />
 					@endforeach
 				</div>
 				@endunless						</div>

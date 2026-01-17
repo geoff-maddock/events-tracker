@@ -225,10 +225,7 @@
 											<span class="text-sm font-medium text-muted-foreground mr-2">Tags:</span>
 											<div class="inline-flex flex-wrap gap-1">
 												@foreach ($post->tags as $tag)
-													<a href="/posts/tag/{{ urlencode($tag->name) }}"
-													   class="badge-tw badge-secondary-tw text-xs hover:bg-dark-border">
-														{{ $tag->name }}
-													</a>
+													<x-tag-badge :tag="$tag" context="posts" />
 												@endforeach
 											</div>
 										</div>

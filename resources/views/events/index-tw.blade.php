@@ -257,39 +257,6 @@ Events @include('events.title-crumbs')
 </div>
 @endif
 
-<!-- Past Events Section -->
-@if (isset($past_events) && count($past_events) > 0)
-<div class="mt-12">
-	<h2 class="text-2xl font-bold text-primary mb-6">
-		<a href="{{ url('/events/past') }}" class="hover:text-primary/90">Past Events</a>
-	</h2>
-	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-		@foreach ($past_events as $event)
-		@include('events.card-tw', ['event' => $event])
-		@endforeach
-	</div>
-	<div class="mt-6">
-		{!! $past_events->onEachSide(2)->links('vendor.pagination.tailwind') !!}
-	</div>
-</div>
-@endif
-
-<!-- Future Events Section -->
-@if (isset($future_events) && count($future_events) > 0)
-<div class="mt-12">
-	<h2 class="text-2xl font-bold text-primary mb-6">
-		<a href="{{ url('/events/future') }}" class="hover:text-primary/90">Future Events</a>
-	</h2>
-	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-		@foreach ($future_events as $event)
-		@include('events.card-tw', ['event' => $event])
-		@endforeach
-	</div>
-	<div class="mt-6">
-		{!! $future_events->onEachSide(2)->links('vendor.pagination.tailwind') !!}
-	</div>
-</div>
-@endif
 
 @stop
 

@@ -96,10 +96,7 @@
     @unless ($thread->tags->isEmpty())
     <div class="flex flex-wrap gap-2">
         @foreach ($thread->tags as $tag)
-        <a href="/threads/tag/{{ urlencode($tag->name) }}" class="inline-flex items-center px-2 py-1 bg-primary/20 border border-primary/30 text-primary rounded text-sm hover:bg-primary/30">
-            <i class="bi bi-tag mr-1"></i>
-            {{ $tag->name }}
-        </a>
+            <x-tag-badge :tag="$tag" context="threads" variant="primary" />
         @endforeach
     </div>
     @endunless

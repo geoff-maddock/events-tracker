@@ -76,9 +76,7 @@
                 @unless ($thread->tags->isEmpty())
                 <div class="flex flex-wrap gap-1 mb-3">
                     @foreach ($thread->tags->take(5) as $tag)
-                    <a href="/tags/{{ $tag->slug }}" class="badge-tw badge-secondary-tw text-xs hover:bg-accent">
-                        {{ $tag->name }}
-                    </a>
+                        <x-tag-badge :tag="$tag" context="threads" />
                     @endforeach
                     @if ($thread->tags->count() > 5)
                     <span class="text-xs text-muted-foreground/50">+{{ $thread->tags->count() - 5 }} more</span>

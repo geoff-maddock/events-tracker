@@ -59,9 +59,7 @@
                         <div class="mt-2">
                             <span class="text-sm text-muted-foreground">Related:</span>
                             @foreach ($s->entities as $entity)
-                                <a href="{{ route('entities.show', $entity->slug) }}" class="badge-tw badge-secondary-tw text-xs">
-                                    {{ $entity->name }}
-                                </a>
+                                <x-entity-badge :entity="$entity" context="series" variant="secondary" />
                             @endforeach
                         </div>
                     @endunless
@@ -70,9 +68,7 @@
                         <div class="mt-2">
                             <span class="text-sm text-muted-foreground">Tags:</span>
                             @foreach ($s->tags as $tag)
-                                <a href="{{ route('tags.show', $tag->slug) }}" class="badge-tw badge-primary-tw text-xs">
-                                    {{ $tag->name }}
-                                </a>
+                                <x-tag-badge :tag="$tag" context="series" variant="primary" />
                             @endforeach
                         </div>
                     @endunless

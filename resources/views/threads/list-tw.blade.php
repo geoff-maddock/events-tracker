@@ -54,18 +54,14 @@
                             @unless ($thread->entities->isEmpty())
                                 <span class="text-xs text-muted-foreground ml-2">Related:</span>
                                 @foreach ($thread->entities as $entity)
-                                    <a href="{{ route('entities.show', [$entity->slug]) }}" class="badge-tw badge-primary-tw text-xs">
-                                        {{ $entity->name }}
-                                    </a>
+                                    <x-entity-badge :entity="$entity" context="threads" variant="primary" />
                                 @endforeach
                             @endunless
 
                             @unless ($thread->tags->isEmpty())
                                 <span class="text-xs text-muted-foreground ml-2">Tags:</span>
                                 @foreach ($thread->tags as $tag)
-                                    <a href="{{ route('tags.show', [$tag->slug]) }}" class="badge-tw badge-secondary-tw text-xs">
-                                        {{ $tag->name }}
-                                    </a>
+                                    <x-tag-badge :tag="$tag" context="threads" />
                                 @endforeach
                             @endunless
                         </div>

@@ -1920,32 +1920,18 @@ class EventsController extends Controller
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
         // get the query builder
-        $pastQuery = $listResultSet->getList();
-        $futureQuery = clone $pastQuery;
+        $query = $listResultSet->getList();
 
         // @phpstan-ignore-next-line
-        $future_events = $futureQuery
+        $events = $query
             ->with('visibility', 'venue','tags','entities','series','eventType','threads')
             ->future()
             ->orderBy('events.start_at', 'ASC')
             ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
 
-        $future_events->filter(function ($e) {
+        $events->filter(function ($e) {
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
-        });
-
-        // @phpstan-ignore-next-line
-        $past_events = $pastQuery
-        // @phpstan-ignore-next-line
-            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
-            ->past()
-            ->orderBy('events.start_at', 'ASC')
-            ->orderBy('events.name', 'ASC')
-            ->paginate($listResultSet->getLimit());
-
-        $past_events->filter(function ($e) {
-            return ($e->visibility && 'Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         // saves the updated session
@@ -1967,8 +1953,7 @@ class EventsController extends Controller
                     $this->getListControlOptions()
                 )
             )
-            ->with(compact('future_events'))
-            ->with(compact('past_events'))
+            ->with(compact('events'))
             ->with(compact('tag'));
     }
 
@@ -2002,31 +1987,17 @@ class EventsController extends Controller
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
         // get the query builder
-        $pastQuery = $listResultSet->getList();
-        $futureQuery = clone $pastQuery;
+        $query = $listResultSet->getList();
 
         // @phpstan-ignore-next-line
-        $future_events = $futureQuery
+        $events = $query
             ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
-            ->future()
             ->orderBy('events.start_at', 'ASC')
             ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
 
-        $future_events->filter(function ($e) {
+        $events->filter(function ($e) {
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
-        });
-
-        // @phpstan-ignore-next-line
-        $past_events = $pastQuery
-            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
-            ->past()
-            ->orderBy('events.start_at', 'ASC')
-            ->orderBy('events.name', 'ASC')
-            ->paginate($listResultSet->getLimit());
-
-        $past_events->filter(function ($e) {
-            return ($e->visibility && 'Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         // saves the updated session
@@ -2048,8 +2019,7 @@ class EventsController extends Controller
                     $this->getListControlOptions()
                 )
             )
-            ->with(compact('future_events'))
-            ->with(compact('past_events'))
+            ->with(compact('events'))
             ->with(compact('related'));
     }
 

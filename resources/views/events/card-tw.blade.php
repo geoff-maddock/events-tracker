@@ -126,10 +126,7 @@
         @unless ($event->entities->isEmpty())
         <div class="flex flex-wrap gap-1 mb-2">
             @foreach ($event->entities->take(3) as $entity)
-            <a href="/entities/{{ $entity->slug }}" class="badge-tw badge-primary-tw text-xs hover:bg-primary/30">
-                {{ $entity->name }}
-                <i class="bi bi-box-arrow-up-right ml-1 text-xs"></i>
-            </a>
+                <x-entity-badge :entity="$entity" context="events" />
             @endforeach
             @if ($event->entities->count() > 3)
             <span class="badge-tw badge-secondary-tw text-xs">+{{ $event->entities->count() - 3 }} more</span>
@@ -141,9 +138,7 @@
         @unless ($event->tags->isEmpty())
         <div class="flex flex-wrap gap-1 mt-auto pt-2">
             @foreach ($event->tags->take(5) as $tag)
-            <a href="/tags/{{ $tag->slug }}" class="badge-tw badge-secondary-tw text-xs hover:bg-accent">
-                {{ $tag->name }}
-            </a>
+                <x-tag-badge :tag="$tag" context="events" />
             @endforeach
             @if ($event->tags->count() > 5)
             <span class="text-xs text-muted-foreground">+{{ $event->tags->count() - 5 }} more</span>

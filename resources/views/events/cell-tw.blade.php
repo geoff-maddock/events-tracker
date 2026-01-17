@@ -52,9 +52,7 @@
         @if ($event->tags->count() > 0)
             <div class="mt-auto pt-2 flex flex-wrap gap-1">
                 @foreach ($event->tags->take(3) as $tag)
-                    <span class="badge-tw badge-secondary-tw text-xs">
-                        {{ $tag->name }}
-                    </span>
+                    <x-tag-badge :tag="$tag" context="events" />
                 @endforeach
             </div>
         @endif

@@ -202,9 +202,7 @@
 					<div class="text-sm font-medium text-muted-foreground">Tags</div>
 					<div class="flex flex-wrap gap-1.5">
 						@foreach ($entity->tags as $tag)
-						<a href="/tags/{{ $tag->name }}" class="badge-tw badge-secondary-tw text-xs hover:bg-accent">
-							{{ $tag->name }}
-						</a>
+							<x-tag-badge :tag="$tag" context="entities" />
 						@endforeach
 					</div>
 				</div>

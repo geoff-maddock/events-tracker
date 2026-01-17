@@ -132,9 +132,7 @@
         @unless ($event->tags->isEmpty())
         <div class="flex flex-wrap gap-1">
             @foreach ($event->tags->take(3) as $tag)
-            <a href="/events/tag/{{ $tag->slug }}" class="badge-tw badge-secondary-tw text-xs hover:bg-accent">
-                {{ $tag->name }}
-            </a>
+                <x-tag-badge :tag="$tag" context="events" />
             @endforeach
             @if ($event->tags->count() > 3)
             <span class="text-xs text-muted-foreground self-center">+{{ $event->tags->count() - 3 }}</span>
