@@ -26,24 +26,36 @@
 		<span id="filters-toggle-text">@if($hasFilter) Hide @else Show @endif Filters</span>
 		<i class="bi bi-chevron-down ml-2 transition-transform @if($hasFilter) rotate-180 @endif" id="filters-chevron"></i>
 	</button>
-
-	<!-- Active Filters / Reset -->
+	
+	<!-- Active Filters Badges (shown when filters are hidden) -->
 	@if($hasFilter)
-	<div class="inline-flex items-center gap-2 ml-4">
-		<a href="{{ url()->action('UsersController@rppReset') }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg">
-			Clear All <i class="bi bi-x ml-1"></i>
-		</a>
+	<div id="active-filters-badges" class="@if($hasFilter) hidden @endif inline-flex flex-wrap items-center gap-2 ml-4">
+		@if(!empty($filters['email']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Email: {{ $filters['email'] }}
+		</span>
+		@endif
+		@if(!empty($filters['name']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Name: {{ $filters['name'] }}
+		</span>
+		@endif
+		@if(!empty($filters['status']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Status: {{ $userStatusOptions[$filters['status']] ?? 'Unknown' }}
+		</span>
+		@endif
 	</div>
 	@endif
 </div>
 
 <!-- Filter Panel -->
-<div id="filter-panel" class="@if(!$hasFilter) hidden @endif bg-card border border-border rounded-lg p-4 mb-6">
+<div id="filter-panel" class="@if(!$hasFilter) hidden @endif bg-card border border-border rounded-lg p-4 mb-6 overflow-hidden">
 	{!! Form::open(['route' => ['users.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
 
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 		<!-- Email Filter -->
-		<div>
+		<div class="min-w-0">
 			<label for="filter_email" class="block text-sm font-medium text-muted-foreground mb-1">Email</label>
 			<input type="text" 
 				name="filters[email]" 
@@ -54,7 +66,7 @@
 		</div>
 
 		<!-- Name Filter -->
-		<div>
+		<div class="min-w-0">
 			<label for="filter_name" class="block text-sm font-medium text-muted-foreground mb-1">Name</label>
 			<input type="text" 
 				name="filters[name]" 
@@ -65,10 +77,11 @@
 		</div>
 
 		<!-- Status Filter -->
-		<div>
+		<div class="min-w-0">
 			<label for="filter_status" class="block text-sm font-medium text-muted-foreground mb-1">Status</label>
 			{!! Form::select('filter_status', $userStatusOptions, ($filters['status'] ?? null),
 			[
+				'data-theme' => 'tailwind',
 				'class' => 'form-select-tw select2',
 				'data-placeholder' => 'Select a status',
 				'name' => 'filters[status]',
@@ -101,8 +114,8 @@
 		@endif
 	</div>
 
-	<!-- Sort Controls & Pagination -->
-	<div class="flex flex-wrap items-center gap-4">
+	<!-- Sort Controls -->
+	<div class="flex items-center gap-4">
 		<form action="{{ url()->current() }}" method="GET" class="flex items-center gap-2">
 			<select name="limit" class="form-select-tw text-sm py-1 auto-submit">
 				@foreach($limitOptions as $value => $label)
@@ -121,29 +134,28 @@
 				@endforeach
 			</select>
 		</form>
+	</div>
 
-		<!-- Pagination -->
-		@if(isset($users) && $users->hasPages())
-		<div class="flex items-center gap-1">
-			<span class="text-muted-foreground mr-1 hidden lg:inline">|</span>
-			@if($users->onFirstPage())
-			<span class="px-3 py-1 text-muted-foreground/50 cursor-not-allowed">&lt; Previous</span>
-			@else
-			<a href="{{ $users->previousPageUrl() }}" class="px-3 py-1 text-muted-foreground hover:text-foreground">&lt; Previous</a>
-			@endif
+	<!-- Pagination (top) -->
+	@if(isset($users) && $users->hasPages())
+	<div class="flex items-center gap-1">
+		@if($users->onFirstPage())
+		<span class="px-3 py-1 text-muted-foreground/50 cursor-not-allowed">&lt; Previous</span>
+		@else
+		<a href="{{ $users->previousPageUrl() }}" class="px-3 py-1 text-muted-foreground hover:text-foreground">&lt; Previous</a>
+		@endif
 
-			@foreach($users->getUrlRange(max(1, $users->currentPage() - 2), min($users->lastPage(), $users->currentPage() + 2)) as $page => $url)
-			<a href="{{ $url }}" class="px-3 py-1 rounded {{ $page == $users->currentPage() ? 'bg-accent text-foreground border border-primary' : 'text-muted-foreground hover:bg-card' }}">{{ $page }}</a>
-			@endforeach
+		@foreach($users->getUrlRange(max(1, $users->currentPage() - 2), min($users->lastPage(), $users->currentPage() + 2)) as $page => $url)
+		<a href="{{ $url }}" class="px-3 py-1 rounded {{ $page == $users->currentPage() ? 'bg-accent text-foreground border border-primary' : 'text-muted-foreground hover:bg-card' }}">{{ $page }}</a>
+		@endforeach
 
-			@if($users->hasMorePages())
-			<a href="{{ $users->nextPageUrl() }}" class="px-3 py-1 text-muted-foreground hover:text-foreground">Next &gt;</a>
-			@else
-			<span class="px-3 py-1 text-muted-foreground/50 cursor-not-allowed">Next &gt;</span>
-			@endif
-		</div>
+		@if($users->hasMorePages())
+		<a href="{{ $users->nextPageUrl() }}" class="px-3 py-1 text-muted-foreground hover:text-foreground">Next &gt;</a>
+		@else
+		<span class="px-3 py-1 text-muted-foreground/50 cursor-not-allowed">Next &gt;</span>
 		@endif
 	</div>
+	@endif
 </div>
 
 	<!-- Users Grid -->
@@ -168,6 +180,7 @@
 	// Filter toggle functionality
 	document.getElementById('filters-toggle-btn')?.addEventListener('click', function() {
 		const panel = document.getElementById('filter-panel');
+		const badges = document.getElementById('active-filters-badges');
 		const text = document.getElementById('filters-toggle-text');
 		const chevron = document.getElementById('filters-chevron');
 		
@@ -176,9 +189,17 @@
 		if (panel.classList.contains('hidden')) {
 			text.textContent = 'Show Filters';
 			chevron.classList.remove('rotate-180');
+			// Show badges when filters are hidden
+			if (badges) {
+				badges.classList.remove('hidden');
+			}
 		} else {
 			text.textContent = 'Hide Filters';
 			chevron.classList.add('rotate-180');
+			// Hide badges when filters are shown
+			if (badges) {
+				badges.classList.add('hidden');
+			}
 		}
 	});
 </script>
