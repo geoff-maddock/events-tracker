@@ -8,7 +8,7 @@
 
 	
 	<!-- Page Header -->
-	<div class="mb-6">
+	<div>
 		<h1 class="text-3xl font-bold text-primary mb-2">Tags</h1>
 		<p class="text-muted-foreground">Browse genres and keyword tags.</p>
 	</div>
