@@ -617,7 +617,8 @@ class PostsController extends Controller
         ++$post->likes;
         $post->save();
 
-        Log::info('User '.$id.' is liking '.$post->name);
+        // log the like
+        //Log::info('User '.$id.' is liking '.$post->name);
 
         flash()->success('Success', 'You are now liking the selected post.');
 

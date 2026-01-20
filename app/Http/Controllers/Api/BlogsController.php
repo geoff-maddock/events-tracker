@@ -361,7 +361,8 @@ class BlogsController extends Controller
         ++$blog->likes;
         $blog->save();
 
-        Log::info('User '.$id.' is liking '.$blog->name);
+        // log the like
+        // Log::info('User '.$id.' is liking '.$blog->name);
 
         flash()->success('Success', 'You are now liking the selected blog.');
 

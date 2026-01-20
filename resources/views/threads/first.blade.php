@@ -90,15 +90,7 @@
                 <span class="text-xs md:text-sm text-muted-foreground mr-2">Related:</span>
                 <div class="inline-flex flex-wrap gap-1">
                     @foreach ($thread->entities as $entity)
-                        <a href="/threads/related-to/{{ urlencode($entity->slug) }}" 
-                           class="badge-tw badge-primary-tw text-xs">
-                            {{ $entity->name }}
-                            <a href="{!! route('entities.show', ['entity' => $entity->slug]) !!}" 
-                               title="Show this entity." 
-                               class="ml-1">
-                                <i class="bi bi-link-45deg"></i>
-                            </a>
-                        </a>
+                        <x-entity-badge :entity="$entity" context="threads" />
                     @endforeach
                 </div>
             </div>

@@ -989,7 +989,8 @@ class ThreadsController extends Controller
         ++$thread->likes;
         $thread->save();
 
-        Log::info('User '.$id.' is liking '.$thread->name);
+        // log the like
+        // Log::info('User '.$id.' is liking '.$thread->name);
 
         flash()->success('Success', 'You are now liking the thread - '.$thread->name);
 
