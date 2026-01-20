@@ -194,12 +194,12 @@ class EntitiesController extends Controller
         $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        //$baseQuery = Entity::query()->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')->select('entities.*');
-
-        $baseQuery = Entity::join('follows', 'entities.id', '=', 'follows.object_id')
-        ->where('follows.object_type', '=', 'entity')
-        ->where('follows.user_id', '=', $this->user->id)
-        ->select('entities.*');
+        $baseQuery = Entity::query()
+            ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
+            ->join('follows', 'entities.id', '=', 'follows.object_id')
+            ->where('follows.object_type', '=', 'entity')
+            ->where('follows.user_id', '=', $this->user->id)
+            ->select('entities.*');
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
