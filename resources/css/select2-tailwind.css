@@ -7,10 +7,24 @@
     box-sizing: border-box !important;
 }
 
+/* Prevent Select2 from overflowing its parent container */
+.select2-container {
+    max-width: 100% !important;
+    min-width: 0 !important;
+}
+
+/* Ensure dropdown respects container width */
+.select2-container .select2-dropdown {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    width: auto !important;
+}
+
 /* Single Select - match form-input-tw styling (py-2 = 0.5rem, text-base with line-height ~1.5) */
 .select2-container--tailwind .select2-selection--single {
     @apply w-full rounded-md border border-input bg-input text-base shadow-sm transition-colors;
-    height: 2.625rem !important; /* Match standard input height */
+    height: 2.625rem !important;
+    /* Match standard input height */
     padding: 0.5rem 0.75rem !important;
     display: flex !important;
     align-items: center !important;
@@ -21,7 +35,8 @@
 /* Multiple Select Container */
 .select2-container--tailwind .select2-selection--multiple {
     @apply w-full rounded-md border border-input bg-input text-base shadow-sm transition-colors;
-    min-height: 2.625rem !important; /* Match standard input height */
+    min-height: 2.625rem !important;
+    /* Match standard input height */
     padding: 0.375rem 0.5rem !important;
     display: flex !important;
     align-items: center !important;
@@ -242,4 +257,13 @@
 /* For multiple select, allow wrapping */
 .select2-container--tailwind .select2-selection--multiple .select2-selection__rendered {
     white-space: normal !important;
+}
+
+/* Hide any default select element that might show below Select2 */
+.select2 {
+    display: none !important;
+}
+
+.select2+.select2-container {
+    display: block !important;
 }

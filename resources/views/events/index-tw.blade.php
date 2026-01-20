@@ -61,25 +61,48 @@ Events @include('events.title-crumbs')
 <div class="mb-6">
 	<button id="filters-toggle-btn" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
 		<i class="bi bi-funnel mr-2"></i>
-		<span id="filters-toggle-text">Show Filters</span>
-		<i class="bi bi-chevron-down ml-2 transition-transform" id="filters-chevron"></i>
+		<span id="filters-toggle-text">@if($hasFilter) Hide @else Show @endif Filters</span>
+		<i class="bi bi-chevron-down ml-2 transition-transform @if($hasFilter) rotate-180 @endif" id="filters-chevron"></i>
 	</button>
 	
-	<!-- Active Filters Tags -->
+	<!-- Active Filters Badges (shown when filters are hidden) -->
 	@if($hasFilter)
-	<div class="inline-flex items-center gap-2 ml-4">
-		@if(isset($filters['start_at']['start']))
-		<span class="badge-tw badge-primary-tw">
-			Date from {{ $filters['start_at']['start'] }}
-			<button class="ml-1 hover:text-white">&times;</button>
+	<div id="active-filters-badges" class="@if($hasFilter) hidden @endif inline-flex flex-wrap items-center gap-2 ml-4">
+		@if(!empty($filters['name']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Name: {{ $filters['name'] }}
 		</span>
 		@endif
-		<a href="{{ url()->action('EventsController@rppReset') }}?key={!! $key ?? '' !!}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg">
-			Clear All <i class="bi bi-x ml-1"></i>
-		</a>
-		<button class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg">
-			Reset <i class="bi bi-arrow-clockwise ml-1"></i>
-		</button>
+		@if(!empty($filters['venue']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Venue: {{ $venueOptions[$filters['venue']] ?? 'Unknown' }}
+		</span>
+		@endif
+		@if(!empty($filters['tag']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Tag: {{ $tagOptions[$filters['tag']] ?? 'Unknown' }}
+		</span>
+		@endif
+		@if(!empty($filters['related']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Entity: {{ $relatedOptions[$filters['related']] ?? 'Unknown' }}
+		</span>
+		@endif
+		@if(!empty($filters['event_type']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Type: {{ $eventTypeOptions[$filters['event_type']] ?? 'Unknown' }}
+		</span>
+		@endif
+		@if(isset($filters['start_at']['start']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Date from: {{ $filters['start_at']['start'] }}
+		</span>
+		@endif
+		@if(isset($filters['start_at']['end']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Date to: {{ $filters['start_at']['end'] }}
+		</span>
+		@endif
 	</div>
 	@endif
 </div>
@@ -273,6 +296,7 @@ Events @include('events.title-crumbs')
 	// Filter toggle functionality
 	document.getElementById('filters-toggle-btn')?.addEventListener('click', function() {
 		const panel = document.getElementById('filter-panel');
+		const badges = document.getElementById('active-filters-badges');
 		const text = document.getElementById('filters-toggle-text');
 		const chevron = document.getElementById('filters-chevron');
 		
@@ -281,9 +305,17 @@ Events @include('events.title-crumbs')
 		if (panel.classList.contains('hidden')) {
 			text.textContent = 'Show Filters';
 			chevron.classList.remove('rotate-180');
+			// Show badges when filters are hidden
+			if (badges) {
+				badges.classList.remove('hidden');
+			}
 		} else {
 			text.textContent = 'Hide Filters';
 			chevron.classList.add('rotate-180');
+			// Hide badges when filters are shown
+			if (badges) {
+				badges.classList.add('hidden');
+			}
 		}
 	});
 </script>
