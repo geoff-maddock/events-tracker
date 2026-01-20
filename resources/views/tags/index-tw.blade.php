@@ -32,28 +32,9 @@
 			</div>
 		</button>
 		<div id="popular-tags-content" class="p-4 border-t border-border">
-			<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-				@foreach($latestTags as $t)
-					@php
-						$event = $t->events()->visible($user ?? null)->latest('start_at')->first();
-						$photo = $event ? $event->getPrimaryPhoto() : null;
-					@endphp
-					<div class="relative group">
-						<a href="/tags/{{ $t->slug }}" class="block aspect-square bg-card border border-border rounded-lg overflow-hidden hover:border-primary transition-colors">
-							@if($photo)
-								<img src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}" alt="{{ $t->name }}" class="w-full h-full object-cover">
-							@else
-								<div class="w-full h-full flex items-center justify-center bg-muted">
-									<i class="bi bi-tag text-4xl text-muted-foreground/30"></i>
-								</div>
-							@endif
-							<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-								<div class="absolute bottom-0 left-0 right-0 p-2 text-white text-sm font-medium">
-									{{ $t->name }}
-								</div>
-							</div>
-						</a>
-					</div>
+			<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+				@foreach($latestTags->take(5) as $tag)
+					<x-tag-card-enhanced :tag="$tag" :user="$user ?? null" />
 				@endforeach
 			</div>
 		</div>
