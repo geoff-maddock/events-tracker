@@ -54,12 +54,34 @@ Entities @include('entities.title-crumbs')
 		<i class="bi bi-chevron-down ml-2 transition-transform @if($hasFilter) rotate-180 @endif" id="filters-chevron"></i>
 	</button>
 	
-	<!-- Active Filters / Reset -->
+	<!-- Active Filters Badges (shown when filters are hidden) -->
 	@if($hasFilter)
-	<div class="inline-flex items-center gap-2 ml-4">
-		<a href="{{ url()->action('EntitiesController@rppReset') }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg">
-			Clear All <i class="bi bi-x ml-1"></i>
-		</a>
+	<div id="active-filters-badges" class="@if($hasFilter) hidden @endif inline-flex flex-wrap items-center gap-2 ml-4">
+		@if(!empty($filters['name']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Name: {{ $filters['name'] }}
+		</span>
+		@endif
+		@if(!empty($filters['role']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Role: {{ $roleOptions[$filters['role']] ?? 'Unknown' }}
+		</span>
+		@endif
+		@if(!empty($filters['tag']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Tag: {{ $tagOptions[$filters['tag']] ?? 'Unknown' }}
+		</span>
+		@endif
+		@if(!empty($filters['entity_type']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Type: {{ $entityTypeOptions[$filters['entity_type']] ?? 'Unknown' }}
+		</span>
+		@endif
+		@if(!empty($filters['entity_status']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Status: {{ $entityStatusOptions[$filters['entity_status']] ?? 'Unknown' }}
+		</span>
+		@endif
 	</div>
 	@endif
 </div>
@@ -154,80 +176,60 @@ Entities @include('entities.title-crumbs')
 </div>
 
 <!-- List Controls -->
-<div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+	<!-- Results Count -->
 	<div class="text-sm text-muted-foreground">
 		@if(isset($entities))
-		Showing {{ $entities->firstItem() ?? 0 }} - {{ $entities->lastItem() ?? 0 }} of {{ $entities->total() }} entities
+		Showing {{ $entities->firstItem() ?? 0 }} to {{ $entities->lastItem() ?? 0 }} of {{ $entities->total() }} results
 		@endif
 	</div>
 
-	<div class="flex flex-wrap items-center gap-2">
-		<a href="{{ url()->action('EntitiesController@rppReset') }}" class="inline-flex items-center px-3 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-accent transition-colors" title="Reset">
-			<i class="bi bi-arrow-clockwise"></i>
-		</a>
-
-		<form action="" method="GET" class="flex gap-2">
-			<select name="limit" class="form-select-tw text-sm auto-submit">
-				@foreach($limitOptions as $key => $value)
-				<option value="{{ $key }}" {{ ($limit ?? 10) == $key ? 'selected' : '' }}>{{ $value }}</option>
+	<!-- Sort Controls -->
+	<div class="flex items-center gap-4">
+		<form action="{{ url()->current() }}" method="GET" class="flex items-center gap-2">
+			<select name="limit" class="form-select-tw text-sm py-1 auto-submit">
+				@foreach($limitOptions as $value => $label)
+				<option value="{{ $value }}" {{ ($limit ?? 10) == $value ? 'selected' : '' }}>{{ $label }}</option>
 				@endforeach
 			</select>
-
-			<select name="sort" class="form-select-tw text-sm auto-submit">
-				@foreach($sortOptions as $key => $value)
-				<option value="{{ $key }}" {{ ($sort ?? 'entities.name') == $key ? 'selected' : '' }}>{{ $value }}</option>
+			<span class="text-muted-foreground text-sm">Sort by:</span>
+			<select name="sort" class="form-select-tw text-sm py-1 auto-submit">
+				@foreach($sortOptions as $value => $label)
+				<option value="{{ $value }}" {{ ($sort ?? 'entities.name') == $value ? 'selected' : '' }}>{{ $label }}</option>
 				@endforeach
 			</select>
-
-			<select name="direction" class="form-select-tw text-sm auto-submit">
-				@foreach($directionOptions as $key => $value)
-				<option value="{{ $key }}" {{ ($direction ?? 'asc') == $key ? 'selected' : '' }}>{{ $value }}</option>
+			<select name="direction" class="form-select-tw text-sm py-1 auto-submit">
+				@foreach($directionOptions as $value => $label)
+				<option value="{{ $value }}" {{ ($direction ?? 'asc') == $value ? 'selected' : '' }}>{{ $label }}</option>
 				@endforeach
 			</select>
 		</form>
+	</div>
 
-		<!-- Pagination Controls -->
-		@if(isset($entities) && $entities->hasPages())
-		<div class="flex items-center gap-1 ml-2">
-			<span class="text-muted-foreground mr-1 hidden md:inline">|</span>
-			@if ($entities->onFirstPage())
-				<span class="relative inline-flex items-center px-3 py-2 text-sm font-medium text-muted-foreground/50 bg-card border border-border cursor-not-allowed rounded-lg">
-					<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-						<path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-					</svg>
-				</span>
-			@else
-				<a href="{{ $entities->previousPageUrl() }}" rel="prev" class="relative inline-flex items-center px-3 py-2 text-sm font-medium text-muted-foreground bg-card border border-border rounded-lg hover:bg-accent transition-colors">
-					<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-						<path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-					</svg>
-				</a>
-			@endif
+	<!-- Pagination (top) -->
+	@if(isset($entities) && $entities->hasPages())
+	<div class="flex items-center gap-1">
+		@if($entities->onFirstPage())
+		<span class="px-3 py-1 text-muted-foreground/50 cursor-not-allowed">&lt; Previous</span>
+		@else
+		<a href="{{ $entities->previousPageUrl() }}" class="px-3 py-1 text-muted-foreground hover:text-foreground">&lt; Previous</a>
+		@endif
 
-			<span class="px-2 py-1 text-sm text-foreground">
-				{{ $entities->currentPage() }}
-			</span>
+		@foreach($entities->getUrlRange(max(1, $entities->currentPage() - 2), min($entities->lastPage(), $entities->currentPage() + 2)) as $page => $url)
+		<a href="{{ $url }}" class="px-3 py-1 rounded {{ $page == $entities->currentPage() ? 'bg-accent text-foreground border border-primary' : 'text-muted-foreground hover:bg-card' }}">{{ $page }}</a>
+		@endforeach
 
-			@if ($entities->hasMorePages())
-				<a href="{{ $entities->nextPageUrl() }}" rel="next" class="relative inline-flex items-center px-3 py-2 text-sm font-medium text-muted-foreground bg-card border border-border rounded-lg hover:bg-accent transition-colors">
-					<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-						<path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-					</svg>
-				</a>
-			@else
-				<span class="relative inline-flex items-center px-3 py-2 text-sm font-medium text-muted-foreground/50 bg-card border border-border cursor-not-allowed rounded-lg">
-					<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-						<path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-					</svg>
-				</span>
-			@endif
-		</div>
+		@if($entities->hasMorePages())
+		<a href="{{ $entities->nextPageUrl() }}" class="px-3 py-1 text-muted-foreground hover:text-foreground">Next &gt;</a>
+		@else
+		<span class="px-3 py-1 text-muted-foreground/50 cursor-not-allowed">Next &gt;</span>
 		@endif
 	</div>
+	@endif
 </div>
 
 <!-- Recently Popular Entities -->
-@if (isset($latestEntities) && count($latestEntities) > 0)
+{{-- @if (isset($latestEntities) && count($latestEntities) > 0)
 <div class="mb-8">
 	<div class="rounded-lg border border-border bg-card shadow">
 		<div class="bg-primary px-6 py-3 flex items-center justify-between rounded-t-lg">
@@ -243,7 +245,7 @@ Entities @include('entities.title-crumbs')
 		</div>
 	</div>
 </div>
-@endif
+@endif --}}
 
 <!-- Main Entity List -->
 <div class="mb-6">
@@ -260,6 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	const filterPanel = document.getElementById('filter-panel');
 	const toggleText = document.getElementById('filters-toggle-text');
 	const chevron = document.getElementById('filters-chevron');
+	const badges = document.getElementById('active-filters-badges');
 	
 	if (toggleBtn) {
 		toggleBtn.addEventListener('click', function() {
@@ -267,6 +270,15 @@ document.addEventListener('DOMContentLoaded', function() {
 			const isHidden = filterPanel.classList.contains('hidden');
 			toggleText.textContent = isHidden ? 'Show Filters' : 'Hide Filters';
 			chevron.classList.toggle('rotate-180');
+			
+			// Show badges when filters are hidden, hide when open
+			if (badges) {
+				if (isHidden) {
+					badges.classList.remove('hidden');
+				} else {
+					badges.classList.add('hidden');
+				}
+			}
 		});
 	}
 	
