@@ -3,9 +3,9 @@
     <div class="p-4 flex flex-col items-center text-center">
         <!-- User Avatar -->
         <div class="mb-4">
-            @if ($user->profile && $user->profile->avatar)
+            @if ($photo = $user->getPrimaryPhoto())
             <a href="{{ route('users.show', [$user->id]) }}">
-                <img src="{{ Storage::disk('external')->url($user->profile->getStorageThumbnail()) }}"
+                <img src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}"
                     alt="{{ $user->name }}"
                     class="w-24 h-24 rounded-full object-cover border-2 border-border hover:border-primary transition-colors">
             </a>
