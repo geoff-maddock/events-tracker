@@ -4,15 +4,29 @@
 
 @section('content')
 
+<!-- Page Header -->
+<div class="mb-6">
+	<h1 class="text-3xl font-bold text-primary mb-2">Event Grid</h1>
+	<p class="text-muted-foreground">Browse upcoming events in a compact grid layout.</p>
+</div>
+
+<!-- Action Buttons -->
+<div class="mb-6 flex flex-wrap gap-2">
+	<a href="{!! URL::route('events.create') !!}" class="inline-flex items-center px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
+		<i class="bi bi-plus-lg mr-2"></i>
+		Create Event
+	</a>
+	<a href="{!! URL::route('events.export') !!}" class="inline-flex items-center px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors" target="_blank">
+		<i class="bi bi-file-text mr-2"></i>
+		Export TXT
+	</a>
+	<a href="{!! URL::route('events.indexIcal') !!}" class="inline-flex items-center px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors" target="_blank">
+		<i class="bi bi-calendar-event mr-2"></i>
+		Export iCal
+	</a>
+</div>
+
 <div class="flex flex-col gap-6">
-    <!-- Header & Actions -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <h1 class="text-2xl font-bold text-foreground flex items-center gap-2">
-            Events
-            @include('events.crumbs-tw')
-        </h1>
-        @include('events.index._actions-tw', ['user' => $user])
-    </div>
 
     <!-- Filters Section -->
     <div class="mb-6">

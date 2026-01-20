@@ -41,11 +41,19 @@ Events @include('events.title-crumbs')
 	<p class="text-muted-foreground">Discover and explore upcoming events.</p>
 </div>
 
-<!-- Create Event Button -->
-<div class="mb-6">
+<!-- Action Buttons -->
+<div class="mb-6 flex flex-wrap gap-2">
 	<a href="{!! URL::route('events.create') !!}" class="inline-flex items-center px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
 		<i class="bi bi-plus-lg mr-2"></i>
 		Create Event
+	</a>
+	<a href="{!! URL::route('events.export') !!}" class="inline-flex items-center px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors" target="_blank">
+		<i class="bi bi-file-text mr-2"></i>
+		Export TXT
+	</a>
+	<a href="{!! URL::route('events.indexIcal') !!}" class="inline-flex items-center px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors" target="_blank">
+		<i class="bi bi-calendar-event mr-2"></i>
+		Export iCal
 	</a>
 </div>
 
@@ -241,7 +249,7 @@ Events @include('events.title-crumbs')
 
 <!-- Events Grid -->
 @if (isset($events) && count($events) > 0)
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+<div class="grid grid-cols-1 md:grid-cols-2 event-3col:grid-cols-3 event-4col:grid-cols-4 gap-6">
 	@foreach ($events as $event)
 	@include('events.card-tw', ['event' => $event])
 	@endforeach

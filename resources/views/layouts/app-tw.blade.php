@@ -82,19 +82,6 @@
 			<!-- Top Bar -->
 			@include('partials.topbar-tw')
 
-			<!-- Mobile Search -->
-			<div class="md:hidden p-4 bg-background border-b border-border">
-				<form role="search" action="/search">
-					<input type="text"
-						class="w-full px-4 py-2 bg-transparent border border-input rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-						placeholder="Search events, venues, artists..."
-						name="keyword"
-						title="Search"
-						aria-label="Search"
-						value="{{ isset($search) ? $search : '' }}">
-				</form>
-			</div>
-
 			<!-- Main Content Area -->
 			<main class="flex-1 p-4 md:p-6 overflow-auto bg-background">
 				@yield('content')

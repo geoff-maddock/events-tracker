@@ -109,6 +109,12 @@
         <!-- Divider -->
         <div class="border-t border-border my-4"></div>
 
+        <!-- About -->
+        <a href="{{ url('/menus/1/content') }}" class="nav-item-tw {{ Request::is('menus/1/content') ? 'nav-item-active-tw' : '' }}">
+            <i class="bi bi-info-circle text-lg"></i>
+            <span>About</span>
+        </a>
+
         <!-- Menu Items -->
         @if (isset($menus) && $menus->isNotEmpty())
         @foreach ($menus as $menu)
@@ -175,10 +181,7 @@
     </div>
 </aside>
 
-<!-- Mobile Menu Button -->
-<button id="mobile-menu-toggle" class="md:hidden fixed bottom-4 left-4 z-50 p-3 bg-accent text-foreground border-2 border-primary rounded-full shadow-lg hover:bg-accent/80 transition-colors">
-    <i class="bi bi-list text-xl"></i>
-</button>
+
 
 <!-- Mobile Sidebar Overlay -->
 <div id="mobile-sidebar-overlay" class="hidden md:hidden fixed inset-0 bg-black/50 z-40" onclick="closeMobileSidebar()"></div>
@@ -276,6 +279,7 @@
         <!-- Divider -->
         <div class="border-t border-border my-4"></div>
 
+
         <!-- Menu Items -->
         @if (isset($menus) && $menus->isNotEmpty())
         @foreach ($menus as $menu)
@@ -286,11 +290,6 @@
         @endforeach
         @endif
 
-        <!-- Help Section -->
-        <a href="{{ url('/about') }}" class="nav-item-tw {{ Request::is('about') ? 'nav-item-active-tw' : '' }}">
-            <i class="bi bi-info-circle text-lg"></i>
-            <span>About</span>
-        </a>
 
         @isset ($hasForum)
         <a href="{{ url('/threads') }}" class="nav-item-tw {{ Request::is('threads') ? 'nav-item-active-tw' : '' }}">
@@ -363,5 +362,7 @@
         overlay.classList.add('hidden');
     }
     
+    // Support both menu toggle buttons
     document.getElementById('mobile-menu-toggle')?.addEventListener('click', toggleMobileSidebar);
+    document.getElementById('mobile-menu-toggle-top')?.addEventListener('click', toggleMobileSidebar);
 </script>

@@ -9,6 +9,8 @@ module.exports = {
   theme: {
     extend: {
       screens: {
+        'event-3col': '1264px',
+        'event-4col': '1984px',
         '2xl': '1600px',
         '3xl': '2000px',
       },
