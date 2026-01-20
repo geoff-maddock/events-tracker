@@ -2,6 +2,11 @@
 
 @section('title', 'Add Keyword Tag')
 
+@section('select2.include')
+<!-- Select2 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+@endsection
+
 @section('content')
 
 <div class="max-w-4xl mx-auto">
@@ -36,6 +41,15 @@
 @section('scripts.footer')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+	// Initialize Select2
+	$('.select2').each(function() {
+		$(this).select2({
+			theme: $(this).data('theme') || 'default',
+			placeholder: $(this).data('placeholder') || 'Select an option',
+			allowClear: true
+		});
+	});
+
 	const nameInput = document.getElementById('name');
 	const slugInput = document.getElementById('slug');
 	let manuallyEdited = false;

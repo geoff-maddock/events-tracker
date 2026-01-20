@@ -7,7 +7,7 @@
         type="text"
         name="first_name"
         id="first_name"
-        :value="old('first_name', $user->first_name ?? '')"
+        :value="old('first_name', isset($user->profile) ? $user->profile->first_name : '')"
         placeholder="Enter first name"
         :hasError="$errors->has('first_name')" />
 </x-ui.form-group>
@@ -21,7 +21,7 @@
         type="text"
         name="last_name"
         id="last_name"
-        :value="old('last_name', $user->last_name ?? '')"
+        :value="old('last_name', isset($user->profile) ? $user->profile->last_name : '')"
         placeholder="Enter last name"
         :hasError="$errors->has('last_name')" />
 </x-ui.form-group>
@@ -36,7 +36,7 @@
         type="text"
         name="alias"
         id="alias"
-        :value="old('alias', $user->alias ?? '')"
+        :value="old('alias', isset($user->profile) ? $user->profile->alias : '')"
         placeholder="Enter alias"
         :hasError="$errors->has('alias')" />
 </x-ui.form-group>
@@ -51,7 +51,7 @@
         id="bio"
         :hasError="$errors->has('bio')"
         rows="4"
-        placeholder="Tell us about yourself">{{ old('bio', $user->bio ?? '') }}</x-ui.textarea>
+        placeholder="Tell us about yourself">{{ old('bio', isset($user->profile) ? $user->profile->bio : '') }}</x-ui.textarea>
 </x-ui.form-group>
 
 {{-- Social Media --}}
@@ -64,7 +64,7 @@
             type="text"
             name="facebook_username"
             id="facebook_username"
-            :value="old('facebook_username', $user->facebook_username ?? '')"
+            :value="old('facebook_username', isset($user->profile) ? $user->profile->facebook_username : '')"
             placeholder="username"
             :hasError="$errors->has('facebook_username')" />
     </x-ui.form-group>
@@ -77,7 +77,7 @@
             type="text"
             name="instagram_username"
             id="instagram_username"
-            :value="old('instagram_username', $user->instagram_username ?? '')"
+            :value="old('instagram_username', isset($user->profile) ? $user->profile->instagram_username : '')"
             placeholder="username"
             :hasError="$errors->has('instagram_username')" />
     </x-ui.form-group>
@@ -90,7 +90,7 @@
             type="text"
             name="twitter_username"
             id="twitter_username"
-            :value="old('twitter_username', $user->twitter_username ?? '')"
+            :value="old('twitter_username', isset($user->profile) ? $user->profile->twitter_username : '')"
             placeholder="username"
             :hasError="$errors->has('twitter_username')" />
     </x-ui.form-group>
