@@ -1,52 +1,37 @@
-{{-- Primary Link --}}
+{{-- Event Name and Slug --}}
 <div class="grid grid-cols-12 gap-4">
-    <div class="col-span-12 md:col-span-8">
+    <div class="col-span-12 md:col-span-6">
         <x-ui.form-group
-            name="primary_link"
-            label="Primary Link"
-            :error="$errors->first('primary_link')"
-            helpText="Primary link to the event on the web, if one exists (not required)">
+            name="name"
+            label="Name"
+            :error="$errors->first('name')"
+            required>
             <x-ui.input
-                type="url"
-                name="primary_link"
-                id="primary_link"
-                :value="old('primary_link', $event->primary_link ?? '')"
-                placeholder="https://example.com/event"
-                :hasError="$errors->has('primary_link')"
-                autofocus />
+                type="text"
+                name="name"
+                id="name"
+                :value="old('name', $event->name ?? '')"
+                placeholder="Use a clear, simple and descriptive event title"
+                :hasError="$errors->has('name')" />
+        </x-ui.form-group>
+    </div>
+
+    <div class="col-span-12 md:col-span-6">
+        <x-ui.form-group
+            name="slug"
+            label="Slug"
+            :error="$errors->first('slug')"
+            helpText="Unique name for this event (will validate)">
+            <x-ui.input
+                type="text"
+                name="slug"
+                id="slug"
+                :value="old('slug', $event->slug ?? '')"
+                placeholder="unique-event-name"
+                :hasError="$errors->has('slug')" />
         </x-ui.form-group>
     </div>
 </div>
-
-{{-- Event Name --}}
-<x-ui.form-group
-    name="name"
-    label="Name"
-    :error="$errors->first('name')"
-    required>
-    <x-ui.input
-        type="text"
-        name="name"
-        id="name"
-        :value="old('name', $event->name ?? '')"
-        placeholder="Use a clear, simple and descriptive event title"
-        :hasError="$errors->has('name')" />
-</x-ui.form-group>
-
-{{-- Slug --}}
-<x-ui.form-group
-    name="slug"
-    label="Slug"
-    :error="$errors->first('slug')"
-    helpText="Unique name for this event (will validate)">
-    <x-ui.input
-        type="text"
-        name="slug"
-        id="slug"
-        :value="old('slug', $event->slug ?? '')"
-        placeholder="unique-event-name"
-        :hasError="$errors->has('slug')" />
-</x-ui.form-group>
 
 {{-- Short Description --}}
 <x-ui.form-group
@@ -76,9 +61,28 @@
         placeholder="Detailed description of the event including all relevant info not in other fields">{{ old('description', $event->description ?? '') }}</x-ui.textarea>
 </x-ui.form-group>
 
-{{-- Event Type, Venue, Promoter --}}
+{{-- Visibility, Event Type, Promoter, Venue --}}
 <div class="grid grid-cols-12 gap-4">
-    <div class="col-span-12 md:col-span-4">
+    <div class="col-span-12 md:col-span-6">
+        <x-ui.form-group
+            name="visibility_id"
+            label="Visibility"
+            :error="$errors->first('visibility_id')"
+            required>
+            <x-ui.select
+                name="visibility_id"
+                id="visibility_id"
+                :hasError="$errors->has('visibility_id')">
+                @foreach($visibilityOptions as $id => $name)
+                    <option value="{{ $id }}" {{ old('visibility_id', $event->visibility->id ?? 3) == $id ? 'selected' : '' }}>
+                        {{ $name }}
+                    </option>
+                @endforeach
+            </x-ui.select>
+        </x-ui.form-group>
+    </div>
+
+    <div class="col-span-12 md:col-span-6">
         <x-ui.form-group
             name="event_type_id"
             label="Event Type"
@@ -100,28 +104,7 @@
         </x-ui.form-group>
     </div>
 
-    <div class="col-span-12 md:col-span-4">
-        <x-ui.form-group
-            name="venue_id"
-            label="Venue"
-            :error="$errors->first('venue_id')">
-            <x-ui.select
-                name="venue_id"
-                id="venue_id"
-                class="select2"
-                data-theme="tailwind"
-                :hasError="$errors->has('venue_id')">
-                <option value="">Select venue</option>
-                @foreach($venueOptions as $id => $name)
-                    <option value="{{ $id }}" {{ old('venue_id', $event->venue_id ?? '') == $id ? 'selected' : '' }}>
-                        {{ $name }}
-                    </option>
-                @endforeach
-            </x-ui.select>
-        </x-ui.form-group>
-    </div>
-
-    <div class="col-span-12 md:col-span-4">
+    <div class="col-span-12 md:col-span-6">
         <x-ui.form-group
             name="promoter_id"
             label="Promoter"
@@ -141,40 +124,29 @@
             </x-ui.select>
         </x-ui.form-group>
     </div>
-</div>
 
-{{-- Additional Time Fields (Collapsible) --}}
-<div class="collapse @if(isset($event->soundcheck_at) || isset($event->door_at)) show @endif" id="form-time">
-    <div class="grid grid-cols-12 gap-4">
-        <div class="col-span-12 md:col-span-6">
-            <x-ui.form-group
-                name="soundcheck_at"
-                label="Soundcheck At"
-                :error="$errors->first('soundcheck_at')">
-                <x-ui.datetime-picker
-                    name="soundcheck_at"
-                    id="soundcheck_at"
-                    :value="old('soundcheck_at', isset($event->soundcheck_at) ? $event->soundcheck_at->format('Y-m-d H:i') : '')"
-                    :hasError="$errors->has('soundcheck_at')"
-                    placeholder="Select soundcheck time" />
-            </x-ui.form-group>
-        </div>
-
-        <div class="col-span-12 md:col-span-6">
-            <x-ui.form-group
-                name="door_at"
-                label="Doors Open"
-                :error="$errors->first('door_at')">
-                <x-ui.datetime-picker
-                    name="door_at"
-                    id="door_at"
-                    :value="old('door_at', isset($event->door_at) ? $event->door_at->format('Y-m-d H:i') : '')"
-                    :hasError="$errors->has('door_at')"
-                    placeholder="Select door time" />
-            </x-ui.form-group>
-        </div>
+    <div class="col-span-12 md:col-span-6">
+        <x-ui.form-group
+            name="venue_id"
+            label="Venue"
+            :error="$errors->first('venue_id')">
+            <x-ui.select
+                name="venue_id"
+                id="venue_id"
+                class="select2"
+                data-theme="tailwind"
+                :hasError="$errors->has('venue_id')">
+                <option value="">Select venue</option>
+                @foreach($venueOptions as $id => $name)
+                    <option value="{{ $id }}" {{ old('venue_id', $event->venue_id ?? '') == $id ? 'selected' : '' }}>
+                        {{ $name }}
+                    </option>
+                @endforeach
+            </x-ui.select>
+        </x-ui.form-group>
     </div>
 </div>
+
 
 {{-- Start, End, Cancelled Times --}}
 <div class="grid grid-cols-12 gap-4">
@@ -279,19 +251,39 @@
     </div>
 </div>
 
-{{-- Ticket Link --}}
-<x-ui.form-group
-    name="ticket_link"
-    label="Ticket Link"
-    :error="$errors->first('ticket_link')">
-    <x-ui.input
-        type="url"
-        name="ticket_link"
-        id="ticket_link"
-        :value="old('ticket_link', $event->ticket_link ?? '')"
-        placeholder="https://tickets.example.com/event"
-        :hasError="$errors->has('ticket_link')" />
-</x-ui.form-group>
+{{-- Primary Link and Ticket Link --}}
+<div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 md:col-span-6">
+        <x-ui.form-group
+            name="primary_link"
+            label="Primary Link"
+            :error="$errors->first('primary_link')"
+            helpText="Primary link to the event on the web, if one exists (not required)">
+            <x-ui.input
+                type="url"
+                name="primary_link"
+                id="primary_link"
+                :value="old('primary_link', $event->primary_link ?? '')"
+                placeholder="https://example.com/event"
+                :hasError="$errors->has('primary_link')" />
+        </x-ui.form-group>
+    </div>
+
+    <div class="col-span-12 md:col-span-6">
+        <x-ui.form-group
+            name="ticket_link"
+            label="Ticket Link"
+            :error="$errors->first('ticket_link')">
+            <x-ui.input
+                type="url"
+                name="ticket_link"
+                id="ticket_link"
+                :value="old('ticket_link', $event->ticket_link ?? '')"
+                placeholder="https://tickets.example.com/event"
+                :hasError="$errors->has('ticket_link')" />
+        </x-ui.form-group>
+    </div>
+</div>
 
 {{-- Series --}}
 <div class="grid grid-cols-12 gap-4">
@@ -328,9 +320,9 @@
     </div>
 </div>
 
-{{-- Related Entities --}}
+{{-- Related Entities and Tags --}}
 <div class="grid grid-cols-12 gap-4">
-    <div class="col-span-12 md:col-span-8">
+    <div class="col-span-12 md:col-span-6">
         <x-ui.form-group
             name="entity_list"
             label="Related Entities"
@@ -360,11 +352,8 @@
             </button>
         </div>
     </div>
-</div>
 
-{{-- Tags --}}
-<div class="grid grid-cols-12 gap-4">
-    <div class="col-span-12 md:col-span-8">
+    <div class="col-span-12 md:col-span-6">
         <x-ui.form-group
             name="tag_list"
             label="Tags"
@@ -397,28 +386,9 @@
     </div>
 </div>
 
-{{-- Visibility, Owner, Do Not Repost --}}
+{{-- Owner, Do Not Repost --}}
 <div class="grid grid-cols-12 gap-4">
-    <div class="col-span-12 md:col-span-4">
-        <x-ui.form-group
-            name="visibility_id"
-            label="Visibility"
-            :error="$errors->first('visibility_id')"
-            required>
-            <x-ui.select
-                name="visibility_id"
-                id="visibility_id"
-                :hasError="$errors->has('visibility_id')">
-                @foreach($visibilityOptions as $id => $name)
-                    <option value="{{ $id }}" {{ old('visibility_id', $event->visibility->id ?? 3) == $id ? 'selected' : '' }}>
-                        {{ $name }}
-                    </option>
-                @endforeach
-            </x-ui.select>
-        </x-ui.form-group>
-    </div>
-
-    <div class="col-span-12 md:col-span-4">
+    <div class="col-span-12 md:col-span-6">
         <x-ui.form-group
             name="created_by"
             label="Owner"
@@ -439,7 +409,7 @@
         </x-ui.form-group>
     </div>
 
-    <div class="col-span-12 md:col-span-4">
+    <div class="col-span-12 md:col-span-6">
         <div class="flex items-center h-9 mt-8">
             <input type="hidden" name="do_not_repost" value="0">
             <input

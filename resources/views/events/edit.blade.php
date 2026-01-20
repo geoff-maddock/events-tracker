@@ -9,7 +9,7 @@
 
 @section('content')
 
-<div class="max-w-7xl mx-auto">
+<div class="w-full">
 	<!-- Header -->
 	<div class="mb-6">
 		<h1 class="text-3xl font-bold text-foreground mb-2">Edit Event</h1>
@@ -60,73 +60,20 @@
 
 		<!-- Photos Sidebar -->
 		<div class="lg:col-span-1">
-			<div class="bg-card rounded-lg border border-border shadow-sm p-4 space-y-4">
-				<h3 class="font-semibold text-lg text-foreground">Event Photos</h3>
-
-				<!-- Photo Gallery -->
-				<div class="grid grid-cols-2 gap-2">
-					@foreach ($event->photos as $photo)
-					<div class="relative group">
-						<a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}"
-							data-lightbox="event-photos"
-							class="block aspect-square rounded-lg overflow-hidden border border-border">
-							<img src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}"
-								alt="{{ $event->name}}"
-								class="w-full h-full object-cover group-hover:scale-105 transition-transform">
-						</a>
-
-						@if ($user && $event->user && (Auth::user()->id === $event->user->id || $user->hasGroup('super_admin')))
-						<div class="absolute top-1 right-1 flex gap-1">
-							<!-- Delete Photo -->
-							<form method="POST" action="{{ route('photos.destroy', $photo->id) }}" class="inline">
-								@csrf
-								@method('DELETE')
-								<button type="submit"
-									onclick="return confirm('Delete this photo?')"
-									class="p-1 bg-destructive/80 text-destructive-foreground rounded hover:bg-destructive transition-colors"
-									title="Delete photo">
-									<i class="bi bi-trash text-xs"></i>
-								</button>
-							</form>
-
-							<!-- Set/Unset Primary -->
-							@if ($photo->is_primary)
-							<form method="POST" action="/photos/{{ $photo->id }}/unset-primary" class="inline">
-								@csrf
-								<button type="submit"
-									class="p-1 bg-primary/80 text-primary-foreground rounded hover:bg-primary transition-colors"
-									title="Primary Photo (Click to unset)">
-									<i class="bi bi-star-fill text-xs"></i>
-								</button>
-							</form>
-							@else
-							<form method="POST" action="/photos/{{ $photo->id }}/set-primary" class="inline">
-								@csrf
-								<button type="submit"
-									class="p-1 bg-muted/80 text-muted-foreground rounded hover:bg-accent transition-colors"
-									title="Set as primary photo">
-									<i class="bi bi-star text-xs"></i>
-								</button>
-							</form>
-							@endif
-						</div>
-						@endif
-					</div>
-					@endforeach
-				</div>
-
-				<!-- Photo Upload Dropzone -->
-				@if ($user && $event->user && (Auth::user()->id === $event->user->id || $user->hasGroup('super_admin') || $event->canUserPostPhoto($user)))
-				<div class="pt-4 border-t border-border">
-					<form action="/events/{{ $event->id }}/photos"
-						class="dropzone border-2 border-dashed border-border rounded-lg p-4 text-center cursor-pointer hover:border-muted-foreground/60 transition-colors"
-						id="myDropzone"
-						method="POST">
-						<input type="hidden" name="_token" value="{{ csrf_token() }}">
-					</form>
-				</div>
-				@endif
+			<!-- Photo Upload -->
+			@if ($user && $event->user && (Auth::user()->id === $event->user->id || $user->hasGroup('super_admin') || $event->canUserPostPhoto($user)))
+			<div class="rounded-lg border border-border bg-card shadow p-2 pt-2 space-y-4 mb-6">
+				<form action="/events/{{ $event->id }}/photos"
+					class="dropzone border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-600 transition-colors"
+					id="myDropzone"
+					method="POST">
+					<input type="hidden" name="_token" value="{{ csrf_token() }}">
+				</form>
 			</div>
+			@endif
+
+			<!-- Photos Section -->
+			@include('partials.photo-gallery-tw', ['event' => $event, 'lightboxGroup' => 'event-gallery'])
 		</div>
 	</div>
 </div>
