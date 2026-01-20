@@ -1,33 +1,38 @@
-{{-- Name --}}
-<x-ui.form-group
-    name="name"
-    label="Name"
-    :error="$errors->first('name')"
-    required>
-    <x-ui.input
-        type="text"
-        name="name"
-        id="name"
-        :value="old('name', $entity->name ?? '')"
-        placeholder="Entity name"
-        :hasError="$errors->has('name')"
-        autofocus />
-</x-ui.form-group>
+{{-- Name and Slug --}}
+<div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 md:col-span-6">
+        <x-ui.form-group
+            name="name"
+            label="Name"
+            :error="$errors->first('name')"
+            required>
+            <x-ui.input
+                type="text"
+                name="name"
+                id="name"
+                :value="old('name', $entity->name ?? '')"
+                placeholder="Entity name"
+                :hasError="$errors->has('name')"
+                autofocus />
+        </x-ui.form-group>
+    </div>
 
-{{-- Slug --}}
-<x-ui.form-group
-    name="slug"
-    label="Slug"
-    :error="$errors->first('slug')"
-    helpText="Unique name for this entity (will validate)">
-    <x-ui.input
-        type="text"
-        name="slug"
-        id="slug"
-        :value="old('slug', $entity->slug ?? '')"
-        placeholder="unique-entity-name"
-        :hasError="$errors->has('slug')" />
-</x-ui.form-group>
+    <div class="col-span-12 md:col-span-6">
+        <x-ui.form-group
+            name="slug"
+            label="Slug"
+            :error="$errors->first('slug')"
+            helpText="Unique name for this entity (will validate)">
+            <x-ui.input
+                type="text"
+                name="slug"
+                id="slug"
+                :value="old('slug', $entity->slug ?? '')"
+                placeholder="unique-entity-name"
+                :hasError="$errors->has('slug')" />
+        </x-ui.form-group>
+    </div>
+</div>
 
 {{-- Short Description --}}
 <x-ui.form-group
@@ -102,56 +107,9 @@
     </div>
 </div>
 
-{{-- Social Media Usernames --}}
+{{-- Started At, FB Username, and Instagram Username --}}
 <div class="grid grid-cols-12 gap-4">
-    <div class="col-span-12 md:col-span-6">
-        <x-ui.form-group
-            name="facebook_username"
-            label="FB Username"
-            :error="$errors->first('facebook_username')">
-            <x-ui.input
-                type="text"
-                name="facebook_username"
-                id="facebook_username"
-                :value="old('facebook_username', $entity->facebook_username ?? '')"
-                placeholder="Add the related facebook username if there is one"
-                :hasError="$errors->has('facebook_username')" />
-        </x-ui.form-group>
-    </div>
-
-    <div class="col-span-12 md:col-span-6">
-        <x-ui.form-group
-            name="twitter_username"
-            label="Twitter Username"
-            :error="$errors->first('twitter_username')">
-            <x-ui.input
-                type="text"
-                name="twitter_username"
-                id="twitter_username"
-                :value="old('twitter_username', $entity->twitter_username ?? '')"
-                placeholder="Add the related twitter username if there is one"
-                :hasError="$errors->has('twitter_username')" />
-        </x-ui.form-group>
-    </div>
-</div>
-
-<div class="grid grid-cols-12 gap-4">
-    <div class="col-span-12 md:col-span-6">
-        <x-ui.form-group
-            name="instagram_username"
-            label="Instagram Username"
-            :error="$errors->first('instagram_username')">
-            <x-ui.input
-                type="text"
-                name="instagram_username"
-                id="instagram_username"
-                :value="old('instagram_username', $entity->instagram_username ?? '')"
-                placeholder="Add the related instagram username if there is one"
-                :hasError="$errors->has('instagram_username')" />
-        </x-ui.form-group>
-    </div>
-
-    <div class="col-span-12 md:col-span-6">
+    <div class="col-span-12 md:col-span-4">
         <x-ui.form-group
             name="started_at"
             label="Started At"
@@ -162,6 +120,36 @@
                 id="started_at"
                 :value="old('started_at', isset($entity->started_at) ? $entity->started_at->format('Y-m-d\TH:i') : '')"
                 :hasError="$errors->has('started_at')" />
+        </x-ui.form-group>
+    </div>
+
+    <div class="col-span-12 md:col-span-4">
+        <x-ui.form-group
+            name="facebook_username"
+            label="FB Username"
+            :error="$errors->first('facebook_username')">
+            <x-ui.input
+                type="text"
+                name="facebook_username"
+                id="facebook_username"
+                :value="old('facebook_username', $entity->facebook_username ?? '')"
+                placeholder="Add the facebook username"
+                :hasError="$errors->has('facebook_username')" />
+        </x-ui.form-group>
+    </div>
+
+    <div class="col-span-12 md:col-span-4">
+        <x-ui.form-group
+            name="instagram_username"
+            label="Instagram Username"
+            :error="$errors->first('instagram_username')">
+            <x-ui.input
+                type="text"
+                name="instagram_username"
+                id="instagram_username"
+                :value="old('instagram_username', $entity->instagram_username ?? '')"
+                placeholder="Add the instagram username"
+                :hasError="$errors->has('instagram_username')" />
         </x-ui.form-group>
     </div>
 </div>
