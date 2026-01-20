@@ -11,8 +11,8 @@
 
 <!-- Page Header -->
 <div class="mb-6">
-	<h1 class="text-3xl font-bold text-primary mb-2">Event Series</h1>
-	<p class="text-muted-foreground">Recurring and scheduled event series.</p>
+	<h1 class="text-3xl font-bold text-primary mb-2">Series Listings</h1>
+	<p class="text-muted-foreground">Discover and explore event series.</p>
 </div>
 
 <!-- Action Menu -->
@@ -40,13 +40,35 @@
 		<span id="filters-toggle-text">@if($hasFilter) Hide @else Show @endif Filters</span>
 		<i class="bi bi-chevron-down ml-2 transition-transform @if($hasFilter) rotate-180 @endif" id="filters-chevron"></i>
 	</button>
-
-	<!-- Active Filters / Reset -->
+	
+	<!-- Active Filters Badges (shown when filters are hidden) -->
 	@if($hasFilter)
-	<div class="inline-flex items-center gap-2 ml-4">
-		<a href="{{ url()->action('SeriesController@rppReset') }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg">
-			Clear All <i class="bi bi-x ml-1"></i>
-		</a>
+	<div id="active-filters-badges" class="@if($hasFilter) hidden @endif inline-flex flex-wrap items-center gap-2 ml-4">
+		@if(!empty($filters['name']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Name: {{ $filters['name'] }}
+		</span>
+		@endif
+		@if(!empty($filters['occurrence_type']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Occurrence: {{ $occurrenceTypeOptions[$filters['occurrence_type']] ?? 'Unknown' }}
+		</span>
+		@endif
+		@if(!empty($filters['venue']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Venue: {{ $venueOptions[$filters['venue']] ?? 'Unknown' }}
+		</span>
+		@endif
+		@if(!empty($filters['tag']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Tag: {{ $tagOptions[$filters['tag']] ?? 'Unknown' }}
+		</span>
+		@endif
+		@if(!empty($filters['related']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Entity: {{ $relatedOptions[$filters['related']] ?? 'Unknown' }}
+		</span>
+		@endif
 	</div>
 	@endif
 </div>
@@ -213,6 +235,7 @@
 	// Filter toggle functionality
 	document.getElementById('filters-toggle-btn')?.addEventListener('click', function() {
 		const panel = document.getElementById('filter-panel');
+		const badges = document.getElementById('active-filters-badges');
 		const text = document.getElementById('filters-toggle-text');
 		const chevron = document.getElementById('filters-chevron');
 		
@@ -221,9 +244,17 @@
 		if (panel.classList.contains('hidden')) {
 			text.textContent = 'Show Filters';
 			chevron.classList.remove('rotate-180');
+			// Show badges when filters are hidden
+			if (badges) {
+				badges.classList.remove('hidden');
+			}
 		} else {
 			text.textContent = 'Hide Filters';
 			chevron.classList.add('rotate-180');
+			// Hide badges when filters are shown
+			if (badges) {
+				badges.classList.add('hidden');
+			}
 		}
 	});
 </script>
