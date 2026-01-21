@@ -12,13 +12,11 @@ use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\SessionStore\ListParameterStore;
 use Illuminate\Session\Store;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,8 +27,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Paginator::useBootstrap();
-
         Relation::morphMap([
             'entity' => Entity::class,
             'events' => Event::class,
