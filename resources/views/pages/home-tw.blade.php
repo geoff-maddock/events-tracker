@@ -6,9 +6,9 @@
 
 <!-- Hero Section -->
 <div class="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/5 rounded-xl border border-border shadow-sm mb-8">
-	<div class="relative p-6 md:p-8 lg:p-10">
+	<div class="relative p-6 md:p-8">
 		<!-- Header with Toggle -->
-		<div class="flex items-start justify-between gap-4 mb-6">
+		<div class="flex items-start justify-between gap-4">
 			<div class="flex-1">
 				<h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-3">
 					{{ config('app.tagline')}}
@@ -26,7 +26,7 @@
 		</div>
 
 		<!-- Collapsible Content -->
-		<div id="home-content" class="space-y-6">
+		<div id="home-content" class="space-y-6 pt-4">
 			<!-- Features Grid -->
 			<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
 				<div class="flex items-start gap-3 p-4 rounded-lg bg-card/50 border border-border/50">
