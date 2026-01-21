@@ -106,24 +106,23 @@
 
 			<!-- Event Image -->
 			@if ($photo = $event->getPrimaryPhoto())
-			<div class="aspect-video relative overflow-hidden rounded-lg border border-border bg-card shadow">
-						<a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" data-lightbox="event-main" class="block w-full h-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-							<img src="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" 
-								 class="object-cover w-full h-full cursor-pointer hover:opacity-90 transition-opacity" 
-								 alt="{{ $event->name }}"
-								 loading="lazy">
-						</a>
-					</div>
-					@endif
+				<div class="relative overflow-hidden rounded-lg border border-border bg-card shadow max-h-[600px] flex items-center justify-center">
+				<a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" data-lightbox="event-main" class="block w-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+					<img src="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" 
+						class="object-contain w-full max-h-[600px] cursor-pointer hover:opacity-90 transition-opacity">
+				</a>
+				</div>
+				@endif
 
-				<!-- Description -->
-				@if ($event->description)
-				<div class="rounded-lg border bg-card shadow">
-					<div class="prose max-w-none p-8 p-4 pt-2 space-y-4">
-						{!! nl2br(e($event->description)) !!}
-					</div>
-			</div>
-		@endif		</div>
+						<!-- Description -->
+						@if ($event->description)
+						<div class="rounded-lg border bg-card shadow">
+							<div class="prose max-w-none p-8 p-4 pt-2 space-y-4">
+								{!! nl2br(e($event->description)) !!}
+							</div>
+						</div>
+				@endif		
+		</div>
 
 		<!-- Sidebar -->
 		<div class="lg:col-span-1 space-y-6">
