@@ -71,12 +71,6 @@
 						<span class="font-medium">All Events</span>
 					</a>
 
-					<a href="{!! URL::route('events.future') !!}"
-						class="inline-flex items-center gap-2 px-4 py-2.5 bg-card border border-border text-foreground rounded-lg hover:bg-accent hover:border-primary/30 transition-all group">
-						<i class="bi bi-calendar3 text-muted-foreground group-hover:text-primary transition-colors"></i>
-						<span class="font-medium">Future Events</span>
-					</a>
-
 					<a href="{!! URL::route('series.index') !!}"
 						class="inline-flex items-center gap-2 px-4 py-2.5 bg-card border border-border text-foreground rounded-lg hover:bg-accent hover:border-primary/30 transition-all group">
 						<i class="bi bi-collection text-muted-foreground group-hover:text-primary transition-colors"></i>

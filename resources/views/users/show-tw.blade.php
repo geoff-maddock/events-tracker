@@ -85,9 +85,9 @@
     </div>
 
     <!-- Main Content Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-6">
         <!-- Profile Card -->
-        <div class="card-tw">
+        <div class="card-tw xl:col-span-2">
             <div class="p-6">
                 <div class="space-y-3">
                     <div class="flex items-center gap-2">
@@ -220,7 +220,7 @@
         </div>
 
         <!-- Photos Card -->
-        <div class="card-tw">
+        <div class="card-tw xl:col-span-1">
             <div class="p-6">
                 <h3 class="text-lg font-semibold text-foreground mb-4">Photos</h3>
 
@@ -274,9 +274,9 @@
     </div>
 
     <!-- Events and Following Cards -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-6">
         <!-- Events Card -->
-        <div class="card-tw">
+        <div class="card-tw xl:col-span-1">
             @if (isset($tabs) && isset($tabs['events']))
                 <div class="border-b border-border px-6 py-4">
                     <h3 class="text-lg font-semibold text-foreground">Events</h3>
@@ -320,7 +320,7 @@
         </div>
 
         <!-- Following Card -->
-        <div class="card-tw">
+        <div class="card-tw xl:col-span-1">
             @if (isset($tabs) && isset($tabs['following']))
                 <div class="border-b border-border px-6 py-4">
                     <h3 class="text-lg font-semibold text-foreground">Following</h3>

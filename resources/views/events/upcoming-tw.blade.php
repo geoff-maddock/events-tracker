@@ -30,9 +30,6 @@
                     <a href="{{ route('events.index') }}" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
                         <i class="bi bi-calendar3 mr-2"></i>Show all events
                     </a>
-                    <a href="{{ route('events.future') }}" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
-                        <i class="bi bi-calendar-check mr-2"></i>Show future events
-                    </a>
                     <a href="{{ route('series.index') }}" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
                         <i class="bi bi-collection mr-2"></i>Show event series
                     </a>
