@@ -12,36 +12,48 @@
 	@endif
 </div>
 
-<!-- Action Menu -->
+<!-- Jump Links -->
 <div class="mb-6 flex flex-wrap gap-2">
-	<a href="{!! URL::route('events.index') !!}" class="inline-flex items-center px-3 py-2 bg-dark-surface border border-dark-border text-gray-300 rounded-lg hover:bg-dark-card transition-colors text-sm">
-		Event Index
+	@if (isset($entities) && $entitiesCount > 0)
+	<a href="#entities-results" class="inline-flex items-center px-4 py-2 bg-dark-card border-2 border-primary text-white rounded-lg hover:bg-dark-border transition-colors text-sm font-medium">
+		<i class="bi bi-people mr-2"></i>
+		Entities ({{ $entitiesCount }})
 	</a>
-	<a href="{!! URL::route('calendar') !!}" class="inline-flex items-center px-3 py-2 bg-dark-surface border border-dark-border text-gray-300 rounded-lg hover:bg-dark-card transition-colors text-sm">
-		Event Calendar
+	@endif
+	
+	@if (isset($tags) && $tagsCount > 0)
+	<a href="#tags-results" class="inline-flex items-center px-4 py-2 bg-dark-card border-2 border-primary text-white rounded-lg hover:bg-dark-border transition-colors text-sm font-medium">
+		<i class="bi bi-tags mr-2"></i>
+		Tags ({{ $tagsCount }})
 	</a>
-	<a href="{!! URL::route('events.create') !!}" class="inline-flex items-center px-3 py-2 bg-dark-card border border-dark-border text-white rounded-lg hover:bg-dark-border transition-colors text-sm">
-		<i class="bi bi-plus-lg mr-2"></i>
-		Add Event
+	@endif
+	
+	@if (isset($events) && count($events) > 0)
+	<a href="#events-results" class="inline-flex items-center px-4 py-2 bg-dark-card border-2 border-primary text-white rounded-lg hover:bg-dark-border transition-colors text-sm font-medium">
+		<i class="bi bi-calendar-event mr-2"></i>
+		Events ({{ $eventsCount }})
 	</a>
-	<a href="{!! URL::route('series.create') !!}" class="inline-flex items-center px-3 py-2 bg-dark-card border border-dark-border text-white rounded-lg hover:bg-dark-border transition-colors text-sm">
-		<i class="bi bi-plus-lg mr-2"></i>
-		Add Series
+	@endif
+	
+	@if (isset($series) && count($series) > 0)
+	<a href="#series-results" class="inline-flex items-center px-4 py-2 bg-dark-card border-2 border-primary text-white rounded-lg hover:bg-dark-border transition-colors text-sm font-medium">
+		<i class="bi bi-collection mr-2"></i>
+		Series ({{ $seriesCount }})
 	</a>
-	<a href="{!! URL::route('entities.create') !!}" class="inline-flex items-center px-3 py-2 bg-dark-card border border-dark-border text-white rounded-lg hover:bg-dark-border transition-colors text-sm">
-		<i class="bi bi-plus-lg mr-2"></i>
-		Add Entity
+	@endif
+	
+	@if (isset($threads) && count($threads) > 0)
+	<a href="#threads-results" class="inline-flex items-center px-4 py-2 bg-dark-card border-2 border-primary text-white rounded-lg hover:bg-dark-border transition-colors text-sm font-medium">
+		<i class="bi bi-chat mr-2"></i>
+		Threads ({{ $threadsCount }})
 	</a>
-	<a href="{!! URL::route('threads.create') !!}" class="inline-flex items-center px-3 py-2 bg-dark-card border border-dark-border text-white rounded-lg hover:bg-dark-border transition-colors text-sm">
-		<i class="bi bi-plus-lg mr-2"></i>
-		Add Thread
-	</a>
+	@endif
 </div>
 
 <div class="space-y-6">
 	<!-- Entities Results -->
 	@if (isset($entities) && $entitiesCount > 0)
-	<div class="card-tw">
+	<div id="entities-results" class="card-tw scroll-mt-6">
 		<div class="p-4 border-b border-dark-border flex items-center justify-between">
 			<div class="flex items-center gap-3">
 				<h2 class="text-xl font-semibold text-white">Entities</h2>
@@ -71,7 +83,7 @@
 
 	<!-- Tags Results -->
 	@if (isset($tags) && $tagsCount > 0)
-	<div class="card-tw">
+	<div id="tags-results" class="card-tw scroll-mt-6">
 		<div class="p-4 border-b border-dark-border flex items-center justify-between">
 			<div class="flex items-center gap-3">
 				<h2 class="text-xl font-semibold text-white">Tags</h2>
@@ -98,7 +110,7 @@
 
 	<!-- Events Results -->
 	@if (isset($events) && count($events) > 0)
-	<div class="card-tw">
+	<div id="events-results" class="card-tw scroll-mt-6">
 		<div class="p-4 border-b border-dark-border flex items-center justify-between">
 			<div class="flex items-center gap-3">
 				<h2 class="text-xl font-semibold text-white">Events</h2>
@@ -128,7 +140,7 @@
 
 	<!-- Series Results -->
 	@if (isset($series) && count($series) > 0)
-	<div class="card-tw">
+	<div id="series-results" class="card-tw scroll-mt-6">
 		<div class="p-4 border-b border-dark-border flex items-center justify-between">
 			<div class="flex items-center gap-3">
 				<h2 class="text-xl font-semibold text-white">Series</h2>
@@ -153,7 +165,7 @@
 
 	<!-- Threads Results -->
 	@if (isset($threads) && count($threads) > 0)
-	<div class="card-tw">
+	<div id="threads-results" class="card-tw scroll-mt-6">
 		<div class="p-4 border-b border-dark-border flex items-center justify-between">
 			<div class="flex items-center gap-3">
 				<h2 class="text-xl font-semibold text-white">Threads</h2>

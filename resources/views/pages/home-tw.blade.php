@@ -136,22 +136,43 @@
 
 @section('scripts.footer')
 <script type="text/javascript">
-// Toggle home content
-document.getElementById('home-toggle')?.addEventListener('click', function() {
+// Toggle home content with localStorage persistence
+document.addEventListener('DOMContentLoaded', function() {
+	const toggleButton = document.getElementById('home-toggle');
 	const content = document.getElementById('home-content');
 	const chevron = document.getElementById('home-chevron');
+	
+	if (!toggleButton || !content || !chevron) return;
 
-	content.classList.toggle('hidden');
-
-	if (content.classList.contains('hidden')) {
+	// Check localStorage for saved state
+	const isCollapsed = localStorage.getItem('homeContentCollapsed') === 'true';
+	
+	// Set initial state based on localStorage
+	if (isCollapsed) {
+		content.classList.add('hidden');
 		chevron.classList.remove('bi-chevron-up');
 		chevron.classList.add('bi-chevron-down');
-		this.setAttribute('aria-expanded', 'false');
-	} else {
-		chevron.classList.remove('bi-chevron-down');
-		chevron.classList.add('bi-chevron-up');
-		this.setAttribute('aria-expanded', 'true');
+		toggleButton.setAttribute('aria-expanded', 'false');
 	}
+
+	// Toggle functionality
+	toggleButton.addEventListener('click', function() {
+		const willBeCollapsed = !content.classList.contains('hidden');
+		
+		content.classList.toggle('hidden');
+
+		if (willBeCollapsed) {
+			chevron.classList.remove('bi-chevron-up');
+			chevron.classList.add('bi-chevron-down');
+			toggleButton.setAttribute('aria-expanded', 'false');
+			localStorage.setItem('homeContentCollapsed', 'true');
+		} else {
+			chevron.classList.remove('bi-chevron-down');
+			chevron.classList.add('bi-chevron-up');
+			toggleButton.setAttribute('aria-expanded', 'true');
+			localStorage.setItem('homeContentCollapsed', 'false');
+		}
+	});
 });
 
 // init app module on document load
