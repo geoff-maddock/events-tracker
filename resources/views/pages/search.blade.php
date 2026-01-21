@@ -124,6 +124,7 @@
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
 				@foreach($events as $event)
 				@include('events.card-tw', ['event' => $event])
+				@php unset($event); @endphp
 				@endforeach
 			</div>
 			<div class="mt-4">
@@ -154,6 +155,7 @@
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
 				@foreach($series as $s)
 				@include('series.card-tw', ['series' => $s])
+				@php unset($s); @endphp
 				@endforeach
 			</div>
 			<div class="mt-4">
@@ -178,6 +180,7 @@
 		<div id="search-threads" class="p-4 space-y-4">
 			@foreach($threads as $thread)
 			@include('threads.card-tw', ['thread' => $thread])
+			@php unset($thread); @endphp
 			@endforeach
 			<div class="mt-4">
 				{!! $threads->appends(['keyword' => $search])->links('vendor.pagination.tailwind') !!}
