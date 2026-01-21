@@ -29,7 +29,7 @@
 	</a>
 	<a href="{!! URL::route('series.export') !!}" class="inline-flex items-center px-3 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-card transition-colors text-sm" target="_blank">
 		<i class="bi bi-download mr-2"></i>
-		Export
+		Export TXT
 	</a>
 </div>
 

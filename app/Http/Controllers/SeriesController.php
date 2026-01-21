@@ -705,7 +705,7 @@ class SeriesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('series.feed-tw', compact('series'));
+        return view('series.feed', compact('series'));
     }
 
     public function createOccurrence(Request $request): View

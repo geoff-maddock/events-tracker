@@ -2558,7 +2558,7 @@ class EventsController extends Controller
             ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
 
-        return view('events.feed-tw', compact('events'));
+        return view('events.feed', compact('events'));
     }
 
     public function exportAttending(

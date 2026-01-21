@@ -47,11 +47,11 @@ Events @include('events.title-crumbs')
 		<i class="bi bi-plus-lg mr-2"></i>
 		Create Event
 	</a>
-	<a href="{!! URL::route('events.export') !!}" class="inline-flex items-center px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors" target="_blank">
-		<i class="bi bi-file-text mr-2"></i>
+	<a href="{!! URL::route('events.export') !!}" class="inline-flex items-center px-3 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-card transition-colors text-sm" target="_blank">
+		<i class="bi bi-download mr-2"></i>
 		Export TXT
 	</a>
-	<a href="{!! URL::route('events.indexIcal') !!}" class="inline-flex items-center px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors" target="_blank">
+	<a href="{!! URL::route('events.indexIcal') !!}" class="inline-flex items-center px-3 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-card transition-colors text-sm" target="_blank">
 		<i class="bi bi-calendar-event mr-2"></i>
 		Export iCal
 	</a>
