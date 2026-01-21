@@ -128,6 +128,18 @@
             @endif
         </div>
 
+        <!-- Entities -->
+        @unless ($event->entities->isEmpty())
+        <div class="flex flex-wrap gap-1 mb-2">
+            @foreach ($event->entities->take(4) as $entity)
+                <x-entity-badge :entity="$entity" context="events" />
+            @endforeach
+            @if ($event->entities->count() > 4)
+            <span class="text-xs text-muted-foreground self-center">+{{ $event->entities->count() - 4 }}</span>
+            @endif
+        </div>
+        @endunless
+
         <!-- Tags -->
         @unless ($event->tags->isEmpty())
         <div class="flex flex-wrap gap-1">
