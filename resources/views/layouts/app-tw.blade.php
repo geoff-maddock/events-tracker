@@ -83,7 +83,7 @@
 			@include('partials.topbar-tw')
 
 			<!-- Main Content Area -->
-			<main class="flex-1 p-4 md:p-6 overflow-auto bg-background">
+			<main class="flex-1 p-4 md:p-6 overflow-auto bg-background max-w-[2400px]">
 				@yield('content')
 				<event-list></event-list>
 			</main>

@@ -170,7 +170,7 @@
 	</div>
 
 	<!-- Sort Controls & Pagination -->
-	<div class="flex flex-wrap items-center gap-4">
+	<div class="flex items-center gap-4">
 		<form action="{{ url()->current() }}" method="GET" class="flex items-center gap-2">
 			<select name="limit" class="form-select-tw text-sm py-1 auto-submit">
 				@foreach($limitOptions as $value => $label)
@@ -189,29 +189,28 @@
 				@endforeach
 			</select>
 		</form>
+	</div>
 
-		<!-- Pagination -->
-		@if(isset($series) && $series->hasPages())
-		<div class="flex items-center gap-1">
-			<span class="text-muted-foreground mr-1 hidden lg:inline">|</span>
-			@if($series->onFirstPage())
-			<span class="px-3 py-1 text-muted-foreground/50 cursor-not-allowed">&lt; Previous</span>
-			@else
-			<a href="{{ $series->previousPageUrl() }}" class="px-3 py-1 text-muted-foreground hover:text-foreground">&lt; Previous</a>
-			@endif
+	<!-- Pagination -->
+	@if(isset($series) && $series->hasPages())
+	<div class="flex items-center gap-1">
+		@if($series->onFirstPage())
+		<span class="px-3 py-1 text-muted-foreground/50 cursor-not-allowed">&lt; Previous</span>
+		@else
+		<a href="{{ $series->previousPageUrl() }}" class="px-3 py-1 text-muted-foreground hover:text-foreground">&lt; Previous</a>
+		@endif
 
-			@foreach($series->getUrlRange(max(1, $series->currentPage() - 2), min($series->lastPage(), $series->currentPage() + 2)) as $page => $url)
-			<a href="{{ $url }}" class="px-3 py-1 rounded {{ $page == $series->currentPage() ? 'bg-accent text-foreground border border-primary' : 'text-muted-foreground hover:bg-card' }}">{{ $page }}</a>
-			@endforeach
+		@foreach($series->getUrlRange(max(1, $series->currentPage() - 2), min($series->lastPage(), $series->currentPage() + 2)) as $page => $url)
+		<a href="{{ $url }}" class="px-3 py-1 rounded {{ $page == $series->currentPage() ? 'bg-accent text-foreground border border-primary' : 'text-muted-foreground hover:bg-card' }}">{{ $page }}</a>
+		@endforeach
 
-			@if($series->hasMorePages())
-			<a href="{{ $series->nextPageUrl() }}" class="px-3 py-1 text-muted-foreground hover:text-foreground">Next &gt;</a>
-			@else
-			<span class="px-3 py-1 text-muted-foreground/50 cursor-not-allowed">Next &gt;</span>
-			@endif
-		</div>
+		@if($series->hasMorePages())
+		<a href="{{ $series->nextPageUrl() }}" class="px-3 py-1 text-muted-foreground hover:text-foreground">Next &gt;</a>
+		@else
+		<span class="px-3 py-1 text-muted-foreground/50 cursor-not-allowed">Next &gt;</span>
 		@endif
 	</div>
+	@endif
 </div>
 
 <!-- Series Grid -->

@@ -226,7 +226,7 @@ Events @include('events.title-crumbs')
 		@endif
 	</div>
 
-	<!-- Sort Controls -->
+	<!-- Sort Controls & Pagination -->
 	<div class="flex items-center gap-4">
 		<form action="{{ url()->current() }}" method="GET" class="flex items-center gap-2">
 			<select name="limit" class="form-select-tw text-sm py-1 auto-submit">
