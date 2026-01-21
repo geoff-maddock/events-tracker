@@ -702,8 +702,14 @@ class EntitiesController extends Controller
 
         $futureEvents = $entity->futureEvents(5);
         $pastEvents = $entity->pastEvents(5);
+        
+        // get related events (up to 12, sorted by date descending)
+        $relatedEvents = $entity->events()
+            ->orderBy('start_at', 'desc')
+            ->limit(12)
+            ->get();
 
-        return view('entities.show-tw', compact('entity', 'threads', 'embeds', 'tracks','futureEvents','pastEvents'));
+        return view('entities.show-tw', compact('entity', 'threads', 'embeds', 'tracks','futureEvents','pastEvents','relatedEvents'));
     }
 
     /**
