@@ -103,32 +103,6 @@
 		</div>
 		@endif
 
-		<!-- Related Events Grid -->
-		<div class="rounded-lg border bg-card shadow">
-			<div class="bg-primary text-primary-foreground px-6 py-4 rounded-t-lg">
-				<h2 class="text-lg font-semibold">Events ({{ $events->total() }})</h2>
-			</div>
-			<div class="p-6">
-				@if (isset($events) && count($events) > 0)
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-						@foreach ($events as $event)
-							@include('events.card-tw', ['event' => $event])
-						@endforeach
-					</div>
-
-					<!-- Pagination -->
-					<div class="flex justify-center">
-						{!! $events->links('vendor.pagination.tailwind') !!}
-					</div>
-				@else
-					<div class="text-center py-12">
-						<i class="bi bi-calendar-x text-4xl text-muted-foreground/50 mb-3 block"></i>
-						<p class="text-muted-foreground">No events found for this series.</p>
-					</div>
-				@endif
-			</div>
-		</div>
-
 		<!-- Threads Section -->
 		@if ($threads)
 			@php
@@ -341,6 +315,38 @@
 		<!-- Audio Section -->
 		@include('embeds.playlist', ['series' => $series])
 	</div>
+</div>
+
+<!-- Events - Full Width -->
+<div class="mt-6 rounded-lg border border-border bg-card shadow p-6">
+	<h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+		<i class="bi bi-calendar-event"></i>
+		Events
+		@if (isset($events))
+			<span class="text-sm font-normal text-muted-foreground ml-2">({{ $events->total() }})</span>
+		@endif
+	</h3>
+	
+	@if (isset($events) && count($events) > 0)
+		<!-- Events Grid -->
+		<div class="grid grid-cols-1 md:grid-cols-2 event-3col:grid-cols-3 event-4col:grid-cols-4 gap-6 mb-6">
+			@foreach ($events as $event)
+				@include('events.card-tw', ['event' => $event])
+			@endforeach
+		</div>
+		
+		<!-- Pagination -->
+		@if ($events->hasPages())
+		<div class="flex justify-center">
+			{!! $events->links('vendor.pagination.tailwind') !!}
+		</div>
+		@endif
+	@else
+		<div class="text-center py-12">
+			<i class="bi bi-calendar-x text-4xl text-muted-foreground/50 mb-3 block"></i>
+			<p class="text-muted-foreground">No events found for this series.</p>
+		</div>
+	@endif
 </div>
 
 @stop
