@@ -65,6 +65,14 @@
 				<h2 class="text-lg font-semibold text-foreground mb-3">Quick Actions</h2>
 				<div class="flex flex-wrap gap-3">
 					<!-- Browse Actions -->
+					@if (Auth::check())
+					<a href="{!! URL::route('radar') !!}"
+						class="inline-flex items-center gap-2 px-4 py-2.5 bg-card border border-border text-foreground rounded-lg hover:bg-accent hover:border-primary/30 transition-all group">
+						<i class="bi bi-broadcast radar text-muted-foreground group-hover:text-primary transition-colors"></i>
+						<span class="font-medium">Radar</span>
+					</a>
+					@endif
+
 					<a href="{!! URL::route('events.index') !!}"
 						class="inline-flex items-center gap-2 px-4 py-2.5 bg-card border border-border text-foreground rounded-lg hover:bg-accent hover:border-primary/30 transition-all group">
 						<i class="bi bi-calendar-event text-muted-foreground group-hover:text-primary transition-colors"></i>
@@ -82,11 +90,9 @@
 						<i class="bi bi-people text-muted-foreground group-hover:text-primary transition-colors"></i>
 						<span class="font-medium">Entities</span>
 					</a>
-
-					<!-- Divider -->
+										<!-- Divider -->
 					<div class="w-px bg-border self-stretch hidden sm:block"></div>
 
-					<!-- Create Actions -->
 					<a href="{!! URL::route('events.create') !!}"
 						class="inline-flex items-center gap-2 px-4 py-2.5 bg-accent text-foreground border-2 border-primary rounded-lg hover:bg-accent/80 transition-all shadow-sm">
 						<i class="bi bi-plus-lg"></i>

@@ -15,7 +15,7 @@
     </div>
 
     <!-- Events Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 w-full">
+    <div class="home grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 w-full">
         @for ($offset = 0; $offset < 4; $offset++)
         <?php $day = \Carbon\Carbon::parse($date)->addDay($offset); ?>
             <section class="day min-h-[500px]" data-num="{{ $offset }}" id="day-position-{{ $offset }}" href="/events/day/{{ $day->format('Y-m-d') }}">
