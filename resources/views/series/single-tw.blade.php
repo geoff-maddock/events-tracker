@@ -90,6 +90,18 @@
             @endif
         </div>
 
+        <!-- Entities -->
+        @unless ($series->entities->isEmpty())
+        <div class="flex flex-wrap gap-1 mb-2">
+            @foreach ($series->entities->take(4) as $entity)
+                <x-entity-badge :entity="$entity" context="series" />
+            @endforeach
+            @if ($series->entities->count() > 4)
+            <span class="text-xs text-muted-foreground self-center">+{{ $series->entities->count() - 4 }}</span>
+            @endif
+        </div>
+        @endunless
+
         <!-- Tags -->
         @unless ($series->tags->isEmpty())
         <div class="flex flex-wrap gap-1">
