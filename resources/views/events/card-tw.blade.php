@@ -194,4 +194,9 @@
         </a>
         @endif
     </div>
+
+    <!-- Embeds (lazy-loaded) -->
+    <div class="px-4 pb-4">
+        @include('embeds.minimal-playlist', ['event' => $event])
+    </div>
 </article>

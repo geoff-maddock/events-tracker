@@ -173,5 +173,10 @@
 				@endif
 			</div>
 		</div>
+
+		<!-- Embeds (lazy-loaded) -->
+		<div class="pt-3">
+			@include('embeds.minimal-playlist', ['entity' => $entity])
+		</div>
 	</div>
 </article>

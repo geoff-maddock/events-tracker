@@ -118,6 +118,9 @@
 			</div>
 		</div>
 		@endif
+
+		<!-- Audio -->
+		@include('embeds.playlist-tw', ['entity' => $entity, 'embeds' => $embeds ?? []])
 	</div>
 
 	<!-- Sidebar -->
