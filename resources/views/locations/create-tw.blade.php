@@ -14,7 +14,7 @@
 	<!-- Form Card -->
 	<div class="card-tw">
 		<div class="p-6">
-			<form action="{{ route('locations.store') }}" method="POST">
+			<form action="{{ route('entities.locations.store', $entity->slug) }}" method="POST">
 				@csrf
 
 				@include('locations.form-tw')

@@ -237,51 +237,54 @@
 		</div>
 
 		<!-- Locations -->
-		@unless ($entity->locations->isEmpty())
 		<div class="rounded-lg border border-border bg-card shadow p-6">
 			<h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
 				<i class="bi bi-geo-alt"></i>
 				Locations
 			</h3>
-			<div class="space-y-4">
-				@foreach ($entity->locations as $location)
-				@if (isset($location->visibility) && ($location->visibility->name != 'Guarded' || ($location->visibility->name == 'Guarded' && $signedIn)))
-				<div class="text-sm">
-					<div class="font-medium text-muted-foreground mb-1">
-						{{ isset($location->locationType) ? $location->locationType->name : '' }}
-					</div>
-					<div class="text-muted-foreground">
-						{{ $location->address_one }}
-						@if($location->neighborhood) {{ $location->neighborhood }} @endif
-						<br>
-						{{ $location->city }} {{ $location->state }} {{ $location->country }}
-					</div>
-					@if (isset($location->capacity) && $location->capacity !== 0)
-					<div class="text-muted-foreground mt-1">
-						<span class="font-medium">Capacity:</span> {{ $location->capacity }}
+			@if ($entity->locations->isEmpty())
+				<p class="text-muted-foreground mb-4">No locations found.</p>
+			@else
+				<div class="space-y-4">
+					@foreach ($entity->locations as $location)
+					@if (isset($location->visibility) && ($location->visibility->name != 'Guarded' || ($location->visibility->name == 'Guarded' && $signedIn)))
+					<div class="text-sm">
+						<div class="font-medium text-muted-foreground mb-1">
+							{{ isset($location->locationType) ? $location->locationType->name : '' }}
+						</div>
+						<div class="text-muted-foreground">
+							{{ $location->address_one }}
+							@if($location->neighborhood) {{ $location->neighborhood }} @endif
+							<br>
+							{{ $location->city }} {{ $location->state }} {{ $location->country }}
+						</div>
+						@if (isset($location->capacity) && $location->capacity !== 0)
+						<div class="text-muted-foreground mt-1">
+							<span class="font-medium">Capacity:</span> {{ $location->capacity }}
+						</div>
+						@endif
+						<div class="mt-2 flex gap-2">
+							@if (isset($location->map_url) && $location->map_url != '')
+							<a href="{!! $location->map_url !!}"
+								target="_blank"
+								class="text-primary hover:text-primary/90 transition-colors"
+								title="View on map">
+								<i class="bi bi-geo-alt-fill"></i>
+							</a>
+							@endif
+							@if ($signedIn && ($entity->ownedBy($user) || $user->hasGroup('super_admin')))
+							<a href="{!! route('entities.locations.edit', ['entity' => $entity->slug, 'location' => $location->id]) !!}"
+								class="text-muted-foreground hover:text-primary transition-colors"
+								title="Edit location">
+								<i class="bi bi-pencil"></i>
+							</a>
+							@endif
+						</div>
 					</div>
 					@endif
-					<div class="mt-2 flex gap-2">
-						@if (isset($location->map_url) && $location->map_url != '')
-						<a href="{!! $location->map_url !!}"
-							target="_blank"
-							class="text-primary hover:text-primary/90 transition-colors"
-							title="View on map">
-							<i class="bi bi-geo-alt-fill"></i>
-						</a>
-						@endif
-						@if ($signedIn && ($entity->ownedBy($user) || $user->hasGroup('super_admin')))
-						<a href="{!! route('entities.locations.edit', ['entity' => $entity->slug, 'location' => $location->id]) !!}"
-							class="text-muted-foreground hover:text-primary transition-colors"
-							title="Edit location">
-							<i class="bi bi-pencil"></i>
-						</a>
-						@endif
-					</div>
+					@endforeach
 				</div>
-				@endif
-				@endforeach
-			</div>
+			@endif
 			@if ($user && Auth::user()->id == ($entity->user ? $entity->user?->id : null))
 			<div class="mt-4">
 				<a href="{!! route('entities.locations.create', ['entity' => $entity->slug]) !!}"
@@ -292,37 +295,39 @@
 			</div>
 			@endif
 		</div>
-		@endunless
 
 		<!-- Contacts -->
-		@unless ($entity->contacts->isEmpty())
 		<div class="rounded-lg border border-border bg-card shadow p-6">
 			<h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
 				<i class="bi bi-person"></i>
 				Contacts
 			</h3>
-			<div class="space-y-3">
-				@foreach ($entity->contacts as $contact)
-				<div class="text-sm">
-					<div class="font-medium text-muted-foreground">{{ $contact->name }}</div>
-					@if ($contact->email)
-					<a href="mailto:{{ $contact->email }}" class="text-primary hover:text-primary/90">
-						{{ $contact->email }}
-					</a>
-					@endif
-					@if ($contact->phone)
-					<div class="text-muted-foreground">{{ $contact->phone }}</div>
-					@endif
-					@if ($signedIn && $entity->ownedBy($user))
-					<a href="{!! route('entities.contacts.edit', ['entity' => $entity->slug, 'contact' => $contact->id]) !!}"
-						class="text-muted-foreground hover:text-primary transition-colors"
-						title="Edit contact">
-						<i class="bi bi-pencil"></i>
-					</a>
-					@endif
+			@if ($entity->contacts->isEmpty())
+				<p class="text-muted-foreground mb-4">No contacts found.</p>
+			@else
+				<div class="space-y-3">
+					@foreach ($entity->contacts as $contact)
+					<div class="text-sm">
+						<div class="font-medium text-muted-foreground">{{ $contact->name }}</div>
+						@if ($contact->email)
+						<a href="mailto:{{ $contact->email }}" class="text-primary hover:text-primary/90">
+							{{ $contact->email }}
+						</a>
+						@endif
+						@if ($contact->phone)
+						<div class="text-muted-foreground">{{ $contact->phone }}</div>
+						@endif
+						@if ($signedIn && $entity->ownedBy($user))
+						<a href="{!! route('entities.contacts.edit', ['entity' => $entity->slug, 'contact' => $contact->id]) !!}"
+							class="text-muted-foreground hover:text-primary transition-colors"
+							title="Edit contact">
+							<i class="bi bi-pencil"></i>
+						</a>
+						@endif
+					</div>
+					@endforeach
 				</div>
-				@endforeach
-			</div>
+			@endif
 			@if ($user && ((Auth::user()->id == ($entity->user ? $entity->user?->id : null)) || $user->hasGroup('super_admin')))
 			<div class="mt-4">
 				<a href="{!! route('entities.contacts.create', ['entity' => $entity->slug]) !!}"
@@ -333,34 +338,36 @@
 			</div>
 			@endif
 		</div>
-		@endunless
 
 		<!-- Links -->
-		@unless ($entity->links->isEmpty())
 		<div class="rounded-lg border border-border bg-card shadow p-6">
 			<h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
 				<i class="bi bi-link-45deg"></i>
 				Links
 			</h3>
-			<div class="space-y-2">
-				@foreach ($entity->links as $link)
-				<div class="flex items-center gap-2">
-					<a href="{{ $link->url }}"
-						target="_blank"
-						class="text-primary hover:text-primary/90 text-sm break-all">
-						{{ $link->text ?? $link->url }}
-					</a>
-					<i class="bi bi-box-arrow-up-right text-xs text-muted-foreground"></i>
-					@if ($signedIn && $entity->ownedBy($user))
-					<a href="{!! route('entities.links.edit', ['entity' => $entity->slug, 'link' => $link->id]) !!}"
-						class="text-muted-foreground hover:text-primary transition-colors ml-auto"
-						title="Edit link">
-						<i class="bi bi-pencil"></i>
-					</a>
-					@endif
+			@if ($entity->links->isEmpty())
+				<p class="text-muted-foreground mb-4">No links found.</p>
+			@else
+				<div class="space-y-2">
+					@foreach ($entity->links as $link)
+					<div class="flex items-center gap-2">
+						<a href="{{ $link->url }}"
+							target="_blank"
+							class="text-primary hover:text-primary/90 text-sm break-all">
+							{{ $link->text ?? $link->url }}
+						</a>
+						<i class="bi bi-box-arrow-up-right text-xs text-muted-foreground"></i>
+						@if ($signedIn && $entity->ownedBy($user))
+						<a href="{!! route('entities.links.edit', ['entity' => $entity->slug, 'link' => $link->id]) !!}"
+							class="text-muted-foreground hover:text-primary transition-colors ml-auto"
+							title="Edit link">
+							<i class="bi bi-pencil"></i>
+						</a>
+						@endif
+					</div>
+					@endforeach
 				</div>
-				@endforeach
-			</div>
+			@endif
 			@if ($user && Auth::user()->id == ($entity->user ? $entity->user?->id : null))
 			<div class="mt-4">
 				<a href="{!! route('entities.links.create', ['entity' => $entity->slug]) !!}"
@@ -371,7 +378,6 @@
 			</div>
 			@endif
 		</div>
-		@endunless
 
 		<!-- Photos Section -->
 		@include('partials.photo-gallery-tw', ['entity' => $entity, 'lightboxGroup' => 'entity-gallery'])

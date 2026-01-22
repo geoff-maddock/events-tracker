@@ -2,6 +2,11 @@
 
 @section('title', 'Blogs')
 
+@section('select2.include')
+<!-- Select2 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+@endsection
+
 @section('content')
 
 <div class="container mx-auto">

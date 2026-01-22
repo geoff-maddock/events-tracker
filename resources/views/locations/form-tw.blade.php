@@ -239,7 +239,7 @@
     <x-ui.button type="submit">
         {{ isset($action) && $action === 'update' ? 'Update Location' : 'Add Location' }}
     </x-ui.button>
-    <a href="{{ url('/locations') }}" class="px-4 py-2 text-muted-foreground hover:text-foreground transition-colors">
+    <a href="{{ route('entities.show', $entity->slug) }}" class="px-4 py-2 text-muted-foreground hover:text-foreground transition-colors">
         Cancel
     </a>
 </div>

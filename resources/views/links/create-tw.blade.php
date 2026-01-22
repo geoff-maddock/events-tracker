@@ -14,7 +14,7 @@
 	<!-- Form Card -->
 	<div class="card-tw">
 		<div class="p-6">
-			<form action="{{ route('links.store') }}" method="POST">
+			<form action="{{ route('entities.links.store', $entity->slug) }}" method="POST">
 				@csrf
 
 				@include('links.form-tw')
@@ -24,7 +24,7 @@
 
 	<!-- Back Link -->
 	<div class="mt-4">
-		<a href="{{ route('links.index') }}" class="text-primary hover:text-primary/90 flex items-center gap-2">
+		<a href="{{ route('entities.show', $entity->slug) }}" class="text-primary hover:text-primary/90 flex items-center gap-2">
 			<i class="bi bi-arrow-left"></i>
 			<span>Return to list</span>
 		</a>
