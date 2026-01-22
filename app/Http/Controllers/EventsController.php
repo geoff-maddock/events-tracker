@@ -1508,7 +1508,7 @@ class EventsController extends Controller
             // extract all the links from the event body and convert into embeds
             $embedExtractor->setLayout("small");
             $embeds = $embedExtractor->getEmbedsForEvent($event, "small");
-
+            unset($entity);
             return [
                 'Message' => 'Added embeds to event page.',
                 'Success' => view('embeds.minimal-playlist')

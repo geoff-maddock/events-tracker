@@ -1,5 +1,5 @@
 @if (isset($embeds) && count($embeds) > 0)
-<div class="rounded-lg overflow-hidden">      
+<div>      
     @php 
         $count = 0;
         $limit = 1;
@@ -36,7 +36,7 @@
         </div>
     @endif
     @if (isset($entity) && is_object($entity) && !($entity instanceof \Illuminate\Pagination\LengthAwarePaginator))
-        <div id="playlist-{{ $entity->id}}" class="playlist-id rounded-lg border bg-card shadow p-4" data-url="/entities/{{ $entity->id }}/load-minimal-embeds">
+        <div id="playlist-{{ $entity->id}}" class="playlist-id rounded-lg border bg-card shadow p-4 {{ $entity->name }}" data-url="/entities/{{ $entity->id }}/load-minimal-embeds">
             <div class="flex items-center justify-center py-4">
                 <div class="load-spinner">
                     <div class="double-bounce1"></div>

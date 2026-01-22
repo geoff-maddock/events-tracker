@@ -254,7 +254,7 @@
 					
 					
                     <!-- Audio Section -->
-					@include('embeds.playlist-tw', ['event' => $event])
+					@include('embeds.playlist-tw', ['event' => $event, 'entity' => null])
 
 				</div>
 			</div>
