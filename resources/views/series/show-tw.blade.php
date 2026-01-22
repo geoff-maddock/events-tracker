@@ -331,7 +331,7 @@
 		<!-- Events Grid -->
 		<div class="grid grid-cols-1 md:grid-cols-2 event-3col:grid-cols-3 event-4col:grid-cols-4 gap-6 mb-6">
 			@foreach ($events as $event)
-				@include('events.card-tw', ['event' => $event])
+				@include('events.card-tw', ['event' => $event, 'series' =>null, 'entity' => null])
 			@endforeach
 		</div>
 		
