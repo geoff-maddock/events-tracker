@@ -85,30 +85,20 @@ Tags
 		</div>
 
 		<!-- Related Tags Section -->
-		@if(isset($tagObject))
+		@if(isset($tagObject) && isset($relatedTags) && count($relatedTags) > 0)
 		<div>
 			<h2 class="text-lg font-semibold mb-4 text-foreground">Related Tags</h2>
-			@php
-				// Get related tags - this would need to be added to the controller
-				// For now, show tags from the same type
-				$relatedTags = isset($tagObject->tagType)
-					? App\Models\Tag::where('tag_type_id', $tagObject->tagType->id)
-						->where('id', '!=', $tagObject->id)
-						->limit(10)
-						->get()
-					: collect();
-			@endphp
-			@if($relatedTags->count() > 0)
 			<div class="flex flex-wrap gap-2">
-				@foreach($relatedTags as $relatedTag)
-				<a href="/tags/{{ $relatedTag->slug }}" class="inline-flex items-center px-3 py-1.5 rounded-md bg-card border border-border text-foreground hover:bg-accent transition-colors">
-					<span class="font-medium">{{ $relatedTag->name }}</span>
+				@foreach($relatedTags as $relatedTagName => $count)
+				@php
+					$relatedTagSlug = \Illuminate\Support\Str::slug($relatedTagName);
+				@endphp
+				<a href="/tags/{{ $relatedTagSlug }}" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-card border border-border text-foreground hover:bg-accent transition-colors">
+					<span class="font-medium">{{ $relatedTagName }}</span>
+					<span class="text-xs text-muted-foreground">({{ $count }})</span>
 				</a>
 				@endforeach
 			</div>
-			@else
-			<p class="text-muted-foreground">No related tags found.</p>
-			@endif
 		</div>
 		@endif
 

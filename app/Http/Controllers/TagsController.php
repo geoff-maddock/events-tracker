@@ -266,7 +266,10 @@ class TagsController extends Controller
 
         $tags = Tag::orderBy('name', 'ASC')->get();
 
-        return view('tags.show-tw', compact('series', 'entities', 'events', 'slug', 'tag', 'tagObject', 'tags'));
+        // Get related tags based on co-occurrence with events
+        $relatedTags = $tagObject ? $tagObject->relatedTags() : [];
+
+        return view('tags.show-tw', compact('series', 'entities', 'events', 'slug', 'tag', 'tagObject', 'tags', 'relatedTags'));
     }
 
     /**
