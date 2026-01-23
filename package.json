@@ -48,7 +48,7 @@
         "npm": "^10.5",
         "save-dev": "0.0.1-security",
         "select2": "^4.1.0-rc.0",
-        "swagger-ui": "^5.30.2",
+        "swagger-ui": "^5.31.0",
         "sweetalert2": "^11.22"
     }
 }
