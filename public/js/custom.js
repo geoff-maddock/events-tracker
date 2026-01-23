@@ -13,21 +13,41 @@ var App = (function () {
     };
 
 
-    // load embeded audio code
+    // load embeded audio code with caching support
     var loadEmbeds = function () {
         $('body div.playlist-id').each(function (e) {
             var url = $(this).attr('data-url');
             var target = $(this).attr('id');
-            $.ajax({
-                url: url
-            }).done(function (data) {
-                // load results into the applicable position
-                $('#' + target).html(data.Success);
-                // remove the target class
-                $('#' + target).removeClass('playlist-id');
-            }).fail(function () {
-                console.log('No event embeds could be loaded')
-            });
+            var slug = $(this).attr('data-slug');
+            var resourceType = $(this).attr('data-resource-type') || 'events';
+
+            // Use EmbedLoader with caching if available and slug is provided
+            if (typeof EmbedLoader !== 'undefined' && slug) {
+                EmbedLoader.load(resourceType, slug, {
+                    endpoint: 'minimal-embeds',
+                    onSuccess: function (embeds) {
+                        if (embeds && embeds.length > 0) {
+                            $('#' + target).html(embeds.join(''));
+                            $('#' + target).removeClass('playlist-id');
+                        }
+                    },
+                    onError: function () {
+                        console.log('No embeds could be loaded for ' + resourceType + '/' + slug);
+                    }
+                });
+            } else if (url) {
+                // Fallback to original AJAX behavior for backward compatibility
+                $.ajax({
+                    url: url
+                }).done(function (data) {
+                    // load results into the applicable position
+                    $('#' + target).html(data.Success);
+                    // remove the target class
+                    $('#' + target).removeClass('playlist-id');
+                }).fail(function () {
+                    console.log('No event embeds could be loaded')
+                });
+            }
         });
     };
 

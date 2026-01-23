@@ -136,7 +136,7 @@
 
         <!-- Tags -->
         @unless ($event->tags->isEmpty())
-        <div class="flex flex-wrap gap-1 mt-auto pt-2">
+        <div class="flex flex-wrap gap-1 pt-2">
             @foreach ($event->tags->take(5) as $tag)
                 <x-tag-badge :tag="$tag" context="events" />
             @endforeach

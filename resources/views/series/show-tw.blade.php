@@ -43,23 +43,23 @@
 					<div class="relative inline-block text-left">
 						<button type="button"
 							id="series-menu-button"
-							class="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+							class="p-1 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
 							title="Actions">
 							<i class="bi bi-three-dots text-xl"></i>
 						</button>
 
-						<div id="series-actions-menu" class="hidden absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-dark-card border border-dark-border ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+						<div id="series-actions-menu" class="hidden absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-card border border-border ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
 							<div class="py-1" role="menu" aria-orientation="vertical">
 								@if ($user && (Auth::user()->id == $series?->user?->id || $user->id == Config::get('app.superuser')))
-									<a href="{{ route('series.edit', ['series' => $series->slug]) }}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-surface hover:text-white transition-colors" role="menuitem">
+									<a href="{{ route('series.edit', ['series' => $series->slug]) }}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
 										<i class="bi bi-pencil mr-2"></i>Edit Series
 									</a>
-									<a href="{{ route('series.createOccurrence', ['id' => $series->id]) }}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-surface hover:text-white transition-colors" role="menuitem">
+									<a href="{{ route('series.createOccurrence', ['id' => $series->id]) }}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
 										<i class="bi bi-plus-circle mr-2"></i>Add Occurrence
 									</a>
-									<div class="border-t border-dark-border my-1"></div>
+									<div class="border-t border-border my-1"></div>
 								@endif
-								<a href="{{ URL::route('series.index') }}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-surface hover:text-white transition-colors" role="menuitem">
+								<a href="{{ URL::route('series.index') }}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
 									<i class="bi bi-list mr-2"></i>Return to list
 								</a>
 							</div>

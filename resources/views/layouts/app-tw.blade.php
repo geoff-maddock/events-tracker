@@ -102,6 +102,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox.min.js"></script>
 	<script src="{{ asset('/js/jquery.ba-throttle-debounce.min.js') }}"></script>
 	<script src="{{ asset('/js/auto-submit.js') }}"></script>
+	<script src="{{ asset('/js/embed-cache.js') }}"></script>
 	<script src="{{ asset('/js/custom.js') }}"></script>
 	
 	@yield('scripts.footer')

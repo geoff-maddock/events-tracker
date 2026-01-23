@@ -89,8 +89,8 @@
 
         <!-- Tags -->
         @unless ($event->tags->isEmpty())
-        <div class="flex flex-wrap gap-1 mt-auto">
-            @foreach ($event->tags->take(3) as $tag)
+        <div class="flex flex-wrap gap-1">
+            @foreach ($event->tags->take(4) as $tag)
                 <x-tag-badge :tag="$tag" context="events" size="sm" />
             @endforeach
             @if ($event->tags->count() > 3)

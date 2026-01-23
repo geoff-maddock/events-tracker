@@ -80,8 +80,10 @@
 											@endif
 											<a href="{!! URL::route('events.index') !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
 												<i class="bi bi-list mr-2"></i>Return to list
-											</a>
-										</div>
+											</a>												<div class="border-t border-border my-1"></div>
+												<button type="button" id="refresh-embeds-btn" data-slug="{{ $event->slug }}" class="w-full text-left block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
+													<i class="bi bi-arrow-repeat mr-2"></i>Refresh Embeds
+												</button>										</div>
 									</div>
 								</div>
 							</div>
@@ -366,6 +368,72 @@ $(document).ready(function(){
             document.addEventListener('click', function(e) {
                 if (!menu.contains(e.target) && !menuButton.contains(e.target)) {
                     menu.classList.add('hidden');
+                }
+            });
+        }
+
+        // Refresh embeds button handler
+        const refreshEmbedsBtn = document.getElementById('refresh-embeds-btn');
+        if (refreshEmbedsBtn) {
+            refreshEmbedsBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const slug = this.dataset.slug;
+                const btn = this;
+                const originalText = btn.innerHTML;
+                
+                // Update button to show loading state
+                btn.innerHTML = '<i class="bi bi-arrow-repeat mr-2 animate-spin"></i>Refreshing...';
+                btn.disabled = true;
+                
+                // Close the dropdown menu
+                if (menu) {
+                    menu.classList.add('hidden');
+                }
+
+                if (typeof EmbedLoader !== 'undefined' && slug) {
+                    // Clear the cache and reload
+                    EmbedLoader.refresh('events', slug).then(function(data) {
+                        // Find the playlist container and update it
+                        var playlistEl = document.querySelector('.playlist-id[data-resource-type="events"]');
+                        if (playlistEl && data && data.embeds && data.embeds.length > 0) {
+                            var html = '<div class="space-y-4">';
+                            data.embeds.forEach(function(embed) {
+                                html += '<div class="rounded-md overflow-hidden">' + embed + '</div>';
+                            });
+                            html += '</div>';
+                            playlistEl.innerHTML = html;
+                        }
+                        
+                        // Show success message
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                title: 'Embeds Refreshed',
+                                text: 'The embed cache has been cleared and reloaded.',
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        }
+                        
+                        // Restore button
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }).catch(function(error) {
+                        console.error('Error refreshing embeds:', error);
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'Failed to refresh embeds. Please try again.',
+                                icon: 'error'
+                            });
+                        }
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    });
+                } else {
+                    console.warn('EmbedLoader not available or slug missing');
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
                 }
             });
         }
