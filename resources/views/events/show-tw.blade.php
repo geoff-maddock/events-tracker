@@ -109,6 +109,7 @@
 				<div class="relative overflow-hidden rounded-lg border border-border bg-card shadow max-h-[600px] flex items-center justify-center">
 				<a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" data-lightbox="event-main" class="block w-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
 					<img src="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" 
+						alt="{{ $event->name }} @ {{ $event->venue ? $event->venue->name : '' }}"
 						class="object-contain w-full max-h-[600px] cursor-pointer hover:opacity-90 transition-opacity">
 				</a>
 				</div>
