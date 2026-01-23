@@ -16,9 +16,9 @@
             <?php $events = App\Models\Event::with('series')->starting($day->format('Y-m-d'))->get(); ?>
 
             @if (count($events) > 0)
-            <ul class="space-y-4">
+            <ul class="grid gap-3">
                 @foreach ($events as $event)
-                    @include('events.single-tw', ['event' => $event])
+                    @include('events.single-card-tw', ['event' => $event])
                 @endforeach
             </ul>
             @else
@@ -33,7 +33,7 @@
             @if (count($series) > 0)
             <div class="mt-6 pt-6 border-t border-border">
                 <h6 class="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">Series Occurring Today</h6>
-                <ul class="space-y-4">
+                <ul class="grid gap-3">
                     @php $type = NULL @endphp
                     @foreach ($series as $s)
                         @if ($type !== $s->occurrence_type_id)
@@ -42,7 +42,7 @@
                             </li>
                             <?php $type = $s->occurrence_type_id; ?>
                         @endif
-                        @include('series.single-tw', ['series' => $s])
+                        @include('series.single-card-tw', ['series' => $s])
                     @endforeach
                 </ul>
             </div>
