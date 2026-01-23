@@ -125,7 +125,7 @@ Tags
 				</div>
 				<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 3xl:grid-cols-4">
 					@foreach ($events->take(8) as $event)
-					@include('events.card-tw', ['event' => $event])
+					@include('events.card-tw', ['event' => $event, 'series' => null, 'entity' => null])
 					@endforeach
 				</div>
 			</div>
@@ -142,7 +142,7 @@ Tags
 				</div>
 				<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 3xl:grid-cols-4">
 					@foreach ($entities->take(8) as $entity)
-					@include('entities.card-tw', ['entity' => $entity])
+					@include('entities.card-tw', ['entity' => $entity, 'series' => null, 'event' => null])
 					@endforeach
 				</div>
 			</div>
@@ -159,7 +159,7 @@ Tags
 				</div>
 				<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 3xl:grid-cols-4">
 					@foreach ($series->take(8) as $s)
-					@include('series.card-tw', ['series' => $s])
+					@include('series.card-tw', ['series' => $s, 'entity' => null, 'event' => null])
 					@endforeach
 				</div>
 			</div>
