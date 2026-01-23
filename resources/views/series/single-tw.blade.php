@@ -1,18 +1,18 @@
-<li id="series-{{ $series->id }}" class="group relative flex flex-col sm:flex-row gap-4 p-4 bg-card rounded-lg border border-border hover:border-primary transition-colors mb-4 shadow-sm">
+<li id="series-{{ $series->id }}" class="group relative flex flex-col sm:flex-row gap-3 sm:gap-4 p-3 sm:p-4 bg-card rounded-lg border border-border hover:border-primary transition-colors mb-3 sm:mb-4 shadow-sm min-w-0">
     <!-- Thumbnail -->
     <div class="flex-shrink-0">
         @if ($primary = $series->getPrimaryPhoto())
         <a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
             data-title="{{ $series->occurrenceType->name }}  {{ $series->occurrence_repeat }}  <a href='/series/{{ $series->id }}'>{{ $series->name }}</a> @ <a href='/entities/{{ $series->venue ? $series->venue->slug : '' }}'>{{ $series->venue ? $series->venue->name : '' }}</a>"
             data-lightbox="{{ $primary->path }}"
-            class="block aspect-square w-28 rounded-lg overflow-hidden border border-border group-hover:border-primary transition-colors">
+            class="block aspect-square w-20 sm:w-24 md:w-28 rounded-lg overflow-hidden border border-border group-hover:border-primary transition-colors">
             <img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}" alt="{{ $series->name }}" class="w-full h-full object-cover">
         </a>
         @else
         <a href="/images/event-placeholder.png"
             data-title="{{ $series->occurrenceType->name }}  {{ $series->occurrence_repeat }}  <a href='/series/{{ $series->id }}'>{{ $series->name }}</a> @ <a href='/entities/{{ $series->venue ? $series->venue->slug : '' }}'>{{ $series->venue ? $series->venue->name : '' }}</a>"
             data-lightbox="/images/event-placeholder.png"
-            class="block aspect-square w-28 rounded-lg overflow-hidden border border-border group-hover:border-primary transition-colors bg-card flex items-center justify-center">
+            class="block aspect-square w-20 sm:w-24 md:w-28 rounded-lg overflow-hidden border border-border group-hover:border-primary transition-colors bg-card flex items-center justify-center">
             <i class="bi bi-collection text-4xl text-muted-foreground/40"></i>
         </a>
         @endif
@@ -64,7 +64,7 @@
         </div>
 
         <!-- Title -->
-        <h3 class="text-xl font-bold text-foreground mb-1">
+        <h3 class="text-lg sm:text-xl font-bold text-foreground mb-1 break-words">
             <a href='/series/{{ $series->slug }}' class="hover:text-primary transition-colors">
                 {{ $series->name }}
             </a>
@@ -72,7 +72,7 @@
 
         <!-- Venue -->
         @if ($series->venue)
-        <div class="text-muted-foreground mb-2">
+        <div class="text-sm sm:text-base text-muted-foreground mb-2 break-words">
             <span class="text-muted-foreground/70">@</span>
             <a href='/entities/{{ $series->venue->slug }}' class="hover:text-primary transition-colors">
                 {{ $series->venue->name }}
