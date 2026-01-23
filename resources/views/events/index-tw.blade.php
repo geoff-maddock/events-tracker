@@ -4,18 +4,9 @@
 Events @include('events.title-crumbs')
 @endsection
 
-@if (isset($past_events) && count($past_events) > 0)
+@if (isset($events) && count($events) > 0)
 @php
-	$first = $past_events[0];
-	if ($primary = $first->getPrimaryPhoto()) {
-		$ogImage = Storage::disk('external')->url($primary->getStorageThumbnail());
-	}
-@endphp
-@endif 
-
-@if (isset($future_events) && count($future_events) > 0)
-@php
-	$first = $future_events[0];
+	$first = $events[0];
 	if ($primary = $first->getPrimaryPhoto()) {
 		$ogImage = Storage::disk('external')->url($primary->getStorageThumbnail());
 	}

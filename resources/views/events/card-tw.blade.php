@@ -6,7 +6,7 @@
         <a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
             data-title="{!! $event->start_at->format('l F jS Y') !!} - {{ $event->name }} @ {{ $event->venue ? $event->venue->name : '' }}"
             data-lightbox="{{ $primary->path }}">
-            <img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}"
+            <img src="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
                 alt="{{ $event->name }}"
                 class="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300">
         </a>
