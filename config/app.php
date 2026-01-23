@@ -120,7 +120,7 @@ return [
     'app_name' => env('APP_NAME', 'Event Repo'),
     'name' => env('APP_NAME', 'Event Repo'),
     'tagline' => env('APP_TAGLINE', 'Event Repository'),
-    'default_theme' => 'dark-theme',
+    'default_theme' => 'dark',
     'twitter_consumer_key' => env('TWITTER_CONSUMER_KEY'),
     'default_hashtag' => env('APP_DEFAULT_HASHTAG', ''),
     'analytics' => env('GOOGLE_ANALYTICS', ''),

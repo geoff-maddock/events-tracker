@@ -38,7 +38,7 @@ class UsersTableSeeder extends Seeder
             'first_name' => 'Default',
             'last_name' => 'Admin',
             'bio' => 'Default Admin',
-            'default_theme' => 'dark-theme',
+            'default_theme' => 'dark',
             'setting_weekly_update' => 1,
             'setting_daily_update' => 1,
             'setting_instant_update' => 1,
