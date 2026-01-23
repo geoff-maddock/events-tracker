@@ -6,7 +6,7 @@
             @if ($primary = $entity->getPrimaryPhoto())
                 <div class="flex-shrink-0">
                     <a href="{{ route('entities.show', [$entity->slug]) }}">
-                        <img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}" alt="{{ $entity->name }}" class="w-12 h-12 rounded-lg object-cover">
+                        <img src="{{ Storage::disk('external')->url($primary->getStoragePath()) }}" alt="{{ $entity->name }}" class="w-12 h-12 rounded-lg object-cover">
                     </a>
                 </div>
             @endif
