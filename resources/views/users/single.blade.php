@@ -5,7 +5,7 @@
 	</div>
 	@else
 	<div class="event-list-thumbnail">
-			<img src="/images/avatar-placeholder-generic.jpg"  class="thumbnail-image">
+			<img src="/images/avatar-placeholder-generic.jpg" alt="{{ $user->name }}" class="thumbnail-image">
 		</div>
 	@endif
 	<span>

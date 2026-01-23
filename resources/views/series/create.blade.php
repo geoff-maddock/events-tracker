@@ -1,22 +1,31 @@
-@extends('app')
+@extends('layouts.app-tw')
 
 @section('title', 'Series Add')
 
 @section('select2.include')
 <!-- Select2 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.1.1/dist/select2-bootstrap-5-theme.min.css" />
 @endsection
 
 @section('content')
 
-<h1 class="display-crumbs text-primary">Add a New Event Series</h1>
+<div class="max-w-7xl mx-auto">
+    <h1 class="text-3xl font-bold text-foreground mb-6">Add a New Event Series</h1>
 
-	{!! Form::open(['route' => 'series.store', 'class' => 'form-container']) !!}
+    <div class="bg-card rounded-lg border border-border shadow-sm p-6">
+        <form method="POST" action="{{ route('series.store') }}" class="space-y-6">
+            @csrf
 
-		@include('series.form')
+            @include('series.form')
+        </form>
+    </div>
 
-	{!! Form::close() !!}
+    <div class="mt-6">
+        <x-ui.button variant="ghost" href="{{ route('series.index') }}">
+            <i class="bi bi-arrow-left mr-2"></i>
+            Return to list
+        </x-ui.button>
+    </div>
+</div>
 
-	{!! link_to_route('series.index', 'Return to list') !!}
 @stop

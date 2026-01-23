@@ -2,149 +2,210 @@
 
 @section('title', 'Series')
 
+@section('select2.include')
+<!-- Select2 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.1.1/dist/select2-bootstrap-5-theme.min.css" />
+@endsection
+
 @section('content')
 
-<h1 class="display-crumbs text-primary">Event Series @include('series.crumbs')</h1>
-
-<div id="action-menu" class="mb-2">
-    <a href="{!! URL::route('series.create') !!}" class="btn btn-primary my-1">Add an event series</a>
-    <a href="{!! URL::route('series.index') !!}" class="btn btn-info my-1">Show current series</a>
-    <a href="{!! URL::route('series.cancelled') !!}" class="btn btn-info my-1">Show cancelled series</a>
-    <a href="{!! URL::route('series.export') !!}" class="btn btn-primary my-1" target="_blank">Export</a>
+<!-- Page Header -->
+<div class="mb-6">
+	<h1 class="text-3xl font-bold text-primary mb-2">Event Series</h1>
+	<p class="text-gray-400">Recurring and scheduled event series.</p>
 </div>
 
-<div id="filters-container" class="row">
-	<div id="filters-content" class="col-xl-9">
-		<a href="#" id="filters" class="btn btn-primary">
-			Filters 
-			<span id="filters-toggle" class="@if (!$hasFilter) filter-closed @else filter-open @endif">
-			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
-				<path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-			  </svg>
-			</span>
+<!-- Action Menu -->
+<div class="mb-6 flex flex-wrap gap-2">
+	<a href="{!! URL::route('series.create') !!}" class="inline-flex items-center px-4 py-2 bg-dark-card border border-dark-border text-white rounded-lg hover:bg-dark-border transition-colors">
+		<i class="bi bi-plus-lg mr-2"></i>
+		Add Series
+	</a>
+	<a href="{!! URL::route('series.index') !!}" class="inline-flex items-center px-3 py-2 bg-dark-surface border border-dark-border text-gray-300 rounded-lg hover:bg-dark-card transition-colors text-sm">
+		Current Series
+	</a>
+	<a href="{!! URL::route('series.cancelled') !!}" class="inline-flex items-center px-3 py-2 bg-dark-surface border border-dark-border text-gray-300 rounded-lg hover:bg-dark-card transition-colors text-sm">
+		Cancelled Series
+	</a>
+	<a href="{!! URL::route('series.export') !!}" class="inline-flex items-center px-3 py-2 bg-dark-surface border border-dark-border text-gray-300 rounded-lg hover:bg-dark-card transition-colors text-sm" target="_blank">
+		<i class="bi bi-download mr-2"></i>
+		Export
+	</a>
+</div>
+
+<!-- Filters Section -->
+<div class="mb-6">
+	<button id="filters-toggle-btn" class="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors">
+		<i class="bi bi-funnel mr-2"></i>
+		<span id="filters-toggle-text">@if($hasFilter) Hide @else Show @endif Filters</span>
+		<i class="bi bi-chevron-down ml-2 transition-transform @if($hasFilter) rotate-180 @endif" id="filters-chevron"></i>
+	</button>
+	
+	<!-- Active Filters / Reset -->
+	@if($hasFilter)
+	<div class="inline-flex items-center gap-2 ml-4">
+		<a href="{{ url()->action('SeriesController@rppReset') }}" class="inline-flex items-center px-3 py-1 text-sm text-gray-300 hover:text-white border border-dark-border rounded-lg">
+			Clear All <i class="bi bi-x ml-1"></i>
 		</a>
-		{!! Form::open(['route' => [$filterRoute ?? 'series.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
+	</div>
+	@endif
+</div>
 
-		<div id="filter-list" class="px-2 @if (!$hasFilter)d-none @endif">
-            <div class="row">
-                <div class="col-sm">
-
-                {!! Form::label('filter_name','Name') !!}
-
-                {!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
-                [
-                    'class' => 'form-control form-background',
-                    'name' => 'filters[name]'
-                    ]) !!}
-            </div>
-
-            <div class="col-sm">
-
-                {!! Form::label('filter_occurrence_type','Occurrence') !!}
-                {!! Form::select('filter_occurrence_type', $occurrenceTypeOptions, (isset($filters['occurrence_type']) ?
-                $filters['occurrence_type'] : NULL), 
-                [
-                    'class' => 'form-select form-background',
-                    'name' => 'filters[occurrence_type]'
-                ]) !!}
-            </div>
-
-            <div class="col-sm">
-                {!! Form::label('filter_occurrence_week','Week') !!}
-                {!! Form::select('filter_occurrence_week', $occurrenceWeekOptions, (isset($filters['occurrence_week']) ?
-                $filters['occurrence_week'] : NULL),
-                [
-                    'class' => 'form-select form-background',
-                    'name' => 'filters[occurrence_week]'
-                ]) !!}
-            </div>
-
-            <div class="col-sm">
-                {!! Form::label('filter_occurrence_day','Day') !!}
-                {!! Form::select('filter_occurrence_day', $occurrenceDayOptions, (isset($filters['occurrence_day']) ?
-                $filters['occurrence_day'] : NULL), 
-                [
-                    'class' => 'form-select form-background',
-                    'name' => 'filters[occurrence_day]',
-                ]) !!}
-            </div>
-
-            <div class="col-sm">
-                {!! Form::label('filter_tag','Tag', array('width' => '100%')) !!}
-                {!! Form::select('filter_tag', $tagOptions, (isset($filters['tag']) ? $filters['tag'] :  NULL),
-                [
-                    'class' =>'form-control form-background',
-                    'name' => 'filters[tag]',
-                ]) !!}
-            </div>
-
-
-            <div class="col-sm">
-                {!! Form::label('filter_visibility','Visibility') !!}
-                {!! Form::select('filter_visibility', $visibilityOptions, (isset($filters['visibility']) ? $filters['visibility'] : NULL),
-                [
-                    'class' =>'form-control form-background',
-                    'name' => 'filters[visibility]'
-                ]) !!}
-            </div>
-
+<!-- Filter Panel -->
+<div id="filter-panel" class="@if(!$hasFilter) hidden @endif bg-dark-surface border border-dark-border rounded-lg p-4 mb-6">
+	{!! Form::open(['route' => [$filterRoute ?? 'series.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
+	
+	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+		<!-- Name Filter -->
+		<div>
+			<label for="filter_name" class="block text-sm font-medium text-gray-300 mb-1">Name</label>
+			<input type="text" 
+				name="filters[name]" 
+				id="filter_name"
+				value="{{ $filters['name'] ?? '' }}"
+				class="form-input-tw"
+				placeholder="Series name...">
 		</div>
-		<div class="row">
-			<div class="col-sm-2">
-				<div class="btn-group col-sm-1">
-                    <label></label>
-                    {!! Form::submit('Apply', ['class' =>'btn btn-primary btn-sm btn-tb me-2 my-2', 'id' =>
-                    'primary-filter-submit']) !!}
-                    {!! Form::close() !!}
-                    {!! Form::open(['route' => ['series.reset'], 'method' => 'GET']) !!}
-                    {!! Form::submit('Reset', ['class' =>'btn btn-primary btn-sm btn-tb me-2 my-2', 'id' =>
-                    'primary-filter-reset']) !!}
-                    {!! Form::close() !!}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right my-2">
-        <form action="{{ url()->action('SeriesController@filter') }}" method="GET" class="form-inline">
-			<div class="form-group row gx-1 justify-content-end">
-                <div class="col-auto">
-                    <a href="{{ url()->action('SeriesController@rppReset') }}" class="btn btn-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
-                            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
-                        </svg>
-                    </a>
-                </div>
-                <div class="col-auto">
-				    {!! Form::select('limit', $limitOptions, ($limit ?? 10), ['class' =>'form-select form-background auto-submit']) !!}
-                </div>
-                <div class="col-auto">
-                    {!! Form::select('sort', $sortOptions, ($sort ?? 'events.start_at'), ['class' =>'form-select form-background auto-submit']) !!}
-                </div>
-                <div class="col-auto">
-    				{!! Form::select('direction', $directionOptions, ($direction ?? 'desc'), ['class' =>'form-select form-background auto-submit']) !!}
-                </div>
-            </div>
-        </form>
-    </div>
 
+		<!-- Occurrence Type Filter -->
+		<div>
+			<label for="filter_occurrence_type" class="block text-sm font-medium text-gray-300 mb-1">Occurrence</label>
+			{!! Form::select('filter_occurrence_type', $occurrenceTypeOptions, ($filters['occurrence_type'] ?? null),
+			[
+				'class' => 'form-select-tw select2',
+				'data-placeholder' => 'Select occurrence',
+				'name' => 'filters[occurrence_type]',
+				'id' => 'filter_occurrence_type'
+			])
+			!!}
+		</div>
+
+		<!-- Venue Filter -->
+		<div>
+			<label for="filter_venue" class="block text-sm font-medium text-gray-300 mb-1">Venue</label>
+			{!! Form::select('filter_venue', $venueOptions, ($filters['venue'] ?? null),
+			[
+				'class' => 'form-select-tw select2',
+				'data-placeholder' => 'Select a venue',
+				'name' => 'filters[venue]',
+				'id' => 'filter_venue'
+			])
+			!!}
+		</div>
+
+		<!-- Tag Filter -->
+		<div>
+			<label for="filter_tag" class="block text-sm font-medium text-gray-300 mb-1">Tag</label>
+			{!! Form::select('filter_tag', $tagOptions, ($filters['tag'] ?? null),
+			[
+				'class' => 'form-select-tw select2',
+				'data-placeholder' => 'Select a tag',
+				'name' => 'filters[tag]',
+				'id' => 'filter_tag'
+			])
+			!!}
+		</div>
+
+		<!-- Related Entity Filter -->
+		<div>
+			<label for="filter_related" class="block text-sm font-medium text-gray-300 mb-1">Related Entity</label>
+			{!! Form::select('filter_related', $relatedOptions, ($filters['related'] ?? null),
+			[
+				'class' => 'form-select-tw select2',
+				'data-placeholder' => 'Select an entity',
+				'name' => 'filters[related]',
+				'id' => 'filter_related'
+			])
+			!!}
+		</div>
+	</div>
+
+	<!-- Filter Actions -->
+	<div class="flex gap-2 mt-4">
+		<button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors">
+			Apply
+		</button>
+		{!! Form::close() !!}
+		{!! Form::open(['route' => ['series.reset'], 'method' => 'GET']) !!}
+		<button type="submit" class="px-4 py-2 bg-dark-card border border-dark-border text-white rounded-lg hover:bg-dark-border transition-colors">
+			Reset
+		</button>
+		{!! Form::close() !!}
+	</div>
 </div>
 
-<div id="list-container" class="row">
-    <div class="col-md-12 col-lg-6">
-        @if (!$series->isEmpty())
-        {!! $series->onEachSide(2)->links() !!}
-        @endif
-        @include('series.list', ['series' => $series])
-        @if (!$series->isEmpty())
-        {!! $series->onEachSide(2)->links() !!}
-        @endif
-    </div>
+<!-- Results Bar -->
+<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+	<!-- Results Count -->
+	<div class="text-sm text-gray-400">
+		@if(isset($series))
+		Showing {{ $series->firstItem() ?? 0 }} to {{ $series->lastItem() ?? 0 }} of {{ $series->total() }} results
+		@endif
+	</div>
+
+	<!-- Sort Controls -->
+	<div class="flex items-center gap-4">
+		<form action="{{ url()->current() }}" method="GET" class="flex items-center gap-2">
+			<select name="limit" class="form-select-tw text-sm py-1 auto-submit">
+				@foreach($limitOptions as $value => $label)
+				<option value="{{ $value }}" {{ ($limit ?? 10) == $value ? 'selected' : '' }}>{{ $label }}</option>
+				@endforeach
+			</select>
+			<span class="text-gray-400 text-sm">Sort by:</span>
+			<select name="sort" class="form-select-tw text-sm py-1 auto-submit">
+				@foreach($sortOptions as $value => $label)
+				<option value="{{ $value }}" {{ ($sort ?? 'series.name') == $value ? 'selected' : '' }}>{{ $label }}</option>
+				@endforeach
+			</select>
+			<select name="direction" class="form-select-tw text-sm py-1 auto-submit">
+				@foreach($directionOptions as $value => $label)
+				<option value="{{ $value }}" {{ ($direction ?? 'asc') == $value ? 'selected' : '' }}>{{ $label }}</option>
+				@endforeach
+			</select>
+		</form>
+	</div>
 </div>
+
+<!-- Series Grid -->
+@if (isset($series) && count($series) > 0)
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+	@foreach ($series as $s)
+	@include('series.card-tw', ['series' => $s])
+	@endforeach
+</div>
+
+<!-- Pagination -->
+<div class="mt-6">
+	{!! $series->onEachSide(2)->links('vendor.pagination.tailwind') !!}
+</div>
+@else
+<div class="text-center py-12">
+	<i class="bi bi-collection-fill text-6xl text-gray-600 mb-4"></i>
+	<p class="text-gray-400">No series found.</p>
+</div>
+@endif
+
 @stop
 
-
 @section('footer')
+<script>
+	// Filter toggle functionality
+	document.getElementById('filters-toggle-btn')?.addEventListener('click', function() {
+		const panel = document.getElementById('filter-panel');
+		const text = document.getElementById('filters-toggle-text');
+		const chevron = document.getElementById('filters-chevron');
+		
+		panel.classList.toggle('hidden');
+		
+		if (panel.classList.contains('hidden')) {
+			text.textContent = 'Show Filters';
+			chevron.classList.remove('rotate-180');
+		} else {
+			text.textContent = 'Hide Filters';
+			chevron.classList.add('rotate-180');
+		}
+	});
+</script>
 @include('partials.filter-js')
 @endsection

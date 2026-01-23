@@ -128,7 +128,7 @@ class SeriesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('series.index')
+        return view('series.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -238,7 +238,7 @@ class SeriesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('series.index')
+        return view('series.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -298,7 +298,7 @@ class SeriesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('series.index')
+        return view('series.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -377,7 +377,7 @@ class SeriesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('series.index')
+        return view('series.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -437,7 +437,7 @@ class SeriesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('series.index')
+        return view('series.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -495,7 +495,7 @@ class SeriesController extends Controller
         // saves the updated session
         $listParamSessionStore->save();
 
-        return view('series.index')
+        return view('series.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -557,7 +557,7 @@ class SeriesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('series.index')
+        return view('series.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -610,7 +610,7 @@ class SeriesController extends Controller
         $events = $series->events()->paginate($this->childLimit);
         $threads = $series->threads()->paginate($this->childLimit);
 
-        return view('series.show', compact('series', 'events', 'threads'));
+        return view('series.show-tw', compact('series', 'events', 'threads'));
     }
 
     public function store(SeriesRequest $request, Series $series): RedirectResponse
@@ -741,7 +741,7 @@ class SeriesController extends Controller
             'length' => 0,
         ]);
 
-        return view('series.createOccurrence', compact('seriesOptions', 'userOptions', 'event'))
+        return view('series.createOccurrence-tw', compact('seriesOptions', 'userOptions', 'event'))
         ->with($this->getSeriesFormOptions())
         ->with(['series' => $series]);
     }
@@ -872,7 +872,7 @@ class SeriesController extends Controller
         if ($request->ajax()) {
             return [
                 'Message' => 'You are now following the series - '.$series->name,
-                'Success' => view('series.single')
+                'Success' => view('series.card-tw')
                     ->with(compact('series'))
                     ->render(),
             ];
@@ -912,7 +912,7 @@ class SeriesController extends Controller
         if ($request->ajax()) {
             return [
                 'Message' => 'You are no longer following the series - '.$series->name,
-                'Success' => view('series.single')
+                'Success' => view('series.card-tw')
                     ->with(compact('series'))
                     ->render(),
             ];

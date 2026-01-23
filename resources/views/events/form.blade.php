@@ -1,234 +1,461 @@
-<div class="row">
+{{-- Event Name and Slug --}}
+<div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 md:col-span-6">
+        <x-ui.form-group
+            name="name"
+            label="Name"
+            :error="$errors->first('name')"
+            required>
+            <x-ui.input
+                type="text"
+                name="name"
+                id="name"
+                :value="old('name', $event->name ?? '')"
+                placeholder="Use a clear, simple and descriptive event title"
+                :hasError="$errors->has('name')" />
+        </x-ui.form-group>
+    </div>
 
-	<div class="form-group col-md-6 mb-2">
-		{!! Form::label('primary_link','Primary Link:') !!}
-		{!! Form::text('primary_link', (isset($event->primary_link) ? $event->primary_link : null), 
-			['placeholder' => 'Primary link to the event on the web, if one exists (not required)',
-			 'class' => 'form-control form-background',
-			 'autofocus' => '']) !!}
-		{!! $errors->first('primary_link','<span class="help-block">:message</span>') !!}
-	</div>
+    <div class="col-span-12 md:col-span-6">
+        <x-ui.form-group
+            name="slug"
+            label="Slug"
+            :error="$errors->first('slug')"
+            helpText="Unique name for this event (will validate)">
+            <x-ui.input
+                type="text"
+                name="slug"
+                id="slug"
+                :value="old('slug', $event->slug ?? '')"
+                placeholder="unique-event-name"
+                :hasError="$errors->has('slug')" />
+        </x-ui.form-group>
+    </div>
 </div>
 
-<div class="row">
-	<div class="form-group col-md-12 mb-1 {{$errors->has('name') ? 'has-error' : '' }}">
-		{!! Form::label('name','Name') !!}
-		{!! Form::text('name', (isset($event->name) ? $event->name :''), [
-				'class' => 'form-control form-background', 
-				'placeholder' => 'Use a clear, simple and descriptive event title']) !!}
-		{!! $errors->first('name','<span class="help-block">:message</span>') !!}
-	</div>
-</div>
+{{-- Short Description --}}
+<x-ui.form-group
+    name="short"
+    label="Short Description"
+    :error="$errors->first('short')">
+    <x-ui.input
+        type="text"
+        name="short"
+        id="short"
+        :value="old('short', $event->short ?? '')"
+        placeholder="A concise one-sentence description of the event"
+        :hasError="$errors->has('short')" />
+</x-ui.form-group>
 
-<div class="row">
-	<div class="form-group col-md-12 mb-1 {{$errors->has('slug') ? 'has-error' : '' }}">
-		{!! Form::label('slug','Slug') !!}
-		{!! Form::text('slug',  (isset($event->slug) ? $event->slug :''), [
-			'placeholder' => 'Unique name for this event (will validate)', 
-			'class' => 'form-control form-control-sm form-background']) !!}
-		{!! $errors->first('slug','<span class="help-block">:message</span>') !!}
-	</div>
-</div>
+{{-- Description --}}
+<x-ui.form-group
+    name="description"
+    label="Description"
+    :error="$errors->first('description')"
+    helpText="Detailed description of the event including all relevant info not in other fields">
+    <x-ui.textarea
+        name="description"
+        id="description"
+        :hasError="$errors->has('description')"
+        rows="4"
+        placeholder="Detailed description of the event including all relevant info not in other fields">{{ old('description', $event->description ?? '') }}</x-ui.textarea>
+</x-ui.form-group>
 
-<div class="row">
-	<div class="form-group col-md-12 mb-1 {{$errors->has('slug') ? 'has-error' : '' }}">
-		{!! Form::label('short','Short Description') !!}
-		{!! Form::text('short',  (isset($event->short) ? $event->short : ''), ['class' => 'form-control form-background',
-			'placeholder' => 'A concise one-sentence description of the event.'
-		]) !!}
-		{!! $errors->first('short','<span class="help-block">:message</span>') !!}
-	</div>
-</div>
+{{-- Visibility, Event Type, Promoter, Venue --}}
+<div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 md:col-span-6">
+        <x-ui.form-group
+            name="visibility_id"
+            label="Visibility"
+            :error="$errors->first('visibility_id')"
+            required>
+            <x-ui.select
+                name="visibility_id"
+                id="visibility_id"
+                :hasError="$errors->has('visibility_id')">
+                @foreach($visibilityOptions as $id => $name)
+                    <option value="{{ $id }}" {{ old('visibility_id', $event->visibility->id ?? 3) == $id ? 'selected' : '' }}>
+                        {{ $name }}
+                    </option>
+                @endforeach
+            </x-ui.select>
+        </x-ui.form-group>
+    </div>
 
-<div class="row mb-2">
-	<div class="form-group col-md-12">
-		{!! Form::label('description','Description') !!}
-		{!! Form::textarea('description', (isset($event->description) ? $event->description : ''), ['class' => 'form-control form-background', 'placeholder' => 'Detailed description of the event including all relevant info not in other fields']) !!}
-		{!! $errors->first('description','<span class="help-block">:message</span>') !!}
-	</div>
-</div>
+    <div class="col-span-12 md:col-span-6">
+        <x-ui.form-group
+            name="event_type_id"
+            label="Event Type"
+            :error="$errors->first('event_type_id')"
+            required>
+            <x-ui.select
+                name="event_type_id"
+                id="event_type_id"
+                class="select2"
+                data-theme="tailwind"
+                :hasError="$errors->has('event_type_id')">
+                <option value="">Select event type</option>
+                @foreach($eventTypeOptions as $id => $name)
+                    <option value="{{ $id }}" {{ old('event_type_id', $event->event_type_id ?? '') == $id ? 'selected' : '' }}>
+                        {{ $name }}
+                    </option>
+                @endforeach
+            </x-ui.select>
+        </x-ui.form-group>
+    </div>
 
-<div class="row mb-1">
+    <div class="col-span-12 md:col-span-6">
+        <x-ui.form-group
+            name="promoter_id"
+            label="Promoter"
+            :error="$errors->first('promoter_id')">
+            <x-ui.select
+                name="promoter_id"
+                id="promoter_id"
+                class="select2"
+                data-theme="tailwind"
+                :hasError="$errors->has('promoter_id')">
+                <option value="">Select promoter</option>
+                @foreach($promoterOptions as $id => $name)
+                    <option value="{{ $id }}" {{ old('promoter_id', $event->promoter_id ?? '') == $id ? 'selected' : '' }}>
+                        {{ $name }}
+                    </option>
+                @endforeach
+            </x-ui.select>
+        </x-ui.form-group>
+    </div>
 
-	<div class="form-group col-md-3 {{$errors->has('event_type_id') ? 'has-error' : '' }}">
-		{!! Form::label('event_type_id','Event type:') !!}
-		{!! Form::select('event_type_id', $eventTypeOptions, (isset($event->event_type_id) ? $event->event_type_id :
-		NULL),
-		['class' => 'form-select form-background select2 bootstrap-5', 'data-placeholder' => '']) !!}
-		{!! $errors->first('event_type_id','<span class="help-block">:message</span>') !!}
-	</div>
-
-	<div class="form-group col-md-3">
-		{!! Form::label('venue_id','Venue') !!}
-		{!! Form::select('venue_id', $venueOptions, (isset($event->venue_id) ? $event->venue_id : NULL), 
-		['class' => 'form-select select2 form-background', 'data-placeholder' => '']) !!}
-		{!! $errors->first('venue_id','<span class="help-block">:message</span>') !!}
-	</div>
-
-	<div class="form-group col-md-3">
-		{!! Form::label('promoter_id','Promoter') !!}
-		{!! Form::select('promoter_id', $promoterOptions, (isset($event->promoter_id) ? $event->promoter_id : NULL),
-		['class' =>'form-control select2 form-background', 'data-placeholder' => '']) !!}
-		{!! $errors->first('promoter_id','<span class="help-block">:message</span>') !!}
-	</div>
-</div>
-
-<div class="row mb-1 collapsible collapse @if (isset($event->soundcheck_at) || isset($event->door_at)) show @else hide @endif" id="form-time">
-	<div class="form-group col-md-3">
-		{!! Form::label('soundcheck_at','Soundcheck At:') !!}
-		{!! Form::dateTimeLocal('soundcheck_at', (isset($event->soundcheck_at) ?
-		$event->soundcheck_at->format('Y-m-d\\TH:i') : NULL), ['class' => 'form-control form-background']) !!}
-		{!! $errors->first('soundcheck_at','<span class="help-block">:message</span>') !!}
-	</div>
-
-	<div class="form-group col-md-3">
-		{!! Form::label('door_at','Doors Open:') !!}
-		{!! Form::dateTimeLocal('door_at', (isset($event->door_at) ?
-		$event->door_at->format('Y-m-d\\TH:i') : NULL), ['class' => 'form-control form-background']) !!}
-		{!! $errors->first('door_at','<span class="help-block">:message</span>') !!}
-	</div>
-
-</div>
-
-<div class="row mb-3">
-	<div class="form-group col-md-3 {{$errors->has('start_at') ? 'has-error' : '' }}">
-		{!! Form::label('start_at','Start At:') !!} <a href="#" class="float-end px-1"  title="Show additional time options"><i class="bi bi-clock-fill toggler" id="form-time-close-box" data-bs-target="#form-time" data-bs-toggle="collapse" aria-expanded="false" aria-controls="form-time" role="button"></i></a>
-		{!! Form::dateTimeLocal('start_at', (isset($event->start_at) ? $event->start_at->format('Y-m-d\\TH:i') : NULL), ['class' => 'form-control form-background']) !!}
-		{!! $errors->first('start_at','<span class="help-block">:message</span>') !!}
-	</div>
-
-	<div class="form-group col-md-3">
-		{!! Form::label('end_at','End At:') !!}
-		{!! Form::dateTimeLocal('end_at', (isset($event->end_at) ? $event->end_at->format('Y-m-d\\TH:i') : NULL), ['class' => 'form-control form-background']) !!}
-		{!! $errors->first('end_at','<span class="help-block">:message</span>') !!}
-	</div>
-
-	<div class="form-group col-md-3">
-		{!! Form::label('cancelled_at','Cancelled At:') !!}
-		{!! Form::dateTimeLocal('cancelled_at', (isset($event->cancelled_at) ?	$event->cancelled_at->format('Y-m-d\\TH:i') : NULL), ['class' => 'form-control form-background']) !!}
-		{!! $errors->first('cancelled_at','<span class="help-block">:message</span>') !!}
-	</div>
-
-	<div class="form-group col-md-1">
-		
-	</div>
-
-</div>
-
-<div class="row mb-1">
-	<div class="form-group col-md-3">
-		{!! Form::label('presale_price','Presale Price:') !!}
-		{!! Form::text('presale_price', (isset($event->presale_price) ? $event->presale_price : ''), ['class' => 'form-control form-background']) !!}
-		{!! $errors->first('presale_price','<span class="help-block">:message</span>') !!}
-	</div>
-
-	<div class="form-group col-md-3">
-		{!! Form::label('door_price','Door Price:') !!}
-		{!! Form::text('door_price', (isset($event->door_price) ? $event->door_price : ''), ['class' => 'form-control form-background']) !!}
-		{!! $errors->first('door_price','<span class="help-block">:message</span>') !!}
-	</div>
-
-	<div class="form-group col-md-3">
-		{!! Form::label('min_age','Min Age:') !!}
-		{!! Form::select('min_age', [ '0' => 'All Ages', '18' => '18', '21' => '21'], (isset($event->min_age) ?
-		$event->min_age : NULL), ['class' => 'form-select form-background']) !!}
-		{!! $errors->first('min_age','<span class="help-block">:message</span>') !!}
-	</div>
-</div>
-
-<div class="row mb-3">
-	<div class="form-group col-md-9 {{$errors->has('ticket_link') ? 'has-error' : '' }}">
-		{!! Form::label('ticket_link','Ticket Link:') !!}
-		{!! Form::text('ticket_link', (isset($event->ticket_link) ? $event->ticket_link : ''), ['class' => 'form-control form-background']) !!}
-		{!! $errors->first('ticket_link','<span class="help-block">:message</span>') !!}
-	</div>
-</div>
-
-<div class="row mb-1">
-	<div class="form-group col-md-3">
-		{!! Form::label('series_id','Series:') !!}
-
-		{!! Form::select('series_id', $seriesOptions, (isset($event->series_id) ? $event->series_id : NULL), 
-		[
-			'class' => 'form-control select2 form-background',
-			'data-placeholder' => 'Link to an existing event series',
-			])
-		 !!}
-		{!! $errors->first('series_id','<span class="help-block">:message</span>') !!}
-		<div class="py-1">
-			<a href="#" class="float-end"><i class="bi bi-question-octagon-fill" data-toggle="tooltip" data-placement="bottom" role="tooltip" title="Add your event as a series if it's occurring on an ongoing basis (weekly, monthly, etc.)"></i></a>
-			<a href="/series/create" class="float-end px-1" target="_"><i class="bi bi-plus-circle-fill"></i> Add New Event Series</a>
-		</div>
-	</div>
-</div>
-
-<div class="row mb-1">
-	<div class="form-group col-md-6">
-		{!! Form::label('entity_list','Related Entities:') !!}
-		{!! Form::select('entity_list[]', $entityOptions, null, [
-		'id' => 'entity_list',
-		'class' =>'form-control select2 form-background',
-		'data-placeholder' => 'Choose related artists, producers, djs, bands, etc.',
-		'data-tags' => 'false',
-		'multiple' => 'multiple']) !!}
-		{!! $errors->first('entities','<span class="help-block">:message</span>') !!}
-		<div class="py-1">
-			<a href="#" class="float-end"><i class="bi bi-question-octagon-fill" data-toggle="tooltip" data-placement="bottom" role="tooltip" title="Add an entity to create a link between your event and a performers, venues, promoters, etc. that is missing from the list."></i></a>
-			<a href="/entities/create" class="float-end px-1" target="_"><i class="bi bi-plus-circle-fill"></i> Add New Entity</a>
-		</div>
-	</div>
-</div>
-
-<div class="row mb-1">
-	<div class="form-group col-md-6">
-		{!! Form::label('tag_list','Tags:') !!}
-		{!! Form::select('tag_list[]', $tagOptions, null, [
-		'id' => 'tag_list',
-		'class' =>'form-control select2 form-background',
-		'data-placeholder' => 'Choose a keyword tag that describes this event',
-		'data-maximum-selection-length' => 10,
-		'data-tags' => 'false',
-		'multiple' => 'multiple']) !!}
-		{!! $errors->first('tags','<span class="help-block">:message</span>') !!}
-		<div class="py-1">
-			<a href="#" class="float-end"><i class="bi bi-question-octagon-fill" data-toggle="tooltip" data-placement="bottom" role="tooltip" title="Add a keyword if the genre or category of your event is missing from the existing keyword tag list."></i></a>
-			<a href="/tags/create" class="float-end px-1" target="_"><i class="bi bi-plus-circle-fill"></i> Add New Keyword Tag</a>
-		</div>
-	</div>
-</div>
-
-<div class="row mb-1">
-	<div class="form-group col-md-3 {{$errors->has('visibility_id') ? 'has-error' : '' }}">
-		{!! Form::label('visibility_id','Visibility:') !!}
-		{!! Form::select('visibility_id', $visibilityOptions, (isset($event->visibility) ? $event->visibility->id :
-		3),
-		['class' => 'form-select form-background']) !!}
-		{!! $errors->first('visibility_id','<span class="help-block">:message</span>') !!}
-	</div>
-
-	<div class="form-group col-md-3">
-		{!! Form::label('created_by','Owner:') !!}
-		{!! Form::select('created_by', $userOptions, (isset($event->created_by) ? $event->created_by : NULL), 
-		['class' =>'form-control select2 form-background', 'data-placeholder' => '']) !!}
-		{!! $errors->first('created_by','<span class="help-block">:message</span>') !!}
-	</div>
-
-	<div class="form-group col-md-3">
-		<div class="form-check mt-4">
-			{!! Form::hidden('do_not_repost', 0) !!}
-			{!! Form::checkbox('do_not_repost', 1, (isset($event->do_not_repost) ? $event->do_not_repost : false), 
-			['class' => 'form-check-input', 'id' => 'do_not_repost']) !!}
-			{!! Form::label('do_not_repost', 'Do not repost on socials', ['class' => 'form-check-label']) !!}
-			{!! $errors->first('do_not_repost','<span class="help-block">:message</span>') !!}
-		</div>
-	</div>
+    <div class="col-span-12 md:col-span-6">
+        <x-ui.form-group
+            name="venue_id"
+            label="Venue"
+            :error="$errors->first('venue_id')">
+            <x-ui.select
+                name="venue_id"
+                id="venue_id"
+                class="select2"
+                data-theme="tailwind"
+                :hasError="$errors->has('venue_id')">
+                <option value="">Select venue</option>
+                @foreach($venueOptions as $id => $name)
+                    <option value="{{ $id }}" {{ old('venue_id', $event->venue_id ?? '') == $id ? 'selected' : '' }}>
+                        {{ $name }}
+                    </option>
+                @endforeach
+            </x-ui.select>
+        </x-ui.form-group>
+    </div>
 </div>
 
 
-<div class="form-group">
-	{!! Form::submit(isset($action) && $action == 'update' ? 'Update Event' : 'Add Event', ['class' =>'btn	btn-primary my-2']) !!}
+{{-- Start, End, Cancelled Times --}}
+<div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 md:col-span-4">
+        <x-ui.form-group
+            name="start_at"
+            label="Start At"
+            :error="$errors->first('start_at')"
+            required>
+            <template x-slot:label>
+                <div class="flex items-center justify-between">
+                    <x-ui.label for="start_at" required>Start At</x-ui.label>
+                    <button type="button" class="text-muted-foreground hover:text-foreground" title="Show additional time options" data-bs-toggle="collapse" data-bs-target="#form-time">
+                        <i class="bi bi-clock-fill"></i>
+                    </button>
+                </div>
+            </template>
+            <x-ui.datetime-picker
+                name="start_at"
+                id="start_at"
+                :value="old('start_at', isset($event->start_at) ? $event->start_at->format('Y-m-d H:i') : '')"
+                :hasError="$errors->has('start_at')"
+                placeholder="Select start date and time" />
+        </x-ui.form-group>
+    </div>
+
+    <div class="col-span-12 md:col-span-4">
+        <x-ui.form-group
+            name="end_at"
+            label="End At"
+            :error="$errors->first('end_at')">
+            <x-ui.datetime-picker
+                name="end_at"
+                id="end_at"
+                :value="old('end_at', isset($event->end_at) ? $event->end_at->format('Y-m-d H:i') : '')"
+                :hasError="$errors->has('end_at')"
+                placeholder="Select end date and time" />
+        </x-ui.form-group>
+    </div>
+
+    <div class="col-span-12 md:col-span-4">
+        <x-ui.form-group
+            name="cancelled_at"
+            label="Cancelled At"
+            :error="$errors->first('cancelled_at')">
+            <x-ui.datetime-picker
+                name="cancelled_at"
+                id="cancelled_at"
+                :value="old('cancelled_at', isset($event->cancelled_at) ? $event->cancelled_at->format('Y-m-d H:i') : '')"
+                :hasError="$errors->has('cancelled_at')"
+                placeholder="Select cancellation date" />
+        </x-ui.form-group>
+    </div>
 </div>
 
+{{-- Pricing and Age --}}
+<div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 md:col-span-4">
+        <x-ui.form-group
+            name="presale_price"
+            label="Presale Price"
+            :error="$errors->first('presale_price')">
+            <x-ui.input
+                type="text"
+                name="presale_price"
+                id="presale_price"
+                :value="old('presale_price', $event->presale_price ?? '')"
+                placeholder="0.00"
+                :hasError="$errors->has('presale_price')" />
+        </x-ui.form-group>
+    </div>
+
+    <div class="col-span-12 md:col-span-4">
+        <x-ui.form-group
+            name="door_price"
+            label="Door Price"
+            :error="$errors->first('door_price')">
+            <x-ui.input
+                type="text"
+                name="door_price"
+                id="door_price"
+                :value="old('door_price', $event->door_price ?? '')"
+                placeholder="0.00"
+                :hasError="$errors->has('door_price')" />
+        </x-ui.form-group>
+    </div>
+
+    <div class="col-span-12 md:col-span-4">
+        <x-ui.form-group
+            name="min_age"
+            label="Min Age"
+            :error="$errors->first('min_age')">
+            <x-ui.select
+                name="min_age"
+                id="min_age"
+                :hasError="$errors->has('min_age')">
+                <option value="0" {{ old('min_age', $event->min_age ?? '0') == '0' ? 'selected' : '' }}>All Ages</option>
+                <option value="18" {{ old('min_age', $event->min_age ?? '') == '18' ? 'selected' : '' }}>18+</option>
+                <option value="21" {{ old('min_age', $event->min_age ?? '') == '21' ? 'selected' : '' }}>21+</option>
+            </x-ui.select>
+        </x-ui.form-group>
+    </div>
+</div>
+
+{{-- Primary Link and Ticket Link --}}
+<div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 md:col-span-6">
+        <x-ui.form-group
+            name="primary_link"
+            label="Primary Link"
+            :error="$errors->first('primary_link')"
+            helpText="Primary link to the event on the web, if one exists (not required)">
+            <x-ui.input
+                type="url"
+                name="primary_link"
+                id="primary_link"
+                :value="old('primary_link', $event->primary_link ?? '')"
+                placeholder="https://example.com/event"
+                :hasError="$errors->has('primary_link')" />
+        </x-ui.form-group>
+    </div>
+
+    <div class="col-span-12 md:col-span-6">
+        <x-ui.form-group
+            name="ticket_link"
+            label="Ticket Link"
+            :error="$errors->first('ticket_link')">
+            <x-ui.input
+                type="url"
+                name="ticket_link"
+                id="ticket_link"
+                :value="old('ticket_link', $event->ticket_link ?? '')"
+                placeholder="https://tickets.example.com/event"
+                :hasError="$errors->has('ticket_link')" />
+        </x-ui.form-group>
+    </div>
+</div>
+
+{{-- Series --}}
+<div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 md:col-span-6">
+        <x-ui.form-group
+            name="series_id"
+            label="Series"
+            :error="$errors->first('series_id')"
+            helpText="Link to an existing event series">
+            <x-ui.select
+                name="series_id"
+                id="series_id"
+                class="select2"
+                data-theme="tailwind"
+                data-placeholder="Link to an existing event series"
+                :hasError="$errors->has('series_id')">
+                <option value="">No series</option>
+                @foreach($seriesOptions as $id => $name)
+                    <option value="{{ $id }}" {{ old('series_id', $event->series_id ?? '') == $id ? 'selected' : '' }}>
+                        {{ $name }}
+                    </option>
+                @endforeach
+            </x-ui.select>
+        </x-ui.form-group>
+        <div class="flex items-center justify-end gap-2 text-sm text-muted-foreground mt-1">
+            <a href="/series/create" target="_blank" class="hover:text-foreground inline-flex items-center gap-1">
+                <i class="bi bi-plus-circle-fill"></i>
+                Add New Event Series
+            </a>
+            <button type="button" class="hover:text-foreground" title="Add your event as a series if it's occurring on an ongoing basis (weekly, monthly, etc.)">
+                <i class="bi bi-question-octagon-fill"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+{{-- Related Entities and Tags --}}
+<div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 md:col-span-6">
+        <x-ui.form-group
+            name="entity_list"
+            label="Related Entities"
+            :error="$errors->first('entities')">
+            <select
+                name="entity_list[]"
+                id="entity_list"
+                class="select2"
+                data-theme="tailwind"
+                data-placeholder="Choose related artists, producers, djs, bands, etc."
+                data-tags="false"
+                multiple>
+                @foreach($entityOptions as $id => $name)
+                    <option value="{{ $id }}" {{ in_array($id, old('entity_list', isset($event) ? $event->entities->pluck('id')->toArray() : [])) ? 'selected' : '' }}>
+                        {{ $name }}
+                    </option>
+                @endforeach
+            </select>
+        </x-ui.form-group>
+        <div class="flex items-center justify-end gap-2 text-sm text-muted-foreground mt-1">
+            <a href="/entities/create" target="_blank" class="hover:text-foreground inline-flex items-center gap-1">
+                <i class="bi bi-plus-circle-fill"></i>
+                Add New Entity
+            </a>
+            <button type="button" class="hover:text-foreground" title="Add an entity to create a link between your event and performers, venues, promoters, etc. that is missing from the list.">
+                <i class="bi bi-question-octagon-fill"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="col-span-12 md:col-span-6">
+        <x-ui.form-group
+            name="tag_list"
+            label="Tags"
+            :error="$errors->first('tags')">
+            <select
+                name="tag_list[]"
+                id="tag_list"
+                class="select2"
+                data-theme="tailwind"
+                data-placeholder="Choose a keyword tag that describes this event"
+                data-maximum-selection-length="10"
+                data-tags="false"
+                multiple>
+                @foreach($tagOptions as $id => $name)
+                    <option value="{{ $id }}" {{ in_array($id, old('tag_list', isset($event) ? $event->tags->pluck('id')->toArray() : [])) ? 'selected' : '' }}>
+                        {{ $name }}
+                    </option>
+                @endforeach
+            </select>
+        </x-ui.form-group>
+        <div class="flex items-center justify-end gap-2 text-sm text-muted-foreground mt-1">
+            <a href="/tags/create" target="_blank" class="hover:text-foreground inline-flex items-center gap-1">
+                <i class="bi bi-plus-circle-fill"></i>
+                Add New Keyword Tag
+            </a>
+            <button type="button" class="hover:text-foreground" title="Add a keyword if the genre or category of your event is missing from the existing keyword tag list.">
+                <i class="bi bi-question-octagon-fill"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+{{-- Owner, Do Not Repost --}}
+<div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 md:col-span-6">
+        <x-ui.form-group
+            name="created_by"
+            label="Owner"
+            :error="$errors->first('created_by')">
+            <x-ui.select
+                name="created_by"
+                id="created_by"
+                class="select2"
+                data-theme="tailwind"
+                :hasError="$errors->has('created_by')">
+                <option value="">Select owner</option>
+                @foreach($userOptions as $id => $name)
+                    <option value="{{ $id }}" {{ old('created_by', $event->created_by ?? '') == $id ? 'selected' : '' }}>
+                        {{ $name }}
+                    </option>
+                @endforeach
+            </x-ui.select>
+        </x-ui.form-group>
+    </div>
+
+    <div class="col-span-12 md:col-span-6">
+        <div class="flex items-center h-9 mt-8">
+            <input type="hidden" name="do_not_repost" value="0">
+            <input
+                type="checkbox"
+                name="do_not_repost"
+                id="do_not_repost"
+                value="1"
+                {{ old('do_not_repost', $event->do_not_repost ?? false) ? 'checked' : '' }}
+                class="h-4 w-4 rounded border-input text-primary focus:ring-ring">
+            <label for="do_not_repost" class="ml-2 text-sm text-foreground cursor-pointer">
+                Do not repost on socials
+            </label>
+        </div>
+    </div>
+</div>
+
+{{-- Submit Button --}}
+<div class="flex items-center gap-4 pt-4">
+    <x-ui.button type="submit" variant="default">
+        {{ isset($action) && $action == 'update' ? 'Update Event' : 'Add Event' }}
+    </x-ui.button>
+</div>
 
 @section('footer')
+<script>
+    // Initialize Select2 with Tailwind theme
+    $(document).ready(function() {
+        $('#event_type_id, #venue_id, #promoter_id, #series_id, #created_by').select2({
+            theme: 'tailwind',
+            width: '100%'
+        });
+
+        $('#entity_list').select2({
+            theme: 'tailwind',
+            width: '100%',
+            placeholder: 'Choose related artists, producers, djs, bands, etc.',
+            tags: false
+        });
+
+        $('#tag_list').select2({
+            theme: 'tailwind',
+            width: '100%',
+            placeholder: 'Choose a keyword tag that describes this event',
+            maximumSelectionLength: 10,
+            tags: false
+        });
+    });
+</script>
 @endsection

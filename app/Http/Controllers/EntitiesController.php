@@ -158,7 +158,7 @@ class EntitiesController extends Controller
         ->orderBy('events_count', 'desc')
         ->paginate(6);
 
-        return view('entities.index')
+        return view('entities.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -194,12 +194,12 @@ class EntitiesController extends Controller
         $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        //$baseQuery = Entity::query()->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')->select('entities.*');
-
-        $baseQuery = Entity::join('follows', 'entities.id', '=', 'follows.object_id')
-        ->where('follows.object_type', '=', 'entity')
-        ->where('follows.user_id', '=', $this->user->id)
-        ->select('entities.*');
+        $baseQuery = Entity::query()
+            ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
+            ->join('follows', 'entities.id', '=', 'follows.object_id')
+            ->where('follows.object_type', '=', 'entity')
+            ->where('follows.user_id', '=', $this->user->id)
+            ->select('entities.*');
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -221,7 +221,7 @@ class EntitiesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('entities.index')
+        return view('entities.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -291,7 +291,7 @@ class EntitiesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('entities.index')
+        return view('entities.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -349,7 +349,7 @@ class EntitiesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('entities.index')
+        return view('entities.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -409,7 +409,7 @@ class EntitiesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('entities.index')
+        return view('entities.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -510,7 +510,7 @@ class EntitiesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('entities.index')
+        return view('entities.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -566,7 +566,7 @@ class EntitiesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('entities.index')
+        return view('entities.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -594,7 +594,7 @@ class EntitiesController extends Controller
     {
         $entity = Entity::getBySlug(strtolower($slug))->firstOrFail();
 
-        return view('entities.show')
+        return view('entities.show-tw')
             ->with(compact('entity'))
             ->render();
     }
@@ -702,8 +702,14 @@ class EntitiesController extends Controller
 
         $futureEvents = $entity->futureEvents(5);
         $pastEvents = $entity->pastEvents(5);
+        
+        // get related events (up to 12, sorted by date descending)
+        $relatedEvents = $entity->events()
+            ->orderBy('start_at', 'desc')
+            ->limit(12)
+            ->get();
 
-        return view('entities.show', compact('entity', 'threads', 'embeds', 'tracks','futureEvents','pastEvents'));
+        return view('entities.show-tw', compact('entity', 'threads', 'embeds', 'tracks','futureEvents','pastEvents','relatedEvents'));
     }
 
     /**
@@ -938,7 +944,7 @@ class EntitiesController extends Controller
         if ($request->ajax()) {
             return [
                 'Message' => 'You are now following the entity - '.$entity->name,
-                'Success' => view('entities.single')
+                'Success' => view('entities.card-tw')
                     ->with(compact('entity'))
                     ->render(),
             ];
@@ -981,7 +987,7 @@ class EntitiesController extends Controller
         if ($request->ajax()) {
             return [
                 'Message' => 'You are no longer following the entity - '.$entity->name,
-                'Success' => view('entities.single')
+                'Success' => view('entities.card-tw')
                     ->with(compact('entity'))
                     ->render(),
             ];

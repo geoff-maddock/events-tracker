@@ -27,6 +27,21 @@ class ResetPasswordController extends Controller
     use ResetsPasswords;
 
     /**
+     * Display the password reset view.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string|null  $token
+     * @return \Illuminate\View\View
+     */
+    public function showResetForm(Request $request, $token = null)
+    {
+        return view('auth.passwords.reset-tw')->with([
+            'token' => $token,
+            'email' => $request->email,
+        ]);
+    }
+
+    /**
      * Where to redirect users after resetting their password.
      *
      * @var string

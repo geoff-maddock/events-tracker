@@ -94,7 +94,7 @@ class ActivityController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('activities.index')
+        return view('activities.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -144,7 +144,7 @@ class ActivityController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('activities.index')
+        return view('activities.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),

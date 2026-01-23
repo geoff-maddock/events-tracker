@@ -44,7 +44,7 @@ class CommentsController extends Controller
             $type = 'events';
         }
 
-        return view('comments.create', compact('object', 'type'));
+        return view('comments.create-tw', compact('object', 'type'));
     }
 
     /**
@@ -85,7 +85,7 @@ class CommentsController extends Controller
      */
     public function show(Entity $entity, Comment $comment): View
     {
-        return view('comments.show', compact('entity', 'comment'));
+        return view('comments.show-tw', compact('entity', 'comment'));
     }
 
     /**
@@ -108,7 +108,7 @@ class CommentsController extends Controller
             $type = 'events';
         }
 
-        return view('comments.edit', compact('entity', 'object', 'event', 'comment', 'type'));
+        return view('comments.edit-tw', compact('entity', 'object', 'event', 'comment', 'type'));
     }
 
     /**

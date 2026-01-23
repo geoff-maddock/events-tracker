@@ -66,8 +66,11 @@ Route::get('/home', 'PagesController@home')->name('pages.home');
 Route::get('about', 'PagesController@about');
 Route::get('privacy', 'PagesController@privacy');
 Route::get('tos', 'PagesController@tos');
+Route::get('radar', 'PagesController@radar')->middleware('auth')->name('radar');
+Route::get('popular', 'PagesController@popular')->name('pages.popular');
 
 Route::get('help', 'PagesController@help');
+Route::get('all-modules', 'PagesController@allModules')->name('pages.allModules');
 
 Route::get('calendar', 'CalendarController@index')->name('calendar');
 Route::get('calendar/by-date/{year}/{month?}/{day?}', 'CalendarController@indexByDate')->name('calendar.byDate')

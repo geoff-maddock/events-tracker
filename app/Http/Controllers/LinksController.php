@@ -58,7 +58,7 @@ class LinksController extends Controller
      */
     public function create(Entity $entity): View
     {
-        return view('links.create', compact('entity'))
+        return view('links.create-tw', compact('entity'))
             ->with($this->getFormOptions());
     }
 
@@ -90,7 +90,7 @@ class LinksController extends Controller
      */
     public function show(Entity $entity, Link $link): View
     {
-        return view('links.show', compact('entity', 'link'));
+        return view('links.show-tw', compact('entity', 'link'));
     }
 
     /**
@@ -98,7 +98,7 @@ class LinksController extends Controller
      */
     public function edit(Entity $entity, Link $link): View
     {
-        return view('links.edit', compact('entity', 'link'))
+        return view('links.edit-tw', compact('entity', 'link'))
             ->with($this->getFormOptions());
     }
 

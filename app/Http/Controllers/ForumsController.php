@@ -119,7 +119,7 @@ class ForumsController extends Controller
             return $forums;
         }
 
-        return view('forums.index')
+        return view('forums.index-tw')
                 ->with(array_merge(
                     [
                         'limit' => $listResultSet->getLimit(),
@@ -187,7 +187,7 @@ class ForumsController extends Controller
             return $forums;
         }
 
-        return view('forums.index')
+        return view('forums.index-tw')
                 ->with(array_merge(
                     [
                         'limit' => $listResultSet->getLimit(),
@@ -255,7 +255,7 @@ class ForumsController extends Controller
             return $forums;
         }
 
-        return view('forums.index')
+        return view('forums.index-tw')
                 ->with(array_merge(
                     [
                         'limit' => $listResultSet->getLimit(),
@@ -274,14 +274,14 @@ class ForumsController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): ViewView
+    public function create(): View
     {
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
         $forum = new Forum();
         $forum->visibility_id = Visibility::VISIBILITY_PUBLIC;
 
-        return view('forums.create', compact('forum'))->with($this->getFormOptions());
+        return view('forums.create-tw', compact('forum'))->with($this->getFormOptions());
     }
 
     /**
@@ -357,7 +357,7 @@ class ForumsController extends Controller
         // pass a slug for the forum
         $slug = $forum->description;
 
-        return view('threads.index')
+        return view('threads.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -379,7 +379,7 @@ class ForumsController extends Controller
     {
         $this->middleware('auth');
 
-        return view('forums.edit', compact('forum'))->with($this->getFormOptions());
+        return view('forums.edit-tw', compact('forum'))->with($this->getFormOptions());
     }
 
     /**

@@ -31,7 +31,7 @@ class ContactsController extends Controller
     {
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('contacts.create', compact('entity', 'contact', 'visibilities'));
+        return view('contacts.create-tw', compact('entity', 'contact', 'visibilities'));
     }
 
     /**
@@ -61,7 +61,7 @@ class ContactsController extends Controller
      */
     public function show(Entity $entity, Contact $contact): View
     {
-        return view('contacts.show', compact('entity', 'contact'));
+        return view('contacts.show-tw', compact('entity', 'contact'));
     }
 
     /**
@@ -71,7 +71,7 @@ class ContactsController extends Controller
     {
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('contacts.edit', compact('entity', 'contact', 'visibilities'));
+        return view('contacts.edit-tw', compact('entity', 'contact', 'visibilities'));
     }
 
     /**

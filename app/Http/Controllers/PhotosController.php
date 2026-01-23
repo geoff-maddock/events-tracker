@@ -79,7 +79,7 @@ class PhotosController extends Controller
     {
         $photos = Photo::get();
 
-        return view('photos.index', compact('photos'));
+        return view('photos.index-tw', compact('photos'));
     }
 
     /**
@@ -129,7 +129,7 @@ class PhotosController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('photos.index')
+        return view('photos.index-tw')
         ->with(array_merge(
             [
                 'limit' => $listResultSet->getLimit(),
@@ -195,7 +195,7 @@ class PhotosController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('photos.index')
+        return view('photos.index-tw')
         ->with(array_merge(
             [
                 'limit' => $listResultSet->getLimit(),
@@ -255,7 +255,7 @@ class PhotosController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('photos.index')
+        return view('photos.index-tw')
         ->with(array_merge(
             [
                 'limit' => $listResultSet->getLimit(),
@@ -273,7 +273,7 @@ class PhotosController extends Controller
 
     public function show(Photo $photo): View
     {
-        return view('photos.show', compact('photo'));
+        return view('photos.show-tw', compact('photo'));
     }
 
     public function store(Request $request, Photo $photo): RedirectResponse

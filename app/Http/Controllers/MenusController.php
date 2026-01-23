@@ -100,7 +100,7 @@ class MenusController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('menus.index')
+        return view('menus.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -152,7 +152,7 @@ class MenusController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('menus.index')
+        return view('menus.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -216,7 +216,7 @@ class MenusController extends Controller
 
         $menu->visibility = Visibility::find(Visibility::VISIBILITY_PUBLIC);
 
-        return view('menus.create', compact('menu'))->with($this->getFormOptions());
+        return view('menus.create-tw', compact('menu'))->with($this->getFormOptions());
     }
 
     /**
@@ -240,7 +240,7 @@ class MenusController extends Controller
      */
     public function show(Menu $menu): View
     {
-        return view('menus.show', compact('menu'));
+        return view('menus.show-tw', compact('menu'));
     }
 
     /**
@@ -257,7 +257,7 @@ class MenusController extends Controller
 
         // todo - confirm the menu is visible
 
-        return view('menus.content', compact('menu'));
+        return view('menus.content-tw', compact('menu'));
     }
 
     /**
@@ -270,7 +270,7 @@ class MenusController extends Controller
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
         $parents = ['' => ''] + Menu::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('menus.edit', compact('menu'))->with($this->getFormOptions());
+        return view('menus.edit-tw', compact('menu'))->with($this->getFormOptions());
     }
 
     /**

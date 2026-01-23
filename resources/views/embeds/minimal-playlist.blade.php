@@ -1,41 +1,47 @@
 @if (isset($embeds) && count($embeds) > 0)
-<div class="row">
-    <div class="col-lg-12">
-        <div class="">      
-            @php 
-                $count = 0;
-                $limit = 1;
-            @endphp 
-            @foreach ($embeds as $embed)
-
-             {!! $embed !!}
- 
-            @php
-                $count++
-            @endphp
-            @if ($count >= $limit)
-                @php break; @endphp
-            @endif
-            @endforeach
-        </span>
-    </div>
+<div>      
+    @php 
+        $count = 0;
+        $limit = 1;
+    @endphp 
+    @foreach ($embeds as $embed)
+        {!! $embed !!}
+        @php
+            $count++
+        @endphp
+        @if ($count >= $limit)
+            @php break; @endphp
+        @endif
+    @endforeach
 </div>
 @else
-    @if (isset($event))
-        <div id="playlist-{{ $event->id}}" class="playlist-id" data-url="/events/{{ $event->id }}/load-minimal-embeds">
-            <div class="card-body">
-			</div>
+    @if (isset($event) && is_object($event) && !($event instanceof \Illuminate\Pagination\LengthAwarePaginator))
+        <div id="playlist-{{ $event->id}}" class="playlist-id rounded-lg border bg-card shadow p-4" data-url="/events/{{ $event->id }}/load-minimal-embeds" data-slug="{{ $event->slug }}" data-resource-type="events">
+            <div class="flex items-center justify-center py-4">
+                <div class="load-spinner">
+                    <div class="double-bounce1"></div>
+                    <div class="double-bounce2"></div>
+                </div>
+            </div>
         </div>
     @endif
-    @if (isset($series))
-    <div id="playlist-{{ $series->id}}" class="playlist-id" data-url="/series/{{ $series->id }}/load-minimal-embeds">
-        <div class="card-body">
+    @if (isset($series) && is_object($series) && !($series instanceof \Illuminate\Pagination\LengthAwarePaginator))
+        <div id="playlist-{{ $series->id}}" class="playlist-id rounded-lg border bg-card shadow p-4" data-url="/series/{{ $series->id }}/load-minimal-embeds" data-slug="{{ $series->slug }}" data-resource-type="series">
+            <div class="flex items-center justify-center py-4">
+                <div class="load-spinner">
+                    <div class="double-bounce1"></div>
+                    <div class="double-bounce2"></div>
+                </div>
+            </div>
         </div>
-    </div>
     @endif
-    @if (isset($entity))
-        <div id="playlist-{{ $entity->id}}" class="playlist-id" data-url="/entities/{{ $entity->id }}/load-minimal-embeds">
-            <div class="card-body">
+    @if (isset($entity) && is_object($entity) && !($entity instanceof \Illuminate\Pagination\LengthAwarePaginator))
+        <div id="playlist-{{ $entity->id}}" class="playlist-id rounded-lg border bg-card shadow p-4 {{ $entity->name }}" data-url="/entities/{{ $entity->id }}/load-minimal-embeds" data-slug="{{ $entity->slug }}" data-resource-type="entities">
+            <div class="flex items-center justify-center py-4">
+                <div class="load-spinner">
+                    <div class="double-bounce1"></div>
+                    <div class="double-bounce2"></div>
+                </div>
             </div>
         </div>
     @endif

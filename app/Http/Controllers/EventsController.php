@@ -176,7 +176,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -311,7 +311,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -406,7 +406,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -477,7 +477,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.grid')
+        return view('events.grid-tw')
         ->with(array_merge(
             [
                 'limit' => $listResultSet->getLimit(),
@@ -548,7 +548,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.indexPhoto')
+        return view('events.indexPhoto-tw')
         ->with(array_merge(
             [
                 'limit' => $listResultSet->getLimit(),
@@ -609,7 +609,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(array_merge(
                 [
                     'slug' => 'Future',
@@ -659,7 +659,7 @@ class EventsController extends Controller
 
         // handle the request if ajax
         if ($request->ajax()) {
-            return view('events.4daysAjax')
+            return view('events.4daysAjax-tw')
                     ->with([
                         'date' => $date,
                         'window' => $this->defaultWindow,
@@ -671,7 +671,7 @@ class EventsController extends Controller
                     ->render();
         }
 
-        return view('events.upcoming')
+        return view('events.upcoming-tw')
         ->with([
             'date' => $date,
             'window' => $this->defaultWindow,
@@ -716,7 +716,7 @@ class EventsController extends Controller
 
         // handle the request if ajax
         if ($request->ajax()) {
-            return view('events.addDays')
+            return view('events.addDays-tw')
                     ->with([
                         'date' => $date,
                         'window' => $this->defaultWindow,
@@ -728,7 +728,7 @@ class EventsController extends Controller
                     ->render();
         }
 
-        return view('events.upcoming')
+        return view('events.upcoming-tw')
         ->with([
             'date' => $date,
             'window' => $this->defaultWindow,
@@ -794,7 +794,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -854,7 +854,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -916,7 +916,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
         ->with(array_merge(
             [
                 'slug' => 'Attending',
@@ -972,7 +972,7 @@ class EventsController extends Controller
             ->with('visibility', 'venue','eventType','entities','tags')
             ->paginate(1000);
 
-        return view('events.feed', compact('events'));
+        return view('events.feed-tw', compact('events'));
     }
 
     /**
@@ -983,7 +983,7 @@ class EventsController extends Controller
         // set number of results per page
         $events = Event::getByTag(ucfirst($tag))->future()->simplePaginate(10000);
 
-        return view('events.feed', compact('events'));
+        return view('events.feed-tw', compact('events'));
     }
 
     /**
@@ -1114,7 +1114,7 @@ class EventsController extends Controller
         }
         $day = Carbon::parse($day);
 
-        return view('events.day')
+        return view('events.day-tw')
             ->with([
                 'day' => $day,
                 'position' => 0,
@@ -1195,7 +1195,7 @@ class EventsController extends Controller
     public function renderCalendar(Collection $events, $series = null, $tag = null): View
     {
         // Change this to instead pass in the json EventsList directly here and render, that way I can just pass anything to this function to display the calendar
-        return view('events.event-calendar');
+        return view('events.event-calendar-tw');
     }
 
     /**
@@ -1431,6 +1431,15 @@ class EventsController extends Controller
         if (!$event) {
             abort(404);
         }
+
+        // Eager load relationships needed for the view
+        $event->load([
+            'photos',
+            'entities.photos' => function ($query) {
+                $query->where('photos.is_primary', true);
+            }
+        ]);
+
         $embeds = $oembedExtractor->getEmbedsForEvent($event);
 
         $thread = Thread::where('event_id', '=', $event->id)->first();
@@ -1443,7 +1452,7 @@ class EventsController extends Controller
         // $embeds = $embedExtractor->getEmbedsForEvent($event);
         // $embeds = [];
 
-        return view('events.show', compact('event', 'embeds'))->with(['thread' => $thread, 'blacklist' => $blacklist])->render();
+        return view('events.show-tw', compact('event', 'embeds'))->with(['thread' => $thread, 'blacklist' => $blacklist])->render();
     }
 
 
@@ -1499,7 +1508,6 @@ class EventsController extends Controller
             // extract all the links from the event body and convert into embeds
             $embedExtractor->setLayout("small");
             $embeds = $embedExtractor->getEmbedsForEvent($event, "small");
-
             return [
                 'Message' => 'Added embeds to event page.',
                 'Success' => view('embeds.minimal-playlist')
@@ -1792,7 +1800,7 @@ class EventsController extends Controller
         if ($request->ajax()) {
             return [
                 'Message' => 'You are now attending the event - '.$event->name,
-                'Success' => view('events.single')
+                'Success' => view('events.card-tw')
                     ->with(compact('event'))
                     ->with('month', '')
                     ->render(),
@@ -1834,7 +1842,7 @@ class EventsController extends Controller
         if ($request->ajax()) {
             return [
                 'Message' => 'You are no longer attending the event - '.$event->name,
-                'Success' => view('events.single')
+                'Success' => view('events.card-tw')
                     ->with(compact('event'))
                     ->with('month', '')
                     ->render(),
@@ -1911,32 +1919,18 @@ class EventsController extends Controller
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
         // get the query builder
-        $pastQuery = $listResultSet->getList();
-        $futureQuery = clone $pastQuery;
+        $query = $listResultSet->getList();
 
         // @phpstan-ignore-next-line
-        $future_events = $futureQuery
+        $events = $query
             ->with('visibility', 'venue','tags','entities','series','eventType','threads')
             ->future()
             ->orderBy('events.start_at', 'ASC')
             ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
 
-        $future_events->filter(function ($e) {
+        $events->filter(function ($e) {
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
-        });
-
-        // @phpstan-ignore-next-line
-        $past_events = $pastQuery
-        // @phpstan-ignore-next-line
-            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
-            ->past()
-            ->orderBy('events.start_at', 'ASC')
-            ->orderBy('events.name', 'ASC')
-            ->paginate($listResultSet->getLimit());
-
-        $past_events->filter(function ($e) {
-            return ($e->visibility && 'Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         // saves the updated session
@@ -1944,7 +1938,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(
                 array_merge(
                     [
@@ -1958,8 +1952,7 @@ class EventsController extends Controller
                     $this->getListControlOptions()
                 )
             )
-            ->with(compact('future_events'))
-            ->with(compact('past_events'))
+            ->with(compact('events'))
             ->with(compact('tag'));
     }
 
@@ -1993,31 +1986,17 @@ class EventsController extends Controller
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
         // get the query builder
-        $pastQuery = $listResultSet->getList();
-        $futureQuery = clone $pastQuery;
+        $query = $listResultSet->getList();
 
         // @phpstan-ignore-next-line
-        $future_events = $futureQuery
+        $events = $query
             ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
-            ->future()
             ->orderBy('events.start_at', 'ASC')
             ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
 
-        $future_events->filter(function ($e) {
+        $events->filter(function (\App\Models\Event $e) {
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
-        });
-
-        // @phpstan-ignore-next-line
-        $past_events = $pastQuery
-            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
-            ->past()
-            ->orderBy('events.start_at', 'ASC')
-            ->orderBy('events.name', 'ASC')
-            ->paginate($listResultSet->getLimit());
-
-        $past_events->filter(function ($e) {
-            return ($e->visibility && 'Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         // saves the updated session
@@ -2025,7 +2004,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(
                 array_merge(
                     [
@@ -2039,8 +2018,7 @@ class EventsController extends Controller
                     $this->getListControlOptions()
                 )
             )
-            ->with(compact('future_events'))
-            ->with(compact('past_events'))
+            ->with(compact('events'))
             ->with(compact('related'));
     }
 
@@ -2094,7 +2072,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(
                 array_merge(
                     [
@@ -2168,7 +2146,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(
                 array_merge(
                     [
@@ -2246,7 +2224,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(
                 array_merge(
                     [
@@ -2326,7 +2304,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(
                 array_merge(
                     [
@@ -2358,7 +2336,7 @@ class EventsController extends Controller
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
-        return view('events.indexWeek', compact('events'));
+        return view('events.indexWeek-tw', compact('events'));
     }
 
     /**
@@ -2502,7 +2480,7 @@ class EventsController extends Controller
             ]
         );
 
-        return view('events.createSeries', compact('series'))
+        return view('events.createSeries-tw', compact('series'))
         ->with($this->getSeriesFormOptions())
         ->with(['event' => $event]);
     }
@@ -2618,7 +2596,7 @@ class EventsController extends Controller
             ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
 
-        return view('events.feed', compact('events'));
+        return view('events.feed-tw', compact('events'));
     }
 
 
@@ -2683,7 +2661,7 @@ class EventsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.indexUserAttending')
+        return view('events.indexUserAttending-tw')
         ->with(array_merge(
             [
                 'slug' => 'Attending',

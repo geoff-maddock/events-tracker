@@ -1,153 +1,204 @@
-@extends('app')
+@extends('layouts.app-tw')
 
 @section('title','Search Results')
 
 @section('content')
 
-<h1 class="display-crumbs text-primary">Search
-		@include('events.crumbs')
-</h1>
-
-<div id="action-menu" class="mb-2">
-	<a href="{!! URL::route('events.index') !!}" class="btn btn-info">Show event index</a>
-	<a href="{!! URL::route('calendar') !!}" class="btn btn-info">Show event calendar</a>
-	<a href="{!! URL::route('events.create') !!}" class="btn btn-primary">Add an event</a>
-	<a href="{!! URL::route('series.create') !!}" class="btn btn-primary">Add an event series</a>
-	<a href="{!! URL::route('entities.create') !!}" class="btn btn-primary">Add an entity</a>
-	<a href="{!! URL::route('threads.create') !!}" class="btn btn-primary">Add a thread</a>
+<!-- Page Header -->
+<div class="mb-6">
+	<h1 class="text-3xl font-bold text-primary mb-2">Search Results</h1>
+	@if(isset($search))
+	<p class="text-gray-400">Results for: <span class="text-white font-semibold">"{{ $search }}"</span></p>
+	@endif
 </div>
 
-<div class="row">
-	<div class="col-lg-12">
+<!-- Jump Links -->
+<div class="mb-6 flex flex-wrap gap-2">
 	@if (isset($entities) && $entitiesCount > 0)
-	<div class="card surface my-2">
-
-		<h5 class="card-header bg-primary">Entities
-			<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Entities that match this search term.">{{ $entitiesCount}}</span></a>
-			<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#search-entities" data-bs-toggle="collapse" aria-expanded="false" aria-controls="search-entities" role="button"></i></a>
-		</h5>
-
-		<div class="card-body collapsible collapse show" id="search-entities">
-				@include('entities.list', ['entities' => $entities, 'keyword' => $search])
-				{!! $entities->appends(['keyword' => $search])->render() !!}
-		</div>
-	</div>
-
-	@else
-
-	<div class="bs-component">
-		No matching entities found.
-	</div>
+	<a href="#entities-results" class="inline-flex items-center px-4 py-2 bg-dark-card border-2 border-primary text-white rounded-lg hover:bg-dark-border transition-colors text-sm font-medium">
+		<i class="bi bi-people mr-2"></i>
+		Entities ({{ $entitiesCount }})
+	</a>
 	@endif
-
-</div>
-</div>
-
-<div class="row">
-	<div class="col-lg-12">
+	
+	@if (isset($tags) && $tagsCount > 0)
+	<a href="#tags-results" class="inline-flex items-center px-4 py-2 bg-dark-card border-2 border-primary text-white rounded-lg hover:bg-dark-border transition-colors text-sm font-medium">
+		<i class="bi bi-tags mr-2"></i>
+		Tags ({{ $tagsCount }})
+	</a>
+	@endif
+	
 	@if (isset($events) && count($events) > 0)
-		@if (isset($tags) && $tagsCount > 0)
-			<div class="card surface">
-				<h5 class="card-header bg-primary">Tags
-					<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom" title="# of Tags that match this search term.">{{ $tagsCount }}</span></a>
-					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#search-tags" data-bs-toggle="collapse" aria-expanded="false" aria-controls="search-tags" role="button"></i></a>
-				</h5>
-
-				<div class="card-body collapsible collapse show" id="search-tags">
-				@include('tags.list', ['tags' => $tags])
-				{!! $tags->appends(['keyword' => $search])->render() !!}
-				</div>
-
-			</div>
-		@endif
-
-			<div class="card surface my-2">
-
-				<h5 class="card-header bg-primary">Events
-					<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Events that match this search term.">{{ $eventsCount}}</span></a>
-					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#search-events" data-bs-toggle="collapse" aria-expanded="false" aria-controls="search-events" role="button"></i></a>
-				</h5>
-
-				<div class="card-body collapsible collapse show" id="search-events">
-				@include('events.list', ['events' => $events])
-				{!! $events->appends(['keyword' => $search])->links() !!}
-				</div>
-
-			</div>
-		</div>
-	@else
-		<div class="col-lg-12">
-			<div class="bs-component">
-					No matching events found.
-			</div>
-		</div>
+	<a href="#events-results" class="inline-flex items-center px-4 py-2 bg-dark-card border-2 border-primary text-white rounded-lg hover:bg-dark-border transition-colors text-sm font-medium">
+		<i class="bi bi-calendar-event mr-2"></i>
+		Events ({{ $eventsCount }})
+	</a>
 	@endif
-	</div>
-
-<div class="row">
+	
 	@if (isset($series) && count($series) > 0)
-	<div class="col-lg-12">
-		<div class="card surface">
-			<h5 class="card-header bg-primary">Series
-					<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Series that match this search term.">{{ $seriesCount}}</span></a>
-					<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#search-series" data-bs-toggle="collapse" aria-expanded="false" aria-controls="search-series" role="button"></i></a>
-			</h5>
-			
-			<div class="card-body collapsible collapse show" id="search-series">
-				@include('series.vertical-list', ['series' => $series])
-			</div>
-
-		</div>
-	</div>
-	@else
-	<div class="bs-component">
-		No matching series found.
-	</div>
+	<a href="#series-results" class="inline-flex items-center px-4 py-2 bg-dark-card border-2 border-primary text-white rounded-lg hover:bg-dark-border transition-colors text-sm font-medium">
+		<i class="bi bi-collection mr-2"></i>
+		Series ({{ $seriesCount }})
+	</a>
+	@endif
+	
+	@if (isset($threads) && count($threads) > 0)
+	<a href="#threads-results" class="inline-flex items-center px-4 py-2 bg-dark-card border-2 border-primary text-white rounded-lg hover:bg-dark-border transition-colors text-sm font-medium">
+		<i class="bi bi-chat mr-2"></i>
+		Threads ({{ $threadsCount }})
+	</a>
 	@endif
 </div>
 
-		@if (isset($users) && count($users) > 0)
-		<div class="card surface my-2">
-
-			<h5 class="card-header bg-primary">Users
-				<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Users that match this search term.">{{ $usersCount}}</span></a>
-				<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#search-users" data-bs-toggle="collapse" aria-expanded="false" aria-controls="search-users" role="button"></i></a>
-			</h5>
-
-			<div class="card-body collapsible collapse show" id="search-users">
-			@include('users.list', ['users' => $users])
-			{!! $users->appends(['keyword' => $search])->links() !!}
+<div class="space-y-6">
+	<!-- Entities Results -->
+	@if (isset($entities) && $entitiesCount > 0)
+	<div id="entities-results" class="card-tw scroll-mt-6">
+		<div class="p-4 border-b border-dark-border flex items-center justify-between">
+			<div class="flex items-center gap-3">
+				<h2 class="text-xl font-semibold text-white">Entities</h2>
+				<span class="badge-tw bg-dark-card text-white">{{ $entitiesCount }}</span>
 			</div>
-
+			<button class="text-gray-400 hover:text-white" onclick="toggleSection('search-entities')">
+				<i class="bi bi-eye-fill"></i>
+			</button>
 		</div>
-		@else
-			<div class="bs-component">
-				No matching users found.
+		<div id="search-entities" class="p-4">
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+				@foreach($entities as $entity)
+				@include('entities.card-tw', ['entity' => $entity])
+				@endforeach
 			</div>
-		@endif
-
-
-		@if (isset($threads) && count($threads) > 0)
-		<div class="card surface my-2">
-
-			<h5 class="card-header bg-primary">Threads
-				<a href="#" ><span class='badge rounded-pill bg-dark' data-toggle="tooltip" data-placement="bottom"  title="# of Threads that match this search term.">{{ $threadsCount}}</span></a>
-				<a href="#" class="float-end px-1"  title="Show / Hide"><i class="bi bi-eye-fill toggler" id="tag-popular-close-box" data-bs-target="#search-threads" data-bs-toggle="collapse" aria-expanded="false" aria-controls="search-threads" role="button"></i></a>
-			</h5>
-
-			<div class="card-body collapsible collapse show" id="search-threads">
-				@include('threads.list', ['threads' => $threads])
-				{!! $threads->appends(['keyword' => $search])->render() !!}
+			<div class="mt-4">
+				{!! $entities->appends(['keyword' => $search])->links('vendor.pagination.tailwind') !!}
 			</div>
 		</div>
-		@else
+	</div>
+	@else
+	<div class="card-tw p-6 text-center">
+		<i class="bi bi-people text-4xl text-gray-600 mb-3"></i>
+		<p class="text-gray-400">No matching entities found.</p>
+	</div>
+	@endif
 
-		<div class="bs-component">
-			No matching threads found.
+	<!-- Tags Results -->
+	@if (isset($tags) && $tagsCount > 0)
+	<div id="tags-results" class="card-tw scroll-mt-6">
+		<div class="p-4 border-b border-dark-border flex items-center justify-between">
+			<div class="flex items-center gap-3">
+				<h2 class="text-xl font-semibold text-white">Tags</h2>
+				<span class="badge-tw bg-dark-card text-white">{{ $tagsCount }}</span>
+			</div>
+			<button class="text-gray-400 hover:text-white" onclick="toggleSection('search-tags')">
+				<i class="bi bi-eye-fill"></i>
+			</button>
 		</div>
+		<div id="search-tags" class="p-4">
+			<div class="flex flex-wrap gap-2">
+				@foreach($tags as $tag)
+				<a href="/tags/{{ $tag->slug }}" class="badge-tw badge-primary-tw hover:bg-primary/30">
+					{{ $tag->name }}
+				</a>
+				@endforeach
+			</div>
+			<div class="mt-4">
+				{!! $tags->appends(['keyword' => $search])->links('vendor.pagination.tailwind') !!}
+			</div>
+		</div>
+	</div>
+	@endif
 
-		@endif
+	<!-- Events Results -->
+	@if (isset($events) && count($events) > 0)
+	<div id="events-results" class="card-tw scroll-mt-6">
+		<div class="p-4 border-b border-dark-border flex items-center justify-between">
+			<div class="flex items-center gap-3">
+				<h2 class="text-xl font-semibold text-white">Events</h2>
+				<span class="badge-tw bg-dark-card text-white">{{ $eventsCount }}</span>
+			</div>
+			<button class="text-gray-400 hover:text-white" onclick="toggleSection('search-events')">
+				<i class="bi bi-eye-fill"></i>
+			</button>
+		</div>
+		<div id="search-events" class="p-4">
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+				@foreach($events as $event)
+				@include('events.card-tw', ['event' => $event])
+				@php unset($event); @endphp
+				@endforeach
+			</div>
+			<div class="mt-4">
+				{!! $events->appends(['keyword' => $search])->links('vendor.pagination.tailwind') !!}
+			</div>
+		</div>
+	</div>
+	@else
+	<div class="card-tw p-6 text-center">
+		<i class="bi bi-calendar-x text-4xl text-gray-600 mb-3"></i>
+		<p class="text-gray-400">No matching events found.</p>
+	</div>
+	@endif
+
+	<!-- Series Results -->
+	@if (isset($series) && count($series) > 0)
+	<div id="series-results" class="card-tw scroll-mt-6">
+		<div class="p-4 border-b border-dark-border flex items-center justify-between">
+			<div class="flex items-center gap-3">
+				<h2 class="text-xl font-semibold text-white">Series</h2>
+				<span class="badge-tw bg-dark-card text-white">{{ $seriesCount }}</span>
+			</div>
+			<button class="text-gray-400 hover:text-white" onclick="toggleSection('search-series')">
+				<i class="bi bi-eye-fill"></i>
+			</button>
+		</div>
+		<div id="search-series" class="p-4">
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+				@foreach($series as $s)
+				@include('series.card-tw', ['series' => $s])
+				@php unset($s); @endphp
+				@endforeach
+			</div>
+			<div class="mt-4">
+				{!! $series->appends(['keyword' => $search])->links('vendor.pagination.tailwind') !!}
+			</div>
+		</div>
+	</div>
+	@endif
+
+	<!-- Threads Results -->
+	@if (isset($threads) && count($threads) > 0)
+	<div id="threads-results" class="card-tw scroll-mt-6">
+		<div class="p-4 border-b border-dark-border flex items-center justify-between">
+			<div class="flex items-center gap-3">
+				<h2 class="text-xl font-semibold text-white">Threads</h2>
+				<span class="badge-tw bg-dark-card text-white">{{ $threadsCount }}</span>
+			</div>
+			<button class="text-gray-400 hover:text-white" onclick="toggleSection('search-threads')">
+				<i class="bi bi-eye-fill"></i>
+			</button>
+		</div>
+		<div id="search-threads" class="p-4 space-y-4">
+			@foreach($threads as $thread)
+			@include('threads.card-tw', ['thread' => $thread])
+			@php unset($thread); @endphp
+			@endforeach
+			<div class="mt-4">
+				{!! $threads->appends(['keyword' => $search])->links('vendor.pagination.tailwind') !!}
+			</div>
+		</div>
+	</div>
+	@endif
 </div>
 
 @stop
- 
+
+@section('footer')
+<script>
+function toggleSection(sectionId) {
+	const section = document.getElementById(sectionId);
+	if (section) {
+		section.classList.toggle('hidden');
+	}
+}
+</script>
+@stop

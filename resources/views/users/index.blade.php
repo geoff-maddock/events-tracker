@@ -10,107 +10,156 @@
 
 @section('content')
 
-<h1 class="display-crumbs text-primary">Users</h1>
-<small class="text-muted">public user directory</small>
+<!-- Page Header -->
+<div class="mb-6">
+	<h1 class="text-3xl font-bold text-primary mb-2">Users</h1>
+	<p class="text-gray-400">Public user directory</p>
+</div>
 
-<div id="filters-container" class="row">
-	<div id="filters-content" class="col-xl-9">
-		<a href="#" id="filters" class="btn btn-primary">
-			Filters 
-			<span id="filters-toggle" class="@if (!$hasFilter) filter-closed @else filter-open @endif">
-			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
-				<path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-			  </svg>
-			</span>
+<!-- Filters Section -->
+<div class="mb-6">
+	<button id="filters-toggle-btn" class="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors">
+		<i class="bi bi-funnel mr-2"></i>
+		<span id="filters-toggle-text">@if($hasFilter) Hide @else Show @endif Filters</span>
+		<i class="bi bi-chevron-down ml-2 transition-transform @if($hasFilter) rotate-180 @endif" id="filters-chevron"></i>
+	</button>
+	
+	<!-- Active Filters / Reset -->
+	@if($hasFilter)
+	<div class="inline-flex items-center gap-2 ml-4">
+		<a href="{{ url()->action('UsersController@rppReset') }}" class="inline-flex items-center px-3 py-1 text-sm text-gray-300 hover:text-white border border-dark-border rounded-lg">
+			Clear All <i class="bi bi-x ml-1"></i>
 		</a>
-        {!! Form::open(['route' => ['users.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
-
-		<div id="filter-list" class="px-2 @if (!$hasFilter)d-none @endif">
-            <div class="row">
-                <div class="col-sm">
-                    {!! Form::label('filter_email','Email') !!}
-
-                    {!! Form::text('filter_email', (isset($filters['email']) ? $filters['email'] : NULL),
-                    ['class' =>'form-control form-background', 'name' => 'filters[email]']) !!}
-                </div>
-
-                <div class="col-sm">
-                    {!! Form::label('filter_name','Name') !!}
-
-                    {!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
-                    ['class' =>'form-control form-background', 'name' => 'filters[name]']) !!}
-                </div>
-
-                <div class="col-sm">
-                {!! Form::label('filter_status','Status') !!}
-                {!! Form::select('filter_status', $userStatusOptions, (isset($filters['status']) ? $filters['status'] :NULL), 
-                    [
-                        'data-theme' => 'bootstrap-5',
-                        'data-width' => '100%',
-                        'class' => 'form-control select2 form-background',
-                        'data-placeholder' => 'Select a status',
-                        'name' => 'filters[status]'
-                    ])
-                !!}
-                </div>
-            </div>
-            <div class="row">
-            <div class="col-sm-2">
-                <div class="btn-group col-sm-1">
-                    <label></label>
-                    {!! Form::submit('Apply', ['class' =>'btn btn-primary btn-sm btn-tb me-2 my-2', 'id' =>
-                    'primary-filter-submit']) !!}
-                    {!! Form::close() !!}
-                    {!! Form::open(['route' => ['users.reset'], 'method' => 'GET']) !!}
-                    {!! Form::submit('Reset', ['class' =>'btn btn-primary btn-sm btn-tb me-2 my-2', 'id' =>
-                    'primary-filter-reset']) !!}
-                    {!! Form::close() !!}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right my-2">
-        <form action="{{ url()->action('UsersController@filter') }}" method="GET" class="form-inline">
-			<div class="form-group row gx-1 justify-content-end">
-				<div class="col-auto">
-                <a href="{{ url()->action('UsersController@rppReset') }}" class="btn btn-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
-                        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
-                    </svg>
-                </a>
-                </div>
-                <div class="col-auto">
-                    {!! Form::select('limit', $limitOptions, ($limit ?? 10), ['class' => 'form-background form-select auto-submit']) !!}
-                </div>
-                <div class="col-auto">
-                    {!! Form::select('sort', $sortOptions, ($sort ?? 'users.name'), ['class' => 'form-background form-select auto-submit'])   !!}
-                </div>
-                <div class="col-auto">
-                    {!! Form::select('direction', $directionOptions, ($direction ?? 'asc'), ['class' => 'form-background form-select auto-submit']) !!}
-                </div>
-            </div>
-        </form>
-    </div>
+	</div>
+	@endif
 </div>
 
-<div id="list-container" class="row">
-    <div class="col-md-12 col-lg-6">
+<!-- Filter Panel -->
+<div id="filter-panel" class="@if(!$hasFilter) hidden @endif bg-dark-surface border border-dark-border rounded-lg p-4 mb-6">
+	{!! Form::open(['route' => ['users.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
+	
+	<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+		<!-- Email Filter -->
+		<div>
+			<label for="filter_email" class="block text-sm font-medium text-gray-300 mb-1">Email</label>
+			<input type="text" 
+				name="filters[email]" 
+				id="filter_email"
+				value="{{ $filters['email'] ?? '' }}"
+				class="form-input-tw"
+				placeholder="User email...">
+		</div>
 
-        @if (!$users->isEmpty())
-            {!! $users->onEachSide(2)->links() !!}
-        @endif
+		<!-- Name Filter -->
+		<div>
+			<label for="filter_name" class="block text-sm font-medium text-gray-300 mb-1">Name</label>
+			<input type="text" 
+				name="filters[name]" 
+				id="filter_name"
+				value="{{ $filters['name'] ?? '' }}"
+				class="form-input-tw"
+				placeholder="User name...">
+		</div>
 
-        @include('users.list', ['users' => $users])
+		<!-- Status Filter -->
+		<div>
+			<label for="filter_status" class="block text-sm font-medium text-gray-300 mb-1">Status</label>
+			{!! Form::select('filter_status', $userStatusOptions, ($filters['status'] ?? null),
+			[
+				'class' => 'form-select-tw select2',
+				'data-placeholder' => 'Select a status',
+				'name' => 'filters[status]',
+				'id' => 'filter_status'
+			])
+			!!}
+		</div>
+	</div>
 
-        @if (!$users->isEmpty())
-            {!! $users->onEachSide(2)->links() !!}
-        @endif
-    </div>
+	<!-- Filter Actions -->
+	<div class="flex gap-2 mt-4">
+		<button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors">
+			Apply
+		</button>
+		{!! Form::close() !!}
+		{!! Form::open(['route' => ['users.reset'], 'method' => 'GET']) !!}
+		<button type="submit" class="px-4 py-2 bg-dark-card border border-dark-border text-white rounded-lg hover:bg-dark-border transition-colors">
+			Reset
+		</button>
+		{!! Form::close() !!}
+	</div>
 </div>
+
+<!-- Results Bar -->
+<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+	<!-- Results Count -->
+	<div class="text-sm text-gray-400">
+		@if(isset($users))
+		Showing {{ $users->firstItem() ?? 0 }} to {{ $users->lastItem() ?? 0 }} of {{ $users->total() }} results
+		@endif
+	</div>
+
+	<!-- Sort Controls -->
+	<div class="flex items-center gap-4">
+		<form action="{{ url()->action('UsersController@filter') }}" method="GET" class="flex items-center gap-2">
+			<select name="rpp" class="form-select-tw text-sm py-1 auto-submit">
+				@foreach($rppOptions as $value => $label)
+				<option value="{{ $value }}" {{ ($rpp ?? 25) == $value ? 'selected' : '' }}>{{ $label }}</option>
+				@endforeach
+			</select>
+			<span class="text-gray-400 text-sm">Sort by:</span>
+			<select name="sortBy" class="form-select-tw text-sm py-1 auto-submit">
+				@foreach($sortOptions as $value => $label)
+				<option value="{{ $value }}" {{ ($sortBy ?? 'name') == $value ? 'selected' : '' }}>{{ $label }}</option>
+				@endforeach
+			</select>
+			<select name="sortDirection" class="form-select-tw text-sm py-1 auto-submit">
+				@foreach($directionOptions as $value => $label)
+				<option value="{{ $value }}" {{ ($sortDirection ?? 'asc') == $value ? 'selected' : '' }}>{{ $label }}</option>
+				@endforeach
+			</select>
+		</form>
+	</div>
+</div>
+
+<!-- Users Grid -->
+@if (isset($users) && count($users) > 0)
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+	@foreach ($users as $user)
+	@include('users.card-tw', ['user' => $user])
+	@endforeach
+</div>
+
+<!-- Pagination -->
+<div class="mt-6">
+	{!! $users->onEachSide(2)->links('vendor.pagination.tailwind') !!}
+</div>
+@else
+<div class="text-center py-12">
+	<i class="bi bi-people text-6xl text-gray-600 mb-4"></i>
+	<p class="text-gray-400">No users found.</p>
+</div>
+@endif
+
 @stop
 
 @section('footer')
+<script>
+	// Filter toggle functionality
+	document.getElementById('filters-toggle-btn')?.addEventListener('click', function() {
+		const panel = document.getElementById('filter-panel');
+		const text = document.getElementById('filters-toggle-text');
+		const chevron = document.getElementById('filters-chevron');
+		
+		panel.classList.toggle('hidden');
+		
+		if (panel.classList.contains('hidden')) {
+			text.textContent = 'Show Filters';
+			chevron.classList.remove('rotate-180');
+		} else {
+			text.textContent = 'Hide Filters';
+			chevron.classList.add('rotate-180');
+		}
+	});
+</script>
 @include('partials.filter-js')
 @endsection

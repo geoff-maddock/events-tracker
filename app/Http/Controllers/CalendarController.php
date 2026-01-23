@@ -159,7 +159,7 @@ class CalendarController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index')
+        return view('events.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -233,7 +233,7 @@ class CalendarController extends Controller
         }
         $day = Carbon::parse($day);
 
-        return view('events.day')
+        return view('events.day-tw')
             ->with([
                 'day' => $day,
                 'position' => 0,
@@ -304,7 +304,7 @@ class CalendarController extends Controller
         // converts array of events into json event list
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'related', 'initialDate'));
+        return view('events.event-calendar-tw', compact('eventList', 'related', 'initialDate'));
     }
 
     /**
@@ -368,28 +368,92 @@ class CalendarController extends Controller
         // converts array of events into json event list
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'tag', 'initialDate'));
+        return view('events.event-calendar-tw', compact('eventList', 'tag', 'initialDate'));
     }
 
     /**
      * Display a calendar view of events.
      **/
-    public function index(): View
+    public function index(Request $request): View
     {
         // set the initial date of the calendar that is displayed
         $initialDate = Carbon::now()->format('Y-m-d');
 
         $eventList = [];
 
-        // get all public events
-        $events = Event::where(function ($query) {
+        // Start with base query
+        $eventsQuery = Event::query()->where(function ($query) {
             /* @phpstan-ignore-next-line */
             $query->visible($this->user);
-        })->with('eventType', 'visibility')
-        ->get();
+        });
+
+        // Apply filters if present
+        if ($request->has('filters')) {
+            $filters = $request->get('filters');
+            
+            if (!empty($filters['name'])) {
+                $eventsQuery->where('events.name', 'like', '%' . $filters['name'] . '%');
+            }
+            
+            if (!empty($filters['tag'])) {
+                $eventsQuery->whereHas('tags', function ($q) use ($filters) {
+                    $q->where('slug', $filters['tag']);
+                });
+            }
+            
+            if (!empty($filters['venue'])) {
+                $eventsQuery->whereHas('venue', function ($q) use ($filters) {
+                    $q->where('name', $filters['venue']);
+                });
+            }
+            
+            if (!empty($filters['related'])) {
+                $eventsQuery->whereHas('entities', function ($q) use ($filters) {
+                    $q->where('name', $filters['related']);
+                });
+            }
+            
+            if (!empty($filters['event_type'])) {
+                $eventsQuery->whereHas('eventType', function ($q) use ($filters) {
+                    $q->where('name', $filters['event_type']);
+                });
+            }
+        }
+
+        // get all public events with filters applied
+        $events = $eventsQuery->with('eventType', 'visibility')->get();
 
         // get all the upcoming series events
-        $series = Series::active()->with('visibility','occurrenceType')->get();
+        $seriesQuery = Series::active()->with('visibility','occurrenceType');
+        
+        // Apply same filters to series if present
+        if ($request->has('filters')) {
+            $filters = $request->get('filters');
+            
+            if (!empty($filters['name'])) {
+                $seriesQuery->where('series.name', 'like', '%' . $filters['name'] . '%');
+            }
+            
+            if (!empty($filters['tag'])) {
+                $seriesQuery->whereHas('tags', function ($q) use ($filters) {
+                    $q->where('slug', $filters['tag']);
+                });
+            }
+            
+            if (!empty($filters['venue'])) {
+                $seriesQuery->whereHas('venue', function ($q) use ($filters) {
+                    $q->where('name', $filters['venue']);
+                });
+            }
+            
+            if (!empty($filters['related'])) {
+                $seriesQuery->whereHas('entities', function ($q) use ($filters) {
+                    $q->where('name', $filters['related']);
+                });
+            }
+        }
+        
+        $series = $seriesQuery->get();
 
         // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
@@ -428,8 +492,12 @@ class CalendarController extends Controller
         }
 
         $eventList = json_encode($eventList);
+        
+        $filters = $request->get('filters', []);
+        $hasFilter = !empty(array_filter($filters));
 
-        return view('events.event-calendar', compact('eventList', 'initialDate'));
+        return view('events.event-calendar-tw', compact('eventList', 'initialDate', 'filters', 'hasFilter'))
+            ->with($this->getFilterOptions());
     }
 
     /**
@@ -493,7 +561,7 @@ class CalendarController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'initialDate'));
+        return view('events.event-calendar-tw', compact('eventList', 'initialDate'));
     }
 
     /**
@@ -548,7 +616,7 @@ class CalendarController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.dynamic-tag-event-calendar', compact('eventList'));
+        return view('events.dynamic-tag-event-calendar-tw', compact('eventList'));
     }
 
     /**
@@ -560,7 +628,7 @@ class CalendarController extends Controller
     public function renderCalendar(Collection $events, $series = null, $tag = null): View
     {
         // Change this to instead pass in the json EventsList directly here and render, that way I can just pass anything to this function to display the calendar
-        return view('events.event-calendar');
+        return view('events.event-calendar-tw');
     }
 
     /**
@@ -758,7 +826,7 @@ class CalendarController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'slug', 'initialDate'));
+        return view('events.event-calendar-tw', compact('eventList', 'slug', 'initialDate'));
     }
 
     /**
@@ -824,7 +892,7 @@ class CalendarController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'slug','initialDate'));
+        return view('events.event-calendar-tw', compact('eventList', 'slug','initialDate'));
     }
 
     /**
@@ -889,7 +957,7 @@ class CalendarController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'slug','initialDate'));
+        return view('events.event-calendar-tw', compact('eventList', 'slug','initialDate'));
     }
 
     /**
@@ -953,7 +1021,7 @@ class CalendarController extends Controller
 
         $eventList = json_encode($eventList);
 
-        return view('events.event-calendar', compact('eventList', 'slug','initialDate'));
+        return view('events.event-calendar-tw', compact('eventList', 'slug','initialDate'));
     }
  
 }

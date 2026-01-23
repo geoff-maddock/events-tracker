@@ -10,135 +10,185 @@
 
 @section('content')
 
-<h1 class="display-crumbs text-primary">Forum @include('threads.crumbs')</h1>
-
-<div id="action-menu" class="mb-2">
-    <a href="{{ url('/threads/all') }}" class="btn btn-info my-1">Show all threads</a>
-    <a href="{!! URL::route('threads.index') !!}" class="btn btn-info my-1">Show paged threads</a>
-    <a href="{!! URL::route('threads.create') !!}" class="btn btn-primary my-1">Add a thread</a>
+<!-- Page Header -->
+<div class="mb-6">
+	<h1 class="text-3xl font-bold text-primary mb-2">Forum</h1>
+	<p class="text-gray-400">Discussions, blog posts, and community threads.</p>
 </div>
 
-<div id="filters-container" class="row">
-	<div id="filters-content" class="col-xl-9">
-		<a href="#" id="filters" class="btn btn-primary">
-			Filters 
-			<span id="filters-toggle" class="@if (!$hasFilter) filter-closed @else filter-open @endif">
-			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
-				<path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-			  </svg>
-			</span>
+<!-- Action Menu -->
+<div class="mb-6 flex flex-wrap gap-2">
+	<a href="{{ url('/threads/all') }}" class="inline-flex items-center px-3 py-2 bg-dark-surface border border-dark-border text-gray-300 rounded-lg hover:bg-dark-card transition-colors text-sm">
+		Show All Threads
+	</a>
+	<a href="{!! URL::route('threads.index') !!}" class="inline-flex items-center px-3 py-2 bg-dark-surface border border-dark-border text-gray-300 rounded-lg hover:bg-dark-card transition-colors text-sm">
+		Show Paged Threads
+	</a>
+	<a href="{!! URL::route('threads.create') !!}" class="inline-flex items-center px-4 py-2 bg-dark-card border border-dark-border text-white rounded-lg hover:bg-dark-border transition-colors">
+		<i class="bi bi-plus-lg mr-2"></i>
+		Add Thread
+	</a>
+</div>
+
+<!-- Filters Section -->
+<div class="mb-6">
+	<button id="filters-toggle-btn" class="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors">
+		<i class="bi bi-funnel mr-2"></i>
+		<span id="filters-toggle-text">@if($hasFilter) Hide @else Show @endif Filters</span>
+		<i class="bi bi-chevron-down ml-2 transition-transform @if($hasFilter) rotate-180 @endif" id="filters-chevron"></i>
+	</button>
+	
+	<!-- Active Filters / Reset -->
+	@if($hasFilter)
+	<div class="inline-flex items-center gap-2 ml-4">
+		<a href="{{ url()->action('ThreadsController@rppReset') }}" class="inline-flex items-center px-3 py-1 text-sm text-gray-300 hover:text-white border border-dark-border rounded-lg">
+			Clear All <i class="bi bi-x ml-1"></i>
 		</a>
-        
-        {!! Form::open(['route' => [$filterRoute ?? 'threads.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
+	</div>
+	@endif
+</div>
 
-		<div id="filter-list" class="px-2 @if (!$hasFilter)d-none @endif">
-            <div class="row">
-                <div class="col-sm">
-                    {!! Form::label('filter_name','Filter By Name') !!}
+<!-- Filter Panel -->
+<div id="filter-panel" class="@if(!$hasFilter) hidden @endif bg-dark-surface border border-dark-border rounded-lg p-4 mb-6">
+	{!! Form::open(['route' => [$filterRoute ?? 'threads.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
+	
+	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+		<!-- Name Filter -->
+		<div>
+			<label for="filter_name" class="block text-sm font-medium text-gray-300 mb-1">Name</label>
+			<input type="text" 
+				name="filters[name]" 
+				id="filter_name"
+				value="{{ $filters['name'] ?? '' }}"
+				class="form-input-tw"
+				placeholder="Thread name...">
+		</div>
 
-                    {!! Form::text('filter_name', (isset($filters['name']) ? $filters['name'] : NULL),
-                    [
-                        'class' =>'form-control form-background',
-                        'name' => 'filters[name]',
-                        'data-theme' => 'bootstrap-5',
-                    ]
-                    ) !!}
-                </div>
+		<!-- User Filter -->
+		<div>
+			<label for="filter_user" class="block text-sm font-medium text-gray-300 mb-1">User</label>
+			{!! Form::select('filter_user', $userOptions, ($filters['user'] ?? null),
+			[
+				'class' => 'form-select-tw select2',
+				'data-placeholder' => 'Select a user',
+				'name' => 'filters[user]',
+				'id' => 'filter_user'
+			])
+			!!}
+		</div>
 
-                <div class="col-sm">
-                    {!! Form::label('filter_user','Filter By User') !!}
-                    {!! Form::select('filter_user', $userOptions, (isset($filters['user']) ? $filters['user'] :
-                    NULL), 
-                    [
-                        'data-theme' => 'bootstrap-5',
-                        'data-width' => '100%', 
-                        'class' => 'form-select select2 form-background', 
-                        'data-placeholder' => 'Select a user',
-                        'name' => 'filters[user]'
-                        ]) !!}
-                </div>
+		<!-- Tag Filter -->
+		<div>
+			<label for="filter_tag" class="block text-sm font-medium text-gray-300 mb-1">Tag</label>
+			{!! Form::select('filter_tag', $tagOptions, ($filters['tag'] ?? null),
+			[
+				'class' => 'form-select-tw select2',
+				'data-placeholder' => 'Select a tag',
+				'name' => 'filters[tag]',
+				'id' => 'filter_tag'
+			])
+			!!}
+		</div>
 
-                <div class="col-sm">
-                    {!! Form::label('filter_tag','Filter By Tag') !!}
-                    {!! Form::select('filter_tag', $tagOptions, (isset($filters['tag']) ? $filters['tag'] : NULL),
-                    [
-                        'data-theme' => 'bootstrap-5',
-                        'data-width' => '100%',
-                        'class' => 'form-select select2 form-background',
-                        'data-placeholder' => 'Select a tag',
-                        'name' => 'filters[tag]'
-                    ]
-                    ) !!}
-                </div>
+		<!-- Series Filter -->
+		<div>
+			<label for="filter_series" class="block text-sm font-medium text-gray-300 mb-1">Series</label>
+			{!! Form::select('filter_series', $seriesOptions, ($filters['series'] ?? null),
+			[
+				'class' => 'form-select-tw select2',
+				'data-placeholder' => 'Select a series',
+				'name' => 'filters[series]',
+				'id' => 'filter_series'
+			])
+			!!}
+		</div>
+	</div>
 
-                <div class="col-sm">
-                    {!! Form::label('filter_series','Filter By Series') !!}
-                    {!! Form::select('filter_series', $seriesOptions, (isset($filters['series']) ? $filters['series'] : NULL),
-                    [
-                        'data-theme' => 'bootstrap-5',
-                        'data-width' => '100%',
-                        'class' => 'form-select select2 form-background',
-                        'data-placeholder' => 'Select a series',
-                        'name' => 'filters[series]'
-                    ]
-                    ) !!}
-                </div>
-            </div>
-                <div class="row my-2">
-                    <div class="col-sm-2">
-                        <div class="btn-group col-sm-1">
-                        <label></label>
-                        {!! Form::submit('Apply', ['class' =>'btn btn-primary btn-sm btn-tb mx-2', 'id' =>
-                        'primary-filter-submit']) !!}
-                        {!! Form::close() !!}
-                        {!! Form::open(['route' => ['threads.reset'], 'method' => 'GET']) !!}
-                        {!! Form::submit('Reset', ['class' =>'btn btn-primary btn-sm btn-tb', 'id' =>  'primary-filter-reset']) !!}
-                        {!! Form::close() !!}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-	<div id="list-control" class="col-xl-3 visible-lg-block visible-md-block text-right my-2">
-		<form action="{{ url()->current() }}" method="GET" class="form-inline">
-			<div class="form-group row gx-1 justify-content-end">
-				<div class="col-auto">
-					<a href="{{ url()->action('ThreadsController@rppReset') }}" class="btn btn-primary" alt="Reset" aria-label="Reset">
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
-							<path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
-							<path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
-						</svg>
-					</a>
-				</div>
-				<div class="col-auto">
-					{!! Form::select('limit', $limitOptions, ($limit ?? 10), ['class' => 'form-background form-select auto-submit']) !!}
-				</div>
-				<div class="col-auto">
-					{!! Form::select('sort', $sortOptions, ($sort ?? 'threads.created_at'), ['class' => 'form-background form-select auto-submit']) !!}
-				</div>
-				<div class="col-auto">
-					{!! Form::select('direction', $directionOptions, ($direction ?? 'desc'), ['class' => 'form-background form-select auto-submit']) !!}
-				</div>
-			</div>
+	<!-- Filter Actions -->
+	<div class="flex gap-2 mt-4">
+		<button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors">
+			Apply
+		</button>
+		{!! Form::close() !!}
+		{!! Form::open(['route' => ['threads.reset'], 'method' => 'GET']) !!}
+		<button type="submit" class="px-4 py-2 bg-dark-card border border-dark-border text-white rounded-lg hover:bg-dark-border transition-colors">
+			Reset
+		</button>
+		{!! Form::close() !!}
+	</div>
+</div>
+
+<!-- Results Bar -->
+<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+	<!-- Results Count -->
+	<div class="text-sm text-gray-400">
+		@if(isset($threads))
+		Showing {{ $threads->firstItem() ?? 0 }} to {{ $threads->lastItem() ?? 0 }} of {{ $threads->total() }} results
+		@endif
+	</div>
+
+	<!-- Sort Controls -->
+	<div class="flex items-center gap-4">
+		<form action="{{ url()->current() }}" method="GET" class="flex items-center gap-2">
+			<select name="rpp" class="form-select-tw text-sm py-1 auto-submit">
+				@foreach($rppOptions as $value => $label)
+				<option value="{{ $value }}" {{ ($rpp ?? 25) == $value ? 'selected' : '' }}>{{ $label }}</option>
+				@endforeach
+			</select>
+			<span class="text-gray-400 text-sm">Sort by:</span>
+			<select name="sortBy" class="form-select-tw text-sm py-1 auto-submit">
+				@foreach($sortOptions as $value => $label)
+				<option value="{{ $value }}" {{ ($sortBy ?? 'threads.created_at') == $value ? 'selected' : '' }}>{{ $label }}</option>
+				@endforeach
+			</select>
+			<select name="sortDirection" class="form-select-tw text-sm py-1 auto-submit">
+				@foreach($directionOptions as $value => $label)
+				<option value="{{ $value }}" {{ ($sortDirection ?? 'desc') == $value ? 'selected' : '' }}>{{ $label }}</option>
+				@endforeach
+			</select>
 		</form>
 	</div>
 </div>
 
-<div id="list-container" class="row">
-
-    <div class="col-lg-12">
-        @if (isset($threads) && count($threads) > 0)
-        {!! $threads->onEachSide(2)->links() !!}
-        @include('threads.list', ['threads' => $threads])
-        {!! $threads->onEachSide(2)->links() !!}
-        @else
-        No matching threads found.
-        @endif
-    </div>
-
+<!-- Threads List -->
+@if (isset($threads) && count($threads) > 0)
+<div class="space-y-4">
+	@foreach ($threads as $thread)
+	@include('threads.card-tw', ['thread' => $thread])
+	@endforeach
 </div>
-@endsection
+
+<!-- Pagination -->
+<div class="mt-6">
+	{!! $threads->onEachSide(2)->links('vendor.pagination.tailwind') !!}
+</div>
+@else
+<div class="text-center py-12">
+	<i class="bi bi-chat-dots text-6xl text-gray-600 mb-4"></i>
+	<p class="text-gray-400">No threads found.</p>
+</div>
+@endif
+
+@stop
 
 @section('footer')
+<script>
+	// Filter toggle functionality
+	document.getElementById('filters-toggle-btn')?.addEventListener('click', function() {
+		const panel = document.getElementById('filter-panel');
+		const text = document.getElementById('filters-toggle-text');
+		const chevron = document.getElementById('filters-chevron');
+		
+		panel.classList.toggle('hidden');
+		
+		if (panel.classList.contains('hidden')) {
+			text.textContent = 'Show Filters';
+			chevron.classList.remove('rotate-180');
+		} else {
+			text.textContent = 'Hide Filters';
+			chevron.classList.add('rotate-180');
+		}
+	});
+</script>
 @include('partials.filter-js')
 @endsection

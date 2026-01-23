@@ -92,7 +92,7 @@ class TagsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
         // count the most common tags in the recent past
         $latestTags = Tag::withCount(['events' => function (Builder $query) {
@@ -144,10 +144,19 @@ class TagsController extends Controller
                     ->with('tags', 'locations', 'roles')
                     ->simplePaginate($this->limit);
 
-        // get a list of all tags
-        $tags = Tag::orderBy('name', 'ASC')->get();
+        // get a list of all tags with optional search filter
+        $query = Tag::query();
 
-        return view('tags.index', compact('series', 'entities', 'events', 'tag', 'tags', 'userTags', 'latestTags'));
+        $search = $request->input('search', '');
+        if (!empty($search)) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        $tags = $query->orderBy('name', 'ASC')->paginate(20)->appends(['search' => $search]);
+
+        $hasFilter = !empty($search);
+
+        return view('tags.index-tw', compact('series', 'entities', 'events', 'tag', 'tags', 'userTags', 'latestTags', 'search', 'hasFilter'));
     }
 
     /**
@@ -207,7 +216,7 @@ class TagsController extends Controller
 
         $tags = Tag::orderBy('name', 'ASC')->get();
 
-        return view('tags.index', compact('series', 'entities', 'events', 'tag', 'tags'));
+        return view('tags.index-tw', compact('series', 'entities', 'events', 'tag', 'tags'));
     }
 
     /**
@@ -220,7 +229,7 @@ class TagsController extends Controller
         // convert the slug to name?
         $tag = $stringHelper->SlugToName($slug);
 
-        // get all series linked to the tag
+        // get limited series linked to the tag (8 for preview)
         $series = Series::getByTag($slug)
             ->with('visibility', 'venue','tags', 'entities','eventType','threads','occurrenceType','occurrenceWeek','occurrenceDay')
             ->where(function ($query) {
@@ -228,9 +237,10 @@ class TagsController extends Controller
                 $query->visible($this->user);
             })
             ->orderBy('start_at', 'ASC')
-            ->paginate();
+            ->limit(8)
+            ->get();
 
-        // get all the events linked to the tag
+        // get limited events linked to the tag (8 for preview)
         $events = Event::getByTag($slug)
             ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
             ->where(function ($query) {
@@ -239,9 +249,10 @@ class TagsController extends Controller
             })
             ->orderBy('start_at', 'DESC')
             ->orderBy('name', 'ASC')
-            ->simplePaginate($this->limit);
+            ->limit(8)
+            ->get();
 
-        // get all entities linked to the tag
+        // get limited entities linked to the tag (8 for preview)
         $entities = Entity::getByTag($slug)
             ->with('tags', 'events','entityType','locations','entityStatus','user')
             ->where(function ($query) {
@@ -250,11 +261,12 @@ class TagsController extends Controller
             })
             ->orderBy('entity_type_id', 'ASC')
             ->orderBy('name', 'ASC')
-            ->simplePaginate($this->limit);
+            ->limit(8)
+            ->get();
 
         $tags = Tag::orderBy('name', 'ASC')->get();
 
-        return view('tags.index', compact('series', 'entities', 'events', 'slug', 'tag', 'tagObject', 'tags'));
+        return view('tags.show-tw', compact('series', 'entities', 'events', 'slug', 'tag', 'tagObject', 'tags'));
     }
 
     /**
@@ -268,7 +280,7 @@ class TagsController extends Controller
 
         $tagTypes = TagType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('tags.edit', compact('tag', 'tagTypes'));
+        return view('tags.edit-tw', compact('tag', 'tagTypes'));
     }
 
     /**
@@ -278,7 +290,7 @@ class TagsController extends Controller
     {
         $tagTypes = TagType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('tags.create', compact('tagTypes'));
+        return view('tags.create-tw', compact('tagTypes'));
     }
 
     /**
@@ -351,7 +363,7 @@ class TagsController extends Controller
         if ($request->ajax()) {
             return [
                 'Message' => 'You are now following the tag - '.$object->name,
-                'Success' => view('tags.link')
+                'Success' => view('tags.link-tw')
                     ->with(compact('tag'))
                     ->render(),
             ];
@@ -395,7 +407,7 @@ class TagsController extends Controller
         if ($request->ajax()) {
             return [
                 'Message' => 'You are no longer following the tag - '.$tag->name,
-                'Success' => view('tags.link')
+                'Success' => view('tags.link-tw')
                     ->with(compact('tag'))
                     ->render(),
             ];

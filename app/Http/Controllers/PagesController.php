@@ -6,6 +6,7 @@ use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Entity;
 use App\Models\EntityStatus;
 use App\Models\Event;
+use App\Models\Menu;
 use App\Models\Series;
 use App\Models\Tag;
 use App\Models\Thread;
@@ -314,22 +315,101 @@ class PagesController extends Controller
 
     public function help(): View
     {
-        return view('pages.help');
+        return view('pages.help-tw');
     }
 
     public function about(): View
     {
-        return view('pages.about');
+        $menu = Menu::with('blogs.contentType')->find(1);
+
+        return view('pages.about-tw', compact('menu'));
     }
 
     public function privacy(): View
     {
-        return view('pages.privacy');
+        return view('pages.privacy-tw');
     }
 
     public function tos(): View
     {
-        return view('pages.tos');
+        return view('pages.tos-tw');
+    }
+
+    public function radar(Request $request): View
+    {
+        $user = $request->user();
+
+        // Get events the user is attending (future only)
+        $attendingEvents = $user->getAttendingFuture();
+
+        // Get recommended events based on followed entities, tags, and series
+        $recommendedEvents = $user->getRecommendedEvents()
+            ->with(['venue', 'tags', 'entities', 'eventType'])
+            ->take(12)
+            ->get();
+
+        // Get recently added events
+        $recentEvents = Event::where('start_at', '>=', Carbon::now())
+            ->with(['venue', 'tags', 'entities', 'eventType'])
+            ->orderBy('created_at', 'desc')
+            ->take(8)
+            ->get();
+
+        // Check if user has followed content for showing recommendations section
+        $hasFollowedContent = $user->getTagsFollowing()->isNotEmpty()
+            || $user->getEntitiesFollowing()->isNotEmpty()
+            || $user->getSeriesFollowing()->isNotEmpty();
+
+        return view('pages.radar-tw', compact(
+            'attendingEvents',
+            'recommendedEvents',
+            'recentEvents',
+            'hasFollowedContent'
+        ));
+    }
+
+    public function allModules(): View
+    {
+        return view('pages.all-modules-tw');
+    }
+
+    public function popular(Request $request): View
+    {
+        $user = $request->user();
+
+        // Get popular events - upcoming events with most attendees
+        $popularEvents = Event::where('start_at', '>=', Carbon::now())
+            ->withCount('attendees')
+            ->with(['venue', 'tags', 'entities', 'eventType'])
+            ->orderBy('attendees_count', 'desc')
+            ->take(12)
+            ->get();
+
+        // Get popular entities - entities with most followers (using subquery since followers() returns Collection)
+        $popularEntities = Entity::whereHas('entityStatus', function ($query) {
+                $query->where('name', 'Active');
+            })
+            ->select('entities.*')
+            ->selectSub(
+                'SELECT COUNT(*) FROM follows WHERE follows.object_type = "entity" AND follows.object_id = entities.id',
+                'followers_count'
+            )
+            ->with(['entityType', 'roles', 'tags'])
+            ->orderBy('followers_count', 'desc')
+            ->take(12)
+            ->get();
+
+        // Get popular tags - tags with most events
+        $popularTags = Tag::withCount('events')
+            ->orderBy('events_count', 'desc')
+            ->take(24)
+            ->get();
+
+        return view('pages.popular-tw', compact(
+            'popularEvents',
+            'popularEntities',
+            'popularTags'
+        ));
     }
 
     public function home(
@@ -344,6 +424,11 @@ class PagesController extends Controller
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([PagesController::class, 'home']));
 
+        // default to today if no date provided
+        if (empty($date)) {
+            $date = Carbon::now('America/New_York')->format('Y-m-d');
+        }
+
         // use the window to get the last date and set the criteria between
         $next_day = Carbon::parse($date)->addDays(1);
         $next_day_window = Carbon::parse($date)->addDays($this->defaultWindow);
@@ -352,7 +437,7 @@ class PagesController extends Controller
 
         // handle the request if ajax
         if ($request->ajax()) {
-            return view('pages.4daysAjax')
+            return view('events.4daysAjax-tw')
                     ->with([
                         'date' => $date,
                         'window' => $this->defaultWindow,
@@ -364,7 +449,7 @@ class PagesController extends Controller
                     ->render();
         }
 
-        return view('pages.home')
+        return view('pages.home-tw')
                     ->with(
                         [
                             'date' => $date,
@@ -447,7 +532,7 @@ class PagesController extends Controller
             ->where('primary_link', 'like', '%facebook%')
             ->get();
 
-        return view('pages.tools', compact('events'));
+        return view('pages.tools-tw', compact('events'));
     }
 
     /**

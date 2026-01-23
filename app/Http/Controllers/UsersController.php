@@ -133,7 +133,7 @@ class UsersController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('users.index')
+        return view('users.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -197,7 +197,7 @@ class UsersController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('users.index')
+        return view('users.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -276,7 +276,7 @@ class UsersController extends Controller
      **/
     public function create(): View
     {
-        return view('users.create')->with($this->getFormOptions());
+        return view('users.create-tw')->with($this->getFormOptions());
     }
 
     public function setTabs(Request $request): void
@@ -313,7 +313,7 @@ class UsersController extends Controller
 
         $token = \Password::getRepository()->create($user);
 
-        return view('users.show', compact('user', 'tabs', 'token'));
+        return view('users.show-tw', compact('user', 'tabs', 'token'));
     }
 
     public function profile(User $user, Request $request): RedirectResponse
@@ -345,7 +345,7 @@ class UsersController extends Controller
     {
         $this->middleware('auth');
 
-        return view('users.edit', compact('user'))
+        return view('users.edit-tw', compact('user'))
             ->with($this->getFormOptions());
     }
 
@@ -374,7 +374,7 @@ class UsersController extends Controller
 
         flash('Success', 'The user has been updated');
 
-        return view('users.show', compact('user', 'tabs'));
+        return view('users.show-tw', compact('user', 'tabs'));
     }
 
     /**

@@ -114,7 +114,7 @@ class BlogsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('blogs.index')
+        return view('blogs.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -169,7 +169,7 @@ class BlogsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('blogs.index')
+        return view('blogs.index-tw')
             ->with(array_merge(
                 [
                     'limit' => $listResultSet->getLimit(),
@@ -194,7 +194,7 @@ class BlogsController extends Controller
         $blog->contentType = ContentType::find(ContentType::PLAIN_TEXT);
         $blog->visibility = Visibility::find(Visibility::VISIBILITY_PUBLIC);
 
-        return view('blogs.create', compact('blog'))
+        return view('blogs.create-tw', compact('blog'))
             ->with($this->getFormOptions());
     }
 
@@ -269,7 +269,7 @@ class BlogsController extends Controller
      */
     public function show(Blog $blog): View
     {
-        return view('blogs.show', compact('blog'));
+        return view('blogs.show-tw', compact('blog'));
     }
 
     /**
@@ -279,7 +279,7 @@ class BlogsController extends Controller
     {
         $this->middleware('auth');
 
-        return view('blogs.edit', compact('blog'))
+        return view('blogs.edit-tw', compact('blog'))
             ->with($this->getFormOptions());
     }
 
@@ -384,7 +384,8 @@ class BlogsController extends Controller
         ++$blog->likes;
         $blog->save();
 
-        Log::info('User '.$id.' is liking '.$blog->name);
+        // log the like
+        // Log::info('User '.$id.' is liking '.$blog->name);
 
         flash()->success('Success', 'You are now liking the selected blog.');
 

@@ -1,6 +1,5 @@
 @extends('minimal')
 
-
 @section('title', 'Event Feed')
 
 @section('content')

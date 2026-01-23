@@ -1,143 +1,170 @@
-@extends('app')
+@extends('layouts.app-tw')
 
 @section('title', 'Event Edit')
 
 @section('select2.include')
 <!-- Select2 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.1.1/dist/select2-bootstrap-5-theme.min.css" />
 @endsection
 
 @section('content')
 
-<h1 class="display-crumbs text-primary">Events. Edit	@include('events.crumbs', ['slug' => $event->slug ?: $event->id, 'event' => $event])</h1>
+<div class="w-full">
+	<!-- Header -->
+	<div class="mb-6">
+		<h1 class="text-3xl font-bold text-foreground mb-2">Edit Event</h1>
+		<div class="text-sm text-muted-foreground">
+			@include('events.crumbs', ['slug' => $event->slug ?: $event->id, 'event' => $event])
+		</div>
+	</div>
 
-<div id="action-menu" class="mb-2">
-	@include('events.edit.actions', ['event' => $event, 'user' => $user])
+	<!-- Actions Menu -->
+	<div class="mb-6">
+		@include('events.edit.actions', ['event' => $event, 'user' => $user])
+	</div>
+
+	<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+		<!-- Main Form Column -->
+		<div class="lg:col-span-2">
+			<div class="bg-card rounded-lg border border-border shadow-sm p-6">
+				<form method="POST" action="{{ route('events.update', $event->id) }}" class="space-y-6">
+					@csrf
+					@method('PATCH')
+
+					@include('events.form', ['action' => 'update'])
+				</form>
+
+				<!-- Delete Button -->
+				@if ($user && ($event->ownedBy($user) || $user->hasGroup('super_admin')))
+				<div class="mt-6 pt-6 border-t border-border">
+					<form method="POST" action="{{ route('events.destroy', $event->id) }}" onsubmit="return confirm('Are you sure you want to delete this event? This action cannot be undone.');">
+						@csrf
+						@method('DELETE')
+						<button type="submit" class="inline-flex items-center px-4 py-2 bg-destructive text-destructive-foreground rounded-md hover:bg-destructive/90 transition-colors">
+							<i class="bi bi-trash mr-2"></i>
+							Delete Event
+						</button>
+					</form>
+				</div>
+				@endif
+			</div>
+
+			<!-- Back Button -->
+			<div class="mt-6">
+				<x-ui.button variant="ghost" href="{{ route('events.show', $event->slug) }}">
+					<i class="bi bi-arrow-left mr-2"></i>
+					Back to Event
+				</x-ui.button>
+			</div>
+		</div>
+
+		<!-- Photos Sidebar -->
+		<div class="lg:col-span-1">
+			<!-- Photo Upload -->
+			@if ($user && $event->user && (Auth::user()->id === $event->user->id || $user->hasGroup('super_admin') || $event->canUserPostPhoto($user)))
+			<div class="rounded-lg border border-border bg-card shadow p-2 pt-2 space-y-4 mb-6">
+				<form action="/events/{{ $event->id }}/photos"
+					class="dropzone border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-600 transition-colors"
+					id="myDropzone"
+					method="POST">
+					<input type="hidden" name="_token" value="{{ csrf_token() }}">
+				</form>
+			</div>
+			@endif
+
+			<!-- Photos Section -->
+			@include('partials.photo-gallery-tw', ['event' => $event, 'lightboxGroup' => 'event-gallery'])
+		</div>
+	</div>
 </div>
 
-<div class="row">
-  <div class="col-md-8">
-	{!! Form::model($event, ['route' => ['events.update', $event->id], 'method' => 'PATCH', 'class' => 'form-container']) !!}
-
-		@include('events.form', ['action' => 'update'])
-
-	{!! Form::close() !!}
-
-	<P>{!! delete_form(['events.destroy', $event->id]) !!}</P>
-
-  </div>
-
-  <div class="col-md-4">
-    <div class="row">
-      @foreach ($event->photos->chunk(4) as $set)
-        @foreach ($set as $photo)
-          <div class="col-md-2">
-          <a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" data-lightbox="{{ Storage::disk('external')->url($photo->getStoragePath()) }}">
-            <img src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}" alt="{{ $event->name}}" class="mw-100"></a>
-          @if ($user && $event->user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser')))
-          @if ($signedIn || $user->id === Config::get('app.superuser'))
-            {!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $photo, 'DELETE', 'Delete the photo') !!}
-            @if ($photo->is_primary)
-            {!! link_form_bootstrap_icon('bi bi-star-fill text-primary icon', '/photos/'.$photo->id.'/unset-primary', 'POST', 'Primary Photo [Click to unset]') !!}
-            @else
-            {!! link_form_bootstrap_icon('bi bi-star text-info icon', '/photos/'.$photo->id.'/set-primary', 'POST', 'Set as primary photo') !!}
-            @endif
-          @endif
-          @endif
-          </div>
-        @endforeach
-      @endforeach
-
-      <div class="col mb-2">
-      @if ($user &&  $event->user && (Auth::user()->id === $event->user->id || $user->id === Config::get('app.superuser') || $event->canUserPostPhoto($user)) )
-      <form action="/events/{{ $event->id }}/photos" class="dropzone" id="myDropzone" method="POST">
-        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-      </form>
-      @endif
-      </div>
-
-      <div id="api-show"></div>
-    </div>
-  </div>
 @stop
 
 @section('scripts.footer')
+@if ($user && $event->user && (Auth::user()->id === $event->user->id || $user->hasGroup('super_admin') || $event->canUserPostPhoto($user)))
 <script>
-    window.Dropzone["autoDiscover"] = false;
+$(document).ready(function(){
+	// Wait for Dropzone to be available
+	var attempts = 0;
+	var maxAttempts = 50; // 5 seconds max
 
-    $(document).ready(function(){
+	function initDropzone() {
+		attempts++;
 
-      var myDropzone = new window.Dropzone('#myDropzone', {
-          dictDefaultMessage: "Drop a file here to add an event image. (Max size 5MB)"
-      });
+		if (typeof window.Dropzone === 'undefined') {
+			if (attempts >= maxAttempts) {
+				console.error('Dropzone failed to load after ' + (maxAttempts * 100) + 'ms');
+				return;
+			}
+			setTimeout(initDropzone, 100);
+			return;
+		}
 
-      $('div.dz-default.dz-message > span').show(); // Show message span
-      $('div.dz-default.dz-message').css({'color': '#000000','opacity':1, 'background-image': 'none'});
+		console.log('Dropzone loaded successfully!');
+		window.Dropzone.autoDiscover = false;
+		var myDropzone = new window.Dropzone('#myDropzone', {
+			dictDefaultMessage: "Drop a file here to add an event image. (Max size 5MB)"
+		});
 
-      myDropzone.options.addPhotosForm = {
-		maxFilesize: 5,
-		accept: ['.jpg','.png','.gif'],
-        dictDefaultMessage: "Drop a file here to add a picture",
-		init: function () {
+		$('div.dz-default.dz-message').css({'color': '#9ca3af', 'opacity': 1, 'background-image': 'none'});
+
+		myDropzone.options.addPhotosForm = {
+			maxFilesize: 5,
+			accept: ['.jpg','.png','.gif'],
+			dictDefaultMessage: "Drop a file here to add a picture",
+			init: function () {
 				myDropzone.on("success", function (file) {
-	                location.href = 'events/{{ $event->id }}';
-	                location.reload();
-	            });
-        myDropzone.on("successmultiple", function (file) {
-            location.href = 'events/{{ $event->id }}';
-            location.reload();
-        });
+					location.reload();
+				});
+				myDropzone.on("successmultiple", function (file) {
+					location.reload();
+				});
 				myDropzone.on("error", function (file, message) {
 					Swal.fire({
-						title: "Are you sure?",
+						title: "Error",
 						text: "Error: " + message.message,
-						type: "warning",
-						showCancelButton: true,
-						confirmButtonColor: "#DD6B55",
+						icon: "error",
+						confirmButtonColor: "#ef4444",
 						confirmButtonText: "Ok",
-				}).then(result => {
-					location.href = 'events/{{ $event->id }}';
-	                location.reload();
+					}).then(result => {
+						location.reload();
 					});
 				});
-				console.log('dropzone init called');
-	        },
-		success: console.log('Upload successful')
-	};
+			},
+			success: console.log('Upload successful')
+		};
 
-      myDropzone.options.addPhotosForm.init();
+		myDropzone.options.addPhotosForm.init();
+	}
 
-    });
+	// Start trying to initialize Dropzone
+	initDropzone();
+});
+</script>
+@endif
 
-    $('input.delete').on('click', function(e){
-        e.preventDefault();
-        const form = $(this).parents('form');
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You will not be able to recover this event!",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Yes, delete it!",
-            preConfirm: function() {
-                return new Promise(function(resolve) {
-                    setTimeout(function() {
-                        resolve()
-                    }, 2000)
-                })
-            }
-        }).then(result => {
-            if (result.value) {
-                // handle Confirm button click
-                // result.value will contain `true` or the input value
-                form.submit();
-            } else {
-                // handle dismissals
-                // result.dismiss can be 'cancel', 'overlay', 'esc' or 'timer'
-                console.log('Cancelled confirm')
-            }
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all flatpickr date/time pickers
+    const dateTimePickers = document.querySelectorAll('[data-flatpickr]');
+
+    dateTimePickers.forEach(function(picker) {
+        const enableTime = picker.getAttribute('data-enable-time') === 'true';
+        const dateFormat = picker.getAttribute('data-date-format') || 'Y-m-d H:i';
+        const altFormat = picker.getAttribute('data-alt-format') || 'F j, Y at h:i K';
+        const minDate = picker.getAttribute('data-min-date');
+        const maxDate = picker.getAttribute('data-max-date');
+
+        flatpickr(picker, {
+            enableTime: enableTime,
+            dateFormat: dateFormat,
+            altInput: true,
+            altFormat: altFormat,
+            time_24hr: false,
+            minDate: minDate,
+            maxDate: maxDate,
         });
-    })
+    });
+});
 </script>
 @stop

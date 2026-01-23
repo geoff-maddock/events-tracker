@@ -1,138 +1,152 @@
-@extends('app')
+@extends('layouts.app-tw')
 
 @section('title', 'Entity Edit')
 
 @section('select2.include')
 <!-- Select2 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.1.1/dist/select2-bootstrap-5-theme.min.css" />
 @endsection
 
 @section('content')
 
-<h1 class="display-crumbs text-primary">Entity . Edit
-	@include('events.crumbs', ['slug' => $entity->name ?: $entity->id])
-</h1>
-      <a href="{!! route('entities.show', ['entity' => $entity->slug]) !!}" class="btn btn-primary">Show Entity</a> <a href="{!! URL::route('entities.index') !!}" class="btn btn-info">Return to list</a>
-
-<div class="row">
-	<div class="col-md-6">
-
-	{!! Form::model($entity, ['route' => ['entities.update', $entity->slug], 'method' => 'PATCH', 'class' => 'form-container']) !!}
-
-		@include('entities.form', ['action' => 'update'])
-
-	{!! Form::close() !!}
-
-	{!! delete_form(['entities.destroy', $entity->slug, 'my-2']) !!}
+<div class="w-full">
+	<!-- Header -->
+	<div class="mb-6">
+		<h1 class="text-3xl font-bold text-foreground mb-2">Edit Entity</h1>
+		<div class="text-sm text-muted-foreground">
+			@include('entities.crumbs', ['slug' => $entity->slug ?: $entity->id])
+		</div>
 	</div>
 
-	<div class="col-md-6">
-		@if ($user && (Auth::user()->id === $entity->user ? $entity->user->id : null || $user->id === Config::get('app.superuser')))
-		<form action="/entities/{{ $entity->id }}/photos" class="dropzone" id="myDropzone" method="POST">
-			<input type="hidden" name="_token" value="{{ csrf_token() }}">
-		</form>
-		@endif
+	<!-- Actions Menu -->
+	<div class="mb-6 flex flex-wrap gap-2">
+		<x-ui.button variant="default" href="{{ route('entities.show', $entity->slug) }}">
+			<i class="bi bi-eye mr-2"></i>
+			Show Entity
+		</x-ui.button>
+		<x-ui.button variant="outline" href="{{ route('entities.index') }}">
+			<i class="bi bi-list mr-2"></i>
+			Return to list
+		</x-ui.button>
+	</div>
 
-		@foreach ($entity->photos->chunk(4) as $set)
-		<div class="row">
-		@foreach ($set as $photo)
-			<div class="col-md-2">
+	<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+		<!-- Main Form Column -->
+		<div class="lg:col-span-2">
+			<div class="bg-card rounded-lg border border-border shadow-sm p-6">
+				<form method="POST" action="{{ route('entities.update', $entity->slug) }}" class="space-y-6">
+					@csrf
+					@method('PATCH')
 
-			<a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" data-lightbox="{{ Storage::disk('external')->url($photo->getStoragePath()) }}">
-				<img src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}" alt="{{ $entity->name}}"  class="mw-100"></a>
-			@if ($user && (Auth::user()->id === $entity->user ? $entity->user->id : null || $user->id === Config::get('app.superuser')))
-				{!! link_form_bootstrap_icon('bi bi-trash-fill text-warning icon', $photo, 'DELETE', 'Delete the photo') !!}
-				@if ($photo->is_primary)
-				{!! link_form_bootstrap_icon('bi bi-star-fill text-primary icon', '/photos/'.$photo->id.'/unset-primary', 'POST', 'Primary Photo [Click to unset]') !!}
-				@else
-				{!! link_form_bootstrap_icon('bi bi-star text-info icon', '/photos/'.$photo->id.'/set-primary', 'POST', 'Set as primary photo') !!}
+					@include('entities.form', ['action' => 'update'])
+				</form>
+
+				<!-- Delete Button -->
+				@if ($user && ($entity->ownedBy($user) || $user->hasGroup('super_admin')))
+				<div class="mt-6 pt-6 border-t border-border">
+					<form method="POST" action="{{ route('entities.destroy', $entity->slug) }}" onsubmit="return confirm('Are you sure you want to delete this entity? This action cannot be undone.');">
+						@csrf
+						@method('DELETE')
+						<button type="submit" class="inline-flex items-center px-4 py-2 bg-destructive text-destructive-foreground rounded-md hover:bg-destructive/90 transition-colors">
+							<i class="bi bi-trash mr-2"></i>
+							Delete Entity
+						</button>
+					</form>
+				</div>
 				@endif
-			@endif
 			</div>
-		@endforeach
+
+			<!-- Back Button -->
+			<div class="mt-6">
+				<x-ui.button variant="ghost" href="{{ route('entities.show', $entity->slug) }}">
+					<i class="bi bi-arrow-left mr-2"></i>
+					Back to Entity
+				</x-ui.button>
+			</div>
 		</div>
-		@endforeach
+
+		<!-- Photos Sidebar -->
+		<div class="lg:col-span-1">
+			<!-- Photo Upload -->
+			@if ($user && ($entity->user && (Auth::user()->id === $entity->user->id) || $user->hasGroup('super_admin')))
+			<div class="rounded-lg border border-border bg-card shadow p-2 pt-2 space-y-4 mb-6">
+				<form action="/entities/{{ $entity->id }}/photos"
+					class="dropzone border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-600 transition-colors"
+					id="myDropzone"
+					method="POST">
+					<input type="hidden" name="_token" value="{{ csrf_token() }}">
+				</form>
+			</div>
+			@endif
+
+			<!-- Photos Section -->
+			@include('partials.photo-gallery-tw', ['entity' => $entity, 'lightboxGroup' => 'entity-gallery'])
+		</div>
 	</div>
 </div>
+
 @stop
 
 @section('scripts.footer')
-<script type="text/javascript">
-    window.Dropzone.autoDiscover = false;
+@if ($user && ($entity->user && (Auth::user()->id === $entity->user->id) || $user->hasGroup('super_admin')))
+<script>
+$(document).ready(function(){
+	// Wait for Dropzone to be available
+	var attempts = 0;
+	var maxAttempts = 50; // 5 seconds max
 
-    $(document).ready(function(){
+	function initDropzone() {
+		attempts++;
 
-        var myDropzone = new window.Dropzone('#myDropzone', {
-            dictDefaultMessage: "Drop a file here to add an entity profile picture. (Max size 5MB)"
-        });
+		if (typeof window.Dropzone === 'undefined') {
+			if (attempts >= maxAttempts) {
+				console.error('Dropzone failed to load after ' + (maxAttempts * 100) + 'ms');
+				return;
+			}
+			setTimeout(initDropzone, 100);
+			return;
+		}
 
-        $('div.dz-default.dz-message > span').show(); // Show message span
-        $('div.dz-default.dz-message').css({'color': '#000000', 'opacity':1, 'background-image': 'none'});
+		console.log('Dropzone loaded successfully!');
+		window.Dropzone.autoDiscover = false;
+		var myDropzone = new window.Dropzone('#myDropzone', {
+			dictDefaultMessage: "Drop a file here to add an entity profile picture. (Max size 5MB)"
+		});
 
-        myDropzone.options.addPhotosForm = {
-		maxFilesize: 5,
-		accept: ['.jpg','.png','.gif'],
-        dictDefaultMessage: "Drop a file here to add a picture",
-		init: function () {
+		$('div.dz-default.dz-message').css({'color': '#9ca3af', 'opacity': 1, 'background-image': 'none'});
+
+		myDropzone.options.addPhotosForm = {
+			maxFilesize: 5,
+			accept: ['.jpg','.png','.gif'],
+			dictDefaultMessage: "Drop a file here to add a picture",
+			init: function () {
 				myDropzone.on("success", function (file) {
-	                location.href = 'entities/{{ $entity->slug }}';
-	                location.reload();
-	            });
-	            myDropzone.on("successmultiple", function (file) {
-	                location.href = 'entities/{{ $entity->slug }}';
-	                location.reload();
-	            });
+					location.reload();
+				});
+				myDropzone.on("successmultiple", function (file) {
+					location.reload();
+				});
 				myDropzone.on("error", function (file, message) {
 					Swal.fire({
-						title: "Are you sure?",
+						title: "Error",
 						text: "Error: " + message.message,
-						type: "warning",
-						showCancelButton: true,
-						confirmButtonColor: "#DD6B55",
+						icon: "error",
+						confirmButtonColor: "#ef4444",
 						confirmButtonText: "Ok",
-				}).then(result => {
-	                location.href = 'entities/{{ $entity->slug }}';
-	                location.reload();
+					}).then(result => {
+						location.reload();
 					});
 				});
-				console.log('dropzone init called');
-	        },
-		success: console.log('Upload successful')
-	};
+			},
+			success: console.log('Upload successful')
+		};
 
-        myDropzone.options.addPhotosForm.init();
+		myDropzone.options.addPhotosForm.init();
+	}
 
-    });
-
-    $('input.delete').on('click', function(e){
-        e.preventDefault();
-        const form = $(this).parents('form');
-        Swal.fire({
-                title: "Are you sure?",
-                text: "You will not be able to recover this entity!",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, delete it!",
-				preConfirm: function() {
-					return new Promise(function(resolve) {
-						setTimeout(function() {
-							resolve()
-						}, 2000)
-					})
-				}
-            }).then(result => {
-            if (result.value) {
-                // handle Confirm button click
-                // result.value will contain `true` or the input value
-                form.submit();
-            } else {
-                // handle dismissals
-                // result.dismiss can be 'cancel', 'overlay', 'esc' or 'timer'
-                console.log('cancelled confirm')
-            }
-        });
-    })
+	// Start trying to initialize Dropzone
+	initDropzone();
+});
 </script>
+@endif
 @stop

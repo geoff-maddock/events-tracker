@@ -1,129 +1,191 @@
-<div class="row">
- 
-	<div class="form-group col-md-8 {{$errors->has('name') ? 'has-error' : '' }}">
-	{!! Form::label('name','Name') !!}
-	{!! Form::text('name', null, ['class' => 'form-control form-background', 'autofocus' => '']) !!}
-	{!! $errors->first('name','<span class="help-block">:message</span>') !!}
-	</div>
+{{-- Name --}}
+<x-ui.form-group
+    name="name"
+    label="Name"
+    :error="$errors->first('name')"
+    required>
+    <x-ui.input
+        type="text"
+        name="name"
+        id="name"
+        :value="old('name', $thread->name ?? '')"
+        placeholder="Thread title"
+        :hasError="$errors->has('name')"
+        autofocus />
+</x-ui.form-group>
 
+{{-- Description --}}
+<x-ui.form-group
+    name="description"
+    label="Description"
+    :error="$errors->first('description')">
+    <x-ui.textarea
+        name="description"
+        id="description"
+        :hasError="$errors->has('description')"
+        rows="2"
+        placeholder="Brief description">{{ old('description', $thread->description ?? '') }}</x-ui.textarea>
+</x-ui.form-group>
+
+{{-- Body --}}
+<x-ui.form-group
+    name="body"
+    label="Body"
+    :error="$errors->first('body')">
+    <x-ui.textarea
+        name="body"
+        id="body"
+        :hasError="$errors->has('body')"
+        rows="6"
+        placeholder="Full thread content">{{ old('body', $thread->body ?? '') }}</x-ui.textarea>
+</x-ui.form-group>
+
+{{-- Forum and Category --}}
+<div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 md:col-span-6">
+        <x-ui.form-group
+            name="forum_id"
+            label="Forum"
+            :error="$errors->first('forum_id')">
+            <x-ui.select
+                name="forum_id"
+                id="forum_id"
+                class="select2"
+                data-theme="tailwind"
+                data-placeholder="Select a forum"
+                :hasError="$errors->has('forum_id')">
+                <option value="">Select a forum</option>
+                @foreach($forumOptions as $id => $name)
+                    <option value="{{ $id }}" {{ old('forum_id', $thread->forum_id ?? '') == $id ? 'selected' : '' }}>
+                        {{ $name }}
+                    </option>
+                @endforeach
+            </x-ui.select>
+        </x-ui.form-group>
+    </div>
+
+    <div class="col-span-12 md:col-span-6">
+        <x-ui.form-group
+            name="thread_category_id"
+            label="Thread Category"
+            :error="$errors->first('thread_category_id')">
+            <x-ui.select
+                name="thread_category_id"
+                id="thread_category_id"
+                :hasError="$errors->has('thread_category_id')">
+                <option value="">Select category</option>
+                @foreach($threadCategoryOptions as $id => $name)
+                    <option value="{{ $id }}" {{ old('thread_category_id', $thread->thread_category_id ?? '') == $id ? 'selected' : '' }}>
+                        {{ $name }}
+                    </option>
+                @endforeach
+            </x-ui.select>
+        </x-ui.form-group>
+    </div>
 </div>
 
-<div class="row">
- 
-	<div class="form-group col-md-8">
-	{!! Form::label('description','Description') !!}
-	{!! Form::textarea('description', null, ['class' => 'form-control form-background', 'cols' => 40, 'rows' => 2]) !!}
-	{!! $errors->first('description','<span class="help-block">:message</span>') !!}
-	</div>
+{{-- Visibility --}}
+<x-ui.form-group
+    name="visibility_id"
+    label="Visibility"
+    :error="$errors->first('visibility_id')">
+    <x-ui.select
+        name="visibility_id"
+        id="visibility_id"
+        :hasError="$errors->has('visibility_id')">
+        @foreach($visibilityOptions as $id => $name)
+            <option value="{{ $id }}" {{ old('visibility_id', $thread->visibility_id ?? 3) == $id ? 'selected' : '' }}>
+                {{ $name }}
+            </option>
+        @endforeach
+    </x-ui.select>
+</x-ui.form-group>
+
+{{-- Related Entities --}}
+<x-ui.form-group
+    name="entity_list"
+    label="Related Entities"
+    :error="$errors->first('entities')"
+    helpText="Choose related artists, producers, DJs">
+    <x-ui.select
+        name="entity_list[]"
+        id="entity_list"
+        class="select2"
+        data-theme="tailwind"
+        data-placeholder="Choose a related artist, producer, dj"
+        data-tags="false"
+        multiple
+        :hasError="$errors->has('entities')">
+        @foreach($entityOptions as $id => $name)
+            <option value="{{ $id }}">{{ $name }}</option>
+        @endforeach
+    </x-ui.select>
+</x-ui.form-group>
+
+{{-- Related Event --}}
+<x-ui.form-group
+    name="event_id"
+    label="Event"
+    :error="$errors->first('event_id')">
+    <x-ui.select
+        name="event_id"
+        id="event_id"
+        class="select2"
+        data-theme="tailwind"
+        data-placeholder="Select an event"
+        :hasError="$errors->has('event_id')">
+        <option value="">Select an event</option>
+        @foreach($eventOptions as $id => $name)
+            <option value="{{ $id }}" {{ old('event_id', $thread->event_id ?? '') == $id ? 'selected' : '' }}>
+                {{ $name }}
+            </option>
+        @endforeach
+    </x-ui.select>
+</x-ui.form-group>
+
+{{-- Related Series --}}
+<x-ui.form-group
+    name="series_list"
+    label="Related Series"
+    :error="$errors->first('series')">
+    <x-ui.select
+        name="series_list[]"
+        id="series_list"
+        class="select2"
+        data-theme="tailwind"
+        data-placeholder="Choose a related series"
+        data-tags="true"
+        multiple
+        :hasError="$errors->has('series')">
+        @foreach($seriesOptions as $id => $name)
+            <option value="{{ $id }}">{{ $name }}</option>
+        @endforeach
+    </x-ui.select>
+</x-ui.form-group>
+
+{{-- Tags --}}
+<x-ui.form-group
+    name="tag_list"
+    label="Tags"
+    :error="$errors->first('tags')">
+    <x-ui.select
+        name="tag_list[]"
+        id="tag_list"
+        class="select2"
+        data-theme="tailwind"
+        data-placeholder="Choose a tag"
+        data-tags="true"
+        multiple
+        :hasError="$errors->has('tags')">
+        @foreach($tagOptions as $id => $name)
+            <option value="{{ $id }}">{{ $name }}</option>
+        @endforeach
+    </x-ui.select>
+</x-ui.form-group>
+
+{{-- Submit Button --}}
+<div class="flex items-center gap-4 pt-4">
+    <x-ui.button type="submit" variant="default">
+        {{ isset($action) && $action == 'update' ? 'Update Thread' : 'Add Thread' }}
+    </x-ui.button>
 </div>
-
-<div class="row">
- 
-	<div class="form-group col-md-8">
-	{!! Form::label('body','Body') !!}
-	{!! Form::textarea('body', null, ['class' => 'form-control form-background']) !!}
-	{!! $errors->first('body','<span class="help-block">:message</span>') !!}
-	</div>
-
-</div>
-
-<div class="row">
-
-	<div class="form-group col-md-2 {{$errors->has('forum_id') ? 'has-error' : '' }}">
-	{!! Form::label('forum_id','Forum:') !!}
-	{!! Form::select('forum_id', $forumOptions, (isset($thread->forum_id) ? $thread->forum_id : NULL), ['class' => 'form-select form-background select2', 'data-placeholder' => 'Select a forum']) !!}
-	{!! $errors->first('forum_id','<span class="help-block">:message</span>') !!}
-	</div>
-
-</div>
-
-<div class="row">
-
-	<div class="form-group col-md-2 {{$errors->has('thread_type_id') ? 'has-error' : '' }}">
-	{!! Form::label('thread_category_id','Thread category:') !!}
-	{!! Form::select('thread_category_id', $threadCategoryOptions, (isset($thread->thread_category_id) ? $thread->thread_category_id : NULL), ['class' => 'form-select form-background']) !!}
-	{!! $errors->first('thread_category_id','<span class="help-block">:message</span>') !!}
-	</div>
-
-</div>
-
-<div class="row">
-	<div class="form-group col-md-2 {{$errors->has('visibility_id') ? 'has-error' : '' }}">
-	{!! Form::label('visibility_id','Visibility:') !!}
-	{!! Form::select('visibility_id', $visibilityOptions, (isset($thread->visibility_id) ? $thread->visibility_id : 3), ['class' => 'form-background form-select']) !!}
-	{!! $errors->first('visibility_id','<span class="help-block">:message</span>') !!}
-	</div>
-</div>
-
-
-
-<div class="row">
-	<div class="form-group col-md-2">
-	{!! Form::label('entity_list','Related Entities:') !!}
-	{!! Form::select('entity_list[]', $entityOptions, null, [
-		'id' => 'entity_list',
-	 	'class' => 'form-select form-background select2',
-	 	'data-placeholder' =>'Choose a related artist, producer, dj',
-	 	'data-tags' => 'false',
-	  	'multiple'
-		  ])
-	!!}
-	{!! $errors->first('entities','<span class="help-block">:message</span>') !!}
-	</div>
-</div>
-
-<div class="row">
-
-	<div class="form-group col-md-2 {{$errors->has('event_id') ? 'has-error' : '' }}">
-	{!! Form::label('event_id','Event:') !!}
-	{!! Form::select('event_id', $eventOptions, (isset($thread->event_id) ? $thread->event_id : NULL), ['class' =>'form-control select2', 'data-placeholder' => 'Select an event']) !!}
-	{!! $errors->first('event_id','<span class="help-block">:message</span>') !!}
-	</div>
-
-</div>
-
-<div class="row">
-	<div class="form-group col-md-2">
-	{!! Form::label('series_list','Related Series:') !!}
-	{!! Form::select('series_list[]', $seriesOptions, null, ['id' => 'series_list', 'class' =>'form-control select2',
-	 'data-placeholder' => 'Choose a related series',
-	 'data-tags' => 'true',
-	  'multiple']) !!}
-	{!! $errors->first('series','<span class="help-block">:message</span>') !!}
-	</div>
-</div>
-
-<div class="row">
-	<div class="form-group col-md-2">
-	{!! Form::label('tag_list','Tags:') !!}
-	{!! Form::select('tag_list[]', $tagOptions, null, ['id' => 'tag_list', 'class' =>'form-control select2',
-	'data-placeholder' => 'Choose a tag',
-	'data-tags' =>'true',
-	 'multiple']) !!}
-	{!! $errors->first('tags','<span class="help-block">:message</span>') !!}
-	</div>
-</div>
-
-
-
-
-<div class="form-group">
-	{!! Form::submit(isset($action) && $action == 'update' ? 'Update Thread' : 'Add Thread', ['class' =>'btn btn-primary my-2']) !!}
-</div>
-
-
-@section('footer')
-	<script>
-        // javascript to enable the select2 for the tag and entity list
-        $('#tag_list').select2(
-            {
-                placeholder: 'Choose a tag',
-                tags: true,
-            });
-        $('#entity_list').select2(
-            {
-                placeholder: 'Choose a related artist, producer, dj',
-                tags: false,
-            });
-	</script>
-@endsection
