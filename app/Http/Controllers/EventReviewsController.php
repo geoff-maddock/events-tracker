@@ -93,7 +93,7 @@ class EventReviewsController extends Controller
      */
     public function show(Event $event, EventReview $eventReview): View
     {
-        return view('events.show', compact('event', 'eventReview'));
+        return view('events.show-tw', compact('event', 'eventReview'));
     }
 
     /**

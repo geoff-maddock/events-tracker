@@ -236,7 +236,12 @@
 			</div>
 		</div>
 
+		@php
+			$canEditEntity = $user && (Auth::user()->id == ($entity->user ? $entity->user?->id : null) || $user->hasGroup('super_admin'));
+		@endphp
+
 		<!-- Locations -->
+		@if ($canEditEntity || !$entity->locations->isEmpty())
 		<div class="rounded-lg border border-border bg-card shadow p-6">
 			<h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
 				<i class="bi bi-geo-alt"></i>
@@ -285,7 +290,7 @@
 					@endforeach
 				</div>
 			@endif
-			@if ($user && Auth::user()->id == ($entity->user ? $entity->user?->id : null))
+			@if ($canEditEntity)
 			<div class="mt-4">
 				<a href="{!! route('entities.locations.create', ['entity' => $entity->slug]) !!}"
 					class="inline-flex items-center px-3 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors text-sm">
@@ -295,8 +300,10 @@
 			</div>
 			@endif
 		</div>
+		@endif
 
 		<!-- Contacts -->
+		@if ($canEditEntity || !$entity->contacts->isEmpty())
 		<div class="rounded-lg border border-border bg-card shadow p-6">
 			<h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
 				<i class="bi bi-person"></i>
@@ -328,7 +335,7 @@
 					@endforeach
 				</div>
 			@endif
-			@if ($user && ((Auth::user()->id == ($entity->user ? $entity->user?->id : null)) || $user->hasGroup('super_admin')))
+			@if ($canEditEntity)
 			<div class="mt-4">
 				<a href="{!! route('entities.contacts.create', ['entity' => $entity->slug]) !!}"
 					class="inline-flex items-center px-3 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors text-sm">
@@ -338,8 +345,10 @@
 			</div>
 			@endif
 		</div>
+		@endif
 
 		<!-- Links -->
+		@if ($canEditEntity || !$entity->links->isEmpty())
 		<div class="rounded-lg border border-border bg-card shadow p-6">
 			<h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
 				<i class="bi bi-link-45deg"></i>
@@ -368,7 +377,7 @@
 					@endforeach
 				</div>
 			@endif
-			@if ($user && Auth::user()->id == ($entity->user ? $entity->user?->id : null))
+			@if ($canEditEntity)
 			<div class="mt-4">
 				<a href="{!! route('entities.links.create', ['entity' => $entity->slug]) !!}"
 					class="inline-flex items-center px-3 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors text-sm">
@@ -378,6 +387,7 @@
 			</div>
 			@endif
 		</div>
+		@endif
 
 		<!-- Photos Section -->
 		@include('partials.photo-gallery-tw', ['entity' => $entity, 'lightboxGroup' => 'entity-gallery'])
