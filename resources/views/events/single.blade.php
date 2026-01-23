@@ -6,7 +6,7 @@
 			data-lightbox="{{ $primary->path }}"
 			data-toggle="tooltip" data-placement="bottom"
 			title="Click to see enlarged image.">
-			<img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}" alt="{{ $event->name }}" class="thumbnail-image"  width="100" height="100">
+			<img src="{{ Storage::disk('external')->url($primary->getStoragePath()) }}" alt="{{ $event->name }}" class="thumbnail-image"  width="100" height="100">
 		</a>
 	</div>
 	@else

@@ -6,7 +6,7 @@
             data-title="{!! $event->start_at->format('l F jS Y') !!} <a href='/events/{{ $event->slug }}'>{{ $event->name }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ $event->venue ? $event->venue->name : '' }}</a>"
             data-lightbox="{{ $primary->path }}"
             class="block aspect-square w-full rounded-lg overflow-hidden border border-border group-hover:border-primary transition-colors">
-            <img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}" alt="{{ $event->name }}" class="w-full h-full object-cover">
+            <img src="{{ Storage::disk('external')->url($primary->getStoragePath()) }}" alt="{{ $event->name }}" class="w-full h-full object-cover">
         </a>
         @else
         <a href="/images/event-placeholder.png"
