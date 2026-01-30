@@ -8,7 +8,7 @@ Events Tracker is a CMS designed to be set up for a music or arts community to t
 Run an instance to create your own community where events, event series, entities, attendees and other objects can be added, tagged maintained and followed.  Keep the discussion going through a related discussion forum.  
 
 
-## FEATURES (v2025.01.01 - Stable Release)
+## FEATURES (v2026.02.01 - Stable Release)
 
 * Public filterable and sortable event listings, with built in views by time, type and topic.
 * Event creation, editing and following for registered users.
