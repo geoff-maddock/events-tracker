@@ -157,6 +157,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed Activities API endpoint missing show method (#1567)
 - Fixed min_age filter direction (#1527)
 - Fixed filtering query parameters with value 0 (#1527)
+## [2026.02.01] - 2026-02-01
+### Fixed
+- Fixed Instagram post failure email to use event slug instead of ID in URLs for better accessibility and identification ([#1648](https://github.com/geoff-maddock/events-tracker/pull/1648))
 
 
 ## [0.1.0] - 2017-08-03
@@ -175,5 +178,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 ### Removed
 
-[Unreleased]: https://github.com/geoff-maddock/events-tracker/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/geoff-maddock/events-tracker/compare/v2026.02.01...HEAD
+[2026.02.01]: https://github.com/geoff-maddock/events-tracker/compare/v2025.01.01...v2026.02.01
+[0.1.0]: https://github.com/geoff-maddock/events-tracker/releases/tag/v0.1.0
 
