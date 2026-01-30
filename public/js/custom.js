@@ -28,7 +28,7 @@ var App = (function () {
                     onSuccess: function (embeds) {
                         if (embeds && embeds.length > 0) {
                             $('#' + target).html(embeds.join(''));
-                            $('#' + target).removeClass('playlist-id');
+                            $('#' + target).removeClass('playlist-id hidden');
                         }
                     },
                     onError: function () {
@@ -40,10 +40,11 @@ var App = (function () {
                 $.ajax({
                     url: url
                 }).done(function (data) {
-                    // load results into the applicable position
-                    $('#' + target).html(data.Success);
-                    // remove the target class
-                    $('#' + target).removeClass('playlist-id');
+                    // load results into the applicable position if data exists
+                    if (data.Success && data.Success.trim() !== '') {
+                        $('#' + target).html(data.Success);
+                        $('#' + target).removeClass('playlist-id hidden');
+                    }
                 }).fail(function () {
                     console.log('No event embeds could be loaded')
                 });
