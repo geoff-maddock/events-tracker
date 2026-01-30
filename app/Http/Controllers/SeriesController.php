@@ -24,6 +24,7 @@ use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -969,9 +970,11 @@ class SeriesController extends Controller
             return back();
         }
 
-        // extract all the links from the event body and convert into embeds
+        // extract all the links from the series and convert into embeds
         $embedExtractor->setLayout("small");
-        $embeds = $embedExtractor->getEmbedsForSeries($series);
+        $allEmbeds = $embedExtractor->getEmbedsForSeries($series);
+        // Only use the first embed for minimal display
+        $embeds = !empty($allEmbeds) ? [$allEmbeds[0]] : [];
 
         // handle the request if ajax
         if ($request->ajax()) {
@@ -984,6 +987,40 @@ class SeriesController extends Controller
         }
         flash()->success('Error', 'You cannot load embeds directly');
 
+        return back();
+    }
+
+    /**
+     * Load the minimal embeds by slug (no auth required)
+     *
+     * @throws \Throwable
+     */
+    public function loadMinimalEmbedsBySlug(string $slug, OembedExtractor $embedExtractor, Request $request): JsonResponse | RedirectResponse
+    {
+        // load the series by slug
+        if (!$series = Series::where('slug', $slug)->first()) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['error' => 'Series not found'], 404);
+            }
+            flash()->error('Error', 'No such series');
+            return back();
+        }
+
+        // extract all the links from the series and convert into embeds
+        $embedExtractor->setLayout("small");
+        $allEmbeds = $embedExtractor->getEmbedsForSeries($series);
+        // Only return the first embed for minimal display
+        $embeds = !empty($allEmbeds) ? [$allEmbeds[0]] : [];
+
+        // return JSON response for AJAX/API calls
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'data' => $embeds,
+                'message' => 'Embeds loaded successfully'
+            ]);
+        }
+
+        flash()->success('Error', 'You cannot load embeds directly');
         return back();
     }
 

@@ -1507,7 +1507,9 @@ class EventsController extends Controller
         if ($request->ajax()) {
             // extract all the links from the event body and convert into embeds
             $embedExtractor->setLayout("small");
-            $embeds = $embedExtractor->getEmbedsForEvent($event, "small");
+            $allEmbeds = $embedExtractor->getEmbedsForEvent($event, "small");
+            // Only use the first embed for minimal display
+            $embeds = !empty($allEmbeds) ? [$allEmbeds[0]] : [];
             return [
                 'Message' => 'Added embeds to event page.',
                 'Success' => view('embeds.minimal-playlist')
@@ -1517,6 +1519,40 @@ class EventsController extends Controller
         }
         flash()->success('Error', 'You cannot load embeds directly');
 
+        return back();
+    }
+
+    /**
+     * Load the minimal embeds by slug (no auth required)
+     *
+     * @throws \Throwable
+     */
+    public function loadMinimalEmbedsBySlug(string $slug, OembedExtractor $embedExtractor, Request $request): JsonResponse | RedirectResponse
+    {
+        // load the event by slug
+        if (!$event = Event::with('entities.links')->where('slug', $slug)->first()) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['error' => 'Event not found'], 404);
+            }
+            flash()->error('Error', 'No such event');
+            return back();
+        }
+
+        // extract all the links from the event body and convert into embeds
+        $embedExtractor->setLayout("small");
+        $allEmbeds = $embedExtractor->getEmbedsForEvent($event, "small");
+        // Only return the first embed for minimal display
+        $embeds = !empty($allEmbeds) ? [$allEmbeds[0]] : [];
+
+        // return JSON response for AJAX/API calls
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'data' => $embeds,
+                'message' => 'Embeds loaded successfully'
+            ]);
+        }
+
+        flash()->success('Error', 'You cannot load embeds directly');
         return back();
     }
 

@@ -223,6 +223,7 @@ Route::get('events/week', 'EventsController@indexWeek')->name('events.week');
 Route::get('events/starting/{date}', 'EventsController@indexStarting');
 Route::get('events/{id}/load-embeds', 'EventsController@loadEmbeds');
 Route::get('events/{id}/load-minimal-embeds', 'EventsController@loadMinimalEmbeds');
+Route::get('events/{slug}/minimal-embeds', 'EventsController@loadMinimalEmbedsBySlug');
 Route::get('events/by-date/{year}/{month?}/{day?}', 'EventsController@indexByDate')
     ->where('year', '[1-9][0-9][0-9][0-9]')
     ->where('month', '(0?[1-9]|1[012])$')
@@ -463,6 +464,7 @@ Route::match(['get', 'post'], 'entities/following', 'EntitiesController@indexFol
 
 Route::get('entities/{id}/load-embeds', 'EntitiesController@loadEmbeds');
 Route::get('entities/{id}/load-minimal-embeds', 'EntitiesController@loadMinimalEmbeds');
+Route::get('entities/{slug}/minimal-embeds', 'EntitiesController@loadMinimalEmbedsBySlug');
 Route::post('entities/{id}/photos', 'EntitiesController@addPhoto');
 
 Route::get('entities/type/{type}', 'EntitiesController@indexTypes');
@@ -543,6 +545,7 @@ Route::resource('reviews', 'ReviewsController');
 // SERIES
 Route::get('series/{id}/load-embeds', 'SeriesController@loadEmbeds');
 Route::get('series/{id}/load-minimal-embeds', 'SeriesController@loadMinimalEmbeds');
+Route::get('series/{slug}/minimal-embeds', 'SeriesController@loadMinimalEmbedsBySlug');
 Route::match(['get', 'post'], 'series/following', 'SeriesController@indexFollowing')->name('series.following')->middleware('auth');
 
 Route::get('series/createOccurrence', [

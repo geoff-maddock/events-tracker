@@ -198,8 +198,8 @@ var EmbedLoader = (function () {
                 }
             }
 
-            // Build API URL
-            var apiUrl = '/api/' + resourceType + '/' + slug + '/' + endpoint;
+            // Build URL (use web route instead of API to avoid auth)
+            var apiUrl = '/' + resourceType + '/' + slug + '/' + endpoint;
 
             console.log('EmbedLoader: Fetching embeds from ' + apiUrl);
 
