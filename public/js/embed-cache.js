@@ -211,10 +211,13 @@ var EmbedLoader = (function () {
             }).done(function (response) {
                 var embedsData = response.data || [];
 
-                // Cache the fetched embeds
-                EmbedCache.set(resourceType, slug, embedsData, endpoint);
-
-                console.log('EmbedLoader: Loaded and cached ' + embedsData.length + ' embeds for ' + resourceType + '/' + slug);
+                // Only cache if there is data to cache
+                if (embedsData.length > 0) {
+                    EmbedCache.set(resourceType, slug, embedsData, endpoint);
+                    console.log('EmbedLoader: Loaded and cached ' + embedsData.length + ' embeds for ' + resourceType + '/' + slug);
+                } else {
+                    console.log('EmbedLoader: Loaded 0 embeds for ' + resourceType + '/' + slug + ' (not cached)');
+                }
 
                 onSuccess(embedsData);
                 resolve(embedsData);
