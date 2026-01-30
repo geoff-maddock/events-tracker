@@ -123,6 +123,8 @@ If applicable:
 
 ✅ **Fully Documented**: Comprehensive documentation for users and maintainers
 
+📝 **Note on CHANGELOG**: The project historically used GitHub Releases for detailed changelogs. The CHANGELOG.md file has been updated for v2026.02.01, but previous releases (like v2025.01.01) may only be documented in GitHub Releases. See: https://github.com/geoff-maddock/events-tracker/releases
+
 ## Reference Documentation
 
 - **Full Release Notes**: See `docs/release_v2026.02.01.md`

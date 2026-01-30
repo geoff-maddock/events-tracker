@@ -70,7 +70,7 @@ Use the following markdown for the GitHub release description:
 
 ---
 
-This release v2026.02.01 contains a bug fix that improves the Instagram integration notification system. This is a minor maintenance release focused on improving the developer and administrator experience when troubleshooting Instagram posting failures.
+Release v2026.02.01 contains a bug fix that improves the Instagram integration notification system. This is a minor maintenance release focused on improving the developer and administrator experience when troubleshooting Instagram posting failures.
 
 ## What's Changed
 
@@ -190,9 +190,14 @@ Alternatively, if needed:
 
 ### Version Numbering
 
-This project uses a date-based versioning scheme: `YYYY.MM.DD`
-- Format: `v2026.02.01` for February 1, 2026
-- For multiple releases on the same day, increment the last number: `v2026.02.01`, `v2026.02.02`, etc.
+This project uses a date-based versioning scheme: `YYYY.MM.NN`
+- Format: `vYYYY.MM.NN` where:
+  - `YYYY` = Year (e.g., 2026)
+  - `MM` = Month (e.g., 02 for February)
+  - `NN` = Sequential release number for that month (01, 02, 03, etc.)
+- Example: `v2026.02.01` is the first release in February 2026
+- For multiple releases in the same month: `v2026.02.01`, `v2026.02.02`, `v2026.02.03`, etc.
+- Releases are typically created on the first day of the month but can be created on any day
 
 ### Continuous Integration
 
