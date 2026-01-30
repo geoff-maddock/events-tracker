@@ -10,7 +10,7 @@ An automated Instagram post attempt failed for the following event:
 
 Please review the event and Instagram configuration to troubleshoot the issue.
 
-@component('mail::button', ['url' => config('app.url') . '/events/' . $eventId])
+@component('mail::button', ['url' => config('app.url') . 'events/' . $eventSlug])
 View Event
 @endcomponent
 
