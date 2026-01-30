@@ -13,6 +13,7 @@ class InstagramPostFailure extends Mailable
     use SerializesModels;
 
     public int $eventId;
+    public string $eventSlug;
     public string $eventName;
     public string $errorMessage;
     public string $site;
@@ -24,9 +25,10 @@ class InstagramPostFailure extends Mailable
      *
      * @return void
      */
-    public function __construct(int $eventId, string $eventName, string $errorMessage, string $site, string $admin_email, string $reply_email)
+    public function __construct(int $eventId, string $eventSlug, string $eventName, string $errorMessage, string $site, string $admin_email, string $reply_email)
     {
         $this->eventId = $eventId;
+        $this->eventSlug = $eventSlug;
         $this->eventName = $eventName;
         $this->errorMessage = $errorMessage;
         $this->site = $site;

@@ -242,6 +242,7 @@ class AutomateInstagramPosts extends Command
 
             Mail::send(new InstagramPostFailure(
                 $event->id,
+                $event->slug,
                 $event->name,
                 $errorMessage,
                 $site,
