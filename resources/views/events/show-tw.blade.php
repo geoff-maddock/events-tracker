@@ -68,10 +68,9 @@
 												<a href="{!! route('events.createSeries', ['id' => $event->id]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
 													<i class="bi bi-collection mr-2"></i>Create Series from Event
 												</a>
-												<a href="{!! route('events.instagramPost', ['id' => $event->id]) !!}" title="Click to post to instagram">
-													<i class="bi bi-instagram">Post to Instagram</i>
+												<a href="{!! route('events.instagramPost', ['id' => $event->id]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
+													<i class="bi bi-instagram mr-2"></i>Post to Instagram
 												</a>
-
 
 												<div class="border-t border-border my-1"></div>
 												<form action="{!! route('events.destroy', ['event' => $event->id]) !!}" method="POST" class="block">
