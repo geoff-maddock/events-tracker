@@ -185,20 +185,20 @@ Entities @include('entities.title-crumbs')
 	</div>
 
 	<!-- Sort Controls -->
-	<div class="flex items-center gap-4">
-		<form action="{{ url()->current() }}" method="GET" class="flex items-center gap-2">
-			<select name="limit" class="form-select-tw text-sm py-1 auto-submit">
+	<div class="flex items-center gap-4 w-full lg:w-auto">
+		<form action="{{ url()->current() }}" method="GET" class="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
+			<select name="limit" class="form-select-tw text-sm py-1.5 px-3 auto-submit flex-1 sm:flex-initial sm:max-w-[120px] min-w-0">
 				@foreach($limitOptions as $value => $label)
 				<option value="{{ $value }}" {{ ($limit ?? 10) == $value ? 'selected' : '' }}>{{ $label }}</option>
 				@endforeach
 			</select>
-			<span class="text-muted-foreground text-sm">Sort by:</span>
-			<select name="sort" class="form-select-tw text-sm py-1 auto-submit">
+			<span class="text-muted-foreground text-sm hidden sm:inline">Sort by:</span>
+			<select name="sort" class="form-select-tw text-sm py-1.5 px-3 auto-submit flex-1 sm:flex-initial sm:max-w-[160px] min-w-0">
 				@foreach($sortOptions as $value => $label)
 				<option value="{{ $value }}" {{ ($sort ?? 'entities.name') == $value ? 'selected' : '' }}>{{ $label }}</option>
 				@endforeach
 			</select>
-			<select name="direction" class="form-select-tw text-sm py-1 auto-submit">
+			<select name="direction" class="form-select-tw text-sm py-1.5 px-3 auto-submit flex-1 sm:flex-initial sm:max-w-[140px] min-w-0">
 				@foreach($directionOptions as $value => $label)
 				<option value="{{ $value }}" {{ ($direction ?? 'asc') == $value ? 'selected' : '' }}>{{ $label }}</option>
 				@endforeach
@@ -208,22 +208,10 @@ Entities @include('entities.title-crumbs')
 
 	<!-- Pagination (top) -->
 	@if(isset($entities) && $entities->hasPages())
-	<div class="flex items-center gap-1">
-		@if($entities->onFirstPage())
-		<span class="px-3 py-1 text-muted-foreground/50 cursor-not-allowed">&lt; Previous</span>
-		@else
-		<a href="{{ $entities->previousPageUrl() }}" class="px-3 py-1 text-muted-foreground hover:text-foreground">&lt; Previous</a>
-		@endif
-
+	<div class="flex items-center justify-center gap-1 flex-1">
 		@foreach($entities->getUrlRange(max(1, $entities->currentPage() - 2), min($entities->lastPage(), $entities->currentPage() + 2)) as $page => $url)
-		<a href="{{ $url }}" class="px-3 py-1 rounded {{ $page == $entities->currentPage() ? 'bg-accent text-foreground border border-primary' : 'text-muted-foreground hover:bg-card' }}">{{ $page }}</a>
+		<a href="{{ $url }}" class="px-2 sm:px-3 py-1 rounded {{ $page == $entities->currentPage() ? 'bg-accent text-foreground border border-primary' : 'text-muted-foreground hover:bg-card' }}">{{ $page }}</a>
 		@endforeach
-
-		@if($entities->hasMorePages())
-		<a href="{{ $entities->nextPageUrl() }}" class="px-3 py-1 text-muted-foreground hover:text-foreground">Next &gt;</a>
-		@else
-		<span class="px-3 py-1 text-muted-foreground/50 cursor-not-allowed">Next &gt;</span>
-		@endif
 	</div>
 	@endif
 </div>
