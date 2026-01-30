@@ -212,7 +212,7 @@ var EmbedLoader = (function () {
                 var embedsData = response.data || [];
 
                 // Only cache if there is data to cache
-                if (embedsData && embedsData.length > 0) {
+                if (embedsData.length > 0) {
                     EmbedCache.set(resourceType, slug, embedsData, endpoint);
                     console.log('EmbedLoader: Loaded and cached ' + embedsData.length + ' embeds for ' + resourceType + '/' + slug);
                 } else {
