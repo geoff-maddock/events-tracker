@@ -15,9 +15,11 @@
 		<a href="{!! URL::route('events.index') !!}" class="btn btn-info mt-2 mr-2">Show all events</a>
 		<a href="{!! URL::route('events.future') !!}" class="btn btn-info mt-2 mr-2">Show future events</a>
 		<a href="{!! URL::route('series.index') !!}" class="btn btn-info mt-2 mr-2">Show event series</a>
+		@auth
 		<a href="{!! URL::route('events.create') !!}" class="btn btn-primary mt-2 mr-2">Add an event</a>
 		<a href="{!! URL::route('series.create') !!}" class="btn btn-primary mt-2 mr-2">Add an event series</a>
 		<a href="{!! URL::route('entities.create') !!}" class="btn btn-primary mt-2 mr-2">Add an entity</a>
+		@endauth
 		@if (Auth::guest())
 			<a href="{!! URL::route('register') !!}" class="btn btn-success mt-2 mr-2">Register account</a>
 		@endif

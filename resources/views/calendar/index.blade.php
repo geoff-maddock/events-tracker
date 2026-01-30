@@ -6,8 +6,10 @@
 
 		<div id='calendar'></div>
 
+		@auth
 		<P><a href="{!! URL::route('events.create') !!}" class="btn btn-primary">Add an event</a></P>
 		<p><a href="{!! URL::route('series.create') !!}" class="btn btn-primary">Add an event series</a></p>
+		@endauth
 
 @stop
 
