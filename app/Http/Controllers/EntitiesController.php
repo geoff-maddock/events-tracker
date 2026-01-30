@@ -26,6 +26,7 @@ use Exception;
 use Storage;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -757,9 +758,11 @@ class EntitiesController extends Controller
             return back();
         }
 
-        // extract all the links from the event body and convert into embeds
+        // extract all the links from the entity and convert into embeds
         $embedExtractor->setLayout("small");
-        $embeds = $embedExtractor->getEmbedsForEntity($entity);
+        $allEmbeds = $embedExtractor->getEmbedsForEntity($entity);
+        // Only use the first embed for minimal display
+        $embeds = !empty($allEmbeds) ? [$allEmbeds[0]] : [];
 
         // handle the request if ajax
         if ($request->ajax()) {
@@ -772,6 +775,40 @@ class EntitiesController extends Controller
         }
         flash()->success('Error', 'You cannot load embeds directly');
 
+        return back();
+    }
+
+    /**
+     * Load the minimal embeds by slug (no auth required)
+     *
+     * @throws \Throwable
+     */
+    public function loadMinimalEmbedsBySlug(string $slug, OembedExtractor $embedExtractor, Request $request): JsonResponse | RedirectResponse
+    {
+        // load the entity by slug
+        if (!$entity = Entity::where('slug', $slug)->first()) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['error' => 'Entity not found'], 404);
+            }
+            flash()->error('Error', 'No such entity');
+            return back();
+        }
+
+        // extract all the links from the entity and convert into embeds
+        $embedExtractor->setLayout("small");
+        $allEmbeds = $embedExtractor->getEmbedsForEntity($entity);
+        // Only return the first embed for minimal display
+        $embeds = !empty($allEmbeds) ? [$allEmbeds[0]] : [];
+
+        // return JSON response for AJAX/API calls
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'data' => $embeds,
+                'message' => 'Embeds loaded successfully'
+            ]);
+        }
+
+        flash()->success('Error', 'You cannot load embeds directly');
         return back();
     }
 

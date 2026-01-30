@@ -98,6 +98,11 @@
 		</div>
 		@endunless
 
+		<!-- Embeds (lazy-loaded) -->
+		<div id="card-entity-minimal-playlist">
+		@include('embeds.minimal-playlist', ['entity' => $entity])
+		</div>
+
 		<!-- Action Icons Footer -->
 		<div class="pt-3 border-t border-border flex items-center justify-between">
 			<div class="flex items-center gap-3">
@@ -174,9 +179,6 @@
 			</div>
 		</div>
 
-		<!-- Embeds (lazy-loaded) -->
-		<div class="pt-3">
-			@include('embeds.minimal-playlist', ['entity' => $entity])
-		</div>
+
 	</div>
 </article>

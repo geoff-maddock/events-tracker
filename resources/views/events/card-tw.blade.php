@@ -147,6 +147,11 @@
         @endunless
     </div>
 
+    <!-- Embeds (lazy-loaded) -->
+    <div id="card-event-minimal-playlist">
+        @include('embeds.minimal-playlist', ['event' => $event, 'entity' => null])
+    </div>
+
     <!-- Card Footer Actions -->
     <div class="px-4 py-3 border-t border-border flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -195,8 +200,4 @@
         @endif
     </div>
 
-    <!-- Embeds (lazy-loaded) -->
-    <div id="card-event-minimal-playlist">
-        @include('embeds.minimal-playlist', ['event' => $event, 'entity' => null])
-    </div>
 </article>
