@@ -63,7 +63,7 @@ class SeriesController extends Controller
 
     public function __construct(SeriesFilters $filter)
     {
-        $this->middleware('verified', ['only' => ['create', 'edit', 'store', 'update']]);
+        $this->middleware('auth.verified', ['only' => ['create', 'edit', 'store', 'update']]);
         $this->filter = $filter;
 
         // prefix for session storage

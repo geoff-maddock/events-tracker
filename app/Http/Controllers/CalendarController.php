@@ -56,7 +56,7 @@ class CalendarController extends Controller
 
     public function __construct(EventFilters $filter)
     {
-        $this->middleware('verified', ['only' => ['create', 'edit', 'duplicate','store', 'update', 'indexAttending', 'calendarAttending']]);
+        $this->middleware('auth.verified', ['only' => ['create', 'edit', 'duplicate','store', 'update', 'indexAttending', 'calendarAttending']]);
         $this->filter = $filter;
 
         // prefix for session storage

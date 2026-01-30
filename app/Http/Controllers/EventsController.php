@@ -81,7 +81,7 @@ class EventsController extends Controller
 
     public function __construct(EventFilters $filter)
     {
-        $this->middleware('verified', ['only' => ['create', 'edit', 'duplicate','store', 'update', 'indexAttending']]);
+        $this->middleware('auth.verified', ['only' => ['create', 'edit', 'duplicate','store', 'update', 'indexAttending']]);
         $this->filter = $filter;
 
         // prefix for session storage

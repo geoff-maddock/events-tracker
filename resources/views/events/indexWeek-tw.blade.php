@@ -14,12 +14,14 @@
             <x-ui.button variant="secondary" href="{{ route('calendar') }}">
                 <i class="bi bi-calendar3 mr-2"></i>Calendar
             </x-ui.button>
+            @auth
             <x-ui.button variant="default" href="{{ route('events.create') }}">
                 <i class="bi bi-plus-lg mr-2"></i>Add Event
             </x-ui.button>
             <x-ui.button variant="default" href="{{ route('series.create') }}">
                 <i class="bi bi-plus-lg mr-2"></i>Add Series
             </x-ui.button>
+            @endauth
         </div>
     </div>
 

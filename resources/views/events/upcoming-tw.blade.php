@@ -92,6 +92,7 @@
 					</a>
 
 					<!-- Divider -->
+					@auth
 					<div class="w-px bg-border self-stretch hidden sm:block"></div>
 
 					<!-- Create Actions -->
@@ -112,6 +113,7 @@
 						<i class="bi bi-plus-lg"></i>
 						<span class="font-medium">Add Entity</span>
 					</a>
+					@endauth
 
 					@if (Auth::guest())
 					<a href="{!! URL::route('register') !!}"

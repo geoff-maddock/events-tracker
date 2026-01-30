@@ -37,6 +37,7 @@
                         <i class="bi bi-collection mr-2"></i>Show event series
                     </a>
                     
+                    @auth
                     <div class="w-full sm:w-auto border-l border-dark-border pl-3 ml-1 flex flex-wrap gap-3">
                         <a href="{!! URL::route('events.create') !!}" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors shadow-lg shadow-primary/20">
                             <i class="bi bi-plus-lg mr-2"></i>Add Event
@@ -48,6 +49,7 @@
                             <i class="bi bi-plus-lg mr-2"></i>Add Entity
                         </a>
                     </div>
+                    @endauth
 
                     @if (Auth::guest())
                         <a href="{!! URL::route('register') !!}" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors ml-auto">
