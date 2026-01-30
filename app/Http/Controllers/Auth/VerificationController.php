@@ -33,6 +33,11 @@ class VerificationController extends Controller
      */
     public function show(Request $request)
     {
+        // Guard against null user (should be prevented by middleware, but defensive)
+        if (!$request->user()) {
+            return redirect()->route('login');
+        }
+
         return $request->user()->hasVerifiedEmail()
             ? redirect($this->redirectPath())
             : view('auth.verify-tw');
@@ -52,7 +57,7 @@ class VerificationController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth')->only('resend');
+        $this->middleware('auth')->only(['show', 'resend']);
         $this->middleware('throttle:6,1')->only('verify', 'resend');
     }
 
