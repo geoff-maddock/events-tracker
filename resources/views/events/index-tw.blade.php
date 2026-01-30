@@ -49,7 +49,7 @@ Events @include('events.title-crumbs')
 </div>
 
 <!-- Filters Section -->
-<div class="mb-6">
+<div class="mb-6 flex flex-wrap items-start gap-2">
 	<button id="filters-toggle-btn" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
 		<i class="bi bi-funnel mr-2"></i>
 		<span id="filters-toggle-text">@if($hasFilter) Hide @else Show @endif Filters</span>
@@ -58,7 +58,7 @@ Events @include('events.title-crumbs')
 	
 	<!-- Active Filters Badges (shown when filters are hidden) -->
 	@if($hasFilter)
-	<div id="active-filters-badges" class="@if($hasFilter) hidden @endif inline-flex flex-wrap items-center gap-2 ml-4">
+	<div id="active-filters-badges" class="@if($hasFilter) hidden @endif flex flex-wrap items-center gap-2">
 		@if(!empty($filters['name']))
 		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
 			Name: {{ $filters['name'] }}
@@ -209,29 +209,29 @@ Events @include('events.title-crumbs')
 </div>
 
 <!-- Results Bar -->
-<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+<div class="flex flex-wrap items-center gap-4 mb-6">
 	<!-- Results Count -->
-	<div class="text-sm text-muted-foreground">
+	<div class="text-sm text-muted-foreground w-full sm:w-auto">
 		@if(isset($events))
 		Showing {{ $events->firstItem() ?? 0 }} to {{ $events->lastItem() ?? 0 }} of {{ $events->total() }} results
 		@endif
 	</div>
 
-	<!-- Sort Controls & Pagination -->
-	<div class="flex items-center gap-4">
-		<form action="{{ url()->current() }}" method="GET" class="flex items-center gap-2">
-			<select name="limit" class="form-select-tw text-sm py-1 auto-submit">
+	<!-- Sort Controls -->
+	<div class="flex items-center justify-center gap-4 w-full sm:flex-1">
+		<form action="{{ url()->current() }}" method="GET" class="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
+			<select name="limit" class="form-select-tw text-sm py-1.5 px-3 auto-submit flex-1 sm:flex-initial sm:max-w-[120px] min-w-0">
 				@foreach($limitOptions as $value => $label)
 				<option value="{{ $value }}" {{ ($limit ?? 10) == $value ? 'selected' : '' }}>{{ $label }}</option>
 				@endforeach
 			</select>
-			<span class="text-muted-foreground text-sm">Sort by:</span>
-			<select name="sort" class="form-select-tw text-sm py-1 auto-submit">
+			<span class="text-muted-foreground text-sm hidden sm:inline">Sort by:</span>
+			<select name="sort" class="form-select-tw text-sm py-1.5 px-3 auto-submit flex-1 sm:flex-initial sm:max-w-[160px] min-w-0">
 				@foreach($sortOptions as $value => $label)
 				<option value="{{ $value }}" {{ ($sort ?? 'events.start_at') == $value ? 'selected' : '' }}>{{ $label }}</option>
 				@endforeach
 			</select>
-			<select name="direction" class="form-select-tw text-sm py-1 auto-submit">
+			<select name="direction" class="form-select-tw text-sm py-1.5 px-3 auto-submit flex-1 sm:flex-initial sm:max-w-[140px] min-w-0">
 				@foreach($directionOptions as $value => $label)
 				<option value="{{ $value }}" {{ ($direction ?? 'desc') == $value ? 'selected' : '' }}>{{ $label }}</option>
 				@endforeach
@@ -241,22 +241,10 @@ Events @include('events.title-crumbs')
 
 	<!-- Pagination (top) -->
 	@if(isset($events) && $events->hasPages())
-	<div class="flex items-center gap-1">
-		@if($events->onFirstPage())
-		<span class="px-3 py-1 text-muted-foreground/50 cursor-not-allowed">&lt; Previous</span>
-		@else
-		<a href="{{ $events->previousPageUrl() }}" class="px-3 py-1 text-muted-foreground hover:text-foreground">&lt; Previous</a>
-		@endif
-
+	<div class="flex items-center justify-center sm:justify-end gap-1 w-full sm:w-auto">
 		@foreach($events->getUrlRange(max(1, $events->currentPage() - 2), min($events->lastPage(), $events->currentPage() + 2)) as $page => $url)
-		<a href="{{ $url }}" class="px-3 py-1 rounded {{ $page == $events->currentPage() ? 'bg-accent text-foreground border border-primary' : 'text-muted-foreground hover:bg-card' }}">{{ $page }}</a>
+		<a href="{{ $url }}" class="px-2 sm:px-3 py-1 rounded {{ $page == $events->currentPage() ? 'bg-accent text-foreground border border-primary' : 'text-muted-foreground hover:bg-card' }}">{{ $page }}</a>
 		@endforeach
-
-		@if($events->hasMorePages())
-		<a href="{{ $events->nextPageUrl() }}" class="px-3 py-1 text-muted-foreground hover:text-foreground">Next &gt;</a>
-		@else
-		<span class="px-3 py-1 text-muted-foreground/50 cursor-not-allowed">Next &gt;</span>
-		@endif
 	</div>
 	@endif
 </div>
