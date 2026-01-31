@@ -45,7 +45,14 @@
                     <i class="bi bi-grid text-sm"></i>
                     <span>Event Grid</span>
                 </a>
+                 @auth
+                <a href="{{ url('/events/attending') }}" class="nav-item-tw text-sm {{ Request::is('events/attending') ? 'nav-item-active-tw' : '' }}">
+                    <i class="bi bi-calendar-check text-sm"></i>
+                    <span>Your Events</span>
+                </a>
+                @endauth
             </div>
+
         </div>
 
         <!-- Calendar -->
@@ -221,6 +228,12 @@
                     <i class="bi bi-grid text-sm"></i>
                     <span>Event Grid</span>
                 </a>
+                @auth
+                <a href="{{ url('/events/attending') }}" class="nav-item-tw text-sm {{ Request::is('events/attending') ? 'nav-item-active-tw' : '' }}">
+                    <i class="bi bi-calendar-check text-sm"></i>
+                    <span>Your Events</span>
+                </a>
+                @endauth
             </div>
         </div>
 
