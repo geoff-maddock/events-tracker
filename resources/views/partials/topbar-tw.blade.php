@@ -1,5 +1,5 @@
 <!-- Mobile Top Bar -->
-<header class="md:hidden border-b border-border bg-card">
+<header class="lg:hidden border-b border-border bg-card">
     <div class="flex items-center justify-between px-4 py-3 gap-3">
         <!-- Hamburger Menu -->
         <button id="mobile-menu-toggle-top" class="text-foreground hover:text-muted-foreground transition-colors flex-shrink-0">
