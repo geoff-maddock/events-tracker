@@ -1,5 +1,5 @@
 <!-- Sidebar Navigation -->
-<aside class="sidebar hidden md:flex md:flex-col md:w-64 min-h-screen bg-card border-r border-border">
+<aside class="sidebar hidden lg:flex lg:flex-col lg:w-64 min-h-screen bg-card border-r border-border">
     <!-- Logo/Brand -->
     <div class="p-4 border-b border-border text-center">
         <a href="{{ url('/') }}" class="flex items-center justify-center gap-2">
@@ -191,10 +191,10 @@
 
 
 <!-- Mobile Sidebar Overlay -->
-<div id="mobile-sidebar-overlay" class="hidden md:hidden fixed inset-0 bg-black/50 z-40" onclick="closeMobileSidebar()"></div>
+<div id="mobile-sidebar-overlay" class="hidden lg:hidden fixed inset-0 bg-black/50 z-40" onclick="closeMobileSidebar()"></div>
 
 <!-- Mobile Sidebar -->
-<aside id="mobile-sidebar" class="sidebar fixed inset-y-0 left-0 z-50 w-64 transform -translate-x-full transition-transform duration-200 ease-in-out md:hidden bg-card border-r border-border flex flex-col">
+<aside id="mobile-sidebar" class="sidebar fixed inset-y-0 left-0 z-50 w-64 transform -translate-x-full transition-transform duration-200 ease-in-out lg:hidden bg-card border-r border-border flex flex-col">
     <!-- Close button -->
     <button onclick="closeMobileSidebar()" class="absolute top-4 right-4 text-muted-foreground hover:text-foreground">
         <i class="bi bi-x-lg text-xl"></i>
