@@ -66,7 +66,7 @@
 		<div id="search-entities" class="p-4">
 			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
 				@foreach($entities as $entity)
-				@include('entities.card-tw', ['entity' => $entity])
+				@include('entities.card-tw', ['entity' => $entity, 'search' => $search])
 				@endforeach
 			</div>
 			<div class="mt-4">
