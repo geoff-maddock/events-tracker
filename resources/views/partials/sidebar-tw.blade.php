@@ -1,11 +1,11 @@
 <!-- Sidebar Navigation -->
 <aside class="sidebar hidden md:flex md:flex-col md:w-64 min-h-screen bg-card border-r border-border">
     <!-- Logo/Brand -->
-    <div class="p-4 border-b border-border">
-        <a href="{{ url('/') }}" class="flex items-center gap-2">
+    <div class="p-4 border-b border-border text-center">
+        <a href="{{ url('/') }}" class="flex items-center justify-center gap-2">
             <span class="text-xl font-bold text-foreground">{{ config('app.app_name') }}</span>
         </a>
-        <span class="text-xs text-muted-foreground">{{ config('app.app_tagline', 'pittsburgh events guide') }}</span>
+        <span class="text-xs text-muted-foreground block">{{ config('app.app_tagline', 'pittsburgh events guide') }}</span>
     </div>
 
     <!-- Search -->
