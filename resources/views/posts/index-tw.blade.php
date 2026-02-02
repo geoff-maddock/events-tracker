@@ -136,6 +136,13 @@
 		</div>
 	</div>
 
+	<!-- Pagination (top) -->
+	@if (isset($posts) && $posts->hasPages())
+	<div class="mb-4">
+		{!! $posts->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links('vendor.pagination.tailwind') !!}
+	</div>
+	@endif
+
 	<!-- Posts Table -->
 	@if (count($posts) > 0)
 		<div class="rounded-lg border bg-card shadow overflow-hidden">
@@ -237,10 +244,12 @@
 				</table>
 			</div>
 
-			<!-- Pagination -->
+			<!-- Pagination (bottom) -->
+			@if ($posts->hasPages())
 			<div class="px-4 py-3 border-t border-border">
-				{!! $posts->onEachSide(2)->links('vendor.pagination.tailwind') !!}
+				{!! $posts->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links('vendor.pagination.tailwind') !!}
 			</div>
+			@endif
 		</div>
 	@else
 		<div class="text-center py-12 bg-card rounded-lg border border-border">

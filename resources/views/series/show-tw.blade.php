@@ -328,6 +328,13 @@
 	</h3>
 	
 	@if (isset($events) && count($events) > 0)
+		<!-- Pagination (top) -->
+		@if ($events->hasPages())
+		<div class="flex justify-center mb-6">
+			{!! $events->onEachSide(2)->links('vendor.pagination.tailwind') !!}
+		</div>
+		@endif
+
 		<!-- Events Grid -->
 		<div class="grid grid-cols-1 md:grid-cols-2 event-3col:grid-cols-3 event-4col:grid-cols-4 gap-6 mb-6">
 			@foreach ($events as $event)
@@ -335,10 +342,10 @@
 			@endforeach
 		</div>
 		
-		<!-- Pagination -->
+		<!-- Pagination (bottom) -->
 		@if ($events->hasPages())
 		<div class="flex justify-center">
-			{!! $events->links('vendor.pagination.tailwind') !!}
+			{!! $events->onEachSide(2)->links('vendor.pagination.tailwind') !!}
 		</div>
 		@endif
 	@else
