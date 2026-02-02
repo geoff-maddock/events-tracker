@@ -205,7 +205,7 @@
 				if ($showDateBar) {
 					$lastDate = $currentDate;
 				}
-				$isWeekend = $event->start_at->isWeekend();
+				$isWeekend = $event->start_at->isWeekend() || $event->start_at->isFriday();
 				$dateLabel = $event->start_at->format('D, M j, Y');
 			@endphp
 			@include('events.cell-compact-tw', [
