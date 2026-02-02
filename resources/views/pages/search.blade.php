@@ -21,13 +21,6 @@
 	</a>
 	@endif
 	
-	@if (isset($tags) && $tagsCount > 0)
-	<a href="#tags-results" class="inline-flex items-center px-4 py-2 bg-dark-card border-2 border-primary text-white rounded-lg hover:bg-dark-border transition-colors text-sm font-medium">
-		<i class="bi bi-tags mr-2"></i>
-		Tags ({{ $tagsCount }})
-	</a>
-	@endif
-	
 	@if (isset($events) && count($events) > 0)
 	<a href="#events-results" class="inline-flex items-center px-4 py-2 bg-dark-card border-2 border-primary text-white rounded-lg hover:bg-dark-border transition-colors text-sm font-medium">
 		<i class="bi bi-calendar-event mr-2"></i>
@@ -42,6 +35,13 @@
 	</a>
 	@endif
 	
+	@if (isset($tags) && $tagsCount > 0)
+	<a href="#tags-results" class="inline-flex items-center px-4 py-2 bg-dark-card border-2 border-primary text-white rounded-lg hover:bg-dark-border transition-colors text-sm font-medium">
+		<i class="bi bi-tags mr-2"></i>
+		Tags ({{ $tagsCount }})
+	</a>
+	@endif
+
 	@if (isset($threads) && count($threads) > 0)
 	<a href="#threads-results" class="inline-flex items-center px-4 py-2 bg-dark-card border-2 border-primary text-white rounded-lg hover:bg-dark-border transition-colors text-sm font-medium">
 		<i class="bi bi-chat mr-2"></i>
@@ -78,31 +78,6 @@
 	<div class="card-tw p-6 text-center">
 		<i class="bi bi-people text-4xl text-gray-600 mb-3"></i>
 		<p class="text-gray-400">No matching entities found.</p>
-	</div>
-	@endif
-
-	<!-- Tags Results -->
-	@if (isset($tags) && $tagsCount > 0)
-	<div id="tags-results" class="card-tw scroll-mt-6">
-		<div class="p-4 border-b border-dark-border flex items-center justify-between">
-			<div class="flex items-center gap-3">
-				<h2 class="text-xl font-semibold text-white">Tags</h2>
-				<span class="badge-tw bg-dark-card text-white">{{ $tagsCount }}</span>
-			</div>
-			<button class="text-gray-400 hover:text-white" onclick="toggleSection('search-tags')">
-				<i class="bi bi-eye-fill"></i>
-			</button>
-		</div>
-		<div id="search-tags" class="p-4">
-			<div class="flex flex-wrap gap-2">
-				@foreach($tags as $tag)
-					@include('tags.grid-card-tw')
-				@endforeach
-			</div>
-			<div class="mt-4">
-				{!! $tags->appends(['keyword' => $search])->links('vendor.pagination.tailwind') !!}
-			</div>
-		</div>
 	</div>
 	@endif
 
@@ -158,6 +133,31 @@
 			</div>
 			<div class="mt-4">
 				{!! $series->appends(['keyword' => $search])->links('vendor.pagination.tailwind') !!}
+			</div>
+		</div>
+	</div>
+	@endif
+
+		<!-- Tags Results -->
+	@if (isset($tags) && $tagsCount > 0)
+	<div id="tags-results" class="card-tw scroll-mt-6">
+		<div class="p-4 border-b border-dark-border flex items-center justify-between">
+			<div class="flex items-center gap-3">
+				<h2 class="text-xl font-semibold text-white">Tags</h2>
+				<span class="badge-tw bg-dark-card text-white">{{ $tagsCount }}</span>
+			</div>
+			<button class="text-gray-400 hover:text-white" onclick="toggleSection('search-tags')">
+				<i class="bi bi-eye-fill"></i>
+			</button>
+		</div>
+		<div id="search-tags" class="p-4">
+			<div class="flex flex-wrap gap-2">
+				@foreach($tags as $tag)
+					@include('tags.grid-card-tw')
+				@endforeach
+			</div>
+			<div class="mt-4">
+				{!! $tags->appends(['keyword' => $search])->links('vendor.pagination.tailwind') !!}
 			</div>
 		</div>
 	</div>
