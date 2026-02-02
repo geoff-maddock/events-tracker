@@ -191,50 +191,11 @@
 	</div>
 </div>
 
-<!-- Results Bar -->
-<div class="flex flex-wrap items-center gap-4 mb-6">
-	<!-- Results Count -->
-	<div class="text-sm text-muted-foreground w-full sm:w-auto">>
-		@if(isset($events))
-		Showing {{ $events->firstItem() ?? 0 }} to {{ $events->lastItem() ?? 0 }} of {{ $events->total() }} results
-		@endif
-	</div>
 
-	<!-- Sort Controls & Pagination -->
-	<div class="flex items-center justify-center gap-4 w-full sm:flex-1">
-		<form action="{{ url()->current() }}" method="GET" class="flex items-center gap-2">
-			<select name="limit" class="form-select-tw text-sm py-1 auto-submit">
-				@foreach($limitOptions as $value => $label)
-				<option value="{{ $value }}" {{ ($limit ?? 24) == $value ? 'selected' : '' }}>{{ $label }}</option>
-				@endforeach
-			</select>
-			<span class="text-muted-foreground text-sm">Sort by:</span>
-			<select name="sort" class="form-select-tw text-sm py-1 auto-submit">
-				@foreach($sortOptions as $value => $label)
-				<option value="{{ $value }}" {{ ($sort ?? 'events.start_at') == $value ? 'selected' : '' }}>{{ $label }}</option>
-				@endforeach
-			</select>
-			<select name="direction" class="form-select-tw text-sm py-1 auto-submit">
-				@foreach($directionOptions as $value => $label)
-				<option value="{{ $value }}" {{ ($direction ?? 'desc') == $value ? 'selected' : '' }}>{{ $label }}</option>
-				@endforeach
-			</select>
-		</form>
-	</div>
-
-	
-		<!-- Pagination -->
-		@if(isset($events) && $events->hasPages())
-		<div class="flex items-center justify-center sm:justify-end gap-1 w-full sm:w-auto">
-			@foreach($events->getUrlRange(max(1, $events->currentPage() - 2), min($events->lastPage(), $events->currentPage() + 2)) as $page => $url)
-			<a href="{{ $url }}" class="px-2 sm:px-3 py-1 rounded {{ $page == $events->currentPage() ? 'bg-accent text-foreground border border-primary' : 'text-muted-foreground hover:bg-card' }}">{{ $page }}</a>
-			@endforeach
-		</div>
-		@endif
-</div>
 
 <!-- Grid Content -->
 @if (isset($events) && count($events) > 0)
+@include('events.index-sort-pagination')
 	<div class="grid gap-4 w-full" style="grid-template-columns: repeat(auto-fill, minmax(max(120px, calc((100% - 15 * 1rem) / 16)), 1fr));">
 		@php $lastDate = ''; @endphp
 		@foreach ($events as $event)
@@ -255,6 +216,9 @@
 			])
 		@endforeach
 	</div>
+
+	<br>
+@include('events.index-sort-pagination')
 @else
 	<div class="text-center py-12 bg-card rounded-lg border border-border">
 		<i class="bi bi-calendar-x text-4xl text-muted-foreground/50 mb-3 block"></i>

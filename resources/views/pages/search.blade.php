@@ -96,9 +96,7 @@
 		<div id="search-tags" class="p-4">
 			<div class="flex flex-wrap gap-2">
 				@foreach($tags as $tag)
-				<a href="/tags/{{ $tag->slug }}" class="badge-tw badge-primary-tw hover:bg-primary/30">
-					{{ $tag->name }}
-				</a>
+					@include('tags.grid-card-tw')
 				@endforeach
 			</div>
 			<div class="mt-4">

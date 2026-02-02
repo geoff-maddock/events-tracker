@@ -148,6 +148,13 @@
 		</div>
 	</div>
 
+	<!-- Pagination (top) -->
+	@if (isset($photos) && $photos->hasPages())
+	<div class="mb-4">
+		{!! $photos->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links('vendor.pagination.tailwind') !!}
+	</div>
+	@endif
+
 	<!-- Grid Content -->
 	@if (isset($photos) && count($photos) > 0)
 		<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -156,10 +163,12 @@
 			@endforeach
 		</div>
 
-		<!-- Pagination -->
+		<!-- Pagination (bottom) -->
+		@if ($photos->hasPages())
 		<div class="flex justify-center mt-6">
-			{!! $photos->links('vendor.pagination.tailwind') !!}
+			{!! $photos->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links('vendor.pagination.tailwind') !!}
 		</div>
+		@endif
 	@else
 		<div class="text-center py-12 bg-card rounded-lg border border-border">
 			<i class="bi bi-image text-4xl text-muted-foreground/50 mb-3 block"></i>

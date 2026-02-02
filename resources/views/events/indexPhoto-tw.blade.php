@@ -142,6 +142,13 @@
         </div>
     </div>
 
+    <!-- Pagination (top) -->
+    @if (isset($events) && $events->hasPages())
+    <div class="mb-4">
+        {!! $events->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links('vendor.pagination.tailwind') !!}
+    </div>
+    @endif
+
     <!-- Photo Grid -->
     @if (isset($events) && count($events) > 0)
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
@@ -150,9 +157,12 @@
             @endforeach
         </div>
 
+        <!-- Pagination (bottom) -->
+        @if ($events->hasPages())
         <div class="mt-6">
-            {!! $events->links('vendor.pagination.tailwind') !!}
+            {!! $events->appends(['sort' => $sort, 'direction' => $direction, 'limit' => $limit])->onEachSide(2)->links('vendor.pagination.tailwind') !!}
         </div>
+        @endif
     @else
         <div class="card-tw p-8 text-center text-muted-foreground">
             <i class="bi bi-image text-4xl mb-3"></i>

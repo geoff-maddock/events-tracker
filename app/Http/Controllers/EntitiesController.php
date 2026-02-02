@@ -200,7 +200,8 @@ class EntitiesController extends Controller
             ->join('follows', 'entities.id', '=', 'follows.object_id')
             ->where('follows.object_type', '=', 'entity')
             ->where('follows.user_id', '=', $this->user->id)
-            ->select('entities.*');
+            ->select('entities.*')
+                        ->withCount('follows');
 
         $listEntityResultBuilder
             ->setFilter($this->filter)

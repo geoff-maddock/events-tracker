@@ -156,7 +156,8 @@ class TagsController extends Controller
 
         $hasFilter = !empty($search);
 
-        return view('tags.index-tw', compact('series', 'entities', 'events', 'tag', 'tags', 'userTags', 'latestTags', 'search', 'hasFilter'));
+        return view('tags.index-tw')
+                ->with(compact('series', 'entities', 'events', 'tag', 'tags', 'userTags', 'latestTags', 'search', 'hasFilter'));
     }
 
     /**
