@@ -125,7 +125,13 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
 
     public function setPasswordAttribute($value)
     {
-        $this->attributes['password'] = bcrypt($value);
+        // Check if the value is already hashed (bcrypt hashes start with $2y$)
+        // This prevents double-hashing when password reset uses Hash::make()
+        if (preg_match('/^\$2y\$/', $value)) {
+            $this->attributes['password'] = $value;
+        } else {
+            $this->attributes['password'] = bcrypt($value);
+        }
     }
 
     /**
