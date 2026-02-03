@@ -6,7 +6,7 @@
 		<a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
 			data-title="{{ $entity->name }}"
 			data-lightbox="{{ $primary->path }}">
-			<img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}"
+			<img src="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
 				alt="{{ $entity->name }}"
 				class="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300">
 		</a>
