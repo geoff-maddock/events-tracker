@@ -275,7 +275,7 @@
                                         </li>
                                     </ul>
                                     <div class="card-body">
-                                        @include('entities.list', ['entities' => $user->getEntitiesFollowing()->take(20)])
+                                        @include('entities.list-tw', ['entities' => $user->getEntitiesFollowing()->take(20)])
                                         <div class="d-block" id="following-entities">
                                             <div class="col-sm-12">
                                                 <ul class="list-style-none"  class="mt-0">
