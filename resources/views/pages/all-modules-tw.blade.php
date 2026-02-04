@@ -29,6 +29,7 @@
 					['name' => 'Popular', 'url' => '/popular', 'icon' => 'bi-graph-up-arrow', 'description' => 'Popular events, entities, and tags'],
 					['name' => 'Posts', 'url' => '/posts', 'icon' => 'bi-file-text', 'description' => 'Community posts'],
 					['name' => 'Reviews', 'url' => '/reviews', 'icon' => 'bi-star', 'description' => 'Event reviews'],
+					['name' => 'Search', 'url' => '/search', 'icon' => 'bi-search', 'description' => 'Search events, entities, series, and more'],
 					['name' => 'Series', 'url' => '/series', 'icon' => 'bi-collection', 'description' => 'Recurring event series'],
 					['name' => 'Tags', 'url' => '/tags', 'icon' => 'bi-tags', 'description' => 'Browse by tags'],
 					['name' => 'Threads', 'url' => '/threads', 'icon' => 'bi-chat-dots', 'description' => 'Forum discussions'],
