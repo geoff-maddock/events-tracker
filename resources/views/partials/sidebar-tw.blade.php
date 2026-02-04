@@ -27,15 +27,17 @@
     <!-- Navigation -->
     <nav class="px-4 py-2 space-y-1">
         <!-- Your Radar (logged in users only) -->
-        @auth
-        <a href="{{ route('radar') }}" class="nav-item-tw {{ Request::is('radar') ? 'nav-item-active-tw' : '' }}">
-            <i class="bi bi-broadcast text-lg"></i>
-            <span>Your Radar</span>
-        </a>
-        @endauth
+
 
         <!-- Events Section -->
-        <div class="pt-4">
+        <div>
+            @auth
+            <a href="{{ route('radar') }}" class="nav-item-tw {{ Request::is('radar') ? 'nav-item-active-tw' : '' }}">
+                <i class="bi bi-broadcast text-lg"></i>
+                <span>Your Radar</span>
+            </a>
+            @endauth
+
             <a href="{{ url('/events') }}" class="nav-item-tw {{ Request::is('events') && !Request::is('events/*') ? 'nav-item-active-tw' : '' }}">
                 <i class="bi bi-calendar-event text-lg"></i>
                 <span>Event Listings</span>
@@ -106,12 +108,6 @@
             <span>Users</span>
         </a>
         @endif
-
-        <!-- Search -->
-        <a href="{{ url('/search') }}" class="nav-item-tw {{ Request::is('search') ? 'nav-item-active-tw' : '' }}">
-            <i class="bi bi-search text-lg"></i>
-            <span>Search</span>
-        </a>
 
         <!-- Divider -->
         <div class="border-t border-border my-4"></div>
@@ -210,15 +206,14 @@
 
     <!-- Navigation -->
     <nav class="flex-1 px-4 py-2 space-y-1 overflow-y-auto">
-        @auth
-        <a href="{{ route('radar') }}" class="nav-item-tw {{ Request::is('radar') ? 'nav-item-active-tw' : '' }}">
-            <i class="bi bi-broadcast text-lg"></i>
-            <span>Your Radar</span>
-        </a>
-        @endauth
-
         <!-- Events Section -->
-        <div class="pt-4">
+        <div>
+            @auth
+            <a href="{{ route('radar') }}" class="nav-item-tw {{ Request::is('radar') ? 'nav-item-active-tw' : '' }}">
+                <i class="bi bi-broadcast text-lg"></i>
+                <span>Your Radar</span>
+            </a>
+            @endauth
             <a href="{{ url('/events') }}" class="nav-item-tw {{ Request::is('events') && !Request::is('events/*') ? 'nav-item-active-tw' : '' }}">
                 <i class="bi bi-calendar-event text-lg"></i>
                 <span>Event Listings</span>
@@ -344,19 +339,23 @@
             <span>All Modules</span>
         </a>
         @endcan
-        <a href="{{ route('logout') }}"
-            onclick="event.preventDefault(); document.getElementById('mobile-sidebar-logout-form').submit();"
-            class="nav-item-tw mt-1">
-            <i class="bi bi-box-arrow-right text-lg"></i>
-            <span>Log out</span>
-        </a>
-        <form id="mobile-sidebar-logout-form" action="{{ route('logout') }}" method="POST" class="hidden">{{ csrf_field() }}</form>
         @endif
     </div>
 
-    <!-- Theme Toggle -->
+    <!-- Theme Toggle & Logout -->
     <div class="p-4 border-t border-border shrink-0">
-        <x-theme-toggle />
+        <div class="flex items-center justify-between gap-4">
+            <x-theme-toggle />
+            @auth
+            <a href="{{ route('logout') }}"
+                onclick="event.preventDefault(); document.getElementById('mobile-sidebar-logout-form').submit();"
+                class="nav-item-tw">
+                <i class="bi bi-box-arrow-right text-lg"></i>
+                <span>Log out</span>
+            </a>
+            <form id="mobile-sidebar-logout-form" action="{{ route('logout') }}" method="POST" class="hidden">{{ csrf_field() }}</form>
+            @endauth
+        </div>
     </div>
 </aside>
 

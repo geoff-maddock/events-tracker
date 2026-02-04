@@ -73,12 +73,12 @@
 	</div>
 	<div id="flash" class="flash"></div>
 
-	<div class="flex min-h-screen bg-background">
+	<div class="flex min-h-screen lg:h-screen bg-background">
 		<!-- Sidebar -->
 		@include('partials.sidebar-tw')
 
 		<!-- Main Content -->
-		<div class="flex-1 flex flex-col bg-background">
+		<div class="flex-1 flex flex-col bg-background lg:overflow-hidden">
 			<!-- Top Bar -->
 			@include('partials.topbar-tw')
 
