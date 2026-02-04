@@ -12,9 +12,9 @@
 <div class="w-full">
 	<!-- Header -->
 	<div class="mb-6">
-		<h1 class="text-3xl font-bold text-foreground mb-2">Edit Event</h1>
+		<h1 class="text-3xl font-bold text-foreground mb-2">Edit Event <span class="text-muted-foreground">{{ $event->name }}</span></h1>
 		<div class="text-sm text-muted-foreground">
-			@include('events.crumbs', ['slug' => $event->slug ?: $event->id, 'event' => $event])
+			@include('events.crumbs-tw', ['slug' => $event->slug ?: $event->id, 'event' => $event])
 		</div>
 	</div>
 
@@ -28,10 +28,9 @@
 		<div class="lg:col-span-2">
 			<div class="bg-card rounded-lg border border-border shadow-sm p-6">
 				<form method="POST" action="{{ route('events.update', $event->id) }}" class="space-y-6">
+					@include('events.form', ['action' => 'update'])
 					@csrf
 					@method('PATCH')
-
-					@include('events.form', ['action' => 'update'])
 				</form>
 
 				<!-- Delete Button -->
