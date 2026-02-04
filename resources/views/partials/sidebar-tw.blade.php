@@ -27,15 +27,17 @@
     <!-- Navigation -->
     <nav class="px-4 py-2 space-y-1">
         <!-- Your Radar (logged in users only) -->
-        @auth
-        <a href="{{ route('radar') }}" class="nav-item-tw {{ Request::is('radar') ? 'nav-item-active-tw' : '' }}">
-            <i class="bi bi-broadcast text-lg"></i>
-            <span>Your Radar</span>
-        </a>
-        @endauth
+
 
         <!-- Events Section -->
-        <div class="pt-4">
+        <div>
+            @auth
+            <a href="{{ route('radar') }}" class="nav-item-tw {{ Request::is('radar') ? 'nav-item-active-tw' : '' }}">
+                <i class="bi bi-broadcast text-lg"></i>
+                <span>Your Radar</span>
+            </a>
+            @endauth
+
             <a href="{{ url('/events') }}" class="nav-item-tw {{ Request::is('events') && !Request::is('events/*') ? 'nav-item-active-tw' : '' }}">
                 <i class="bi bi-calendar-event text-lg"></i>
                 <span>Event Listings</span>
