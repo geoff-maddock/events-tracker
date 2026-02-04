@@ -13,7 +13,7 @@ Entities @include('entities.title-crumbs')
 
 <!-- Page Header -->
 <div class="mb-6">
-	<h1 class="text-3xl font-bold text-primary mb-2">Entity Listings</h1>
+	<h1 class="text-3xl font-bold text-primary mb-2">Entity Listings @include('events.crumbs-tw')</h1>
 	<p class="text-muted-foreground">Discover venues, artists, promoters, and more.</p>
 </div>
 

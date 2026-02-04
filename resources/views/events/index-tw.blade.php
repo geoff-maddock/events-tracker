@@ -28,7 +28,7 @@ Events @include('events.title-crumbs')
 
 <!-- Page Header -->
 <div class="mb-6">
-	<h1 class="text-3xl font-bold text-primary mb-2">Event Listings</h1>
+	<h1 class="text-3xl font-bold text-primary mb-2">Event Listings @include('events.crumbs-tw')</h1>
 	<p class="text-muted-foreground">Discover and explore upcoming events.</p>
 </div>
 

@@ -65,6 +65,9 @@
 												<a href="{!! route('events.edit', ['event' => $event->id]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
 													<i class="bi bi-pencil mr-2"></i>Edit Event
 												</a>
+												<a href="{!! route('events.duplicate', ['id' => $event->id]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem" title="Create a new event based on this event.">
+													<i class="bi bi-files mr-2"></i>Duplicate Event
+												</a>
 												<a href="{!! route('events.createSeries', ['id' => $event->id]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
 													<i class="bi bi-collection mr-2"></i>Create Series from Event
 												</a>

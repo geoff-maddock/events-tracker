@@ -12,7 +12,7 @@
 <div class="w-full">
 	<!-- Header -->
 	<div class="mb-6">
-		<h1 class="text-3xl font-bold text-foreground mb-2">Edit Series: {{ $series->name }}</h1>
+		<h1 class="text-3xl font-bold text-foreground mb-2">Edit Series <span class="text-muted-foreground">{{ $series->name }}</p></h1>
 		@if ($series->start_at)
 		<div class="text-sm text-muted-foreground">
 			{{ $series->start_at->format('l F jS Y \a\t h:i A') }}
@@ -37,10 +37,11 @@
 		<div class="lg:col-span-2">
 			<div class="bg-card rounded-lg border border-border shadow-sm p-6">
 				<form method="POST" action="{{ route('series.update', $series->slug) }}" class="space-y-6">
-					@csrf
-					@method('PATCH')
+
 
 					@include('series.form', ['action' => 'update'])
+					@csrf
+					@method('PATCH')
 				</form>
 
 				<!-- Delete Button -->

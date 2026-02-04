@@ -12,10 +12,7 @@
 <div class="w-full">
 	<!-- Header -->
 	<div class="mb-6">
-		<h1 class="text-3xl font-bold text-foreground mb-2">Edit Entity</h1>
-		<div class="text-sm text-muted-foreground">
-			@include('entities.crumbs', ['slug' => $entity->slug ?: $entity->id])
-		</div>
+		<h1 class="text-3xl font-bold text-foreground mb-2">Edit Entity <span class="text-muted-foreground">{{ $entity->name }}</span></h1>
 	</div>
 
 	<!-- Actions Menu -->
@@ -35,10 +32,9 @@
 		<div class="lg:col-span-2">
 			<div class="bg-card rounded-lg border border-border shadow-sm p-6">
 				<form method="POST" action="{{ route('entities.update', $entity->slug) }}" class="space-y-6">
+					@include('entities.form', ['action' => 'update'])
 					@csrf
 					@method('PATCH')
-
-					@include('entities.form', ['action' => 'update'])
 				</form>
 
 				<!-- Delete Button -->
