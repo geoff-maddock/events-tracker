@@ -339,19 +339,23 @@
             <span>All Modules</span>
         </a>
         @endcan
-        <a href="{{ route('logout') }}"
-            onclick="event.preventDefault(); document.getElementById('mobile-sidebar-logout-form').submit();"
-            class="nav-item-tw mt-1">
-            <i class="bi bi-box-arrow-right text-lg"></i>
-            <span>Log out</span>
-        </a>
-        <form id="mobile-sidebar-logout-form" action="{{ route('logout') }}" method="POST" class="hidden">{{ csrf_field() }}</form>
         @endif
     </div>
 
-    <!-- Theme Toggle -->
+    <!-- Theme Toggle & Logout -->
     <div class="p-4 border-t border-border shrink-0">
-        <x-theme-toggle />
+        <div class="flex items-center justify-between gap-4">
+            <x-theme-toggle />
+            @auth
+            <a href="{{ route('logout') }}"
+                onclick="event.preventDefault(); document.getElementById('mobile-sidebar-logout-form').submit();"
+                class="nav-item-tw">
+                <i class="bi bi-box-arrow-right text-lg"></i>
+                <span>Log out</span>
+            </a>
+            <form id="mobile-sidebar-logout-form" action="{{ route('logout') }}" method="POST" class="hidden">{{ csrf_field() }}</form>
+            @endauth
+        </div>
     </div>
 </aside>
 

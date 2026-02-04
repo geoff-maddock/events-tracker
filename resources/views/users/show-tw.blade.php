@@ -7,10 +7,7 @@
 <div class="max-w-7xl mx-auto">
     <!-- Header -->
     <div class="mb-6">
-        <h1 class="text-3xl font-bold text-foreground mb-2">User Profile</h1>
-        <div class="text-sm text-muted-foreground">
-            @include('users.crumbs')
-        </div>
+        <h1 class="text-3xl font-bold text-foreground mb-2">User Profile <span class="text-muted-foreground">@include('users.crumbs')</span></h1>
     </div>
 
     <!-- Action Buttons -->

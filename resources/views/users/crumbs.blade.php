@@ -1,6 +1,6 @@
 @if (isset($user))
-. {{ ucfirst($user->name) }}
+/ {{ ucfirst($user->name) }}
 @endif
 @if (isset($slug))
-. {{ ucfirst($slug) }}
+/ {{ ucfirst($slug) }}
 @endif
