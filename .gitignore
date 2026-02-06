@@ -38,10 +38,5 @@ phpstan.neon
 
 # ignore the context files
 context
-<<<<<<< HEAD
-/public/js/manifest.js
-/public/js/vendor.js
-=======
 public/js/manifest.js
 public/js/vendor.js
->>>>>>> 7a9638a9 (Updates to gitignore)
