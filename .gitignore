@@ -38,3 +38,5 @@ phpstan.neon
 
 # ignore the context files
 context
+/public/js/manifest.js
+/public/js/vendor.js
