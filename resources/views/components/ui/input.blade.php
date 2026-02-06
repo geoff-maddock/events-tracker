@@ -9,10 +9,11 @@ if ($hasError) {
 }
 $isPassword = $attributes->get('type') === 'password';
 if ($isPassword) {
-    $classes .= ' pr-10';
+    $classes .= ' pr-10'; // Add right padding for toggle button
 }
 @endphp
 
+{{-- Password inputs are wrapped with a toggle button. Note: id attribute is required for password inputs --}}
 @if($isPassword)
 <div class="relative">
     <input {{ $attributes->merge(['class' => $classes]) }} />

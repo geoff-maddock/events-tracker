@@ -149,6 +149,7 @@
     <script src="{{ asset('/js/jquery.ba-throttle-debounce.min.js') }}"></script>
 	<script src="{{ asset('/js/auto-submit.js') }}"></script>
 	<script src="{{ asset('/js/custom.js') }}"></script>
+	<script src="{{ asset('/js/password-toggle.js') }}"></script>
 
 	<!-- Theme Toggle Script -->
 	<script>
