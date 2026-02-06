@@ -48,6 +48,8 @@ class UsersTest extends TestCase
     /** @test */
     public function a_non_admin_cannot_access_password_reset_form()
     {
+        $this->expectException(\Illuminate\Auth\Access\AuthorizationException::class);
+        
         // Create a regular user without admin permissions
         $regularUser = User::factory()->create();
         
@@ -56,9 +58,7 @@ class UsersTest extends TestCase
         
         $this->actingAs($regularUser);
         
-        $response = $this->get(route('users.showResetPassword', ['id' => $targetUser->id]));
-        
-        // Should be redirected back with an error
-        $response->assertRedirect();
+        $this->withoutExceptionHandling();
+        $this->get(route('users.showResetPassword', ['id' => $targetUser->id]));
     }
 }
