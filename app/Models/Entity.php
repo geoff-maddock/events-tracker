@@ -416,7 +416,7 @@ class Entity extends Eloquent
     /**
      * If there is a past event, return it.
      */
-    public function pastEvents(int $rpp = null): LengthAwarePaginator
+    public function pastEvents(?int $rpp = null): LengthAwarePaginator
     {
         return $this->events()->distinct()
             ->where('start_at', '<', Carbon::now())
@@ -583,7 +583,7 @@ class Entity extends Eloquent
      * Return the primary location address.
      *
      **/
-    public function getPrimaryLocationAddress(bool $signedIn = null): string
+    public function getPrimaryLocationAddress(?bool $signedIn = null): string
     {
         $address = '';
 

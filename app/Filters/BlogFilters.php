@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class BlogFilters extends QueryFilter
 {
-    public function name(string $value = null): Builder
+    public function name(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->where('name', 'like', '%'.$value.'%');
@@ -15,7 +15,7 @@ class BlogFilters extends QueryFilter
         }
     }
 
-    public function body(string $value = null): Builder
+    public function body(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->where('body', 'like', '%'.$value.'%');
@@ -24,7 +24,7 @@ class BlogFilters extends QueryFilter
         }
     }
 
-    public function user(string $value = null): Builder
+    public function user(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('user', function ($q) use ($value) {
@@ -35,7 +35,7 @@ class BlogFilters extends QueryFilter
         }
     }
 
-    public function tag(string $value = null): Builder
+    public function tag(?string $value = null): Builder
     {
         if (isset($value)) {
             return $this->builder->whereHas('tags', function ($q) use ($value) {
