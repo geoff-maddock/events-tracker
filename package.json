@@ -45,7 +45,7 @@
         "laravel-mix-purgecss": "^6.0.0",
         "lightbox2": "^2.11.1",
         "moment": "^2.29.4",
-        "npm": "^10.5",
+        "npm": "^11.9",
         "save-dev": "0.0.1-security",
         "select2": "^4.1.0-rc.0",
         "swagger-ui": "^5.30.2",
