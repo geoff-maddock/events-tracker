@@ -66,7 +66,12 @@
                 <i class="bi bi-key mr-2"></i>
                 Reset Password
             </a>
-
+            @can('grant_access')
+                <a href="{!! route('users.showResetPassword', ['id' => $user->id]) !!}" class="inline-flex items-center px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors">
+                                <i class="bi bi-key mr-2"></i>
+                    Reset User Password
+                </a>
+            @endcan
             @can('impersonate_user')
                 <a href="{{ route('user.impersonate', ['user' => $user->id]) }}" title="Impersonate user" class="inline-flex items-center px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors confirm">
                     <i class="bi bi-person-badge mr-2"></i>

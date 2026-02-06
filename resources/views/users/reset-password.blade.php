@@ -1,39 +1,71 @@
-@extends('app')
+@extends('layouts.app-tw')
 
 @section('title', 'Reset User Password')
 
 @section('content')
 
-<h1 class="display-crumbs text-primary">Reset Password for {{ $user->name }}</h1>
+<div class="max-w-2xl mx-auto">
+    <!-- Page Header -->
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-primary mb-2">Reset Password</h1>
+        <p class="text-muted-foreground">{{ $user->name }}</p>
+    </div>
 
-<div class="row">
-    <div class="col-md-6">
-        <div class="card surface">
-            <div class="card-header bg-primary">
-                <h5 class="my-0 fw-normal">Reset Password</h5>
-            </div>
-            <div class="card-body">
-                <form method="POST" action="{!! route('users.resetPassword', ['id' => $user->id]) !!}">
-                    @csrf
+    <!-- Action Menu -->
+    <div class="flex flex-wrap gap-3 mb-6">
+        <a href="{{ route('users.show', ['user' => $user->id]) }}" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-border rounded-lg hover:bg-accent/80 transition-colors">
+            <i class="bi bi-arrow-left mr-2"></i>
+            Back to Profile
+        </a>
+    </div>
 
-                    <div class="form-group {{$errors->has('password') ? 'has-error' : '' }}">
-                        <label for="password" class="form-label">New Password</label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter new password" required>
-                        {!! $errors->first('password','<span class="help-block form-error">:message</span>') !!}
-                    </div>
+    <!-- Form Card -->
+    <div class="card-tw">
+        <div class="p-6">
+            <form method="POST" action="{{ route('users.resetPassword', ['id' => $user->id]) }}">
+                @csrf
 
-                    <div class="form-group {{$errors->has('password_confirmation') ? 'has-error' : '' }}">
-                        <label for="password_confirmation" class="form-label">Confirm Password</label>
-                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirm new password" required>
-                        {!! $errors->first('password_confirmation','<span class="help-block form-error">:message</span>') !!}
-                    </div>
+                <!-- New Password -->
+                <x-ui.form-group
+                    name="password"
+                    label="New Password"
+                    :error="$errors->first('password')"
+                    required>
+                    <x-ui.input
+                        type="password"
+                        name="password"
+                        id="password"
+                        placeholder="Enter new password"
+                        :hasError="$errors->has('password')"
+                        required />
+                </x-ui.form-group>
 
-                    <div class="form-group mt-3">
-                        <button type="submit" class="btn btn-primary">Reset Password</button>
-                        <a href="{!! route('users.show', ['user' => $user->id]) !!}" class="btn btn-secondary">Cancel</a>
-                    </div>
-                </form>
-            </div>
+                <!-- Confirm Password -->
+                <x-ui.form-group
+                    name="password_confirmation"
+                    label="Confirm Password"
+                    :error="$errors->first('password_confirmation')"
+                    required>
+                    <x-ui.input
+                        type="password"
+                        name="password_confirmation"
+                        id="password_confirmation"
+                        placeholder="Confirm new password"
+                        :hasError="$errors->has('password_confirmation')"
+                        required />
+                </x-ui.form-group>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-3 mt-6">
+                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+                        <i class="bi bi-key mr-2"></i>
+                        Reset Password
+                    </button>
+                    <a href="{{ route('users.show', ['user' => $user->id]) }}" class="inline-flex items-center px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
+                        Cancel
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
 </div>
