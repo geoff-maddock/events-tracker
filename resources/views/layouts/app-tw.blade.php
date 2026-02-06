@@ -103,6 +103,7 @@
 	<script src="{{ asset('/js/auto-submit.js') }}"></script>
 	<script src="{{ asset('/js/embed-cache.js') }}"></script>
 	<script src="{{ asset('/js/custom.js') }}"></script>
+	<script src="{{ asset('/js/password-toggle.js') }}"></script>
 	
 	@yield('scripts.footer')
 	@yield('footer')
