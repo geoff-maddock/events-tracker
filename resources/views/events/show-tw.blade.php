@@ -179,11 +179,11 @@
 								<div class="flex items-center text-sm text-muted-foreground">
 									<i class="bi bi-calendar-event mr-2 h-4 w-4"></i>
 									<span>{!! $event->start_at->format('l, F jS Y') !!}</span>
-									@if ($event->door_at)
-									<span class="mx-2">•</span>
-									<span>Doors {!! $event->door_at->format('g:i A') !!}</span>
-									@endif
-									<span class="mx-2">•</span>
+								@if ($event->door_at && $event->door_at->format('g:i A') !== $event->start_at->format('g:i A'))
+								<span class="mx-2">•</span>
+								<span>Doors {!! $event->door_at->format('g:i A') !!}</span>
+								@endif
+								<span class="mx-2">•</span>
 									<span>Show {!! $event->start_at->format('g:i A') !!}</span>
 									<a href="{!! $event->getGoogleCalendarLink() !!}" target="_blank" rel="nofollow" class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Add to Google Calendar">
 										<i class="bi bi-calendar-plus text-muted-foreground"></i>
@@ -197,39 +197,48 @@
 									<a href="/entities/{{$event->venue->slug }}" class="hover:text-foreground transition-colors underline-offset-2 hover:underline">
 										{!! $event->venue->name !!}
 									</a>
-								</div>
-								@endif
-
-								<!-- Age Restriction -->
-								@if (isset($event->min_age))
-								<div class="flex items-center text-sm text-muted-foreground">
-									<i class="bi bi-person-badge mr-2 h-4 w-4"></i>
-									<span>{{ $event->age_format }}</span>
-								</div>
-								@endif
-
-								<!-- Price -->
-								@if (isset($event->presale_price) || isset($event->door_price))
-								<div class="flex items-center gap-3 text-sm">
-									<i class="bi bi-cash h-4 w-4 text-muted-foreground"></i>
-									@if (isset($event->presale_price))
-									<span class="text-green-600 dark:text-green-500">
-										Presale: ${{ floor($event->presale_price) == $event->presale_price ? number_format($event->presale_price, 0) : number_format($event->presale_price, 2) }}
-									</span>
-									@endif
-									@if (isset($event->door_price))
-									<span class="text-muted-foreground">
-										Door: ${{ floor($event->door_price) == $event->door_price ? number_format($event->door_price, 0) : number_format($event->door_price, 2) }}
-									</span>
-									@endif
-									@if ($ticket = $event->ticket_link)
-									<a href="{{ $ticket }}" target="_blank" rel="noopener noreferrer" class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Buy tickets">
-										<i class="bi bi-ticket-perforated text-muted-foreground"></i>
-									</a>
-									@endif
-								</div>
+								@if ($event->venue->getPrimaryLocationMap())
+								<a href="{{ $event->venue->getPrimaryLocationMap() }}" 
+									target="_blank" 
+									rel="noopener noreferrer" 
+									class="inline-flex items-center gap-1 ml-2 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" 
+									title="View on map">
+									<i class="bi bi-map text-muted-foreground"></i>
+								</a>
 								@endif
 							</div>
+							@endif
+
+							<!-- Age Restriction -->
+							@if (isset($event->min_age))
+							<div class="flex items-center text-sm text-muted-foreground">
+								<i class="bi bi-person-badge mr-2 h-4 w-4"></i>
+								<span>{{ $event->age_format }}</span>
+							</div>
+							@endif
+
+							<!-- Price -->
+							@if (isset($event->presale_price) || isset($event->door_price))
+							<div class="flex items-center gap-3 text-sm">
+								<i class="bi bi-cash h-4 w-4 text-muted-foreground"></i>
+								@if (isset($event->presale_price))
+								<span class="text-green-600 dark:text-green-500">
+									Presale: ${{ floor($event->presale_price) == $event->presale_price ? number_format($event->presale_price, 0) : number_format($event->presale_price, 2) }}
+								</span>
+								@endif
+								@if (isset($event->door_price))
+								<span class="text-muted-foreground">
+									Door: ${{ floor($event->door_price) == $event->door_price ? number_format($event->door_price, 0) : number_format($event->door_price, 2) }}
+								</span>
+								@endif
+								@if ($ticket = $event->ticket_link)
+								<a href="{{ $ticket }}" target="_blank" rel="noopener noreferrer" class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Buy tickets">
+									<i class="bi bi-ticket-perforated text-muted-foreground"></i>
+								</a>
+								@endif
+							</div>
+							@endif
+						</div>
 
 				<!-- Related Entities -->
 				@unless ($event->entities->isEmpty())
@@ -240,7 +249,9 @@
 						@endforeach
 					</div>
 				</div>
-				@endunless				<!-- Tags -->
+				@endunless
+
+				<!-- Tags -->
 				@unless ($event->tags->isEmpty())
 				<div class="flex flex-wrap gap-2">
 					@foreach ($event->tags as $tag)
