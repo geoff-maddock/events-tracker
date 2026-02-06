@@ -165,7 +165,7 @@ class Activity extends Eloquent
         return $this->user ? $this->user->name : 'unknown';
     }
 
-    public static function log(mixed $object, ?User $user, mixed $action, string $message = null): void
+    public static function log(mixed $object, ?User $user, mixed $action, ?string $message = null): void
     {
         // if an object was passed, set the class and table
         $class = get_class($object);
@@ -205,7 +205,7 @@ class Activity extends Eloquent
         $activity->save();
     }
 
-    public static function logFailure(Failed $event, string $message = null): void
+    public static function logFailure(Failed $event, ?string $message = null): void
     {
         /** @var ?User $user */
         $user = $event->user;

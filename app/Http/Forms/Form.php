@@ -16,7 +16,7 @@ class Form
 
     protected array $rules = [];
 
-    public function __construct(Request $request = null)
+    public function __construct(?Request $request = null)
     {
         $this->request = $request ?: request();
     }
