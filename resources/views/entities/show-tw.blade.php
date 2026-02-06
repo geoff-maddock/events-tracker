@@ -124,7 +124,9 @@
 		@endif
 
 		<!-- Audio -->
+		@if ($entity->entityType && $entity->entityType->name !== 'Space')
 		@include('embeds.playlist-tw', ['entity' => $entity, 'embeds' => $embeds ?? []])
+		@endif
 	</div>
 
 	<!-- Sidebar -->
