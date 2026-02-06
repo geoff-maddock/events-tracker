@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Filters\UserFilters;
+use App\Http\Requests\AdminPasswordResetRequest;
 use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
@@ -10,6 +11,7 @@ use App\Mail\UserActivation;
 use App\Mail\UserSuspended;
 use App\Mail\UserUpdate;
 use App\Mail\WeeklyUpdate;
+use App\Models\Action;
 use App\Models\Activity;
 use App\Models\Group;
 use App\Models\Profile;
@@ -23,6 +25,7 @@ use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
@@ -837,6 +840,45 @@ class UsersController extends Controller
         flash()->success('Success', 'These users have been purged: '.$list);
 
         return back();
+    }
+
+    /**
+     * Show form for admin to reset a user's password.
+     */
+    public function showResetPassword(int $id): View|RedirectResponse
+    {
+        if (!$user = User::find($id)) {
+            flash()->error('Error', 'No such user');
+
+            return back();
+        }
+
+        return view('users.reset-password', compact('user'));
+    }
+
+    /**
+     * Admin reset of user password.
+     */
+    public function resetPassword(int $id, AdminPasswordResetRequest $request): RedirectResponse
+    {
+        if (!$user = User::find($id)) {
+            flash()->error('Error', 'No such user');
+
+            return back();
+        }
+
+        // update the user's password
+        $user->password = Hash::make($request->input('password'));
+        $user->save();
+
+        // add to activity log
+        Activity::log($user, $this->user, Action::PASSWORD_RESET);
+
+        Log::info('User '.$user->name.' password was reset by admin '.$this->user->name);
+
+        flash()->success('Success', 'Password for user '.$user->name.' has been reset.');
+
+        return redirect()->route('users.show', ['user' => $user->id]);
     }
 
     protected function getListControlOptions(): array
