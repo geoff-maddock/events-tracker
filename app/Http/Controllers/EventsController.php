@@ -2220,7 +2220,7 @@ class EventsController extends Controller
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
-            ->setQueryBuilder(Event::query())
+            ->setQueryBuilder(Event::query()->join('event_types', 'events.event_type_id', '=', 'event_types.id'))
             ->setDefaultSort(['events.start_at' => 'desc'])
             ->setParentFilter(['event_type' => $type]);
 
@@ -2228,32 +2228,15 @@ class EventsController extends Controller
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
 
         // get the query builder
-        $pastQuery = $listResultSet->getList();
-        $futureQuery = clone $pastQuery;
+        $query = $listResultSet->getList();
 
         // @phpstan-ignore-next-line
-        $future_events = $futureQuery
+        $events = $query
+            ->select('events.*')
             ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
-            ->future()
             ->orderBy('events.start_at', 'ASC')
             ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
-
-        $future_events->filter(function ($e) {
-            return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
-        });
-
-        // @phpstan-ignore-next-line
-        $past_events = $pastQuery
-            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
-            ->past()
-            ->orderBy('events.start_at', 'ASC')
-            ->orderBy('events.name', 'ASC')
-            ->paginate($listResultSet->getLimit());
-
-        $past_events->filter(function ($e) {
-            return ($e->visibility && 'Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
-        });
 
         // saves the updated session
         $listParamSessionStore->save();
@@ -2274,8 +2257,7 @@ class EventsController extends Controller
                     $this->getListControlOptions()
                 )
             )
-            ->with(compact('future_events'))
-            ->with(compact('past_events'))
+            ->with(compact('events'))
             ->with(compact('type'));
     }
 
