@@ -141,9 +141,9 @@ class EntitiesController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
-        // get the entities
+        // get the entities - relationships already loaded in baseQuery, just add user
         $entities = $query
-            ->with('tags', 'events','entityType','locations','entityStatus','user')
+            ->with('user')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -151,11 +151,11 @@ class EntitiesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        // count the most common entities in the recent past
+        // count the most common entities in the recent past - only load minimal data
         $latestEntities = Entity::withCount(['events' => function (Builder $query) {
             $query->where('events.start_at', '>', Carbon::now()->subMonths(3));
         }])
-        ->with('tags', 'events','entityType','locations','entityStatus','roles','user')
+        ->with('tags', 'entityType', 'locations', 'entityStatus', 'roles', 'user')
         ->orderBy('events_count', 'desc')
         ->paginate(6);
 

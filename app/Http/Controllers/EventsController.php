@@ -165,6 +165,8 @@ class EventsController extends Controller
                 'tags',
                 'entities',
                 'photos',
+                'threads',
+                'eventResponses.responseType',
                 'attendees' => function ($q) {
                     $q->where('response_type_id', 1);
                 },
@@ -469,7 +471,7 @@ class EventsController extends Controller
 
         // get the events
         $events = $query
-            ->with('visibility', 'venue')
+            ->with('visibility', 'venue', 'eventType', 'tags', 'photos')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
