@@ -646,7 +646,16 @@ class Series extends Eloquent
         // get all the upcoming series events
         $series = Series::active()
             ->whereNotIn('id', $ids ?? [])
-            ->with(['visibility', 'occurrenceType'])
+            ->with([
+                'visibility',
+                'occurrenceType',
+                'occurrenceWeek',
+                'occurrenceDay',
+                'venue',
+                'entities',
+                'tags',
+                'photos'
+            ])
             ->get();
 
         $series = $series->filter(function ($e) {

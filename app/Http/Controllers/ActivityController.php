@@ -87,7 +87,9 @@ class ActivityController extends Controller
         $query = $listResultSet->getList();
 
         // get the activities
-        $activities = $query->paginate($listResultSet->getLimit());
+        $activities = $query
+            ->with('user', 'action')
+            ->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();
@@ -137,7 +139,9 @@ class ActivityController extends Controller
         $query = $listResultSet->getList();
 
         // get the activities
-        $activities = $query->paginate($listResultSet->getLimit());
+        $activities = $query
+            ->with('user', 'action')
+            ->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();
