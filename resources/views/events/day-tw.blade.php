@@ -13,7 +13,19 @@
 
         <!-- Body -->
         <div class="p-4 flex-grow overflow-y-auto custom-scrollbar">
-            <?php $events = App\Models\Event::with('series')->starting($day->format('Y-m-d'))->get(); ?>
+            <?php $events = App\Models\Event::with([
+                'series.occurrenceType',
+                'series.occurrenceWeek', 
+                'series.occurrenceDay',
+                'series.visibility',
+                'visibility',
+                'venue',
+                'entities',
+                'tags',
+                'threads',
+                'eventResponses',
+                'photos'
+            ])->starting($day->format('Y-m-d'))->get(); ?>
 
             @if (count($events) > 0)
             <ul class="grid gap-3">

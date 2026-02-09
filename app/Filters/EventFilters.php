@@ -117,7 +117,7 @@ class EventFilters extends QueryFilter
     {
         if (isset($value)) {
             return $this->builder->whereHas('eventType', function ($q) use ($value) {
-                $q->where('slug', '=', $value);
+                $q->where('event_types.slug', '=', $value);
             });
         } else {
             return $this->builder;

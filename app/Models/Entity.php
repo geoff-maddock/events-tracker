@@ -458,6 +458,11 @@ class Entity extends Eloquent
      */
     public function getBandcampLinkAttribute(): ?Link
     {
+        // check if the relation is loaded
+        if ($this->relationLoaded('links')) {
+            return $this->links->where('url', 'LIKE', '%bandcamp%')->sortBy('created_at')->first();
+        }
+        
         return $this->links()->where('url', 'LIKE', '%bandcamp%')->orderBy('created_at', 'ASC')->first();
     }
 
@@ -466,6 +471,11 @@ class Entity extends Eloquent
      */
     public function getSoundcloudLinkAttribute(): ?Link
     {
+        // check if the relation is loaded
+        if ($this->relationLoaded('links')) {
+            return $this->links->where('url', 'LIKE', '%soundcloud%')->sortBy('created_at')->first();
+        }
+        
         return $this->links()->where('url', 'LIKE', '%soundcloud%')->orderBy('created_at', 'ASC')->first();
     }
 

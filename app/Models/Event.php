@@ -688,6 +688,11 @@ class Event extends Model
      **/
     public function getEventResponse(User $user): ?EventResponse
     {
+        // check if the relation is loaded
+        if ($this->relationLoaded('eventResponses')) {
+            return $this->eventResponses->where('user_id', $user->id)->first();
+        }
+        
         return EventResponse::where('event_id', '=', $this->id)
             ->where('user_id', '=', $user->id)->first();
     }
