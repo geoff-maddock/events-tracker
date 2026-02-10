@@ -77,6 +77,17 @@ class AdminActivitySummary extends Command
             'other' => 0,
         ];
 
+        // Track user counts for each activity type
+        $userCounts = [
+            'logins' => [],
+            'deletions' => [],
+            'new_users' => [],
+            'new_events' => [],
+            'new_entities' => [],
+            'new_series' => [],
+            'other' => [],
+        ];
+
         foreach ($activities as $activity) {
             $actionName = $activity->action ? $activity->action->name : 'Unknown';
             $objectTable = $activity->object_table;
@@ -85,29 +96,45 @@ class AdminActivitySummary extends Command
             if ($activity->action_id === Action::LOGIN) {
                 $summary['logins'][] = $activity;
                 $counts['logins']++;
+                $userName = $activity->user_name ?? 'Unknown';
+                $userCounts['logins'][$userName] = ($userCounts['logins'][$userName] ?? 0) + 1;
             } elseif ($activity->action_id === Action::DELETE) {
                 $summary['deletions'][] = $activity;
                 $counts['deletions']++;
+                $userName = $activity->user_name ?? 'Unknown';
+                $userCounts['deletions'][$userName] = ($userCounts['deletions'][$userName] ?? 0) + 1;
             } elseif ($activity->action_id === Action::CREATE) {
                 if ($objectTable === 'User') {
                     $summary['new_users'][] = $activity;
                     $counts['new_users']++;
+                    $userName = $activity->user_name ?? 'Unknown';
+                    $userCounts['new_users'][$userName] = ($userCounts['new_users'][$userName] ?? 0) + 1;
                 } elseif ($objectTable === 'Event') {
                     $summary['new_events'][] = $activity;
                     $counts['new_events']++;
+                    $userName = $activity->user_name ?? 'Unknown';
+                    $userCounts['new_events'][$userName] = ($userCounts['new_events'][$userName] ?? 0) + 1;
                 } elseif ($objectTable === 'Entity') {
                     $summary['new_entities'][] = $activity;
                     $counts['new_entities']++;
+                    $userName = $activity->user_name ?? 'Unknown';
+                    $userCounts['new_entities'][$userName] = ($userCounts['new_entities'][$userName] ?? 0) + 1;
                 } elseif ($objectTable === 'Series') {
                     $summary['new_series'][] = $activity;
                     $counts['new_series']++;
+                    $userName = $activity->user_name ?? 'Unknown';
+                    $userCounts['new_series'][$userName] = ($userCounts['new_series'][$userName] ?? 0) + 1;
                 } else {
                     $summary['other'][] = $activity;
                     $counts['other']++;
+                    $userName = $activity->user_name ?? 'Unknown';
+                    $userCounts['other'][$userName] = ($userCounts['other'][$userName] ?? 0) + 1;
                 }
             } else {
                 $summary['other'][] = $activity;
                 $counts['other']++;
+                $userName = $activity->user_name ?? 'Unknown';
+                $userCounts['other'][$userName] = ($userCounts['other'][$userName] ?? 0) + 1;
             }
         }
 
@@ -139,7 +166,8 @@ class AdminActivitySummary extends Command
                     $startDate,
                     $endDate,
                     $summary,
-                    $counts
+                    $counts,
+                    $userCounts
                 ));
 
             Log::info("Admin activity summary email sent to {$admin_email} for the past {$days} days.");

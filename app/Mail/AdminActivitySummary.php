@@ -21,6 +21,7 @@ class AdminActivitySummary extends Mailable
     public Carbon $endDate;
     public array $summary;
     public array $counts;
+    public array $userCounts;
 
     /**
      * Create a new message instance.
@@ -36,7 +37,8 @@ class AdminActivitySummary extends Mailable
         Carbon $startDate,
         Carbon $endDate,
         array $summary,
-        array $counts
+        array $counts,
+        array $userCounts
     ) {
         $this->url = $url;
         $this->site = $site;
@@ -47,6 +49,7 @@ class AdminActivitySummary extends Mailable
         $this->endDate = $endDate;
         $this->summary = $summary;
         $this->counts = $counts;
+        $this->userCounts = $userCounts;
     }
 
     /**
