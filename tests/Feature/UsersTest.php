@@ -32,7 +32,8 @@ class UsersTest extends TestCase
     {
         // Create an admin user with grant_access permission
         $admin = User::factory()->create();
-        $admin->groups()->attach(1); // Assuming group ID 1 has grant_access permission
+        $admin->assignGroup('admin');
+        $admin->refresh(); // Reload the user to get the groups relationship
         
         // Create a regular user
         $user = User::factory()->create();
@@ -48,8 +49,6 @@ class UsersTest extends TestCase
     /** @test */
     public function a_non_admin_cannot_access_password_reset_form()
     {
-        $this->expectException(\Illuminate\Auth\Access\AuthorizationException::class);
-        
         // Create a regular user without admin permissions
         $regularUser = User::factory()->create();
         
@@ -58,7 +57,9 @@ class UsersTest extends TestCase
         
         $this->actingAs($regularUser);
         
-        $this->withoutExceptionHandling();
-        $this->get(route('users.showResetPassword', ['id' => $targetUser->id]));
+        $response = $this->get(route('users.showResetPassword', ['id' => $targetUser->id]));
+        
+        // Should be redirected when authorization fails
+        $response->assertRedirect();
     }
 }

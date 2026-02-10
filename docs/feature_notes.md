@@ -2,6 +2,28 @@
 
 A more detailed description of new features and changes to the application.
 
+## 2025.01.15
+
+### Semantic Entity Routes
+You can now access entities using cleaner, semantic URLs based on their role.
+
+**Index Routes** - List all entities of a specific type:
+- `/venue` - List all venues
+- `/artist` - List all artists  
+- `/dj` - List all DJs
+- `/producer` - List all music producers
+- `/promoter` - List all promoters
+- `/shop` - List all shops
+- `/band` - List all bands
+
+**Detail Routes** - View a specific entity by role and slug:
+- `/venue/{slug}` - View a specific venue (e.g., `/venue/brillobox`)
+- `/artist/{slug}` - View a specific artist (e.g., `/artist/andy-warhol`)
+- `/dj/{slug}` - View a specific DJ (e.g., `/dj/cutups`)
+- Similar patterns for producer, promoter, shop, and band
+
+These routes work alongside the existing `/entities/role/{role}` and `/entities/{slug}` routes.
+
 ## 2024.12.26
 
 ### ICAL Calendar Integration

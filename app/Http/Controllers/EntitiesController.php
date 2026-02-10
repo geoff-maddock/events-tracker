@@ -602,6 +602,30 @@ class EntitiesController extends Controller
     }
 
     /**
+     * Display a specific entity by role and slug.
+     * This provides semantic routes like /venue/brillobox or /dj/cutups
+     *
+     * @throws \Throwable
+     */
+    public function showByRoleAndSlug(string $slug, string $role)
+    {
+        // Get entity by slug and verify it has the specified role
+        $entity = Entity::getBySlug(strtolower($slug))
+            ->whereHas('roles', function ($q) use ($role) {
+                $q->where('slug', '=', strtolower($role));
+            })
+            ->first();
+
+        if (!$entity) {
+            abort(404);
+        }
+
+        return view('entities.show-tw')
+            ->with(compact('entity'))
+            ->render();
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return Response|string
