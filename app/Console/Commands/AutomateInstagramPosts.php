@@ -227,10 +227,6 @@ class AutomateInstagramPosts extends Command
             }
 
             // Check status of all uploaded photos in batch
-            if (empty($igContainerIds)) {
-                throw new Exception('No photos were successfully uploaded');
-            }
-            
             if ($instagram->checkBatchStatus($igContainerIds) === false) {
                 throw new Exception('Instagram batch status check failed');
             }

@@ -614,9 +614,13 @@ class EntitiesController extends Controller
             ->whereHas('roles', function ($q) use ($role) {
                 $q->where('slug', '=', strtolower($role));
             })
-            ->firstOrFail();
+            ->first();
 
-        return view('entities.show')
+        if (!$entity) {
+            abort(404);
+        }
+
+        return view('entities.show-tw')
             ->with(compact('entity'))
             ->render();
     }
