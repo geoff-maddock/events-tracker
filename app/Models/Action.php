@@ -34,6 +34,7 @@ class Action extends Eloquent
     // Additional actions
     const PASSWORD_RESET_REQUEST = 17;
     const PASSWORD_RESET = 18;
+    const EXPORT = 19;
 
     /**
      * The storage format of the model's date columns.

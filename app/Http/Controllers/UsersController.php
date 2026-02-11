@@ -956,7 +956,7 @@ class UsersController extends Controller
         ExportUserDataJob::dispatch($user);
 
         // Add to activity log
-        Activity::log($user, $this->user, Action::UPDATE);
+        Activity::log($user, $this->user, Action::EXPORT);
 
         Log::info('User data export requested for user: ' . $user->name . ' by: ' . $this->user->name);
 
