@@ -38,7 +38,7 @@ class AdminActivitySummary extends Mailable
         Carbon $endDate,
         array $summary,
         array $counts,
-        array $userCounts
+        array $userCounts = []
     ) {
         $this->url = $url;
         $this->site = $site;
@@ -49,7 +49,15 @@ class AdminActivitySummary extends Mailable
         $this->endDate = $endDate;
         $this->summary = $summary;
         $this->counts = $counts;
-        $this->userCounts = $userCounts;
+        $this->userCounts = $userCounts ?: [
+            'logins' => [],
+            'deletions' => [],
+            'new_users' => [],
+            'new_events' => [],
+            'new_entities' => [],
+            'new_series' => [],
+            'other' => [],
+        ];
     }
 
     /**

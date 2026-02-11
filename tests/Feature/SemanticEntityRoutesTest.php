@@ -73,6 +73,8 @@ class SemanticEntityRoutesTest extends TestCase
      */
     public function testSemanticDetailRoutesFailWithWrongRole()
     {
+        $this->withExceptionHandling();
+        
         $user = User::factory()->create(['user_status_id' => 2]);
         $this->actingAs($user);
 

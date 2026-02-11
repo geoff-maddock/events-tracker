@@ -25,9 +25,11 @@ This is your activity summary for **{{ $site }}** covering the past **{{ $days }
 ## Logins ({{ $counts['logins'] }})
 
 **Users who logged in:**
+@if(isset($userCounts['logins']) && count($userCounts['logins']) > 0)
 @foreach ($userCounts['logins'] as $userName => $count)
 - **{{ $userName }}**: {{ $count }} time{{ $count > 1 ? 's' : '' }}
 @endforeach
+@endif
 
 ---
 
@@ -36,10 +38,13 @@ This is your activity summary for **{{ $site }}** covering the past **{{ $days }
 @if (count($summary['deletions']) > 0)
 ## Deletions ({{ $counts['deletions'] }})
 
+@if(isset($userCounts['deletions']) && count($userCounts['deletions']) > 0)
 **Users who deleted items:**
 @foreach ($userCounts['deletions'] as $userName => $count)
 - **{{ $userName }}**: {{ $count }} deletion{{ $count > 1 ? 's' : '' }}
 @endforeach
+
+@endif
 
 **Deleted items:**
 @foreach ($summary['deletions'] as $activity)
@@ -53,7 +58,7 @@ This is your activity summary for **{{ $site }}** covering the past **{{ $days }
 @if (count($summary['new_users']) > 0)
 ## New Users ({{ $counts['new_users'] }})
 
-@if (count($userCounts['new_users']) > 0)
+@if (isset($userCounts['new_users']) && count($userCounts['new_users']) > 0)
 **Users who created new users:**
 @foreach ($userCounts['new_users'] as $userName => $count)
 - **{{ $userName }}**: {{ $count }} user{{ $count > 1 ? 's' : '' }}
@@ -72,10 +77,13 @@ This is your activity summary for **{{ $site }}** covering the past **{{ $days }
 @if (count($summary['new_events']) > 0)
 ## New Events ({{ $counts['new_events'] }})
 
+@if(isset($userCounts['new_events']) && count($userCounts['new_events']) > 0)
 **Users who created events:**
 @foreach ($userCounts['new_events'] as $userName => $count)
 - **{{ $userName }}**: {{ $count }} event{{ $count > 1 ? 's' : '' }}
 @endforeach
+
+@endif
 
 **New events created:**
 @foreach ($summary['new_events'] as $activity)
@@ -89,10 +97,13 @@ This is your activity summary for **{{ $site }}** covering the past **{{ $days }
 @if (count($summary['new_entities']) > 0)
 ## New Entities ({{ $counts['new_entities'] }})
 
+@if(isset($userCounts['new_entities']) && count($userCounts['new_entities']) > 0)
 **Users who created entities:**
 @foreach ($userCounts['new_entities'] as $userName => $count)
 - **{{ $userName }}**: {{ $count }} {{ $count > 1 ? 'entities' : 'entity' }}
 @endforeach
+
+@endif
 
 **New entities created:**
 @foreach ($summary['new_entities'] as $activity)
@@ -106,10 +117,13 @@ This is your activity summary for **{{ $site }}** covering the past **{{ $days }
 @if (count($summary['new_series']) > 0)
 ## New Series ({{ $counts['new_series'] }})
 
+@if(isset($userCounts['new_series']) && count($userCounts['new_series']) > 0)
 **Users who created series:**
 @foreach ($userCounts['new_series'] as $userName => $count)
 - **{{ $userName }}**: {{ $count }} series
 @endforeach
+
+@endif
 
 **New series created:**
 @foreach ($summary['new_series'] as $activity)
@@ -123,10 +137,13 @@ This is your activity summary for **{{ $site }}** covering the past **{{ $days }
 @if (count($summary['other']) > 0)
 ## Other Activities ({{ $counts['other'] }})
 
+@if(isset($userCounts['other']) && count($userCounts['other']) > 0)
 **Users who performed other activities:**
 @foreach ($userCounts['other'] as $userName => $count)
 - **{{ $userName }}**: {{ $count }} action{{ $count > 1 ? 's' : '' }}
 @endforeach
+
+@endif
 
 **Recent other activities:**
 @foreach (array_slice($summary['other'], 0, 20) as $activity)
