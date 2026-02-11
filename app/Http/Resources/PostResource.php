@@ -30,8 +30,7 @@ class PostResource extends JsonResource
             'visibility_id' => $this->visibility_id,
             'views' => $this->views,
             'is_active' => $this->is_active,
-            'created_by' => $this->created_by,
-            'creator' => $this->creator ? new MinimalUserResource($this->creator) : null,
+            'author' => $this->creator ? new MinimalUserResource($this->creator) : null,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

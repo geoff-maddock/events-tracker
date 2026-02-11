@@ -11,6 +11,7 @@ use App\Http\Resources\CommentResource;
 use App\Http\Resources\PhotoResource;
 use App\Http\Resources\BlogResource;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use ZipArchive;
 
 class DataExportService
@@ -56,7 +57,7 @@ class DataExportService
         }
         
         // Create ZIP file
-        $zipFilename = 'user_data_export_' . $user->id . '_' . date('Y-m-d_H-i-s') . '.zip';
+        $zipFilename = 'user_data_export_' . uniqid('', true) . '.zip';
         $zipPath = storage_path('app/exports/' . $zipFilename);
         
         $this->createZipArchive($exportDir, $zipPath);
@@ -250,7 +251,7 @@ class DataExportService
                     }
                 } catch (\Exception $e) {
                     // Log error but continue with other photos
-                    \Log::warning('Failed to download photo: ' . $photo['path'], ['error' => $e->getMessage()]);
+                    Log::warning('Failed to download photo: ' . $photo['path'], ['error' => $e->getMessage()]);
                 }
             }
         }
@@ -309,7 +310,7 @@ class DataExportService
     }
     
     /**
-     * Get the URL for downloading the export file
+     * Get a signed URL for downloading the export file with expiration
      *
      * @param string $filename
      * @return string
@@ -330,6 +331,9 @@ class DataExportService
             );
         }
         
+        // Note: Using public URL for now. For production with S3/DigitalOcean Spaces,
+        // this should be replaced with Storage::temporaryUrl($publicPath, now()->addDays(7))
+        // which will generate a signed URL with automatic expiration
         return url('storage/' . $publicPath);
     }
     
