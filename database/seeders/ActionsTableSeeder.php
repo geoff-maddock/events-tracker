@@ -232,6 +232,18 @@ class ActionsTableSeeder extends Seeder
                 'created_at' => null,
                 'updated_at' => null,
             ],
+            18 => [
+                'id' => 19,
+                'name' => 'Export',
+                'object_table' => 'User',
+                'child_object_table' => null,
+                'description' => 'User data export requested',
+                'changes' => null,
+                'order' => 0,
+                'is_active' => 1,
+                'created_at' => null,
+                'updated_at' => null,
+            ],
         ]);
     }
 }
