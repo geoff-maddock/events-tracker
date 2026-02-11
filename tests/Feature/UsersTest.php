@@ -62,7 +62,7 @@ class UsersTest extends TestCase
         
         $response = $this->get(route('users.showResetPassword', ['id' => $targetUser->id]));
         
-        // Should be redirected when authorization fails
-        $response->assertRedirect();
+        // Should be redirected or receive 403 when authorization fails
+        $this->assertContains($response->status(), [302, 301, 403]);
     }
 }

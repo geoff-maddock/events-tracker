@@ -2,6 +2,7 @@
 
 namespace App\Filters;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 
 class EntityFilters extends QueryFilter
@@ -158,5 +159,48 @@ class EntityFilters extends QueryFilter
         } else {
             return $this->builder;
         }
+    }
+
+    public function active_range(?string $value = null): Builder
+    {
+        if (!isset($value)) {
+            return $this->builder;
+        }
+
+        // Parse the value to determine the time period
+        // Expected formats: "1-month", "1-year", "2-years", "5-years"
+        $fromDate = null;
+
+        switch ($value) {
+            case '1-day':
+                $fromDate = Carbon::now()->subDay();
+                break;
+            case '1-week':
+                $fromDate = Carbon::now()->subWeek();
+                break;
+            case '1-month':
+                $fromDate = Carbon::now()->subMonth();
+                break;
+            case '3-months':
+                $fromDate = Carbon::now()->subMonths(3);
+                break;
+            case '1-year':
+                $fromDate = Carbon::now()->subYear();
+                break;
+            case '2-years':
+                $fromDate = Carbon::now()->subYears(2);
+                break;
+            case '5-years':
+                $fromDate = Carbon::now()->subYears(5);
+                break;
+            default:
+                // If invalid value, return builder without filtering
+                return $this->builder;
+        }
+
+        // Filter entities that have events with start_at >= fromDate
+        return $this->builder->whereHas('events', function ($q) use ($fromDate) {
+            $q->where('events.start_at', '>=', $fromDate);
+        });
     }
 }

@@ -77,6 +77,11 @@ Entities @include('entities.title-crumbs')
 			Type: {{ $entityTypeOptions[$filters['entity_type']] ?? 'Unknown' }}
 		</span>
 		@endif
+		@if(!empty($filters['active_range']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Active: {{ ['1-week' => '1 Week', '1-month' => '1 Month', '1-year' => '1 Year', '2-years' => '2 Years', '5-years' => '5 Years'][$filters['active_range']] ?? 'Unknown' }}
+		</span>
+		@endif
 		@if(!empty($filters['entity_status']))
 		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
 			Status: {{ $entityStatusOptions[$filters['entity_status']] ?? 'Unknown' }}
@@ -90,7 +95,7 @@ Entities @include('entities.title-crumbs')
 <div id="filter-panel" class="@if(!$hasFilter) hidden @endif bg-card border border-border rounded-lg p-4 mb-6 overflow-hidden">
 	{!! Form::open(['route' => ['entities.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
 
-	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
 		<!-- Name Filter -->
 		<div class="min-w-0">
 			<label for="filter_name" class="block text-sm font-medium text-muted-foreground mb-1">Name</label>
@@ -154,6 +159,20 @@ Entities @include('entities.title-crumbs')
 				'data-placeholder' => 'Select a status',
 				'name' => 'filters[entity_status]',
 				'id' => 'filter_entity_status'
+			])
+			!!}
+		</div>
+
+		<!-- Active Range Filter -->
+		<div class="min-w-0">
+			<label for="filter_active_range" class="block text-sm font-medium text-muted-foreground mb-1">Active Range</label>
+			{!! Form::select('filter_active_range', ['' => 'Any', '1-day' => '1 Day', '1-week' => '1 Week', '1-month' => '1 Month', '3-months' => '3 Months', '1-year' => '1 Year', '2-years' => '2 Years', '5-years' => '5 Years'], ($filters['active_range'] ?? null),
+			[
+				'data-theme' => 'tailwind',
+				'class' => 'form-select-tw',
+				'data-placeholder' => 'Select active range',
+				'name' => 'filters[active_range]',
+				'id' => 'filter_active_range'
 			])
 			!!}
 		</div>
