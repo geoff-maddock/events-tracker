@@ -82,6 +82,11 @@ Entities @include('entities.title-crumbs')
 			Status: {{ $entityStatusOptions[$filters['entity_status']] ?? 'Unknown' }}
 		</span>
 		@endif
+		@if(!empty($filters['active_range']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			Active: {{ ['1-month' => '1 Month', '1-year' => '1 Year', '2-years' => '2 Years', '5-years' => '5 Years'][$filters['active_range']] ?? 'Unknown' }}
+		</span>
+		@endif
 	</div>
 	@endif
 </div>
@@ -154,6 +159,20 @@ Entities @include('entities.title-crumbs')
 				'data-placeholder' => 'Select a status',
 				'name' => 'filters[entity_status]',
 				'id' => 'filter_entity_status'
+			])
+			!!}
+		</div>
+
+		<!-- Active Range Filter -->
+		<div class="min-w-0">
+			<label for="filter_active_range" class="block text-sm font-medium text-muted-foreground mb-1">Active Range</label>
+			{!! Form::select('filter_active_range', ['' => 'Any', '1-month' => '1 Month', '1-year' => '1 Year', '2-years' => '2 Years', '5-years' => '5 Years'], ($filters['active_range'] ?? null),
+			[
+				'data-theme' => 'tailwind',
+				'class' => 'form-select-tw',
+				'data-placeholder' => 'Select active range',
+				'name' => 'filters[active_range]',
+				'id' => 'filter_active_range'
 			])
 			!!}
 		</div>
