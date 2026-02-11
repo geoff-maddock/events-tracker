@@ -49,6 +49,9 @@ class ApiEntityFiltersTest extends TestCase
 
     public function testFilterByActiveRange()
     {
+        // Freeze time for consistent test behavior
+        Carbon::setTestNow(Carbon::now());
+
         $user = User::factory()->create(['user_status_id' => 1]);
         $this->actingAs($user);
 
@@ -100,6 +103,9 @@ class ApiEntityFiltersTest extends TestCase
             ->assertJsonFragment(['name' => 'Recent Active Entity'])
             ->assertJsonFragment(['name' => 'Old Active Entity'])
             ->assertJsonMissing(['name' => 'Never Active Entity']);
+
+        // Clean up - reset test time
+        Carbon::setTestNow();
     }
 }
 

@@ -174,16 +174,16 @@ class EntityFilters extends QueryFilter
 
         switch ($value) {
             case '1-month':
-                $fromDate = $now->copy()->subMonth();
+                $fromDate = $now->subMonth();
                 break;
             case '1-year':
-                $fromDate = $now->copy()->subYear();
+                $fromDate = $now->subYear();
                 break;
             case '2-years':
-                $fromDate = $now->copy()->subYears(2);
+                $fromDate = $now->subYears(2);
                 break;
             case '5-years':
-                $fromDate = $now->copy()->subYears(5);
+                $fromDate = $now->subYears(5);
                 break;
             default:
                 // If invalid value, return builder without filtering
