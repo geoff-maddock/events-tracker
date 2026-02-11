@@ -28,7 +28,7 @@
 
 <div class="form-group col-sm-2">
     {!! Form::label('filter_active_range','Filter By Active Range') !!}
-    <?php $active_range_options = ['' => '&nbsp;', '1-month' => '1 Month', '1-year' => '1 Year', '2-years' => '2 Years', '5-years' => '5 Years']; ?>
+    <?php $active_range_options = ['' => '&nbsp;', '1-week' => '1 Week', '1-month' => '1 Month', '3-months' => '3 Months', '1-year' => '1 Year', '2-years' => '2 Years', '5-years' => '5 Years']; ?>
     {!! Form::select('filters[active_range]', $active_range_options, (isset($filters['active_range']) ? $filters['active_range'] : NULL), ['class'
     =>'form-control', 'data-placeholder' => 'Select active range', 'id' => 'filter_active_range']) !!}
 </div>

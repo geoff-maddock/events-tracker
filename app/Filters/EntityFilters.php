@@ -172,8 +172,17 @@ class EntityFilters extends QueryFilter
         $fromDate = null;
 
         switch ($value) {
+            case '1-day':
+                $fromDate = Carbon::now()->subDay();
+                break;
+            case '1-week':
+                $fromDate = Carbon::now()->subWeek();
+                break;
             case '1-month':
                 $fromDate = Carbon::now()->subMonth();
+                break;
+            case '3-months':
+                $fromDate = Carbon::now()->subMonths(3);
                 break;
             case '1-year':
                 $fromDate = Carbon::now()->subYear();
