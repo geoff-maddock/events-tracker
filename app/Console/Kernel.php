@@ -5,6 +5,7 @@ namespace App\Console;
 use App\Console\Commands\AdminActivitySummary;
 use App\Console\Commands\AdminTest;
 use App\Console\Commands\AutomateInstagramPosts;
+use App\Console\Commands\CleanupExports;
 use App\Console\Commands\InitializeEventShares;
 use App\Console\Commands\Notify;
 use App\Console\Commands\NotifyWeekly;
@@ -28,6 +29,7 @@ class Kernel extends ConsoleKernel
         UserCleanup::class,
         AutomateInstagramPosts::class,
         InitializeEventShares::class,
+        CleanupExports::class,
     ];
 
     /**
@@ -49,6 +51,9 @@ class Kernel extends ConsoleKernel
         // DAILY
         // schedule daily user cleanup process
         $schedule->command('userCleanup')->daily()->timezone('America/New_York')->at('07:00');
+
+        // schedule daily cleanup of old export files
+        $schedule->command('cleanup:exports')->daily()->timezone('America/New_York')->at('03:00');
 
         // schedule daily email of events each user is attending today
         $schedule->command('notify')->daily()->timezone('America/New_York')->at('09:00');
