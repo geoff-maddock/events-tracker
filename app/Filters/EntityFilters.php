@@ -169,20 +169,21 @@ class EntityFilters extends QueryFilter
 
         // Parse the value to determine the time period
         // Expected formats: "1-month", "1-year", "2-years", "5-years"
+        $now = Carbon::now();
         $fromDate = null;
 
         switch ($value) {
             case '1-month':
-                $fromDate = Carbon::now()->subMonth();
+                $fromDate = $now->copy()->subMonth();
                 break;
             case '1-year':
-                $fromDate = Carbon::now()->subYear();
+                $fromDate = $now->copy()->subYear();
                 break;
             case '2-years':
-                $fromDate = Carbon::now()->subYears(2);
+                $fromDate = $now->copy()->subYears(2);
                 break;
             case '5-years':
-                $fromDate = Carbon::now()->subYears(5);
+                $fromDate = $now->copy()->subYears(5);
                 break;
             default:
                 // If invalid value, return builder without filtering
