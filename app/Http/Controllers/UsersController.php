@@ -316,7 +316,30 @@ class UsersController extends Controller
 
         $token = \Password::getRepository()->create($user);
 
-        return view('users.show-tw', compact('user', 'tabs', 'token'));
+        // Determine if the current viewer can see the full profile
+        // Full profile is visible if:
+        // 1. The viewer is the profile owner
+        // 2. The viewer is a superuser/admin
+        // 3. The profile owner has enabled public_profile setting
+        $canViewFullProfile = false;
+        
+        if ($this->user) {
+            // User is signed in
+            if ($this->user->id == $user->id || $this->user->id == config('app.superuser')) {
+                // Viewing own profile or is superuser
+                $canViewFullProfile = true;
+            } elseif ($user->profile->setting_public_profile == 1) {
+                // Profile owner has enabled public profile
+                $canViewFullProfile = true;
+            }
+        } else {
+            // Not signed in, check if profile is public
+            if ($user->profile->setting_public_profile == 1) {
+                $canViewFullProfile = true;
+            }
+        }
+
+        return view('users.show-tw', compact('user', 'tabs', 'token', 'canViewFullProfile'));
     }
 
     public function profile(User $user, Request $request): RedirectResponse

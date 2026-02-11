@@ -67,6 +67,11 @@ class Profile extends Eloquent
         'first_name', 'last_name', 'bio', 'alias', 'location', 'facebook_username', 'twitter_username', 'instagram_username','default_theme', 'setting_weekly_update', 'setting_daily_update', 'setting_instant_update', 'setting_forum_update', 'setting_public_profile'
     ];
 
+    protected $attributes = [
+        'default_theme' => 'dark',
+        'setting_public_profile' => 1,
+    ];
+
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
