@@ -138,6 +138,12 @@ class AdminActivitySummary extends Command
             }
         }
 
+        // Sort user counts by count (descending) for each category
+        foreach ($userCounts as $category => &$users) {
+            arsort($users);
+        }
+        unset($users);
+
         // Display summary counts
         $this->info('Activity Summary:');
         $this->table(
