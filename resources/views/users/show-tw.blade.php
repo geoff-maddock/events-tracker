@@ -12,27 +12,29 @@
 
     <!-- Action Buttons -->
     <div class="flex flex-wrap gap-2 mb-6">
-        <a href="{{ route('users.attending', ['id' => $user->id]) }}" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
-            <i class="bi bi-calendar-check mr-2"></i>
-            Attending
-        </a>
+        @if ($canViewFullProfile)
+            <a href="{{ route('users.attending', ['id' => $user->id]) }}" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+                <i class="bi bi-calendar-check mr-2"></i>
+                Attending
+            </a>
 
-        <!-- iCal Dropdown -->
-        <div class="relative" x-data="{ open: false }">
-            <button @click="open = !open" type="button" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
-                <i class="bi bi-calendar-plus mr-2"></i>
-                iCal
-                <i class="bi bi-chevron-down ml-2 text-xs"></i>
-            </button>
-            <div x-show="open" @click.away="open = false" class="absolute left-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-10">
-                <a href="{{ route('users.attendingIcal', ['id' => $user->id]) }}" class="block px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors rounded-t-lg">
-                    Attending iCal
-                </a>
-                <a href="{{ route('users.interestedIcal', ['id' => $user->id]) }}" class="block px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors rounded-b-lg">
-                    Interested iCal
-                </a>
+            <!-- iCal Dropdown -->
+            <div class="relative" x-data="{ open: false }">
+                <button @click="open = !open" type="button" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+                    <i class="bi bi-calendar-plus mr-2"></i>
+                    iCal
+                    <i class="bi bi-chevron-down ml-2 text-xs"></i>
+                </button>
+                <div x-show="open" @click.away="open = false" class="absolute left-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-10">
+                    <a href="{{ route('users.attendingIcal', ['id' => $user->id]) }}" class="block px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors rounded-t-lg">
+                        Attending iCal
+                    </a>
+                    <a href="{{ route('users.interestedIcal', ['id' => $user->id]) }}" class="block px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors rounded-b-lg">
+                        Interested iCal
+                    </a>
+                </div>
             </div>
-        </div>
+        @endif
 
         @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser')))
             <a href="{{ route('users.edit', ['user' => $user->id]) }}" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
@@ -120,12 +122,14 @@
                         </div>
                     @endif
 
-                    <div class="flex items-center gap-2">
-                        <span class="font-semibold text-foreground">Default Theme:</span>
-                        <span class="text-foreground">{{ $user->profile->default_theme ?: Config::get('app.default_theme') }}</span>
-                    </div>
+                    @if ($canViewFullProfile)
+                        <div class="flex items-center gap-2">
+                            <span class="font-semibold text-foreground">Default Theme:</span>
+                            <span class="text-foreground">{{ $user->profile->default_theme ?: Config::get('app.default_theme') }}</span>
+                        </div>
+                    @endif
 
-                    @if ($user->profile->bio)
+                    @if ($canViewFullProfile && $user->profile->bio)
                         <div class="pt-4 border-t border-border">
                             <span class="font-semibold text-foreground block mb-2">Bio:</span>
                             <p class="text-muted-foreground">{{ $user->profile->bio }}</p>
@@ -133,7 +137,7 @@
                     @endif
 
                     <!-- Social Links -->
-                    @if ($user->profile->facebook_username || $user->profile->twitter_username || $user->profile->instagram_username)
+                    @if ($canViewFullProfile && ($user->profile->facebook_username || $user->profile->twitter_username || $user->profile->instagram_username))
                         <div class="pt-4 border-t border-border">
                             <span class="font-semibold text-foreground block mb-2">Social:</span>
                             <div class="flex flex-wrap gap-3">
@@ -188,8 +192,19 @@
                         </div>
                     </div>
 
+                    <!-- Private Profile Notice -->
+                    @if (!$canViewFullProfile)
+                        <div class="pt-4 border-t border-border">
+                            <div class="bg-muted/50 border border-border rounded-lg p-4 text-center">
+                                <i class="bi bi-lock text-3xl text-muted-foreground mb-2 block"></i>
+                                <p class="text-muted-foreground">This user has a private profile.</p>
+                            </div>
+                        </div>
+                    @endif
+
                     <!-- Groups -->
-                    @unless ($user->groups->isEmpty())
+                    @if ($canViewFullProfile)
+                        @unless ($user->groups->isEmpty())
                         <div class="pt-4 border-t border-border">
                             <span class="font-semibold text-foreground block mb-2">Groups:</span>
                             <div class="flex flex-wrap gap-2">
@@ -200,9 +215,11 @@
                                 @endforeach
                             </div>
                         </div>
-                    @endunless
+                        @endunless
+                    @endif
 
                     <!-- Activity Info -->
+                    @if ($canViewFullProfile)
                     <div class="pt-4 border-t border-border text-sm text-muted-foreground">
                         <div class="flex flex-wrap gap-4">
                             <span><strong>Joined:</strong> {{ $user->created_at->format('M j, Y') }}</span>
@@ -210,6 +227,7 @@
                             <span><strong>Last Active:</strong> {{ $user->lastActivity ? $user->lastActivity->created_at->format('M j, Y') : 'Never' }}</span>
                         </div>
                     </div>
+                    @endif
 
                     <!-- Delete Button -->
                     @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser')))
@@ -226,7 +244,7 @@
             <div class="p-6">
                 <h3 class="text-lg font-semibold text-foreground mb-4">Photos</h3>
 
-                @if ($signedIn || $user->id == Config::get('app.superuser'))
+                @if ($canViewFullProfile && ($signedIn || $user->id == Config::get('app.superuser')))
                     <form action="/users/{{ $user->id }}/photos" class="dropzone mb-4 border-2 border-dashed border-border rounded-lg" id="myDropzone" method="POST">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     </form>
@@ -276,9 +294,10 @@
     </div>
 
     <!-- Events and Following Cards -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-6">
-        <!-- Events Card -->
-        <div class="card-tw xl:col-span-1">
+    @if ($canViewFullProfile)
+        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-6">
+            <!-- Events Card -->
+            <div class="card-tw xl:col-span-1">
             @if (isset($tabs) && isset($tabs['events']))
                 <div class="border-b border-border px-6 py-4">
                     <h3 class="text-lg font-semibold text-foreground">Events</h3>
@@ -391,8 +410,9 @@
                     @endswitch
                 </div>
             @endif
+            </div>
         </div>
-    </div>
+    @endif
 </div>
 
 @stop

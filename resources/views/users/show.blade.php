@@ -7,16 +7,18 @@
     <h1 class="display-crumbs text-primary">User  @include('users.crumbs')</h1>
     <div class="row">
         <div class="m-2">
-            <a href="{!! route('users.attending', ['id' => $user->id]) !!}" class="btn btn-primary">Attending</a>
-            <div class="btn-group">
-                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    Ical
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="{!! route('users.attendingIcal', ['id' => $user->id]) !!}">Attending Ical</a></li>
-                    <li><a class="dropdown-item" href="{!! route('users.interestedIcal', ['id' => $user->id]) !!}">Interested Ical</a></li>
-                </ul>
-            </div>
+            @if ($canViewFullProfile)
+                <a href="{!! route('users.attending', ['id' => $user->id]) !!}" class="btn btn-primary">Attending</a>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        Ical
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{!! route('users.attendingIcal', ['id' => $user->id]) !!}">Attending Ical</a></li>
+                        <li><a class="dropdown-item" href="{!! route('users.interestedIcal', ['id' => $user->id]) !!}">Interested Ical</a></li>
+                    </ul>
+                </div>
+            @endif
 
             @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser') ) )
                 <a href="{!! route('users.edit', ['user' => $user->id]) !!}" class="btn btn-primary">Edit Profile</a>
@@ -73,11 +75,13 @@
                     <b>Email </b> {{ $user->email }}<br>
                     <b>Contact </b> <a href="mailto:{{ $user->email }}">{{ $user->email }}</a><br>
                 @endif
-                <b>Default
-                    Theme </b> {{ $user->profile->default_theme ? $user->profile->default_theme : Config::get('app.default_theme') }}
-                <br>
+                @if ($canViewFullProfile)
+                    <b>Default
+                        Theme </b> {{ $user->profile->default_theme ? $user->profile->default_theme : Config::get('app.default_theme') }}
+                    <br>
+                @endif
 
-                @if ($user->profile->bio)
+                @if ($canViewFullProfile && $user->profile->bio)
                     <div class="bio">
 
                         <b>Bio</b><br>
@@ -87,7 +91,7 @@
                     </div>
                 @endif
 
-                @if ($user->profile->facebook_username)
+                @if ($canViewFullProfile && $user->profile->facebook_username)
                     <b>Facebook:</b> <a href="https://facebook.com/{{ $user->profile->facebook_username }}" target="_">{{$user->profile->facebook_username}}</a>
                 @endif
 
@@ -97,6 +101,7 @@
 
                 @if ($user->profile->instagram_username)
                         <b>Instagram:</b> <a href="https://instagram.com/{{ $user->profile->instagram_username }}" target="_">{{ '@' }}{{ $user->profile->instagram_username }}</a>
+                @endif
                 @endif
 
 
@@ -110,7 +115,14 @@
                 @endif
                 Public Profile: {{ $user->profile->setting_public_profile ? 'Yes' : 'No'}}<br><br>
 
-                <div class="groups">
+                @if (!$canViewFullProfile)
+                    <div class="alert alert-info">
+                        <i class="bi bi-lock"></i> This user has a private profile.
+                    </div>
+                @endif
+
+                @if ($canViewFullProfile)
+                    <div class="groups">
                     @unless ($user->groups->isEmpty())
                         <P><b>Groups:</b>
                             @foreach ($user->groups as $group)
@@ -120,6 +132,7 @@
                         @endforeach
                     @endunless
                 </div>
+
                 <p>Actions:
                     <a href="/users/{{ $user->id }}/ical" title="Export attending events to iCal">
                         <i class='bi bi-calendar-plus text-warning icon'></i>
@@ -127,11 +140,12 @@
                 </p>
 
                 <b>Joined:</b> {{ $user->created_at->format('m.d.y') }} | Logged in {{ $user->loginCount }} times |  <b>Last Active:</b> {{ $user->lastActivity ?  $user->lastActivity->created_at->format('m.d.y') : 'Never'}}<br>
+                @endif
                 <br>
             </div>
 
             <div class="col-lg-6">
-                @if ($signedIn || $user->id == Config::get('app.superuser'))
+                @if ($canViewFullProfile && ($signedIn || $user->id == Config::get('app.superuser')))
                     <form action="/users/{{ $user->id }}/photos" class="dropzone" id="myDropzone" method="POST">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     </form>
@@ -161,6 +175,7 @@
         </div>
 
     <div class="row m-2"></div>
+    @if ($canViewFullProfile)
     <div class="row small-gutter mx-2">
 
             <div class="col-lg-6">
@@ -361,9 +376,9 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
+    @endif
 
 @stop
 
