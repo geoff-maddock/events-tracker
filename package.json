@@ -13,6 +13,7 @@
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.7",
+        "@tailwindcss/postcss": "^4.1.12",
         "@tailwindcss/line-clamp": "^0.4.4",
         "autoprefixer": "^10.4.17",
         "axios": "^1.12.1",
@@ -28,7 +29,7 @@
         "resolve-url-loader": "^5.0",
         "sass": "^1.56.1",
         "sass-loader": "^16.0.3",
-        "tailwindcss": "^3.4.1",
+        "tailwindcss": "^4.1.12",
         "vue": "^3.2",
         "webpack": "^5.105.0"
     },
@@ -45,7 +46,6 @@
         "laravel-mix-purgecss": "^6.0.0",
         "lightbox2": "^2.11.1",
         "moment": "^2.29.4",
-        "npm": "^11.9",
         "save-dev": "0.0.1-security",
         "select2": "^4.1.0-rc.0",
         "swagger-ui": "^5.31.0",

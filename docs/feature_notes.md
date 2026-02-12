@@ -2,6 +2,35 @@
 
 A more detailed description of new features and changes to the application.
 
+## 2026.02.12
+
+### Tailwind CSS 4 Upgrade (Mix-first)
+The frontend build now uses Tailwind CSS v4 while staying on Laravel Mix for this phase.
+
+**Build/config updates:**
+- `tailwindcss` upgraded to `^4.1.12`
+- `@tailwindcss/postcss` added and used in `postcss.config.js`
+- `webpack.mix.js` now relies on PostCSS config for Tailwind processing
+- `resources/css/tailwind.css` now uses:
+	- `@config '../../tailwind.config.js';`
+	- `@import 'tailwindcss';`
+
+**Compatibility adjustment:**
+- Replaced `@apply` composition of custom classes (`card-tw`, `card-hover-tw`) with direct utility lists for Tailwind v4 compatibility.
+
+**Template cleanup (unused legacy files removed):**
+- `resources/views/app-old.blade.php`
+- `resources/views/pages/about-old.blade.php`
+- `resources/views/pages/home-old.blade.php`
+- `resources/views/pages/search-tw.blade.php`
+- `resources/views/users/index-old.blade.php`
+- `resources/views/threads/index-old.blade.php`
+- `resources/views/events/home-tw.blade.php`
+
+**Notes:**
+- Active search remains `resources/views/pages/search.blade.php`.
+- A Vite migration is intentionally deferred; this change keeps the existing Mix pipeline stable.
+
 ## 2025.01.15
 
 ### Semantic Entity Routes

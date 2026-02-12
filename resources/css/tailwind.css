@@ -1,10 +1,8 @@
 @import './select2-tailwind.css';
 @import '../../node_modules/dropzone/dist/dropzone.css';
 @import '../../node_modules/flatpickr/dist/flatpickr.min.css';
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@config '../../tailwind.config.js';
+@import 'tailwindcss';
 
 @layer base {
   :root {
@@ -163,12 +161,12 @@
 
   /* Event card specific styles */
   .event-card-tw {
-    @apply card-tw card-hover-tw flex flex-col;
+    @apply bg-card rounded-lg overflow-hidden shadow-lg border border-border hover:shadow-xl transition-all duration-200 flex flex-col;
   }
 
   /* Entity card specific styles */
   .entity-card-tw {
-    @apply card-tw card-hover-tw flex flex-col;
+    @apply bg-card rounded-lg overflow-hidden shadow-lg border border-border hover:shadow-xl transition-all duration-200 flex flex-col;
   }
 
   .event-card-image-tw {
@@ -364,4 +362,45 @@
 .swal2-html-container,
 .swal2-content {
   @apply text-muted-foreground;
+}
+
+/* Normalize container breakpoints independent of event-specific screen variants */
+.container {
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .container {
+    max-width: 640px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1280px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .container {
+    max-width: 1600px;
+  }
+}
+
+@media (min-width: 2000px) {
+  .container {
+    max-width: 2000px;
+  }
 }
