@@ -287,6 +287,21 @@
 @if ($user && (Auth::user()->id === $event->user?->id || $user->hasGroup('super_admin') ))
 <script>
 $(document).ready(function(){
+	const fireAlert = function(options) {
+		if (window.Swal && typeof window.Swal.fire === 'function') {
+			return window.Swal.fire(options);
+		}
+
+		const message = options.text || options.title || 'Alert';
+		if (options.showCancelButton) {
+			const confirmed = window.confirm(message);
+			return Promise.resolve({ value: confirmed, isConfirmed: confirmed });
+		}
+
+		window.alert(message);
+		return Promise.resolve({ value: true, isConfirmed: true });
+	};
+
 	// Wait for Dropzone to be available
 	var attempts = 0;
 	var maxAttempts = 50; // 5 seconds max
@@ -331,7 +346,7 @@ $(document).ready(function(){
 	            });
 				myDropzone.on("error", function (file, message) {
 					console.log(message)
-					Swal.fire({
+					fireAlert({
 						title: "Error",
 						text: "Error: "+message.message,
 						icon: "error",
@@ -355,10 +370,25 @@ $(document).ready(function(){
 @endif
 
 <script type="text/javascript">
+	const fireAlert = function(options) {
+		if (window.Swal && typeof window.Swal.fire === 'function') {
+			return window.Swal.fire(options);
+		}
+
+		const message = options.text || options.title || 'Alert';
+		if (options.showCancelButton) {
+			const confirmed = window.confirm(message);
+			return Promise.resolve({ value: confirmed, isConfirmed: confirmed });
+		}
+
+		window.alert(message);
+		return Promise.resolve({ value: true, isConfirmed: true });
+	};
+
     $('button.delete').on('click', function(e){
         e.preventDefault();
         const form = $(this).parents('form');
-        Swal.fire({
+		fireAlert({
             title: "Are you sure?",
             text: "You will not be able to recover this!",
             icon: "warning",
@@ -366,7 +396,7 @@ $(document).ready(function(){
             confirmButtonColor: "#ef4444",
             confirmButtonText: "Yes, delete it!",
         }).then(result => {
-            if (result.value) {
+			if (result.value || result.isConfirmed) {
                 form.submit();
             }
         });
@@ -423,28 +453,24 @@ $(document).ready(function(){
                         }
                         
                         // Show success message
-                        if (typeof Swal !== 'undefined') {
-                            Swal.fire({
-                                title: 'Embeds Refreshed',
-                                text: 'The embed cache has been cleared and reloaded.',
-                                icon: 'success',
-                                timer: 2000,
-                                showConfirmButton: false
-                            });
-                        }
+						fireAlert({
+							title: 'Embeds Refreshed',
+							text: 'The embed cache has been cleared and reloaded.',
+							icon: 'success',
+							timer: 2000,
+							showConfirmButton: false
+						});
                         
                         // Restore button
                         btn.innerHTML = originalText;
                         btn.disabled = false;
                     }).catch(function(error) {
                         console.error('Error refreshing embeds:', error);
-                        if (typeof Swal !== 'undefined') {
-                            Swal.fire({
-                                title: 'Error',
-                                text: 'Failed to refresh embeds. Please try again.',
-                                icon: 'error'
-                            });
-                        }
+						fireAlert({
+							title: 'Error',
+							text: 'Failed to refresh embeds. Please try again.',
+							icon: 'error'
+						});
                         btn.innerHTML = originalText;
                         btn.disabled = false;
                     });
