@@ -61,14 +61,6 @@
                 </a>
                 @endif
 
-                @if ($ticket = $event->ticket_link)
-                <a href="{{ $event->getTicketTrackingLink() }}"
-                   class="text-muted-foreground hover:text-primary transition-colors"
-                   title="Ticket link" target="_blank" rel="noopener">
-                    <i class="bi bi-ticket-fill"></i>
-                </a>
-                @endif
-
                 @if ($signedIn)
                     @if ($response = $event->getEventResponse($user))
                     <a href="{!! route('events.unattend', ['id' => $event->id]) !!}"
@@ -118,6 +110,14 @@
                 <i class="bi bi-currency-dollar"></i>
                 {{ $event->door_price }}
             </span>
+            @endif
+
+            @if ($ticket = $event->getTicketTrackingLink())
+            <a href="{{ $ticket }}"
+               class="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors"
+               title="Buy tickets" target="_blank" rel="noopener">
+                <i class="bi bi-ticket-perforated"></i>
+            </a>
             @endif
             
             @if($event->min_age)

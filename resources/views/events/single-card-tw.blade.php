@@ -22,12 +22,10 @@
     <div class="flex-grow min-w-0 flex flex-col">
         <!-- Header -->
         <div class="flex flex-col gap-1 mb-2">
-            <!-- Visibility Badge -->
             @if ($event->visibility->name !== 'Public')
             <span class="text-xs font-bold text-yellow-500 uppercase tracking-wider">{{ $event->visibility->name }}</span>
             @endif
-            
-            <!-- Date -->
+
             <a href='/events/by-date/{!! $event->start_at->format('Y') !!}/{!! $event->start_at->format('m') !!}/{!! $event->start_at->format('d') !!}'
                class="text-xs sm:text-sm text-primary hover:text-primary/90 font-medium">
                 {!! $event->start_at->format('D F jS Y') !!}
@@ -59,14 +57,22 @@
                 {{ $event->start_at->format('g:i A') }}
             </span>
             @endif
-            
+
             @if ($event->door_price)
             <span class="flex items-center gap-1">
                 <i class="bi bi-currency-dollar"></i>
                 {{ $event->door_price }}
             </span>
             @endif
-            
+
+            @if ($ticket = $event->getTicketTrackingLink())
+            <a href="{{ $ticket }}"
+               class="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors"
+               title="Buy tickets" target="_blank" rel="noopener">
+                <i class="bi bi-ticket-perforated"></i>
+            </a>
+            @endif
+
             @if($event->min_age)
             <span class="flex items-center gap-1">
                 <i class="bi bi-person-badge"></i>
@@ -122,14 +128,6 @@
                class="text-muted-foreground hover:text-primary transition-colors"
                title="External link" target="_blank" rel="noopener">
                 <i class="bi bi-link-45deg text-xl"></i>
-            </a>
-            @endif
-
-            @if ($ticket = $event->ticket_link)
-            <a href="{{ $event->getTicketTrackingLink() }}"
-               class="text-muted-foreground hover:text-primary transition-colors"
-               title="Ticket link" target="_blank" rel="noopener">
-                <i class="bi bi-ticket-fill"></i>
             </a>
             @endif
 

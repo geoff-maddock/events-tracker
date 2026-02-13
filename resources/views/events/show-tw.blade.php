@@ -233,7 +233,7 @@
 									</span>
 									@endif
 								@endif
-								@if ($ticket = $event->ticket_link)
+								@if ($ticket = $event->getTicketTrackingLink())
 								<a href="{{ $ticket }}" target="_blank" rel="noopener noreferrer" class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Buy tickets">
 									<i class="bi bi-ticket-perforated text-muted-foreground"></i>
 								</a>
