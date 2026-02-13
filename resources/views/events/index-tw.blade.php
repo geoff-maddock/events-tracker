@@ -135,9 +135,10 @@ Events @include('events.title-crumbs')
 			[
 				'data-theme' => 'tailwind',
 				'class' => 'form-select-tw select2',
-				'data-placeholder' => 'Select a tag',
-				'name' => 'filters[tag]',
-				'id' => 'filter_tag'
+				'data-placeholder' => 'Select tags',
+				'name' => 'filters[tag][]',
+				'id' => 'filter_tag',
+				'multiple' => true
 			])
 			!!}
 		</div>

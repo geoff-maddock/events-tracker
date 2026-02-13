@@ -59,14 +59,15 @@
 			</div>
 
 			<div class="col-sm">
-				{!! Form::label('filter_tag', 'Tag') !!}
+				{!! Form::label('filter_tag', 'Tags') !!}
 				{!! Form::select('filter_tag', $tagOptions, (isset($filters['tag']) ? $filters['tag'] : NULL),
 				[
 					'data-theme' => 'bootstrap-5',
 					'data-width' => '100%',
 					'class' =>'form-control select2 form-background',
-					'data-placeholder' => 'Select a tag',
-					'name' => 'filters[tag]'
+					'data-placeholder' => 'Select tags',
+					'name' => 'filters[tag][]',
+					'multiple' => true
 				]) !!}
 			</div>
 
