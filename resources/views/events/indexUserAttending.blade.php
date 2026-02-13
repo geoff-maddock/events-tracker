@@ -112,13 +112,13 @@ User @include('users.title-crumbs')
 
 			<div class="col-sm">
 				{!! Form::label('filter_tag', 'Tags') !!}
-				{!! Form::select('filter_tag', $tagOptions, (isset($filters['tag']) ? $filters['tag'] : NULL),
+				{!! Form::select('filters[tag][]', $tagOptions, (isset($filters['tag']) ? $filters['tag'] : NULL),
 				[
 					'data-theme' => 'bootstrap-5',
 					'data-width' => '100%',
 					'class' =>'form-select select2 form-background',
 					'data-placeholder' => 'Select tags',
-					'name' => 'filters[tag][]',
+					'id' => 'filter_tag',
 					'multiple' => true
 				]) !!}
 			</div>
