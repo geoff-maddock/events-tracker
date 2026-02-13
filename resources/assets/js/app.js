@@ -18,6 +18,7 @@ window.Swal = Swal;
 
 // dropzone used for file uploading
 import { Dropzone } from 'dropzone';
+
 window.Dropzone = Dropzone;
 
 // flatpickr for date/time picking
