@@ -1,0 +1,13 @@
+{
+  "resources/assets/js/app.js": {
+    "file": "assets/app-BQz8xHDn.js",
+    "name": "app",
+    "src": "resources/assets/js/app.js",
+    "isEntry": true
+  },
+  "resources/css/tailwind.css": {
+    "file": "assets/tailwind-DJjxzYDw.css",
+    "src": "resources/css/tailwind.css",
+    "isEntry": true
+  }
+}

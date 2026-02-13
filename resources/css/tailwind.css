@@ -1,8 +1,9 @@
+@import 'tailwindcss';
 @import './select2-tailwind.css';
 @import '../../node_modules/dropzone/dist/dropzone.css';
 @import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 @config '../../tailwind.config.js';
-@import 'tailwindcss';
+@reference 'tailwindcss';
 
 @layer base {
   :root {
