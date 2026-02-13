@@ -16,6 +16,8 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
+        $this->withoutVite();
+
         // replaces disableExceptionHandling
         // disabled due to Token mismatch on post - not sure when this is needed
         $this->withoutExceptionHandling();

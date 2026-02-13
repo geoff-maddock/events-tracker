@@ -30,8 +30,8 @@
   	<link rel="alternate" type="application/rss+xml" href="{{ url('rss') }}"
     	    title="RSS Feed {{ config('app.app_name')}}">
 
-	<!-- Tailwind CSS (New UI) -->
-	<link href="{{ asset('/css/tailwind.css') }}" rel="stylesheet">
+	<!-- Vite-managed app assets -->
+	@vite(['resources/css/tailwind.css', 'resources/assets/js/app.js'])
 
     <!-- Legacy Bootstrap CSS for backward compatibility - loaded based on localStorage -->
 	<script>
@@ -142,7 +142,6 @@
 		</div>
 	</div>
 
-	<script src="{{ asset('/js/app.js') }}"></script>
 	<script src="{{ asset('/js/jquery-3.5.1.min.js') }}"></script>
 	<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox.min.js"></script>

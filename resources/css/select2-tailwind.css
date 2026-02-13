@@ -1,4 +1,5 @@
 /* Select2 Tailwind Theme */
+@reference "tailwindcss";
 
 /* Container - ensure full width but respect parent constraints */
 .select2-container--tailwind {

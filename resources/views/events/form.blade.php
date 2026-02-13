@@ -418,7 +418,7 @@
                 id="do_not_repost"
                 value="1"
                 {{ old('do_not_repost', $event->do_not_repost ?? false) ? 'checked' : '' }}
-                class="h-4 w-4 rounded border-input text-primary focus:ring-ring">
+                class="relative h-4 w-4 appearance-none rounded border border-input bg-muted checked:bg-background checked:border-foreground focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background after:content-[''] after:absolute after:left-1/2 after:top-1/2 after:h-2 after:w-1 after:-translate-x-1/2 after:-translate-y-1/2 after:rotate-45 after:border-r-2 after:border-b-2 after:border-transparent checked:after:border-foreground dark:checked:after:border-accent-foreground">
             <label for="do_not_repost" class="ml-2 text-sm text-foreground cursor-pointer">
                 Do not repost on socials
             </label>

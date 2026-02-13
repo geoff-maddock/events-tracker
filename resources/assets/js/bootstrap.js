@@ -1,17 +1,13 @@
-window._ = require('lodash');
+import _ from 'lodash';
+import axios from 'axios';
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
+import Swal from 'sweetalert2';
+import Visibility from './utilities/visibility';
 
-/**
- * We'll load jQuery and the Bootstrap jQuery plugin which provides support
- * for JavaScript based Bootstrap features such as modals and tabs. This
- * code may be modified to fit the specific needs of your application.
- */
+window.Swal = Swal;
 
-try {
-    window.Popper = require('popper.js').default;
-    window.$ = window.jQuery = require('jquery');
-
-    require('bootstrap-sass');
-} catch (e) {}
+window._ = _;
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
@@ -19,7 +15,7 @@ try {
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
 
-window.axios = require('axios');
+window.axios = axios;
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
@@ -43,59 +39,61 @@ if (token) {
  * allows your team to easily build robust real-time web applications.
  */
 
-import Visibility from './utilities/visibility';
 Visibility.init('body');
 console.log('assets js bootstrap.js visibility init')
 
-import Echo from 'laravel-echo';
+window.Pusher = Pusher;
 
-window.Pusher = require('pusher-js');
+const pusherKey = import.meta.env.VITE_PUSHER_APP_KEY;
 
-window.Echo = new Echo({
-    broadcaster: 'pusher',
-    //key: 'eba5ac880f201aaae590',
-    key: process.env.MIX_PUSHER_APP_KEY,
-    cluster: 'us2',
-    encrypted: true
-});
+if (pusherKey) {
+    window.Echo = new Echo({
+        broadcaster: 'pusher',
+        key: pusherKey,
+        cluster: 'us2',
+        encrypted: true,
+    });
 
-window.Echo.channel('events')
-    .listen('EventUpdated', e => {
-        const message = 'Event #' + e.event.id + ' "' + e.event.name + '" was updated.';
-        Swal.fire({
-            title: "Event Updated",
-            text: message,
-            type: "info",
-            timer: 2500,
-            showConfirmButton: false,
-            preConfirm: function() {
-                return new Promise(function(resolve) {
-                    setTimeout(function() {
-                        resolve()
-                    }, 2000)
-                })
-            }
-        });
-        console.log('Event updated.');
-        console.log(e);
-    })
-    // .listen('EventCreated', e => {
-    //     const message = 'Event #' + e.event.id + ' "' + e.event.name + '" was created.';
-    //     Swal.fire({
-    //         title: "New Event Created",
-    //         text: message,
-    //         type: "info",
-    //         timer: 2500,
-    //         showConfirmButton: false,
-    //         preConfirm: function() {
-    //             return new Promise(function(resolve) {
-    //                 setTimeout(function() {
-    //                     resolve()
-    //                 }, 2000)
-    //             })
-    //         }
-    //     });
-    //     console.log('Event created.');
-    //     console.log(e);
-    // })
-;
+    window.Echo.channel('events')
+        .listen('EventUpdated', e => {
+            const message = 'Event #' + e.event.id + ' "' + e.event.name + '" was updated.';
+            Swal.fire({
+                title: 'Event Updated',
+                text: message,
+                icon: 'info',
+                timer: 2500,
+                showConfirmButton: false,
+                preConfirm: function () {
+                    return new Promise(function (resolve) {
+                        setTimeout(function () {
+                            resolve();
+                        }, 2000);
+                    });
+                }
+            });
+            console.log('Event updated.');
+            console.log(e);
+        })
+        // .listen('EventCreated', e => {
+        //     const message = 'Event #' + e.event.id + ' "' + e.event.name + '" was created.';
+        //     Swal.fire({
+        //         title: "New Event Created",
+        //         text: message,
+        //         type: "info",
+        //         timer: 2500,
+        //         showConfirmButton: false,
+        //         preConfirm: function() {
+        //             return new Promise(function(resolve) {
+        //                 setTimeout(function() {
+        //                     resolve()
+        //                 }, 2000)
+        //             })
+        //         }
+        //     });
+        //     console.log('Event created.');
+        //     console.log(e);
+        // })
+        ;
+} else {
+    window.Echo = null;
+}

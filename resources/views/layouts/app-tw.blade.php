@@ -30,8 +30,8 @@
 	<link rel="alternate" type="application/rss+xml" href="{{ url('rss') }}"
 		title="RSS Feed {{ config('app.app_name')}}">
 
-	<!-- Tailwind CSS with Arcane City design system -->
-	<link href="{{ asset('/css/tailwind.css') }}" rel="stylesheet">
+	<!-- Vite-managed app assets -->
+	@vite(['resources/css/tailwind.css', 'resources/assets/js/app.js'])
 
 	@yield('select2.include')
 
@@ -92,10 +92,6 @@
 	<!-- Alpine.js for reactive components -->
 	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-	<!-- Webpack bundles must load in correct order: manifest -> vendor -> app -->
-	<script src="{{ asset('/js/manifest.js') }}"></script>
-	<script src="{{ asset('/js/vendor.js') }}"></script>
-	<script src="{{ asset('/js/app.js') }}"></script>
 	<script src="{{ asset('/js/jquery-3.5.1.min.js') }}"></script>
 	<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox.min.js"></script>

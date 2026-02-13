@@ -4,6 +4,8 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
+import './bootstrap';
+
 // Note: Alpine.js is loaded via CDN in the layout file
 import Visibility from './utilities/visibility';
 
@@ -11,10 +13,11 @@ import Visibility from './utilities/visibility';
 // window.moment = require('moment');
 
 // sweet alert used for flash messages / alerts 
-window.Swal = require('sweetalert2');
+import Swal from 'sweetalert2';
+window.Swal = Swal;
 
 // dropzone used for file uploading
-const { Dropzone } = require("dropzone");
+import { Dropzone } from 'dropzone';
 window.Dropzone = Dropzone;
 
 // flatpickr for date/time picking
