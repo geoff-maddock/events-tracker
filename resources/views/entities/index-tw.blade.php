@@ -69,7 +69,7 @@ Entities @include('entities.title-crumbs')
 		@endif
 		@if(!empty($filters['tag']))
 		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-			Tag: {{ $tagOptions[$filters['tag']] ?? 'Unknown' }}
+			Tag: {{ collect((array) $filters['tag'])->filter()->map(fn ($tag) => $tagOptions[$tag] ?? $tag)->implode(', ') }}
 		</span>
 		@endif
 		@if(!empty($filters['entity_type']))
