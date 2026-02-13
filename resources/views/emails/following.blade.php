@@ -43,7 +43,7 @@ You might be interested in this new event because you are following <b>{!! $obje
 	</a>
 	@endif
 	@if ($ticket = $event->ticket_link)
-	<a href="{{ $link }}" target="_" title="Ticket link">
+	<a href="{{ $event->getTicketTrackingLink() }}" target="_" title="Ticket link">
 		<i class="bi bi-ticket-perforated"></i>
 	</a>
 	@endif

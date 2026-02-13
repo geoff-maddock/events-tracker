@@ -184,7 +184,7 @@
 
             <!-- Ticket Link -->
             @if ($ticket = $event->ticket_link)
-            <a href="{{ $ticket }}" target="_blank" rel="noopener"
+            <a href="{{ $event->getTicketTrackingLink() }}" target="_blank" rel="noopener"
                 class="text-muted-foreground hover:text-primary transition-colors"
                 title="Buy tickets">
                 <i class="bi bi-ticket-perforated"></i>

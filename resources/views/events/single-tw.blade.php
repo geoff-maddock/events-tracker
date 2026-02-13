@@ -62,7 +62,7 @@
                 @endif
 
                 @if ($ticket = $event->ticket_link)
-                <a href="{{ $ticket }}"
+                <a href="{{ $event->getTicketTrackingLink() }}"
                    class="text-muted-foreground hover:text-primary transition-colors"
                    title="Ticket link" target="_blank" rel="noopener">
                     <i class="bi bi-ticket-fill"></i>

@@ -641,4 +641,7 @@ Route::get('promoter/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults(
 Route::get('shop/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults('role', 'shop')->name('shop.show');
 Route::get('band/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults('role', 'band')->name('band.show');
 
+// Click tracking for event ticket links
+Route::get('go/evt-{id}', 'ClickTrackController@redirect')->name('clicktrack.event')->where('id', '[0-9]+');
+
 Auth::routes();
