@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+- Click-tracking redirect layer for Event and Series ticket links
+  - New `/go/evt-{id}` and `/go/ser-{id}` routes that track clicks before redirecting to ticket URLs
+  - Tracks event_id, venue_id, promoter_id, tags, user_agent, referrer, IP address, and timestamp
+  - Automatically attaches referral parameters to ticket URLs
+  - Comprehensive test coverage for click tracking functionality
+
+### Fixed
+- Fixed bug in email templates where ticket links incorrectly used `$link` variable instead of `$ticket`
+
 
 ## [0.1.0] - 2017-08-03
 ### Added
