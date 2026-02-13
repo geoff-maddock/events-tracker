@@ -929,6 +929,20 @@ class Series extends Eloquent
         return $format;
     }
 
+    /**
+     * Get the click-tracking URL for the series' ticket link
+     * 
+     * @return string|null
+     */
+    public function getTicketTrackingLink(): ?string
+    {
+        if (!$this->ticket_link) {
+            return null;
+        }
+
+        return route('clicktrack.series', ['id' => $this->id]);
+    }
+
     // returns the actual path to the primary photo
     public function getPrimaryPhotoPath(): ?string
     {

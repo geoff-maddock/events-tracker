@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ClickTrack;
 use App\Models\Event;
+use App\Models\Series;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -17,7 +18,7 @@ class ClickTrackController extends Controller
      * @param int $eventId
      * @return RedirectResponse
      */
-    public function redirect(Request $request, int $eventId): RedirectResponse
+    public function redirectEvent(Request $request, int $eventId): RedirectResponse
     {
         // Find the event
         $event = Event::find($eventId);
@@ -45,9 +46,57 @@ class ClickTrackController extends Controller
             'clicked_at' => Carbon::now(),
         ]);
 
-        // Get the ticket link and attach referral params if needed
-        $ticketUrl = $event->ticket_link;
+        // Redirect with referral params
+        return redirect()->away($this->attachReferralParams($event->ticket_link));
+    }
+
+    /**
+     * Track click and redirect to series ticket link
+     *
+     * @param Request $request
+     * @param int $seriesId
+     * @return RedirectResponse
+     */
+    public function redirectSeries(Request $request, int $seriesId): RedirectResponse
+    {
+        // Find the series
+        $series = Series::find($seriesId);
+
+        // If series doesn't exist or has no ticket link, redirect to series page
+        if (!$series || !$series->ticket_link) {
+            if ($series) {
+                return redirect()->route('series.show', $series->slug);
+            }
+            return redirect()->route('home');
+        }
+
+        // Collect tracking data
+        $tags = $series->tags->pluck('name')->implode(',');
         
+        // Create click tracking record
+        ClickTrack::create([
+            'event_id' => null,
+            'venue_id' => $series->venue_id,
+            'promoter_id' => $series->promoter_id,
+            'tags' => $tags,
+            'user_agent' => $request->userAgent(),
+            'referrer' => $request->header('referer'),
+            'ip_address' => $request->ip(),
+            'clicked_at' => Carbon::now(),
+        ]);
+
+        // Redirect with referral params
+        return redirect()->away($this->attachReferralParams($series->ticket_link));
+    }
+
+    /**
+     * Attach referral parameters to the ticket URL
+     *
+     * @param string $ticketUrl
+     * @return string
+     */
+    private function attachReferralParams(string $ticketUrl): string
+    {
         // Parse URL to add referral parameters
         $parsedUrl = parse_url($ticketUrl);
         $query = [];
@@ -79,7 +128,6 @@ class ClickTrackController extends Controller
             $redirectUrl .= '#' . $parsedUrl['fragment'];
         }
 
-        // Redirect to the ticket URL
-        return redirect()->away($redirectUrl);
+        return $redirectUrl;
     }
 }
