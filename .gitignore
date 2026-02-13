@@ -4,6 +4,7 @@
 /node_modules
 /planning
 /public/hot
+/public/build
 /public/photos
 /public/photos-backup
 /public/storage
