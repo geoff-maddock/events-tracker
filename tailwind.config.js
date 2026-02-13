@@ -5,15 +5,32 @@ module.exports = {
     './resources/views/**/*.blade.php',
     './resources/js/**/*.js',
     './resources/js/**/*.vue',
+    './resources/assets/js/**/*.js',
+    './resources/assets/js/**/*.vue',
   ],
   theme: {
-    extend: {
+    container: {
+      center: true,
       screens: {
-        'event-3col': '1264px',
-        'event-4col': '1984px',
+        sm: '640px',
+        md: '768px',
+        lg: '1024px',
+        xl: '1280px',
         '2xl': '1600px',
         '3xl': '2000px',
       },
+    },
+    screens: {
+      sm: '640px',
+      md: '768px',
+      lg: '1024px',
+      'event-3col': '1264px',
+      xl: '1280px',
+      '2xl': '1600px',
+      'event-4col': '1984px',
+      '3xl': '2000px',
+    },
+    extend: {
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',

@@ -12,10 +12,7 @@ mix.js('resources/assets/js/app.js', 'public/js')
     .sourceMaps();
 
 // Build Tailwind CSS - single unified build
-mix.postCss('resources/css/tailwind.css', 'public/css', [
-    require('tailwindcss'),
-    require('autoprefixer'),
-]);
+mix.postCss('resources/css/tailwind.css', 'public/css');
 
 // Production optimizations
 if (mix.inProduction()) {
