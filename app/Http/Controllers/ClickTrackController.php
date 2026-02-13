@@ -15,13 +15,13 @@ class ClickTrackController extends Controller
      * Track click and redirect to event ticket link
      *
      * @param Request $request
-     * @param int $eventId
+     * @param int $id
      * @return RedirectResponse
      */
-    public function redirectEvent(Request $request, int $eventId): RedirectResponse
+    public function redirectEvent(Request $request, int $id): RedirectResponse
     {
         // Find the event
-        $event = Event::find($eventId);
+        $event = Event::find($id);
 
         // If event doesn't exist or has no ticket link, redirect to event page
         if (!$event || !$event->ticket_link) {
@@ -54,13 +54,13 @@ class ClickTrackController extends Controller
      * Track click and redirect to series ticket link
      *
      * @param Request $request
-     * @param int $seriesId
+     * @param int $id
      * @return RedirectResponse
      */
-    public function redirectSeries(Request $request, int $seriesId): RedirectResponse
+    public function redirectSeries(Request $request, int $id): RedirectResponse
     {
         // Find the series
-        $series = Series::find($seriesId);
+        $series = Series::find($id);
 
         // If series doesn't exist or has no ticket link, redirect to series page
         if (!$series || !$series->ticket_link) {

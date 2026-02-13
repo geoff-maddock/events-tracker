@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('click_tracks', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('event_id')->nullable()->index();
-            $table->unsignedInteger('venue_id')->nullable()->index();
-            $table->unsignedInteger('promoter_id')->nullable()->index();
+            $table->unsignedBigInteger('event_id')->nullable()->index();
+            $table->unsignedBigInteger('venue_id')->nullable()->index();
+            $table->unsignedBigInteger('promoter_id')->nullable()->index();
             $table->string('tags')->nullable(); // comma-separated list of tags
             $table->string('user_agent', 512)->nullable();
             $table->string('referrer', 512)->nullable();
@@ -24,10 +24,6 @@ return new class extends Migration
             $table->string('city', 100)->nullable();
             $table->timestamp('clicked_at')->nullable();
             $table->timestamps();
-            
-            $table->engine = 'InnoDB';
-            $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_unicode_ci';
         });
     }
 
