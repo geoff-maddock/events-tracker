@@ -126,13 +126,13 @@
                             </select>
                         </div>
 
-                        <!-- Tag -->
+                        <!-- Tags -->
                         <div>
-                            <label for="filter_tag" class="block text-sm font-medium text-foreground mb-1">Tag</label>
-                            <select name="filters[tag]" id="filter_tag" class="select2 w-full" data-placeholder="Select a tag" data-theme="tailwind">
+                            <label for="filter_tag" class="block text-sm font-medium text-foreground mb-1">Tags</label>
+                            <select name="filters[tag][]" id="filter_tag" class="select2 w-full" data-placeholder="Select tags" data-theme="tailwind" multiple>
                                 <option value=""></option>
                                 @foreach($tagOptions as $id => $name)
-                                    <option value="{{ $id }}" {{ ($filters['tag'] ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                                    <option value="{{ $id }}" {{ (is_array($filters['tag'] ?? null) && in_array($id, $filters['tag'])) || ($filters['tag'] ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
                                 @endforeach
                             </select>
                         </div>

@@ -74,16 +74,18 @@ class EntityFilters extends QueryFilter
             return $this->builder;
         }
 
-        $values = is_array($value) ? $value : array_filter(explode(',', (string) $value));
+        $values = collect(is_array($value) ? $value : explode(',', (string) $value))
+            ->map(fn ($item) => trim((string) $item))
+            ->filter(fn ($item) => $item !== '')
+            ->values()
+            ->all();
 
-        if (count($values) > 1) {
-            return $this->builder->whereHas('tags', function ($q) use ($values) {
-                $q->whereIn('slug', $values);
-            });
+        if (empty($values)) {
+            return $this->builder;
         }
 
         return $this->builder->whereHas('tags', function ($q) use ($values) {
-            $q->where('slug', '=', $values[0]);
+            $q->whereIn('slug', $values);
         });
     }
 
@@ -93,7 +95,15 @@ class EntityFilters extends QueryFilter
             return $this->builder;
         }
 
-        $values = is_array($value) ? $value : array_filter(explode(',', (string) $value));
+        $values = collect(is_array($value) ? $value : explode(',', (string) $value))
+            ->map(fn ($item) => trim((string) $item))
+            ->filter(fn ($item) => $item !== '')
+            ->values()
+            ->all();
+
+        if (empty($values)) {
+            return $this->builder;
+        }
 
         foreach ($values as $val) {
             $this->builder->whereHas('tags', function ($q) use ($val) {

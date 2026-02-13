@@ -69,7 +69,7 @@ Entities @include('entities.title-crumbs')
 		@endif
 		@if(!empty($filters['tag']))
 		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-			Tag: {{ $tagOptions[$filters['tag']] ?? 'Unknown' }}
+			Tag: {{ collect((array) $filters['tag'])->filter()->map(fn ($tag) => $tagOptions[$tag] ?? $tag)->implode(', ') }}
 		</span>
 		@endif
 		@if(!empty($filters['entity_type']))
@@ -123,13 +123,14 @@ Entities @include('entities.title-crumbs')
 
 		<!-- Tag Filter -->
 		<div class="min-w-0">
-			<label for="filter_tag" class="block text-sm font-medium text-muted-foreground mb-1">Tag</label>
-			{!! Form::select('filter_tag', $tagOptions, ($filters['tag'] ?? null),
+			<label for="filter_tag" class="block text-sm font-medium text-muted-foreground mb-1">Tags</label>
+			{!! Form::select('filter_tag', $tagOptions, ((array) ($filters['tag'] ?? [])),
 			[
 				'data-theme' => 'tailwind',
 				'class' => 'form-select-tw select2',
-				'data-placeholder' => 'Select a tag',
-				'name' => 'filters[tag]',
+				'data-placeholder' => 'Select tags',
+				'name' => 'filters[tag][]',
+				'multiple' => true,
 				'id' => 'filter_tag'
 			])
 			!!}
