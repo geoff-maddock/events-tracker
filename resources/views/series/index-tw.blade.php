@@ -119,14 +119,14 @@
 
 		<!-- Tag Filter -->
 		<div class="min-w-0">
-			<label for="filter_tag" class="block text-sm font-medium text-muted-foreground mb-1">Tag</label>
-			{!! Form::select('filter_tag', $tagOptions, ($filters['tag'] ?? null),
+			<label for="filter_tag" class="block text-sm font-medium text-muted-foreground mb-1">Tags</label>
+			{!! Form::select('filters[tag][]', $tagOptions, ($filters['tag'] ?? []),
 			[
 				'data-theme' => 'tailwind',
 				'class' => 'form-select-tw select2',
-				'data-placeholder' => 'Select a tag',
-				'name' => 'filters[tag]',
-				'id' => 'filter_tag'
+				'data-placeholder' => 'Select tags',
+				'id' => 'filter_tag',
+				'multiple' => true
 			])
 			!!}
 		</div>

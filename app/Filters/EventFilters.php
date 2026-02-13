@@ -71,14 +71,8 @@ class EventFilters extends QueryFilter
             return $this->builder;
         }
 
-        if (count($values) > 1) {
-            return $this->builder->whereHas('tags', function ($q) use ($values) {
-                $q->whereIn('slug', $values);
-            });
-        }
-
         return $this->builder->whereHas('tags', function ($q) use ($values) {
-            $q->where('slug', '=', $values[0]);
+            $q->whereIn('slug', $values);
         });
     }
 
