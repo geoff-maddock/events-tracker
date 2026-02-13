@@ -16,7 +16,7 @@
 @if ($event->venue->getPrimaryLocationAddress()){{ $event->venue->getPrimaryLocationAddress() }} @endif @else no venue specified @endif 
 @if ($event->door_price)${{ number_format($event->door_price,0) }}@endif 
 @if ($event->min_age){{ $event->age_format }}@endif 
-@if ($link = $event->primary_link)[Primary Link]({{ $link }})@endif  @if ($ticket = $event->ticket_link)[Buy Ticket]({{ $ticket }})@endif  
+@if ($link = $event->primary_link)[Primary Link]({{ $link }})@endif  @if ($ticket = $event->ticket_link)[Buy Ticket]({{ $event->getTicketTrackingLink() }})@endif  
 
 @if ($event->description)
 {{ $event->description }}  

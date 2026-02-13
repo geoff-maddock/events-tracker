@@ -218,20 +218,22 @@
 							@endif
 
 							<!-- Price -->
-							@if (isset($event->presale_price) || isset($event->door_price))
+							@if (isset($event->presale_price) || isset($event->door_price) || $event->ticket_link)
 							<div class="flex items-center gap-3 text-sm">
+								@if (isset($event->presale_price) || isset($event->door_price))
 								<i class="bi bi-cash h-4 w-4 text-muted-foreground"></i>
-								@if (isset($event->presale_price))
-								<span class="text-green-600 dark:text-green-500">
-									Presale: ${{ floor($event->presale_price) == $event->presale_price ? number_format($event->presale_price, 0) : number_format($event->presale_price, 2) }}
-								</span>
+									@if (isset($event->presale_price))
+									<span class="text-green-600 dark:text-green-500">
+										Presale: ${{ floor($event->presale_price) == $event->presale_price ? number_format($event->presale_price, 0) : number_format($event->presale_price, 2) }}
+									</span>
+									@endif
+									@if (isset($event->door_price))
+									<span class="text-muted-foreground">
+										Door: ${{ floor($event->door_price) == $event->door_price ? number_format($event->door_price, 0) : number_format($event->door_price, 2) }}
+									</span>
+									@endif
 								@endif
-								@if (isset($event->door_price))
-								<span class="text-muted-foreground">
-									Door: ${{ floor($event->door_price) == $event->door_price ? number_format($event->door_price, 0) : number_format($event->door_price, 2) }}
-								</span>
-								@endif
-								@if ($ticket = $event->ticket_link)
+								@if ($ticket = $event->getTicketTrackingLink())
 								<a href="{{ $ticket }}" target="_blank" rel="noopener noreferrer" class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Buy tickets">
 									<i class="bi bi-ticket-perforated text-muted-foreground"></i>
 								</a>

@@ -850,6 +850,20 @@ class Event extends Model
         return $url;
     }
 
+    /**
+     * Get the click-tracking URL for the event's ticket link
+     * 
+     * @return string|null
+     */
+    public function getTicketTrackingLink(): ?string
+    {
+        if (!$this->ticket_link) {
+            return null;
+        }
+
+        return route('clicktrack.event', ['id' => $this->id]);
+    }
+
     public function getDateLastTitleFormat(): ?string
     {
         $format = $this->name;

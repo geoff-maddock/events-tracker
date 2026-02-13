@@ -54,7 +54,7 @@
 		@endif
 
 		@if ($ticket = $event->ticket_link)
-		<a href="{{ $ticket }}" target="_" title="Ticket link">
+		<a href="{{ $event->getTicketTrackingLink() }}" target="_" title="Ticket link">
 			<i class="bi bi-ticket-perforated card-actions"></i>	
 		</a>
 		@endif
@@ -122,12 +122,12 @@
 
 		@if (isset($event->presale_price))
 			@if (floor($event->presale_price) == $event->presale_price)
-			<a href="{{ $ticket }}" target="_" title="Ticket link">
+			<a href="{{ $event->getTicketTrackingLink() }}" target="_" title="Ticket link">
 				${{ number_format($event->presale_price, 0) }}	
 			</a>
 				
 			@else 
-			<a href="{{ $ticket }}" target="_" title="Ticket link">
+			<a href="{{ $event->getTicketTrackingLink() }}" target="_" title="Ticket link">
 				${{ number_format($event->presale_price, 2) }}	
 			</a>
 			@endif /
