@@ -126,9 +126,9 @@
                             </select>
                         </div>
 
-                        <!-- Tag -->
+                        <!-- Tags -->
                         <div>
-                            <label for="filter_tag" class="block text-sm font-medium text-foreground mb-1">Tag</label>
+                            <label for="filter_tag" class="block text-sm font-medium text-foreground mb-1">Tags</label>
                             <select name="filters[tag][]" id="filter_tag" class="select2 w-full" data-placeholder="Select tags" data-theme="tailwind" multiple>
                                 <option value=""></option>
                                 @foreach($tagOptions as $id => $name)

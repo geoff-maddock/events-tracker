@@ -130,7 +130,7 @@ Events @include('events.title-crumbs')
 
 		<!-- Tag Filter -->
 		<div class="min-w-0">
-			<label for="filter_tag" class="block text-sm font-medium text-muted-foreground mb-1">Tag</label>
+			<label for="filter_tag" class="block text-sm font-medium text-muted-foreground mb-1">Tags</label>
 			{!! Form::select('filter_tag', $tagOptions, ($filters['tag'] ?? null),
 			[
 				'data-theme' => 'tailwind',

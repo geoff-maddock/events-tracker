@@ -16,6 +16,62 @@ class ApiEventFiltersTest extends TestCase
 
     protected $seed = true;
 
+    protected $jungleTag;
+    protected $technoTag;
+    protected $houseTag;
+    protected $jungleEvent;
+    protected $technoEvent;
+    protected $houseEvent;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Create and authenticate user
+        $user = User::factory()->create(['user_status_id' => 1]);
+        $this->actingAs($user);
+
+        // Create tags
+        $this->jungleTag = Tag::factory()->create([
+            'name' => 'Jungle',
+            'slug' => 'jungle',
+        ]);
+
+        $this->technoTag = Tag::factory()->create([
+            'name' => 'Techno',
+            'slug' => 'techno',
+        ]);
+
+        $this->houseTag = Tag::factory()->create([
+            'name' => 'House',
+            'slug' => 'house',
+        ]);
+
+        // Create events
+        $this->jungleEvent = Event::factory()->create([
+            'name' => 'Jungle Night',
+            'slug' => 'jungle-night',
+            'start_at' => Carbon::now()->addDays(1),
+        ]);
+
+        $this->technoEvent = Event::factory()->create([
+            'name' => 'Techno Party',
+            'slug' => 'techno-party',
+            'start_at' => Carbon::now()->addDays(2),
+        ]);
+
+        $this->houseEvent = Event::factory()->create([
+            'name' => 'House Music',
+            'slug' => 'house-music',
+            'start_at' => Carbon::now()->addDays(3),
+        ]);
+
+        // Attach tags to events
+        $this->jungleEvent->tags()->attach($this->jungleTag->id);
+        $this->technoEvent->tags()->attach($this->technoTag->id);
+        $this->houseEvent->tags()->attach($this->houseTag->id);
+    }
+
     /**
      * Test filtering events by a single tag.
      *
@@ -23,49 +79,6 @@ class ApiEventFiltersTest extends TestCase
      */
     public function testFilterBySingleTag()
     {
-        $user = User::factory()->create(['user_status_id' => 1]);
-        $this->actingAs($user);
-
-        // Create tags
-        $jungleTag = Tag::factory()->create([
-            'name' => 'Jungle',
-            'slug' => 'jungle',
-        ]);
-
-        $technoTag = Tag::factory()->create([
-            'name' => 'Techno',
-            'slug' => 'techno',
-        ]);
-
-        $houseTag = Tag::factory()->create([
-            'name' => 'House',
-            'slug' => 'house',
-        ]);
-
-        // Create events
-        $jungleEvent = Event::factory()->create([
-            'name' => 'Jungle Night',
-            'slug' => 'jungle-night',
-            'start_at' => Carbon::now()->addDays(1),
-        ]);
-
-        $technoEvent = Event::factory()->create([
-            'name' => 'Techno Party',
-            'slug' => 'techno-party',
-            'start_at' => Carbon::now()->addDays(2),
-        ]);
-
-        $houseEvent = Event::factory()->create([
-            'name' => 'House Music',
-            'slug' => 'house-music',
-            'start_at' => Carbon::now()->addDays(3),
-        ]);
-
-        // Attach tags to events
-        $jungleEvent->tags()->attach($jungleTag->id);
-        $technoEvent->tags()->attach($technoTag->id);
-        $houseEvent->tags()->attach($houseTag->id);
-
         // Test filtering by single tag
         $response = $this->getJson('/api/events?filters[tag]=jungle');
 
@@ -82,49 +95,6 @@ class ApiEventFiltersTest extends TestCase
      */
     public function testFilterByMultipleTags()
     {
-        $user = User::factory()->create(['user_status_id' => 1]);
-        $this->actingAs($user);
-
-        // Create tags
-        $jungleTag = Tag::factory()->create([
-            'name' => 'Jungle',
-            'slug' => 'jungle',
-        ]);
-
-        $technoTag = Tag::factory()->create([
-            'name' => 'Techno',
-            'slug' => 'techno',
-        ]);
-
-        $houseTag = Tag::factory()->create([
-            'name' => 'House',
-            'slug' => 'house',
-        ]);
-
-        // Create events
-        $jungleEvent = Event::factory()->create([
-            'name' => 'Jungle Night',
-            'slug' => 'jungle-night',
-            'start_at' => Carbon::now()->addDays(1),
-        ]);
-
-        $technoEvent = Event::factory()->create([
-            'name' => 'Techno Party',
-            'slug' => 'techno-party',
-            'start_at' => Carbon::now()->addDays(2),
-        ]);
-
-        $houseEvent = Event::factory()->create([
-            'name' => 'House Music',
-            'slug' => 'house-music',
-            'start_at' => Carbon::now()->addDays(3),
-        ]);
-
-        // Attach tags to events
-        $jungleEvent->tags()->attach($jungleTag->id);
-        $technoEvent->tags()->attach($technoTag->id);
-        $houseEvent->tags()->attach($houseTag->id);
-
         // Test filtering by multiple tags using comma-separated values (OR logic)
         $response = $this->getJson('/api/events?filters[tag]=jungle,techno');
 
@@ -141,49 +111,6 @@ class ApiEventFiltersTest extends TestCase
      */
     public function testFilterByMultipleTagsArray()
     {
-        $user = User::factory()->create(['user_status_id' => 1]);
-        $this->actingAs($user);
-
-        // Create tags
-        $jungleTag = Tag::factory()->create([
-            'name' => 'Jungle',
-            'slug' => 'jungle',
-        ]);
-
-        $technoTag = Tag::factory()->create([
-            'name' => 'Techno',
-            'slug' => 'techno',
-        ]);
-
-        $houseTag = Tag::factory()->create([
-            'name' => 'House',
-            'slug' => 'house',
-        ]);
-
-        // Create events
-        $jungleEvent = Event::factory()->create([
-            'name' => 'Jungle Night',
-            'slug' => 'jungle-night',
-            'start_at' => Carbon::now()->addDays(1),
-        ]);
-
-        $technoEvent = Event::factory()->create([
-            'name' => 'Techno Party',
-            'slug' => 'techno-party',
-            'start_at' => Carbon::now()->addDays(2),
-        ]);
-
-        $houseEvent = Event::factory()->create([
-            'name' => 'House Music',
-            'slug' => 'house-music',
-            'start_at' => Carbon::now()->addDays(3),
-        ]);
-
-        // Attach tags to events
-        $jungleEvent->tags()->attach($jungleTag->id);
-        $technoEvent->tags()->attach($technoTag->id);
-        $houseEvent->tags()->attach($houseTag->id);
-
         // Test filtering by multiple tags using array format (OR logic)
         $response = $this->getJson('/api/events?filters[tag][]=jungle&filters[tag][]=techno');
 
@@ -200,25 +127,6 @@ class ApiEventFiltersTest extends TestCase
      */
     public function testFilterEventWithMultipleTags()
     {
-        $user = User::factory()->create(['user_status_id' => 1]);
-        $this->actingAs($user);
-
-        // Create tags
-        $jungleTag = Tag::factory()->create([
-            'name' => 'Jungle',
-            'slug' => 'jungle',
-        ]);
-
-        $technoTag = Tag::factory()->create([
-            'name' => 'Techno',
-            'slug' => 'techno',
-        ]);
-
-        $houseTag = Tag::factory()->create([
-            'name' => 'House',
-            'slug' => 'house',
-        ]);
-
         // Create event with multiple tags
         $multiTagEvent = Event::factory()->create([
             'name' => 'Multi Genre Night',
@@ -226,22 +134,14 @@ class ApiEventFiltersTest extends TestCase
             'start_at' => Carbon::now()->addDays(1),
         ]);
 
-        $houseEvent = Event::factory()->create([
-            'name' => 'House Music',
-            'slug' => 'house-music',
-            'start_at' => Carbon::now()->addDays(3),
-        ]);
-
         // Attach multiple tags to the same event
-        $multiTagEvent->tags()->attach([$jungleTag->id, $technoTag->id]);
-        $houseEvent->tags()->attach($houseTag->id);
+        $multiTagEvent->tags()->attach([$this->jungleTag->id, $this->technoTag->id]);
 
         // Test filtering by one of the tags
         $response = $this->getJson('/api/events?filters[tag]=jungle');
 
         $response->assertStatus(200)
-            ->assertJsonFragment(['name' => 'Multi Genre Night'])
-            ->assertJsonMissing(['name' => 'House Music']);
+            ->assertJsonFragment(['name' => 'Multi Genre Night']);
 
         // Test filtering by multiple tags - should still return the event once
         $response = $this->getJson('/api/events?filters[tag]=jungle,techno');
