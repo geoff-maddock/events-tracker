@@ -27,6 +27,7 @@ use App\Models\Menu;
 use App\Models\Permission;
 use App\Models\Photo;
 use App\Models\Post;
+use App\Models\Role;
 use App\Models\Series;
 use App\Models\Thread;
 use App\Models\ThreadCategory;
@@ -465,6 +466,18 @@ Route::bind('entity-types', function ($id) {
 
 Route::resource('entity-types', 'EntityTypesController');
 Route::delete('entity-types/{id}', 'EntityTypesController@destroy');
+
+// Roles
+Route::match(['get', 'post'], 'roles/filter', ['as' => 'roles.filter', 'uses' => 'RolesController@filter']);
+Route::get('roles/reset', ['as' => 'roles.reset', 'uses' => 'RolesController@reset']);
+Route::get('roles/rpp-reset', ['as' => 'roles.rppReset', 'uses' => 'RolesController@rppReset']);
+
+Route::bind('roles', function ($id) {
+    return Role::whereId($id)->firstOrFail();
+});
+
+Route::resource('roles', 'RolesController');
+Route::delete('roles/{id}', 'RolesController@destroy');
 
 // GROUPS
 Route::match(['get', 'post'], 'groups/filter', ['as' => 'groups.filter', 'uses' => 'GroupsController@filter']);
