@@ -36,7 +36,7 @@ class BotDetector
 
         // Check against known bot patterns
         foreach (self::$botPatterns as $pattern) {
-            if (stripos($userAgent, strtolower($pattern)) !== false) {
+            if (strpos($userAgent, strtolower($pattern)) !== false) {
                 return true;
             }
         }

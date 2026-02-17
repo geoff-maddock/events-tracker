@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('click_tracks', function (Blueprint $table) {
-            $table->integer('user_id')->nullable()->index()->after('event_id');
+            $table->foreignId('user_id')->nullable()->index()->after('event_id');
         });
     }
 
