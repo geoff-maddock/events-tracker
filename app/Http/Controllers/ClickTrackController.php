@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\BotDetector;
 use App\Models\ClickTrack;
 use App\Models\Event;
 use App\Models\Series;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 
 class ClickTrackController extends Controller
 {
@@ -31,12 +33,19 @@ class ClickTrackController extends Controller
             return redirect()->route('home');
         }
 
+        // Check if the request is from a bot/crawler
+        if (BotDetector::isBot($request->userAgent())) {
+            // Redirect without tracking if it's a bot
+            return redirect()->away($this->attachReferralParams($event->ticket_link));
+        }
+
         // Collect tracking data
         $tags = $event->tags->pluck('name')->implode(',');
         
         // Create click tracking record
         ClickTrack::create([
             'event_id' => $event->id,
+            'user_id' => Auth::id(), // Will be null for anonymous users
             'venue_id' => $event->venue_id,
             'promoter_id' => $event->promoter_id,
             'tags' => $tags,
@@ -70,12 +79,19 @@ class ClickTrackController extends Controller
             return redirect()->route('home');
         }
 
+        // Check if the request is from a bot/crawler
+        if (BotDetector::isBot($request->userAgent())) {
+            // Redirect without tracking if it's a bot
+            return redirect()->away($this->attachReferralParams($series->ticket_link));
+        }
+
         // Collect tracking data
         $tags = $series->tags->pluck('name')->implode(',');
         
         // Create click tracking record
         ClickTrack::create([
             'event_id' => null,
+            'user_id' => Auth::id(), // Will be null for anonymous users
             'venue_id' => $series->venue_id,
             'promoter_id' => $series->promoter_id,
             'tags' => $tags,
