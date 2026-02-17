@@ -163,6 +163,16 @@ Route::post('users/{id}/reset-password', [
     'uses' => 'UsersController@resetPassword',
 ])->middleware('can:grant_access');
 
+Route::post('users/{id}/export-data', [
+    'as' => 'users.exportData',
+    'uses' => 'UsersController@exportData',
+])->middleware('auth');
+
+Route::get('exports/download/{filename}', [
+    'as' => 'exports.download',
+    'uses' => 'UsersController@downloadExport',
+])->middleware('signed');
+
 Route::post('purge', 'UsersController@purge')->name('users.purge');
 
 Route::match(['get', 'post'], 'users/{id}/attending', 'EventsController@indexUserAttending')->name('users.attending');

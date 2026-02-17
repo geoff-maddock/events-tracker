@@ -8,6 +8,8 @@
 /public/photos
 /public/photos-backup
 /public/storage
+/storage/app/exports
+/storage/app/public/exports
 /public/js/app.js
 /public/js/app.js.LICENSE.txt
 /public/js/app.js.map

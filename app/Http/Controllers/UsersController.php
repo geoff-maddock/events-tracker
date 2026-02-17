@@ -25,12 +25,15 @@ use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use App\Services\Calendar\ICalBuilder;
+use App\Jobs\ExportUserDataJob;
+use App\Services\DataExportService;
 use Throwable;
 
 class UsersController extends Controller
@@ -927,5 +930,56 @@ class UsersController extends Controller
             'userStatusOptions' => ['' => ''] + UserStatus::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'groupOptions' => Group::orderBy('name')->pluck('name', 'id')->all(),
         ];
+    }
+
+    /**
+     * Export user data as a ZIP file with JSON and images.
+     */
+    public function exportData(int $id, Request $request): RedirectResponse
+    {
+        // Check if there is a logged in user
+        if (!$this->user) {
+            flash()->error('Error', 'No user is logged in.');
+            return back();
+        }
+
+        if (!$user = User::find($id)) {
+            flash()->error('Error', 'No such user');
+            return back();
+        }
+
+        // Authorization: user can only export their own data, or superuser can export any
+        if ($this->user->id != $user->id && $this->user->id != config('app.superuser')) {
+            flash()->error('Error', 'You are not authorized to export this user\'s data.');
+            return back();
+        }
+
+        // Dispatch the export job
+        ExportUserDataJob::dispatch($user);
+
+        // Add to activity log
+        Activity::log($user, $this->user, Action::EXPORT);
+
+        Log::info('User data export requested for user: ' . $user->name . ' by: ' . $this->user->name);
+
+        flash()->success('Success', 'Your data export has been queued. You will receive an email with a download link when it is ready.');
+
+        return redirect()->route('users.show', ['user' => $user->id]);
+    }
+
+    /**
+     * Download a generated export file via signed URL.
+     */
+    public function downloadExport(string $filename, Request $request, DataExportService $exportService): BinaryFileResponse
+    {
+        $path = $exportService->findExportPath($filename);
+
+        if (!$path || !is_file($path)) {
+            abort(404);
+        }
+
+        return response()->download($path, $filename, [
+            'Content-Type' => 'application/zip',
+        ]);
     }
 }
