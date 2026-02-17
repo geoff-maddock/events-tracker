@@ -111,7 +111,7 @@ class PagesController extends Controller
      */
     public function search(Request $request): View
     {
-        $search = $request->input('keyword');
+        $search = $request->input('keyword', '');
         $searchSlug = Str::slug($search, '-');
 
         // override limit, while not breaking template that tries to render
