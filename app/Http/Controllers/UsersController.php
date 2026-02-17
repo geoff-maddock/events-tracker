@@ -964,7 +964,7 @@ class UsersController extends Controller
 
         flash()->success('Success', 'Your data export has been queued. You will receive an email with a download link when it is ready.');
 
-        return back();
+        return redirect()->route('users.show', ['user' => $user->id]);
     }
 
     /**
