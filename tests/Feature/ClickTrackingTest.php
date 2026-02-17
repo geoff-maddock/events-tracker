@@ -8,6 +8,7 @@ use App\Models\Event;
 use App\Models\Series;
 use App\Models\ClickTrack;
 use App\Models\User;
+use App\Models\UserStatus;
 use App\Models\EventType;
 use App\Models\Visibility;
 
@@ -173,5 +174,139 @@ class ClickTrackingTest extends TestCase
 
         // Assert it returns the correct URL
         $this->assertEquals(route('clicktrack.series', ['id' => $series->id]), $trackingLink);
+    }
+
+    /** @test */
+    public function click_tracking_stores_authenticated_user_id()
+    {
+        // Create a user and authenticate
+        $user = User::factory()->create([
+            'user_status_id' => UserStatus::ACTIVE,
+        ]);
+        $this->actingAs($user);
+
+        // Create an event with a ticket link
+        $event = Event::factory()->create([
+            'ticket_link' => 'https://example.com/tickets',
+        ]);
+
+        // Visit the tracking URL
+        $response = $this->get('/go/evt-' . $event->id);
+
+        // Assert redirect
+        $response->assertRedirect();
+
+        // Assert click was tracked with user_id
+        $this->assertDatabaseHas('click_tracks', [
+            'event_id' => $event->id,
+            'user_id' => $user->id,
+        ]);
+    }
+
+    /** @test */
+    public function click_tracking_stores_null_user_id_for_anonymous_users()
+    {
+        // Create an event with a ticket link
+        $event = Event::factory()->create([
+            'ticket_link' => 'https://example.com/tickets',
+        ]);
+
+        // Visit the tracking URL without authentication
+        $response = $this->get('/go/evt-' . $event->id);
+
+        // Assert redirect
+        $response->assertRedirect();
+
+        // Assert click was tracked with null user_id
+        $this->assertDatabaseHas('click_tracks', [
+            'event_id' => $event->id,
+            'user_id' => null,
+        ]);
+    }
+
+    /** @test */
+    public function click_tracking_does_not_track_bot_requests()
+    {
+        // Create an event with a ticket link
+        $event = Event::factory()->create([
+            'ticket_link' => 'https://example.com/tickets',
+        ]);
+
+        // Visit the tracking URL with a bot user agent
+        $response = $this->withHeaders([
+            'User-Agent' => 'Googlebot/2.1 (+http://www.google.com/bot.html)',
+        ])->get('/go/evt-' . $event->id);
+
+        // Assert redirect (still redirects the bot)
+        $response->assertRedirect();
+
+        // Assert no click was tracked
+        $this->assertEquals(0, ClickTrack::count());
+    }
+
+    /** @test */
+    public function click_tracking_does_not_track_crawler_requests()
+    {
+        // Create an event with a ticket link
+        $event = Event::factory()->create([
+            'ticket_link' => 'https://example.com/tickets',
+        ]);
+
+        // Visit the tracking URL with a crawler user agent
+        $response = $this->withHeaders([
+            'User-Agent' => 'Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)',
+        ])->get('/go/evt-' . $event->id);
+
+        // Assert redirect (still redirects the crawler)
+        $response->assertRedirect();
+
+        // Assert no click was tracked
+        $this->assertEquals(0, ClickTrack::count());
+    }
+
+    /** @test */
+    public function series_click_tracking_stores_authenticated_user_id()
+    {
+        // Create a user and authenticate
+        $user = User::factory()->create([
+            'user_status_id' => UserStatus::ACTIVE,
+        ]);
+        $this->actingAs($user);
+
+        // Create a series with a ticket link
+        $series = Series::factory()->create([
+            'ticket_link' => 'https://example.com/tickets',
+        ]);
+
+        // Visit the tracking URL
+        $response = $this->get('/go/ser-' . $series->id);
+
+        // Assert redirect
+        $response->assertRedirect();
+
+        // Assert click was tracked with user_id
+        $this->assertDatabaseHas('click_tracks', [
+            'user_id' => $user->id,
+        ]);
+    }
+
+    /** @test */
+    public function series_click_tracking_does_not_track_bot_requests()
+    {
+        // Create a series with a ticket link
+        $series = Series::factory()->create([
+            'ticket_link' => 'https://example.com/tickets',
+        ]);
+
+        // Visit the tracking URL with a bot user agent
+        $response = $this->withHeaders([
+            'User-Agent' => 'facebookexternalhit/1.1',
+        ])->get('/go/ser-' . $series->id);
+
+        // Assert redirect (still redirects the bot)
+        $response->assertRedirect();
+
+        // Assert no click was tracked
+        $this->assertEquals(0, ClickTrack::count());
     }
 }

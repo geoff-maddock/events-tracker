@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * @property int $id
  * @property int|null $event_id
+ * @property int|null $user_id
  * @property int|null $venue_id
  * @property int|null $promoter_id
  * @property string|null $tags
@@ -23,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Event|null $event
+ * @property-read \App\Models\User|null $user
  */
 class ClickTrack extends Model
 {
@@ -30,6 +32,7 @@ class ClickTrack extends Model
 
     protected $fillable = [
         'event_id',
+        'user_id',
         'venue_id',
         'promoter_id',
         'tags',
@@ -67,5 +70,13 @@ class ClickTrack extends Model
     public function promoter(): BelongsTo
     {
         return $this->belongsTo(Entity::class, 'promoter_id');
+    }
+
+    /**
+     * Get the user that owns this click track.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }
