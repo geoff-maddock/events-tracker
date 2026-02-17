@@ -31,18 +31,20 @@
 	</a>
 	@endif
 
-	@if ($signedIn)
-	@if ($follow = $entity->followedBy($user))
+	@if ($follow = $entity->followedBy($signedIn ? $user : null))
 	<a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}" data-target="#entity-{{ $entity->id }}"
 		class="ajax-action" title="Click to unfollow">
 		<i class="bi bi-check-circle-fill card-actions text-info"></i>
 	</a>
-	@else
+	@elseif ($signedIn)
 	<a href="{!! route('entities.follow', ['id' => $entity->id]) !!}" data-target="#entity-{{ $entity->id }}"
 		class="ajax-action" title="Click to follow">
 		<i class="bi bi-plus-circle card-actions icon"></i>
 	</a>
-	@endif
+	@else
+	<a href="{!! route('login') !!}" title="Sign in to follow">
+		<i class="bi bi-plus-circle card-actions icon"></i>
+	</a>
 	@endif
 
 
