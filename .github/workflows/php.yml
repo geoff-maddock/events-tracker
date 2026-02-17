@@ -51,6 +51,12 @@ jobs:
       - name: Install dependencies
         run: composer install --quiet --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
       - name: Install NPM Dependencies
         run: npm install
 
