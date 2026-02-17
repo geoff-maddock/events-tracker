@@ -8,6 +8,7 @@ use App\Models\Event;
 use App\Models\Series;
 use App\Models\ClickTrack;
 use App\Models\User;
+use App\Models\UserStatus;
 use App\Models\EventType;
 use App\Models\Visibility;
 
@@ -179,7 +180,9 @@ class ClickTrackingTest extends TestCase
     public function click_tracking_stores_authenticated_user_id()
     {
         // Create a user and authenticate
-        $user = User::factory()->create();
+        $user = User::factory()->create([
+            'user_status_id' => UserStatus::ACTIVE,
+        ]);
         $this->actingAs($user);
 
         // Create an event with a ticket link
@@ -265,7 +268,9 @@ class ClickTrackingTest extends TestCase
     public function series_click_tracking_stores_authenticated_user_id()
     {
         // Create a user and authenticate
-        $user = User::factory()->create();
+        $user = User::factory()->create([
+            'user_status_id' => UserStatus::ACTIVE,
+        ]);
         $this->actingAs($user);
 
         // Create a series with a ticket link
