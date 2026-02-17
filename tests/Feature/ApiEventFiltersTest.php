@@ -31,20 +31,20 @@ class ApiEventFiltersTest extends TestCase
         $user = User::factory()->create(['user_status_id' => 1]);
         $this->actingAs($user);
 
-        // Create tags
+        // Create tags with unique names to avoid conflicts with seeded data
         $this->jungleTag = Tag::factory()->create([
-            'name' => 'Jungle',
-            'slug' => 'jungle',
+            'name' => 'Test Jungle Filter',
+            'slug' => 'test-jungle-filter',
         ]);
 
         $this->technoTag = Tag::factory()->create([
-            'name' => 'Techno',
-            'slug' => 'techno',
+            'name' => 'Test Techno Filter',
+            'slug' => 'test-techno-filter',
         ]);
 
         $this->houseTag = Tag::factory()->create([
-            'name' => 'House',
-            'slug' => 'house',
+            'name' => 'Test House Filter',
+            'slug' => 'test-house-filter',
         ]);
 
         // Create events
@@ -80,7 +80,7 @@ class ApiEventFiltersTest extends TestCase
     public function testFilterBySingleTag()
     {
         // Test filtering by single tag
-        $response = $this->getJson('/api/events?filters[tag]=jungle');
+        $response = $this->getJson('/api/events?filters[tag]=test-jungle-filter');
 
         $response->assertStatus(200)
             ->assertJsonFragment(['name' => 'Jungle Night'])
@@ -96,7 +96,7 @@ class ApiEventFiltersTest extends TestCase
     public function testFilterByMultipleTags()
     {
         // Test filtering by multiple tags using comma-separated values (OR logic)
-        $response = $this->getJson('/api/events?filters[tag]=jungle,techno');
+        $response = $this->getJson('/api/events?filters[tag]=test-jungle-filter,test-techno-filter');
 
         $response->assertStatus(200)
             ->assertJsonFragment(['name' => 'Jungle Night'])
@@ -112,7 +112,7 @@ class ApiEventFiltersTest extends TestCase
     public function testFilterByMultipleTagsArray()
     {
         // Test filtering by multiple tags using array format (OR logic)
-        $response = $this->getJson('/api/events?filters[tag][]=jungle&filters[tag][]=techno');
+        $response = $this->getJson('/api/events?filters[tag][]=test-jungle-filter&filters[tag][]=test-techno-filter');
 
         $response->assertStatus(200)
             ->assertJsonFragment(['name' => 'Jungle Night'])
@@ -138,13 +138,13 @@ class ApiEventFiltersTest extends TestCase
         $multiTagEvent->tags()->attach([$this->jungleTag->id, $this->technoTag->id]);
 
         // Test filtering by one of the tags
-        $response = $this->getJson('/api/events?filters[tag]=jungle');
+        $response = $this->getJson('/api/events?filters[tag]=test-jungle-filter');
 
         $response->assertStatus(200)
             ->assertJsonFragment(['name' => 'Multi Genre Night']);
 
         // Test filtering by multiple tags - should still return the event once
-        $response = $this->getJson('/api/events?filters[tag]=jungle,techno');
+        $response = $this->getJson('/api/events?filters[tag]=test-jungle-filter,test-techno-filter');
 
         $response->assertStatus(200)
             ->assertJsonFragment(['name' => 'Multi Genre Night'])
