@@ -847,15 +847,6 @@ class SeriesController extends Controller
     {
         // check if there is a logged in user
         if (!$this->user) {
-            // handle the request if ajax
-            if ($request->ajax()) {
-                return [
-                    'Error' => 'Unauthorized',
-                    'Message' => 'Please sign in to follow',
-                    'RedirectUrl' => route('login'),
-                ];
-            }
-            
             flash()->error('Error', 'No user is logged in.');
 
             return back();
@@ -901,15 +892,6 @@ class SeriesController extends Controller
     {
         // check if there is a logged in user
         if (!$this->user) {
-            // handle the request if ajax
-            if ($request->ajax()) {
-                return [
-                    'Error' => 'Unauthorized',
-                    'Message' => 'Please sign in to unfollow',
-                    'RedirectUrl' => route('login'),
-                ];
-            }
-            
             flash()->error('Error', 'No user is logged in.');
 
             return back();

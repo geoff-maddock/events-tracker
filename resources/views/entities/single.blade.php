@@ -36,9 +36,13 @@
 		class="ajax-action" title="Click to unfollow">
 		<i class="bi bi-check-circle-fill card-actions text-info"></i>
 	</a>
-	@else
+	@elseif ($signedIn)
 	<a href="{!! route('entities.follow', ['id' => $entity->id]) !!}" data-target="#entity-{{ $entity->id }}"
-		class="ajax-action" title="{{ $signedIn ? 'Click to follow' : 'Sign in to follow' }}">
+		class="ajax-action" title="Click to follow">
+		<i class="bi bi-plus-circle card-actions icon"></i>
+	</a>
+	@else
+	<a href="{!! route('login') !!}" title="Sign in to follow">
 		<i class="bi bi-plus-circle card-actions icon"></i>
 	</a>
 	@endif

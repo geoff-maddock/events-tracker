@@ -38,9 +38,8 @@
                 </a>
                 @endif
             @else
-                <a href="{!! route('series.follow', ['id' => $series->id]) !!}" 
-                    data-target="#series-card-{{ $series->id }}" 
-                    class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
+                <a href="{!! route('login') !!}"
+                    class="p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
                     title="Sign in to follow">
                     <i class="bi bi-plus-circle text-muted-foreground hover:text-primary text-lg"></i>
                 </a>

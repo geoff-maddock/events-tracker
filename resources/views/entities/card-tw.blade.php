@@ -38,9 +38,8 @@
 				</a>
 				@endif
 			@else
-				<a href="{!! route('entities.follow', ['id' => $entity->id]) !!}"
-					data-target="#entity-card-{{ $entity->id }}"
-					class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
+				<a href="{!! route('login') !!}"
+					class="p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
 					title="Sign in to follow">
 					<i class="bi bi-plus-circle text-muted-foreground hover:text-primary text-lg"></i>
 				</a>

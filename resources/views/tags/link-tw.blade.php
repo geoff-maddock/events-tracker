@@ -8,8 +8,12 @@
             <a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" class="ajax-action text-amber-500 hover:text-amber-400 transition-colors" title="Click to unfollow">
                 <i class="bi bi-dash-circle-fill"></i>
             </a>
+        @elseif ($signedIn)
+            <a href="{!! route('tags.follow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" class="ajax-action text-primary hover:text-primary/80 transition-colors" title="Click to follow">
+                <i class="bi bi-plus-circle-fill"></i>
+            </a>
         @else
-            <a href="{!! route('tags.follow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" class="ajax-action text-primary hover:text-primary/80 transition-colors" title="{{ $signedIn ? 'Click to follow' : 'Sign in to follow' }}">
+            <a href="{!! route('login') !!}" class="text-primary hover:text-primary/80 transition-colors" title="Sign in to follow">
                 <i class="bi bi-plus-circle-fill"></i>
             </a>
         @endif
@@ -23,8 +27,12 @@
             <a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" class="ajax-action text-amber-500 hover:text-amber-400 transition-colors" title="Click to unfollow">
                 <i class="bi bi-dash-circle-fill"></i>
             </a>
+        @elseif ($signedIn)
+            <a href="{!! route('tags.follow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" class="ajax-action text-primary hover:text-primary/80 transition-colors" title="Click to follow">
+                <i class="bi bi-plus-circle-fill"></i>
+            </a>
         @else
-            <a href="{!! route('tags.follow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" class="ajax-action text-primary hover:text-primary/80 transition-colors" title="{{ $signedIn ? 'Click to follow' : 'Sign in to follow' }}">
+            <a href="{!! route('login') !!}" class="text-primary hover:text-primary/80 transition-colors" title="Sign in to follow">
                 <i class="bi bi-plus-circle-fill"></i>
             </a>
         @endif

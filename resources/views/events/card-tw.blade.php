@@ -38,9 +38,8 @@
                 </a>
                 @endif
             @else
-                <a href="{!! route('events.attend', ['id' => $event->id]) !!}"
-                    data-target="#event-card-{{ $event->id }}"
-                    class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
+                <a href="{!! route('login') !!}"
+                    class="p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
                     title="Sign in to mark as attending">
                     <i class="bi bi-star text-muted-foreground hover:text-primary text-lg"></i>
                 </a>

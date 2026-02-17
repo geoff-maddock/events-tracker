@@ -1813,15 +1813,6 @@ class EventsController extends Controller
     {
         // check if there is a logged in user
         if (!$this->user) {
-            // handle the request if ajax
-            if ($request->ajax()) {
-                return [
-                    'Error' => 'Unauthorized',
-                    'Message' => 'Please sign in to mark as attending',
-                    'RedirectUrl' => route('login'),
-                ];
-            }
-            
             flash()->error('Error', 'No user is logged in.');
 
             return back();
@@ -1867,15 +1858,6 @@ class EventsController extends Controller
     {
         // check if there is a logged in user
         if (!$this->user) {
-            // handle the request if ajax
-            if ($request->ajax()) {
-                return [
-                    'Error' => 'Unauthorized',
-                    'Message' => 'Please sign in to unattend',
-                    'RedirectUrl' => route('login'),
-                ];
-            }
-            
             flash()->error('Error', 'No user is logged in.');
 
             return back();
