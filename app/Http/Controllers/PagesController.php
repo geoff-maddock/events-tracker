@@ -121,16 +121,16 @@ class PagesController extends Controller
         $eventQuery = Event::getByEntity(strtolower($searchSlug))
                     ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
                     ->orWhereHas('tags', function ($q) use ($search) {
-                        $q->where('name', '=', ucfirst($search));
+                        $q->where('name', '=', mb_convert_case($search, MB_CASE_TITLE, 'UTF-8'));
                     })
                     ->orWhereHas('series', function ($q) use ($search) {
-                        $q->where('name', '=', ucfirst($search));
+                        $q->where('name', '=', mb_convert_case($search, MB_CASE_TITLE, 'UTF-8'));
                     })
                     ->orWhereHas('venue', function ($q) use ($search) {
-                        $q->where('name', '=', ucfirst($search));
+                        $q->where('name', '=', mb_convert_case($search, MB_CASE_TITLE, 'UTF-8'));
                     })
                     ->orWhereHas('promoter', function ($q) use ($search) {
-                        $q->where('name', '=', ucfirst($search));
+                        $q->where('name', '=', mb_convert_case($search, MB_CASE_TITLE, 'UTF-8'));
                     })
                     ->orWhere('name', 'like', '%'.$search.'%')
                     ->where(function ($query) {
@@ -146,7 +146,7 @@ class PagesController extends Controller
         $seriesQuery = Series::getByEntity(strtolower($searchSlug))
                     ->with('visibility', 'venue','tags', 'entities','eventType','threads','occurrenceType','occurrenceWeek','occurrenceDay')
                     ->orWhereHas('tags', function ($q) use ($search) {
-                        $q->where('name', '=', ucfirst($search));
+                        $q->where('name', '=', mb_convert_case($search, MB_CASE_TITLE, 'UTF-8'));
                     })
                     ->orWhere('name', 'like', '%'.$search.'%')
                     ->where(function ($query) {
@@ -163,10 +163,10 @@ class PagesController extends Controller
                 ->with('tags', 'events','entityType','locations','entityStatus','user')
                 ->where('entity_status_id','<>',EntityStatus::UNLISTED)
                 ->orWhereHas('tags', function ($q) use ($search) {
-                    $q->where('name', '=', ucfirst($search));
+                    $q->where('name', '=', mb_convert_case($search, MB_CASE_TITLE, 'UTF-8'));
                 })
                 ->orWherehas('aliases', function ($q) use ($search) {
-                    $q->where('name', '=', ucfirst($search));
+                    $q->where('name', '=', mb_convert_case($search, MB_CASE_TITLE, 'UTF-8'));
                 })
                 ->orderBy('entity_type_id', 'ASC')
                 ->orderBy('name', 'ASC');
@@ -191,7 +191,7 @@ class PagesController extends Controller
         // find threads by name
         $threadsQuery = Thread::with('visibility','entities','tags','posts','event','user')->where('name', 'like', '%'.$search.'%')
             ->orWhereHas('tags', function ($q) use ($search) {
-                $q->where('name', '=', ucfirst($search));
+                $q->where('name', '=', mb_convert_case($search, MB_CASE_TITLE, 'UTF-8'));
             })
             ->orderBy('name', 'ASC');
             
@@ -224,16 +224,16 @@ class PagesController extends Controller
         $eventQuery = Event::getByEntity(strtolower($searchSlug))
                     ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
                     ->orWhereHas('tags', function ($q) use ($search) {
-                        $q->where('name', '=', ucfirst($search));
+                        $q->where('name', '=', mb_convert_case($search, MB_CASE_TITLE, 'UTF-8'));
                     })
                     ->orWhereHas('series', function ($q) use ($search) {
-                        $q->where('name', '=', ucfirst($search));
+                        $q->where('name', '=', mb_convert_case($search, MB_CASE_TITLE, 'UTF-8'));
                     })
                     ->orWhereHas('venue', function ($q) use ($search) {
-                        $q->where('name', '=', ucfirst($search));
+                        $q->where('name', '=', mb_convert_case($search, MB_CASE_TITLE, 'UTF-8'));
                     })
                     ->orWhereHas('promoter', function ($q) use ($search) {
-                        $q->where('name', '=', ucfirst($search));
+                        $q->where('name', '=', mb_convert_case($search, MB_CASE_TITLE, 'UTF-8'));
                     })
                     ->orWhere('name', 'like', '%'.$search.'%')
                     ->where(function ($query) {
@@ -254,7 +254,7 @@ class PagesController extends Controller
         $seriesQuery = Series::getByEntity(strtolower($searchSlug))
                     ->with('visibility', 'venue','tags', 'entities','eventType','threads','occurrenceType','occurrenceWeek','occurrenceDay')
                     ->orWhereHas('tags', function ($q) use ($search) {
-                        $q->where('name', '=', ucfirst($search));
+                        $q->where('name', '=', mb_convert_case($search, MB_CASE_TITLE, 'UTF-8'));
                     })
                     ->orWhere('name', 'like', '%'.$search.'%')
                     ->where(function ($query) {
@@ -275,10 +275,10 @@ class PagesController extends Controller
           ->with('tags', 'events','entityType','locations','entityStatus','user')
           ->where('entity_status_id','<>',EntityStatus::UNLISTED)
           ->orWhereHas('tags', function ($q) use ($search) {
-              $q->where('name', '=', ucfirst($search));
+              $q->where('name', '=', mb_convert_case($search, MB_CASE_TITLE, 'UTF-8'));
           })
           ->orWherehas('aliases', function ($q) use ($search) {
-              $q->where('name', '=', ucfirst($search));
+              $q->where('name', '=', mb_convert_case($search, MB_CASE_TITLE, 'UTF-8'));
           })
           ->orderBy('entity_type_id', 'ASC')
           ->orderBy('name', 'ASC');
@@ -303,7 +303,7 @@ class PagesController extends Controller
         // find threads by name
         $threadsQuery = Thread::with('visibility','entities','tags','posts','event','user')->where('name', 'like', '%'.$search.'%')
             ->orWhereHas('tags', function ($q) use ($search) {
-                $q->where('name', '=', ucfirst($search));
+                $q->where('name', '=', mb_convert_case($search, MB_CASE_TITLE, 'UTF-8'));
             })
             ->orderBy('name', 'ASC');
             
