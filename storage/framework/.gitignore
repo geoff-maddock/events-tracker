@@ -6,3 +6,7 @@ events.scanned.php
 routes.scanned.php
 down
 framework
+
+!exports/
+exports/*
+!exports/.gitignore

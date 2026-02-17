@@ -123,14 +123,13 @@ Entities @include('entities.title-crumbs')
 
 		<!-- Tag Filter -->
 		<div class="min-w-0">
-			<label for="filter_tag" class="block text-sm font-medium text-muted-foreground mb-1">Tags</label>
-			{!! Form::select('filter_tag', $tagOptions, ((array) ($filters['tag'] ?? [])),
+			<label for="filter_tag" class="block text-sm font-medium text-muted-foreground mb-1">Tag</label>
+			{!! Form::select('filter_tag', $tagOptions, ($filters['tag'] ?? null),
 			[
 				'data-theme' => 'tailwind',
 				'class' => 'form-select-tw select2',
-				'data-placeholder' => 'Select tags',
-				'name' => 'filters[tag][]',
-				'multiple' => true,
+				'data-placeholder' => 'Select a tag',
+				'name' => 'filters[tag]',
 				'id' => 'filter_tag'
 			])
 			!!}

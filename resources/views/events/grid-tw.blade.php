@@ -121,7 +121,7 @@
 				'data-placeholder' => 'Select tags',
 				'id' => 'filter_tag',
 				'multiple' => true
-			])
+	])
 			!!}
 		</div>
 

@@ -12,10 +12,13 @@ use App\Http\Resources\PhotoResource;
 use App\Http\Resources\BlogResource;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use ZipArchive;
 
 class DataExportService
 {
+    protected ?string $privateExportRoot = null;
+
     /**
      * Generate a complete data export for a user
      *
@@ -25,14 +28,15 @@ class DataExportService
     public function generateExport(User $user): array
     {
         $exportData = $this->aggregateUserData($user);
+
+        $exportsRoot = $this->getPrivateExportRoot();
+        $this->ensureDirectoryExists($exportsRoot);
+        $this->ensureDirectoryExists($exportsRoot . '/tmp');
         
         // Create a unique directory for this export
         $exportId = uniqid('export_' . $user->id . '_', true);
-        $exportDir = storage_path('app/exports/' . $exportId);
-        
-        if (!file_exists($exportDir)) {
-            mkdir($exportDir, 0755, true);
-        }
+        $exportDir = $exportsRoot . '/tmp/' . $exportId;
+        $this->ensureDirectoryExists($exportDir);
         
         // Write JSON files
         $this->writeJsonFile($exportDir . '/events.json', $exportData['events']);
@@ -49,9 +53,12 @@ class DataExportService
         
         // Create ZIP file
         $zipFilename = 'user_data_export_' . uniqid('', true) . '.zip';
-        $zipPath = storage_path('app/exports/' . $zipFilename);
+        $zipPath = $exportsRoot . '/' . $zipFilename;
         
         $this->createZipArchive($exportDir, $zipPath);
+
+        // Best-effort publish to public storage for direct /storage URL access
+        $this->publishToPublicExports($zipFilename, $zipPath);
         
         // Clean up temporary directory
         $this->deleteDirectory($exportDir);
@@ -265,24 +272,131 @@ class DataExportService
      */
     public function getDownloadUrl(string $filename): string
     {
-        // Store in public storage temporarily
         $publicPath = 'exports/' . $filename;
-        
-        // Copy from storage/app/exports to storage/app/public/exports
-        if (file_exists(storage_path('app/exports/' . $filename))) {
-            if (!file_exists(storage_path('app/public/exports'))) {
-                mkdir(storage_path('app/public/exports'), 0755, true);
-            }
-            copy(
-                storage_path('app/exports/' . $filename),
-                storage_path('app/public/' . $publicPath)
-            );
+
+        $publicAbsolutePath = storage_path('app/public/' . $publicPath);
+        if (file_exists($publicAbsolutePath)) {
+            return url('storage/' . $publicPath);
         }
-        
-        // Note: Using public URL for now. For production with S3/DigitalOcean Spaces,
-        // this should be replaced with Storage::temporaryUrl($publicPath, now()->addDays(7))
-        // which will generate a signed URL with automatic expiration
-        return url('storage/' . $publicPath);
+
+        $sourcePath = $this->findExportPath($filename);
+        if ($sourcePath && $this->publishToPublicExports($filename, $sourcePath)) {
+            return url('storage/' . $publicPath);
+        }
+
+        return URL::temporarySignedRoute('exports.download', now()->addDays(7), [
+            'filename' => $filename,
+        ]);
+    }
+
+    /**
+     * Find export file path across known storage roots.
+     */
+    public function findExportPath(string $filename): ?string
+    {
+        $candidates = [
+            storage_path('app/public/exports/' . $filename),
+            storage_path('framework/exports/' . $filename),
+            storage_path('app/exports/' . $filename),
+            sys_get_temp_dir() . '/events-tracker-exports/' . $filename,
+        ];
+
+        foreach ($candidates as $candidate) {
+            if (is_file($candidate)) {
+                return $candidate;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Best-effort copy to public exports directory.
+     */
+    protected function publishToPublicExports(string $filename, string $sourcePath): bool
+    {
+        $publicExportsDir = storage_path('app/public/exports');
+
+        try {
+            $this->ensureDirectoryExists($publicExportsDir);
+            $destination = $publicExportsDir . '/' . $filename;
+
+            if (!@copy($sourcePath, $destination)) {
+                return false;
+            }
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::warning('Unable to publish export to public storage', [
+                'filename' => $filename,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Resolve a writable private export root.
+     */
+    protected function getPrivateExportRoot(): string
+    {
+        if ($this->privateExportRoot !== null) {
+            return $this->privateExportRoot;
+        }
+
+        $candidates = [
+            storage_path('framework/exports'),
+            storage_path('app/exports'),
+            sys_get_temp_dir() . '/events-tracker-exports',
+        ];
+
+        foreach ($candidates as $candidate) {
+            if ($this->ensureDirectoryExists($candidate, false) && $this->isDirectoryWritable($candidate)) {
+                $this->privateExportRoot = $candidate;
+
+                return $candidate;
+            }
+        }
+
+        throw new \RuntimeException('No writable export directory available');
+    }
+
+    /**
+     * Ensure directory exists.
+     */
+    protected function ensureDirectoryExists(string $directory, bool $throwOnFailure = true): bool
+    {
+        if (!is_dir($directory) && !@mkdir($directory, 0755, true) && !is_dir($directory)) {
+            if ($throwOnFailure) {
+                throw new \RuntimeException('Unable to create export directory: ' . $directory);
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Check writability by creating a temporary file.
+     */
+    protected function isDirectoryWritable(string $directory): bool
+    {
+        if (!is_dir($directory)) {
+            return false;
+        }
+
+        $testFile = $directory . '/.write_test_' . uniqid('', true);
+        $written = @file_put_contents($testFile, 'test');
+
+        if ($written === false) {
+            return false;
+        }
+
+        @unlink($testFile);
+
+        return true;
     }
     
     /**

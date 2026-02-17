@@ -25,6 +25,7 @@ use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -32,6 +33,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use App\Services\Calendar\ICalBuilder;
 use App\Jobs\ExportUserDataJob;
+use App\Services\DataExportService;
 use Throwable;
 
 class UsersController extends Controller
@@ -963,5 +965,21 @@ class UsersController extends Controller
         flash()->success('Success', 'Your data export has been queued. You will receive an email with a download link when it is ready.');
 
         return back();
+    }
+
+    /**
+     * Download a generated export file via signed URL.
+     */
+    public function downloadExport(string $filename, Request $request, DataExportService $exportService): BinaryFileResponse
+    {
+        $path = $exportService->findExportPath($filename);
+
+        if (!$path || !is_file($path)) {
+            abort(404);
+        }
+
+        return response()->download($path, $filename, [
+            'Content-Type' => 'application/zip',
+        ]);
     }
 }

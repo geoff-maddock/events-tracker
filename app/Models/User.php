@@ -139,7 +139,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     public function series(): HasMany
     {
-        return $this->hasMany(Series::class);
+        return $this->hasMany(Series::class, 'created_by');
     }
 
     /**
@@ -155,7 +155,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     public function comments(): HasMany
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(Comment::class, 'created_by');
     }
 
     /**
