@@ -2,7 +2,7 @@
 
 ## Overview
 
-The User Data Export feature allows users to download all data they've contributed to the site in a transferable format. This includes events, series, entities, posts, comments, follows, photos, and profile information.
+The User Data Export feature allows users to download all data they've contributed to the site in a transferable format. This includes events, series, entities, posts, comments, follows, photo metadata, and profile information.
 
 ## How It Works
 
@@ -29,11 +29,10 @@ The export is a ZIP file containing:
 - `follows.json` - All entities, tags, series, and threads you follow
 - `event_responses.json` - Your event responses (attending, interested, etc.)
 - `profile.json` - Your profile information and settings
-- `photos_metadata.json` - Metadata for all photos associated with your account
+- `photos_metadata.json` - Metadata for all photos associated with your account (paths, names, IDs)
 - `constants.json` - Reference data (event types, statuses, visibility options, etc.)
 
-#### Photos Directory
-- Original images and thumbnails for all photos associated with your account
+**Note:** Photo image files are not included in the export to keep file sizes manageable. Only photo metadata is provided.
 
 ## Technical Implementation
 
@@ -50,8 +49,6 @@ DataExportService aggregates all user data
          ↓
 JSON files created with proper formatting
          ↓
-Photos downloaded from storage
-         ↓
 ZIP archive created
          ↓
 File stored temporarily
@@ -66,7 +63,7 @@ Cleanup job removes files after 7 days
 #### DataExportService (`app/Services/DataExportService.php`)
 - Aggregates all user data from database
 - Transforms data using Laravel Resources for consistency
-- Downloads photos from storage
+- Creates JSON files with photo metadata (images not included)
 - Creates ZIP archive
 - Manages file cleanup
 
@@ -195,12 +192,6 @@ Activity logs in the database also track export requests.
 1. Verify email configuration in `.env`
 2. Check mail logs
 3. Check spam folder
-
-### Photos Not Included
-
-1. Verify storage configuration
-2. Check file permissions on storage directories
-3. Review logs for "Failed to download photo" warnings
 
 ## Future Enhancements
 

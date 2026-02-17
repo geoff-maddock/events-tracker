@@ -47,15 +47,6 @@ class DataExportService
         $this->writeJsonFile($exportDir . '/photos_metadata.json', $exportData['photos']);
         $this->writeJsonFile($exportDir . '/constants.json', $exportData['constants']);
         
-        // Download and save photos
-        $photosDir = $exportDir . '/photos';
-        if (!empty($exportData['photo_files'])) {
-            if (!file_exists($photosDir)) {
-                mkdir($photosDir, 0755, true);
-            }
-            $this->downloadPhotos($exportData['photo_files'], $photosDir);
-        }
-        
         // Create ZIP file
         $zipFilename = 'user_data_export_' . uniqid('', true) . '.zip';
         $zipPath = storage_path('app/exports/' . $zipFilename);
@@ -175,19 +166,9 @@ class DataExportService
             ] : null,
         ];
         
-        // Photos associated with user
+        // Photos associated with user (metadata only, images not included to keep file size manageable)
         $photos = $user->photos()->get();
         $photosData = PhotoResource::collection($photos)->resolve();
-        
-        // Photo files to download
-        $photoFiles = $photos->map(function ($photo) {
-            return [
-                'id' => $photo->id,
-                'name' => $photo->name,
-                'path' => $photo->path,
-                'thumbnail' => $photo->thumbnail,
-            ];
-        })->toArray();
         
         // Constants/lookup data
         $constants = [
@@ -209,7 +190,6 @@ class DataExportService
             'event_responses' => $eventResponses,
             'profile' => $profile,
             'photos' => $photosData,
-            'photo_files' => $photoFiles,
             'constants' => $constants,
         ];
     }
@@ -223,38 +203,6 @@ class DataExportService
     protected function writeJsonFile(string $filepath, $data): void
     {
         file_put_contents($filepath, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-    }
-    
-    /**
-     * Download photos from storage to local directory
-     *
-     * @param array $photoFiles
-     * @param string $destinationDir
-     */
-    protected function downloadPhotos(array $photoFiles, string $destinationDir): void
-    {
-        foreach ($photoFiles as $photo) {
-            if (!empty($photo['path'])) {
-                try {
-                    // Try to get file from storage
-                    if (Storage::exists($photo['path'])) {
-                        $contents = Storage::get($photo['path']);
-                        $filename = basename($photo['path']);
-                        file_put_contents($destinationDir . '/' . $filename, $contents);
-                    }
-                    
-                    // Also try thumbnail if exists
-                    if (!empty($photo['thumbnail']) && Storage::exists($photo['thumbnail'])) {
-                        $contents = Storage::get($photo['thumbnail']);
-                        $filename = basename($photo['thumbnail']);
-                        file_put_contents($destinationDir . '/thumb_' . $filename, $contents);
-                    }
-                } catch (\Exception $e) {
-                    // Log error but continue with other photos
-                    Log::warning('Failed to download photo: ' . $photo['path'], ['error' => $e->getMessage()]);
-                }
-            }
-        }
     }
     
     /**

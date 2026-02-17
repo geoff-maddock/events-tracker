@@ -14,7 +14,8 @@ Download Your Data
 
 **Important Notes:**
 - This download link will be available for 7 days
-- The export includes all your contributed data in JSON format along with any associated images
+- The export includes all your contributed data in JSON format
+- Photo images are not included to keep file size manageable (only metadata is included)
 - The file is a ZIP archive containing:
   - Events you created
   - Event series you created
@@ -23,7 +24,7 @@ Download Your Data
   - Your follows (tags, entities, series, threads)
   - Event responses
   - Your profile information
-  - Associated photos
+  - Photo metadata (paths and details, but not the actual image files)
   - Reference data (event types, statuses, etc.)
 
 If you have any questions or need assistance, please contact us at {{ $admin_email }}.
