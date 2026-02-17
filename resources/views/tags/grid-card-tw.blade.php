@@ -37,6 +37,12 @@
                     <i class="bi bi-heart"></i>
                 </a>
                 @endif
+            @else
+                <a href="{!! route('tags.follow', ['id' => $tag->id]) !!}"
+                    title="Sign in to follow"
+                    class="flex-shrink-0 text-muted-foreground hover:text-primary transition-colors">
+                    <i class="bi bi-heart"></i>
+                </a>
             @endif
         </div>
     </div>

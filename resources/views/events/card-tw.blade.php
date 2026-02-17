@@ -20,25 +20,32 @@
         @endif
 
         <!-- Favorite/Attend Button -->
-        @if ($signedIn)
         <div class="absolute top-2 right-2">
-            @if ($response = $event->getEventResponse($user))
-            <a href="{!! route('events.unattend', ['id' => $event->id]) !!}"
-                data-target="#event-card-{{ $event->id }}"
-                class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
-                title="{{ $response->responseType->name }}">
-                <i class="bi bi-star-fill text-primary text-lg"></i>
-            </a>
+            @if ($signedIn)
+                @if ($response = $event->getEventResponse($user))
+                <a href="{!! route('events.unattend', ['id' => $event->id]) !!}"
+                    data-target="#event-card-{{ $event->id }}"
+                    class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
+                    title="{{ $response->responseType->name }}">
+                    <i class="bi bi-star-fill text-primary text-lg"></i>
+                </a>
+                @else
+                <a href="{!! route('events.attend', ['id' => $event->id]) !!}"
+                    data-target="#event-card-{{ $event->id }}"
+                    class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
+                    title="Click to mark as attending">
+                    <i class="bi bi-star text-muted-foreground hover:text-primary text-lg"></i>
+                </a>
+                @endif
             @else
-            <a href="{!! route('events.attend', ['id' => $event->id]) !!}"
-                data-target="#event-card-{{ $event->id }}"
-                class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
-                title="Click to mark as attending">
-                <i class="bi bi-star text-muted-foreground hover:text-primary text-lg"></i>
-            </a>
+                <a href="{!! route('events.attend', ['id' => $event->id]) !!}"
+                    data-target="#event-card-{{ $event->id }}"
+                    class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
+                    title="Sign in to mark as attending">
+                    <i class="bi bi-star text-muted-foreground hover:text-primary text-lg"></i>
+                </a>
             @endif
         </div>
-        @endif
 
         <!-- Cancelled Badge -->
         @if ($event->visibility->name === 'Cancelled')

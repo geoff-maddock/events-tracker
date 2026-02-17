@@ -20,25 +20,32 @@
         @endif
 
         <!-- Follow/Unfollow Button -->
-        @if ($signedIn)
         <div class="absolute top-2 right-2">
-            @if ($follow = $series->followedBy($user))
-            <a href="{!! route('series.unfollow', ['id' => $series->id]) !!}"
-                data-target="#series-card-{{ $series->id }}"
-                class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
-                title="Click to unfollow">
-                <i class="bi bi-dash-circle-fill text-primary text-lg"></i>
-            </a>
+            @if ($signedIn)
+                @if ($follow = $series->followedBy($user))
+                <a href="{!! route('series.unfollow', ['id' => $series->id]) !!}"
+                    data-target="#series-card-{{ $series->id }}"
+                    class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
+                    title="Click to unfollow">
+                    <i class="bi bi-dash-circle-fill text-primary text-lg"></i>
+                </a>
+                @else
+                <a href="{!! route('series.follow', ['id' => $series->id]) !!}" 
+                    data-target="#series-card-{{ $series->id }}" 
+                    class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
+                    title="Click to follow">
+                    <i class="bi bi-plus-circle text-muted-foreground hover:text-primary text-lg"></i>
+                </a>
+                @endif
             @else
-            <a href="{!! route('series.follow', ['id' => $series->id]) !!}" 
-                data-target="#series-card-{{ $series->id }}" 
-                class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
-                title="Click to follow">
-                <i class="bi bi-plus-circle text-muted-foreground hover:text-primary text-lg"></i>
-            </a>
+                <a href="{!! route('series.follow', ['id' => $series->id]) !!}" 
+                    data-target="#series-card-{{ $series->id }}" 
+                    class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
+                    title="Sign in to follow">
+                    <i class="bi bi-plus-circle text-muted-foreground hover:text-primary text-lg"></i>
+                </a>
             @endif
         </div>
-        @endif
 
         <!-- Visibility Badge -->
         @if ($series->visibility->name !== 'Public')

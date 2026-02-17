@@ -20,25 +20,32 @@
 		@endif
 
 		<!-- Follow Button -->
-		@if ($signedIn)
 		<div class="absolute top-2 right-2">
-			@if ($follow = $entity->followedBy($user))
-			<a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}"
-				data-target="#entity-card-{{ $entity->id }}"
-				class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
-				title="Following - click to unfollow">
-				<i class="bi bi-check-circle-fill text-primary text-lg"></i>
-			</a>
+			@if ($signedIn)
+				@if ($follow = $entity->followedBy($user))
+				<a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}"
+					data-target="#entity-card-{{ $entity->id }}"
+					class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
+					title="Following - click to unfollow">
+					<i class="bi bi-check-circle-fill text-primary text-lg"></i>
+				</a>
+				@else
+				<a href="{!! route('entities.follow', ['id' => $entity->id]) !!}"
+					data-target="#entity-card-{{ $entity->id }}"
+					class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
+					title="Click to follow">
+					<i class="bi bi-plus-circle text-muted-foreground hover:text-primary text-lg"></i>
+				</a>
+				@endif
 			@else
-			<a href="{!! route('entities.follow', ['id' => $entity->id]) !!}"
-				data-target="#entity-card-{{ $entity->id }}"
-				class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
-				title="Click to follow">
-				<i class="bi bi-plus-circle text-muted-foreground hover:text-primary text-lg"></i>
-			</a>
+				<a href="{!! route('entities.follow', ['id' => $entity->id]) !!}"
+					data-target="#entity-card-{{ $entity->id }}"
+					class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
+					title="Sign in to follow">
+					<i class="bi bi-plus-circle text-muted-foreground hover:text-primary text-lg"></i>
+				</a>
 			@endif
 		</div>
-		@endif
 
 		<!-- Inactive Badge -->
 		@if ($entity->entityStatus->name === 'Inactive')

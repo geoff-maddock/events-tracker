@@ -203,6 +203,24 @@ var App = (function () {
             $.ajax({
                 url: $(this).attr('href'),
             }).done(function (data) {
+                // check if user needs to authenticate
+                if (data.Error === 'Unauthorized' && data.RedirectUrl) {
+                    // show message and redirect to login
+                    Swal.fire({
+                        title: "Sign In Required",
+                        text: data.Message,
+                        icon: "info",
+                        confirmButtonText: "Sign In",
+                        showCancelButton: true,
+                        cancelButtonText: "Cancel"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = data.RedirectUrl;
+                        }
+                    });
+                    return;
+                }
+                
                 // fire a flash message
                 $(target).replaceWith(data.Success);
                 Swal.fire({
