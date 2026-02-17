@@ -1,6 +1,6 @@
 <li id="event-{{ $event->id }}" class="group relative flex flex-col gap-3 p-3 bg-card rounded-lg border border-border hover:border-primary transition-colors shadow-sm min-w-0 h-full">
     <!-- Thumbnail -->
-    <div class="flex-shrink-0 w-full">
+    <div class="flex-shrink-0 w-full relative">
         @if ($primary = $event->getPrimaryPhoto())
         <a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
             data-title="{!! $event->start_at->format('l F jS Y') !!} <a href='/events/{{ $event->slug }}'>{{ $event->name }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ $event->venue ? $event->venue->name : '' }}</a>"
@@ -16,6 +16,33 @@
             <i class="bi bi-calendar-event text-5xl text-muted-foreground/40"></i>
         </a>
         @endif
+
+        <!-- Favorite/Attend Button -->
+        <div class="absolute top-2 right-2">
+            @if ($signedIn)
+                @if ($response = $event->getEventResponse($user))
+                <a href="{!! route('events.unattend', ['id' => $event->id]) !!}"
+                    data-target="#event-{{ $event->id }}"
+                    class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
+                    title="{{ $response->responseType->name }}">
+                    <i class="bi bi-star-fill text-primary text-lg"></i>
+                </a>
+                @else
+                <a href="{!! route('events.attend', ['id' => $event->id]) !!}"
+                    data-target="#event-{{ $event->id }}"
+                    class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
+                    title="Click to mark as attending">
+                    <i class="bi bi-star text-muted-foreground hover:text-primary text-lg"></i>
+                </a>
+                @endif
+            @else
+                <a href="{!! route('login') !!}"
+                    class="p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
+                    title="Sign in to mark as attending">
+                    <i class="bi bi-star text-muted-foreground hover:text-primary text-lg"></i>
+                </a>
+            @endif
+        </div>
     </div>
 
     <!-- Content -->
@@ -129,22 +156,6 @@
                title="External link" target="_blank" rel="noopener">
                 <i class="bi bi-link-45deg text-xl"></i>
             </a>
-            @endif
-
-            @if ($signedIn)
-                @if ($response = $event->getEventResponse($user))
-                <a href="{!! route('events.unattend', ['id' => $event->id]) !!}"
-                   class="text-primary hover:text-destructive transition-colors"
-                   title="Unattend">
-                    <i class="bi bi-check-circle-fill"></i>
-                </a>
-                @else
-                <a href="{!! route('events.attend', ['id' => $event->id]) !!}"
-                   class="text-muted-foreground hover:text-primary transition-colors"
-                   title="Attend">
-                    <i class="bi bi-check-circle"></i>
-                </a>
-                @endif
             @endif
         </div>
     </div>
