@@ -37,7 +37,7 @@ class EventFilters extends QueryFilter
     {
         if (isset($value)) {
             return $this->builder->whereHas('venue', function ($q) use ($value) {
-                $q->where('name','like', '%'.$value.'%');
+                $q->where('slug','like', '%'.$value.'%');
             });
         } else {
             return $this->builder;
@@ -48,7 +48,7 @@ class EventFilters extends QueryFilter
     {
         if (isset($value)) {
             return $this->builder->whereHas('promoter', function ($q) use ($value) {
-                $q->where('name','like', '%'.$value.'%');
+                $q->where('slug', 'like', '%'.$value.'%');
             });
         } else {
             return $this->builder;
@@ -111,7 +111,7 @@ class EventFilters extends QueryFilter
     {
         if (isset($value)) {
             return $this->builder->whereHas('entities', function ($q) use ($value) {
-                $q->where('name', '=', ucfirst($value));
+                $q->where('slug', '=', $value);
             });
         } else {
             return $this->builder;

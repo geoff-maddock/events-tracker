@@ -343,9 +343,9 @@ class EventsController extends Controller
     {
         return [
             'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
-            'venueOptions' => ['' => ''] + Entity::getVenues()->pluck('name', 'name')->all(),
-            'relatedOptions' => ['' => ''] + Entity::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'eventTypeOptions' => ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+            'venueOptions' => ['' => ''] + Entity::getVenues()->pluck('name', 'slug')->all(),
+            'relatedOptions' => ['' => ''] + Entity::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
+            'eventTypeOptions' => ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
         ];
     }
 
@@ -384,7 +384,9 @@ class EventsController extends Controller
         $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
+        $baseQuery = Event::query()
+            ->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')
+            ->select('events.*');
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
