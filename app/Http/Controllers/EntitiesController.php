@@ -620,8 +620,14 @@ class EntitiesController extends Controller
             abort(404);
         }
 
+        // get related events (up to 12, sorted by date descending)
+        $relatedEvents = $entity->events()
+            ->orderBy('start_at', 'desc')
+            ->limit(12)
+            ->get();
+
         return view('entities.show-tw')
-            ->with(compact('entity'))
+            ->with(compact('entity', 'relatedEvents'))
             ->render();
     }
 
@@ -725,9 +731,6 @@ class EntitiesController extends Controller
         // get all the tracks as streamable URLs
         // $tracks = $embedExtractor->getTracksFromUrl('https://0h85.bandcamp.com/');
         $tracks = [];
-
-        $futureEvents = $entity->futureEvents(5);
-        $pastEvents = $entity->pastEvents(5);
         
         // get related events (up to 12, sorted by date descending)
         $relatedEvents = $entity->events()
@@ -735,7 +738,7 @@ class EntitiesController extends Controller
             ->limit(12)
             ->get();
 
-        return view('entities.show-tw', compact('entity', 'threads', 'embeds', 'tracks','futureEvents','pastEvents','relatedEvents'));
+        return view('entities.show-tw', compact('entity', 'threads', 'embeds', 'tracks', 'relatedEvents'));
     }
 
     /**
