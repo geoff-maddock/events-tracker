@@ -97,10 +97,10 @@ class NotifyWeekly extends Command
                     /** @var \App\Models\Tag $tag */
                     $tagEvents = [];
                     // get the future events for each followed tag
-                    /** @var \Illuminate\Pagination\LengthAwarePaginator $tagFutureEvents */
+                    /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\Event> $tagFutureEvents */
                     $tagFutureEvents = $tag->futureEvents();
-                    if ($tagFutureEvents->total() > 0) {
-                        foreach ($tagFutureEvents->items() as $futureEvent) {
+                    if ($tagFutureEvents->isNotEmpty()) {
+                        foreach ($tagFutureEvents as $futureEvent) {
                             /** @var \App\Models\Event $futureEvent */
                             if (!in_array($futureEvent->id, $attendingIdList)) {
                                 $tagEvents[] = $futureEvent;
