@@ -73,6 +73,7 @@
 					['name' => 'Groups', 'url' => '/groups', 'icon' => 'bi-people-fill', 'description' => 'Manage user groups'],
 					['name' => 'Menus', 'url' => '/menus', 'icon' => 'bi-menu-button-wide', 'description' => 'Manage navigation menus'],
 					['name' => 'Permissions', 'url' => '/permissions', 'icon' => 'bi-key', 'description' => 'Manage permissions'],
+					['name' => 'Roles', 'url' => '/roles', 'icon' => 'bi-person-badge', 'description' => 'Manage entity roles'],
 				];
 				sort($adminModules);
 				@endphp

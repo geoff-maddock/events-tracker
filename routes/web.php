@@ -27,6 +27,7 @@ use App\Models\Menu;
 use App\Models\Permission;
 use App\Models\Photo;
 use App\Models\Post;
+use App\Models\Role;
 use App\Models\Series;
 use App\Models\Thread;
 use App\Models\ThreadCategory;
@@ -466,6 +467,18 @@ Route::bind('entity-types', function ($id) {
 Route::resource('entity-types', 'EntityTypesController');
 Route::delete('entity-types/{id}', 'EntityTypesController@destroy');
 
+// Roles
+Route::match(['get', 'post'], 'roles/filter', ['as' => 'roles.filter', 'uses' => 'RolesController@filter']);
+Route::get('roles/reset', ['as' => 'roles.reset', 'uses' => 'RolesController@reset']);
+Route::get('roles/rpp-reset', ['as' => 'roles.rppReset', 'uses' => 'RolesController@rppReset']);
+
+Route::bind('roles', function ($id) {
+    return Role::whereId($id)->firstOrFail();
+});
+
+Route::resource('roles', 'RolesController');
+Route::delete('roles/{id}', 'RolesController@destroy');
+
 // GROUPS
 Route::match(['get', 'post'], 'groups/filter', ['as' => 'groups.filter', 'uses' => 'GroupsController@filter']);
 Route::get('groups/all', 'GroupsController@indexAll');
@@ -641,6 +654,7 @@ Route::get('producer', 'EntitiesController@indexRoles')->defaults('role', 'produ
 Route::get('promoter', 'EntitiesController@indexRoles')->defaults('role', 'promoter')->name('promoter.index');
 Route::get('shop', 'EntitiesController@indexRoles')->defaults('role', 'shop')->name('shop.index');
 Route::get('band', 'EntitiesController@indexRoles')->defaults('role', 'band')->name('band.index');
+Route::get('visualist', 'EntitiesController@indexRoles')->defaults('role', 'visualist')->name('visualist.index');
 
 // Detail routes: /venue/{slug}, /artist/{slug}, etc. - shows specific entity
 Route::get('venue/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults('role', 'venue')->name('venue.show');
@@ -650,6 +664,7 @@ Route::get('producer/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults(
 Route::get('promoter/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults('role', 'promoter')->name('promoter.show');
 Route::get('shop/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults('role', 'shop')->name('shop.show');
 Route::get('band/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults('role', 'band')->name('band.show');
+Route::get('visualist/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults('role', 'visualist')->name('visualist.show');
 
 // Click tracking for event and series ticket links
 Route::get('go/evt-{id}', 'ClickTrackController@redirectEvent')->name('clicktrack.event')->where('id', '[0-9]+');
