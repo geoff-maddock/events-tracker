@@ -259,6 +259,7 @@ Route::get('events/day/{day}', 'EventsController@day')->name('events.day')
     ->where('day', '[1-2][0-9][0-9][0-9]-[0-3][0-9]-[0-9][0-9]');    
 Route::match(['get', 'post'], 'events/attending', 'EventsController@indexAttending')->name('events.attending');
 Route::match(['get', 'post'], 'events/filter', ['as' => 'events.filter', 'uses' => 'EventsController@filter']);
+Route::get('events/apply-filter', ['as' => 'events.applyFilterFromUrl', 'uses' => 'EventsController@applyFilterFromUrl']);
 Route::get('events/reset', ['as' => 'events.reset', 'uses' => 'EventsController@reset']);
 Route::get('events/rpp-reset', ['as' => 'events.rppReset', 'uses' => 'EventsController@rppReset']);
 

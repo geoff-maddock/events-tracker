@@ -1077,6 +1077,46 @@ class EventsController extends Controller
     }
 
     /**
+     * Apply filters from URL query parameters and redirect to filtered view.
+     * This allows users to share filtered event lists via URL.
+     *
+     * @return RedirectResponse
+     */
+    public function applyFilterFromUrl(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ): RedirectResponse {
+        // Initialize session store
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_index');
+
+        // Get filters from query parameters
+        $filters = $request->input('filters', []);
+        
+        if (!empty($filters)) {
+            // Set filters in session
+            $listParamSessionStore->setFilters($filters);
+            
+            // Set sorting if provided
+            if ($request->has('sort')) {
+                $listParamSessionStore->setSortFieldName($request->input('sort'));
+            }
+            if ($request->has('direction')) {
+                $listParamSessionStore->setSortDirection($request->input('direction'));
+            }
+            if ($request->has('limit')) {
+                $listParamSessionStore->setLimit((int) $request->input('limit'));
+            }
+            
+            // Save to session
+            $listParamSessionStore->save();
+        }
+
+        // Redirect to events filter page to apply the filters
+        return redirect()->route('events.filter');
+    }
+
+    /**
      * TODO https://github.com/geoff-maddock/events-tracker/issues/409
      * This is not used in the UI - find where to add
      * Send a reminder to all users who are attending this event.
