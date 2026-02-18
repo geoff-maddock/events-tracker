@@ -1089,6 +1089,9 @@ class EventsController extends Controller
         // Initialize session store
         $listParamSessionStore->setBaseIndex('internal_event');
         $listParamSessionStore->setKeyPrefix('internal_event_index');
+        
+        // Set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
         // Get filters from query parameters
         $filters = $request->input('filters', []);
