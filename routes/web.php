@@ -654,6 +654,7 @@ Route::get('producer', 'EntitiesController@indexRoles')->defaults('role', 'produ
 Route::get('promoter', 'EntitiesController@indexRoles')->defaults('role', 'promoter')->name('promoter.index');
 Route::get('shop', 'EntitiesController@indexRoles')->defaults('role', 'shop')->name('shop.index');
 Route::get('band', 'EntitiesController@indexRoles')->defaults('role', 'band')->name('band.index');
+Route::get('visualist', 'EntitiesController@indexRoles')->defaults('role', 'visualist')->name('visualist.index');
 
 // Detail routes: /venue/{slug}, /artist/{slug}, etc. - shows specific entity
 Route::get('venue/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults('role', 'venue')->name('venue.show');
@@ -663,6 +664,7 @@ Route::get('producer/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults(
 Route::get('promoter/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults('role', 'promoter')->name('promoter.show');
 Route::get('shop/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults('role', 'shop')->name('shop.show');
 Route::get('band/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults('role', 'band')->name('band.show');
+Route::get('visualist/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults('role', 'visualist')->name('visualist.show');
 
 // Click tracking for event and series ticket links
 Route::get('go/evt-{id}', 'ClickTrackController@redirectEvent')->name('clicktrack.event')->where('id', '[0-9]+');
