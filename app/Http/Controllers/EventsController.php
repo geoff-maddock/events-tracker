@@ -89,7 +89,7 @@ class EventsController extends Controller
 
         // default list variables
         $this->defaultLimit = 10;
-        $this->defaultGridLimit = 24;
+        $this->defaultGridLimit = 100;
         $this->defaultSort = 'start_at';
         $this->defaultSortDirection = 'desc';
         $this->defaultWindow = 4;
@@ -446,10 +446,15 @@ class EventsController extends Controller
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
 
+        // set the default filter to starting today, can override
+        $defaultFilter = ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]];
+
         $listEntityResultBuilder
         ->setFilter($this->filter)
+        ->setDefaultLimit($this->defaultGridLimit)
+        ->setDefaultFilters($defaultFilter)
         ->setQueryBuilder($baseQuery)
-        ->setDefaultSort(['events.start_at' => 'desc']);
+        ->setDefaultSort(['events.start_at' => 'asc']);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
