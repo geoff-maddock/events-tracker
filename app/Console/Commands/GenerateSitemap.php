@@ -48,6 +48,11 @@ class GenerateSitemap extends Command
                     return;
                 }
 
+                // skip click tracking redirect links
+                if (strpos($url->segment(1), 'go') !== false) {
+                    return;
+                }
+
                 // skip user tabs
                 if (strpos($url->url, '?') !== false) {
                     return;
@@ -174,6 +179,11 @@ class GenerateSitemap extends Command
                 return $url;
             })
             ->shouldCrawl(function (UriInterface $url) {
+                // Skip click tracking redirect links
+                if (strpos($url->getPath(), '/go/') !== false) {
+                    return false;
+                }
+
                 // Skip events/add links
                 if (strpos($url->getPath(), '/events/add') !== false) {
                     return false;
