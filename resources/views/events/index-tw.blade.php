@@ -315,7 +315,7 @@ Events @include('events.title-crumbs')
 		}
 		
 		// Build the full URL
-		const baseUrl = '{{ route('events.applyFilterFromUrl') }}';
+		const baseUrl = '{{ Route::has('events.applyFilterFromUrl') ? route('events.applyFilterFromUrl') : route('events.filter') }}';
 		const fullUrl = `${baseUrl}?${params.toString()}`;
 		
 		// Copy to clipboard
