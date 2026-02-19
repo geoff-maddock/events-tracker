@@ -191,6 +191,12 @@ Entities @include('entities.title-crumbs')
 			Reset
 		</button>
 		{!! Form::close() !!}
+		@if($hasFilter)
+		<button type="button" id="copy-filter-url-btn" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors flex items-center gap-2">
+			<i class="bi bi-link-45deg"></i>
+			<span>Copy Filter URL</span>
+		</button>
+		@endif
 	</div>
 </div>
 
@@ -243,6 +249,60 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 	});
 });
+</script>
+<script>
+	// Copy filter URL functionality
+	document.getElementById('copy-filter-url-btn')?.addEventListener('click', function() {
+		const filters = @json($filters ?? []);
+		const sort = @json($sort ?? '');
+		const direction = @json($direction ?? '');
+		const limit = @json($limit ?? null);
+
+		const params = new URLSearchParams();
+
+		if (filters && Object.keys(filters).length > 0) {
+			for (const [key, value] of Object.entries(filters)) {
+				if (value !== null && value !== '' && value !== undefined) {
+					if (Array.isArray(value)) {
+						value.forEach(v => {
+							if (v !== null && v !== '') {
+								params.append(`filters[${key}][]`, v);
+							}
+						});
+					} else if (typeof value === 'object' && value !== null) {
+						for (const [subKey, subValue] of Object.entries(value)) {
+							if (subValue !== null && subValue !== '') {
+								params.append(`filters[${key}][${subKey}]`, subValue);
+							}
+						}
+					} else {
+						params.append(`filters[${key}]`, value);
+					}
+				}
+			}
+		}
+
+		if (sort) params.append('sort', sort);
+		if (direction) params.append('direction', direction);
+		if (limit) params.append('limit', limit);
+
+		const baseUrl = '{{ Route::has('entities.applyFilterFromUrl') ? route('entities.applyFilterFromUrl') : route('entities.filter') }}';
+		const fullUrl = `${baseUrl}?${params.toString()}`;
+
+		navigator.clipboard.writeText(fullUrl).then(function() {
+			const btn = document.getElementById('copy-filter-url-btn');
+			const originalContent = btn.innerHTML;
+			btn.innerHTML = '<i class="bi bi-check2"></i><span>Copied!</span>';
+			btn.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
+			setTimeout(function() {
+				btn.innerHTML = originalContent;
+				btn.classList.remove('bg-green-100', 'border-green-500', 'text-green-700');
+			}, 2000);
+		}).catch(function(err) {
+			alert('Failed to copy URL. Please copy manually: ' + fullUrl);
+			console.error('Could not copy text: ', err);
+		});
+	});
 </script>
 @include('partials.filter-js')
 @endsection

@@ -202,6 +202,49 @@ class SeriesController extends Controller
     }
 
     /**
+     * Apply filters from URL query parameters and redirect to filtered view.
+     * This allows users to share filtered series lists via URL.
+     *
+     * @return RedirectResponse
+     */
+    public function applyFilterFromUrl(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ): RedirectResponse {
+        // Initialize session store
+        $listParamSessionStore->setBaseIndex('internal_series');
+        $listParamSessionStore->setKeyPrefix('internal_series_index');
+
+        // Set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([SeriesController::class, 'index']));
+
+        // Get filters from query parameters
+        $filters = $request->input('filters', []);
+
+        if (!empty($filters)) {
+            // Set filters in session
+            $listParamSessionStore->setFilters($filters);
+
+            // Set sorting if provided
+            if ($request->has('sort')) {
+                $listParamSessionStore->setSortFieldName($request->input('sort'));
+            }
+            if ($request->has('direction')) {
+                $listParamSessionStore->setSortDirection($request->input('direction'));
+            }
+            if ($request->has('limit')) {
+                $listParamSessionStore->setLimit((int) $request->input('limit'));
+            }
+
+            // Save to session
+            $listParamSessionStore->save();
+        }
+
+        // Redirect to series filter page to apply the filters
+        return redirect()->route('series.filter');
+    }
+
+    /**
      * @throws \Throwable
      */
     public function index(

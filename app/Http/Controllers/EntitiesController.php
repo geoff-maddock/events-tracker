@@ -469,6 +469,49 @@ class EntitiesController extends Controller
     }
 
     /**
+     * Apply filters from URL query parameters and redirect to filtered view.
+     * This allows users to share filtered entity lists via URL.
+     *
+     * @return RedirectResponse
+     */
+    public function applyFilterFromUrl(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ): RedirectResponse {
+        // Initialize session store
+        $listParamSessionStore->setBaseIndex('internal_entity');
+        $listParamSessionStore->setKeyPrefix('internal_entity_index');
+
+        // Set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
+
+        // Get filters from query parameters
+        $filters = $request->input('filters', []);
+
+        if (!empty($filters)) {
+            // Set filters in session
+            $listParamSessionStore->setFilters($filters);
+
+            // Set sorting if provided
+            if ($request->has('sort')) {
+                $listParamSessionStore->setSortFieldName($request->input('sort'));
+            }
+            if ($request->has('direction')) {
+                $listParamSessionStore->setSortDirection($request->input('direction'));
+            }
+            if ($request->has('limit')) {
+                $listParamSessionStore->setLimit((int) $request->input('limit'));
+            }
+
+            // Save to session
+            $listParamSessionStore->save();
+        }
+
+        // Redirect to entities filter page to apply the filters
+        return redirect()->route('entities.filter');
+    }
+
+    /**
      * Display a listing of entities by tag.
      *
      * @throws \Throwable

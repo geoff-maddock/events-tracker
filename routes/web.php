@@ -506,6 +506,7 @@ Route::get('entities/type/{type}', 'EntitiesController@indexTypes');
 Route::get('entities/role/{role}', 'EntitiesController@indexRoles')->name('entities.role');
 
 Route::match(['get', 'post'], 'entities/filter', ['as' => 'entities.filter', 'uses' => 'EntitiesController@filter']);
+Route::get('entities/apply-filter', ['as' => 'entities.applyFilterFromUrl', 'uses' => 'EntitiesController@applyFilterFromUrl']);
 Route::get('entities/reset', ['as' => 'entities.reset', 'uses' => 'EntitiesController@reset']);
 Route::get('entities/rpp-reset', ['as' => 'entities.rppReset', 'uses' => 'EntitiesController@rppReset']);
 
@@ -602,6 +603,7 @@ Route::get(
     ]
 );
 Route::match(['get', 'post'], 'series/filter', ['as' => 'series.filter', 'uses' => 'SeriesController@filter']);
+Route::get('series/apply-filter', ['as' => 'series.applyFilterFromUrl', 'uses' => 'SeriesController@applyFilterFromUrl']);
 Route::get('series/reset', ['as' => 'series.reset', 'uses' => 'SeriesController@reset']);
 Route::get('series/rpp-reset', ['as' => 'series.rppReset', 'uses' => 'SeriesController@rppReset']);
 
