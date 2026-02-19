@@ -259,6 +259,7 @@ Route::get('events/day/{day}', 'EventsController@day')->name('events.day')
     ->where('day', '[1-2][0-9][0-9][0-9]-[0-3][0-9]-[0-9][0-9]');    
 Route::match(['get', 'post'], 'events/attending', 'EventsController@indexAttending')->name('events.attending');
 Route::match(['get', 'post'], 'events/filter', ['as' => 'events.filter', 'uses' => 'EventsController@filter']);
+Route::get('events/apply-filter', ['as' => 'events.applyFilterFromUrl', 'uses' => 'EventsController@applyFilterFromUrl']);
 Route::get('events/reset', ['as' => 'events.reset', 'uses' => 'EventsController@reset']);
 Route::get('events/rpp-reset', ['as' => 'events.rppReset', 'uses' => 'EventsController@rppReset']);
 
@@ -505,6 +506,7 @@ Route::get('entities/type/{type}', 'EntitiesController@indexTypes');
 Route::get('entities/role/{role}', 'EntitiesController@indexRoles')->name('entities.role');
 
 Route::match(['get', 'post'], 'entities/filter', ['as' => 'entities.filter', 'uses' => 'EntitiesController@filter']);
+Route::get('entities/apply-filter', ['as' => 'entities.applyFilterFromUrl', 'uses' => 'EntitiesController@applyFilterFromUrl']);
 Route::get('entities/reset', ['as' => 'entities.reset', 'uses' => 'EntitiesController@reset']);
 Route::get('entities/rpp-reset', ['as' => 'entities.rppReset', 'uses' => 'EntitiesController@rppReset']);
 
@@ -601,6 +603,7 @@ Route::get(
     ]
 );
 Route::match(['get', 'post'], 'series/filter', ['as' => 'series.filter', 'uses' => 'SeriesController@filter']);
+Route::get('series/apply-filter', ['as' => 'series.applyFilterFromUrl', 'uses' => 'SeriesController@applyFilterFromUrl']);
 Route::get('series/reset', ['as' => 'series.reset', 'uses' => 'SeriesController@reset']);
 Route::get('series/rpp-reset', ['as' => 'series.rppReset', 'uses' => 'SeriesController@rppReset']);
 
