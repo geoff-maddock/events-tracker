@@ -1,7 +1,12 @@
 @php
-	// Accept either 'photos', 'event', or 'entity' parameter
+	// Accept either 'photos', 'event', 'series', or 'entity' parameter
 	$galleryPhotos = $photos ?? collect();
 
+	// Determine owner for admin controls
+	$galleryOwner = $entity ?? $series ?? $event ?? null;
+
+	// null means all displayed photos are manageable; a collection restricts which are
+	$manageablePhotoIds = null;
 
 	// If an event is provided, gather all photos (event photos + entity primary photos)
 	if (isset($event)) {
@@ -10,8 +15,14 @@
 			return $ent->photos->where('is_primary', true);
 		});
 		$galleryPhotos = $eventPhotos->concat($entityPhotos);
+		// Only the event's own photos should have admin controls
+		$manageablePhotoIds = $eventPhotos->pluck('id');
 	}
-	// If an entity is provided (and no event), use entity photos
+	// If a series is provided, use series photos only
+	elseif (isset($series)) {
+		$galleryPhotos = $series->photos;
+	}
+	// If an entity is provided, use entity photos
 	elseif (isset($entity)) {
 		$galleryPhotos = $entity->photos;
 	}
@@ -36,7 +47,7 @@
 			</a>
 
 			{{-- Admin Controls --}}
-			@if (isset($entity) && Auth::check() && (Auth::user()->id == ($entity->user ? $entity->user?->id : null) || Auth::user()->hasGroup('super_admin')))
+			@if (isset($galleryOwner) && Auth::check() && (Auth::user()->id == $galleryOwner->user?->id || Auth::user()->hasGroup('super_admin')) && ($manageablePhotoIds === null || $manageablePhotoIds->contains($photo->id)))
 			<div class="absolute top-2 right-2 flex flex-col gap-2 z-50">
 				{{-- Delete --}}
 				<form method="POST" action="/photos/{{ $photo->id }}" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this photo?');">
