@@ -212,7 +212,7 @@ class Series extends Eloquent
      */
     public function scopeActive(Builder $query): Builder
     {
-        return $query->whereNull('cancelled_at');
+        return $query->where('visibility_id', '!=', Visibility::VISIBILITY_CANCELLED);
     }
 
     /**

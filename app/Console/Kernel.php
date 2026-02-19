@@ -6,6 +6,7 @@ use App\Console\Commands\AdminActivitySummary;
 use App\Console\Commands\AdminTest;
 use App\Console\Commands\AutomateInstagramPosts;
 use App\Console\Commands\CleanupExports;
+use App\Console\Commands\CreateSeriesEvents;
 use App\Console\Commands\InitializeEventShares;
 use App\Console\Commands\Notify;
 use App\Console\Commands\NotifyWeekly;
@@ -30,6 +31,7 @@ class Kernel extends ConsoleKernel
         AutomateInstagramPosts::class,
         InitializeEventShares::class,
         CleanupExports::class,
+        CreateSeriesEvents::class,
     ];
 
     /**
@@ -54,6 +56,9 @@ class Kernel extends ConsoleKernel
 
         // schedule daily cleanup of old export files
         $schedule->command('cleanup:exports')->daily()->timezone('America/New_York')->at('03:00');
+
+        // schedule daily creation of next series events
+        $schedule->command('series:create-events')->daily()->timezone('America/New_York')->at('04:00');
 
         // schedule daily email of events each user is attending today
         $schedule->command('notify')->daily()->timezone('America/New_York')->at('09:00');
