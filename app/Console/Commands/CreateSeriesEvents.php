@@ -40,6 +40,9 @@ class CreateSeriesEvents extends Command
             ->whereHas('occurrenceType', function ($query) {
                 $query->where('name', '!=', 'No Schedule');
             })
+            ->whereDoesntHave('eventType', function ($query) {
+                $query->where('name', 'Radio Show');
+            })
             ->with(['entities', 'tags', 'photos', 'creator'])
             ->get();
 
