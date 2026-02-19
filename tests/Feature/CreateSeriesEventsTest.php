@@ -59,6 +59,7 @@ class CreateSeriesEventsTest extends TestCase
             'start_at' => Carbon::now()->addWeeks(1)->setTime(20, 0, 0),
             'length' => 3,
             'cancelled_at' => null,
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
         ]);
 
         // Count events before
@@ -241,6 +242,7 @@ class CreateSeriesEventsTest extends TestCase
             'founded_at' => Carbon::now()->subWeeks(2),
             'start_at' => Carbon::now()->addWeeks(1)->setTime(20, 0, 0),
             'cancelled_at' => Carbon::now()->subDays(1),
+            'visibility_id' => Visibility::VISIBILITY_CANCELLED,
         ]);
 
         // Count events before
