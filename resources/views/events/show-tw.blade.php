@@ -273,7 +273,7 @@
 					@endif
 
                     <!-- Photos Section -->
-                    @include('partials.photo-gallery-tw', ['event' => $event, 'lightboxGroup' => 'event-gallery'])		
+                    @include('partials.photo-gallery-tw', ['event' => $event, 'entity' => null, 'series' => null, 'lightboxGroup' => 'event-gallery'])		
 					
 					
                     <!-- Audio Section -->

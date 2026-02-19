@@ -310,7 +310,7 @@
 		@endif
 
 		<!-- Photos Section -->
-		@include('partials.photo-gallery-tw', ['event' => $series, 'lightboxGroup' => 'series-gallery'])
+		@include('partials.photo-gallery-tw', ['series' => $series, 'entity' => null, 'event' => null, 'lightboxGroup' => 'series-gallery'])
 
 		<!-- Audio Section -->
 		@include('embeds.playlist', ['series' => $series])
