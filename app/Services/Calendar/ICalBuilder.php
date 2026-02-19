@@ -93,7 +93,7 @@ class ICalBuilder
 
             $vEvent->setOccurrence($occurrence)
                 ->setSummary($event->name)
-                ->setDescription($event->description);
+                ->setDescription($event->description ? $event->description : '');
 
             // convert $event->updated_at to timestamp
             $updated = new DateTime($event->updated_at, true);
