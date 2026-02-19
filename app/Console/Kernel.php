@@ -58,7 +58,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('cleanup:exports')->daily()->timezone('America/New_York')->at('03:00');
 
         // schedule daily creation of next series events
-        $schedule->command('series:create-events')->daily()->timezone('America/New_York')->at('04:00');
+        // DISABLED - need to reconsider if we want this
+        // $schedule->command('series:create-events')->daily()->timezone('America/New_York')->at('04:00');
 
         // schedule daily email of events each user is attending today
         $schedule->command('notify')->daily()->timezone('America/New_York')->at('09:00');
