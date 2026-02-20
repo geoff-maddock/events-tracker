@@ -114,7 +114,7 @@
 		<!-- Tag Filter -->
 		<div class="min-w-0">
 			<label for="filter_tag" class="block text-sm font-medium text-muted-foreground mb-1">Tags</label>
-			{!! Form::select('filters[tag][]', $tagOptions, ($filters['tag'] ?? null),
+			{!! Form::select('filters[tag][]', array_filter($tagOptions, fn($key) => $key !== '', ARRAY_FILTER_USE_KEY), ($filters['tag'] ?? null),
 			[
 				'data-theme' => 'tailwind',
 				'class' => 'form-select-tw select2',
