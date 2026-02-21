@@ -160,6 +160,7 @@ class CreateSeriesEventsTest extends TestCase
             'founded_at' => Carbon::now()->subWeeks(2),
             'start_at' => Carbon::now()->addWeeks(1)->setTime(20, 0, 0),
             'cancelled_at' => null,
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
         ]);
 
         // Attach entities to series
@@ -202,6 +203,7 @@ class CreateSeriesEventsTest extends TestCase
             'founded_at' => Carbon::now()->subWeeks(2),
             'start_at' => Carbon::now()->addWeeks(1)->setTime(20, 0, 0),
             'cancelled_at' => null,
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
         ]);
 
         // Attach tags to series

@@ -36,7 +36,8 @@
       "Bash(then ls /var/www/dev-events/resources/views/$dir/*.blade.php)",
       "Bash(xargs:*)",
       "Bash(if [ -f \"/var/www/dev-events/resources/views/$dir/show-tw.blade.php\" ])",
-      "Bash(elif [ -f \"/var/www/dev-events/resources/views/$dir/show.blade.php\" ])"
+      "Bash(elif [ -f \"/var/www/dev-events/resources/views/$dir/show.blade.php\" ])",
+      "WebFetch(domain:schema.org)"
     ],
     "deny": [],
     "ask": []
