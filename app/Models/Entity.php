@@ -765,17 +765,147 @@ class Entity extends Eloquent
 
     public function getSchemaType(): string
     {
-        if ($this->hasRole('Venue')) {
-            return 'MusicVenue';
-        }
-        if ($this->hasRole('DJ') || $this->hasRole('Producer') || $this->hasRole('Musician')) {
-            return 'MusicGroup';
-        }
-        if ($this->entityType && $this->entityType->name === 'Individual') {
-            return 'Person';
+        if ($this->hasRole('Venue')) { return 'MusicVenue'; }
+        if ($this->hasRole('Band')) { return 'MusicGroup'; }
+        if ($this->hasRole('DJ') || $this->hasRole('Producer') || $this->hasRole('Musician')) { return 'MusicGroup'; }
+        if ($this->hasRole('Artist')) { return 'Person'; }
+        if ($this->hasRole('Promoter')) { return 'Organization'; }
+        if ($this->hasRole('Shop')) { return 'LocalBusiness'; }
+
+        if ($this->entityType) {
+            return match ($this->entityType->name) {
+                'Individual' => 'Person',
+                'Group'      => 'Organization',
+                'Space'      => 'LocalBusiness',
+                default      => 'Organization',
+            };
         }
 
         return 'Organization';
+    }
+
+    public function getSameAsLinks(): array
+    {
+        $sameAs = [];
+
+        if (!empty($this->instagram_username)) {
+            $sameAs[] = 'https://www.instagram.com/' . $this->instagram_username;
+        }
+        if (!empty($this->facebook_username)) {
+            $sameAs[] = 'https://www.facebook.com/' . $this->facebook_username;
+        }
+        if (!empty($this->twitter_username)) {
+            $sameAs[] = 'https://twitter.com/' . $this->twitter_username;
+        }
+
+        $identityPlatforms = [
+            'soundcloud.com', 'bandcamp.com', 'ra.co', 'residentadvisor.net',
+            'discogs.com', 'open.spotify.com', 'spotify.com', 'mixcloud.com',
+            'beatport.com', 'youtube.com', 'facebook.com',
+        ];
+
+        foreach ($this->links as $link) {
+            if (empty($link->url)) {
+                continue;
+            }
+            foreach ($identityPlatforms as $platform) {
+                if (str_contains($link->url, $platform)) {
+                    $sameAs[] = $link->url;
+                    break;
+                }
+            }
+        }
+
+        $primary = $this->primaryLink();
+        if ($primary && !empty($primary->url) && !in_array($primary->url, $sameAs)) {
+            $sameAs[] = $primary->url;
+        }
+
+        return array_values(array_unique($sameAs));
+    }
+
+    public function getJsonLd(): array
+    {
+        $schemaType   = $this->getSchemaType();
+        $canonicalUrl = url('/entities/' . $this->slug);
+
+        $data = [
+            '@context'         => 'https://schema.org',
+            '@type'            => $schemaType,
+            '@id'              => $canonicalUrl . '#entity',
+            'name'             => $this->name,
+            'url'              => $canonicalUrl,
+            'description'      => $this->getSeoDescriptionFormat(),
+            'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => $canonicalUrl],
+        ];
+
+        $aliases = $this->aliases->pluck('name')->filter()->values()->all();
+        if (!empty($aliases)) {
+            $data['alternateName'] = $aliases;
+        }
+
+        $photo = $this->getPrimaryPhoto();
+        if ($photo) {
+            $data['image'] = Storage::disk('external')->url($photo->getStoragePath());
+        }
+
+        $tags = $this->tags->pluck('name')->filter()->values()->all();
+        if (!empty($tags)) {
+            if (in_array($schemaType, ['MusicGroup', 'MusicVenue'])) {
+                $data['genre'] = $tags;
+            } else {
+                $data['knowsAbout'] = $tags;
+            }
+        }
+
+        if ($schemaType === 'Person') {
+            $roles = $this->roles->pluck('name')->filter()->values()->all();
+            if (!empty($roles)) {
+                $data['hasOccupation'] = array_map(
+                    fn ($role) => ['@type' => 'Occupation', 'name' => $role],
+                    $roles
+                );
+            }
+        }
+
+        $location = $this->getPrimaryLocation();
+        if ($location && !empty($location->city)) {
+            if ($schemaType === 'MusicVenue' && !empty($location->address_one)) {
+                $data['address'] = [
+                    '@type'           => 'PostalAddress',
+                    'streetAddress'   => $location->address_one,
+                    'addressLocality' => $location->city,
+                    'addressRegion'   => $location->state ?? '',
+                    'postalCode'      => $location->postcode ?? '',
+                    'addressCountry'  => $location->country ?? 'US',
+                ];
+            } else {
+                $cityState = $location->city . (!empty($location->state) ? ', ' . $location->state : '');
+                $data['homeLocation'] = ['@type' => 'Place', 'name' => $cityState];
+            }
+        }
+
+        $sameAs = $this->getSameAsLinks();
+        if (!empty($sameAs)) {
+            $data['sameAs'] = $sameAs;
+        }
+
+        return $data;
+    }
+
+    public function getBreadcrumbJsonLd(): array
+    {
+        $items   = [['@type' => 'ListItem', 'position' => 1, 'name' => 'Entities', 'item' => url('/entities')]];
+        $primary = $this->roles->first();
+
+        if ($primary) {
+            $items[] = ['@type' => 'ListItem', 'position' => 2, 'name' => $primary->name, 'item' => route('entities.role', $primary->slug)];
+            $items[] = ['@type' => 'ListItem', 'position' => 3, 'name' => $this->name,    'item' => url('/entities/' . $this->slug)];
+        } else {
+            $items[] = ['@type' => 'ListItem', 'position' => 2, 'name' => $this->name, 'item' => url('/entities/' . $this->slug)];
+        }
+
+        return ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => $items];
     }
 
     // Format the entity to post as a tweet
