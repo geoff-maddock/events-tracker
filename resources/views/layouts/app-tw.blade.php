@@ -5,14 +5,16 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta property="og:url" content="{{ Request::url() }}">
-	<meta property="og:type" content="website">
+	<meta property="og:type" content="@yield('og-type', 'website')">
 	<meta property="og:title" content="@yield('title', config('app.app_name'))">
 	<meta property="og:image" content="@yield('og-image', url('/').'/apple-icon-180x180.png')">
 	<meta property="og:description" content="@yield('og-description', 'A calender of events, concerts, club nights, weekly and monthly events series, promoters, artists, producers, djs, venues and other entities.')">
 	<meta name="description" content="@yield('description', 'A calender of events, concerts, club nights, weekly and monthly events series, promoters, artists, producers, djs, venues and other entities.')">
 	<meta property="fb:app_id" content="{{ config('app.fb_app_id') }}">
+	@yield('canonical')
 	@yield('facebook.meta')
 	@yield('google.event.json')
+	@yield('entity.json')
 	<meta name="theme-color" content="#0f172a"/>
 	<meta name="csrf-token" content="{{ csrf_token() }}">
 	<title>@yield('title','Event Guide') • {{ config('app.app_name')}}</title>

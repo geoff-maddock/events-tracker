@@ -717,6 +717,67 @@ class Entity extends Eloquent
         return $format;
     }
 
+    public function getSeoTitleFormat(): string
+    {
+        $format = $this->name;
+
+        $roles = $this->roles->take(2)->pluck('name')->toArray();
+        if (!empty($roles)) {
+            $format .= ' (' . implode(', ', $roles) . ')';
+        }
+
+        $location = $this->getPrimaryLocation();
+        if ($location && !empty($location->city)) {
+            $format .= ' – ' . $location->city;
+            if (!empty($location->state)) {
+                $format .= ', ' . $location->state;
+            }
+        }
+
+        return $format;
+    }
+
+    public function getSeoDescriptionFormat(): string
+    {
+        if (!empty($this->short)) {
+            return $this->short;
+        }
+
+        $sentence = $this->name;
+        $roleStr = $this->getRoleString();
+        $location = $this->getPrimaryLocation();
+
+        if (!empty($roleStr)) {
+            $sentence .= ' is a ' . strtolower($roleStr);
+            if ($location && !empty($location->city)) {
+                $state = !empty($location->state) ? ', ' . $location->state : '';
+                $sentence .= ' based in ' . $location->city . $state;
+            }
+        } elseif ($location && !empty($location->city)) {
+            $state = !empty($location->state) ? ', ' . $location->state : '';
+            $sentence .= ' is based in ' . $location->city . $state;
+        }
+
+        $sentence .= '. See upcoming shows, past performances, music links, and scene connections on Arcane City.';
+
+        return $sentence;
+    }
+
+    public function getSchemaType(): string
+    {
+        if ($this->hasRole('Venue')) {
+            return 'MusicVenue';
+        }
+        if ($this->hasRole('DJ') || $this->hasRole('Producer') || $this->hasRole('Musician')) {
+            return 'MusicGroup';
+        }
+        if ($this->entityType && $this->entityType->name === 'Individual') {
+            return 'Person';
+        }
+
+        return 'Organization';
+    }
+
     // Format the entity to post as a tweet
     public function getBriefFormat(): string
     {
