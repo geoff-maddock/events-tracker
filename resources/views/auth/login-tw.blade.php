@@ -74,7 +74,7 @@
 
                 <div class="flex items-center justify-between">
                     <label class="flex items-center gap-2 text-sm">
-                        <input type="checkbox" name="remember" class="rounded border-border text-primary focus:ring-primary" {{ old('remember') ? 'checked' : '' }}>
+                        <input type="checkbox" name="remember" class="rounded border-border text-primary dark:bg-input dark:text-primary-foreground focus:ring-primary" {{ old('remember') ? 'checked' : '' }}>
                         <span class="text-muted-foreground">Remember me</span>
                     </label>
                     <a href="/password/reset" class="text-sm text-primary hover:underline">Forgot password?</a>

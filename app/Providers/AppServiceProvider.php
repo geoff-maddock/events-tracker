@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Auth\RememberMeSessionGuard;
 use App\Models\Entity;
 use App\Models\Event;
 use App\Models\Post;
@@ -27,6 +28,21 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Auth::extend('session-1yr', function ($app, $name, array $config) {
+            $guard = new RememberMeSessionGuard(
+                $name,
+                Auth::createUserProvider($config['provider']),
+                $app['session.store'],
+                $app['request']
+            );
+
+            $guard->setCookieJar($app['cookie']);
+            $guard->setDispatcher($app['events']);
+            $guard->setRequest($app['request']);
+
+            return $guard;
+        });
+
         Relation::morphMap([
             'entity' => Entity::class,
             'events' => Event::class,
