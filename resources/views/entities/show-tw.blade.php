@@ -1,12 +1,22 @@
 @extends('layouts.app-tw')
 
-@section('title', $entity->getTitleFormat())
+@section('title', $entity->getSeoTitleFormat())
 
-@section('og-description', $entity->short)
-@section('description', $entity->short)
+@section('og-type', 'profile')
+
+@section('canonical')
+<link rel="canonical" href="{{ url('/entities/'.$entity->slug) }}">
+@endsection
+
+@section('og-description', $entity->getSeoDescriptionFormat())
+@section('description', $entity->getSeoDescriptionFormat())
 
 @section('og-image')
 @if ($photo = $entity->getPrimaryPhoto()){{ Storage::disk('external')->url($photo->getStoragePath()) }}@endif
+@endsection
+
+@section('entity.json')
+@include('entities.json-ld', ['entity' => $entity])
 @endsection
 
 @section('content')
