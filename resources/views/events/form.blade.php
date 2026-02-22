@@ -173,6 +173,25 @@
         </x-ui.form-group>
     </div>
 
+    {{-- Duplicate Warning Panel --}}
+    <div id="events-on-date-warning"
+         class="hidden col-span-12 rounded-md border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 p-4 text-sm"
+         role="alert">
+        <div class="flex items-start gap-2">
+            <i class="bi bi-exclamation-triangle-fill text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0"></i>
+            <div>
+                <p class="font-medium text-amber-800 dark:text-amber-300 mb-2">
+                    Other events are already scheduled on this date:
+                </p>
+                <ul id="events-on-date-list" class="space-y-1 text-amber-700 dark:text-amber-400 list-disc list-inside">
+                </ul>
+                <p class="mt-2 text-amber-600 dark:text-amber-500 text-xs">
+                    You can still submit this event if it is different from the above.
+                </p>
+            </div>
+        </div>
+    </div>
+
     <div class="col-span-12 md:col-span-4">
         <x-ui.form-group
             name="end_at"

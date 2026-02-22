@@ -263,9 +263,9 @@
 				@endunless						</div>
 					</div>
 
-			<!-- Photo Upload -->
-			@if ($user && (Auth::user()->id == $event->user?->id || $user->hasGroup('super_admin') ))
-			<div class="rounded-lg border border-border bg-card shadow p-2 pt-2 space-y-4">
+					<!-- Photo Upload -->
+					@if ($user && (Auth::user()->id == $event->user?->id || $user->hasGroup('super_admin') ))
+					<div class="rounded-lg border border-border bg-card shadow p-2 pt-2 space-y-4">
 						<form action="/events/{{ $event->id }}/photos" class="dropzone border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-600 transition-colors" id="myDropzone" method="POST">
 							<input type="hidden" name="_token" value="{{ csrf_token() }}">
 						</form>
