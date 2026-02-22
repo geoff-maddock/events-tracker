@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const minDate = picker.getAttribute('data-min-date');
         const maxDate = picker.getAttribute('data-max-date');
 
-        flatpickr(picker, {
+        const config = {
             enableTime: enableTime,
             dateFormat: dateFormat,
             altInput: true,
@@ -162,8 +162,46 @@ document.addEventListener('DOMContentLoaded', function() {
             time_24hr: false,
             minDate: minDate,
             maxDate: maxDate,
-        });
+        };
+
+        if (picker.id === 'start_at') {
+            config.onChange = function(selectedDates) {
+                if (selectedDates.length === 0) return;
+                const d = selectedDates[0];
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                checkEventsOnDate(year, month, day, '{{ $event->slug }}');
+            };
+        }
+
+        flatpickr(picker, config);
     });
 });
+
+function checkEventsOnDate(year, month, day, excludeSlug) {
+    const warning = document.getElementById('events-on-date-warning');
+    const list = document.getElementById('events-on-date-list');
+    if (!warning || !list) return;
+
+    fetch(`/api/events/by-date/${year}/${month}/${day}`)
+        .then(r => r.json())
+        .then(data => {
+            const events = (data.data || []).filter(e => e.slug !== excludeSlug);
+            if (events.length === 0) {
+                warning.classList.add('hidden');
+                return;
+            }
+            list.innerHTML = events.map(e => {
+                const venue = e.venue ? ` @ ${e.venue.name}` : '';
+                const time = e.start_at
+                    ? new Date(e.start_at).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
+                    : '';
+                return `<li><a href="/events/${e.slug}" target="_blank" class="underline hover:no-underline">${e.name}</a>${venue}${time ? ' &mdash; ' + time : ''}</li>`;
+            }).join('');
+            warning.classList.remove('hidden');
+        })
+        .catch(() => warning.classList.add('hidden'));
+}
 </script>
 @stop
