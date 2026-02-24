@@ -954,7 +954,7 @@ class EntitiesController extends Controller
         }
 
         $entity->tags()->sync($syncArray);
-        $entity->aliases()->attach($aliasSyncArray);
+        $entity->aliases()->sync($aliasSyncArray);
         $entity->roles()->sync($request->input('role_list', []));
 
         // add to activity log
