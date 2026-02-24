@@ -103,7 +103,7 @@
 
 
         <!-- Forum -->
-        <a href="{{ url('/threads/all') }}" class="nav-item-tw {{ Request::is('threads') ? 'nav-item-active-tw' : '' }}">
+        <a href="{{ url('/threads/all') }}" class="nav-item-tw {{ Request::is('threads*') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-chat-dots text-lg"></i>
             <span>Forum</span>
         </a>
@@ -283,6 +283,13 @@
             <span>Tags</span>
         </a>
 
+        <!-- Forum -->
+        <a href="{{ url('/threads/all') }}" class="nav-item-tw {{ Request::is('threads/*') ? 'nav-item-active-tw' : '' }}">
+            <i class="bi bi-chat-dots text-lg"></i>
+            <span>Forum</span>
+        </a>
+
+
         <!-- Users -->
         @auth
         <a href="{{ url('/users') }}" class="nav-item-tw {{ Request::is('users') ? 'nav-item-active-tw' : '' }}">
@@ -307,7 +314,7 @@
 
 
         @isset ($hasForum)
-        <a href="{{ url('/threads') }}" class="nav-item-tw {{ Request::is('threads') ? 'nav-item-active-tw' : '' }}">
+        <a href="{{ url('/threads') }}" class="nav-item-tw {{ Request::is('threads/*') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-chat-dots text-lg"></i>
             <span>Forum</span>
         </a>
