@@ -167,10 +167,22 @@
 
 <!-- Threads List -->
 @if (isset($threads) && count($threads) > 0)
-<div class="space-y-4">
-	@foreach ($threads as $thread)
-	@include('threads.card-tw', ['thread' => $thread])
-	@endforeach
+<div class="border border-border rounded-lg overflow-hidden">
+	<!-- Column header (lg+) -->
+	<div class="hidden lg:flex items-center gap-3 px-4 py-2 bg-muted border-b border-border text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+		<div class="w-8 flex-shrink-0"></div>
+		<div class="flex-1">Thread</div>
+		<div class="w-28 text-center flex-shrink-0">Author</div>
+		<div class="w-20 text-center flex-shrink-0">Replies</div>
+		<div class="w-32 text-right flex-shrink-0">Last Activity</div>
+		<div class="w-4 flex-shrink-0"></div>
+	</div>
+	<!-- Rows -->
+	<div class="divide-y divide-border">
+		@foreach ($threads as $thread)
+		@include('threads.card-tw', ['thread' => $thread])
+		@endforeach
+	</div>
 </div>
 @else
 <div class="text-center py-12">
