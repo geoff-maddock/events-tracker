@@ -13,7 +13,7 @@ Forum Thread "{{ $thread->name }}"
 
 <!-- Back Button -->
 <div class="mb-6">
-	<a href="{{ URL::previous() }}" class="inline-flex items-center gap-2 px-3 py-2 text-sm border rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+	<a href="{{ URL::previous() }}" class="inline-flex items-center gap-2 px-3 py-2 text-sm border border-border rounded-lg hover:bg-accent transition-colors text-muted-foreground">
 		<i class="bi bi-arrow-left"></i>
 		<span>Back</span>
 	</a>
@@ -45,26 +45,9 @@ Forum Thread "{{ $thread->name }}"
 	</div>
 
 	<!-- Thread Content -->
-	<div class="rounded-lg border bg-card shadow">
-		<div class="overflow-x-auto">
-			<table class="w-full">
-				<thead class="bg-primary/10 border-b border-border">
-					<tr class="text-sm font-semibold text-muted-foreground">
-						<th class="px-4 py-3 text-left">Thread</th>
-						<th class="px-4 py-3 text-left hidden md:table-cell">Category</th>
-						<th class="px-4 py-3 text-left">User</th>
-						<th class="px-4 py-3 text-center hidden md:table-cell">Posts</th>
-						<th class="px-4 py-3 text-center hidden md:table-cell">Views</th>
-						<th class="px-4 py-3 text-center hidden md:table-cell">Likes</th>
-						<th class="px-4 py-3 text-left hidden sm:table-cell">Last Post</th>
-					</tr>
-				</thead>
-				<tbody>
-					@include('threads.first', ['thread' => $thread])
-					@include('posts.list', ['thread' => $thread, 'posts' => $thread->posts])
-				</tbody>
-			</table>
-		</div>
+	<div class="space-y-3">
+		@include('threads.first-tw', ['thread' => $thread])
+		@include('posts.list-tw', ['thread' => $thread, 'posts' => $thread->posts])
 	</div>
 
 	<!-- Reply Form -->
