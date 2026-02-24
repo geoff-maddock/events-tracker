@@ -101,6 +101,13 @@
             <span>Tags</span>
         </a>
 
+
+        <!-- Forum -->
+        <a href="{{ url('/threads/all') }}" class="nav-item-tw {{ Request::is('threads') ? 'nav-item-active-tw' : '' }}">
+            <i class="bi bi-chat-dots text-lg"></i>
+            <span>Forum</span>
+        </a>
+
         <!-- Users -->
         @if (!Auth::guest())
         <a href="{{ url('/users') }}" class="nav-item-tw {{ Request::is('users') ? 'nav-item-active-tw' : '' }}">

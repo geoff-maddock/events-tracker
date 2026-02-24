@@ -12,7 +12,7 @@
 <!-- Page Header -->
 <div class="mb-6">
 	<h1 class="text-3xl font-bold text-primary mb-2">Forum</h1>
-	<p class="text-muted-foreground">Discussions, blog posts, and community threads.</p>
+	<p class="text-muted-foreground">Discussions and community threads.</p>
 </div>
 
 <!-- Action Menu -->
