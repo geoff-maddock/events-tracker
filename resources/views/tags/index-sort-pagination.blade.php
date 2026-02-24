@@ -10,20 +10,23 @@
 	<!-- Sort Controls -->
 	<div class="flex items-center justify-center gap-4 w-full sm:flex-1">
 		<form action="{{ url()->current() }}" method="GET" class="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
+			@if(!empty($search))
+			<input type="hidden" name="search" value="{{ $search }}">
+			@endif
 			<select name="limit" class="form-select-tw text-sm py-1.5 px-3 auto-submit flex-1 sm:flex-initial sm:max-w-[120px] min-w-0">
 				@foreach($limitOptions as $value => $label)
-				<option value="{{ $value }}" {{ ($limit ?? 10) == $value ? 'selected' : '' }}>{{ $label }}</option>
+				<option value="{{ $value }}" {{ ($limit ?? 25) == $value ? 'selected' : '' }}>{{ $label }}</option>
 				@endforeach
 			</select>
 			<span class="text-muted-foreground text-sm hidden sm:inline">Sort by:</span>
 			<select name="sort" class="form-select-tw text-sm py-1.5 px-3 auto-submit flex-1 sm:flex-initial sm:max-w-[160px] min-w-0">
 				@foreach($sortOptions as $value => $label)
-				<option value="{{ $value }}" {{ ($sort ?? 'tags.start_at') == $value ? 'selected' : '' }}>{{ $label }}</option>
+				<option value="{{ $value }}" {{ ($sort ?? 'name') == $value ? 'selected' : '' }}>{{ $label }}</option>
 				@endforeach
 			</select>
 			<select name="direction" class="form-select-tw text-sm py-1.5 px-3 auto-submit flex-1 sm:flex-initial sm:max-w-[140px] min-w-0">
 				@foreach($directionOptions as $value => $label)
-				<option value="{{ $value }}" {{ ($direction ?? 'desc') == $value ? 'selected' : '' }}>{{ $label }}</option>
+				<option value="{{ $value }}" {{ ($direction ?? 'asc') == $value ? 'selected' : '' }}>{{ $label }}</option>
 				@endforeach
 			</select>
 		</form>
