@@ -61,7 +61,7 @@ class TagsController extends Controller
         // default list variables
         $this->defaultSort = 'name';
         $this->defaultSortDirection = 'asc';
-        $this->defaultLimit = 10;
+        $this->defaultLimit = 25;
 
         // set list variables
         $this->sort = $this->defaultSort;
@@ -144,6 +144,19 @@ class TagsController extends Controller
                     ->with('tags', 'locations', 'roles')
                     ->simplePaginate($this->limit);
 
+        // get sort/pagination parameters from request
+        $sort = $request->input('sort', 'name');
+        $direction = $request->input('direction', 'asc');
+        $limit = (int) $request->input('limit', $this->defaultLimit);
+
+        $allowedSorts = array_keys($this->getListControlOptions()['sortOptions']);
+        if (!in_array($sort, $allowedSorts)) {
+            $sort = 'name';
+        }
+        if (!in_array($direction, ['asc', 'desc'])) {
+            $direction = 'asc';
+        }
+
         // get a list of all tags with optional search filter
         $query = Tag::query();
 
@@ -152,12 +165,29 @@ class TagsController extends Controller
             $query->where('name', 'like', '%' . $search . '%');
         }
 
-        $tags = $query->orderBy('name', 'ASC')->paginate(20)->appends(['search' => $search]);
+        $tags = $query->withGridThumbnail()
+            ->when($sort === 'events_count', fn ($q) => $q->withCount('events'))
+            ->orderBy($sort, $direction)
+            ->paginate($limit)
+            ->appends(['search' => $search, 'sort' => $sort, 'direction' => $direction, 'limit' => $limit]);
 
         $hasFilter = !empty($search);
 
         return view('tags.index-tw')
-                ->with(compact('series', 'entities', 'events', 'tag', 'tags', 'userTags', 'latestTags', 'search', 'hasFilter'));
+                ->with(array_merge(
+                    compact('series', 'entities', 'events', 'tag', 'tags', 'userTags', 'latestTags', 'search', 'hasFilter'),
+                    ['sort' => $sort, 'direction' => $direction, 'limit' => $limit],
+                    $this->getListControlOptions()
+                ));
+    }
+
+    protected function getListControlOptions(): array
+    {
+        return [
+            'limitOptions' => [10 => 10, 25 => 25, 50 => 50, 100 => 100],
+            'sortOptions' => ['name' => 'Name', 'events_count' => 'Popularity', 'created_at' => 'Date Created', 'updated_at' => 'Last Updated'],
+            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
+        ];
     }
 
     /**

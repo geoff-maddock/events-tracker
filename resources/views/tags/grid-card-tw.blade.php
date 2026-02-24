@@ -1,13 +1,12 @@
 @php
-    $event = $tag->events()->visible($user ?? null)->latest('start_at')->first();
-    $photo = $event ? $event->getPrimaryPhoto() : null;
+    $thumbnail = $tag->grid_thumbnail ?? null;
     $following = $signedIn ? ($user->getTagsFollowing()->contains($tag)) : false;
 @endphp
 <div class="bg-card border border-border rounded-lg overflow-hidden hover:border-primary transition-colors group">
     <!-- Tag Image -->
     <a href="/tags/{{ $tag->slug }}" class="block aspect-square relative overflow-hidden">
-        @if($photo)
-            <img src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}" alt="{{ $tag->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+        @if($thumbnail)
+            <img src="{{ Storage::disk('external')->url($thumbnail) }}" alt="{{ $tag->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
         @else
             <div class="w-full h-full flex items-center justify-center bg-muted">
                 <i class="bi bi-tag text-4xl text-muted-foreground/30"></i>

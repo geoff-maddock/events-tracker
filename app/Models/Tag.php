@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use App\Filters\TagFilters;
 
 /**
@@ -75,6 +75,37 @@ class Tag extends Eloquent
     public function entities(): BelongsToMany
     {
         return $this->belongsToMany(Entity::class)->withTimestamps();
+    }
+
+    /**
+     * Adds a grid_thumbnail subquery select — returns the thumbnail path of the most recent
+     * public event photo, falling back to the most recently created entity photo.
+     */
+    public function scopeWithGridThumbnail(Builder $query): Builder
+    {
+        return $query->select('tags.*')->addSelect(DB::raw('
+            COALESCE(
+                (SELECT p.thumbnail
+                 FROM photos p
+                 JOIN event_photo ep ON p.id = ep.photo_id
+                 JOIN events e ON e.id = ep.event_id
+                 JOIN event_tag et ON e.id = et.event_id
+                 WHERE et.tag_id = tags.id
+                   AND p.is_primary = 1
+                   AND e.visibility_id = ' . Visibility::VISIBILITY_PUBLIC . '
+                 ORDER BY e.start_at DESC
+                 LIMIT 1),
+                (SELECT p.thumbnail
+                 FROM photos p
+                 JOIN entity_photo eph ON p.id = eph.photo_id
+                 JOIN entities en ON en.id = eph.entity_id
+                 JOIN entity_tag etag ON en.id = etag.entity_id
+                 WHERE etag.tag_id = tags.id
+                   AND p.is_primary = 1
+                 ORDER BY en.created_at DESC
+                 LIMIT 1)
+            ) as grid_thumbnail
+        '));
     }
 
     /**
