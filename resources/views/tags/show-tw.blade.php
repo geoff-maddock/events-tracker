@@ -87,7 +87,15 @@ Tags
 		<!-- Related Tags Section -->
 		@if(isset($tagObject) && isset($relatedTags) && count($relatedTags) > 0)
 		<div>
-			<h2 class="text-lg font-semibold mb-4 text-foreground">Related Tags</h2>
+			<div class="flex items-center justify-between mb-4">
+				<h2 class="text-lg font-semibold text-foreground">Related Tags</h2>
+				@if ($signedIn && $user->hasGroup('super_admin'))
+				<div class="flex items-center text-sm text-muted-foreground">
+					<i class="bi bi-star mr-2 h-4 w-4"></i>
+					<span>{{ count($tagObject->followers()) }} {{ Str::plural('follower', count($tagObject->followers())) }}</span>
+				</div>
+				@endif
+			</div>
 			<div class="flex flex-wrap gap-2">
 				@foreach($relatedTags as $relatedTagName => $count)
 				@php

@@ -235,6 +235,7 @@
 					@endif
 				</div>
 
+				@if ($series->primary_link || $series->ticket_link || $series->facebook_username || $series->twitter_username || $series->instagram_username)
 				<!-- Social Links -->
 				<div class="flex items-center gap-3 text-sm border-t border-border pt-4">
 					@if ($link = $series->primary_link)
@@ -267,11 +268,13 @@
 						</a>
 					@endif
 				</div>
+				@endif
 
-				<!-- Follow Info -->
-				@if ($signedIn)
-					<div class="text-sm text-muted-foreground border-t border-border pt-4">
-						<span class="font-semibold">{{ count($series->followers()) }}</span> Follows
+				<!-- Follower Count (Admin only) -->
+				@if ($signedIn && $user->hasGroup('super_admin'))
+					<div class="flex items-center text-sm text-muted-foreground border-t border-border pt-4">
+						<i class="bi bi-star mr-2 h-4 w-4"></i>
+						<span>{{ count($series->followers()) }} {{ Str::plural('follower', count($series->followers())) }}</span>
 					</div>
 				@endif
 

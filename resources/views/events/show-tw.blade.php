@@ -328,6 +328,15 @@
 								@endif
 							</div>
 							@endif
+
+							<!-- Follower Count (Admin only) -->
+							@if ($signedIn && $user->hasGroup('super_admin'))
+							<div class="flex items-center text-sm text-muted-foreground">
+								<i class="bi bi-star mr-2 h-4 w-4"></i>
+								<span>{{ $event->eventResponses()->count() }} {{ Str::plural('follower', $event->eventResponses()->count()) }}</span>
+							</div>
+							@endif
+
 						</div>
 
 				<!-- Related Entities -->
