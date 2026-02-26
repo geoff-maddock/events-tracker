@@ -378,7 +378,7 @@ class UsersController extends Controller
             ->with($this->getFormOptions());
     }
 
-    public function update(User $user, ProfileRequest $request): View
+    public function update(User $user, ProfileRequest $request): RedirectResponse
     {
         $input = $request->all();
 
@@ -395,15 +395,12 @@ class UsersController extends Controller
             $user->groups()->sync($request->input('group_list', []));
         }
 
-        // get all the tabs from the session
-        $tabs = $this->getTabs($request);
-
         // add to activity log
         Activity::log($user, $this->user, 2);
 
         flash('Success', 'The user has been updated');
 
-        return view('users.show-tw', compact('user', 'tabs'));
+        return redirect()->route('users.show', ['user' => $user->id]);
     }
 
     /**
