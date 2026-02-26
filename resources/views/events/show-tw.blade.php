@@ -85,6 +85,11 @@
 												</form>
 												<div class="border-t border-border my-1"></div>
 											@endif
+											@if ($signedIn)
+												<a href="{!! route('events.createThread', ['id' => $event->id]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
+													<i class="bi bi-chat-left-text mr-2"></i>Create Thread
+												</a>
+											@endif
 											<a href="{!! URL::route('events.index') !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
 												<i class="bi bi-list mr-2"></i>Return to list
 											</a>												<div class="border-t border-border my-1"></div>
@@ -132,6 +137,89 @@
 							</div>
 						</div>
 				@endif		
+
+@php $relatedThreads = $event->threads()->with(['posts.user.profile', 'user'])->latest()->take(5)->get(); @endphp
+				@if ($relatedThreads->isNotEmpty())
+				<div class="rounded-lg border border-border bg-card shadow">
+					<div class="px-4 py-3 border-b border-border">
+						<h2 class="text-lg font-semibold">Related Threads</h2>
+					</div>
+					<div class="divide-y divide-border">
+						@foreach ($relatedThreads as $thread)
+						<div>
+							<div class="flex items-center justify-between px-4 py-3 bg-muted/20">
+								<h3 class="font-semibold text-foreground">
+									<a href="{{ route('threads.show', [$thread->id]) }}" class="hover:text-primary transition-colors">{{ $thread->name }}</a>
+								</h3>
+								<a href="{{ route('threads.show', [$thread->id]) }}" class="text-xs text-muted-foreground hover:text-primary transition-colors">View thread <i class="bi bi-arrow-right"></i></a>
+							</div>
+							<div class="divide-y divide-border">
+								{{-- Thread body --}}
+								<div class="flex">
+									<div class="hidden sm:flex flex-col items-center gap-1 py-3 px-2 bg-muted/30 border-r border-border w-24 flex-shrink-0 text-center">
+										@if (isset($thread->user))
+										@include('users.avatar', ['user' => $thread->user, 'size' => 'md'])
+										<a href="{{ route('users.show', [$thread->user->id]) }}" class="text-xs font-medium text-foreground hover:text-primary leading-tight break-all">{{ $thread->user->name }}</a>
+										<span class="text-xs text-muted-foreground">{{ $thread->created_at->format('M j, Y') }}</span>
+										@else
+										<div class="w-10 h-10 rounded-full bg-muted flex items-center justify-center"><i class="bi bi-person text-muted-foreground/40"></i></div>
+										<span class="text-xs text-muted-foreground italic">Deleted</span>
+										@endif
+									</div>
+									<div class="flex-1 min-w-0 p-3">
+										<div class="sm:hidden flex items-center gap-2 mb-2 pb-2 border-b border-border">
+											@if (isset($thread->user))
+											@include('users.avatar', ['user' => $thread->user, 'size' => 'sm'])
+											<a href="{{ route('users.show', [$thread->user->id]) }}" class="text-sm font-medium hover:text-primary">{{ $thread->user->name }}</a>
+											@endif
+											<span class="text-xs text-muted-foreground ml-auto">{{ $thread->created_at->diffForHumans() }}</span>
+										</div>
+										<div class="prose prose-sm max-w-none dark:prose-invert">
+											@if (isset($thread->user) && $thread->user->can('trust_thread'))
+												{!! $thread->body !!}
+											@else
+												{{ $thread->body }}
+											@endif
+										</div>
+									</div>
+								</div>
+								@foreach ($thread->posts as $post)
+								<div class="flex" id="post-{{ $post->id }}">
+									<div class="hidden sm:flex flex-col items-center gap-1 py-3 px-2 bg-muted/30 border-r border-border w-24 flex-shrink-0 text-center">
+										@if (isset($post->user))
+										@include('users.avatar', ['user' => $post->user, 'size' => 'md'])
+										<a href="{{ route('users.show', [$post->user->id]) }}" class="text-xs font-medium text-foreground hover:text-primary leading-tight break-all">{{ $post->user->name }}</a>
+										<span class="text-xs text-muted-foreground">{{ $post->created_at->format('M j, Y') }}</span>
+										@else
+										<div class="w-10 h-10 rounded-full bg-muted flex items-center justify-center"><i class="bi bi-person text-muted-foreground/40"></i></div>
+										<span class="text-xs text-muted-foreground italic">Deleted</span>
+										@endif
+									</div>
+									<div class="flex-1 min-w-0 p-3">
+										<div class="sm:hidden flex items-center gap-2 mb-2 pb-2 border-b border-border">
+											@if (isset($post->user))
+											@include('users.avatar', ['user' => $post->user, 'size' => 'sm'])
+											<a href="{{ route('users.show', [$post->user->id]) }}" class="text-sm font-medium hover:text-primary">{{ $post->user->name }}</a>
+											@endif
+											<span class="text-xs text-muted-foreground ml-auto">{{ $post->created_at->diffForHumans() }}</span>
+										</div>
+										<div class="prose prose-sm max-w-none dark:prose-invert">
+											@if (isset($post->user) && $post->user->can('trust_post'))
+												{!! $post->body !!}
+											@else
+												{{ $post->body }}
+											@endif
+										</div>
+									</div>
+								</div>
+								@endforeach
+							</div>
+						</div>
+						@endforeach
+					</div>
+				</div>
+				@endif
+
 		</div>
 
 		<!-- Sidebar -->
