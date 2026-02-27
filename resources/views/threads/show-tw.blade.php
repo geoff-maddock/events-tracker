@@ -46,8 +46,8 @@ Forum Thread "{{ $thread->name }}"
 
 	<!-- Thread Content -->
 	<div class="space-y-3">
-		@include('threads.first-tw', ['thread' => $thread])
-		@include('posts.list-tw', ['thread' => $thread, 'posts' => $thread->posts])
+		@include('threads.first-tw', ['thread' => $thread, 'threadFollow' => $threadFollow, 'threadLike' => $threadLike])
+		@include('posts.list-tw', ['thread' => $thread, 'posts' => $thread->posts, 'likedPostIds' => $likedPostIds])
 	</div>
 
 	<!-- Reply Form -->

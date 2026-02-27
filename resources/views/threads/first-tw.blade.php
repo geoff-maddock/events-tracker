@@ -60,7 +60,7 @@
             </a>
             @endif
             @endif
-            @if ($follow = $thread->followedBy($user))
+            @if ($follow = ($threadFollow ?? $thread->followedBy($user)))
             <a href="{!! route('threads.unfollow', ['id' => $thread->id]) !!}"
                title="Unfollow"
                class="inline-flex items-center px-2 py-1 text-sm bg-card border border-border rounded hover:bg-accent transition-colors">
@@ -73,7 +73,7 @@
                 <i class="bi bi-plus-circle-fill text-info"></i>
             </a>
             @endif
-            @if ($like = $thread->likedBy($user))
+            @if ($like = ($threadLike ?? $thread->likedBy($user)))
             <a href="{!! route('threads.unlike', ['id' => $thread->id]) !!}"
                title="Unlike"
                class="inline-flex items-center gap-1 px-2 py-1 text-sm bg-card border border-border rounded hover:bg-accent transition-colors">
