@@ -22,13 +22,35 @@
 	<!-- Filters -->
 	<div class="card-tw mb-6">
 		<div class="p-4">
-			<button type="button" id="filters-toggle-btn" class="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
-				<i class="bi bi-funnel text-lg"></i>
-				<span class="font-medium">Filters</span>
-				<i class="bi bi-chevron-down transition-transform" id="filters-icon"></i>
-			</button>
+			<div class="flex flex-wrap items-center gap-2">
+				<button type="button" id="filters-toggle-btn" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
+					<i class="bi bi-funnel mr-2"></i>
+					<span id="filters-toggle-text">Show Filters</span>
+					<i class="bi bi-chevron-down ml-2 transition-transform" id="filters-icon"></i>
+				</button>
 
-			<div id="filters-content" class="{{ $hasFilter ? '' : 'hidden' }} mt-4">
+				@if($hasFilter)
+				<div id="active-filters-badges" class="inline-flex flex-wrap items-center gap-2">
+					@if(!empty($filters['name']))
+					<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+						Name: {{ $filters['name'] }}
+					</span>
+					@endif
+					@if(!empty($filters['body']))
+					<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+						Body: {{ $filters['body'] }}
+					</span>
+					@endif
+					@if(!empty($filters['user']))
+					<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+						User: {{ $userOptions[$filters['user']] ?? 'Unknown' }}
+					</span>
+					@endif
+				</div>
+				@endif
+			</div>
+
+			<div id="filters-content" class="hidden mt-4">
 				<form action="{{ route('blogs.filter') }}" method="POST">
 					@csrf
 					<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -119,10 +141,25 @@ document.addEventListener('DOMContentLoaded', function() {
 	const filtersContent = document.getElementById('filters-content');
 	const filtersIcon = document.getElementById('filters-icon');
 
+	const badges = document.getElementById('active-filters-badges');
+	const toggleText = document.getElementById('filters-toggle-text');
+
+	function applyState(open) {
+		filtersContent.classList.toggle('hidden', !open);
+		if (filtersIcon) filtersIcon.classList.toggle('rotate-180', open);
+		if (toggleText) toggleText.textContent = open ? 'Hide Filters' : 'Show Filters';
+		if (badges) badges.classList.toggle('hidden', open);
+	}
+
+	const storageKey = 'filter-open:' + window.location.pathname;
+	const saved = localStorage.getItem(storageKey);
+	if (saved !== null) applyState(saved === '1');
+
 	if (toggleBtn) {
 		toggleBtn.addEventListener('click', function() {
-			filtersContent.classList.toggle('hidden');
-			filtersIcon.classList.toggle('rotate-180');
+			const open = filtersContent.classList.contains('hidden');
+			applyState(open);
+			localStorage.setItem(storageKey, open ? '1' : '0');
 		});
 	}
 
