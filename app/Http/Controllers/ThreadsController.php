@@ -188,7 +188,8 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility')
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user', 'lastPost.user')
+            ->withCount('posts')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -253,7 +254,8 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility')
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user', 'lastPost.user')
+            ->withCount('posts')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -355,8 +357,9 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility')
-            ->paginate(1000000000);
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user', 'lastPost.user')
+            ->withCount('posts')
+            ->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();
@@ -420,7 +423,8 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility')
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user', 'lastPost.user')
+            ->withCount('posts')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -479,7 +483,8 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility')
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user', 'lastPost.user')
+            ->withCount('posts')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -540,7 +545,8 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility')
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user', 'lastPost.user')
+            ->withCount('posts')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -601,7 +607,8 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility')
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user', 'lastPost.user')
+            ->withCount('posts')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -767,11 +774,26 @@ class ThreadsController extends Controller
 
         $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        // call a log for this and prevent it from going out of control
-        ++$thread->views;
-        $thread->save();
+        $thread->load(['user', 'entities', 'tags', 'series', 'event', 'posts.user', 'posts.entities', 'posts.tags']);
 
-        return view('threads.show-tw', compact('thread', 'tags'));
+        // Pre-compute follow/like state for the current user to avoid per-view queries
+        $threadFollow = $this->user ? $thread->followedBy($this->user) : null;
+        $threadLike = $this->user ? $thread->likedBy($this->user) : null;
+
+        // Pre-load all liked post IDs for the current user in one query
+        $likedPostIds = ($this->user && $thread->posts->isNotEmpty())
+            ? Like::where('object_type', 'post')
+                ->whereIn('object_id', $thread->posts->pluck('id'))
+                ->where('user_id', $this->user->id)
+                ->pluck('object_id')
+                ->flip()
+                ->all()
+            : [];
+
+        // Atomic view count increment — avoids model events and updated_at side-effects
+        $thread->increment('views');
+
+        return view('threads.show-tw', compact('thread', 'tags', 'threadFollow', 'threadLike', 'likedPostIds'));
     }
 
     public function lock(int $id): RedirectResponse

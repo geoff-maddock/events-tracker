@@ -4,10 +4,8 @@
 
         {{-- Col 1: Avatar (small, all sizes) --}}
         <div class="flex-shrink-0 mt-0.5">
-            @if ($thread->user && $thread->user->profile && $thread->user->profile->avatar)
-            <img src="{{ Storage::disk('external')->url($thread->user->profile->getStorageThumbnail()) }}"
-                alt="{{ $thread->user->name }}"
-                class="w-8 h-8 rounded-full object-cover">
+            @if ($thread->user)
+            @include('users.avatar', ['user' => $thread->user, 'size' => 'sm'])
             @else
             <div class="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
                 <i class="bi bi-person text-sm text-muted-foreground/50"></i>
@@ -34,9 +32,9 @@
                 <span>·</span>
                 @endif
                 <span>{{ $thread->created_at->diffForHumans() }}</span>
-                @if ($thread->posts->count() > 0)
+                @if ($thread->posts_count > 0)
                 <span>·</span>
-                <span><i class="bi bi-chat"></i> {{ $thread->posts->count() }}</span>
+                <span><i class="bi bi-chat"></i> {{ $thread->posts_count }}</span>
                 @endif
                 @if (isset($thread->views))
                 <span>·</span>
@@ -84,7 +82,7 @@
 
         {{-- Col 4: Replies / Views (lg+) --}}
         <div class="hidden lg:flex flex-col items-center w-20 flex-shrink-0">
-            <span class="text-sm font-medium text-foreground">{{ $thread->posts->count() }}</span>
+            <span class="text-sm font-medium text-foreground">{{ $thread->posts_count }}</span>
             <span class="text-xs text-muted-foreground">replies</span>
             @if(isset($thread->views))
             <span class="text-xs text-muted-foreground mt-0.5">{{ $thread->views }} views</span>
@@ -97,8 +95,8 @@
                 $lastPostAt = method_exists($thread, 'lastPostAt') ? $thread->lastPostAt : $thread->updated_at;
             @endphp
             <span class="text-xs text-foreground">{{ $lastPostAt->diffForHumans() }}</span>
-            @if ($thread->posts->isNotEmpty() && $thread->posts->last()?->user)
-            <span class="text-xs text-muted-foreground truncate max-w-full mt-0.5">{{ $thread->posts->last()->user->name ?? '' }}</span>
+            @if ($thread->posts_count > 0 && $thread->lastPost?->user)
+            <span class="text-xs text-muted-foreground truncate max-w-full mt-0.5">{{ $thread->lastPost->user->name }}</span>
             @endif
         </div>
 
