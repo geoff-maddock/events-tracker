@@ -188,7 +188,8 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility')
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user', 'lastPost.user')
+            ->withCount('posts')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -253,7 +254,8 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility')
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user', 'lastPost.user')
+            ->withCount('posts')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -355,8 +357,9 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility')
-            ->paginate(1000000000);
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user', 'lastPost.user')
+            ->withCount('posts')
+            ->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();
@@ -420,7 +423,8 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility')
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user', 'lastPost.user')
+            ->withCount('posts')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -479,7 +483,8 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility')
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user', 'lastPost.user')
+            ->withCount('posts')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -540,7 +545,8 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility')
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user', 'lastPost.user')
+            ->withCount('posts')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -601,7 +607,8 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility')
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user', 'lastPost.user')
+            ->withCount('posts')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -766,6 +773,8 @@ class ThreadsController extends Controller
         }
 
         $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+
+        $thread->load(['user', 'entities', 'tags', 'series', 'event', 'posts.user', 'posts.entities', 'posts.tags']);
 
         // call a log for this and prevent it from going out of control
         ++$thread->views;
