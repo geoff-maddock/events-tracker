@@ -1484,27 +1484,50 @@ class EventsController extends Controller
             abort(404);
         }
 
-        // Eager load relationships needed for the view
+        // Eager load all relationships needed for the view
         $event->load([
             'photos',
+            'visibility',
+            'eventType',
+            'series',
+            'venue.locations',
+            'venue.links',
+            'promoter.links',
+            'tags',
+            'user',
             'entities.photos' => function ($query) {
                 $query->where('photos.is_primary', true);
-            }
+            },
+            'entities.roles',
+            'entities.links',
         ]);
 
+        // Load only the current user's response (for the attend/unattend button)
+        if ($this->user) {
+            $event->load(['eventResponses' => function ($query) {
+                $query->where('user_id', $this->user->id);
+            }]);
+        }
+
+        // Load total follower count for admin display
+        $event->loadCount('eventResponses');
+
         $embeds = $oembedExtractor->getEmbedsForEvent($event);
+
+        $relatedThreads = $event->threads()
+            ->with(['posts.user', 'user'])
+            ->latest()
+            ->take(5)
+            ->get();
 
         $thread = Thread::where('event_id', '=', $event->id)->first();
 
         // check blacklist status
         $blacklist = $this->checkBlackList($event);
 
-        // // extract all the links from the event body and convert into embeds
-        // $embedExtractor->setLayout("small");
-        // $embeds = $embedExtractor->getEmbedsForEvent($event);
-        // $embeds = [];
-
-        return view('events.show-tw', compact('event', 'embeds'))->with(['thread' => $thread, 'blacklist' => $blacklist])->render();
+        return view('events.show-tw', compact('event', 'embeds', 'relatedThreads'))
+            ->with(['thread' => $thread, 'blacklist' => $blacklist])
+            ->render();
     }
 
 

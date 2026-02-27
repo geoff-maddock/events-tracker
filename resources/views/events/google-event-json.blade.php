@@ -24,7 +24,7 @@
         @if ($event->venue->getPrimaryLocationAddress(true))
         ,
         @php
-            $location = $event->venue->locations()->first();
+            $location = $event->venue->locations->first();
         @endphp
         "address": {
             "@type": "PostalAddress",

@@ -179,7 +179,7 @@ class Event extends Model
 
     public function resolveRouteBinding($value, $field = null)
     {
-        return $this->with('photos', 'entities')->where('slug', $value)->orWhere('id', $value)->firstOrFail();
+        return $this->where('slug', $value)->orWhere('id', $value)->firstOrFail();
     }
 
 
@@ -675,9 +675,18 @@ class Event extends Model
 
     /**
      * Get any related performer type entities.
+     * Uses in-memory filtering when entities and roles are already loaded.
      */
-    public function performerEntities(?int $rpp = null): LengthAwarePaginator
+    public function performerEntities(?int $rpp = null): LengthAwarePaginator | Collection
     {
+        if ($this->relationLoaded('entities') && $this->entities->every(fn ($e) => $e->relationLoaded('roles'))) {
+            $filtered = $this->entities->filter(
+                fn ($entity) => $entity->roles->whereIn('slug', ['dj', 'band', 'producer'])->isNotEmpty()
+            )->sortBy('name');
+
+            return $rpp !== null ? $filtered->take($rpp)->values() : $filtered->values();
+        }
+
         return $this->entities()->whereHas('roles', function ($q) {
             $q->whereIn('slug', ['dj', 'band', 'producer']);
         })->orderBy('name', 'ASC')->paginate($rpp);

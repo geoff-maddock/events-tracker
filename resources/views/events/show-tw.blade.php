@@ -120,9 +120,10 @@
 
 			<!-- Event Image -->
 			@if ($photo = $event->getPrimaryPhoto())
+				@php $primaryPhotoUrl = Storage::disk('external')->url($photo->getStoragePath()); @endphp
 				<div class="relative overflow-hidden rounded-lg border border-border bg-card shadow max-h-[600px] flex items-center justify-center">
-				<a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" data-lightbox="event-main" class="block w-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-					<img src="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" 
+				<a href="{{ $primaryPhotoUrl }}" data-lightbox="event-main" class="block w-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+					<img src="{{ $primaryPhotoUrl }}" 
 						alt="{{ $event->name }} @ {{ $event->venue ? $event->venue->name : '' }}"
 						class="object-contain w-full max-h-[600px] cursor-pointer hover:opacity-90 transition-opacity">
 				</a>
@@ -138,7 +139,6 @@
 						</div>
 				@endif		
 
-@php $relatedThreads = $event->threads()->with(['posts.user.profile', 'user'])->latest()->take(5)->get(); @endphp
 				@if ($relatedThreads->isNotEmpty())
 				<div class="rounded-lg border border-border bg-card shadow">
 					<div class="px-4 py-3 border-b border-border">
@@ -331,9 +331,10 @@
 
 							<!-- Follower Count (Admin only) -->
 							@if ($signedIn && $user->hasGroup('super_admin'))
+							@php $followerCount = $event->event_responses_count ?? 0; @endphp
 							<div class="flex items-center text-sm text-muted-foreground">
 								<i class="bi bi-star mr-2 h-4 w-4"></i>
-								<span>{{ $event->eventResponses()->count() }} {{ Str::plural('follower', $event->eventResponses()->count()) }}</span>
+								<span>{{ $followerCount }} {{ Str::plural('follower', $followerCount) }}</span>
 							</div>
 							@endif
 
