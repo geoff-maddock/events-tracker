@@ -73,6 +73,12 @@
                                     <a href="{{ url('events/related-to/'.$entity->slug) }}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
                                         <i class="bi bi-calendar-event mr-2"></i>Show Related Events
                                     </a>
+                                    <a href="{!! route('entities.instagramPost', ['id' => $entity->id]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
+                                        <i class="bi bi-instagram mr-2"></i>Post to Instagram
+                                    </a>
+                                    <a href="{!! route('entities.instagramStoryPost', ['id' => $entity->id]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
+                                        <i class="bi bi-instagram mr-2"></i>Post Story to Instagram
+                                    </a>
                                     <div class="border-t border-border my-1"></div>
                                     <form action="{!! route('entities.destroy', ['entity' => $entity->slug]) !!}" method="POST" class="block">
                                         @csrf
