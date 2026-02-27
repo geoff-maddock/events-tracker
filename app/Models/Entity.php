@@ -1049,7 +1049,7 @@ class Entity extends Eloquent
      }
 
      // add the next events
-     $events = $this->futureEvents(14)->items();
+     $events = $this->futureEvents(9)->items();
      if (count($events) > 0) {
             $format .= "\n\nUpcoming Events:";
             foreach ($events as $event) {
