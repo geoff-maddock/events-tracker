@@ -64,6 +64,13 @@
 			</a>
 		</h3>
 
+		<!-- Aliases -->
+		@if ($entity->aliases->isNotEmpty())
+		<div class="text-xs text-muted-foreground/70 -mt-1">
+			Also known as: {{ $entity->getAliasString() }}
+		</div>
+		@endif
+
 		<!-- Entity Type & Location -->
 		@if ($type = $entity->entityType)
 		<div class="text-sm text-muted-foreground">
