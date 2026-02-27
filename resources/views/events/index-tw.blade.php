@@ -52,13 +52,13 @@ Events @include('events.title-crumbs')
 <div class="mb-6 flex flex-wrap items-start gap-2">
 	<button id="filters-toggle-btn" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
 		<i class="bi bi-funnel mr-2"></i>
-		<span id="filters-toggle-text">@if($hasFilter) Hide @else Show @endif Filters</span>
-		<i class="bi bi-chevron-down ml-2 transition-transform @if($hasFilter) rotate-180 @endif" id="filters-chevron"></i>
+		<span id="filters-toggle-text">Show Filters</span>
+		<i class="bi bi-chevron-down ml-2 transition-transform" id="filters-chevron"></i>
 	</button>
 	
 	<!-- Active Filters Badges (shown when filters are hidden) -->
 	@if($hasFilter)
-	<div id="active-filters-badges" class="@if($hasFilter) hidden @endif flex flex-wrap items-center gap-2">
+	<div id="active-filters-badges" class="flex flex-wrap items-center gap-2">
 		@if(!empty($filters['name']))
 		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
 			Name: {{ $filters['name'] }}
@@ -99,7 +99,7 @@ Events @include('events.title-crumbs')
 </div>
 
 <!-- Filter Panel -->
-<div id="filter-panel" class="@if(!$hasFilter) hidden @endif bg-card border border-border rounded-lg p-4 mb-6 overflow-hidden">
+<div id="filter-panel" class="hidden bg-card border border-border rounded-lg p-4 mb-6 overflow-hidden">
 	{!! Form::open(['route' => [$filterRoute ?? 'events.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
 
 	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
@@ -241,31 +241,30 @@ Events @include('events.title-crumbs')
 
 @section('footer')
 <script>
-	// Filter toggle functionality
-	document.getElementById('filters-toggle-btn')?.addEventListener('click', function() {
+	// Filter toggle with localStorage persistence
+	(function() {
+		const storageKey = 'filter-open:' + window.location.pathname;
 		const panel = document.getElementById('filter-panel');
 		const badges = document.getElementById('active-filters-badges');
 		const text = document.getElementById('filters-toggle-text');
 		const chevron = document.getElementById('filters-chevron');
-		
-		panel.classList.toggle('hidden');
-		
-		if (panel.classList.contains('hidden')) {
-			text.textContent = 'Show Filters';
-			chevron.classList.remove('rotate-180');
-			// Show badges when filters are hidden
-			if (badges) {
-				badges.classList.remove('hidden');
-			}
-		} else {
-			text.textContent = 'Hide Filters';
-			chevron.classList.add('rotate-180');
-			// Hide badges when filters are shown
-			if (badges) {
-				badges.classList.add('hidden');
-			}
+
+		function applyState(open) {
+			panel.classList.toggle('hidden', !open);
+			if (text) text.textContent = open ? 'Hide Filters' : 'Show Filters';
+			if (chevron) chevron.classList.toggle('rotate-180', open);
+			if (badges) badges.classList.toggle('hidden', open);
 		}
-	});
+
+		const saved = localStorage.getItem(storageKey);
+		if (saved !== null) applyState(saved === '1');
+
+		document.getElementById('filters-toggle-btn')?.addEventListener('click', function() {
+			const open = panel.classList.contains('hidden');
+			applyState(open);
+			localStorage.setItem(storageKey, open ? '1' : '0');
+		});
+	})();
 
 	// Copy filter URL functionality
 	document.getElementById('copy-filter-url-btn')?.addEventListener('click', function() {
