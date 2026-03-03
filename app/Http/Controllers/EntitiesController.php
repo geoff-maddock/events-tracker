@@ -782,7 +782,15 @@ class EntitiesController extends Controller
             ->limit(12)
             ->get();
 
-        return view('entities.show-tw', compact('entity', 'threads', 'embeds', 'tracks', 'relatedEvents'));
+        // only compute co-performer and venue lists when the entity has more than 2 events
+        $frequentlyPerformsWith = null;
+        $frequentlyPerformsAt = null;
+        if ($relatedEvents->count() > 2) {
+            $frequentlyPerformsWith = $entity->getFrequentlyPerformsWith();
+            $frequentlyPerformsAt = $entity->getFrequentlyPerformsAt();
+        }
+
+        return view('entities.show-tw', compact('entity', 'threads', 'embeds', 'tracks', 'relatedEvents', 'frequentlyPerformsWith', 'frequentlyPerformsAt'));
     }
 
     /**
