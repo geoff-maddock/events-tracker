@@ -425,6 +425,51 @@
 	</div>
 </div>
 
+<!-- Frequently Performs With / At - Full Width -->
+@if ((!empty($frequentlyPerformsWith) && $frequentlyPerformsWith->isNotEmpty()) || (!empty($frequentlyPerformsAt) && $frequentlyPerformsAt->isNotEmpty()))
+<div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+
+	@if (!empty($frequentlyPerformsWith) && $frequentlyPerformsWith->isNotEmpty())
+	<div class="rounded-lg border border-border bg-card shadow p-6">
+		<h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+			<i class="bi bi-people"></i>
+			Frequently Performs With
+		</h3>
+		<ul class="space-y-2">
+			@foreach ($frequentlyPerformsWith as $coPerformer)
+			<li class="flex items-center justify-between">
+				<a href="{{ url('entities/'.$coPerformer->slug) }}" class="text-primary hover:text-primary/90 hover:underline">
+					{{ $coPerformer->name }}
+				</a>
+				<span class="text-xs text-muted-foreground ml-2">{{ $coPerformer->frequency }} {{ Str::plural('event', $coPerformer->frequency) }}</span>
+			</li>
+			@endforeach
+		</ul>
+	</div>
+	@endif
+
+	@if (!empty($frequentlyPerformsAt) && $frequentlyPerformsAt->isNotEmpty())
+	<div class="rounded-lg border border-border bg-card shadow p-6">
+		<h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+			<i class="bi bi-geo-alt"></i>
+			Frequently Performs At
+		</h3>
+		<ul class="space-y-2">
+			@foreach ($frequentlyPerformsAt as $venue)
+			<li class="flex items-center justify-between">
+				<a href="{{ url('entities/'.$venue->slug) }}" class="text-primary hover:text-primary/90 hover:underline">
+					{{ $venue->name }}
+				</a>
+				<span class="text-xs text-muted-foreground ml-2">{{ $venue->frequency }} {{ Str::plural('event', $venue->frequency) }}</span>
+			</li>
+			@endforeach
+		</ul>
+	</div>
+	@endif
+
+</div>
+@endif
+
 <!-- Related Events - Full Width -->
 <div class="mt-6 rounded-lg border border-border bg-card shadow p-6">
 	<h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
