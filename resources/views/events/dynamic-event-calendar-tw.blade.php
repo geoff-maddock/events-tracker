@@ -61,6 +61,7 @@
 @stop
 
 @section('footer')
+@include('partials.calendar-event-content')
 <script>
     function checkViewport() {
         if (window.innerWidth < 768) {
@@ -90,6 +91,7 @@
                 minute: '2-digit',
                 meridiem: 'short'
             },
+            eventContent: calendarEventContent,
         });
         calendar.render();
     });
