@@ -501,9 +501,9 @@ class Entity extends Eloquent
         }
 
         return Entity::select('entities.*')
-            ->selectRaw('COUNT(event_entity.event_id) as frequency')
-            ->join('event_entity', 'entities.id', '=', 'event_entity.entity_id')
-            ->whereIn('event_entity.event_id', $eventIds)
+            ->selectRaw('COUNT(entity_event.event_id) as frequency')
+            ->join('entity_event', 'entities.id', '=', 'entity_event.entity_id')
+            ->whereIn('entity_event.event_id', $eventIds)
             ->where('entities.id', '!=', $this->id)
             ->groupBy('entities.id')
             ->orderByDesc('frequency')
