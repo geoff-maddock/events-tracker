@@ -69,6 +69,7 @@
 @stop
 
 @section('footer')
+@include('partials.calendar-event-content')
 <script>
     // Check the current viewport size for initial view
     function checkViewport() {
@@ -108,6 +109,7 @@
                 minute: '2-digit',
                 meridiem: 'short'
             },
+            eventContent: calendarEventContent,
         });
         calendar.render();
 
