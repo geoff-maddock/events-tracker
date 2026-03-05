@@ -100,6 +100,20 @@ class CalendarController extends Controller
         ];
     }
 
+    /**
+     * Normalize a tag filter value (string or array) into a clean array of slugs.
+     *
+     * @param mixed $value
+     * @return array<string>
+     */
+    protected function normalizeTagValues(mixed $value): array
+    {
+        return collect(is_array($value) ? $value : [$value])
+            ->filter(fn ($item) => $item !== '')
+            ->values()
+            ->all();
+    }
+
     protected function getFormOptions(): array
     {
         return [
@@ -396,9 +410,12 @@ class CalendarController extends Controller
             }
             
             if (!empty($filters['tag'])) {
-                $eventsQuery->whereHas('tags', function ($q) use ($filters) {
-                    $q->where('slug', $filters['tag']);
-                });
+                $tagValues = $this->normalizeTagValues($filters['tag']);
+                if (!empty($tagValues)) {
+                    $eventsQuery->whereHas('tags', function ($q) use ($tagValues) {
+                        $q->whereIn('slug', $tagValues);
+                    });
+                }
             }
             
             if (!empty($filters['venue'])) {
@@ -435,9 +452,12 @@ class CalendarController extends Controller
             }
             
             if (!empty($filters['tag'])) {
-                $seriesQuery->whereHas('tags', function ($q) use ($filters) {
-                    $q->where('slug', $filters['tag']);
-                });
+                $tagValues = $this->normalizeTagValues($filters['tag']);
+                if (!empty($tagValues)) {
+                    $seriesQuery->whereHas('tags', function ($q) use ($tagValues) {
+                        $q->whereIn('slug', $tagValues);
+                    });
+                }
             }
             
             if (!empty($filters['venue'])) {
