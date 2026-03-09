@@ -7,7 +7,7 @@ This is your weekly update on upcoming events related to artists, venues, promot
 @if (count($events) > 0)
 ### Summary of events:
 @foreach ($events as $event)
-1. [{{$event->name}}]({{ $url }}events/{{$event->id }})
+1. [{{$event->name}}]({{ $url }}events/{{$event->id }})@if ($event->cancelled_at) **(CANCELLED)**@endif
 @endforeach
 
 ***
@@ -41,7 +41,7 @@ Here are some upcoming events that you might be interested in based on the entit
 ### Summary of events:
 @foreach ($interests as $tag => $list)
 @foreach ($list as $event)
-1. [{{$event->name}}]({{ $url }}events/{{$event->id }})
+1. [{{$event->name}}]({{ $url }}events/{{$event->id }})@if ($event->cancelled_at) **(CANCELLED)**@endif
 @endforeach
 @endforeach
 

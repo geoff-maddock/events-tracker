@@ -1,3 +1,13 @@
+@if ($event->cancelled_at)
+# {!! $event->start_at->format('l F jS Y') !!}
+## ~~{{ $event->name }}~~ **CANCELLED**
+**{!! $event->start_at->format('g:i A') !!}**  
+[Link]({{ $url }}events/{{$event->id }})
+
+*This event was cancelled on {{ $event->cancelled_at->format('F jS Y') }}.*
+
+***
+@else
 # {!! $event->start_at->format('l F jS Y') !!}
 @if ($photo = $event->getPrimaryPhoto())
 <img src="{{ Storage::disk('external')->url($photo->getStoragePath()) }}">  
@@ -39,3 +49,4 @@
 @endunless
 
 ***
+@endif

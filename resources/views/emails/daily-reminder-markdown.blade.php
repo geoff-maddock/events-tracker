@@ -7,7 +7,7 @@ Here are the events you are attending today.
 
 ### Summary of events:
 @foreach ($events as $event)
-1. [{{$event->name}}]({{ $url }}events/{{$event->id }})
+1. [{{$event->name}}]({{ $url }}events/{{$event->id }})@if ($event->cancelled_at) **(CANCELLED)**@endif
 @endforeach
 
 ***
