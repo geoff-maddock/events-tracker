@@ -82,12 +82,39 @@
 
         <!-- Series Meta Info -->
         <div class="space-y-2 text-sm text-muted-foreground mb-4">
-            <!-- Next Event Date -->
+
+            <!-- Next Edition Bar -->
             @if ($series->occurrenceType->name !== 'No Schedule')
-            <div class="flex items-center gap-2">
-                <i class="bi bi-calendar3"></i>
-                <span>Next: {{ $series->nextEvent() ? $series->nextEvent()->start_at->format('l F jS Y') : $series->cycleFromFoundedAt()->format('l F jS Y') }}</span>
+            @php $nextEvent = $series->nextEvent(); @endphp
+            @if ($nextEvent)
+            <div class="rounded border border-primary/30 bg-primary/5 px-3 py-2 flex items-start gap-2">
+                <i class="bi bi-calendar-event text-primary mt-0.5 flex-shrink-0"></i>
+                <div class="min-w-0">
+                    <div class="text-xs font-semibold text-primary uppercase tracking-wide mb-0.5">Next Edition</div>
+                    <div class="flex flex-wrap items-center gap-x-1 text-sm">
+                        <span class="font-medium text-foreground">{{ $nextEvent->start_at->format('D, M j, Y') }}</span>
+                        @if ($nextEvent->start_at->format('H:i') !== '00:00')
+                        <span class="text-muted-foreground">&middot; {{ $nextEvent->start_at->format('g:i A') }}</span>
+                        @endif
+                    </div>
+                    <a href="{{ route('events.show', [$nextEvent->slug]) }}" class="text-primary hover:underline text-sm truncate block">{{ $nextEvent->name }}</a>
+                </div>
             </div>
+            @elseif ($series->cancelled_at === null && ($nextDate = $series->cycleFromFoundedAt()))
+            <div class="rounded border border-border bg-muted/50 px-3 py-2 flex items-start gap-2">
+                <i class="bi bi-calendar3 text-muted-foreground mt-0.5 flex-shrink-0"></i>
+                <div class="min-w-0">
+                    <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Next Edition</div>
+                    <div class="flex flex-wrap items-center gap-x-1 text-sm">
+                        <span class="font-medium text-foreground">{{ $nextDate->format('D, M j, Y') }}</span>
+                        @if ($series->start_at && $series->start_at->format('H:i') !== '00:00')
+                        <span class="text-muted-foreground">&middot; {{ $series->start_at->format('g:i A') }}</span>
+                        @endif
+                    </div>
+                    <span class="badge-tw badge-secondary-tw text-xs mt-0.5 inline-block">Not yet created as event</span>
+                </div>
+            </div>
+            @endif
             @endif
 
             <!-- Venue -->
@@ -100,14 +127,6 @@
                     <i class="bi bi-box-arrow-up-right text-xs"></i>
                 </a>
                 @endif
-            </div>
-            @endif
-
-            <!-- Next Event Link -->
-            @if ($event = $series->nextEvent())
-            <div class="flex items-center gap-2">
-                <i class="bi bi-arrow-right-circle"></i>
-                <a href="{{ route('events.show', [$event->slug]) }}" class="hover:text-primary">{{ $event->name }}</a>
             </div>
             @endif
 
