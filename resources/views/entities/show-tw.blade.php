@@ -425,6 +425,41 @@
 	</div>
 </div>
 
+<!-- Frequently Performs With / At - Full Width -->
+@if ((!empty($frequentlyPerformsWith) && $frequentlyPerformsWith->isNotEmpty()) || (!empty($frequentlyPerformsAt) && $frequentlyPerformsAt->isNotEmpty()))
+<div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+
+	@if (!empty($frequentlyPerformsWith) && $frequentlyPerformsWith->isNotEmpty())
+	<div class="rounded-lg border border-border bg-card shadow p-6">
+		<h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+			<i class="bi bi-people"></i>
+			Frequently Performs With
+		</h3>
+		<div class="flex flex-wrap gap-2">
+			@foreach ($frequentlyPerformsWith as $coPerformer)
+				<x-entity-badge :entity="$coPerformer" />
+			@endforeach
+		</div>
+	</div>
+	@endif
+
+	@if (!empty($frequentlyPerformsAt) && $frequentlyPerformsAt->isNotEmpty())
+	<div class="rounded-lg border border-border bg-card shadow p-6">
+		<h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+			<i class="bi bi-geo-alt"></i>
+			Frequently Performs At
+		</h3>
+		<div class="flex flex-wrap gap-2">
+			@foreach ($frequentlyPerformsAt as $venue)
+				<x-entity-badge :entity="$venue" />
+			@endforeach
+		</div>
+	</div>
+	@endif
+
+</div>
+@endif
+
 <!-- Related Events - Full Width -->
 <div class="mt-6 rounded-lg border border-border bg-card shadow p-6">
 	<h3 class="text-xl font-semibold mb-4 flex items-center gap-2">

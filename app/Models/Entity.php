@@ -489,6 +489,57 @@ class Entity extends Eloquent
     }
 
     /**
+     * Get a ranked list of entities that frequently perform with this entity
+     * (other entities related to the same events).
+     */
+    public function getFrequentlyPerformsWith(int $limit = 10): Collection
+    {
+        $eventIds = $this->events()->pluck('events.id');
+
+        if ($eventIds->isEmpty()) {
+            return new Collection();
+        }
+
+        return Entity::select('entities.*')
+            ->selectRaw('COUNT(entity_event.event_id) as frequency')
+            ->join('entity_event', 'entities.id', '=', 'entity_event.entity_id')
+            ->whereIn('entity_event.event_id', $eventIds)
+            ->where('entities.id', '!=', $this->id)
+            ->whereNotIn('entities.id', function ($query) {
+                $query->select('entity_role.entity_id')
+                    ->from('entity_role')
+                    ->join('roles', 'entity_role.role_id', '=', 'roles.id')
+                    ->whereIn('roles.name', ['Venue', 'Shop']);
+            })
+            ->groupBy('entities.id')
+            ->orderByDesc('frequency')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
+     * Get a ranked list of venues that this entity frequently performs at
+     * (venues of events the entity is related to).
+     */
+    public function getFrequentlyPerformsAt(int $limit = 10): Collection
+    {
+        $eventIds = $this->events()->pluck('events.id');
+
+        if ($eventIds->isEmpty()) {
+            return new Collection();
+        }
+
+        return Entity::select('entities.*')
+            ->selectRaw('COUNT(events.id) as frequency')
+            ->join('events', 'entities.id', '=', 'events.venue_id')
+            ->whereIn('events.id', $eventIds)
+            ->groupBy('entities.id')
+            ->orderByDesc('frequency')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
      * Get a list of tag ids associated with the entity.
      */
     public function getTagListAttribute(): array
