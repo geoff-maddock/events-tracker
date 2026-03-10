@@ -505,6 +505,12 @@ class Entity extends Eloquent
             ->join('entity_event', 'entities.id', '=', 'entity_event.entity_id')
             ->whereIn('entity_event.event_id', $eventIds)
             ->where('entities.id', '!=', $this->id)
+            ->whereNotIn('entities.id', function ($query) {
+                $query->select('entity_role.entity_id')
+                    ->from('entity_role')
+                    ->join('roles', 'entity_role.role_id', '=', 'roles.id')
+                    ->whereIn('roles.name', ['Venue', 'Shop']);
+            })
             ->groupBy('entities.id')
             ->orderByDesc('frequency')
             ->limit($limit)

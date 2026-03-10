@@ -785,9 +785,12 @@ class EntitiesController extends Controller
         // only compute co-performer and venue lists when the entity has more than 2 events
         $frequentlyPerformsWith = null;
         $frequentlyPerformsAt = null;
+        $isVenueOrShop = $entity->hasRole('Venue') || $entity->hasRole('Shop');
         if ($relatedEvents->count() > 2) {
             $frequentlyPerformsWith = $entity->getFrequentlyPerformsWith();
-            $frequentlyPerformsAt = $entity->getFrequentlyPerformsAt();
+            if (!$isVenueOrShop) {
+                $frequentlyPerformsAt = $entity->getFrequentlyPerformsAt();
+            }
         }
 
         return view('entities.show-tw', compact('entity', 'threads', 'embeds', 'tracks', 'relatedEvents', 'frequentlyPerformsWith', 'frequentlyPerformsAt'));
