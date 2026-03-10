@@ -55,6 +55,28 @@
             @endif
         </div>
 
+        <!-- Next Edition Bar -->
+        @php $nextEvent = $series->nextEvent(); @endphp
+        @if ($nextEvent)
+        <div class="rounded border border-primary/30 bg-primary/5 px-2 py-1.5 flex items-start gap-1.5 mb-2">
+            <i class="bi bi-calendar-event text-primary text-xs mt-0.5 flex-shrink-0"></i>
+            <div class="min-w-0">
+                <div class="text-xs font-semibold text-primary uppercase tracking-wide leading-none mb-0.5">Next Edition</div>
+                <div class="text-xs text-foreground font-medium">{{ $nextEvent->start_at->format('D, M j, Y') }}</div>
+                <a href="{{ route('events.show', [$nextEvent->slug]) }}" class="text-xs text-primary hover:underline truncate block leading-tight">{{ $nextEvent->name }}</a>
+            </div>
+        </div>
+        @elseif ($series->occurrenceType->name !== 'No Schedule' && $series->cancelled_at === null && ($nextDate = $series->cycleFromFoundedAt()))
+        <div class="rounded border border-border bg-muted/50 px-2 py-1.5 flex items-start gap-1.5 mb-2">
+            <i class="bi bi-calendar3 text-muted-foreground text-xs mt-0.5 flex-shrink-0"></i>
+            <div class="min-w-0">
+                <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wide leading-none mb-0.5">Next Edition</div>
+                <div class="text-xs text-foreground font-medium">{{ $nextDate->format('D, M j, Y') }}</div>
+                <span class="text-xs text-muted-foreground italic leading-tight">Not yet created</span>
+            </div>
+        </div>
+        @endif
+
         <!-- Entities -->
         @unless ($series->entities->isEmpty())
         <div class="flex flex-wrap gap-1 mb-2">
