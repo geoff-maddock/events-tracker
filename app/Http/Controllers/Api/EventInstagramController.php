@@ -389,9 +389,8 @@ class EventInstagramController extends Controller
                     $imageUrl = Storage::disk('external')->url($photo->getStoragePath());
 
                     if (!$imageUrl) {
-                        $errorMessage = 'You must have an image url to post to Instagram';
-
-                        return null;
+                        Log::info('No image url found for entity: '.$entity->id.' on event: '.$event->id.', skipping.');
+                        continue;
                     }
 
                     // make the instagram api calls
@@ -401,10 +400,8 @@ class EventInstagramController extends Controller
                         $igContainerIds[] = $igContainerId;
                         Log::info('Added container id: '.$igContainerId);
                     } catch (Exception $e) {
-                        Log::info('Error uploading carousel photo');
-                        $errorMessage = 'There was an error posting to Instagram.  Please try again.';
-
-                        return null;
+                        Log::info('Error uploading carousel photo for entity: '.$entity->id.', skipping. Error: '.$e->getMessage());
+                        continue;
                     }
                 }
             }
