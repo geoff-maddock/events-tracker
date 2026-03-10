@@ -435,16 +435,11 @@
 			<i class="bi bi-people"></i>
 			Frequently Performs With
 		</h3>
-		<ul class="space-y-2">
+		<p class="text-sm">
 			@foreach ($frequentlyPerformsWith as $coPerformer)
-			<li class="flex items-center justify-between">
-				<a href="{{ url('entities/'.$coPerformer->slug) }}" class="text-primary hover:text-primary/90 hover:underline">
-					{{ $coPerformer->name }}
-				</a>
-				<span class="text-xs text-muted-foreground ml-2">{{ $coPerformer->frequency }} {{ Str::plural('event', $coPerformer->frequency) }}</span>
-			</li>
+				<a href="{{ url('entities/'.$coPerformer->slug) }}" class="text-primary hover:text-primary/90 hover:underline">{{ $coPerformer->name }}</a>@unless ($loop->last), @endunless
 			@endforeach
-		</ul>
+		</p>
 	</div>
 	@endif
 
@@ -454,16 +449,11 @@
 			<i class="bi bi-geo-alt"></i>
 			Frequently Performs At
 		</h3>
-		<ul class="space-y-2">
+		<p class="text-sm">
 			@foreach ($frequentlyPerformsAt as $venue)
-			<li class="flex items-center justify-between">
-				<a href="{{ url('entities/'.$venue->slug) }}" class="text-primary hover:text-primary/90 hover:underline">
-					{{ $venue->name }}
-				</a>
-				<span class="text-xs text-muted-foreground ml-2">{{ $venue->frequency }} {{ Str::plural('event', $venue->frequency) }}</span>
-			</li>
+				<a href="{{ url('entities/'.$venue->slug) }}" class="text-primary hover:text-primary/90 hover:underline">{{ $venue->name }}</a>@unless ($loop->last), @endunless
 			@endforeach
-		</ul>
+		</p>
 	</div>
 	@endif
 
