@@ -497,7 +497,7 @@ class Entity extends Eloquent
         $eventIds = $this->events()->pluck('events.id');
 
         if ($eventIds->isEmpty()) {
-            return collect();
+            return new Collection();
         }
 
         return Entity::select('entities.*')
@@ -526,7 +526,7 @@ class Entity extends Eloquent
         $eventIds = $this->events()->pluck('events.id');
 
         if ($eventIds->isEmpty()) {
-            return collect();
+            return new Collection();
         }
 
         return Entity::select('entities.*')
