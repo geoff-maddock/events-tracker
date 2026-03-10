@@ -462,8 +462,9 @@
         data-tags="false"
         multiple
         :hasError="$errors->has('entities')">
+        @php $selectedEntities = old('entity_list', $series->entities->pluck('id')->toArray()); @endphp
         @foreach($entityOptions as $id => $name)
-            <option value="{{ $id }}">{{ $name }}</option>
+            <option value="{{ $id }}" {{ in_array($id, $selectedEntities) ? 'selected' : '' }}>{{ $name }}</option>
         @endforeach
     </x-ui.select>
 </x-ui.form-group>
@@ -483,8 +484,9 @@
         data-tags="false"
         multiple
         :hasError="$errors->has('tags')">
+        @php $selectedTags = old('tag_list', $series->tags->pluck('id')->toArray()); @endphp
         @foreach($tagOptions as $id => $name)
-            <option value="{{ $id }}">{{ $name }}</option>
+            <option value="{{ $id }}" {{ in_array($id, $selectedTags) ? 'selected' : '' }}>{{ $name }}</option>
         @endforeach
     </x-ui.select>
 </x-ui.form-group>
