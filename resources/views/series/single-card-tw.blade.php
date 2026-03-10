@@ -56,7 +56,6 @@
         </div>
 
         <!-- Next Edition Bar -->
-        @if ($series->occurrenceType->name !== 'No Schedule')
         @php $nextEvent = $series->nextEvent(); @endphp
         @if ($nextEvent)
         <div class="rounded border border-primary/30 bg-primary/5 px-2 py-1.5 flex items-start gap-1.5 mb-2">
@@ -67,7 +66,7 @@
                 <a href="{{ route('events.show', [$nextEvent->slug]) }}" class="text-xs text-primary hover:underline truncate block leading-tight">{{ $nextEvent->name }}</a>
             </div>
         </div>
-        @elseif ($series->cancelled_at === null && ($nextDate = $series->cycleFromFoundedAt()))
+        @elseif ($series->occurrenceType->name !== 'No Schedule' && $series->cancelled_at === null && ($nextDate = $series->cycleFromFoundedAt()))
         <div class="rounded border border-border bg-muted/50 px-2 py-1.5 flex items-start gap-1.5 mb-2">
             <i class="bi bi-calendar3 text-muted-foreground text-xs mt-0.5 flex-shrink-0"></i>
             <div class="min-w-0">
@@ -76,7 +75,6 @@
                 <span class="text-xs text-muted-foreground italic leading-tight">Not yet created</span>
             </div>
         </div>
-        @endif
         @endif
 
         <!-- Entities -->
