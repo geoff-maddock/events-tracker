@@ -435,11 +435,11 @@
 			<i class="bi bi-people"></i>
 			Frequently Performs With
 		</h3>
-		<p class="text-sm">
+		<div class="flex flex-wrap gap-2">
 			@foreach ($frequentlyPerformsWith as $coPerformer)
-				<a href="{{ url('entities/'.$coPerformer->slug) }}" class="text-primary hover:text-primary/90 hover:underline">{{ $coPerformer->name }}</a>@unless ($loop->last), @endunless
+				<x-entity-badge :entity="$coPerformer" />
 			@endforeach
-		</p>
+		</div>
 	</div>
 	@endif
 
@@ -449,11 +449,11 @@
 			<i class="bi bi-geo-alt"></i>
 			Frequently Performs At
 		</h3>
-		<p class="text-sm">
+		<div class="flex flex-wrap gap-2">
 			@foreach ($frequentlyPerformsAt as $venue)
-				<a href="{{ url('entities/'.$venue->slug) }}" class="text-primary hover:text-primary/90 hover:underline">{{ $venue->name }}</a>@unless ($loop->last), @endunless
+				<x-entity-badge :entity="$venue" />
 			@endforeach
-		</p>
+		</div>
 	</div>
 	@endif
 
