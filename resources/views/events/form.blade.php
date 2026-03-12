@@ -164,12 +164,12 @@
                     </button>
                 </div>
             </template>
-            <x-ui.datetime-picker
+            <x-ui.input
+                type="datetime-local"
                 name="start_at"
                 id="start_at"
-                :value="old('start_at', isset($event->start_at) ? $event->start_at->format('Y-m-d H:i') : '')"
-                :hasError="$errors->has('start_at')"
-                placeholder="Select start date and time" />
+                :value="old('start_at', isset($event->start_at) ? $event->start_at->format('Y-m-d\TH:i') : '')"
+                :hasError="$errors->has('start_at')" />
         </x-ui.form-group>
     </div>
 
@@ -197,12 +197,12 @@
             name="end_at"
             label="End At"
             :error="$errors->first('end_at')">
-            <x-ui.datetime-picker
+            <x-ui.input
+                type="datetime-local"
                 name="end_at"
                 id="end_at"
-                :value="old('end_at', isset($event->end_at) ? $event->end_at->format('Y-m-d H:i') : '')"
-                :hasError="$errors->has('end_at')"
-                placeholder="Select end date and time" />
+                :value="old('end_at', isset($event->end_at) ? $event->end_at->format('Y-m-d\TH:i') : '')"
+                :hasError="$errors->has('end_at')" />
         </x-ui.form-group>
     </div>
 
@@ -211,12 +211,12 @@
             name="cancelled_at"
             label="Cancelled At"
             :error="$errors->first('cancelled_at')">
-            <x-ui.datetime-picker
+            <x-ui.input
+                type="datetime-local"
                 name="cancelled_at"
                 id="cancelled_at"
-                :value="old('cancelled_at', isset($event->cancelled_at) ? $event->cancelled_at->format('Y-m-d H:i') : '')"
-                :hasError="$errors->has('cancelled_at')"
-                placeholder="Select cancellation date" />
+                :value="old('cancelled_at', isset($event->cancelled_at) ? $event->cancelled_at->format('Y-m-d\TH:i') : '')"
+                :hasError="$errors->has('cancelled_at')" />
         </x-ui.form-group>
     </div>
 </div>

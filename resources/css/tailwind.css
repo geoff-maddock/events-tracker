@@ -268,9 +268,22 @@
   @apply bg-accent;
 }
 
+.dark .flatpickr-monthDropdown-months {
+  color-scheme: dark;
+}
+
+/* datetime-local dark mode */
+.dark input[type="datetime-local"] {
+  color-scheme: dark;
+}
+
 /* Light mode overrides */
 .flatpickr-calendar {
   @apply bg-card border-border shadow-lg;
+}
+
+.flatpickr-monthDropdown-months {
+  color-scheme: light;
 }
 
 .flatpickr-day.selected {
