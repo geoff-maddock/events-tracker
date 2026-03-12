@@ -144,39 +144,17 @@ $(document).ready(function(){
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize all flatpickr date/time pickers
-    const dateTimePickers = document.querySelectorAll('[data-flatpickr]');
-
-    dateTimePickers.forEach(function(picker) {
-        const enableTime = picker.getAttribute('data-enable-time') === 'true';
-        const dateFormat = picker.getAttribute('data-date-format') || 'Y-m-d H:i';
-        const altFormat = picker.getAttribute('data-alt-format') || 'F j, Y at h:i K';
-        const minDate = picker.getAttribute('data-min-date');
-        const maxDate = picker.getAttribute('data-max-date');
-
-        const config = {
-            enableTime: enableTime,
-            dateFormat: dateFormat,
-            altInput: true,
-            altFormat: altFormat,
-            time_24hr: false,
-            minDate: minDate,
-            maxDate: maxDate,
-        };
-
-        if (picker.id === 'start_at') {
-            config.onChange = function(selectedDates) {
-                if (selectedDates.length === 0) return;
-                const d = selectedDates[0];
-                const year = d.getFullYear();
-                const month = String(d.getMonth() + 1).padStart(2, '0');
-                const day = String(d.getDate()).padStart(2, '0');
-                checkEventsOnDate(year, month, day, '{{ $event->slug }}');
-            };
-        }
-
-        flatpickr(picker, config);
-    });
+    const startAt = document.getElementById('start_at');
+    if (startAt) {
+        startAt.addEventListener('change', function() {
+            if (!this.value) return;
+            const d = new Date(this.value);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            checkEventsOnDate(year, month, day, '{{ $event->slug }}');
+        });
+    }
 });
 
 function checkEventsOnDate(year, month, day, excludeSlug) {
