@@ -14,6 +14,7 @@
 @stop
 
 @section('footer')
+@include('partials.calendar-event-content')
 	<div class='m-2'>
 		<script>
 
@@ -43,6 +44,7 @@
 				// ],
 				height: 1000,
 				initialDate: '{{ $initialDate }}',
+				eventContent: calendarEventContent,
 			  });
 			  calendar.render();
 			});

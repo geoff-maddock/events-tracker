@@ -215,6 +215,7 @@
 @stop
 
 @section('footer')
+@include('partials.calendar-event-content')
 <script>
     // Toggle filter section with localStorage persistence
     document.addEventListener('DOMContentLoaded', function() {
@@ -292,6 +293,7 @@
                 minute: '2-digit',
                 meridiem: 'short'
             },
+            eventContent: calendarEventContent,
         });
         calendar.render();
 
