@@ -29,7 +29,11 @@ Events @include('events.title-crumbs')
 <!-- Page Header -->
 <div class="mb-6">
 	<h1 class="text-3xl font-bold text-primary mb-2">Event Listings @include('events.crumbs-tw')</h1>
+	@isset($tag)
+	<p class="text-muted-foreground">Discover and explore all events tagged with <strong>{{ ucfirst($tag->name) }}</strong>.</p>
+	@else
 	<p class="text-muted-foreground">Discover and explore upcoming events.</p>
+	@endisset
 </div>
 
 <!-- Action Buttons -->
