@@ -2035,8 +2035,7 @@ class EventsController extends Controller
         // @phpstan-ignore-next-line
         $events = $query
             ->with('visibility', 'venue','tags','entities','series','eventType','threads')
-            ->future()
-            ->orderBy('events.start_at', 'ASC')
+            ->orderBy('events.start_at', 'DESC')
             ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
 
