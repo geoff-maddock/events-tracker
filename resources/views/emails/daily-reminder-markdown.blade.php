@@ -7,7 +7,7 @@ Here are the events you are attending today.
 
 ### Summary of events:
 @foreach ($events as $event)
-1. [{{$event->name}}]({{ $url }}events/{{$event->id }})@if ($event->cancelled_at) **(CANCELLED)**@endif
+1. [{{$event->name}}@if ($event->cancelled_at) **(CANCELLED)**@endif]({{ $url }}events/{{$event->slug }})
 @endforeach
 
 ***
@@ -22,7 +22,7 @@ Here are the event series you follow that happen today.
 
 ### Summary of series:
 @foreach ($seriesList as $series)
-1. [{{$series->name}}]({{ $url }}series/{{$series->id }})
+1. [{{$series->name}}]({{ $url }}series/{{$series->slug }})
 @endforeach
 
 @foreach ($seriesList as $series)
@@ -52,5 +52,5 @@ Thanks!
 {{ $site }}  
 {{ $url }}  
 
-<img src="{{ asset('images/arcane-city-icon-96x96.png') }}">
+<img src="{{ asset('images/arcane-city-pgh.png') }}">
 @endcomponent
