@@ -46,7 +46,7 @@
         "moment": "^2.29.4",
         "save-dev": "0.0.1-security",
         "select2": "^4.1.0-rc.0",
-        "swagger-ui": "^5.31.0",
+        "swagger-ui": "^5.32.1",
         "sweetalert2": "^11.22"
     }
 }
