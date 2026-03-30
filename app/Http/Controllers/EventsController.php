@@ -2039,7 +2039,7 @@ class EventsController extends Controller
             ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
 
-        $events->filter(function ($e) {
+        $events->filter(function (Event $e): bool {
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
