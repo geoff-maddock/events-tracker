@@ -188,16 +188,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.369.28",
+            "version": "3.375.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "d19d88c4d9d709eb119f2d85a385a9e40b834e33"
+                "reference": "6cfa1798c3fa0182d902eda9419dca48c86d74a1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/d19d88c4d9d709eb119f2d85a385a9e40b834e33",
-                "reference": "d19d88c4d9d709eb119f2d85a385a9e40b834e33",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/6cfa1798c3fa0182d902eda9419dca48c86d74a1",
+                "reference": "6cfa1798c3fa0182d902eda9419dca48c86d74a1",
                 "shasum": ""
             },
             "require": {
@@ -218,12 +218,12 @@
                 "aws/aws-php-sns-message-validator": "~1.0",
                 "behat/behat": "~3.0",
                 "composer/composer": "^2.7.8",
-                "dms/phpunit-arraysubset-asserts": "^0.4.0",
+                "dms/phpunit-arraysubset-asserts": "^v0.5.0",
                 "doctrine/cache": "~1.4",
                 "ext-dom": "*",
                 "ext-openssl": "*",
                 "ext-sockets": "*",
-                "phpunit/phpunit": "^9.6",
+                "phpunit/phpunit": "^10.0",
                 "psr/cache": "^2.0 || ^3.0",
                 "psr/simple-cache": "^2.0 || ^3.0",
                 "sebastian/comparator": "^1.2.3 || ^4.0 || ^5.0",
@@ -261,11 +261,11 @@
             "authors": [
                 {
                     "name": "Amazon Web Services",
-                    "homepage": "http://aws.amazon.com"
+                    "homepage": "https://aws.amazon.com"
                 }
             ],
             "description": "AWS SDK for PHP - Use Amazon Web Services in your PHP project",
-            "homepage": "http://aws.amazon.com/sdkforphp",
+            "homepage": "https://aws.amazon.com/sdk-for-php",
             "keywords": [
                 "amazon",
                 "aws",
@@ -279,9 +279,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.369.28"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.375.0"
             },
-            "time": "2026-02-05T19:09:46+00:00"
+            "time": "2026-03-30T19:30:55+00:00"
         },
         {
             "name": "bepsvpt/secure-headers",
@@ -1646,16 +1646,16 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "2.8.0",
+            "version": "2.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "21dc724a0583619cd1652f673303492272778051"
+                "reference": "7d0ed42f28e42d61352a7a79de682e5e67fec884"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/21dc724a0583619cd1652f673303492272778051",
-                "reference": "21dc724a0583619cd1652f673303492272778051",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/7d0ed42f28e42d61352a7a79de682e5e67fec884",
+                "reference": "7d0ed42f28e42d61352a7a79de682e5e67fec884",
                 "shasum": ""
             },
             "require": {
@@ -1671,6 +1671,7 @@
             "require-dev": {
                 "bamarni/composer-bin-plugin": "^1.8.2",
                 "http-interop/http-factory-tests": "0.9.0",
+                "jshttp/mime-db": "1.54.0.1",
                 "phpunit/phpunit": "^8.5.44 || ^9.6.25"
             },
             "suggest": {
@@ -1742,7 +1743,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/2.8.0"
+                "source": "https://github.com/guzzle/psr7/tree/2.9.0"
             },
             "funding": [
                 {
@@ -1758,7 +1759,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-08-23T21:21:41+00:00"
+            "time": "2026-03-10T16:41:02+00:00"
         },
         {
             "name": "guzzlehttp/uri-template",
@@ -7461,16 +7462,16 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v8.0.1",
+            "version": "v8.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "d937d400b980523dc9ee946bb69972b5e619058d"
+                "reference": "7bf9162d7a0dff98d079b72948508fa48018a770"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/d937d400b980523dc9ee946bb69972b5e619058d",
-                "reference": "d937d400b980523dc9ee946bb69972b5e619058d",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/7bf9162d7a0dff98d079b72948508fa48018a770",
+                "reference": "7bf9162d7a0dff98d079b72948508fa48018a770",
                 "shasum": ""
             },
             "require": {
@@ -7507,7 +7508,7 @@
             "description": "Provides basic utilities for the filesystem",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/filesystem/tree/v8.0.1"
+                "source": "https://github.com/symfony/filesystem/tree/v8.0.6"
             },
             "funding": [
                 {
@@ -7527,7 +7528,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-12-01T09:13:36+00:00"
+            "time": "2026-02-25T16:59:43+00:00"
         },
         {
             "name": "symfony/finder",
