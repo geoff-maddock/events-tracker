@@ -1,0 +1,69 @@
+<?php
+
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | AI Provider
+    |--------------------------------------------------------------------------
+    |
+    | The AI provider to use for features like flyer analysis.
+    | Supported: "anthropic"
+    |
+    */
+
+    'provider' => env('AI_PROVIDER', 'anthropic'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Anthropic (Claude) Configuration
+    |--------------------------------------------------------------------------
+    */
+
+    'anthropic' => [
+        'api_key' => env('ANTHROPIC_API_KEY', ''),
+        'api_url' => 'https://api.anthropic.com/v1/messages',
+        'api_version' => '2023-06-01',
+        'model' => env('ANTHROPIC_MODEL', 'claude-opus-4-5'),
+        'max_tokens' => 2048,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Flyer Analysis System Prompt
+    |--------------------------------------------------------------------------
+    |
+    | The system prompt used when analysing an event flyer image.
+    |
+    */
+
+    'flyer_system_prompt' => 'You are an event data extraction assistant for an event calendar system focused on music and arts events. '
+        . 'Your task is to analyse the provided event flyer image and extract all available information. '
+        . 'After extracting from the flyer, use your knowledge to research and supplement any missing details. '
+        . 'Extract all of the info about the event from the flyer including date, location, performers, time, styles and any other relevant info. '
+        . 'Use that to research more info on the event and then look at the schema for the event and attempt to fill in as much info as possible. '
+        . 'Make an educated guess, but no wild guess or overreach. '
+        . 'Everything generally will be in Pittsburgh PA unless the flyer indicates otherwise.',
+
+    'flyer_user_prompt' => 'Please analyse this event flyer and return a JSON object with the following fields. '
+        . 'Return ONLY valid JSON with no markdown fences or extra text. '
+        . 'Use null for any field you cannot confidently determine. '
+        . 'Keys required: '
+        . '"name" (string, event title), '
+        . '"slug" (string, lowercase hyphenated version of name), '
+        . '"short" (string, one concise sentence describing the event), '
+        . '"description" (string, full description including all relevant info), '
+        . '"start_at" (string, ISO 8601 datetime YYYY-MM-DDTHH:MM or null), '
+        . '"end_at" (string, ISO 8601 datetime YYYY-MM-DDTHH:MM or null), '
+        . '"door_at" (string, ISO 8601 datetime for door open time YYYY-MM-DDTHH:MM or null), '
+        . '"venue_name" (string, venue name or null), '
+        . '"promoter_name" (string, promoter or organiser name or null), '
+        . '"presale_price" (number, presale ticket price without currency symbol or null), '
+        . '"door_price" (number, door ticket price without currency symbol or null), '
+        . '"min_age" (number, 0 for all ages / 18 / 21), '
+        . '"primary_link" (string, URL to event page or null), '
+        . '"ticket_link" (string, URL to purchase tickets or null), '
+        . '"performers" (array of strings, names of performers/artists/DJs/bands), '
+        . '"tags" (array of strings, genre and style tags such as "electronic", "hip-hop", "jazz").',
+
+];
