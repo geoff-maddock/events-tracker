@@ -186,7 +186,8 @@ Route::match(['get', 'post'], 'users/filter', ['as' => 'users.filter', 'uses' =>
 Route::get('users/reset', ['as' => 'users.reset', 'uses' => 'UsersController@reset']);
 Route::get('users/rpp-reset', ['as' => 'users.rppReset', 'uses' => 'UsersController@rppReset']);
 
-Route::resource('users', 'UsersController')->middleware('auth');
+Route::resource('users', 'UsersController')->except(['show'])->middleware('auth');
+Route::get('users/{user}', 'UsersController@show')->name('users.show');
 
 Route::get('profile/{id}', 'UsersController@show')->name('users.profile-show');
 Route::get('profile', 'UsersController@profile')->name('users.profile');

@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
@@ -99,7 +100,51 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = ['name', 'email', 'password', 'user_status_id'];
+    protected $fillable = ['name', 'slug', 'email', 'password', 'user_status_id'];
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $user): void {
+            if (empty($user->slug)) {
+                $user->slug = self::generateUniqueSlug($user->name ?? 'user');
+            }
+        });
+    }
+
+    /**
+     * Resolve route bindings by either slug or numeric id.
+     */
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->where('slug', $value)->orWhere('id', $value)->firstOrFail();
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+    /**
+     * Generate a unique user slug from the provided name.
+     */
+    protected static function generateUniqueSlug(string $name): string
+    {
+        $baseSlug = Str::slug($name);
+
+        if ('' === $baseSlug) {
+            $baseSlug = 'user';
+        }
+
+        $slug = $baseSlug;
+        $counter = 2;
+
+        while (self::where('slug', $slug)->exists()) {
+            $slug = $baseSlug.'-'.$counter;
+            $counter++;
+        }
+
+        return $slug;
+    }
 
     public $frontendUrl = null;
 
