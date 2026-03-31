@@ -28,6 +28,7 @@ use Laravel\Sanctum\HasApiTokens;
  *
  * @property mixed                                                                                                     $id
  * @property string                                                                                                    $name
+ * @property string|null                                                                                               $slug
  * @property string                                                                                                    $email
  * @property string                                                                                                    $password
  * @property string|null                                                                                               $remember_token
@@ -75,6 +76,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @method static \Illuminate\Database\Eloquent\Builder|User whereEmailVerifiedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User wherePassword($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereRememberToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
