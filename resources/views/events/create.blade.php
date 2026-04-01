@@ -64,7 +64,7 @@
                     class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled>
                     <i class="bi bi-stars mr-2"></i>
-                    <span id="analyze-btn-text">Analyze with AI</span>
+                    <span id="analyze-btn-text">Analyze Image</span>
                 </button>
                 <span id="analyze-spinner" class="hidden text-sm text-muted-foreground">
                     <i class="bi bi-arrow-clockwise animate-spin mr-1"></i>
@@ -222,7 +222,7 @@ async function analyzeFlyer() {
         setFlyerStatus('An unexpected error occurred. Please try again.', 'error');
     } finally {
         btn.disabled    = false;
-        btnText.textContent = 'Analyze with AI';
+        btnText.textContent = 'Analyze Image';
         spinner.classList.add('hidden');
     }
 }

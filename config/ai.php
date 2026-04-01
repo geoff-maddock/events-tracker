@@ -64,7 +64,7 @@ return [
         . '"min_age" (number, 0 for all ages / 18 / 21), '
         . '"primary_link" (string, URL to event page or null), '
         . '"ticket_link" (string, URL to purchase tickets or null), '
-        . '"performers" (array of strings, names of performers/artists/DJs/bands), '
-        . '"tags" (array of strings, genre and style tags such as "electronic", "hip-hop", "jazz").',
+        . '"related_entities" (array of strings, names of performers/artists/DJs/bands/venues) - capitalize them, '
+        . '"tags" (array of strings, genre and style tags such as "electronic", "hip-hop", "jazz") - capitalize them',
 
 ];
