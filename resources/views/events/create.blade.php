@@ -94,6 +94,14 @@
 @section('scripts.footer')
 
 <script>
+// ── Constants ──────────────────────────────────────────────────────────────
+const FLYER_DEFAULT_EVENT_TYPE = 'Concert';
+const FLYER_DJ_EVENT_TYPE = 'Club Night';
+const FLYER_DJ_KEYWORDS = [
+    'dj', 'club', 'electronic', 'techno', 'house', 'drum and bass',
+    'jungle', 'dnb', 'edm', 'rave', 'dance music', 'club night',
+];
+
 // ── Flyer import panel toggle ──────────────────────────────────────────────
 (function () {
     const btn   = document.getElementById('flyer-toggle-btn');
@@ -230,20 +238,24 @@ function populateFormFromFlyer(data) {
         }
     }
 
-    // venue – try to match by name in the select options
+    // event_type – match against existing options only, never create new
+    // Fall back to "Concert" by default, or "Club Night" for DJ/electronic events
+    matchEventType(data.event_type_name, data.tags, data.performers);
+
+    // venue – match against existing options only, never create new
     matchSelectByName('venue_id', data.venue_name);
 
-    // promoter – try to match by name in the select options
+    // promoter – match against existing options only, never create new
     matchSelectByName('promoter_id', data.promoter_name);
 
-    // Tags – add extracted tags as new options in the Select2 multi-select
+    // Tags – select from existing options only, never create new
     if (Array.isArray(data.tags) && data.tags.length) {
-        addSelect2Options('tag_list', data.tags);
+        selectExistingOptions('tag_list', data.tags);
     }
 
-    // Performers – add to entity list as new options
+    // Performers – select from existing entity options only, never create new
     if (Array.isArray(data.performers) && data.performers.length) {
-        addSelect2Options('entity_list', data.performers);
+        selectExistingOptions('entity_list', data.performers);
     }
 
     // Scroll to the form
@@ -256,52 +268,98 @@ function setField(id, value) {
     if (el) el.value = value;
 }
 
-function matchSelectByName(selectId, name) {
-    if (!name) return;
-    const el = document.getElementById(selectId);
+/**
+ * Match event_type_id against existing select options.
+ * Falls back to "Club Night" for DJ/electronic events, or "Concert" as the
+ * general default.
+ */
+function matchEventType(eventTypeName, tags, performers) {
+    const el = document.getElementById('event_type_id');
     if (!el) return;
+
+    // Determine if this looks like a DJ / electronic / club event
+    const haystack = [
+        eventTypeName || '',
+        ...(Array.isArray(tags) ? tags : []),
+        ...(Array.isArray(performers) ? performers : []),
+    ].join(' ').toLowerCase();
+    const isDjEvent = FLYER_DJ_KEYWORDS.some(kw => haystack.includes(kw));
+
+    // 1. Try the AI-suggested type first (exact, then starts-with)
+    if (eventTypeName && matchSelectByNameReturn('event_type_id', eventTypeName)) return;
+
+    // 2. Fall back to "Club Night" for DJ events, otherwise "Concert"
+    const fallback = isDjEvent ? FLYER_DJ_EVENT_TYPE : FLYER_DEFAULT_EVENT_TYPE;
+    matchSelectByNameReturn('event_type_id', fallback);
+}
+
+/**
+ * Like matchSelectByName but returns true when a match was found.
+ * Tries exact match first, then starts-with.
+ */
+function matchSelectByNameReturn(selectId, name) {
+    if (!name) return false;
+    const el = document.getElementById(selectId);
+    if (!el) return false;
     const nameLower = name.toLowerCase();
-    // Try exact match first, then starts-with match
+
     for (const option of el.options) {
         if (option.text.toLowerCase() === nameLower) {
             el.value = option.value;
-            if (window.jQuery && jQuery('#' + selectId).data('select2')) {
-                jQuery('#' + selectId).trigger('change');
-            }
-            return;
+            triggerSelect2(selectId);
+            return true;
         }
     }
     for (const option of el.options) {
         if (option.text.toLowerCase().startsWith(nameLower)) {
             el.value = option.value;
-            if (window.jQuery && jQuery('#' + selectId).data('select2')) {
-                jQuery('#' + selectId).trigger('change');
-            }
-            return;
+            triggerSelect2(selectId);
+            return true;
         }
+    }
+    return false;
+}
+
+function matchSelectByName(selectId, name) {
+    matchSelectByNameReturn(selectId, name);
+}
+
+function triggerSelect2(selectId) {
+    if (window.jQuery && jQuery('#' + selectId).data('select2')) {
+        jQuery('#' + selectId).trigger('change');
     }
 }
 
-function addSelect2Options(selectId, names) {
+/**
+ * Select existing options in a Select2 multi-select whose text matches any of
+ * the supplied names (case-insensitive exact match, then starts-with).
+ * Never creates new options – only selects what already exists.
+ */
+function selectExistingOptions(selectId, names) {
     if (!window.jQuery) return;
     const $el = jQuery('#' + selectId);
     if (!$el.length) return;
 
     names.forEach(function (name) {
         if (!name) return;
-        // Check if an option with this text already exists (case-insensitive)
         const lower = name.toLowerCase();
-        let found = false;
+
+        // Exact match
+        let matched = false;
         $el.find('option').each(function () {
             if (jQuery(this).text().toLowerCase() === lower) {
                 jQuery(this).prop('selected', true);
-                found = true;
+                matched = true;
             }
         });
-        if (!found) {
-            // Add new option and select it (Select2 allows tag-like addition for display)
-            const newOption = new Option(name, name, true, true);
-            $el.append(newOption);
+
+        // Starts-with match if no exact match
+        if (!matched) {
+            $el.find('option').each(function () {
+                if (jQuery(this).text().toLowerCase().startsWith(lower)) {
+                    jQuery(this).prop('selected', true);
+                }
+            });
         }
     });
     $el.trigger('change');

@@ -58,6 +58,7 @@ return [
         . '"door_at" (string, ISO 8601 datetime for door open time YYYY-MM-DDTHH:MM or null), '
         . '"venue_name" (string, venue name or null), '
         . '"promoter_name" (string, promoter or organiser name or null), '
+        . '"event_type_name" (string, best matching event type from: Concert, Club Night, Festival, DJ Set, Art Show, Comedy, Theater, Workshop, Film, Other — or null if unclear), '
         . '"presale_price" (number, presale ticket price without currency symbol or null), '
         . '"door_price" (number, door ticket price without currency symbol or null), '
         . '"min_age" (number, 0 for all ages / 18 / 21), '
