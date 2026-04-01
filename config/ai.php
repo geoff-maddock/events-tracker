@@ -43,7 +43,8 @@ return [
         . 'Extract all of the info about the event from the flyer including date, location, performers, time, styles and any other relevant info. '
         . 'Use that to research more info on the event and then look at the schema for the event and attempt to fill in as much info as possible. '
         . 'Make an educated guess, but no wild guess or overreach. '
-        . 'Everything generally will be in Pittsburgh PA unless the flyer indicates otherwise.',
+        . 'Everything generally will be in Pittsburgh PA unless the flyer indicates otherwise.'
+        . 'Where possible, research bandcamp or soundcloud URLs for any performers and include in the description.  only add if you can confidently verify it is correct.',
 
     'flyer_user_prompt' => 'Please analyse this event flyer and return a JSON object with the following fields. '
         . 'Return ONLY valid JSON with no markdown fences or extra text. '
@@ -65,6 +66,6 @@ return [
         . '"primary_link" (string, URL to event page or null), '
         . '"ticket_link" (string, URL to purchase tickets or null), '
         . '"related_entities" (array of strings, names of performers/artists/DJs/bands/venues) - capitalize them, '
-        . '"tags" (array of strings, genre and style tags such as "electronic", "hip-hop", "jazz") - capitalize them',
+        . '"tag_list" (array of strings, genre and style tags such as "electronic", "hip-hop", "jazz") - capitalize them',
 
 ];
