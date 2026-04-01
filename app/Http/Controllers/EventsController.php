@@ -1682,6 +1682,48 @@ class EventsController extends Controller
             $event->entities()->syncWithoutDetaching($request->input('promoter_id'));
         }
 
+        // If the event was created from an analysed flyer, attach that image as
+        // the primary photo now so the user does not need to upload it again.
+        $token = $request->input('flyer_temp_token');
+        $safeExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        if ($token && preg_match('/^[a-f0-9\-]{36}\.([a-z]{2,4})$/', $token, $extMatch)
+            && in_array($extMatch[1], $safeExtensions, true)) {
+            $tempPath = storage_path('app/' . \App\Http\Controllers\FlyerAnalysisController::FLYER_TEMP_DIR . '/' . $token);
+            if (file_exists($tempPath)) {
+                try {
+                    $mimeType = mime_content_type($tempPath);
+                    if ($mimeType === false) {
+                        Log::warning('EventsController@store: could not determine MIME type for flyer temp file', [
+                            'token' => $token,
+                        ]);
+                        $mimeType = 'image/jpeg';
+                    }
+                    $uploadedFile = new \Illuminate\Http\UploadedFile(
+                        $tempPath,
+                        $token,
+                        $mimeType,
+                        null,
+                        true // mark as already moved so no temp-file move is attempted
+                    );
+                    $photo = $imageHandler->makePhoto($uploadedFile);
+                    $photo->is_primary = 1;
+                    $photo->save();
+                    $event->addPhoto($photo);
+                } catch (\Throwable $e) {
+                    Log::warning('EventsController@store: failed to attach flyer photo', [
+                        'event_id' => $event->id,
+                        'error' => $e->getMessage(),
+                    ]);
+                } finally {
+                    if (file_exists($tempPath) && !unlink($tempPath)) {
+                        Log::warning('EventsController@store: failed to delete flyer temp file', [
+                            'path' => $tempPath,
+                        ]);
+                    }
+                }
+            }
+        }
+
         // add to activity log
         Activity::log($event, $this->user, 1);
 
