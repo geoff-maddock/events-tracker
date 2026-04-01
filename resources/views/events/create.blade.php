@@ -77,6 +77,9 @@
     <div class="bg-card rounded-lg border border-border shadow-sm p-6">
         <form method="POST" action="{{ route('events.store') }}" class="space-y-6">
             @csrf
+            {{-- Populated automatically when a flyer has been analysed; carries the
+                 server-side temp path so the image can be attached after save. --}}
+            <input type="hidden" name="flyer_temp_token" id="flyer_temp_token">
 
             @include('events.form')
         </form>
@@ -156,6 +159,9 @@ function clearFlyerSelection() {
     document.getElementById('flyer-drop-content').classList.remove('hidden');
     document.getElementById('flyer-preview-content').classList.add('hidden');
     document.getElementById('analyze-flyer-btn').disabled = true;
+    // Clear any previously stored temp token since the user is picking a new image
+    const tokenInput = document.getElementById('flyer_temp_token');
+    if (tokenInput) tokenInput.value = '';
     setFlyerStatus('', '');
 }
 
@@ -202,6 +208,13 @@ async function analyzeFlyer() {
         }
 
         populateFormFromFlyer(json.data);
+
+        // Store the temp token so the flyer can be attached as a photo on save
+        const tokenInput = document.getElementById('flyer_temp_token');
+        if (tokenInput && json.flyer_temp_token) {
+            tokenInput.value = json.flyer_temp_token;
+        }
+
         setFlyerStatus('✓ Form pre-filled from flyer. Please review and adjust before saving.', 'success');
 
     } catch (err) {
