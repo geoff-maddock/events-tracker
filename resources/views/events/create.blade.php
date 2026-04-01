@@ -28,7 +28,7 @@
 
         <div id="flyer-import-panel" class="hidden">
             <p class="text-sm text-muted-foreground mb-4">
-                Upload an event flyer and our AI assistant will extract the event details and pre-fill the form below.
+                Upload an event flyer and the app will attempt to extract the event details and pre-fill the form below.
                 You can review and edit the information before saving.
             </p>
 
