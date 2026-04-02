@@ -301,6 +301,11 @@
         <!-- Divider -->
         <div class="border-t border-border my-4"></div>
 
+        <!-- About -->
+        <a href="{{ url('/menus/1/content') }}" class="nav-item-tw {{ Request::is('menus/1/content') ? 'nav-item-active-tw' : '' }}">
+            <i class="bi bi-info-circle text-lg"></i>
+            <span>About</span>
+        </a>
 
         <!-- Menu Items -->
         @if (isset($menus) && $menus->isNotEmpty())
