@@ -44,13 +44,14 @@ return [
         . 'Use that to research more info on the event and then look at the schema for the event and attempt to fill in as much info as possible. '
         . 'Make an educated guess, but no wild guess or overreach. '
         . 'Everything generally will be in Pittsburgh PA unless the flyer indicates otherwise.'
-        . 'Where possible, research bandcamp or soundcloud URLs for any performers and include in the description.  only add if you can confidently verify it is correct.',
+        . 'Where possible, research bandcamp or soundcloud URLs for any performers and include in the description.  only add if you can confidently verify it is correct.'
+        , 'Once the info is collected, re-write the description in a clear, readable format suitable for an event listing with accurate info, all relevant details included.',
 
     'flyer_user_prompt' => 'Please analyse this event flyer and return a JSON object with the following fields. '
         . 'Return ONLY valid JSON with no markdown fences or extra text. '
         . 'Use null for any field you cannot confidently determine. '
         . 'Keys required: '
-        . '"name" (string, event title), '
+        . '"name" (string, event title, do not include the venue unless it is an essential part of the event title), '
         . '"slug" (string, lowercase hyphenated version of name), '
         . '"short" (string, one concise sentence describing the event), '
         . '"description" (string, full description including all relevant info), '
