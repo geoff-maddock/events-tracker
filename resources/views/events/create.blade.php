@@ -253,7 +253,7 @@ function populateFormFromFlyer(data) {
 
     // event_type – match against existing options only, never create new
     // Fall back to "Concert" by default, or "Club Night" for DJ/electronic events
-    matchEventType(data.event_type_name, data.tags, data.performers);
+    matchEventType(data.event_type_name, data.tag_list, data.related_entities);
 
     // venue – match against existing options only, never create new
     matchSelectByName('venue_id', data.venue_name);
@@ -262,13 +262,13 @@ function populateFormFromFlyer(data) {
     matchSelectByName('promoter_id', data.promoter_name);
 
     // Tags – select from existing options only, never create new
-    if (Array.isArray(data.tags) && data.tags.length) {
-        selectExistingOptions('tag_list', data.tags);
+    if (Array.isArray(data.tag_list) && data.tag_list.length) {
+        selectExistingOptions('tag_list', data.tag_list);
     }
 
-    // Performers – select from existing entity options only, never create new
-    if (Array.isArray(data.performers) && data.performers.length) {
-        selectExistingOptions('entity_list', data.performers);
+    // Related entities – select from existing entity options only, never create new
+    if (Array.isArray(data.related_entities) && data.related_entities.length) {
+        selectExistingOptions('entity_list', data.related_entities);
     }
 
     // Scroll to the form
@@ -286,7 +286,7 @@ function setField(id, value) {
  * Falls back to "Club Night" for DJ/electronic events, or "Concert" as the
  * general default.
  */
-function matchEventType(eventTypeName, tags, performers) {
+function matchEventType(eventTypeName, tags, relatedEntities) {
     const el = document.getElementById('event_type_id');
     if (!el) return;
 
@@ -294,7 +294,7 @@ function matchEventType(eventTypeName, tags, performers) {
     const haystack = [
         eventTypeName || '',
         ...(Array.isArray(tags) ? tags : []),
-        ...(Array.isArray(performers) ? performers : []),
+        ...(Array.isArray(relatedEntities) ? relatedEntities : []),
     ].join(' ').toLowerCase();
     const isDjEvent = FLYER_DJ_KEYWORDS.some(kw => haystack.includes(kw));
 
@@ -317,14 +317,14 @@ function matchSelectByNameReturn(selectId, name) {
     const nameLower = name.toLowerCase();
 
     for (const option of el.options) {
-        if (option.text.toLowerCase() === nameLower) {
+        if (option.text.trim().toLowerCase() === nameLower) {
             el.value = option.value;
             triggerSelect2(selectId);
             return true;
         }
     }
     for (const option of el.options) {
-        if (option.text.toLowerCase().startsWith(nameLower)) {
+        if (option.text.trim().toLowerCase().startsWith(nameLower)) {
             el.value = option.value;
             triggerSelect2(selectId);
             return true;
@@ -347,21 +347,27 @@ function triggerSelect2(selectId) {
  * Select existing options in a Select2 multi-select whose text matches any of
  * the supplied names (case-insensitive exact match, then starts-with).
  * Never creates new options – only selects what already exists.
+ * Uses Select2's recommended .val([]).trigger('change') API for reliable UI updates.
  */
 function selectExistingOptions(selectId, names) {
     if (!window.jQuery) return;
     const $el = jQuery('#' + selectId);
     if (!$el.length) return;
 
+    const valuesToSelect = [];
+
     names.forEach(function (name) {
         if (!name) return;
         const lower = name.toLowerCase();
-
-        // Exact match
         let matched = false;
+
+        // Exact match first
         $el.find('option').each(function () {
-            if (jQuery(this).text().toLowerCase() === lower) {
-                jQuery(this).prop('selected', true);
+            if (jQuery(this).text().trim().toLowerCase() === lower) {
+                const val = jQuery(this).val();
+                if (!valuesToSelect.includes(val)) {
+                    valuesToSelect.push(val);
+                }
                 matched = true;
             }
         });
@@ -369,13 +375,19 @@ function selectExistingOptions(selectId, names) {
         // Starts-with match if no exact match
         if (!matched) {
             $el.find('option').each(function () {
-                if (jQuery(this).text().toLowerCase().startsWith(lower)) {
-                    jQuery(this).prop('selected', true);
+                if (jQuery(this).text().trim().toLowerCase().startsWith(lower)) {
+                    const val = jQuery(this).val();
+                    if (!valuesToSelect.includes(val)) {
+                        valuesToSelect.push(val);
+                    }
                 }
             });
         }
     });
-    $el.trigger('change');
+
+    if (valuesToSelect.length > 0) {
+        $el.val(valuesToSelect).trigger('change');
+    }
 }
 
 // ── Existing: collision detection ─────────────────────────────────────────
