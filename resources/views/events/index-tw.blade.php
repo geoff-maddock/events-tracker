@@ -98,6 +98,11 @@ Events @include('events.title-crumbs')
 			Date to: {{ $filters['start_at']['end'] }}
 		</span>
 		@endif
+		@if(!empty($filters['my_events']))
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			My Events
+		</span>
+		@endif
 	</div>
 	@endif
 </div>
@@ -194,6 +199,20 @@ Events @include('events.title-crumbs')
 				</div>
 			</div>
 		</div>
+
+		@auth
+		<!-- My Events Filter -->
+		<div class="min-w-0 flex items-end">
+			<label class="inline-flex items-center gap-2 cursor-pointer py-2">
+				<input type="checkbox"
+					name="filters[my_events]"
+					value="1"
+					{{ !empty($filters['my_events'] ?? null) ? 'checked' : '' }}
+					class="w-4 h-4 rounded border-border bg-input accent-primary focus:ring-ring">
+				<span class="text-sm font-medium text-muted-foreground">My Events</span>
+			</label>
+		</div>
+		@endauth
 	</div>
 
 	<!-- Filter Actions -->

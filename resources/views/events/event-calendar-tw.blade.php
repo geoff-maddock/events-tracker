@@ -67,13 +67,13 @@
         <h1 class="text-3xl font-bold text-foreground">
             Events Calendar
             @if(isset($slug))
-                <span class="text-primary">- {{ $slug }}</span>
+                <span class="text-primary">/ {{ $slug }}</span>
             @endif
             @if(isset($tag))
-                <span class="text-primary">- {{ $tag->name }}</span>
+                <span class="text-primary">/ {{ $tag->name }}</span>
             @endif
             @if(isset($related))
-                <span class="text-primary">- {{ $related->name }}</span>
+                <span class="text-primary">/ {{ $related->name }}</span>
             @endif
         </h1>
     </div>

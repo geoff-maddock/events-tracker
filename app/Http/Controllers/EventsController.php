@@ -941,7 +941,8 @@ class EventsController extends Controller
             $this->getFilterOptions(),
             $this->getListControlOptions()
         ))
-            ->with(compact('events'));
+            ->with(compact('events'))
+            ->with(['type' => 'Attending']);
     }
 
     /**
