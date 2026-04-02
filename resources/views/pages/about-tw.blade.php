@@ -3,7 +3,7 @@
 @section('title', 'About')
 
 @section('content')
-<div class="max-w-4xl mx-auto w-full">
+<div class="max-w-4xl mx-auto w-full overflow-x-hidden">
     <div class="mb-4 md:mb-8">
         <h1 class="text-2xl md:text-3xl font-bold text-foreground">About {{ config('app.app_name') }}</h1>
     </div>
@@ -11,9 +11,9 @@
     @if ($menu)
         <div class="space-y-4 md:space-y-6">
             @forelse ($menu->blogs as $blog)
-                <div class="card-tw p-4 md:p-6">
+                <div class="card-tw p-4 md:p-6 overflow-hidden">
                     @if ($blog->contentType && $blog->contentType->name === "HTML")
-                        <div class="prose dark:prose-invert max-w-none">
+                        <div class="prose dark:prose-invert max-w-none [&_img]:!max-w-full [&_img]:!h-auto [&_img]:!w-auto [&_iframe]:!max-w-full [&_iframe]:w-full">
                             {!! $blog->body !!}
                         </div>
                     @else

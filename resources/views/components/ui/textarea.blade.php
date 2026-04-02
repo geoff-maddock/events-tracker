@@ -1,5 +1,6 @@
 @props([
     'hasError' => false,
+    'value' => '',
 ])
 
 @php
@@ -9,4 +10,4 @@ if ($hasError) {
 }
 @endphp
 
-<textarea {{ $attributes->merge(['class' => $classes]) }}>{{ $slot }}</textarea>
+<textarea {{ $attributes->merge(['class' => $classes]) }}>{{ $value ?: $slot }}</textarea>
