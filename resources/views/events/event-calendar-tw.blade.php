@@ -80,11 +80,16 @@
 
     <!-- Filters Section -->
     <div class="mb-6">
+        <div class="flex items-center justify-between flex-wrap gap-2">
         <button id="filters-toggle-btn" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
             <i class="bi bi-funnel mr-2"></i>
             <span id="filters-toggle-text">@if(isset($hasFilter) && $hasFilter) Hide @else Show @endif Filters</span>
             <i class="bi bi-chevron-down ml-2 transition-transform @if(isset($hasFilter) && $hasFilter) rotate-180 @endif" id="filters-chevron"></i>
         </button>
+        <a href="{!! URL::route('events.indexIcal') !!}" class="inline-flex items-center px-3 py-1.5 bg-dark-card border border-dark-border text-white rounded-lg hover:bg-dark-border hover:text-primary transition-colors text-sm" target="_blank" rel="noopener noreferrer">
+            <i class="bi bi-calendar-event mr-1"></i> Export iCal
+        </a>
+        </div>
         
         <!-- Active Filters Badges (shown when filters are hidden) -->
         @if(isset($hasFilter) && $hasFilter)
