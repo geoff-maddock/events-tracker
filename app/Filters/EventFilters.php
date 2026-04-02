@@ -3,6 +3,7 @@
 namespace App\Filters;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class EventFilters extends QueryFilter
 {
@@ -232,5 +233,25 @@ class EventFilters extends QueryFilter
         }
 
         return $this->builder;
+    }
+
+    public function my_events(?string $value = null): Builder
+    {
+        if (!isset($value) || !$value) {
+            return $this->builder;
+        }
+
+        $user = Auth::user();
+        if (!$user) {
+            return $this->builder;
+        }
+
+        return $this->builder->whereIn('events.id', function ($query) use ($user) {
+            $query->select('event_responses.event_id')
+                ->from('event_responses')
+                ->join('response_types', 'event_responses.response_type_id', '=', 'response_types.id')
+                ->where('response_types.name', '=', 'Attending')
+                ->where('event_responses.user_id', '=', $user->id);
+        });
     }
 }
