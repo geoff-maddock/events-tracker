@@ -86,8 +86,8 @@
             <span id="filters-toggle-text">@if(isset($hasFilter) && $hasFilter) Hide @else Show @endif Filters</span>
             <i class="bi bi-chevron-down ml-2 transition-transform @if(isset($hasFilter) && $hasFilter) rotate-180 @endif" id="filters-chevron"></i>
         </button>
-        <a href="{!! URL::route('events.indexIcal') !!}" class="inline-flex items-center px-3 py-1.5 bg-dark-card border border-dark-border text-white rounded-lg hover:bg-dark-border hover:text-primary transition-colors text-sm" target="_blank" rel="noopener noreferrer">
-            <i class="bi bi-calendar-event mr-1"></i> Export iCal
+        <a href="{!! URL::route('events.indexIcal') !!}" class="inline-flex items-center px-3 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-card transition-colors text-sm" target="_blank" rel="noopener noreferrer">
+            <i class="bi bi-calendar-event mr-2"></i> Export iCal
         </a>
         </div>
         
