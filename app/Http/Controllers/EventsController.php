@@ -2133,7 +2133,7 @@ class EventsController extends Controller
             ->setFilter($this->filter)
             ->setQueryBuilder(Event::query())
             ->setDefaultSort(['events.start_at' => 'desc'])
-            ->setParentFilter(['related' => $related->name]);
+            ->setParentFilter(['related' => $related->slug]);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
