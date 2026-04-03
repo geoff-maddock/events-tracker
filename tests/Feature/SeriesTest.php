@@ -61,4 +61,34 @@ class SeriesTest extends TestCase
 
         $response->assertStatus(302);
     }
+
+    /**
+     * Test that a series can be accessed by its slug
+     *
+     * @return void
+     */
+    public function testShowSeriesBySlug()
+    {
+        $series = Series::factory()->create(['slug' => 'test-series-slug']);
+
+        $response = $this->get('/series/test-series-slug');
+
+        $response->assertStatus(200);
+        $response->assertSee($series->name);
+    }
+
+    /**
+     * Test that a series can be accessed by its integer ID (backward compatibility)
+     *
+     * @return void
+     */
+    public function testShowSeriesById()
+    {
+        $series = Series::factory()->create(['slug' => 'test-series-by-id']);
+
+        $response = $this->get('/series/' . $series->id);
+
+        $response->assertStatus(200);
+        $response->assertSee($series->name);
+    }
 }

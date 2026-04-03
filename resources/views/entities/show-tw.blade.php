@@ -201,7 +201,7 @@
 					<div class="text-sm font-medium text-muted-foreground">Series</div>
 					<div class="flex flex-wrap gap-1.5">
 						@foreach ($entity->series as $series)
-						<a href="/series/{{ $series->id }}"
+						<a href="{{ route('series.show', [$series->slug]) }}"
 							class="badge-tw badge-primary-tw text-xs hover:bg-primary/30 {{ $series->visibility->name == 'Cancelled' ? 'line-through opacity-50' : '' }}">
 							{{ $series->name }}
 						</a>
