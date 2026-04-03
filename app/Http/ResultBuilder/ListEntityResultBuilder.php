@@ -163,6 +163,13 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
             $this->appliedSortField = array_keys($this->defaultSort)[0];
             $this->appliedSortDirection = $this->defaultSort[$this->appliedSortField];
         }
+
+        // If sorting by a relationship count column (e.g. follows_count), add withCount
+        if (str_ends_with($this->appliedSortField, '_count')) {
+            $relationship = str_replace('_count', '', $this->appliedSortField);
+            $this->queryBuilder->withCount($relationship);
+        }
+
         $this->queryBuilder->orderBy($this->appliedSortField, $this->appliedSortDirection);
     }
 
