@@ -174,6 +174,12 @@ class Series extends Eloquent
         return 'slug';
     }
 
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return is_numeric($value)
+            ? $this->where('id', $value)->firstOrFail()
+            : $this->where('slug', $value)->firstOrFail();
+    }
 
     /**
      * Additional fields to treat as Carbon instances.

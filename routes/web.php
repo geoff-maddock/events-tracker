@@ -622,10 +622,6 @@ Route::get('series/{id}/unfollow', [
 ]);
 
 
-Route::bind('series', function ($slug) {
-    return Series::whereSlug($slug)->firstOrFail();
-});
-
 Route::resource('series', 'SeriesController');
 
 Route::get('series/{series:slug}', 'SeriesController@show')->name('series.show');
