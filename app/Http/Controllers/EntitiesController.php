@@ -641,6 +641,7 @@ class EntitiesController extends Controller
 
         return view('entities.show-tw')
             ->with(compact('entity'))
+            ->with(['filterStartAt' => Carbon::today()])
             ->render();
     }
 
@@ -672,6 +673,7 @@ class EntitiesController extends Controller
 
         return view('entities.show-tw')
             ->with(compact('entity', 'relatedEvents'))
+            ->with(['filterStartAt' => Carbon::today()])
             ->render();
     }
 

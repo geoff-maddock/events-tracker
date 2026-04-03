@@ -465,7 +465,7 @@
 	<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
 		<h3 class="text-xl font-semibold flex items-center gap-2">
 			<i class="bi bi-calendar-event"></i>
-			Related Events
+			Upcoming Events
 		</h3>
 		<!-- Date Filter -->
 		<form method="GET" action="{{ route('entities.show', $entity->slug) }}" class="flex items-center gap-2">
