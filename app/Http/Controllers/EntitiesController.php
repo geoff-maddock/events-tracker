@@ -641,6 +641,7 @@ class EntitiesController extends Controller
 
         return view('entities.show-tw')
             ->with(compact('entity'))
+            ->with(['filterStartAt' => Carbon::today()])
             ->render();
     }
 
@@ -672,6 +673,7 @@ class EntitiesController extends Controller
 
         return view('entities.show-tw')
             ->with(compact('entity', 'relatedEvents'))
+            ->with(['filterStartAt' => Carbon::today()])
             ->render();
     }
 
@@ -756,7 +758,7 @@ class EntitiesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Entity $entity, OembedExtractor $embedExtractor): View
+    public function show(Entity $entity, OembedExtractor $embedExtractor, Request $request): View
     {
         app('redirect')->setIntendedUrl(url()->current());
 
@@ -775,25 +777,46 @@ class EntitiesController extends Controller
         // get all the tracks as streamable URLs
         // $tracks = $embedExtractor->getTracksFromUrl('https://0h85.bandcamp.com/');
         $tracks = [];
-        
-        // get related events (up to 12, sorted by date descending)
-        $relatedEvents = $entity->events()
+
+        // determine the start date filter for related events (default: today)
+        $filterStartAt = null;
+        if ($request->filled('start_at')) {
+            try {
+                $filterStartAt = Carbon::parse($request->input('start_at'))->startOfDay();
+            } catch (\Exception $e) {
+                $filterStartAt = Carbon::today()->startOfDay();
+            }
+        } else {
+            $filterStartAt = Carbon::today()->startOfDay();
+        }
+
+        // get related events (up to 16, sorted by date ascending from the filter date)
+        $relatedEventsQuery = $entity->events()
+            ->where('start_at', '>=', $filterStartAt)
+            ->orderBy('start_at', 'asc');
+
+        $relatedEvents = $relatedEventsQuery->limit(16)->get();
+
+        // get past events (prior to today, most recent first); fetch 21 to detect overflow past the 20 shown
+        $pastEvents = $entity->events()
+            ->where('start_at', '<', Carbon::today()->startOfDay())
             ->orderBy('start_at', 'desc')
-            ->limit(12)
+            ->limit(21)
             ->get();
 
-        // only compute co-performer and venue lists when the entity has more than 2 events
+        // only compute co-performer and venue lists when the entity has more than 2 events total;
+        // use a lightweight count to check regardless of the date filter applied above
         $frequentlyPerformsWith = null;
         $frequentlyPerformsAt = null;
         $isVenueOrShop = $entity->hasRole('Venue') || $entity->hasRole('Shop');
-        if ($relatedEvents->count() > 2) {
+        if ($entity->events()->limit(3)->count() > 2) {
             $frequentlyPerformsWith = $entity->getFrequentlyPerformsWith();
             if (!$isVenueOrShop) {
                 $frequentlyPerformsAt = $entity->getFrequentlyPerformsAt();
             }
         }
 
-        return view('entities.show-tw', compact('entity', 'threads', 'embeds', 'tracks', 'relatedEvents', 'frequentlyPerformsWith', 'frequentlyPerformsAt'));
+        return view('entities.show-tw', compact('entity', 'threads', 'embeds', 'tracks', 'relatedEvents', 'pastEvents', 'frequentlyPerformsWith', 'frequentlyPerformsAt', 'filterStartAt'));
     }
 
     /**
