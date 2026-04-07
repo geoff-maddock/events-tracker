@@ -142,7 +142,7 @@ Entities @include('entities.title-crumbs')
 
 		<!-- Entity Type Filter -->
 		<div class="min-w-0">
-			<label for="filter_entity_type" class="block text-sm font-medium text-muted-foreground mb-1">Type</label>
+			<label for="filter_entity_type" class="block text-sm font-medium text-muted-foreground mb-1">Entity Type</label>
 			{!! Form::select('filter_entity_type', $entityTypeOptions, ($filters['entity_type'] ?? null),
 			[
 				'data-theme' => 'tailwind',

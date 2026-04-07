@@ -47,12 +47,6 @@
                     <i class="bi bi-grid text-sm"></i>
                     <span>Event Grid</span>
                 </a>
-                 @auth
-                <a href="{{ url('/events/attending') }}" class="nav-item-tw text-sm {{ Request::is('events/attending') ? 'nav-item-active-tw' : '' }}">
-                    <i class="bi bi-calendar-check text-sm"></i>
-                    <span>Your Events</span>
-                </a>
-                @endauth
             </div>
 
         </div>
@@ -63,14 +57,6 @@
                 <i class="bi bi-calendar3 text-lg"></i>
                 <span>Event Calendar</span>
             </a>
-            @auth
-            <div class="ml-8 space-y-1 mt-1">
-                <a href="{{ url('/calendar/attending') }}" class="nav-item-tw text-sm {{ Request::is('calendar/attending') ? 'nav-item-active-tw' : '' }}">
-                    <i class="bi bi-calendar-check text-sm"></i>
-                    <span>Your Calendar</span>
-                </a>
-            </div>
-            @endauth
         </div>
 
         <!-- Entity Listings -->
@@ -79,14 +65,6 @@
                 <i class="bi bi-people text-lg"></i>
                 <span>Entity Listings</span>
             </a>
-            @auth
-            <div class="ml-8 space-y-1 mt-1">
-                <a href="{{ url('/entities/following') }}" class="nav-item-tw text-sm {{ Request::is('entities/following') ? 'nav-item-active-tw' : '' }}">
-                    <i class="bi bi-person-heart text-sm"></i>
-                    <span>Your Entities</span>
-                </a>
-            </div>
-            @endauth
         </div>
 
         <!-- Series Listings -->
@@ -230,12 +208,6 @@
                     <i class="bi bi-grid text-sm"></i>
                     <span>Event Grid</span>
                 </a>
-                @auth
-                <a href="{{ url('/events/attending') }}" class="nav-item-tw text-sm {{ Request::is('events/attending') ? 'nav-item-active-tw' : '' }}">
-                    <i class="bi bi-calendar-check text-sm"></i>
-                    <span>Your Events</span>
-                </a>
-                @endauth
             </div>
         </div>
 
@@ -245,14 +217,6 @@
                 <i class="bi bi-calendar3 text-lg"></i>
                 <span>Event Calendar</span>
             </a>
-            @auth
-            <div class="ml-8 space-y-1 mt-1">
-                <a href="{{ url('/calendar/attending') }}" class="nav-item-tw text-sm {{ Request::is('calendar/attending') ? 'nav-item-active-tw' : '' }}">
-                    <i class="bi bi-calendar-check text-sm"></i>
-                    <span>Your Calendar</span>
-                </a>
-            </div>
-            @endauth
         </div>
 
         <!-- Entity Listings -->
@@ -261,14 +225,6 @@
                 <i class="bi bi-people text-lg"></i>
                 <span>Entity Listings</span>
             </a>
-            @auth
-            <div class="ml-8 space-y-1 mt-1">
-                <a href="{{ url('/entities/following') }}" class="nav-item-tw text-sm {{ Request::is('entities/following') ? 'nav-item-active-tw' : '' }}">
-                    <i class="bi bi-person-heart text-sm"></i>
-                    <span>Your Entities</span>
-                </a>
-            </div>
-            @endauth
         </div>
 
         <!-- Series Listings -->

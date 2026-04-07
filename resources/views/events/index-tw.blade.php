@@ -172,7 +172,7 @@ Events @include('events.title-crumbs')
 
 		<!-- Event Type Filter -->
 		<div class="min-w-0">
-			<label for="filter_event_type" class="block text-sm font-medium text-muted-foreground mb-1">Type</label>
+			<label for="filter_event_type" class="block text-sm font-medium text-muted-foreground mb-1">Event Type</label>
 			{!! Form::select('filter_event_type', $eventTypeOptions, ($filters['event_type'] ?? null),
 			[
 				'data-theme' => 'tailwind',
