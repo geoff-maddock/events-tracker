@@ -76,19 +76,30 @@
                 <span class="text-primary">/ {{ $related->name }}</span>
             @endif
         </h1>
+        <div class="flex flex-wrap gap-2 mt-3 sm:mt-0">
+            <a href="{!! URL::route('events.create') !!}" class="inline-flex items-center px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
+                <i class="bi bi-plus-lg mr-2"></i>
+                Create Event
+            </a>
+            <a href="{!! URL::route('events.export') !!}" class="inline-flex items-center px-3 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-card transition-colors text-sm" target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-download mr-2"></i>
+                Export TXT
+            </a>
+            <a href="{!! URL::route('events.indexIcal') !!}" class="inline-flex items-center px-3 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-card transition-colors text-sm" target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-calendar-event mr-2"></i>
+                Export iCal
+            </a>
+        </div>
     </div>
 
     <!-- Filters Section -->
     <div class="mb-6">
-        <div class="flex items-center justify-between flex-wrap gap-2">
+        <div class="flex items-center flex-wrap gap-2">
         <button id="filters-toggle-btn" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
             <i class="bi bi-funnel mr-2"></i>
             <span id="filters-toggle-text">@if(isset($hasFilter) && $hasFilter) Hide @else Show @endif Filters</span>
             <i class="bi bi-chevron-down ml-2 transition-transform @if(isset($hasFilter) && $hasFilter) rotate-180 @endif" id="filters-chevron"></i>
         </button>
-        <a href="{!! URL::route('events.indexIcal') !!}" class="inline-flex items-center px-3 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-card transition-colors text-sm" target="_blank" rel="noopener noreferrer">
-            <i class="bi bi-calendar-event mr-2"></i> Export iCal
-        </a>
         </div>
         
         <!-- Active Filters Badges (shown when filters are hidden) -->
