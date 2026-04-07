@@ -52,6 +52,10 @@
                     <i class="bi bi-calendar-check text-sm"></i>
                     <span>Your Events</span>
                 </a>
+                <a href="{{ url('/events/following') }}" class="nav-item-tw text-sm {{ Request::is('events/following') ? 'nav-item-active-tw' : '' }}">
+                    <i class="bi bi-bell text-sm"></i>
+                    <span>Events Following</span>
+                </a>
                 @endauth
             </div>
 
@@ -234,6 +238,10 @@
                 <a href="{{ url('/events/attending') }}" class="nav-item-tw text-sm {{ Request::is('events/attending') ? 'nav-item-active-tw' : '' }}">
                     <i class="bi bi-calendar-check text-sm"></i>
                     <span>Your Events</span>
+                </a>
+                <a href="{{ url('/events/following') }}" class="nav-item-tw text-sm {{ Request::is('events/following') ? 'nav-item-active-tw' : '' }}">
+                    <i class="bi bi-bell text-sm"></i>
+                    <span>Events Following</span>
                 </a>
                 @endauth
             </div>

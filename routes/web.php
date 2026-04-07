@@ -259,6 +259,7 @@ Route::get('events/daily', 'EventsController@daily');
 Route::get('events/day/{day}', 'EventsController@day')->name('events.day')
     ->where('day', '[1-2][0-9][0-9][0-9]-[0-3][0-9]-[0-9][0-9]');    
 Route::match(['get', 'post'], 'events/attending', 'EventsController@indexAttending')->name('events.attending');
+Route::match(['get', 'post'], 'events/following', 'EventsController@indexFollowing')->name('events.following')->middleware('auth');
 Route::match(['get', 'post'], 'events/filter', ['as' => 'events.filter', 'uses' => 'EventsController@filter']);
 Route::get('events/apply-filter', ['as' => 'events.applyFilterFromUrl', 'uses' => 'EventsController@applyFilterFromUrl']);
 Route::get('events/reset', ['as' => 'events.reset', 'uses' => 'EventsController@reset']);
@@ -325,6 +326,16 @@ Route::get('events/{id}/unattend', [
     'as' => 'events.unattend',
     'uses' => 'EventsController@unattend',
 ]);
+
+Route::get('events/{id}/follow', [
+    'as' => 'events.follow',
+    'uses' => 'EventsController@follow',
+])->middleware('auth');
+
+Route::get('events/{id}/unfollow', [
+    'as' => 'events.unfollow',
+    'uses' => 'EventsController@unfollow',
+])->middleware('auth');
 
 Route::post('events/{id}/photos', 'EventsController@addPhoto');
 Route::delete('events/{id}/photos/{photo_id}', 'EventsController@deletePhoto');

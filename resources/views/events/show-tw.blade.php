@@ -49,6 +49,19 @@
 											<i class="bi bi-star text-muted-foreground text-xl"></i>
 										</a>
 									@endif
+									@if ($event->followedBy($user))
+										<a href="{{ route('events.unfollow', ['id' => $event->id]) }}" class="p-2 rounded-md hover:bg-accent" title="You're following this event">
+											<i class="bi bi-bell-fill text-primary text-xl"></i>
+										</a>
+									@else
+										<a href="{{ route('events.follow', ['id' => $event->id]) }}" class="p-2 rounded-md hover:bg-accent" title="Follow this event">
+											<i class="bi bi-bell text-muted-foreground text-xl"></i>
+										</a>
+									@endif
+								@else
+									<a href="{{ route('login') }}" class="p-2 rounded-md hover:bg-accent" title="Sign in to follow">
+										<i class="bi bi-bell text-muted-foreground text-xl"></i>
+									</a>
 								@endif
 								
 								<div class="relative inline-block text-left">
@@ -331,9 +344,9 @@
 
 							<!-- Follower Count (Admin only) -->
 							@if ($signedIn && $user->hasGroup('super_admin'))
-							@php $followerCount = $event->event_responses_count ?? 0; @endphp
+							@php $followerCount = $event->follows()->count(); @endphp
 							<div class="flex items-center text-sm text-muted-foreground">
-								<i class="bi bi-star mr-2 h-4 w-4"></i>
+								<i class="bi bi-bell mr-2 h-4 w-4"></i>
 								<span>{{ $followerCount }} {{ Str::plural('follower', $followerCount) }}</span>
 							</div>
 							@endif

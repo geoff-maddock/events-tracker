@@ -547,6 +547,31 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     }
 
     /**
+     * Return a list of events the user is directly following.
+     */
+    public function getEventsFollowing(): Collection
+    {
+        return Event::join('follows', 'events.id', '=', 'follows.object_id')
+            ->where('follows.object_type', '=', 'event')
+            ->where('follows.user_id', '=', $this->id)
+            ->orderBy('events.start_at', 'asc')
+            ->select('events.*')
+            ->get();
+    }
+
+    /**
+     * Return a count of events the user is directly following.
+     */
+    public function countEventsFollowing(): int
+    {
+        return Event::join('follows', 'events.id', '=', 'follows.object_id')
+            ->where('follows.object_type', '=', 'event')
+            ->where('follows.user_id', '=', $this->id)
+            ->select('events.*')
+            ->count();
+    }
+
+    /**
      * Return the tags the user is following.
      */
     public function followedTags(): BelongsToMany

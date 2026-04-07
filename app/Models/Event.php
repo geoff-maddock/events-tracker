@@ -19,6 +19,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use App\Models\Follow;
 use App\Models\User;
 
 /**
@@ -505,6 +506,40 @@ class Event extends Model
         return $this->belongsToMany(User::class, "event_responses")->wherePivot("response_type_id", 1);
     }
 
+
+    /**
+     * Checks if the event is followed by the user.
+     */
+    public function followedBy(?User $user): ?Follow
+    {
+        if (!$user) {
+            return null;
+        }
+
+        return Follow::where('object_type', '=', 'event')
+            ->where('object_id', '=', $this->id)
+            ->where('user_id', '=', $user->id)
+            ->first();
+    }
+
+    /**
+     * Returns the users that follow the event.
+     */
+    public function followers(): Collection
+    {
+        return User::join('follows', 'users.id', '=', 'follows.user_id')
+            ->where('follows.object_type', 'event')
+            ->where('follows.object_id', $this->id)
+            ->get('users.*');
+    }
+
+    /**
+     * The follows that belong to the event.
+     */
+    public function follows(): MorphMany
+    {
+        return $this->morphMany(Follow::class, 'object', 'object_type', 'object_id');
+    }
 
     /**
      * Get the count of users attending this event.

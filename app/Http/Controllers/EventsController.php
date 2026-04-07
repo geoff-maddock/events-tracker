@@ -946,6 +946,72 @@ class EventsController extends Controller
     }
 
     /**
+     * Display a listing of events that the current user is following.
+     */
+    public function indexFollowing(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ) {
+        $this->middleware('auth');
+
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_following');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = Event::join('follows', 'events.id', '=', 'follows.object_id')
+            ->where('follows.object_type', '=', 'event')
+            ->where('follows.user_id', '=', $this->user->id)
+            ->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')
+            ->orderBy('follows.created_at', 'desc')
+            ->select('events.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultSort(['events.start_at' => 'asc']);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // get the events
+        $events = $query
+            ->with('visibility', 'venue', 'tags', 'entities', 'series', 'eventType', 'threads')
+            ->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        return view('events.index-tw')
+        ->with(array_merge(
+            [
+                'slug' => 'Following',
+                'limit' => $listResultSet->getLimit(),
+                'sort' => $listResultSet->getSort(),
+                'direction' => $listResultSet->getSortDirection(),
+                'hasFilter' => $this->hasFilter,
+                'filters' => $listResultSet->getFilters(),
+                'filterRoute' => 'events.following',
+                'key' => 'internal_event_following',
+                'redirect' => 'events.following',
+            ],
+            $this->getFilterOptions(),
+            $this->getListControlOptions()
+        ))
+            ->with(compact('events'))
+            ->with(['type' => 'Following']);
+    }
+
+    /**
      * Display a simple text feed of future events.
      *
      * @return View
@@ -2534,7 +2600,7 @@ class EventsController extends Controller
         $follow->object_type = 'event';
         $follow->save();
 
-        Log::info('User '.$id.' is following '.$event->name);
+        Log::info('User '.$this->user->id.' is following '.$event->name);
 
         flash()->success('Success', 'You are now following the event - '.$event->name);
 
