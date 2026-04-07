@@ -797,6 +797,13 @@ class EntitiesController extends Controller
 
         $relatedEvents = $relatedEventsQuery->limit(16)->get();
 
+        // get past events (prior to today, most recent first); fetch 21 to detect overflow past the 20 shown
+        $pastEvents = $entity->events()
+            ->where('start_at', '<', Carbon::today()->startOfDay())
+            ->orderBy('start_at', 'desc')
+            ->limit(21)
+            ->get();
+
         // only compute co-performer and venue lists when the entity has more than 2 events total;
         // use a lightweight count to check regardless of the date filter applied above
         $frequentlyPerformsWith = null;
@@ -809,7 +816,7 @@ class EntitiesController extends Controller
             }
         }
 
-        return view('entities.show-tw', compact('entity', 'threads', 'embeds', 'tracks', 'relatedEvents', 'frequentlyPerformsWith', 'frequentlyPerformsAt', 'filterStartAt'));
+        return view('entities.show-tw', compact('entity', 'threads', 'embeds', 'tracks', 'relatedEvents', 'pastEvents', 'frequentlyPerformsWith', 'frequentlyPerformsAt', 'filterStartAt'));
     }
 
     /**

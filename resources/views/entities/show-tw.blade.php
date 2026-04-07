@@ -490,16 +490,17 @@
 			@foreach ($relatedEvents as $event)
 				@include('events.card-tw', ['event' => $event])
 			@endforeach
+			@if (isset($pastEvents) && $pastEvents->count() > 0)
+				@include('events.past-events-grid-card-tw', ['pastEvents' => $pastEvents, 'entity' => $entity])
+			@endif
 		</div>
-
-		<a href="{{ url('events/related-to/'.$entity->slug) }}" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
-			View All Related Events
-		</a>
 	@else
 		<p class="text-muted-foreground mb-4">No upcoming related events found.</p>
-		<a href="{{ url('events/related-to/'.$entity->slug) }}" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
-			View All Related Events
-		</a>
+		@if (isset($pastEvents) && $pastEvents->count() > 0)
+			<div class="grid grid-cols-1 md:grid-cols-2 event-3col:grid-cols-3 event-4col:grid-cols-4 gap-6 mb-6">
+				@include('events.past-events-grid-card-tw', ['pastEvents' => $pastEvents, 'entity' => $entity])
+			</div>
+		@endif
 	@endif
 </div>
 
