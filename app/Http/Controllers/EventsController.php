@@ -953,8 +953,6 @@ class EventsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ) {
-        $this->middleware('auth');
-
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_event');
         $listParamSessionStore->setKeyPrefix('internal_event_following');
