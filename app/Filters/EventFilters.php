@@ -241,18 +241,7 @@ class EventFilters extends QueryFilter
             return $this->builder;
         }
 
-        $user = Auth::user();
-        if (!$user) {
-            return $this->builder;
-        }
-
-        return $this->builder->whereIn('events.id', function ($query) use ($user) {
-            $query->select('event_responses.event_id')
-                ->from('event_responses')
-                ->join('response_types', 'event_responses.response_type_id', '=', 'response_types.id')
-                ->where('response_types.name', '=', 'Attending')
-                ->where('event_responses.user_id', '=', $user->id);
-        });
+        return $this->applyAttendingFilter();
     }
 
     public function display_type(?string $value = null): Builder
@@ -267,13 +256,7 @@ class EventFilters extends QueryFilter
         }
 
         if ($value === 'attending') {
-            return $this->builder->whereIn('events.id', function ($query) use ($user) {
-                $query->select('event_responses.event_id')
-                    ->from('event_responses')
-                    ->join('response_types', 'event_responses.response_type_id', '=', 'response_types.id')
-                    ->where('response_types.name', '=', 'Attending')
-                    ->where('event_responses.user_id', '=', $user->id);
-            });
+            return $this->applyAttendingFilter();
         }
 
         if ($value === 'created') {
@@ -281,5 +264,21 @@ class EventFilters extends QueryFilter
         }
 
         return $this->builder;
+    }
+
+    private function applyAttendingFilter(): Builder
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return $this->builder;
+        }
+
+        return $this->builder->whereIn('events.id', function ($query) use ($user) {
+            $query->select('event_responses.event_id')
+                ->from('event_responses')
+                ->join('response_types', 'event_responses.response_type_id', '=', 'response_types.id')
+                ->where('response_types.name', '=', 'Attending')
+                ->where('event_responses.user_id', '=', $user->id);
+        });
     }
 }
