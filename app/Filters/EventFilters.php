@@ -259,8 +259,22 @@ class EventFilters extends QueryFilter
             return $this->applyAttendingFilter();
         }
 
+        if ($value === 'not_attending') {
+            return $this->builder->whereNotIn('events.id', function ($query) use ($user) {
+                $query->select('event_responses.event_id')
+                    ->from('event_responses')
+                    ->join('response_types', 'event_responses.response_type_id', '=', 'response_types.id')
+                    ->where('response_types.name', '=', 'Attending')
+                    ->where('event_responses.user_id', '=', $user->id);
+            });
+        }
+
         if ($value === 'created') {
             return $this->builder->where('events.created_by', '=', $user->id);
+        }
+
+        if ($value === 'not_created') {
+            return $this->builder->where('events.created_by', '!=', $user->id);
         }
 
         return $this->builder;

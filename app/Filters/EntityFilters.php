@@ -233,8 +233,19 @@ class EntityFilters extends QueryFilter
             });
         }
 
+        if ($value === 'not_following') {
+            return $this->builder->whereDoesntHave('follows', function ($q) use ($user) {
+                $q->where('follows.object_type', '=', 'entity')
+                    ->where('follows.user_id', '=', $user->id);
+            });
+        }
+
         if ($value === 'created') {
             return $this->builder->where('entities.created_by', '=', $user->id);
+        }
+
+        if ($value === 'not_created') {
+            return $this->builder->where('entities.created_by', '!=', $user->id);
         }
 
         return $this->builder;

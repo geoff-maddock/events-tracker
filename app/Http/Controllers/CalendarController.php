@@ -437,8 +437,8 @@ class CalendarController extends Controller
             }
 
             if (!empty($filters['display_type']) && $filters['display_type'] !== 'all' && $this->user) {
+                $userId = $this->user->id;
                 if ($filters['display_type'] === 'attending') {
-                    $userId = $this->user->id;
                     $eventsQuery->whereIn('events.id', function ($q) use ($userId) {
                         $q->select('event_responses.event_id')
                             ->from('event_responses')
@@ -446,8 +446,18 @@ class CalendarController extends Controller
                             ->where('response_types.name', '=', 'Attending')
                             ->where('event_responses.user_id', '=', $userId);
                     });
+                } elseif ($filters['display_type'] === 'not_attending') {
+                    $eventsQuery->whereNotIn('events.id', function ($q) use ($userId) {
+                        $q->select('event_responses.event_id')
+                            ->from('event_responses')
+                            ->join('response_types', 'event_responses.response_type_id', '=', 'response_types.id')
+                            ->where('response_types.name', '=', 'Attending')
+                            ->where('event_responses.user_id', '=', $userId);
+                    });
                 } elseif ($filters['display_type'] === 'created') {
-                    $eventsQuery->where('events.created_by', '=', $this->user->id);
+                    $eventsQuery->where('events.created_by', '=', $userId);
+                } elseif ($filters['display_type'] === 'not_created') {
+                    $eventsQuery->where('events.created_by', '!=', $userId);
                 }
             }
         }

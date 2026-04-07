@@ -84,7 +84,7 @@
 		@endif
 		@if(!empty($filters['display_type']) && $filters['display_type'] !== 'all')
 		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-			{{ ['attending' => 'Events Attending', 'created' => 'Events Created'][$filters['display_type']] ?? $filters['display_type'] }}
+			{{ ['attending' => 'Events Attending', 'not_attending' => 'Events Not Attending', 'created' => 'Events Created', 'not_created' => 'Events Not Created'][$filters['display_type']] ?? $filters['display_type'] }}
 		</span>
 		@endif
 	</div>
@@ -191,7 +191,9 @@
 			<select name="filters[display_type]" id="filter_display_type" class="form-select-tw">
 				<option value="all" {{ ($filters['display_type'] ?? 'all') === 'all' ? 'selected' : '' }}>All Events</option>
 				<option value="attending" {{ ($filters['display_type'] ?? '') === 'attending' ? 'selected' : '' }}>Events Attending</option>
+				<option value="not_attending" {{ ($filters['display_type'] ?? '') === 'not_attending' ? 'selected' : '' }}>Events Not Attending</option>
 				<option value="created" {{ ($filters['display_type'] ?? '') === 'created' ? 'selected' : '' }}>Events Created</option>
+				<option value="not_created" {{ ($filters['display_type'] ?? '') === 'not_created' ? 'selected' : '' }}>Events Not Created</option>
 			</select>
 		</div>
 		@endauth
