@@ -21,11 +21,11 @@
 		<i class="bi bi-plus-lg mr-2"></i>
 		Create Event
 	</a>
-	<a href="{!! URL::route('events.export') !!}" class="inline-flex items-center px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors" target="_blank">
-		<i class="bi bi-file-text mr-2"></i>
+	<a href="{!! URL::route('events.export') !!}" class="inline-flex items-center px-3 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-card transition-colors text-sm" target="_blank">
+		<i class="bi bi-download mr-2"></i>
 		Export TXT
 	</a>
-	<a href="{!! URL::route('events.indexIcal') !!}" class="inline-flex items-center px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors" target="_blank">
+	<a href="{!! URL::route('events.indexIcal') !!}" class="inline-flex items-center px-3 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-card transition-colors text-sm" target="_blank">
 		<i class="bi bi-calendar-event mr-2"></i>
 		Export iCal
 	</a>
@@ -80,6 +80,11 @@
 		@if(!empty($filters['my_events']))
 		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
 			My Events
+		</span>
+		@endif
+		@if(!empty($filters['display_type']) && $filters['display_type'] !== 'all')
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			{{ ['attending' => 'Events Attending', 'not_attending' => 'Events Not Attending', 'created' => 'Events Created', 'not_created' => 'Events Not Created'][$filters['display_type']] ?? $filters['display_type'] }}
 		</span>
 		@endif
 	</div>
@@ -146,7 +151,7 @@
 
 		<!-- Event Type Filter -->
 		<div class="min-w-0">
-			<label for="filter_event_type" class="block text-sm font-medium text-muted-foreground mb-1">Type</label>
+			<label for="filter_event_type" class="block text-sm font-medium text-muted-foreground mb-1">Event Type</label>
 			{!! Form::select('filter_event_type', $eventTypeOptions, ($filters['event_type'] ?? null),
 			[
 				'data-theme' => 'tailwind',
@@ -180,16 +185,16 @@
 		</div>
 
 		@auth
-		<!-- My Events Filter -->
-		<div class="min-w-0 flex items-end">
-			<label class="inline-flex items-center gap-2 cursor-pointer py-2">
-				<input type="checkbox"
-					name="filters[my_events]"
-					value="1"
-					{{ !empty($filters['my_events'] ?? null) ? 'checked' : '' }}
-					class="w-4 h-4 rounded border-border bg-input accent-primary focus:ring-ring">
-				<span class="text-sm font-medium text-muted-foreground">My Events</span>
-			</label>
+		<!-- Display Type Filter -->
+		<div class="min-w-0">
+			<label for="filter_display_type" class="block text-sm font-medium text-muted-foreground mb-1">Display Type</label>
+			<select name="filters[display_type]" id="filter_display_type" class="form-select-tw">
+				<option value="all" {{ ($filters['display_type'] ?? 'all') === 'all' ? 'selected' : '' }}>All Events</option>
+				<option value="attending" {{ ($filters['display_type'] ?? '') === 'attending' ? 'selected' : '' }}>Events Attending</option>
+				<option value="not_attending" {{ ($filters['display_type'] ?? '') === 'not_attending' ? 'selected' : '' }}>Events Not Attending</option>
+				<option value="created" {{ ($filters['display_type'] ?? '') === 'created' ? 'selected' : '' }}>Events Created</option>
+				<option value="not_created" {{ ($filters['display_type'] ?? '') === 'not_created' ? 'selected' : '' }}>Events Not Created</option>
+			</select>
 		</div>
 		@endauth
 	</div>

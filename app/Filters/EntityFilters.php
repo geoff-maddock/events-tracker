@@ -4,6 +4,7 @@ namespace App\Filters;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class EntityFilters extends QueryFilter
 {
@@ -212,5 +213,41 @@ class EntityFilters extends QueryFilter
         return $this->builder->whereHas('events', function ($q) use ($fromDate) {
             $q->where('events.start_at', '>=', $fromDate);
         });
+    }
+
+    public function display_type(?string $value = null): Builder
+    {
+        if (!isset($value) || !$value || $value === 'all') {
+            return $this->builder;
+        }
+
+        $user = Auth::user();
+        if (!$user) {
+            return $this->builder;
+        }
+
+        if ($value === 'following') {
+            return $this->builder->whereHas('follows', function ($q) use ($user) {
+                $q->where('follows.object_type', '=', 'entity')
+                    ->where('follows.user_id', '=', $user->id);
+            });
+        }
+
+        if ($value === 'not_following') {
+            return $this->builder->whereDoesntHave('follows', function ($q) use ($user) {
+                $q->where('follows.object_type', '=', 'entity')
+                    ->where('follows.user_id', '=', $user->id);
+            });
+        }
+
+        if ($value === 'created') {
+            return $this->builder->where('entities.created_by', '=', $user->id);
+        }
+
+        if ($value === 'not_created') {
+            return $this->builder->where('entities.created_by', '!=', $user->id);
+        }
+
+        return $this->builder;
     }
 }

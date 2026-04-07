@@ -435,6 +435,31 @@ class CalendarController extends Controller
                     $q->where('name', $filters['event_type']);
                 });
             }
+
+            if (!empty($filters['display_type']) && $filters['display_type'] !== 'all' && $this->user) {
+                $userId = $this->user->id;
+                if ($filters['display_type'] === 'attending') {
+                    $eventsQuery->whereIn('events.id', function ($q) use ($userId) {
+                        $q->select('event_responses.event_id')
+                            ->from('event_responses')
+                            ->join('response_types', 'event_responses.response_type_id', '=', 'response_types.id')
+                            ->where('response_types.name', '=', 'Attending')
+                            ->where('event_responses.user_id', '=', $userId);
+                    });
+                } elseif ($filters['display_type'] === 'not_attending') {
+                    $eventsQuery->whereNotIn('events.id', function ($q) use ($userId) {
+                        $q->select('event_responses.event_id')
+                            ->from('event_responses')
+                            ->join('response_types', 'event_responses.response_type_id', '=', 'response_types.id')
+                            ->where('response_types.name', '=', 'Attending')
+                            ->where('event_responses.user_id', '=', $userId);
+                    });
+                } elseif ($filters['display_type'] === 'created') {
+                    $eventsQuery->where('events.created_by', '=', $userId);
+                } elseif ($filters['display_type'] === 'not_created') {
+                    $eventsQuery->where('events.created_by', '!=', $userId);
+                }
+            }
         }
 
         // get all public events with filters applied
@@ -514,7 +539,13 @@ class CalendarController extends Controller
         $eventList = json_encode($eventList);
         
         $filters = $request->get('filters', []);
-        $hasFilter = !empty(array_filter($filters));
+        $effectiveFilters = array_filter($filters, function ($value, $key) {
+            if ($key === 'display_type' && $value === 'all') {
+                return false;
+            }
+            return !empty($value);
+        }, ARRAY_FILTER_USE_BOTH);
+        $hasFilter = !empty($effectiveFilters);
 
         return view('events.event-calendar-tw', compact('eventList', 'initialDate', 'filters', 'hasFilter'))
             ->with($this->getFilterOptions());

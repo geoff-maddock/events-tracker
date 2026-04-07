@@ -87,6 +87,11 @@ Entities @include('entities.title-crumbs')
 			Status: {{ $entityStatusOptions[$filters['entity_status']] ?? 'Unknown' }}
 		</span>
 		@endif
+		@if(!empty($filters['display_type']) && $filters['display_type'] !== 'all')
+		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+			{{ ['following' => 'Entities Followed', 'not_following' => 'Entities Not Followed', 'created' => 'Entities Created', 'not_created' => 'Entities Not Created'][$filters['display_type']] ?? $filters['display_type'] }}
+		</span>
+		@endif
 	</div>
 	@endif
 </div>
@@ -137,7 +142,7 @@ Entities @include('entities.title-crumbs')
 
 		<!-- Entity Type Filter -->
 		<div class="min-w-0">
-			<label for="filter_entity_type" class="block text-sm font-medium text-muted-foreground mb-1">Type</label>
+			<label for="filter_entity_type" class="block text-sm font-medium text-muted-foreground mb-1">Entity Type</label>
 			{!! Form::select('filter_entity_type', $entityTypeOptions, ($filters['entity_type'] ?? null),
 			[
 				'data-theme' => 'tailwind',
@@ -176,6 +181,20 @@ Entities @include('entities.title-crumbs')
 			])
 			!!}
 		</div>
+
+		@auth
+		<!-- Display Type Filter -->
+		<div class="min-w-0">
+			<label for="filter_display_type" class="block text-sm font-medium text-muted-foreground mb-1">Display Type</label>
+			<select name="filters[display_type]" id="filter_display_type" class="form-select-tw">
+				<option value="all" {{ ($filters['display_type'] ?? 'all') === 'all' ? 'selected' : '' }}>All Entities</option>
+				<option value="following" {{ ($filters['display_type'] ?? '') === 'following' ? 'selected' : '' }}>Entities Followed</option>
+				<option value="not_following" {{ ($filters['display_type'] ?? '') === 'not_following' ? 'selected' : '' }}>Entities Not Followed</option>
+				<option value="created" {{ ($filters['display_type'] ?? '') === 'created' ? 'selected' : '' }}>Entities Created</option>
+				<option value="not_created" {{ ($filters['display_type'] ?? '') === 'not_created' ? 'selected' : '' }}>Entities Not Created</option>
+			</select>
+		</div>
+		@endauth
 	</div>
 
 	<!-- Filter Actions -->
