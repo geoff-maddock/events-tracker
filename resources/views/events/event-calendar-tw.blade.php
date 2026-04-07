@@ -119,6 +119,11 @@
                 Type: {{ $filters['event_type'] }}
             </span>
             @endif
+            @if(!empty($filters['display_type']) && $filters['display_type'] !== 'all')
+            <span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
+                {{ ['attending' => 'Events Attending', 'created' => 'Events Created'][$filters['display_type']] ?? $filters['display_type'] }}
+            </span>
+            @endif
         </div>
         @endif
     </div>
@@ -193,6 +198,18 @@
                     ])
                     !!}
                 </div>
+
+                @auth
+                <!-- Display Type Filter -->
+                <div class="min-w-0">
+                    <label for="filter_display_type" class="block text-sm font-medium text-muted-foreground mb-1">Display Type</label>
+                    <select name="filters[display_type]" id="filter_display_type" class="form-select-tw">
+                        <option value="all" {{ ($filters['display_type'] ?? 'all') === 'all' ? 'selected' : '' }}>All Events</option>
+                        <option value="attending" {{ ($filters['display_type'] ?? '') === 'attending' ? 'selected' : '' }}>Events Attending</option>
+                        <option value="created" {{ ($filters['display_type'] ?? '') === 'created' ? 'selected' : '' }}>Events Created</option>
+                    </select>
+                </div>
+                @endauth
             </div>
 
             <!-- Filter Actions -->
