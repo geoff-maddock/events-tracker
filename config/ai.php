@@ -41,6 +41,7 @@ return [
         . 'Your task is to analyse the provided event flyer image and extract all available information. '
         . 'After extracting from the flyer, use your knowledge to research and supplement any missing details. '
         . 'Extract all of the info about the event from the flyer including date, location, performers, time, styles and any other relevant info. '
+        . 'Unless the flyer explicitly states otherwise, assume the event is happening in the current year.'
         . 'Use that to research more info on the event and then look at the schema for the event and attempt to fill in as much info as possible. '
         . 'Make an educated guess, but no wild guess or overreach. '
         . 'Everything generally will be in Pittsburgh PA unless the flyer indicates otherwise.'
