@@ -99,7 +99,7 @@ $ npm install
 * Run `composer install`
 * Run `npm install`
 * Run node build for your environment
-  - ```npm run prod```
+  - ```npm run build```
 * Run migrations to create the initial database.
   - php artisan migrate:fresh
 * Seed database tables from one of the provided default seeders.  Only run this when starting the production app the first time.
@@ -138,7 +138,7 @@ $ npm install
 
         location ~ \.php$ {
         include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+        fastcgi_pass unix:/run/php/php8.4-fpm.sock;
         }
     ```
 * Set up SSL 
@@ -154,13 +154,15 @@ $ npm install
 
 * Build assets
 ```bash
-npm build prod
+npm run build
 ```
 
 ### Optional Configurations
+- S3 Storage [RECOMMENDED]
 - Mailgun API key [RECOMMENDED]
 - Facebook API key [OPTIONAL]
 - Twitter API key  [OPTIONAL]
+- AI Provider API key [OPTIONAL]
 
 ## Log in to running app
 * Visit the domain at https://domain.name
