@@ -18,21 +18,21 @@ Follow these steps to configure and deploy the application
 		2vCPUs
 		4GB / 80 GB Disk
   ```
-* PHP 8,1+ [verify version]
+* PHP 8.4+ [verify version]
 	```
-	gmaddock@Wrecked:/var/www/dev-events$ php -v
-	PHP 8.1.16 (cli) (built: Feb 14 2023 18:34:05) (NTS)
+	gmaddock@Wrecked:/var/www/events-tracker$ php -v
+  PHP 8.4.17 (cli) (built: Jan 18 2026 14:18:33) (NTS)
 	```
 * Verify required extensions are installed:  pdo_mysql, zip
 * MySQL 8 [verify version - may not require 8]
   ```
-  gmaddock@Wrecked:/var/www/dev-events$ mysql -V
-  mysql  Ver 8.0.18 for Linux on x86_64 (MySQL Community Server - GPL)
+  gmaddock@Wrecked:/var/www/events-tracker$ mysql -V
+  mysql  Ver 8.0.45-0ubuntu0.22.04.1 for Linux on x86_64 ((Ubuntu))
   ```
-* NodeJS 12.4+
+* NodeJS 24.14.1+
   ```
-  gmaddock@Wrecked:/var/www/dev-events$ node -v
-  v14.15.5
+  gmaddock@Wrecked:/var/www/events-tracker$ node -v
+  v24.14.1
   ```
 * Provision a database and add a user with access
 ```
