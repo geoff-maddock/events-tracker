@@ -7,6 +7,12 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
 @endsection
 
+@if (isset($blogs) && count($blogs) > 0)
+@section('page.json')
+@include('blogs.index-json-ld')
+@endsection
+@endif
+
 @section('content')
 
 <div class="container mx-auto">
