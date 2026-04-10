@@ -17,7 +17,7 @@
         "@tailwindcss/postcss": "^4.1.12",
         "@tailwindcss/line-clamp": "^0.4.4",
         "autoprefixer": "^10.4.17",
-        "axios": "^1.13.5",
+        "axios": "^1.15.0",
         "cross-env": "^7",
         "eslint": "^10.0.1",
         "laravel-vite-plugin": "^2.1.0",
