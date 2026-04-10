@@ -2,6 +2,10 @@
 
 @section('title'){{ config('app.tagline')}}@endsection
 
+@section('page.json')
+@include('pages.home-json-ld')
+@endsection
+
 @section('og-image'){{ url('/').'/images/arcane-city-promo.jpg' }}@endsection
 
 @section('content')
