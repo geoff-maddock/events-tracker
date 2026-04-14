@@ -1281,10 +1281,17 @@ class EventsController extends Controller
 
         // adds events to event list
         foreach ($events as $event) {
+            // For calendar display: if end_at is set and is after start_at, set end to 11:59 PM on the start date
+            $calendarEnd = null;
+            if ($event->end_at && $event->end_at->gt($event->start_at)) {
+                $calendarEnd = $event->start_at->copy()->setTime(23, 59, 0);
+            } elseif ($event->end_at) {
+                $calendarEnd = $event->end_at;
+            }
             $eventList[] = [
                 'id' => 'event-'.$event->id,
                 'start' => $event->start_at->format('Y-m-d H:i'),
-                'end' => ($event->end_time !== null) ? $event->end_time->format('Y-m-d H:i') : null,
+                'end' => $calendarEnd ? $calendarEnd->format('Y-m-d H:i') : null,
                 'title' => $event->name,
                 'url' => '/events/'.$event->slug,
                 'backgroundColor' => '#0a57ad',

@@ -10,6 +10,7 @@
      * time (info.timeText) and title to ensure the event is always visible.
      */
     function calendarEventContent(info) {
+
         var frame = document.createElement('div');
         frame.className = 'fc-event-main-frame';
 
