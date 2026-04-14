@@ -116,6 +116,12 @@ Events @include('events.title-crumbs')
 		@endif
 	</div>
 	@endif
+
+	@if($hasFilter)
+	<a id="filters-reset-closed" href="{{ route('events.reset') }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg">
+		Reset <i class="bi bi-x ml-1"></i>
+	</a>
+	@endif
 </div>
 
 <!-- Filter Panel -->
@@ -235,7 +241,7 @@ Events @include('events.title-crumbs')
 		{!! Form::open(['route' => ['events.reset'], 'method' => 'GET']) !!}
 		{!! Form::hidden('redirect', $redirect ?? 'events.index') !!}
 		{!! Form::hidden('key', $key ?? 'internal_event_index') !!}
-		<button type="submit" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
+		<button id="filters-reset-open" type="submit" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors hidden">
 			Reset
 		</button>
 		{!! Form::close() !!}
@@ -282,12 +288,17 @@ Events @include('events.title-crumbs')
 		const badges = document.getElementById('active-filters-badges');
 		const text = document.getElementById('filters-toggle-text');
 		const chevron = document.getElementById('filters-chevron');
+		const resetClosed = document.getElementById('filters-reset-closed');
+		const resetOpen = document.getElementById('filters-reset-open');
+		const hasFilter = @json($hasFilter);
 
 		function applyState(open) {
 			panel.classList.toggle('hidden', !open);
 			if (text) text.textContent = open ? 'Hide Filters' : 'Show Filters';
 			if (chevron) chevron.classList.toggle('rotate-180', open);
 			if (badges) badges.classList.toggle('hidden', open);
+			if (resetClosed) resetClosed.classList.toggle('hidden', open || !hasFilter);
+			if (resetOpen) resetOpen.classList.toggle('hidden', !open || !hasFilter);
 		}
 
 		const saved = localStorage.getItem(storageKey);

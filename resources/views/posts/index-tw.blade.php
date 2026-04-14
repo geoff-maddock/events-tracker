@@ -25,7 +25,7 @@
 	</div>
 
 	<!-- Filters Section -->
-	<div class="mb-6">
+	<div class="mb-6 flex flex-wrap items-start gap-2">
 		<button id="filters-toggle-btn" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border-2 border-primary rounded-lg hover:bg-accent/80 transition-colors">
 			<i class="bi bi-funnel mr-2"></i>
 			<span id="filters-toggle-text">Show Filters</span>
@@ -51,6 +51,12 @@
 			</span>
 			@endif
 		</div>
+		@endif
+
+		@if($hasFilter)
+		<a id="filters-reset-closed" href="{{ route('posts.reset') }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg">
+			Reset <i class="bi bi-x ml-1"></i>
+		</a>
 		@endif
 	</div>
 
@@ -108,7 +114,7 @@
 			</button>
 			{!! Form::close() !!}
 			{!! Form::open(['route' => ['posts.reset'], 'method' => 'GET']) !!}
-			<button type="submit" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
+			<button id="filters-reset-open" type="submit" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors hidden">
 				Reset
 			</button>
 			{!! Form::close() !!}
@@ -281,12 +287,17 @@
 		const badges = document.getElementById('active-filters-badges');
 		const text = document.getElementById('filters-toggle-text');
 		const chevron = document.getElementById('filters-chevron');
+		const resetClosed = document.getElementById('filters-reset-closed');
+		const resetOpen = document.getElementById('filters-reset-open');
+		const hasFilter = @json($hasFilter);
 
 		function applyState(open) {
 			panel.classList.toggle('hidden', !open);
 			if (text) text.textContent = open ? 'Hide Filters' : 'Show Filters';
 			if (chevron) chevron.classList.toggle('rotate-180', open);
 			if (badges) badges.classList.toggle('hidden', open);
+			if (resetClosed) resetClosed.classList.toggle('hidden', open || !hasFilter);
+			if (resetOpen) resetOpen.classList.toggle('hidden', !open || !hasFilter);
 		}
 
 		const saved = localStorage.getItem(storageKey);

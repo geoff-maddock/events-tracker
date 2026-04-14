@@ -100,6 +100,11 @@
             <span id="filters-toggle-text">@if(isset($hasFilter) && $hasFilter) Hide @else Show @endif Filters</span>
             <i class="bi bi-chevron-down ml-2 transition-transform @if(isset($hasFilter) && $hasFilter) rotate-180 @endif" id="filters-chevron"></i>
         </button>
+        @if(isset($hasFilter) && $hasFilter)
+        <a id="filters-reset-closed" href="{{ route('calendar') }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg hidden">
+            Reset <i class="bi bi-x ml-1"></i>
+        </a>
+        @endif
         </div>
         
         <!-- Active Filters Badges (shown when filters are hidden) -->
@@ -230,7 +235,7 @@
                 <button type="submit" class="px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
                     Apply
                 </button>
-                <a href="{{ route('calendar') }}" class="inline-flex items-center px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
+                <a id="filters-reset-open" href="{{ route('calendar') }}" class="inline-flex items-center px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors @if(!isset($hasFilter) || !$hasFilter) hidden @endif">
                     Reset
                 </a>
                 @if(isset($hasFilter) && $hasFilter)
@@ -259,6 +264,8 @@
         const filterChevron = document.getElementById('filters-chevron');
         const filterToggleText = document.getElementById('filters-toggle-text');
         const activeBadges = document.getElementById('active-filters-badges');
+        const resetClosed = document.getElementById('filters-reset-closed');
+        const resetOpen = document.getElementById('filters-reset-open');
         
         if (filterToggleBtn && filterPanel && filterChevron && filterToggleText) {
             // Check localStorage for saved state or keep open if filters are active
@@ -271,6 +278,8 @@
                 filterChevron.classList.add('rotate-180');
                 filterToggleText.textContent = 'Hide Filters';
                 if (activeBadges) activeBadges.classList.add('hidden');
+                if (resetClosed) resetClosed.classList.add('hidden');
+                if (resetOpen) resetOpen.classList.remove('hidden');
             }
 
             // Toggle functionality
@@ -283,10 +292,14 @@
                 if (willBeCollapsed) {
                     filterToggleText.textContent = 'Show Filters';
                     if (activeBadges) activeBadges.classList.remove('hidden');
+                    if (resetClosed) resetClosed.classList.remove('hidden');
+                    if (resetOpen) resetOpen.classList.add('hidden');
                     localStorage.setItem('calendarFiltersCollapsed', 'true');
                 } else {
                     filterToggleText.textContent = 'Hide Filters';
                     if (activeBadges) activeBadges.classList.add('hidden');
+                    if (resetClosed) resetClosed.classList.add('hidden');
+                    if (resetOpen) resetOpen.classList.remove('hidden');
                     localStorage.setItem('calendarFiltersCollapsed', 'false');
                 }
             });

@@ -53,6 +53,9 @@
 					</span>
 					@endif
 				</div>
+				<a id="filters-reset-closed" href="{{ route('blogs.reset') }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg">
+					Reset <i class="bi bi-x ml-1"></i>
+				</a>
 				@endif
 			</div>
 
@@ -85,7 +88,7 @@
 						<button type="submit" class="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
 							Apply Filters
 						</button>
-						<a href="{{ route('blogs.reset') }}" class="px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors">
+						<a id="filters-reset-open" href="{{ route('blogs.reset') }}" class="px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors hidden">
 							Reset
 						</a>
 					</div>
@@ -149,12 +152,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	const badges = document.getElementById('active-filters-badges');
 	const toggleText = document.getElementById('filters-toggle-text');
+	const resetClosed = document.getElementById('filters-reset-closed');
+	const resetOpen = document.getElementById('filters-reset-open');
+	const hasFilter = @json($hasFilter);
 
 	function applyState(open) {
 		filtersContent.classList.toggle('hidden', !open);
 		if (filtersIcon) filtersIcon.classList.toggle('rotate-180', open);
 		if (toggleText) toggleText.textContent = open ? 'Hide Filters' : 'Show Filters';
 		if (badges) badges.classList.toggle('hidden', open);
+		if (resetClosed) resetClosed.classList.toggle('hidden', open || !hasFilter);
+		if (resetOpen) resetOpen.classList.toggle('hidden', !open || !hasFilter);
 	}
 
 	const storageKey = 'filter-open:' + window.location.pathname;
