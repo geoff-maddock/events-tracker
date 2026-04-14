@@ -16,16 +16,8 @@
         var timeEl = document.createElement('div');
         timeEl.className = 'fc-event-time';
 
-        if (!info.isStart && info.event.end) {
-            // Continuation day: show "Ends at [end time]"
-            var end = info.event.end;
-            var hours = end.getHours();
-            var minutes = end.getMinutes();
-            var meridiem = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12 || 12;
-            timeEl.textContent = 'Ends at ' + hours + ':' + String(minutes).padStart(2, '0') + ' ' + meridiem;
-        } else if (info.timeText) {
-            // Start day: use FullCalendar's pre-formatted start time
+        if (info.timeText) {
+            // Always use FullCalendar's pre-formatted start time
             timeEl.textContent = info.timeText;
         }
 
