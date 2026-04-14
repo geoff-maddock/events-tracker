@@ -32,7 +32,7 @@
 </div>
 
 <!-- Filters Section -->
-<div class="mb-6">
+<div class="mb-6 flex flex-wrap items-start gap-2">
 	<button id="filters-toggle-btn" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
 		<i class="bi bi-funnel mr-2"></i>
 		<span id="filters-toggle-text">@if($hasFilter) Hide @else Show @endif Filters</span>
@@ -88,6 +88,12 @@
 		</span>
 		@endif
 	</div>
+	@endif
+
+	@if($hasFilter)
+	<a id="filters-reset-closed" href="{{ route('events.reset') }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg @if($hasFilter) hidden @endif">
+		Reset <i class="bi bi-x ml-1"></i>
+	</a>
 	@endif
 </div>
 
@@ -208,7 +214,7 @@
 		{!! Form::open(['route' => ['events.reset'], 'method' => 'GET']) !!}
 		{!! Form::hidden('redirect', 'events.grid') !!}
 		{!! Form::hidden('key', 'internal_event_grid') !!}
-		<button type="submit" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
+		<button id="filters-reset-open" type="submit" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors @if(!$hasFilter) hidden @endif">
 			Reset
 		</button>
 		{!! Form::close() !!}
@@ -260,6 +266,9 @@
         const badges = document.getElementById('active-filters-badges');
         const text = document.getElementById('filters-toggle-text');
         const chevron = document.getElementById('filters-chevron');
+        const resetClosed = document.getElementById('filters-reset-closed');
+        const resetOpen = document.getElementById('filters-reset-open');
+        const hasFilter = @json($hasFilter);
 
         panel.classList.toggle('hidden');
 
@@ -270,6 +279,8 @@
             if (badges) {
                 badges.classList.remove('hidden');
             }
+            if (resetClosed && hasFilter) resetClosed.classList.remove('hidden');
+            if (resetOpen) resetOpen.classList.add('hidden');
         } else {
             text.textContent = 'Hide Filters';
             chevron.classList.add('rotate-180');
@@ -277,6 +288,8 @@
             if (badges) {
                 badges.classList.add('hidden');
             }
+            if (resetClosed) resetClosed.classList.add('hidden');
+            if (resetOpen && hasFilter) resetOpen.classList.remove('hidden');
         }
     });
 </script>

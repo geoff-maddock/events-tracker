@@ -17,11 +17,18 @@
 	<!-- Filters -->
 	<div class="card-tw mb-6">
 		<div class="p-4">
+			<div class="flex flex-wrap items-center gap-2">
 			<button type="button" id="filters-toggle-btn" class="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
 				<i class="bi bi-funnel text-lg"></i>
 				<span class="font-medium">Filters</span>
 				<i class="bi bi-chevron-down transition-transform" id="filters-icon"></i>
 			</button>
+			@if($hasFilter)
+			<a id="filters-reset-closed" href="{{ route('categories.reset') }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg hidden">
+				Reset <i class="bi bi-x ml-1"></i>
+			</a>
+			@endif
+			</div>
 
 			<div id="filters-content" class="{{ $hasFilter ? '' : 'hidden' }} mt-4">
 				<form action="{{ route('categories.filter') }}" method="POST">
@@ -37,7 +44,7 @@
 						<button type="submit" class="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
 							Apply Filters
 						</button>
-						<a href="{{ route('categories.reset') }}" class="px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors">
+						<a id="filters-reset-open" href="{{ route('categories.reset') }}" class="px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors @if(!$hasFilter) hidden @endif">
 							Reset
 						</a>
 					</div>
@@ -98,11 +105,17 @@ document.addEventListener('DOMContentLoaded', function() {
 	const toggleBtn = document.getElementById('filters-toggle-btn');
 	const filtersContent = document.getElementById('filters-content');
 	const filtersIcon = document.getElementById('filters-icon');
+	const resetClosed = document.getElementById('filters-reset-closed');
+	const resetOpen = document.getElementById('filters-reset-open');
+	const hasFilter = @json($hasFilter);
 
 	if (toggleBtn) {
 		toggleBtn.addEventListener('click', function() {
 			filtersContent.classList.toggle('hidden');
 			filtersIcon.classList.toggle('rotate-180');
+			const isHidden = filtersContent.classList.contains('hidden');
+			if (resetClosed) resetClosed.classList.toggle('hidden', !isHidden || !hasFilter);
+			if (resetOpen) resetOpen.classList.toggle('hidden', isHidden || !hasFilter);
 		});
 	}
 

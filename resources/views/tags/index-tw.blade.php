@@ -34,6 +34,11 @@
 			<span id="filters-toggle-text">@if($hasFilter) Hide @else Show @endif Filters</span>
 			<i class="bi bi-chevron-down ml-2 transition-transform @if($hasFilter) rotate-180 @endif" id="filters-chevron"></i>
 		</button>
+		@if($hasFilter)
+		<a id="filters-reset-closed" href="{{ url('/tags') }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg @if($hasFilter) hidden @endif">
+			Reset <i class="bi bi-x ml-1"></i>
+		</a>
+		@endif
 	</div>
 
 	<!-- Filter Panel -->
@@ -52,7 +57,7 @@
 				<button type="submit" class="px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
 					Apply
 				</button>
-				<a href="{{ url('/tags') }}" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
+				<a id="filters-reset-open" href="{{ url('/tags') }}" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors @if(!$hasFilter) hidden @endif">
 					Reset
 				</a>
 			</div>
@@ -80,15 +85,22 @@
 		const panel = document.getElementById('filter-panel');
 		const text = document.getElementById('filters-toggle-text');
 		const chevron = document.getElementById('filters-chevron');
+		const resetClosed = document.getElementById('filters-reset-closed');
+		const resetOpen = document.getElementById('filters-reset-open');
+		const hasFilter = @json($hasFilter);
 
 		panel.classList.toggle('hidden');
 
 		if (panel.classList.contains('hidden')) {
 			text.textContent = 'Show Filters';
 			chevron.classList.remove('rotate-180');
+			if (resetClosed && hasFilter) resetClosed.classList.remove('hidden');
+			if (resetOpen) resetOpen.classList.add('hidden');
 		} else {
 			text.textContent = 'Hide Filters';
 			chevron.classList.add('rotate-180');
+			if (resetClosed) resetClosed.classList.add('hidden');
+			if (resetOpen && hasFilter) resetOpen.classList.remove('hidden');
 		}
 	});
 </script>
