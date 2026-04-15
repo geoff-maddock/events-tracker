@@ -17,6 +17,17 @@
                 '@type' => 'Place',
                 'name'  => $event->venue->name,
             ];
+        } else {
+            $item['item']['location'] = [
+                '@type'   => 'Place',
+                'name'    => 'TBA',
+                'address' => [
+                    '@type'           => 'PostalAddress',
+                    'addressLocality' => 'Pittsburgh',
+                    'addressRegion'   => 'PA',
+                    'addressCountry'  => 'US',
+                ],
+            ];
         }
         if ($event->short) {
             $item['item']['description'] = $event->short;

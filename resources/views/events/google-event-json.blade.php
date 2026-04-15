@@ -36,6 +36,17 @@
           }
           @endif
       },
+    @else
+    "location": {
+        "@type": "Place",
+        "name": "TBA",
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Pittsburgh",
+            "addressRegion": "PA",
+            "addressCountry": "US"
+        }
+    },
     @endif
     "description": "{{ $event->description }}",
     "offers": {
