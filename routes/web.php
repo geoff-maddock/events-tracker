@@ -235,6 +235,14 @@ Route::get('update', function () {
 
 Route::get('events/today', 'EventsController@indexToday');
 Route::match(['get', 'post'], 'events/grid', 'EventsController@indexGrid')->name('events.grid');
+Route::get('events/grid/tag/{slug}', 'EventsController@indexGridTags')->name('events.grid.tag');
+Route::get('events/grid/by-date/{year}/{month?}/{day?}', 'EventsController@indexGridByDate')->name('events.grid.byDate')
+    ->where('year', '[1-9][0-9][0-9][0-9]')
+    ->where('month', '(0?[1-9]|1[012])$')
+    ->where('day', '[0-3][0-9]');
+Route::get('events/grid/related-to/{slug}', 'EventsController@indexGridRelatedTo')->name('events.grid.relatedto');
+Route::get('events/grid/type/{slug}', 'EventsController@indexGridTypes')->name('events.grid.type');
+Route::get('events/grid/series/{slug}', 'EventsController@indexGridSeries')->name('events.grid.series');
 Route::match(['get', 'post'], 'events/photos', 'EventsController@indexPhoto')->name('events.photo');
 Route::get('events/future', 'EventsController@indexFuture')->name('events.future');
 Route::get('events/upcoming/{date?}', 'EventsController@indexUpcoming')->name('events.upcoming');

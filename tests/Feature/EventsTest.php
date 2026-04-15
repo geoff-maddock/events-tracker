@@ -42,6 +42,15 @@ class EventsTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testEventsGridFilterRoutesAreRegistered()
+    {
+        $this->assertEquals('/events/grid/tag/test-tag', route('events.grid.tag', ['slug' => 'test-tag'], false));
+        $this->assertEquals('/events/grid/by-date/2026/4/15', route('events.grid.byDate', ['year' => 2026, 'month' => 4, 'day' => 15], false));
+        $this->assertEquals('/events/grid/related-to/test-entity', route('events.grid.relatedto', ['slug' => 'test-entity'], false));
+        $this->assertEquals('/events/grid/type/test-type', route('events.grid.type', ['slug' => 'test-type'], false));
+        $this->assertEquals('/events/grid/series/test-series', route('events.grid.series', ['slug' => 'test-series'], false));
+    }
+
     /**
      * A basic functional test example.
      *
