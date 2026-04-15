@@ -7,6 +7,10 @@
 @if ($photo = $series->getPrimaryPhoto()){{ Storage::disk('external')->url($photo->getStoragePath()) }}@endif
 @endsection
 
+@section('page.json')
+@include('series.json-ld')
+@endsection
+
 @section('content')
 
 <!-- Back Button -->
