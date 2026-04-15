@@ -238,7 +238,7 @@ Route::match(['get', 'post'], 'events/grid', 'EventsController@indexGrid')->name
 Route::get('events/grid/tag/{slug}', 'EventsController@indexGridTags')->name('events.grid.tag');
 Route::get('events/grid/by-date/{year}/{month?}/{day?}', 'EventsController@indexGridByDate')->name('events.grid.byDate')
     ->where('year', '[1-9][0-9][0-9][0-9]')
-    ->where('month', '(0?[1-9]|1[012])$')
+    ->where('month', '(0?[1-9]|1[012])')
     ->where('day', '[0-3][0-9]');
 Route::get('events/grid/related-to/{slug}', 'EventsController@indexGridRelatedTo')->name('events.grid.relatedto');
 Route::get('events/grid/type/{slug}', 'EventsController@indexGridTypes')->name('events.grid.type');

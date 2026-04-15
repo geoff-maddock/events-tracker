@@ -508,7 +508,6 @@ class EventsController extends Controller
      * @throws \Throwable
      */
     public function indexGridByDate(
-        Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder,
         string $year,
@@ -540,7 +539,6 @@ class EventsController extends Controller
      * @throws \Throwable
      */
     public function indexGridTags(
-        Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder,
         string $slug
@@ -562,7 +560,6 @@ class EventsController extends Controller
      * @throws \Throwable
      */
     public function indexGridRelatedTo(
-        Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder,
         string $slug
@@ -583,7 +580,6 @@ class EventsController extends Controller
      * @throws \Throwable
      */
     public function indexGridTypes(
-        Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder,
         string $slug
@@ -602,7 +598,6 @@ class EventsController extends Controller
      * @throws \Throwable
      */
     public function indexGridSeries(
-        Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder,
         string $slug
