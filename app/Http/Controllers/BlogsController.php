@@ -14,6 +14,7 @@ use App\Models\Menu;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\Visibility;
+use App\Services\ImageHandler;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -471,6 +472,31 @@ class BlogsController extends Controller
         Session::flash('flash_message', 'Not authorized');
 
         return redirect('/');
+    }
+
+    /**
+     * Add a photo to a blog.
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function addPhoto(int $id, Request $request, ImageHandler $imageHandler): void
+    {
+        $this->validate($request, [
+            'file' => 'required|mimes:jpg,jpeg,png,gif,webp',
+        ]);
+
+        if ($blog = Blog::find($id)) {
+            $photo = $imageHandler->makePhoto($request->file('file'));
+
+            // count existing photos, and if zero, make this primary
+            if (0 === count($blog->photos)) {
+                $photo->is_primary = 1;
+            }
+
+            $photo->save();
+
+            $blog->addPhoto($photo);
+        }
     }
 
     protected function getListControlOptions(): array

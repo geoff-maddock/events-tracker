@@ -1,9 +1,9 @@
 @php
-	// Accept either 'photos', 'event', 'series', or 'entity' parameter
+	// Accept either 'photos', 'event', 'series', 'entity', or 'blog' parameter
 	$galleryPhotos = $photos ?? collect();
 
 	// Determine owner for admin controls
-	$galleryOwner = $entity ?? $series ?? $event ?? null;
+	$galleryOwner = $entity ?? $series ?? $event ?? $blog ?? null;
 
 	// null means all displayed photos are manageable; a collection restricts which are
 	$manageablePhotoIds = null;
@@ -27,6 +27,10 @@
 	elseif (isset($entity)) {
 		$galleryPhotos = $entity->getGalleryPhotos(24, false);
 		$manageablePhotoIds = $entity->photos->pluck('id');
+	}
+	// If a blog is provided, use blog photos only
+	elseif (isset($blog)) {
+		$galleryPhotos = $blog->photos;
 	}
 @endphp
 

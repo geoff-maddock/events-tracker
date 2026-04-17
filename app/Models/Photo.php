@@ -107,6 +107,14 @@ class Photo extends Eloquent
         return $this->belongsToMany(Series::class)->withTimestamps();
     }
 
+    /**
+     * Get the blogs that the photo belongs to.
+     */
+    public function blogs(): BelongsToMany
+    {
+        return $this->belongsToMany(Blog::class)->withTimestamps();
+    }
+
     public static function fromForm(UploadedFile $file): Photo
     {
         $name = time().$file->getClientOriginalName();

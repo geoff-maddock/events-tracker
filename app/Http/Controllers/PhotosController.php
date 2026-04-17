@@ -347,6 +347,14 @@ class PhotosController extends Controller
             }
         }
 
+        $blogs = $photo->blogs;
+        foreach ($blogs as $blog) {
+            foreach ($blog->photos as $p) {
+                $p->is_primary = 0;
+                $p->save();
+            }
+        }
+
         $photo->is_primary = 1;
         $photo->save();
 
