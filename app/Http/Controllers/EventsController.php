@@ -1369,6 +1369,40 @@ class EventsController extends Controller
     }
 
     /**
+     * Apply filters from URL query parameters and redirect to events grid view.
+     *
+     * @return RedirectResponse
+     */
+    public function applyGridFilterFromUrl(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore
+    ): RedirectResponse {
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix('internal_event_grid');
+        $listParamSessionStore->setIndexTab(action([EventsController::class, 'indexGrid']));
+
+        $filters = $request->input('filters', []);
+
+        if (!empty($filters)) {
+            $listParamSessionStore->setFilters($filters);
+
+            if ($request->has('sort')) {
+                $listParamSessionStore->setSortFieldName($request->input('sort'));
+            }
+            if ($request->has('direction')) {
+                $listParamSessionStore->setSortDirection($request->input('direction'));
+            }
+            if ($request->has('limit')) {
+                $listParamSessionStore->setLimit((int) $request->input('limit'));
+            }
+
+            $listParamSessionStore->save();
+        }
+
+        return redirect()->route('events.grid');
+    }
+
+    /**
      * TODO https://github.com/geoff-maddock/events-tracker/issues/409
      * This is not used in the UI - find where to add
      * Send a reminder to all users who are attending this event.

@@ -243,6 +243,7 @@ Route::get('events/grid/by-date/{year}/{month?}/{day?}', 'EventsController@index
 Route::get('events/grid/related-to/{slug}', 'EventsController@indexGridRelatedTo')->name('events.grid.relatedto');
 Route::get('events/grid/type/{slug}', 'EventsController@indexGridTypes')->name('events.grid.type');
 Route::get('events/grid/series/{slug}', 'EventsController@indexGridSeries')->name('events.grid.series');
+Route::get('events/grid/apply-filter', ['as' => 'events.grid.applyFilterFromUrl', 'uses' => 'EventsController@applyGridFilterFromUrl']);
 Route::match(['get', 'post'], 'events/photos', 'EventsController@indexPhoto')->name('events.photo');
 Route::get('events/future', 'EventsController@indexFuture')->name('events.future');
 Route::get('events/upcoming/{date?}', 'EventsController@indexUpcoming')->name('events.upcoming');
