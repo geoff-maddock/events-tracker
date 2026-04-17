@@ -525,6 +525,7 @@ Route::get('entities/{id}/tweet', [
 
 Route::get('entities/{id}/instagram-post', 'EntitiesController@postToInstagram')->name('entities.instagramPost');
 Route::get('entities/{id}/instagram-story-post', 'EntitiesController@postStoryToInstagram')->name('entities.instagramStoryPost');
+Route::get('entities/{id}/send-update-summary', 'EntitiesController@sendUpdateSummary')->name('entities.sendUpdateSummary')->middleware('auth');
 
 Route::match(['get', 'post'], 'entities/{id}/follow', [
     'as' => 'entities.follow',

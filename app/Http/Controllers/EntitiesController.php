@@ -15,6 +15,7 @@ use App\Models\Follow;
 use App\Models\Role;
 use App\Models\Tag;
 use App\Models\User;
+use App\Mail\EntityUpdateSummary;
 use App\Notifications\EventPublished;
 use App\Services\Embeds\OembedExtractor;
 use App\Services\ImageHandler;
@@ -31,6 +32,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -1430,6 +1432,76 @@ class EntitiesController extends Controller
 
         // post was successful
         flash()->success('Success', 'Successfully published to Instagram, returned id: '.$result);
+
+        return back();
+    }
+
+    /**
+     * Send an update summary email to the entity's contact email address.
+     */
+    public function sendUpdateSummary(int $id): RedirectResponse
+    {
+        // only super_admins may trigger this action
+        if (!$this->user || !$this->user->hasGroup('super_admin')) {
+            flash()->error('Error', 'You are not authorized to perform this action.');
+
+            return back();
+        }
+
+        if (!$entity = Entity::with(['contacts', 'entityType', 'entityStatus', 'roles', 'tags'])->find($id)) {
+            flash()->error('Error', 'No such entity');
+
+            return back();
+        }
+
+        // find a contact email to send to
+        $contact = $entity->contacts()->whereNotNull('email')->where('email', '!=', '')->first();
+
+        if (!$contact || !$contact->email) {
+            flash()->error('Error', 'This entity has no contact email address on file.');
+
+            return back();
+        }
+
+        $reply_email = config('app.noreplyemail');
+        $admin_email = config('app.admin');
+        $site = config('app.app_name');
+        $url = config('app.url');
+
+        // upcoming events
+        $upcomingEvents = $entity->events()
+            ->with(['venue', 'eventType', 'visibility'])
+            ->where('start_at', '>=', Carbon::now())
+            ->orderBy('start_at', 'ASC')
+            ->limit(10)
+            ->get();
+
+        // past events (most recent first, up to 10)
+        $pastEvents = $entity->events()
+            ->with(['venue'])
+            ->where('start_at', '<', Carbon::now())
+            ->orderBy('start_at', 'DESC')
+            ->limit(10)
+            ->get();
+
+        // entities frequently performing with
+        $frequentlyPerformsWith = $entity->getFrequentlyPerformsWith(10);
+
+        Mail::to($contact->email, $contact->name ?? $entity->name)
+            ->send(new EntityUpdateSummary(
+                $url,
+                $site,
+                $admin_email,
+                $reply_email,
+                $entity,
+                $upcomingEvents,
+                $pastEvents,
+                $frequentlyPerformsWith
+            ));
+
+        Log::info('Entity update summary sent for entity ' . $entity->id . ' (' . $entity->name . ') to ' . $contact->email);
+
+        flash()->success('Success', 'Update summary sent to ' . $contact->email);
 
         return back();
     }
