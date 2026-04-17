@@ -671,10 +671,36 @@ class EventsController extends Controller
                     'filters' => $listResultSet->getFilters(),
                 ],
                 $this->getFilterOptions(),
-                $this->getListControlOptions()
+                $this->getListControlOptions(),
+                $this->getParentFilterViewData($listResultSet->getParentFilters())
             ))
             ->with(compact('events'))
             ->render();
+    }
+
+    protected function getParentFilterViewData(array $parentFilter): array
+    {
+        $viewData = ['parentFilter' => $parentFilter];
+
+        if (isset($parentFilter['tag'])) {
+            $viewData['tag'] = Tag::where('slug', '=', $parentFilter['tag'])->first() ?? $parentFilter['tag'];
+        }
+
+        if (isset($parentFilter['related'])) {
+            $viewData['related'] = Entity::where('slug', '=', $parentFilter['related'])->first() ?? $parentFilter['related'];
+        }
+
+        if (isset($parentFilter['type'])) {
+            $viewData['type'] = $parentFilter['type'];
+        } elseif (isset($parentFilter['event_type'])) {
+            $viewData['type'] = $parentFilter['event_type'];
+        }
+
+        if (isset($parentFilter['role'])) {
+            $viewData['role'] = $parentFilter['role'];
+        }
+
+        return $viewData;
     }
 
     /**
