@@ -22,7 +22,7 @@
 
 <!-- Back Button -->
 <div class="mb-6">
-	<a href="{{ URL::previous() }}" class="inline-flex items-center gap-2 px-3 py-2 text-sm border rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+	<a href="{{ session('previous_url', URL::previous()) }}" class="inline-flex items-center gap-2 px-3 py-2 text-sm border rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
 		<i class="bi bi-arrow-left"></i>
 		<span>Back</span>
 	</a>
