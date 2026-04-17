@@ -667,6 +667,15 @@ class EntitiesController extends Controller
 
         // get related events (up to 12, sorted by date descending)
         $relatedEvents = $entity->events()
+            ->with([
+                'venue.locations',
+                'promoter.links',
+                'photos',
+                'entities.roles',
+                'entities.links',
+                'eventStatus',
+                'visibility',
+            ])
             ->orderBy('start_at', 'desc')
             ->limit(12)
             ->get();
@@ -792,6 +801,15 @@ class EntitiesController extends Controller
 
         // get related events (up to 16, sorted by date ascending from the filter date)
         $relatedEventsQuery = $entity->events()
+            ->with([
+                'venue.locations',
+                'promoter.links',
+                'photos',
+                'entities.roles',
+                'entities.links',
+                'eventStatus',
+                'visibility',
+            ])
             ->where('start_at', '>=', $filterStartAt)
             ->orderBy('start_at', 'asc');
 
