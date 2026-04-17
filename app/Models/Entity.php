@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Auth;
 use Str;
 use Storage;
@@ -581,8 +582,10 @@ class Entity extends Eloquent
      *
      * By default this returns only photos directly attached to the entity.
      * Pass true for $includeRelatedEventPhotos to include recent event photos again.
+     *
+     * @return SupportCollection<int, Photo>
      */
-    public function getGalleryPhotos(int $limit = 24, bool $includeRelatedEventPhotos = false): Collection
+    public function getGalleryPhotos(int $limit = 24, bool $includeRelatedEventPhotos = false): SupportCollection
     {
         $directPhotos = $this->relationLoaded('photos')
             ? $this->photos->sortByDesc(function ($photo) {

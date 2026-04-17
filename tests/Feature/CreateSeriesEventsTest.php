@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Event;
+use App\Models\EventType;
 use App\Models\OccurrenceDay;
 use App\Models\OccurrenceType;
 use App\Models\OccurrenceWeek;
@@ -46,6 +47,7 @@ class CreateSeriesEventsTest extends TestCase
         $user = User::factory()->create();
 
         // Get occurrence type
+        $eventType = EventType::where('name', 'Concert')->first();
         $occurrenceType = OccurrenceType::where('name', 'Weekly')->first();
         $occurrenceDay = OccurrenceDay::where('name', 'Monday')->first();
 
@@ -53,6 +55,7 @@ class CreateSeriesEventsTest extends TestCase
         $series = Series::factory()->create([
             'name' => 'Test Weekly Series',
             'created_by' => $user->id,
+            'event_type_id' => $eventType->id,
             'occurrence_type_id' => $occurrenceType->id,
             'occurrence_day_id' => $occurrenceDay->id,
             'founded_at' => Carbon::now()->subWeeks(2),
@@ -147,6 +150,7 @@ class CreateSeriesEventsTest extends TestCase
         $artist = Entity::factory()->create(['name' => 'Test Artist']);
 
         // Get occurrence type
+        $eventType = EventType::where('name', 'Concert')->first();
         $occurrenceType = OccurrenceType::where('name', 'Weekly')->first();
         $occurrenceDay = OccurrenceDay::where('name', 'Monday')->first();
 
@@ -155,6 +159,7 @@ class CreateSeriesEventsTest extends TestCase
             'name' => 'Test Series With Entities',
             'created_by' => $user->id,
             'venue_id' => $venue->id,
+            'event_type_id' => $eventType->id,
             'occurrence_type_id' => $occurrenceType->id,
             'occurrence_day_id' => $occurrenceDay->id,
             'founded_at' => Carbon::now()->subWeeks(2),
@@ -191,6 +196,7 @@ class CreateSeriesEventsTest extends TestCase
         $tag2 = Tag::factory()->create(['name' => 'Live']);
 
         // Get occurrence type
+        $eventType = EventType::where('name', 'Concert')->first();
         $occurrenceType = OccurrenceType::where('name', 'Weekly')->first();
         $occurrenceDay = OccurrenceDay::where('name', 'Monday')->first();
 
@@ -198,6 +204,7 @@ class CreateSeriesEventsTest extends TestCase
         $series = Series::factory()->create([
             'name' => 'Test Series With Tags',
             'created_by' => $user->id,
+            'event_type_id' => $eventType->id,
             'occurrence_type_id' => $occurrenceType->id,
             'occurrence_day_id' => $occurrenceDay->id,
             'founded_at' => Carbon::now()->subWeeks(2),
