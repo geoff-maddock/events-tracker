@@ -46,6 +46,13 @@
     @endif
 @endif
 
+@if (isset($dateFilterDescription))
+    <span class="text-gray-400 mx-2">/</span>
+    <span class="text-primary hover:text-primary-hover transition-colors">
+        {{ $dateFilterDescription }}
+    </span>
+@endif
+
 @if (isset($type))
     <span class="text-gray-400 mx-2">/</span>
     <span class="text-primary hover:text-primary-hover transition-colors">

@@ -261,19 +261,21 @@ class EventsController extends Controller
         ?string $month = null,
         ?string $day = null
     ): string {
+        $dateFilterDescription = $this->formatDateFilterDescription($year, $month, $day);
+
         // set the start_at from and to dates based on the passed params
         if ($year && !$month && !$day) {
             $start_at_from = $year.'0101';
             $start_at_to = $year.'1231';
-            $slug = $year;
+            $slug = $dateFilterDescription;
         } elseif (!$day) {
             $start_at_from = Carbon::parse($year.$month.'01');
             $start_at_to = Carbon::parse($start_at_from)->endOfMonth();
-            $slug = $year.' - '.$month;
+            $slug = $dateFilterDescription;
         } else {
             $start_at_from = Carbon::parse($year.$month.$day);
             $start_at_to = Carbon::parse($start_at_from)->addDay();
-            $slug = $year.' - '.$month.' - '.$day;
+            $slug = $dateFilterDescription;
         }
 
         // initialized listParamSessionStore with baseindex key
@@ -322,6 +324,7 @@ class EventsController extends Controller
                     'hasFilter' => $this->hasFilter,
                     'filters' => $listResultSet->getFilters(),
                     'slug' => $slug,
+                    'dateFilterDescription' => $dateFilterDescription,
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -529,7 +532,9 @@ class EventsController extends Controller
             $listParamSessionStore,
             $listEntityResultBuilder,
             ['start_at' => ['start' => $startAtFrom->format('Y-m-d H:i:s'), 'end' => $startAtTo->format('Y-m-d H:i:s')]],
-            'internal_event_grid_by_date'
+            'internal_event_grid_by_date',
+            ['events.start_at' => 'asc'],
+            ['dateFilterDescription' => $this->formatDateFilterDescription($year, $month, $day)]
         );
     }
 
@@ -620,7 +625,8 @@ class EventsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         array $parentFilter,
         string $keyPrefix,
-        array $defaultSort = ['events.start_at' => 'asc']
+        array $defaultSort = ['events.start_at' => 'asc'],
+        array $extraViewData = []
     ): string {
         $listParamSessionStore->setBaseIndex('internal_event');
         $listParamSessionStore->setKeyPrefix($keyPrefix);
@@ -672,15 +678,56 @@ class EventsController extends Controller
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions(),
-                $this->getParentFilterViewData($listResultSet->getParentFilters())
+                $this->getParentFilterViewData($listResultSet->getParentFilters()),
+                $extraViewData
             ))
             ->with(compact('events'))
             ->render();
     }
 
+    protected function formatDateFilterDescription(string $year, ?string $month = null, ?string $day = null): string
+    {
+        if ($year && !$month && !$day) {
+            return $year;
+        }
+
+        if ($month && !$day) {
+            return Carbon::create((int) $year, (int) $month, 1)->format('F Y');
+        }
+
+        return Carbon::create((int) $year, (int) $month, (int) $day)->format('F jS, Y');
+    }
+
+    protected function formatStartAtFilterDescription(array $startAtFilter): ?string
+    {
+        if (empty($startAtFilter['start'])) {
+            return null;
+        }
+
+        $start = Carbon::parse($startAtFilter['start']);
+        $end = !empty($startAtFilter['end']) ? Carbon::parse($startAtFilter['end']) : null;
+
+        if ($end && $start->isSameDay($start->copy()->startOfYear()) && $end->isSameDay($start->copy()->endOfYear())) {
+            return $start->format('Y');
+        }
+
+        if ($end && $start->isSameDay($start->copy()->startOfMonth()) && $end->isSameDay($start->copy()->endOfMonth())) {
+            return $start->format('F Y');
+        }
+
+        return $start->format('F jS, Y');
+    }
+
     protected function getParentFilterViewData(array $parentFilter): array
     {
         $viewData = ['parentFilter' => $parentFilter];
+
+        if (isset($parentFilter['start_at']) && is_array($parentFilter['start_at'])) {
+            $dateFilterDescription = $this->formatStartAtFilterDescription($parentFilter['start_at']);
+            if ($dateFilterDescription) {
+                $viewData['dateFilterDescription'] = $dateFilterDescription;
+            }
+        }
 
         if (isset($parentFilter['tag'])) {
             $viewData['tag'] = Tag::where('slug', '=', $parentFilter['tag'])->first() ?? $parentFilter['tag'];
