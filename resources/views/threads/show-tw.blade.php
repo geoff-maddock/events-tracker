@@ -13,7 +13,7 @@ Forum Thread "{{ $thread->name }}"
 
 <!-- Back Button -->
 <div class="mb-6">
-	<a href="{{ URL::previous() }}" class="inline-flex items-center gap-2 px-3 py-2 text-sm border border-border rounded-lg hover:bg-accent transition-colors text-muted-foreground">
+	<a href="{{ session('previous_url', URL::previous()) }}" class="inline-flex items-center gap-2 px-3 py-2 text-sm border border-border rounded-lg hover:bg-accent transition-colors text-muted-foreground">
 		<i class="bi bi-arrow-left"></i>
 		<span>Back</span>
 	</a>
