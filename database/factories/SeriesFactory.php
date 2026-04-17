@@ -36,12 +36,14 @@ class SeriesFactory extends Factory
             'slug' => $this->faker->name,
             'short' => $this->faker->text(100), // Limit to 100 characters instead of paragraph
             'description' => $this->faker->paragraph,
-            'event_type_id' => random_int(1, 5),
             'visibility_id' => function () {
                 return Visibility::all()->random()->id;
             },
             'event_type_id' => function () {
-                return EventType::all()->random()->id;
+                return EventType::query()
+                    ->where('name', '!=', 'Radio Show')
+                    ->inRandomOrder()
+                    ->value('id') ?? EventType::query()->inRandomOrder()->value('id');
             },
             'occurrence_type_id' => function () {
                 return OccurrenceType::all()->random()->id;

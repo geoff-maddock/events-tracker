@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Auth;
 use Str;
 use Storage;
@@ -574,6 +575,49 @@ class Entity extends Eloquent
     public function photos(): BelongsToMany
     {
         return $this->belongsToMany(Photo::class)->withTimestamps();
+    }
+
+    /**
+     * Get gallery photos for the entity page.
+     *
+     * By default this returns only photos directly attached to the entity.
+     * Pass true for $includeRelatedEventPhotos to include recent event photos again.
+     *
+     * @return SupportCollection<int, Photo>
+     */
+    public function getGalleryPhotos(int $limit = 24, bool $includeRelatedEventPhotos = false): SupportCollection
+    {
+        $directPhotos = $this->relationLoaded('photos')
+            ? $this->photos->sortByDesc(function ($photo) {
+                return (int) $photo->is_primary;
+            })->values()
+            : $this->photos()
+                ->orderByDesc('photos.is_primary')
+                ->orderByDesc('photos.created_at')
+                ->get();
+
+        if (!$includeRelatedEventPhotos) {
+            return $directPhotos
+                ->take($limit)
+                ->values();
+        }
+
+        $relatedEventPhotos = $this->events()
+            ->with(['photos' => function ($query) {
+                $query->orderByDesc('photos.created_at');
+            }])
+            ->orderByDesc('events.start_at')
+            ->limit($limit)
+            ->get()
+            ->flatMap(function ($event) {
+                return $event->photos;
+            });
+
+        return $directPhotos
+            ->concat($relatedEventPhotos)
+            ->unique('id')
+            ->take($limit)
+            ->values();
     }
 
     /**

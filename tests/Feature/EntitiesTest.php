@@ -93,6 +93,43 @@ class EntitiesTest extends TestCase
     }
 
     /** @test */
+    public function an_entity_page_excludes_related_event_photos_by_default()
+    {
+        $entity = Entity::factory()->create(['slug' => 'gallery-entity']);
+
+        $directPhoto = Photo::factory()->create([
+            'name' => 'direct-photo',
+            'path' => 'photos/direct-photo.jpg',
+            'thumbnail' => 'photos/tn-direct-photo.jpg',
+            'is_primary' => 1,
+        ]);
+
+        $eventPhoto = Photo::factory()->create([
+            'name' => 'event-photo',
+            'path' => 'photos/event-photo.jpg',
+            'thumbnail' => 'photos/tn-event-photo.jpg',
+            'is_primary' => 0,
+        ]);
+
+        $entity->addPhoto($directPhoto);
+
+        $event = \App\Models\Event::factory()->create([
+            'start_at' => now()->subDay(),
+            'end_at' => now(),
+        ]);
+        $event->entities()->attach($entity->id);
+        $event->addPhoto($eventPhoto);
+
+        $this->assertCount(1, $entity->fresh()->getGalleryPhotos());
+        $this->assertCount(2, $entity->fresh()->getGalleryPhotos(24, true));
+
+        $this->get('/entities/' . $entity->slug)
+            ->assertOk()
+            ->assertSee('tn-direct-photo.jpg')
+            ->assertDontSee('tn-event-photo.jpg');
+    }
+
+    /** @test */
     public function an_authenticated_user_can_create_new_entities()
     {
         $this->signIn();

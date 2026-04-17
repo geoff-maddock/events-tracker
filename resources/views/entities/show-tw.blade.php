@@ -447,7 +447,7 @@
 		@endif
 
 		<!-- Photos Section -->
-		@include('partials.photo-gallery-tw', ['entity' => $entity, 'lightboxGroup' => 'entity-gallery'])
+		@include('partials.photo-gallery-tw', ['event'=> null,'series'=>null,'entity' => $entity, 'lightboxGroup' => 'entity-gallery'])
 
 		<!-- Photo Upload -->
 		@if ($user && ($user->id == $entity->user?->id || $user->hasGroup('super_admin')))

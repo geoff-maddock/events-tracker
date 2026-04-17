@@ -1400,14 +1400,13 @@ class EntitiesController extends Controller
             abort(404);
         }
 
-        $photos = [];
-    
-        // extract all the links from the entity
-        $photoList = $entity->photos()->get();
+        /** @var \Illuminate\Support\Collection<int, Photo> $photoList */
+        $photoList = $entity->getGalleryPhotos();
 
-        foreach ($photoList as $photo) {
-            $photos[] = $photo->getApiResponse();
-        }
+        $photos = $photoList
+            ->map(fn (Photo $photo): array => $photo->getApiResponse())
+            ->values()
+            ->all();
 
         return response()->json($photos);
     }
