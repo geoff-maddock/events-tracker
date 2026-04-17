@@ -1,8 +1,12 @@
 @extends('layouts.app-tw')
 
 @section('title', 'Blog: ' . $blog->name)
+@section('description', \Illuminate\Support\Str::limit(trim((string) preg_replace('/\s+/', ' ', strip_tags($blog->body ?? ''))), 160, '...'))
+@section('og-image', url('/images/arcane-city-promo.jpg'))
 
 @section('content')
+
+@include('blogs.json-ld', ['blog' => $blog])
 
 <div class="container mx-auto max-w-4xl">
 	<!-- Header with breadcrumbs -->
