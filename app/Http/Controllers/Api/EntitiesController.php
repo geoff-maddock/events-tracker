@@ -1401,9 +1401,8 @@ class EntitiesController extends Controller
         }
 
         $photos = [];
-    
-        // extract all the links from the entity
-        $photoList = $entity->photos()->get();
+
+        $photoList = $entity->getGalleryPhotos();
 
         foreach ($photoList as $photo) {
             $photos[] = $photo->getApiResponse();

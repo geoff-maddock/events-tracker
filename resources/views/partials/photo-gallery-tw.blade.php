@@ -22,9 +22,11 @@
 	elseif (isset($series)) {
 		$galleryPhotos = $series->photos;
 	}
-	// If an entity is provided, use entity photos
+	// If an entity is provided, use direct entity photos only by default.
+	// Change the boolean below to true if you want recent related event photos back.
 	elseif (isset($entity)) {
-		$galleryPhotos = $entity->photos;
+		$galleryPhotos = $entity->getGalleryPhotos(24, false);
+		$manageablePhotoIds = $entity->photos->pluck('id');
 	}
 @endphp
 

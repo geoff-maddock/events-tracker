@@ -577,6 +577,47 @@ class Entity extends Eloquent
     }
 
     /**
+     * Get gallery photos for the entity page.
+     *
+     * By default this returns only photos directly attached to the entity.
+     * Pass true for $includeRelatedEventPhotos to include recent event photos again.
+     */
+    public function getGalleryPhotos(int $limit = 24, bool $includeRelatedEventPhotos = false): Collection
+    {
+        $directPhotos = $this->relationLoaded('photos')
+            ? $this->photos->sortByDesc(function ($photo) {
+                return (int) $photo->is_primary;
+            })->values()
+            : $this->photos()
+                ->orderByDesc('photos.is_primary')
+                ->orderByDesc('photos.created_at')
+                ->get();
+
+        if (!$includeRelatedEventPhotos) {
+            return $directPhotos
+                ->take($limit)
+                ->values();
+        }
+
+        $relatedEventPhotos = $this->events()
+            ->with(['photos' => function ($query) {
+                $query->orderByDesc('photos.created_at');
+            }])
+            ->orderByDesc('events.start_at')
+            ->limit($limit)
+            ->get()
+            ->flatMap(function ($event) {
+                return $event->photos;
+            });
+
+        return $directPhotos
+            ->concat($relatedEventPhotos)
+            ->unique('id')
+            ->take($limit)
+            ->values();
+    }
+
+    /**
      * Return the primary photo for this entity.
      *
      **/
