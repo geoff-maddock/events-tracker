@@ -6,6 +6,7 @@ use App\Filters\LocationFilters;
 use App\Models\Entity;
 use App\Models\Location;
 use App\Models\Visibility;
+use App\Http\Requests\LocationPatchRequest;
 use App\Http\Requests\LocationRequest;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -91,11 +92,48 @@ class LocationsController extends Controller
 
 
     /**
-     * Update the specified resource in storage.
+     * PUT: full replacement of the resource. Optional fillable scalars
+     * omitted from the body are reset to null.
      */
     public function update(Location $location, LocationRequest $request): JsonResponse
     {
-        $location->fill($request->input())->save();
+        $input = $request->all();
+
+        $optionalFields = [
+            'attn',
+            'address_one',
+            'address_two',
+            'neighborhood',
+            'state',
+            'postcode',
+            'country',
+            'latitude',
+            'longitude',
+            'entity_id',
+            'capacity',
+            'map_url',
+        ];
+        foreach ($optionalFields as $field) {
+            if (!array_key_exists($field, $input)) {
+                $input[$field] = null;
+            }
+        }
+
+        $location->fill($input)->save();
+
+        return response()->json($location);
+    }
+
+    /**
+     * PATCH: partial update. Only fields present in the body are touched.
+     */
+    public function patch(Location $location, LocationPatchRequest $request): JsonResponse
+    {
+        $input = $request->all();
+        $scalarInput = array_intersect_key($input, array_flip($location->getFillable()));
+        if (!empty($scalarInput)) {
+            $location->fill($scalarInput)->save();
+        }
 
         return response()->json($location);
     }

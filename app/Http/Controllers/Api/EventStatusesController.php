@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Filters\EventStatusFilters;
 use App\Models\Activity;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EventStatusPatchRequest;
 use App\Http\Requests\EventStatusRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use Illuminate\Http\Request;
@@ -124,9 +125,26 @@ class EventStatusesController extends Controller
         return response()->json($eventStatus);
     }
 
+    /**
+     * PUT: full replacement of the resource. Only `name` is fillable.
+     */
     public function update(EventStatus $eventStatus, EventStatusRequest $request): JsonResponse
     {
-        $eventStatus->fill($request->input())->save();
+        $eventStatus->fill($request->all())->save();
+
+        return response()->json($eventStatus);
+    }
+
+    /**
+     * PATCH: partial update. Only fields present in the body are touched.
+     */
+    public function patch(EventStatus $eventStatus, EventStatusPatchRequest $request): JsonResponse
+    {
+        $input = $request->all();
+        $scalarInput = array_intersect_key($input, array_flip($eventStatus->getFillable()));
+        if (!empty($scalarInput)) {
+            $eventStatus->fill($scalarInput)->save();
+        }
 
         return response()->json($eventStatus);
     }

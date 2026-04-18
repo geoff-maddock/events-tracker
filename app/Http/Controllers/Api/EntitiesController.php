@@ -898,15 +898,51 @@ class EntitiesController extends Controller
     }
 
     /**
-     * Update a link on an entity.
+     * PUT: full replacement of an entity's link. `title` and `is_primary`
+     * reset to null/0 when omitted.
      */
     public function updateLink(int $id, int $linkId, Request $request): JsonResponse
     {
         $this->validate($request, [
-            'text' => ['sometimes', 'required', 'min:3'],
-            'url' => ['sometimes', 'required', 'min:3'],
+            'text' => ['required', 'min:3'],
+            'url' => ['required', 'min:3'],
             'title' => ['nullable', 'string'],
             'is_primary' => ['nullable', 'boolean'],
+        ]);
+
+        if ($entity = Entity::find($id)) {
+            $link = $entity->links()->find($linkId);
+            if ($link) {
+                if ($request->user()->id !== ($link->created_by ?? $entity->created_by)) {
+                    return response()->json([], 403);
+                }
+
+                $input = $request->only(['text', 'url', 'title', 'is_primary']);
+                $input['title'] = $input['title'] ?? null;
+                $input['is_primary'] = !empty($input['is_primary']) ? 1 : 0;
+
+                $link->update($input);
+
+                Activity::log($link, $this->user, Action::UPDATE);
+
+                return response()->json($link);
+            }
+        }
+
+        return response()->json([], 404);
+    }
+
+    /**
+     * PATCH: partial update for an entity's link. Only fields present in
+     * the body are touched.
+     */
+    public function patchLink(int $id, int $linkId, Request $request): JsonResponse
+    {
+        $this->validate($request, [
+            'text' => ['sometimes', 'required', 'min:3'],
+            'url' => ['sometimes', 'required', 'min:3'],
+            'title' => ['sometimes', 'nullable', 'string'],
+            'is_primary' => ['sometimes', 'nullable', 'boolean'],
         ]);
 
         if ($entity = Entity::find($id)) {
@@ -920,9 +956,10 @@ class EntitiesController extends Controller
                 if (array_key_exists('is_primary', $input)) {
                     $input['is_primary'] = $input['is_primary'] ? 1 : 0;
                 }
-                $link->update($input);
+                if (!empty($input)) {
+                    $link->update($input);
+                }
 
-                // add to activity log
                 Activity::log($link, $this->user, Action::UPDATE);
 
                 return response()->json($link);
@@ -962,9 +999,66 @@ class EntitiesController extends Controller
     }
 
     /**
-     * Update a location on an entity.
+     * PUT: full replacement of an entity's location. Optional fillable
+     * scalars omitted from the body are reset to null. `entity_id` is
+     * always preserved on the parent entity.
      */
     public function updateLocation(int $id, int $locationId, Request $request): JsonResponse
+    {
+        $this->validate($request, [
+            'name' => ['required', 'min:3'],
+            'slug' => ['required', 'min:3', 'regex:/^[a-z0-9-]+$/'],
+            'city' => ['required', 'min:3'],
+            'visibility_id' => ['required'],
+            'location_type_id' => ['required'],
+        ]);
+
+        if ($entity = Entity::find($id)) {
+            $location = $entity->locations()->find($locationId);
+            if ($location) {
+                if ($request->user()->id !== ($location->created_by ?? $entity->created_by)) {
+                    return response()->json([], 403);
+                }
+
+                $input = $request->all();
+
+                $optionalFields = [
+                    'attn',
+                    'address_one',
+                    'address_two',
+                    'neighborhood',
+                    'state',
+                    'postcode',
+                    'country',
+                    'latitude',
+                    'longitude',
+                    'capacity',
+                    'map_url',
+                ];
+                foreach ($optionalFields as $field) {
+                    if (!array_key_exists($field, $input)) {
+                        $input[$field] = null;
+                    }
+                }
+                // entity_id stays bound to the parent entity.
+                $input['entity_id'] = $id;
+
+                $location->update($input);
+
+                Activity::log($location, $this->user, Action::UPDATE);
+
+                return response()->json($location);
+            }
+        }
+
+        return response()->json([], 404);
+    }
+
+    /**
+     * PATCH: partial update for an entity's location. Only fields present
+     * in the body are touched.
+     */
+    public function patchLocation(int $id, int $locationId, Request $request): JsonResponse
     {
         $this->validate($request, [
             'name' => ['sometimes', 'required', 'min:3'],
@@ -982,9 +1076,11 @@ class EntitiesController extends Controller
                 }
 
                 $input = $request->all();
-                $location->update($input);
+                $scalarInput = array_intersect_key($input, array_flip($location->getFillable()));
+                if (!empty($scalarInput)) {
+                    $location->update($scalarInput);
+                }
 
-                // add to activity log
                 Activity::log($location, $this->user, Action::UPDATE);
 
                 return response()->json($location);
@@ -1022,14 +1118,15 @@ class EntitiesController extends Controller
     }
 
     /**
-     * Update a contact on an entity.
+     * PUT: full replacement of an entity's contact. Optional fillable
+     * scalars (`email`, `phone`, `other`) are reset to null when omitted.
      */
     public function updateContact(int $id, int $contactId, Request $request): JsonResponse
     {
         $this->validate($request, [
-            'name' => ['sometimes', 'required', 'min:3'],
-            'type' => ['sometimes', 'required', 'min:3'],
-            'visibility_id' => ['sometimes', 'required', 'integer'],
+            'name' => ['required', 'min:3'],
+            'type' => ['required', 'min:3'],
+            'visibility_id' => ['required', 'integer'],
             'email' => ['nullable', 'email'],
             'phone' => ['nullable', 'string'],
             'other' => ['nullable', 'string'],
@@ -1043,7 +1140,47 @@ class EntitiesController extends Controller
                 }
 
                 $input = $request->only(['name', 'email', 'phone', 'other', 'type', 'visibility_id']);
+                foreach (['email', 'phone', 'other'] as $field) {
+                    if (!array_key_exists($field, $input)) {
+                        $input[$field] = null;
+                    }
+                }
                 $contact->update($input);
+
+                Activity::log($contact, $this->user, Action::UPDATE);
+                return response()->json($contact);
+            }
+        }
+
+        return response()->json([], 404);
+    }
+
+    /**
+     * PATCH: partial update for an entity's contact. Only fields present
+     * in the body are touched.
+     */
+    public function patchContact(int $id, int $contactId, Request $request): JsonResponse
+    {
+        $this->validate($request, [
+            'name' => ['sometimes', 'required', 'min:3'],
+            'type' => ['sometimes', 'required', 'min:3'],
+            'visibility_id' => ['sometimes', 'required', 'integer'],
+            'email' => ['sometimes', 'nullable', 'email'],
+            'phone' => ['sometimes', 'nullable', 'string'],
+            'other' => ['sometimes', 'nullable', 'string'],
+        ]);
+
+        if ($entity = Entity::find($id)) {
+            $contact = $entity->contacts()->find($contactId);
+            if ($contact) {
+                if ($request->user()->id !== ($contact->created_by ?? $entity->created_by)) {
+                    return response()->json([], 403);
+                }
+
+                $input = $request->only(['name', 'email', 'phone', 'other', 'type', 'visibility_id']);
+                if (!empty($input)) {
+                    $contact->update($input);
+                }
 
                 Activity::log($contact, $this->user, Action::UPDATE);
                 return response()->json($contact);

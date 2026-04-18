@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Filters\RoleFilters;
 use App\Models\Activity;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RolePatchRequest;
 use App\Http\Requests\RoleRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use Illuminate\Http\Request;
@@ -113,9 +114,33 @@ class RolesController extends Controller
         return response()->json($role);
     }
 
+    /**
+     * PUT: full replacement of the resource. Optional `short` is reset to
+     * null when omitted from the body.
+     */
     public function update(Role $role, RoleRequest $request): JsonResponse
     {
-        $role->fill($request->input())->save();
+        $input = $request->all();
+
+        if (!array_key_exists('short', $input)) {
+            $input['short'] = null;
+        }
+
+        $role->fill($input)->save();
+
+        return response()->json($role);
+    }
+
+    /**
+     * PATCH: partial update. Only fields present in the body are touched.
+     */
+    public function patch(Role $role, RolePatchRequest $request): JsonResponse
+    {
+        $input = $request->all();
+        $scalarInput = array_intersect_key($input, array_flip($role->getFillable()));
+        if (!empty($scalarInput)) {
+            $role->fill($scalarInput)->save();
+        }
 
         return response()->json($role);
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Filters\ThreadFilters;
+use App\Http\Requests\ThreadPatchRequest;
 use App\Http\Requests\ThreadRequest;
 use App\Http\Resources\ThreadCollection;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
@@ -381,24 +382,57 @@ class ThreadsController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * PUT: full replacement of the resource. Optional fillable scalars
+     * omitted from the body are reset to null.
      */
-    public function update(ThreadRequest $request, Thread $thread): RedirectResponse
+    public function update(ThreadRequest $request, Thread $thread): JsonResponse
     {
-        $msg = '';
-
-        $thread->fill($request->input())->save();
-
         if (!$thread->ownedBy($this->user)) {
             $this->unauthorized($request);
         }
 
-        // add to activity log
+        $input = $request->all();
+
+        $optionalFields = [
+            'description',
+            'slug',
+            'thread_category_id',
+            'views',
+            'event_id',
+            'locked_at',
+            'locked_by',
+        ];
+        foreach ($optionalFields as $field) {
+            if (!array_key_exists($field, $input)) {
+                $input[$field] = null;
+            }
+        }
+
+        $thread->fill($input)->save();
+
         Activity::log($thread, $this->user, 2);
 
-        flash('Success', 'Your thread has been updated');
+        return response()->json($thread);
+    }
 
-        return redirect('threads');
+    /**
+     * PATCH: partial update. Only fields present in the body are touched.
+     */
+    public function patch(ThreadPatchRequest $request, Thread $thread): JsonResponse
+    {
+        if (!$thread->ownedBy($this->user)) {
+            $this->unauthorized($request);
+        }
+
+        $input = $request->all();
+        $scalarInput = array_intersect_key($input, array_flip($thread->getFillable()));
+        if (!empty($scalarInput)) {
+            $thread->fill($scalarInput)->save();
+        }
+
+        Activity::log($thread, $this->user, 2);
+
+        return response()->json($thread);
     }
 
     protected function unauthorized(ThreadRequest $request): RedirectResponse | Response

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Filters\ForumFilters;
+use App\Http\Requests\ForumPatchRequest;
 use App\Http\Requests\ForumRequest;
 use App\Http\Resources\ForumCollection;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
@@ -377,24 +378,48 @@ class ForumsController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * PUT: full replacement of the resource. Optional fillable scalars
+     * omitted from the body are reset to null.
      */
-    public function update(ForumRequest $request, Forum $forum): RedirectResponse
+    public function update(ForumRequest $request, Forum $forum): JsonResponse
     {
-        $msg = '';
-
-        $forum->fill($request->input())->save();
-
         if (!$forum->ownedBy($this->user)) {
             $this->unauthorized($request);
         }
 
-        // add to activity log
+        $input = $request->all();
+
+        foreach (['short', 'description'] as $field) {
+            if (!array_key_exists($field, $input)) {
+                $input[$field] = null;
+            }
+        }
+
+        $forum->fill($input)->save();
+
         Activity::log($forum, $this->user, 2);
 
-        flash('Success', 'Your forum has been updated');
+        return response()->json($forum);
+    }
 
-        return redirect('forums');
+    /**
+     * PATCH: partial update. Only fields present in the body are touched.
+     */
+    public function patch(ForumPatchRequest $request, Forum $forum): JsonResponse
+    {
+        if (!$forum->ownedBy($this->user)) {
+            $this->unauthorized($request);
+        }
+
+        $input = $request->all();
+        $scalarInput = array_intersect_key($input, array_flip($forum->getFillable()));
+        if (!empty($scalarInput)) {
+            $forum->fill($scalarInput)->save();
+        }
+
+        Activity::log($forum, $this->user, 2);
+
+        return response()->json($forum);
     }
 
     protected function unauthorized(ForumRequest $request): RedirectResponse | Response

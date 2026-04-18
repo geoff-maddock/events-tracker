@@ -6,6 +6,7 @@ use App\Events\EventCreated;
 use App\Events\EventUpdated;
 use App\Filters\EventFilters;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EventPatchRequest;
 use App\Http\Requests\EventRequest;
 use App\Http\Resources\EventCollection;
 use App\Http\Resources\EventResource;
@@ -1052,26 +1053,110 @@ class EventsController extends Controller
         }
     }
 
+    /**
+     * PUT: full replacement of the resource.
+     *
+     * Optional fillable scalars omitted from the body are reset to null, and
+     * relations (tags, entities) sync to the supplied arrays — missing keys
+     * mean "detach all".
+     */
     public function update(Event $event, EventRequest $request): JsonResponse
     {
-        // Get the authenticated user
         $this->user = $request->user();
 
         if (!$event->ownedBy($this->user)) {
             $this->unauthorized($request);
         }
 
-        $msg = '';
-
-        $input = $request->input();
+        $input = $request->all();
         $input['updated_by'] = $this->user->id;
-        
+
+        foreach ($this->optionalEventFields() as $field) {
+            if (!array_key_exists($field, $input)) {
+                $input[$field] = null;
+            }
+        }
+
         $event->fill($input)->save();
 
-        $tagArray = $request->input('tag_list', []);
+        $event->tags()->sync($this->resolveTagIds($request->input('tag_list', [])));
+        $event->entities()->sync($request->input('entity_list', []));
+
+        Activity::log($event, $this->user, 2);
+        EventUpdated::dispatch($event);
+
+        return response()->json(new EventResource($event));
+    }
+
+    /**
+     * PATCH: partial update. Only fields present in the body are touched;
+     * scalars and relations not in the request are left untouched.
+     */
+    public function patch(Event $event, EventPatchRequest $request): JsonResponse
+    {
+        $this->user = $request->user();
+
+        if (!$event->ownedBy($this->user)) {
+            $this->unauthorized($request);
+        }
+
+        $input = $request->all();
+
+        $scalarInput = array_intersect_key($input, array_flip($event->getFillable()));
+        if (!empty($scalarInput)) {
+            $scalarInput['updated_by'] = $this->user->id;
+            $event->fill($scalarInput)->save();
+        }
+
+        if ($request->has('tag_list')) {
+            $event->tags()->sync($this->resolveTagIds((array) $request->input('tag_list', [])));
+        }
+
+        if ($request->has('entity_list')) {
+            $event->entities()->sync((array) $request->input('entity_list', []));
+        }
+
+        Activity::log($event, $this->user, 2);
+        EventUpdated::dispatch($event);
+
+        return response()->json(new EventResource($event));
+    }
+
+    /**
+     * Fillable scalar fields that aren't required by EventRequest. PUT resets
+     * any omitted from the body to null.
+     */
+    private function optionalEventFields(): array
+    {
+        return [
+            'short',
+            'description',
+            'event_status_id',
+            'is_benefit',
+            'promoter_id',
+            'venue_id',
+            'presale_price',
+            'door_price',
+            'ticket_link',
+            'primary_link',
+            'series_id',
+            'soundcheck_at',
+            'door_at',
+            'end_at',
+            'cancelled_at',
+            'do_not_repost',
+            'min_age',
+        ];
+    }
+
+    /**
+     * Resolve a list of tag identifiers to ids, creating any tags that don't
+     * already exist by id. Accepts a mix of existing tag ids and new tag names.
+     */
+    private function resolveTagIds(array $tagArray): array
+    {
         $syncArray = [];
 
-        // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
             if (!Tag::find($tag)) {
                 $newTag = new Tag();
@@ -1080,25 +1165,15 @@ class EventsController extends Controller
                 $newTag->tag_type_id = 1;
                 $newTag->save();
 
-                // log adding of new tag
                 Activity::log($newTag, $this->user, 1);
 
                 $syncArray[strtolower($tag)] = $newTag->id;
-
-                $msg .= ' Added tag '.$tag.'.';
             } else {
                 $syncArray[$key] = $tag;
             }
         }
 
-        $event->tags()->sync($syncArray);
-        $event->entities()->sync($request->input('entity_list', []));
-
-        // add to activity log
-        Activity::log($event, $this->user, 2);
-        EventUpdated::dispatch($event);
-
-        return response()->json(new EventResource($event));
+        return $syncArray;
     }
 
     protected function unauthorized(EventRequest $request): RedirectResponse | Response

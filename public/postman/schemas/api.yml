@@ -356,6 +356,73 @@ components:
         alias_list:
           type: array
           items: { "type": "integer" }
+    EntityPatchRequest:
+      type: object
+      description: |
+        Partial-update body for PATCH. Mirrors EntityRequest properties but
+        with no required fields — clients send only the keys they want to
+        change.
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          description: The cannonical name of the enitity
+          example: Brillobox
+        slug:
+          type: string
+          maxLength: 255
+          description: A unique identifier name for the entity in kebab-case
+          example: brillobox-bar
+        short:
+          type: string
+          maxLength: 255
+          description: A brief description of the enitity
+          example: A two level bar and venue
+        description:
+          type: string
+          maxLength: 65535
+          description: Full description of the entity
+          example: A two level bar and venue that specializes in indie music and vegetarian food
+        entity_type_id:
+          description: Relation to the entity type table that defines the type of an entity
+          type: integer
+          example: 1
+        entity_status_id:
+          description: The unique identifier of an entity status
+          type: integer
+          example: 1
+        started_at:
+          type: string
+          example: "2018-03-20T09:12:28Z"
+          format: date-time
+          description: Date and time that the entity started to exist
+        facebook_username:
+          type: string
+          maxLength: 64
+          description: The entity's username on facebook
+          example: johnsmith
+        twitter_username:
+          type: string
+          maxLength: 64
+          description: The entity's username on twitter
+          example: johnsmith
+        instagram_username:
+          type: string
+          maxLength: 64
+          description: The entity's username on instagram
+          example: boom_concepts
+        tag_list:
+          description: An array of Tag PK ids related to the entity. Omit to leave tags untouched; send an empty array to detach all.
+          type: array
+          items: { "type": "integer" }
+        role_list:
+          description: An array of Role PK ids related to the entity. Omit to leave roles untouched; send an empty array to detach all.
+          type: array
+          items: { "type": "integer" }
+        alias_list:
+          description: An array of Alias PK ids related to the entity. Omit to leave aliases untouched; send an empty array to detach all.
+          type: array
+          items: { "type": "integer" }
     EntityResponse:
       type: object
       properties:
@@ -2881,8 +2948,40 @@ paths:
             example: about-arcane-city
       tags:
         - blogs
-      summary: Update Blog
+      summary: Update Blog (PUT — full replace)
+      description: |
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
       operationId: updateBlogById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Blog"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Blog"
+    patch:
+      parameters:
+        - name: slug
+          description: The unique identifier of the blog
+          in: path
+          required: true
+          schema:
+            description: The unique identifier of a blog
+            type: string
+            readOnly: true
+            example: about-arcane-city
+      tags:
+        - blogs
+      summary: Patch Blog (PATCH — partial update)
+      description: |
+        Partial update per REST PATCH semantics. Only the fields present in the body are modified; scalars and relations not included are left untouched. Validation rules from the corresponding *Request schema are applied as `sometimes` rules — if a field is supplied it must satisfy its constraints, but missing fields are not rejected. To clear a relation explicitly, send an empty array (e.g. `"tag_list": []`).
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
+      operationId: patchBlogById
       requestBody:
         content:
           application/json:
@@ -3350,8 +3449,39 @@ paths:
             example: "cutups-event"
       tags:
         - events
-      summary: Update Events
+      summary: Update Events (PUT — full replace)
+      description: |
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
       operationId: updateEventById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventResponse"
+    patch:
+      parameters:
+        - name: slug
+          description: A unique string identifier of the event
+          in: path
+          required: true
+          schema:
+            type: string
+            readOnly: true
+            example: "cutups-event"
+      tags:
+        - events
+      summary: Patch Event (PATCH — partial update)
+      description: |
+        Partial update per REST PATCH semantics. Only the fields present in the body are modified; scalars and relations not included are left untouched. Validation rules from the corresponding *Request schema are applied as `sometimes` rules — if a field is supplied it must satisfy its constraints, but missing fields are not rejected. To clear a relation explicitly, send an empty array (e.g. `"tag_list": []`).
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
+      operationId: patchEventById
       requestBody:
         content:
           application/json:
@@ -3814,13 +3944,43 @@ paths:
             example: "cutups"
       tags:
         - entities
-      summary: Update Entity
+      summary: Update Entity (PUT — full replace)
+      description: |
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
       operationId: updateEntityBySlug
       requestBody:
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/EntityRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EntityResponse"
+    patch:
+      parameters:
+        - name: slug
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "cutups"
+      tags:
+        - entities
+      summary: Patch Entity (PATCH — partial update)
+      description: |
+        Partial update per REST PATCH semantics. Only the fields present in the body are modified; scalars and relations not included are left untouched. Validation rules from the corresponding *Request schema are applied as `sometimes` rules — if a field is supplied it must satisfy its constraints, but missing fields are not rejected. To clear a relation explicitly, send an empty array (e.g. `"tag_list": []`).
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
+      operationId: patchEntityBySlug
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EntityPatchRequest"
       responses:
         "200":
           description: Successful response
@@ -4057,8 +4217,47 @@ paths:
             example: 1
       tags:
         - entities
-      summary: Update Entity Link
+      summary: Update Entity Link (PUT — full replace)
+      description: |
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
       operationId: updateEntityLinkById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Link"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Link"
+    patch:
+      parameters:
+        - name: id
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+        - name: linkId
+          description: The unique identifier of the link
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - entities
+      summary: Patch Entity link (PATCH — partial update)
+      description: |
+        Partial update per REST PATCH semantics. Only the fields present in the body are modified; scalars and relations not included are left untouched. Validation rules from the corresponding *Request schema are applied as `sometimes` rules — if a field is supplied it must satisfy its constraints, but missing fields are not rejected. To clear a relation explicitly, send an empty array (e.g. `"tag_list": []`).
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
+      operationId: patchEntityLinkById
       requestBody:
         content:
           application/json:
@@ -4146,8 +4345,47 @@ paths:
             example: 1
       tags:
         - entities
-      summary: Update Entity Location
+      summary: Update Entity Location (PUT — full replace)
+      description: |
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
       operationId: updateEntityLocationById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LocationRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Location"
+    patch:
+      parameters:
+        - name: id
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+        - name: locationId
+          description: The unique identifier of the location
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - entities
+      summary: Patch Entity location (PATCH — partial update)
+      description: |
+        Partial update per REST PATCH semantics. Only the fields present in the body are modified; scalars and relations not included are left untouched. Validation rules from the corresponding *Request schema are applied as `sometimes` rules — if a field is supplied it must satisfy its constraints, but missing fields are not rejected. To clear a relation explicitly, send an empty array (e.g. `"tag_list": []`).
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
+      operationId: patchEntityLocationById
       requestBody:
         content:
           application/json:
@@ -4235,8 +4473,47 @@ paths:
             example: 1
       tags:
         - entities
-      summary: Update Entity Contact
+      summary: Update Entity Contact (PUT — full replace)
+      description: |
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
       operationId: updateEntityContactById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Contact"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+    patch:
+      parameters:
+        - name: id
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+        - name: contactId
+          description: The unique identifier of the contact
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - entities
+      summary: Patch Entity contact (PATCH — partial update)
+      description: |
+        Partial update per REST PATCH semantics. Only the fields present in the body are modified; scalars and relations not included are left untouched. Validation rules from the corresponding *Request schema are applied as `sometimes` rules — if a field is supplied it must satisfy its constraints, but missing fields are not rejected. To clear a relation explicitly, send an empty array (e.g. `"tag_list": []`).
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
+      operationId: patchEntityContactById
       requestBody:
         content:
           application/json:
@@ -4418,8 +4695,40 @@ paths:
             example: 1
       tags:
         - entity-statuses
-      summary: Update Entity Status
+      summary: Update Entity Status (PUT — full replace)
+      description: |
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
       operationId: updateEntityStatusById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EntityStatusRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EntityStatusResponse"
+    patch:
+      parameters:
+        - name: entityStatusId
+          description: The unique identifier of the entity status
+          in: path
+          required: true
+          schema:
+            description: The unique identifier of an entity type
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - entity-statuses
+      summary: Patch Entity status (PATCH — partial update)
+      description: |
+        Partial update per REST PATCH semantics. Only the fields present in the body are modified; scalars and relations not included are left untouched. Validation rules from the corresponding *Request schema are applied as `sometimes` rules — if a field is supplied it must satisfy its constraints, but missing fields are not rejected. To clear a relation explicitly, send an empty array (e.g. `"tag_list": []`).
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
+      operationId: patchEntityStatusById
       requestBody:
         content:
           application/json:
@@ -4541,8 +4850,30 @@ paths:
     put:
       tags:
         - entity-types
-      summary: Update Entity Type
+      summary: Update Entity Type (PUT — full replace)
+      description: |
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
       operationId: updateEntityTypeById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EntityTypeRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EntityTypeResponse"
+    patch:
+      tags:
+        - entity-types
+      summary: Patch Entity type (PATCH — partial update)
+      description: |
+        Partial update per REST PATCH semantics. Only the fields present in the body are modified; scalars and relations not included are left untouched. Validation rules from the corresponding *Request schema are applied as `sometimes` rules — if a field is supplied it must satisfy its constraints, but missing fields are not rejected. To clear a relation explicitly, send an empty array (e.g. `"tag_list": []`).
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
+      operationId: patchEntityTypeById
       requestBody:
         content:
           application/json:
@@ -4654,8 +4985,30 @@ paths:
     put:
       tags:
         - event-types
-      summary: Update Event Type
+      summary: Update Event Type (PUT — full replace)
+      description: |
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
       operationId: updateEventTypeById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventTypeRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventTypeResponse"
+    patch:
+      tags:
+        - event-types
+      summary: Patch Event type (PATCH — partial update)
+      description: |
+        Partial update per REST PATCH semantics. Only the fields present in the body are modified; scalars and relations not included are left untouched. Validation rules from the corresponding *Request schema are applied as `sometimes` rules — if a field is supplied it must satisfy its constraints, but missing fields are not rejected. To clear a relation explicitly, send an empty array (e.g. `"tag_list": []`).
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
+      operationId: patchEventTypeById
       requestBody:
         content:
           application/json:
@@ -4778,8 +5131,40 @@ paths:
             example: 1
       tags:
         - event-statuses
-      summary: Update Event Status
+      summary: Update Event Status (PUT — full replace)
+      description: |
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
       operationId: updateEventStatusById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventStatusRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventStatusResponse"
+    patch:
+      parameters:
+        - name: eventStatusId
+          description: The unique identifier of the event status
+          in: path
+          required: true
+          schema:
+            description: The unique identifier of an event status
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - event-statuses
+      summary: Patch Event status (PATCH — partial update)
+      description: |
+        Partial update per REST PATCH semantics. Only the fields present in the body are modified; scalars and relations not included are left untouched. Validation rules from the corresponding *Request schema are applied as `sometimes` rules — if a field is supplied it must satisfy its constraints, but missing fields are not rejected. To clear a relation explicitly, send an empty array (e.g. `"tag_list": []`).
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
+      operationId: patchEventStatusById
       requestBody:
         content:
           application/json:
@@ -4912,8 +5297,40 @@ paths:
             example: 1
       tags:
         - forums
-      summary: Update Forum
+      summary: Update Forum (PUT — full replace)
+      description: |
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
       operationId: updateForumById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Forum"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Forum"
+    patch:
+      parameters:
+        - name: forumId
+          description: The unique identifier of the forum
+          in: path
+          required: true
+          schema:
+            description: The unique identifier of a forum
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - forums
+      summary: Patch Forum (PATCH — partial update)
+      description: |
+        Partial update per REST PATCH semantics. Only the fields present in the body are modified; scalars and relations not included are left untouched. Validation rules from the corresponding *Request schema are applied as `sometimes` rules — if a field is supplied it must satisfy its constraints, but missing fields are not rejected. To clear a relation explicitly, send an empty array (e.g. `"tag_list": []`).
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
+      operationId: patchForumById
       requestBody:
         content:
           application/json:
@@ -5250,8 +5667,30 @@ paths:
     put:
       tags:
         - locations
-      summary: Update location
+      summary: Update location (PUT — full replace)
+      description: |
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
       operationId: updateLocationById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LocationRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Location"
+    patch:
+      tags:
+        - locations
+      summary: Patch Location (PATCH — partial update)
+      description: |
+        Partial update per REST PATCH semantics. Only the fields present in the body are modified; scalars and relations not included are left untouched. Validation rules from the corresponding *Request schema are applied as `sometimes` rules — if a field is supplied it must satisfy its constraints, but missing fields are not rejected. To clear a relation explicitly, send an empty array (e.g. `"tag_list": []`).
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
+      operationId: patchLocationById
       requestBody:
         content:
           application/json:
@@ -5746,8 +6185,30 @@ paths:
     put:
       tags:
         - series
-      summary: Update Series
+      summary: Update Series (PUT — full replace)
+      description: |
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
       operationId: updateSeriesById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SeriesRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SeriesResponse"
+    patch:
+      tags:
+        - series
+      summary: Patch Series (PATCH — partial update)
+      description: |
+        Partial update per REST PATCH semantics. Only the fields present in the body are modified; scalars and relations not included are left untouched. Validation rules from the corresponding *Request schema are applied as `sometimes` rules — if a field is supplied it must satisfy its constraints, but missing fields are not rejected. To clear a relation explicitly, send an empty array (e.g. `"tag_list": []`).
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
+      operationId: patchSeriesBySlug
       requestBody:
         content:
           application/json:
@@ -6260,8 +6721,40 @@ paths:
             example: 1
       tags:
         - threads
-      summary: Update Thread
+      summary: Update Thread (PUT — full replace)
+      description: |
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
       operationId: updateThreadById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Thread"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Thread"
+    patch:
+      parameters:
+        - name: threadId
+          description: The unique identifier of the thread
+          in: path
+          required: true
+          schema:
+            description: The unique identifier of a thread
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - threads
+      summary: Patch Thread (PATCH — partial update)
+      description: |
+        Partial update per REST PATCH semantics. Only the fields present in the body are modified; scalars and relations not included are left untouched. Validation rules from the corresponding *Request schema are applied as `sometimes` rules — if a field is supplied it must satisfy its constraints, but missing fields are not rejected. To clear a relation explicitly, send an empty array (e.g. `"tag_list": []`).
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
+      operationId: patchThreadById
       requestBody:
         content:
           application/json:
@@ -6536,8 +7029,30 @@ paths:
     put:
       tags:
         - roles
-      summary: Update Role
+      summary: Update Role (PUT — full replace)
+      description: |
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
       operationId: updateRoleById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+    patch:
+      tags:
+        - roles
+      summary: Patch Role (PATCH — partial update)
+      description: |
+        Partial update per REST PATCH semantics. Only the fields present in the body are modified; scalars and relations not included are left untouched. Validation rules from the corresponding *Request schema are applied as `sometimes` rules — if a field is supplied it must satisfy its constraints, but missing fields are not rejected. To clear a relation explicitly, send an empty array (e.g. `"tag_list": []`).
+        Full replacement of the resource per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and any *_list relation arrays sync to exactly the supplied values — omitting a list detaches all rows for that relation. Use PATCH for partial updates.
+      operationId: patchRoleById
       requestBody:
         content:
           application/json:

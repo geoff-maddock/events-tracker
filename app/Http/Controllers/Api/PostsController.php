@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Filters\PostFilters;
+use App\Http\Requests\PostPatchRequest;
 use App\Http\Requests\PostRequest;
 use App\Http\Resources\PostCollection;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
@@ -440,24 +441,74 @@ class PostsController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * PUT: full replacement of the resource.
      *
-     * @internal param int $id
+     * Optional fillable scalars omitted from the body are reset to null, and
+     * relations (tags, entities) sync to the supplied arrays — missing keys
+     * mean "detach all".
      */
-    public function update(Post $post, PostRequest $request): RedirectResponse
+    public function update(Post $post, PostRequest $request): JsonResponse
     {
-        $msg = '';
-
-        $post->fill($request->input())->save();
-
         if (!$post->ownedBy($this->user)) {
             $this->unauthorized($request);
         }
 
-        $tagArray = $request->input('tag_list', []);
+        $input = $request->all();
+
+        foreach (['name', 'slug', 'description'] as $field) {
+            if (!array_key_exists($field, $input)) {
+                $input[$field] = null;
+            }
+        }
+
+        $post->fill($input)->save();
+
+        $post->tags()->sync($this->resolveTagIds($request->input('tag_list', [])));
+        $post->entities()->sync($request->input('entity_list', []));
+
+        Activity::log($post, $this->user, 2);
+
+        return response()->json($post);
+    }
+
+    /**
+     * PATCH: partial update. Only fields present in the body are touched;
+     * scalars and relations not in the request are left untouched.
+     */
+    public function patch(Post $post, PostPatchRequest $request): JsonResponse
+    {
+        if (!$post->ownedBy($this->user)) {
+            $this->unauthorized($request);
+        }
+
+        $input = $request->all();
+
+        $scalarInput = array_intersect_key($input, array_flip($post->getFillable()));
+        if (!empty($scalarInput)) {
+            $post->fill($scalarInput)->save();
+        }
+
+        if ($request->has('tag_list')) {
+            $post->tags()->sync($this->resolveTagIds((array) $request->input('tag_list', [])));
+        }
+
+        if ($request->has('entity_list')) {
+            $post->entities()->sync((array) $request->input('entity_list', []));
+        }
+
+        Activity::log($post, $this->user, 2);
+
+        return response()->json($post);
+    }
+
+    /**
+     * Resolve a list of tag identifiers to ids, creating any tags that don't
+     * already exist by id. Accepts a mix of existing tag ids and new tag names.
+     */
+    private function resolveTagIds(array $tagArray): array
+    {
         $syncArray = [];
 
-        // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
             if (!Tag::find($tag)) {
                 $newTag = new Tag();
@@ -467,22 +518,12 @@ class PostsController extends Controller
                 $newTag->save();
 
                 $syncArray[] = $newTag->id;
-
-                $msg .= ' Added tag '.$tag.'.';
             } else {
                 $syncArray[$key] = $tag;
             }
         }
 
-        $post->tags()->sync($syncArray);
-        $post->entities()->sync($request->input('entity_list', []));
-
-        // add to activity log
-        Activity::log($post, $this->user, 2);
-
-        flash('Success', 'Your post has been updated');
-
-        return redirect()->route('threads.show', ['thread' => $post->thread_id]);
+        return $syncArray;
     }
 
     /**

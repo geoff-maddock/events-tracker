@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Filters\EntityTypeFilters;
 use App\Models\Activity;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EntityTypePatchRequest;
 use App\Http\Requests\EntityTypeRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use Illuminate\Http\Request;
@@ -182,12 +183,27 @@ class EntityTypesController extends Controller
 
 
     /**
-     * Update the specified resource in storage.
-     *
+     * PUT: full replacement of the resource. All fillable fields are
+     * required by EntityTypeRequest, so PUT and PATCH differ only in
+     * validation strictness.
      */
     public function update(EntityType $entityType, EntityTypeRequest $request): JsonResponse
     {
-        $entityType->fill($request->input())->save();
+        $entityType->fill($request->all())->save();
+
+        return response()->json($entityType);
+    }
+
+    /**
+     * PATCH: partial update. Only fields present in the body are touched.
+     */
+    public function patch(EntityType $entityType, EntityTypePatchRequest $request): JsonResponse
+    {
+        $input = $request->all();
+        $scalarInput = array_intersect_key($input, array_flip($entityType->getFillable()));
+        if (!empty($scalarInput)) {
+            $entityType->fill($scalarInput)->save();
+        }
 
         return response()->json($entityType);
     }
