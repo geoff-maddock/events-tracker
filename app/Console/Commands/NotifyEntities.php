@@ -68,7 +68,7 @@ class NotifyEntities extends Command
         $emailedCount = 0;
 
         // Gather all entities that have at least one contact with an email address
-        /** @var \Illuminate\Database\Eloquent\Collection<int, Entity> $entities */
+        /** @var \Illuminate\Database\Eloquent\Builder<Entity> $query */
         $query = Entity::whereHas('contacts', function ($q) {
             $q->whereNotNull('email')->where('email', '!=', '');
         })->with(['contacts', 'roles']);
