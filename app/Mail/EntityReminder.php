@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use App\Models\Entity;
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Mail\Mailable;
@@ -31,7 +30,11 @@ class EntityReminder extends Mailable
 
     public Collection $relatedEntities;
 
-    public SupportCollection $relatedEvents;
+    public SupportCollection $relatedEntityEvents;
+
+    public Collection $frequentVenues;
+
+    public SupportCollection $frequentVenueEvents;
 
     /**
      * Create a new message instance.
@@ -45,7 +48,9 @@ class EntityReminder extends Mailable
         Entity $entity,
         Collection $upcomingEvents,
         Collection $relatedEntities,
-        SupportCollection $relatedEvents
+        SupportCollection $relatedEntityEvents,
+        Collection $frequentVenues,
+        SupportCollection $frequentVenueEvents
     ) {
         $this->url = $url;
         $this->site = $site;
@@ -55,7 +60,9 @@ class EntityReminder extends Mailable
         $this->entity = $entity;
         $this->upcomingEvents = $upcomingEvents;
         $this->relatedEntities = $relatedEntities;
-        $this->relatedEvents = $relatedEvents;
+        $this->relatedEntityEvents = $relatedEntityEvents;
+        $this->frequentVenues = $frequentVenues;
+        $this->frequentVenueEvents = $frequentVenueEvents;
     }
 
     /**

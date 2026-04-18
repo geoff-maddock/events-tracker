@@ -27,16 +27,37 @@ Here are some acts you've shared the stage with, along with their upcoming event
 
 @foreach ($relatedEntities as $related)
 **[{{ $related->name }}]({{ $url }}entities/{{ $related->slug }})**
-@endforeach
 
-@if ($relatedEvents->count() > 0)
-### Their Upcoming Events
-
-@foreach ($relatedEvents as $event)
+@php $relatedEvts = $relatedEntityEvents->get($related->id) @endphp
+@if ($relatedEvts && $relatedEvts->count() > 0)
+@foreach ($relatedEvts as $event)
 - [{{ $event->name }}]({{ $url }}events/{{ $event->slug }}) — {{ $event->start_at->format('l F jS Y \a\t g:i A') }}@if ($event->venue_id) at {{ $event->venue->name }}@endif
 @endforeach
-
+@else
+- *(No upcoming events listed)*
 @endif
+
+@endforeach
+@endif
+
+@if ($frequentVenues->count() > 0)
+### Venues You Frequently Perform At
+
+Here are some venues you've performed at, along with their upcoming events:
+
+@foreach ($frequentVenues as $venue)
+**[{{ $venue->name }}]({{ $url }}entities/{{ $venue->slug }})**
+
+@php $venueEvts = $frequentVenueEvents->get($venue->id) @endphp
+@if ($venueEvts && $venueEvts->count() > 0)
+@foreach ($venueEvts as $event)
+- [{{ $event->name }}]({{ $url }}events/{{ $event->slug }}) — {{ $event->start_at->format('l F jS Y \a\t g:i A') }}
+@endforeach
+@else
+- *(No upcoming events listed)*
+@endif
+
+@endforeach
 @endif
 
 ---

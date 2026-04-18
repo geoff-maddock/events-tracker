@@ -7,10 +7,10 @@ use App\Mail\EntityReminder;
 use App\Models\Action;
 use App\Models\Activity;
 use App\Models\Entity;
+use App\Models\Event;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
@@ -131,27 +131,33 @@ class NotifyEntities extends Command
             // Gather related entities (those that frequently perform with this entity), up to 5
             $relatedEntities = $entity->getFrequentlyPerformsWith(5);
 
-            // Gather upcoming events for those related entities (next 90 days, max 5 per entity)
-            $relatedEvents = new Collection();
-            foreach ($relatedEntities as $relatedEntity) {
-                /** @var Entity $relatedEntity */
-                $entityEvents = $relatedEntity->events()
+            // Gather upcoming events for each related entity (next 90 days, max 5 per entity)
+            $relatedEntityEvents = $relatedEntities->mapWithKeys(function ($relatedEntity) {
+                return [$relatedEntity->id => $relatedEntity->events()
                     ->where('start_at', '>=', Carbon::now())
                     ->where('start_at', '<=', Carbon::now()->addDays(90))
                     ->orderBy('start_at', 'ASC')
                     ->limit(5)
-                    ->get();
+                    ->get()];
+            });
 
-                $relatedEvents = $relatedEvents->merge($entityEvents);
-            }
+            // Gather venues this entity frequently performs at, up to 5
+            $frequentVenues = $entity->getFrequentlyPerformsAt(5);
 
-            // Deduplicate and sort by start date
-            $relatedEvents = $relatedEvents->unique('id')->sortBy('start_at')->values();
+            // Gather upcoming events at each of those venues (next 90 days, max 5 per venue)
+            $frequentVenueEvents = $frequentVenues->mapWithKeys(function ($venue) {
+                return [$venue->id => Event::where('venue_id', $venue->id)
+                    ->where('start_at', '>=', Carbon::now())
+                    ->where('start_at', '<=', Carbon::now()->addDays(90))
+                    ->orderBy('start_at', 'ASC')
+                    ->limit(5)
+                    ->get()];
+            });
 
             // In dry-run mode, just show who would receive the email
             if ($isDryRun) {
                 foreach ($contactEmails as $contactEmail) {
-                    $this->line("  WOULD SEND  {$entity->name} → {$contactEmail}  (upcoming events: {$upcomingEvents->count()}, related events: {$relatedEvents->count()})");
+                    $this->line("  WOULD SEND  {$entity->name} → {$contactEmail}  (upcoming events: {$upcomingEvents->count()}, related artists: {$relatedEntities->count()}, frequent venues: {$frequentVenues->count()})");
                 }
                 continue;
             }
@@ -171,7 +177,9 @@ class NotifyEntities extends Command
                             $entity,
                             $upcomingEvents,
                             $relatedEntities,
-                            $relatedEvents
+                            $relatedEntityEvents,
+                            $frequentVenues,
+                            $frequentVenueEvents
                         ));
 
                     $logTarget = $isTestRun ? "{$testEmail} (test, real: {$contactEmail})" : $contactEmail;
