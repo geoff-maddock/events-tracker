@@ -65,6 +65,8 @@ We're building this site for artists, venues, and promoters like you, and your p
 
 If you have any questions or feedback, just reply to this email — we'd love to hear from you!
 
+Follow us on Instagram for event highlights and community updates: [**@arcane.city**](https://www.instagram.com/arcane.city)
+
 Thanks for being part of the community,
 {{ $site }}
 {{ $url }}
