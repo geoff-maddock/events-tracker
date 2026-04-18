@@ -9,6 +9,7 @@ use App\Console\Commands\CleanupExports;
 use App\Console\Commands\CreateSeriesEvents;
 use App\Console\Commands\InitializeEventShares;
 use App\Console\Commands\Notify;
+use App\Console\Commands\NotifyEntities;
 use App\Console\Commands\NotifyWeekly;
 use App\Console\Commands\UserCleanup;
 use App\Models\User;
@@ -26,6 +27,7 @@ class Kernel extends ConsoleKernel
         Notify::class,
         AdminTest::class,
         AdminActivitySummary::class,
+        NotifyEntities::class,
         NotifyWeekly::class,
         UserCleanup::class,
         AutomateInstagramPosts::class,
@@ -49,6 +51,9 @@ class Kernel extends ConsoleKernel
         // MONTHLY
         // schedule monthly admin activity summary (30 days) on the first of each month
         $schedule->command('admin:activity-summary 30')->monthly()->timezone('America/New_York')->at('6:00');
+
+        // schedule monthly entity outreach reminder on the first of each month
+        $schedule->command('notifyEntities')->monthly()->timezone('America/New_York')->at('7:00');
 
         // DAILY
         // schedule daily user cleanup process
