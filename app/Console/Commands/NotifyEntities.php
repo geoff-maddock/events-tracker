@@ -17,11 +17,13 @@ use Illuminate\Support\Facades\Mail;
 class NotifyEntities extends Command
 {
     /**
-     * The console command name.
+     * The name and signature of the console command.
      *
      * @var string
      */
-    protected $name = 'notifyEntities';
+    protected $signature = 'notifyEntities
+                            {--dry-run : List who would receive emails without actually sending any}
+                            {--test-run= : Send all emails to this address instead of the actual recipients}';
 
     /**
      * The console command description.
@@ -39,6 +41,16 @@ class NotifyEntities extends Command
         $admin_email = config('app.admin');
         $site = config('app.app_name');
         $url = config('app.url');
+
+        $isDryRun = (bool) $this->option('dry-run');
+        $testEmail = $this->option('test-run');
+        $isTestRun = !empty($testEmail);
+
+        if ($isDryRun) {
+            $this->warn('DRY RUN — no emails will be sent.');
+        } elseif ($isTestRun) {
+            $this->warn("TEST RUN — all emails will be sent to: {$testEmail}");
+        }
 
         $cutoff = Carbon::now()->subMonths(2);
         $emailedCount = 0;
@@ -72,6 +84,7 @@ class NotifyEntities extends Command
                 })->exists();
 
             if ($recentLogin) {
+                $this->line("  SKIP  {$entity->name} — contact user logged in recently.");
                 Log::info("NotifyEntities: Skipping {$entity->name} — contact user logged in recently.");
                 continue;
             }
@@ -104,10 +117,20 @@ class NotifyEntities extends Command
             // Deduplicate and sort by start date
             $relatedEvents = $relatedEvents->unique('id')->sortBy('start_at')->values();
 
-            // Send a reminder email to each contact email for this entity
+            // In dry-run mode, just show who would receive the email
+            if ($isDryRun) {
+                foreach ($contactEmails as $contactEmail) {
+                    $this->line("  WOULD SEND  {$entity->name} → {$contactEmail}  (upcoming events: {$upcomingEvents->count()}, related events: {$relatedEvents->count()})");
+                }
+                continue;
+            }
+
+            // Determine the actual recipient(s): test address or real contact email
             foreach ($contactEmails as $contactEmail) {
+                $recipient = $isTestRun ? $testEmail : $contactEmail;
+
                 try {
-                    Mail::to($contactEmail)
+                    Mail::to($recipient)
                         ->send(new EntityReminder(
                             $url,
                             $site,
@@ -119,11 +142,13 @@ class NotifyEntities extends Command
                             $relatedEvents
                         ));
 
-                    Log::info("NotifyEntities: Sent reminder to {$entity->name} at {$contactEmail}.");
+                    $logTarget = $isTestRun ? "{$testEmail} (test, real: {$contactEmail})" : $contactEmail;
+                    $this->line("  SENT  {$entity->name} → {$logTarget}");
+                    Log::info("NotifyEntities: Sent reminder for {$entity->name} to {$logTarget}.");
                     $emailedCount++;
                 } catch (\Exception $e) {
-                    Log::error("NotifyEntities: Failed to send to {$entity->name} at {$contactEmail}: {$e->getMessage()}");
-                    $this->error("Failed to send to {$entity->name} at {$contactEmail}: {$e->getMessage()}");
+                    Log::error("NotifyEntities: Failed to send to {$entity->name} at {$recipient}: {$e->getMessage()}");
+                    $this->error("Failed to send to {$entity->name} at {$recipient}: {$e->getMessage()}");
                 }
             }
         }
@@ -140,9 +165,18 @@ class NotifyEntities extends Command
 
         $this->info("Found {$instagramEntities->count()} Instagram-only entities for admin outreach.");
 
+        if ($isDryRun) {
+            $this->warn('DRY RUN complete — no emails were sent.');
+            $this->info("Admin summary would be sent to: {$admin_email}");
+
+            return Command::SUCCESS;
+        }
+
         // Send the admin a summary email with the Instagram-only list and a template message
+        $adminRecipient = $isTestRun ? $testEmail : $admin_email;
+
         try {
-            Mail::to($admin_email)
+            Mail::to($adminRecipient)
                 ->send(new EntityOutreachAdminSummary(
                     $url,
                     $site,
@@ -152,7 +186,9 @@ class NotifyEntities extends Command
                     $emailedCount
                 ));
 
-            Log::info("NotifyEntities: Admin outreach summary sent to {$admin_email}.");
+            $logTarget = $isTestRun ? "{$testEmail} (test, real: {$admin_email})" : $admin_email;
+            $this->line("  SENT  Admin outreach summary → {$logTarget}");
+            Log::info("NotifyEntities: Admin outreach summary sent to {$logTarget}.");
         } catch (\Exception $e) {
             Log::error("NotifyEntities: Failed to send admin summary: {$e->getMessage()}");
             $this->error("Failed to send admin summary: {$e->getMessage()}");
