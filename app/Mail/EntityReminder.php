@@ -7,7 +7,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Collection as SupportCollection;
 
 class EntityReminder extends Mailable
 {
@@ -32,8 +31,6 @@ class EntityReminder extends Mailable
 
     public Collection $frequentVenues;
 
-    public SupportCollection $frequentVenueEvents;
-
     /**
      * Create a new message instance.
      */
@@ -46,8 +43,7 @@ class EntityReminder extends Mailable
         Entity $entity,
         Collection $upcomingEvents,
         Collection $relatedEntities,
-        Collection $frequentVenues,
-        SupportCollection $frequentVenueEvents
+        Collection $frequentVenues
     ) {
         $this->url = $url;
         $this->site = $site;
@@ -58,7 +54,6 @@ class EntityReminder extends Mailable
         $this->upcomingEvents = $upcomingEvents;
         $this->relatedEntities = $relatedEntities;
         $this->frequentVenues = $frequentVenues;
-        $this->frequentVenueEvents = $frequentVenueEvents;
     }
 
     /**

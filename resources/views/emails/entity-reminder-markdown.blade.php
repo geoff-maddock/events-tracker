@@ -34,21 +34,12 @@ Here are some acts you've shared the stage with:
 @if ($frequentVenues->count() > 0)
 ### Venues You Frequently Perform At
 
-Here are some venues you've performed at, along with their upcoming events:
+Here are some venues you've performed at:
 
 @foreach ($frequentVenues as $venue)
-**[{{ $venue->name }}]({{ $url }}entities/{{ $venue->slug }})**
-
-@php $venueEvts = $frequentVenueEvents->get($venue->id) @endphp
-@if ($venueEvts && $venueEvts->count() > 0)
-@foreach ($venueEvts as $event)
-- [{{ $event->name }}]({{ $url }}events/{{ $event->slug }}) — {{ $event->start_at->format('l F jS Y \a\t g:i A') }}
+- [{{ $venue->name }}]({{ $url }}entities/{{ $venue->slug }})
 @endforeach
-@else
-- *(No upcoming events listed)*
-@endif
 
-@endforeach
 @endif
 
 ---

@@ -7,7 +7,6 @@ use App\Mail\EntityReminder;
 use App\Models\Action;
 use App\Models\Activity;
 use App\Models\Entity;
-use App\Models\Event;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -134,16 +133,6 @@ class NotifyEntities extends Command
             // Gather venues this entity frequently performs at, up to 5
             $frequentVenues = $entity->getFrequentlyPerformsAt(5);
 
-            // Gather upcoming events at each of those venues (next 90 days, max 5 per venue)
-            $frequentVenueEvents = $frequentVenues->mapWithKeys(function ($venue) {
-                return [$venue->id => Event::where('venue_id', $venue->id)
-                    ->where('start_at', '>=', Carbon::now())
-                    ->where('start_at', '<=', Carbon::now()->addDays(90))
-                    ->orderBy('start_at', 'ASC')
-                    ->limit(5)
-                    ->get()];
-            });
-
             // In dry-run mode, just show who would receive the email
             if ($isDryRun) {
                 foreach ($contactEmails as $contactEmail) {
@@ -167,8 +156,7 @@ class NotifyEntities extends Command
                             $entity,
                             $upcomingEvents,
                             $relatedEntities,
-                            $frequentVenues,
-                            $frequentVenueEvents
+                            $frequentVenues
                         ));
 
                     $logTarget = $isTestRun ? "{$testEmail} (test, real: {$contactEmail})" : $contactEmail;
