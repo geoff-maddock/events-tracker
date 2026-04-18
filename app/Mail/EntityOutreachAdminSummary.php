@@ -21,6 +21,8 @@ class EntityOutreachAdminSummary extends Mailable
 
     public string $reply_email;
 
+    public string $feedback_email;
+
     public Collection $instagramEntities;
 
     public int $emailedCount;
@@ -33,6 +35,7 @@ class EntityOutreachAdminSummary extends Mailable
         string $site,
         string $admin_email,
         string $reply_email,
+        string $feedback_email,
         Collection $instagramEntities,
         int $emailedCount
     ) {
@@ -40,6 +43,7 @@ class EntityOutreachAdminSummary extends Mailable
         $this->site = $site;
         $this->admin_email = $admin_email;
         $this->reply_email = $reply_email;
+        $this->feedback_email = $feedback_email;
         $this->instagramEntities = $instagramEntities;
         $this->emailedCount = $emailedCount;
     }
@@ -53,6 +57,7 @@ class EntityOutreachAdminSummary extends Mailable
 
         return $this->markdown('emails.entity-outreach-admin-markdown')
             ->from($this->reply_email, $this->site)
+            ->replyTo($this->feedback_email, $this->site)
             ->subject($this->site.': Entity Outreach Summary - '.$dt->format('F Y'));
     }
 }

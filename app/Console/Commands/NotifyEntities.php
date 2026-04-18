@@ -39,6 +39,7 @@ class NotifyEntities extends Command
     {
         $reply_email = config('app.noreplyemail');
         $admin_email = config('app.admin');
+        $feedback_email = config('app.feedback');
         $site = config('app.app_name');
         $url = config('app.url');
 
@@ -136,6 +137,7 @@ class NotifyEntities extends Command
                             $site,
                             $admin_email,
                             $reply_email,
+                            $feedback_email,
                             $entity,
                             $upcomingEvents,
                             $relatedEntities,
@@ -182,6 +184,7 @@ class NotifyEntities extends Command
                     $site,
                     $admin_email,
                     $reply_email,
+                    $feedback_email,
                     $instagramEntities,
                     $emailedCount
                 ));
