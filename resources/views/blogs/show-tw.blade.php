@@ -111,11 +111,82 @@
 			@endcan
 		</div>
 	</div>
+
+	<!-- Photo Upload -->
+	@auth
+		@if (Auth::user()->id === $blog->user?->id || Auth::user()->hasGroup('super_admin'))
+		<div class="rounded-lg border border-border bg-card shadow p-4 mb-6">
+			<form action="/blogs/{{ $blog->id }}/photos"
+				class="dropzone border-2 border-dashed border-border rounded-lg p-4 text-center cursor-pointer hover:border-muted-foreground/60 transition-colors"
+				id="myDropzone"
+				method="POST">
+				<input type="hidden" name="_token" value="{{ csrf_token() }}">
+			</form>
+		</div>
+		@endif
+	@endauth
+
+	<!-- Photos Section -->
+	@include('partials.photo-gallery-tw', ['blog' => $blog, 'event' => null, 'entity' => null, 'series' => null, 'lightboxGroup' => 'blog-gallery'])
 </div>
 
 @stop
 
 @section('scripts.footer')
+@auth
+	@if (Auth::user()->id === $blog->user?->id || Auth::user()->hasGroup('super_admin'))
+<script>
+$(document).ready(function(){
+	// Wait for Dropzone to be available
+	var attempts = 0;
+	var maxAttempts = 50; // 5 seconds max
+
+	function initDropzone() {
+		attempts++;
+
+		if (typeof window.Dropzone === 'undefined') {
+			if (attempts >= maxAttempts) {
+				console.error('Dropzone failed to load after ' + (maxAttempts * 100) + 'ms');
+				return;
+			}
+			setTimeout(initDropzone, 100);
+			return;
+		}
+
+		window.Dropzone.autoDiscover = false;
+		var myDropzone = new window.Dropzone('#myDropzone', {
+			dictDefaultMessage: "Add a picture (Max size 5MB)"
+		});
+
+		$('div.dz-default.dz-message').css({'color': '#9ca3af', 'opacity': 1, 'background-image': 'none'});
+
+		myDropzone.options.addPhotosForm = {
+			maxFilesize: 5,
+			acceptedFiles: '.jpg,.jpeg,.png,.gif,.webp',
+			dictDefaultMessage: "Drop a file here to add a picture",
+			init: function () {
+				myDropzone.on("success", function (file) {
+					location.reload();
+				});
+				myDropzone.on("successmultiple", function (file) {
+					location.reload();
+				});
+				myDropzone.on("error", function (file, message) {
+					console.log(message);
+				});
+			},
+			success: function() { console.log('Upload successful'); }
+		};
+
+		myDropzone.options.addPhotosForm.init();
+	}
+
+	// Start trying to initialize Dropzone
+	initDropzone();
+})
+</script>
+	@endif
+@endauth
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', function() {
 	const deleteButton = document.querySelector('input.delete');

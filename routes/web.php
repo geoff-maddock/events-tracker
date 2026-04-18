@@ -437,6 +437,7 @@ Route::get('blogs/all', 'BlogsController@indexAll');
 Route::match(['get', 'post'], 'blogs/filter', ['as' => 'blogs.filter', 'uses' => 'BlogsController@filter']);
 Route::get('blogs/reset', ['as' => 'blogs.reset', 'uses' => 'BlogsController@reset']);
 Route::get('blogs/rpp-reset', ['as' => 'blogs.rppReset', 'uses' => 'BlogsController@rppReset']);
+Route::post('blogs/{id}/photos', 'BlogsController@addPhoto');
 
 Route::bind('blogs', function ($id) {
     return Blog::whereId($id)->firstOrFail();
