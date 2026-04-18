@@ -23,7 +23,8 @@ class NotifyEntities extends Command
      */
     protected $signature = 'notifyEntities
                             {--dry-run : List who would receive emails without actually sending any}
-                            {--test-run= : Send all emails to this address instead of the actual recipients}';
+                            {--test-run= : Send all emails to this address instead of the actual recipients}
+                            {--single= : Process only the entity with this slug (or numeric ID)}';
 
     /**
      * The console command description.
@@ -46,6 +47,7 @@ class NotifyEntities extends Command
         $isDryRun = (bool) $this->option('dry-run');
         $testEmail = $this->option('test-run');
         $isTestRun = !empty($testEmail);
+        $singleSlug = $this->option('single');
 
         if ($isDryRun) {
             $this->warn('DRY RUN — no emails will be sent.');
@@ -53,14 +55,34 @@ class NotifyEntities extends Command
             $this->warn("TEST RUN — all emails will be sent to: {$testEmail}");
         }
 
+        if ($singleSlug) {
+            $this->warn("SINGLE MODE — processing only entity: {$singleSlug}");
+        }
+
         $cutoff = Carbon::now()->subMonths(2);
         $emailedCount = 0;
 
         // Gather all entities that have at least one contact with an email address
         /** @var \Illuminate\Database\Eloquent\Collection<int, Entity> $entities */
-        $entities = Entity::whereHas('contacts', function ($q) {
+        $query = Entity::whereHas('contacts', function ($q) {
             $q->whereNotNull('email')->where('email', '!=', '');
-        })->with(['contacts', 'roles'])->get();
+        })->with(['contacts', 'roles']);
+
+        if ($singleSlug) {
+            if (is_numeric($singleSlug)) {
+                $query->where('id', (int) $singleSlug);
+            } else {
+                $query->where('slug', $singleSlug);
+            }
+        }
+
+        $entities = $query->get();
+
+        if ($singleSlug && $entities->isEmpty()) {
+            $this->error("No entity found with slug or ID: {$singleSlug}");
+
+            return Command::FAILURE;
+        }
 
         $this->info("Found {$entities->count()} entities with contact emails.");
 
@@ -170,6 +192,13 @@ class NotifyEntities extends Command
         if ($isDryRun) {
             $this->warn('DRY RUN complete — no emails were sent.');
             $this->info("Admin summary would be sent to: {$admin_email}");
+
+            return Command::SUCCESS;
+        }
+
+        // When targeting a single entity, skip the admin Instagram summary
+        if ($singleSlug) {
+            $this->info("NotifyEntities (single) complete. Sent {$emailedCount} entity reminder email(s).");
 
             return Command::SUCCESS;
         }
