@@ -131,16 +131,6 @@ class NotifyEntities extends Command
             // Gather related entities (those that frequently perform with this entity), up to 5
             $relatedEntities = $entity->getFrequentlyPerformsWith(5);
 
-            // Gather upcoming events for each related entity (next 90 days, max 5 per entity)
-            $relatedEntityEvents = $relatedEntities->mapWithKeys(function ($relatedEntity) {
-                return [$relatedEntity->id => $relatedEntity->events()
-                    ->where('start_at', '>=', Carbon::now())
-                    ->where('start_at', '<=', Carbon::now()->addDays(90))
-                    ->orderBy('start_at', 'ASC')
-                    ->limit(5)
-                    ->get()];
-            });
-
             // Gather venues this entity frequently performs at, up to 5
             $frequentVenues = $entity->getFrequentlyPerformsAt(5);
 
@@ -177,7 +167,6 @@ class NotifyEntities extends Command
                             $entity,
                             $upcomingEvents,
                             $relatedEntities,
-                            $relatedEntityEvents,
                             $frequentVenues,
                             $frequentVenueEvents
                         ));

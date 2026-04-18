@@ -30,8 +30,6 @@ class EntityReminder extends Mailable
 
     public Collection $relatedEntities;
 
-    public SupportCollection $relatedEntityEvents;
-
     public Collection $frequentVenues;
 
     public SupportCollection $frequentVenueEvents;
@@ -48,7 +46,6 @@ class EntityReminder extends Mailable
         Entity $entity,
         Collection $upcomingEvents,
         Collection $relatedEntities,
-        SupportCollection $relatedEntityEvents,
         Collection $frequentVenues,
         SupportCollection $frequentVenueEvents
     ) {
@@ -60,7 +57,6 @@ class EntityReminder extends Mailable
         $this->entity = $entity;
         $this->upcomingEvents = $upcomingEvents;
         $this->relatedEntities = $relatedEntities;
-        $this->relatedEntityEvents = $relatedEntityEvents;
         $this->frequentVenues = $frequentVenues;
         $this->frequentVenueEvents = $frequentVenueEvents;
     }

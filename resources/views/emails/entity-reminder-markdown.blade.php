@@ -23,21 +23,12 @@ We don't have any upcoming events listed for you yet — this is a great opportu
 @if ($relatedEntities->count() > 0)
 ### Artists &amp; Acts You Frequently Perform With
 
-Here are some acts you've shared the stage with, along with their upcoming events:
+Here are some acts you've shared the stage with:
 
 @foreach ($relatedEntities as $related)
-**[{{ $related->name }}]({{ $url }}entities/{{ $related->slug }})**
-
-@php $relatedEvts = $relatedEntityEvents->get($related->id) @endphp
-@if ($relatedEvts && $relatedEvts->count() > 0)
-@foreach ($relatedEvts as $event)
-- [{{ $event->name }}]({{ $url }}events/{{ $event->slug }}) — {{ $event->start_at->format('l F jS Y \a\t g:i A') }}@if ($event->venue_id) at {{ $event->venue->name }}@endif
+- [{{ $related->name }}]({{ $url }}entities/{{ $related->slug }})
 @endforeach
-@else
-- *(No upcoming events listed)*
-@endif
 
-@endforeach
 @endif
 
 @if ($frequentVenues->count() > 0)
