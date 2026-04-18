@@ -11,20 +11,26 @@ We wanted to share a summary of the activity related to your profile on {{ $url 
 ## Your Profile
 
 **Name:** {{ $entity->name }}
+
 @if ($entity->entityType)
 **Type:** {{ $entity->entityType->name }}
+
 @endif
 @if ($entity->entityStatus)
 **Status:** {{ $entity->entityStatus->name }}
+
 @endif
 @if ($entity->short)
 **Summary:** {{ $entity->short }}
+
 @endif
 @if ($entity->description)
 **Description:** {{ $entity->description }}
+
 @endif
 @if ($entity->getRoleString())
 **Roles:** {{ $entity->getRoleString() }}
+
 @endif
 
 [View your profile on {{ $site }}]({{ $url }}entities/{{ $entity->slug }})
