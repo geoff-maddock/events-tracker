@@ -30,6 +30,8 @@ class EntityUpdateSummary extends Mailable
 
     public Collection $frequentlyPerformsWith;
 
+    public Collection $frequentlyPerformsAt;
+
     /**
      * Create a new message instance.
      *
@@ -43,7 +45,8 @@ class EntityUpdateSummary extends Mailable
         Entity $entity,
         Collection $upcomingEvents,
         Collection $pastEvents,
-        Collection $frequentlyPerformsWith
+        Collection $frequentlyPerformsWith,
+        Collection $frequentlyPerformsAt
     ) {
         $this->url = $url;
         $this->site = $site;
@@ -53,6 +56,7 @@ class EntityUpdateSummary extends Mailable
         $this->upcomingEvents = $upcomingEvents;
         $this->pastEvents = $pastEvents;
         $this->frequentlyPerformsWith = $frequentlyPerformsWith;
+        $this->frequentlyPerformsAt = $frequentlyPerformsAt;
     }
 
     /**

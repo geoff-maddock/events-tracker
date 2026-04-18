@@ -84,6 +84,19 @@ Based on your event history, {{ $entity->name }} frequently performs with:
 ---
 @endif
 
+@if ($frequentlyPerformsAt->count() > 0)
+## Venues Frequently Performed At
+
+Based on your event history, {{ $entity->name }} frequently performs at:
+
+@foreach ($frequentlyPerformsAt as $venue)
+- [{{ $venue->name }}]({{ $url }}entities/{{ $venue->slug }})@if (isset($venue->frequency)) ({{ $venue->frequency }} {{ $venue->frequency === 1 ? 'event' : 'events' }})@endif
+
+@endforeach
+
+---
+@endif
+
 ## Keep Your Profile Up to Date
 
 We invite you to log in and update your profile on {{ $site }}, add upcoming events, or sign up if you don't already have an account.

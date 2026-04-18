@@ -1487,6 +1487,9 @@ class EntitiesController extends Controller
         // entities frequently performing with
         $frequentlyPerformsWith = $entity->getFrequentlyPerformsWith(10);
 
+        // venues frequently performed at
+        $frequentlyPerformsAt = $entity->getFrequentlyPerformsAt(10);
+
         Mail::to($contact->email, $contact->name ?? $entity->name)
             ->send(new EntityUpdateSummary(
                 $url,
@@ -1496,7 +1499,8 @@ class EntitiesController extends Controller
                 $entity,
                 $upcomingEvents,
                 $pastEvents,
-                $frequentlyPerformsWith
+                $frequentlyPerformsWith,
+                $frequentlyPerformsAt
             ));
 
         Log::info('Entity update summary sent for entity ' . $entity->id . ' (' . $entity->name . ') to ' . $contact->email);
