@@ -24,7 +24,8 @@ class NotifyEntities extends Command
     protected $signature = 'notifyEntities
                             {--dry-run : List who would receive emails without actually sending any}
                             {--test-run= : Send all emails to this address instead of the actual recipients}
-                            {--single= : Process only the entity with this slug (or numeric ID)}';
+                            {--single= : Process only the entity with this slug (or numeric ID)}
+                            {--skip-activity-check : Send to all qualifying entities regardless of recent login activity}';
 
     /**
      * The console command description.
@@ -48,6 +49,7 @@ class NotifyEntities extends Command
         $testEmail = $this->option('test-run');
         $isTestRun = !empty($testEmail);
         $singleSlug = $this->option('single');
+        $skipActivityCheck = (bool) $this->option('skip-activity-check');
 
         if ($isDryRun) {
             $this->warn('DRY RUN — no emails will be sent.');
@@ -57,6 +59,10 @@ class NotifyEntities extends Command
 
         if ($singleSlug) {
             $this->warn("SINGLE MODE — processing only entity: {$singleSlug}");
+        }
+
+        if ($skipActivityCheck) {
+            $this->warn('SKIP ACTIVITY CHECK — recent-login filter is disabled.');
         }
 
         $cutoff = Carbon::now()->subMonths(2);
@@ -99,17 +105,19 @@ class NotifyEntities extends Command
             }
 
             // Check whether any user matching a contact email has logged in recently.
-            // If so, they are already engaged — skip this entity.
-            $recentLogin = User::whereIn('email', $contactEmails)
-                ->whereHas('activity', function ($q) use ($cutoff) {
-                    $q->where('action_id', Action::LOGIN)
-                        ->where('created_at', '>=', $cutoff);
-                })->exists();
+            // If so, they are already engaged — skip this entity (unless overridden).
+            if (!$skipActivityCheck) {
+                $recentLogin = User::whereIn('email', $contactEmails)
+                    ->whereHas('activity', function ($q) use ($cutoff) {
+                        $q->where('action_id', Action::LOGIN)
+                            ->where('created_at', '>=', $cutoff);
+                    })->exists();
 
-            if ($recentLogin) {
-                $this->line("  SKIP  {$entity->name} — contact user logged in recently.");
-                Log::info("NotifyEntities: Skipping {$entity->name} — contact user logged in recently.");
-                continue;
+                if ($recentLogin) {
+                    $this->line("  SKIP  {$entity->name} — contact user logged in recently.");
+                    Log::info("NotifyEntities: Skipping {$entity->name} — contact user logged in recently.");
+                    continue;
+                }
             }
 
             // Gather upcoming events for the entity (next 90 days, max 10)
