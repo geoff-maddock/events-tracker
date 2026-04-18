@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "cc58a79b-8dd4-42d8-87f8-8c667838eaa1",
-		"name": "Arcane City",
+		"_postman_id": "cc58a79b-8dd4-42d8-87f8-8c667838ea12",
+		"name": "Arcane City [updated]",
 		"description": "REST API for working with Arcane City data\n\nContact Support:\n Name: Geoff Maddock\n Email: geoff.maddock@gmail.com",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_uid": "21955993-cc58a79b-8dd4-42d8-87f8-8c667838eaa1"
@@ -973,13 +973,14 @@
 									]
 								},
 								{
-									"name": "Update Entity",
+									"name": "Update Entity (PUT — full replace)",
 									"id": "68aac17f-003a-4564-8028-455c0a8299a6",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
 									"request": {
 										"method": "PUT",
+										"description": "Full replacement of the entity per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and `tag_list`, `role_list`, and `alias_list` sync to exactly the supplied arrays — omitting a list detaches all rows for that relation. Use PATCH for partial updates.",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -992,7 +993,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"name\": \"Brillobox\",\n  \"slug\": \"brillobox-bar\",\n  \"short\": \"A two level bar and venue\",\n  \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n  \"entity_type_id\": 1,\n  \"entity_status_id\": 1,\n  \"created_by\": 1,\n  \"updated_by\": 1,\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"started_at\": \"2018-03-20T09:12:28Z\",\n  \"facebook_username\": \"johnsmith\",\n  \"twitter_username\": \"johnsmith\"\n}",
+											"raw": "{\n  \"name\": \"Brillobox\",\n  \"slug\": \"brillobox-bar\",\n  \"short\": \"A two level bar and venue\",\n  \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n  \"entity_type_id\": 1,\n  \"entity_status_id\": 1,\n  \"started_at\": \"2018-03-20T09:12:28Z\",\n  \"facebook_username\": \"johnsmith\",\n  \"twitter_username\": \"johnsmith\",\n  \"instagram_username\": \"johnsmith\",\n  \"tag_list\": [],\n  \"role_list\": [],\n  \"alias_list\": []\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -1033,7 +1034,109 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"name\": \"Brillobox\",\n  \"slug\": \"brillobox-bar\",\n  \"short\": \"A two level bar and venue\",\n  \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n  \"entity_type_id\": 1,\n  \"entity_status_id\": 1,\n  \"created_by\": 1,\n  \"updated_by\": 1,\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"started_at\": \"2018-03-20T09:12:28Z\",\n  \"facebook_username\": \"johnsmith\",\n  \"twitter_username\": \"johnsmith\"\n}",
+													"raw": "{\n  \"name\": \"Brillobox\",\n  \"slug\": \"brillobox-bar\",\n  \"short\": \"A two level bar and venue\",\n  \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n  \"entity_type_id\": 1,\n  \"entity_status_id\": 1,\n  \"started_at\": \"2018-03-20T09:12:28Z\",\n  \"facebook_username\": \"johnsmith\",\n  \"twitter_username\": \"johnsmith\",\n  \"instagram_username\": \"johnsmith\",\n  \"tag_list\": [],\n  \"role_list\": [],\n  \"alias_list\": []\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/entities/:slug",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"entities",
+														":slug"
+													],
+													"variable": [
+														{
+															"key": "slug",
+															"value": "cutups",
+															"description": "(Required) The unique identifier of the entity"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"value\": \"reference #/components/schemas/Entity not found in the OpenAPI spec\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Patch Entity (PATCH — partial update)",
+									"id": "2ae0fe3b-9124-478d-a2fd-99772484e4b3",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "PATCH",
+										"description": "Partial update per REST PATCH semantics. Only the fields present in the body are modified; scalar fields and relations not included are left untouched. To clear a relation explicitly, send an empty array (e.g. `\"tag_list\": []`).",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"instagram_username\": \"boom_concepts\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/entities/:slug",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"entities",
+												":slug"
+											],
+											"variable": [
+												{
+													"key": "slug",
+													"value": "cutups",
+													"description": "(Required) The unique identifier of the entity"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "fa063ede-0e4e-4029-b5b1-f16f13d1b3a5",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "PATCH",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"instagram_username\": \"boom_concepts\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"

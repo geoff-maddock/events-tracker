@@ -107,7 +107,12 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::post('entities/{entity}/unfollow', 'Api\EntitiesController@unfollowJson')->middleware('auth:sanctum');
     Route::get('entities/popular', ['as' => 'entities.popular', 'uses' => 'Api\EntitiesController@popular']);
     Route::get('entities/following', ['as' => 'entities.following', 'uses' => 'Api\EntitiesController@indexFollowingJson'])->middleware('auth:sanctum');
-    Route::resource('entities', 'Api\EntitiesController');
+    // PUT replaces the resource; PATCH applies a partial update. Both are
+    // wired explicitly so they map to distinct controller methods rather than
+    // the single update() endpoint Route::resource would otherwise generate.
+    Route::put('entities/{entity}', 'Api\EntitiesController@update')->name('entities.update');
+    Route::patch('entities/{entity}', 'Api\EntitiesController@patch')->name('entities.patch');
+    Route::resource('entities', 'Api\EntitiesController')->except(['update']);
 
     Route::match(['get', 'post'], 'entity-types/filter', ['as' => 'entityType.filter', 'uses' => 'Api\EntityTypesController@filter']);
     Route::get('entity-types/reset', ['as' => 'entity-types.reset', 'uses' => 'Api\EntityTypesController@reset']);

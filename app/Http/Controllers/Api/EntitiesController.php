@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Filters\EntityFilters;
+use App\Http\Requests\EntityPatchRequest;
 use App\Http\Requests\EntityRequest;
 use App\Http\Resources\EntityCollection;
 use App\Http\Resources\EntityResource;
@@ -88,6 +89,7 @@ class EntitiesController extends Controller
             'unattendJson',
             'store',
             'update',
+            'patch',
             'destroy',
             'followJson',
             'unfollowJson',
@@ -699,28 +701,86 @@ class EntitiesController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * PUT: full replacement of the resource.
+     *
+     * Optional fillable scalars omitted from the body are reset to null, and
+     * relations (tags, aliases, roles) sync to the supplied arrays — missing
+     * keys mean "detach all", per strict REST semantics.
      */
     public function update(Entity $entity, EntityRequest $request): JsonResponse
     {
-        $msg = '';
-
         $input = $request->all();
-
         $input['slug'] = Str::slug($request->input('slug', '-'));
+
+        // Reset optional fillable scalars not present in the body to null so
+        // PUT behaves as a full replacement.
+        $optionalFields = [
+            'facebook_username',
+            'twitter_username',
+            'instagram_username',
+            'entity_address_id',
+            'started_at',
+        ];
+        foreach ($optionalFields as $field) {
+            if (!array_key_exists($field, $input)) {
+                $input[$field] = null;
+            }
+        }
 
         $entity->fill($input)->save();
 
-        // if we got this far, it worked
-        $msg = 'Updated entity. ';
+        $entity->tags()->sync($this->resolveTagIds($request->input('tag_list', [])));
+        $entity->aliases()->sync($this->resolveAliasIds($request->input('alias_list', [])));
+        $entity->roles()->sync($request->input('role_list', []));
 
-        $tagArray = $request->input('tag_list', []);
-        $aliasArray = $request->input('alias_list', []);
+        Activity::log($entity, $this->user, 2);
 
+        return response()->json(new EntityResource($entity));
+    }
+
+    /**
+     * PATCH: partial update. Only fields present in the body are touched;
+     * scalars and relations not in the request are left untouched.
+     */
+    public function patch(Entity $entity, EntityPatchRequest $request): JsonResponse
+    {
+        $input = $request->all();
+
+        if (array_key_exists('slug', $input)) {
+            $input['slug'] = Str::slug($request->input('slug', '-'));
+        }
+
+        // Only touch scalar fields that actually appeared in the body.
+        $scalarInput = array_intersect_key($input, array_flip($entity->getFillable()));
+        if (!empty($scalarInput)) {
+            $entity->fill($scalarInput)->save();
+        }
+
+        if ($request->has('tag_list')) {
+            $entity->tags()->sync($this->resolveTagIds((array) $request->input('tag_list', [])));
+        }
+
+        if ($request->has('alias_list')) {
+            $entity->aliases()->sync($this->resolveAliasIds((array) $request->input('alias_list', [])));
+        }
+
+        if ($request->has('role_list')) {
+            $entity->roles()->sync((array) $request->input('role_list', []));
+        }
+
+        Activity::log($entity, $this->user, 2);
+
+        return response()->json(new EntityResource($entity));
+    }
+
+    /**
+     * Resolve a list of tag identifiers to ids, creating any tags that don't
+     * already exist by id. Accepts a mix of existing tag ids and new tag names.
+     */
+    private function resolveTagIds(array $tagArray): array
+    {
         $syncArray = [];
-        $aliasSyncArray = [];
 
-        // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
             if (!Tag::find($tag)) {
                 $newTag = new Tag();
@@ -729,18 +789,25 @@ class EntitiesController extends Controller
                 $newTag->tag_type_id = 1;
                 $newTag->save();
 
-                // log adding of new tag
                 Activity::log($newTag, $this->user, 1);
 
                 $syncArray[strtolower($tag)] = $newTag->id;
-
-                $msg .= ' Added tag '.$tag.'.';
             } else {
                 $syncArray[$key] = $tag;
             }
         }
 
-        // check the elements in the alias list, and if any don't match, add the alias
+        return $syncArray;
+    }
+
+    /**
+     * Resolve a list of alias identifiers to ids, creating any aliases that
+     * don't already exist by id.
+     */
+    private function resolveAliasIds(array $aliasArray): array
+    {
+        $aliasSyncArray = [];
+
         foreach ($aliasArray as $key => $alias) {
             if (!Alias::find($alias)) {
                 $newAlias = new Alias();
@@ -748,21 +815,12 @@ class EntitiesController extends Controller
                 $newAlias->save();
 
                 $aliasSyncArray[strtolower($alias)] = $newAlias->id;
-
-                $msg .= ' Added alias '.$alias.'.';
             } else {
                 $aliasSyncArray[$key] = $alias;
             }
         }
 
-        $entity->tags()->sync($syncArray);
-        $entity->aliases()->attach($aliasSyncArray);
-        $entity->roles()->sync($request->input('role_list', []));
-
-        // add to activity log
-        Activity::log($entity, $this->user, 2);
-
-        return response()->json(new EntityResource($entity));
+        return $aliasSyncArray;
     }
 
     /**
