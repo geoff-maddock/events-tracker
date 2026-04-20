@@ -73,7 +73,7 @@
         {{-- Col 3: Author (lg+) --}}
         <div class="hidden lg:flex flex-col items-center text-center w-28 flex-shrink-0">
             @if ($thread->user)
-            <a href="{{ route('users.show', [$thread->user->id]) }}" class="text-xs text-muted-foreground hover:text-primary truncate max-w-full">
+            <a href="{{ route('users.show', [$thread->user]) }}" class="text-xs text-muted-foreground hover:text-primary truncate max-w-full">
                 {{ $thread->user->name }}
             </a>
             <span class="text-xs text-muted-foreground/60 mt-0.5">{{ $thread->created_at->diffForHumans() }}</span>

@@ -99,7 +99,7 @@
         <div class="hidden sm:flex flex-col items-center gap-2 py-5 px-3 bg-muted/30 border-r border-border w-28 flex-shrink-0 text-center">
             @if (isset($thread->user))
             @include('users.avatar', ['user' => $thread->user, 'size' => 'xl'])
-            <a href="{{ route('users.show', [$thread->user->id]) }}"
+            <a href="{{ route('users.show', [$thread->user]) }}"
                class="text-xs font-medium text-foreground hover:text-primary leading-tight break-all">
                 {{ $thread->user->name }}
             </a>
@@ -123,7 +123,7 @@
                 @if (isset($thread->user))
                 @include('users.avatar', ['user' => $thread->user, 'size' => 'sm'])
                 <div class="min-w-0">
-                    <a href="{{ route('users.show', [$thread->user->id]) }}" class="text-sm font-medium hover:text-primary">{{ $thread->user->name }}</a>
+                    <a href="{{ route('users.show', [$thread->user]) }}" class="text-sm font-medium hover:text-primary">{{ $thread->user->name }}</a>
                     <div class="text-xs text-muted-foreground">{{ $thread->created_at->diffForHumans() }}</div>
                 </div>
                 @endif

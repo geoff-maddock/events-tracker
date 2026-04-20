@@ -159,7 +159,7 @@
 									<div class="hidden sm:flex flex-col items-center gap-1 py-3 px-2 bg-muted/30 border-r border-border w-24 flex-shrink-0 text-center">
 										@if (isset($thread->user))
 										@include('users.avatar', ['user' => $thread->user, 'size' => 'md'])
-										<a href="{{ route('users.show', [$thread->user->id]) }}" class="text-xs font-medium text-foreground hover:text-primary leading-tight break-all">{{ $thread->user->name }}</a>
+										<a href="{{ route('users.show', [$thread->user]) }}" class="text-xs font-medium text-foreground hover:text-primary leading-tight break-all">{{ $thread->user->name }}</a>
 										<span class="text-xs text-muted-foreground">{{ $thread->created_at->format('M j, Y') }}</span>
 										@else
 										<div class="w-10 h-10 rounded-full bg-muted flex items-center justify-center"><i class="bi bi-person text-muted-foreground/40"></i></div>
@@ -170,7 +170,7 @@
 										<div class="sm:hidden flex items-center gap-2 mb-2 pb-2 border-b border-border">
 											@if (isset($thread->user))
 											@include('users.avatar', ['user' => $thread->user, 'size' => 'sm'])
-											<a href="{{ route('users.show', [$thread->user->id]) }}" class="text-sm font-medium hover:text-primary">{{ $thread->user->name }}</a>
+											<a href="{{ route('users.show', [$thread->user]) }}" class="text-sm font-medium hover:text-primary">{{ $thread->user->name }}</a>
 											@endif
 											<span class="text-xs text-muted-foreground ml-auto">{{ $thread->created_at->diffForHumans() }}</span>
 										</div>
@@ -188,7 +188,7 @@
 									<div class="hidden sm:flex flex-col items-center gap-1 py-3 px-2 bg-muted/30 border-r border-border w-24 flex-shrink-0 text-center">
 										@if (isset($post->user))
 										@include('users.avatar', ['user' => $post->user, 'size' => 'md'])
-										<a href="{{ route('users.show', [$post->user->id]) }}" class="text-xs font-medium text-foreground hover:text-primary leading-tight break-all">{{ $post->user->name }}</a>
+										<a href="{{ route('users.show', [$post->user]) }}" class="text-xs font-medium text-foreground hover:text-primary leading-tight break-all">{{ $post->user->name }}</a>
 										<span class="text-xs text-muted-foreground">{{ $post->created_at->format('M j, Y') }}</span>
 										@else
 										<div class="w-10 h-10 rounded-full bg-muted flex items-center justify-center"><i class="bi bi-person text-muted-foreground/40"></i></div>
@@ -199,7 +199,7 @@
 										<div class="sm:hidden flex items-center gap-2 mb-2 pb-2 border-b border-border">
 											@if (isset($post->user))
 											@include('users.avatar', ['user' => $post->user, 'size' => 'sm'])
-											<a href="{{ route('users.show', [$post->user->id]) }}" class="text-sm font-medium hover:text-primary">{{ $post->user->name }}</a>
+											<a href="{{ route('users.show', [$post->user]) }}" class="text-sm font-medium hover:text-primary">{{ $post->user->name }}</a>
 											@endif
 											<span class="text-xs text-muted-foreground ml-auto">{{ $post->created_at->diffForHumans() }}</span>
 										</div>

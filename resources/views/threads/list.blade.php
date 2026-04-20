@@ -69,7 +69,7 @@
       @if (isset($thread->user))
         @include('users.avatar', ['user' => $thread->user])
         <span class="cell-stat d-none d-xl-table-cell">
-          {!! link_to_route('users.show', $thread->user->name, [$thread->user->id], ['class' => 'forum-link']) !!}
+          {!! link_to_route('users.show', $thread->user->name, [$thread->user], ['class' => 'forum-link']) !!}
         </span>
       @else
          User deleted

@@ -43,7 +43,7 @@
 
     <!-- Action Buttons -->
     <div class="flex flex-wrap gap-2 mb-6">
-        <a href="{{ route('users.show', ['user' => $user->id]) }}" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+        <a href="{{ route('users.show', ['user' => $user]) }}" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
             <i class="bi bi-person mr-2"></i>
             Profile
         </a>

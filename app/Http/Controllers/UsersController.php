@@ -400,7 +400,7 @@ class UsersController extends Controller
 
         flash('Success', 'The user has been updated');
 
-        return redirect()->route('users.show', ['user' => $user->id]);
+        return redirect()->route('users.show', ['user' => $user]);
     }
 
     /**
@@ -901,7 +901,7 @@ class UsersController extends Controller
 
         flash()->success('Success', 'Password for user '.$user->name.' has been reset.');
 
-        return redirect()->route('users.show', ['user' => $user->id]);
+        return redirect()->route('users.show', ['user' => $user]);
     }
 
     protected function getListControlOptions(): array
@@ -961,7 +961,7 @@ class UsersController extends Controller
 
         flash()->success('Success', 'Your data export has been queued. You will receive an email with a download link when it is ready.');
 
-        return redirect()->route('users.show', ['user' => $user->id]);
+        return redirect()->route('users.show', ['user' => $user]);
     }
 
     /**

@@ -139,7 +139,7 @@
                 </div>
                 <div class="hidden lg:block min-w-0 flex-1">
                     <div class="text-sm truncate">
-                        {!! link_to_route('users.show', $thread->user->name, [$thread->user->id], ['class' => 'text-primary hover:underline']) !!}
+                        {!! link_to_route('users.show', $thread->user->name, [$thread->user], ['class' => 'text-primary hover:underline']) !!}
                     </div>
                 </div>
             </div>

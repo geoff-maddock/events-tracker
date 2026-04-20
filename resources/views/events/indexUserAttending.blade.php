@@ -40,7 +40,7 @@ User @include('users.title-crumbs')
 
 <div class="row">
 	<div class="mb-2">
-		<a href="{!! route('users.show', ['user' => $user->id]) !!}" class="btn btn-primary">Show</a>
+		<a href="{!! route('users.show', ['user' => $user]) !!}" class="btn btn-primary">Show</a>
 		@if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser') ) )
 			<a href="{!! route('users.edit', ['user' => $user->id]) !!}" class="btn btn-primary">Edit Profile</a>
 			@can('grant_access')
