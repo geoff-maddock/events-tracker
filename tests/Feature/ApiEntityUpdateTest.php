@@ -85,7 +85,7 @@ class ApiEntityUpdateTest extends TestCase
             'alias_list' => ['Brand New Alias'],
         ];
 
-        $response = $this->putJson("/api/entities/{$entity->id}", $payload);
+        $response = $this->putJson("/api/entities/{$entity->slug}", $payload);
         $response->assertOk();
 
         $entity->refresh();
@@ -103,7 +103,7 @@ class ApiEntityUpdateTest extends TestCase
         ['entity' => $entity] = $this->makeEntityWithRelations();
 
         // PUT with only the required scalars; optional username fields are absent.
-        $response = $this->putJson("/api/entities/{$entity->id}", $this->basePayload($entity));
+        $response = $this->putJson("/api/entities/{$entity->slug}", $this->basePayload($entity));
         $response->assertOk();
 
         $entity->refresh();
@@ -117,7 +117,7 @@ class ApiEntityUpdateTest extends TestCase
         $this->authenticatedUser();
         ['entity' => $entity] = $this->makeEntityWithRelations();
 
-        $response = $this->putJson("/api/entities/{$entity->id}", $this->basePayload($entity));
+        $response = $this->putJson("/api/entities/{$entity->slug}", $this->basePayload($entity));
         $response->assertOk();
 
         $entity->refresh();
@@ -136,7 +136,7 @@ class ApiEntityUpdateTest extends TestCase
         $originalTwitter = $entity->twitter_username;
         $originalFacebook = $entity->facebook_username;
 
-        $response = $this->patchJson("/api/entities/{$entity->id}", [
+        $response = $this->patchJson("/api/entities/{$entity->slug}", [
             'instagram_username' => 'boom_concepts',
         ]);
         $response->assertOk();
@@ -163,7 +163,7 @@ class ApiEntityUpdateTest extends TestCase
         $originalInstagram = $entity->instagram_username;
         $newTag = Tag::factory()->create();
 
-        $response = $this->patchJson("/api/entities/{$entity->id}", [
+        $response = $this->patchJson("/api/entities/{$entity->slug}", [
             'tag_list' => [$newTag->id],
         ]);
         $response->assertOk();
@@ -182,7 +182,7 @@ class ApiEntityUpdateTest extends TestCase
         ['entity' => $entity] = $this->makeEntityWithRelations();
 
         // No name/slug/short/description/entity_type_id/entity_status_id supplied.
-        $response = $this->patchJson("/api/entities/{$entity->id}", [
+        $response = $this->patchJson("/api/entities/{$entity->slug}", [
             'instagram_username' => 'just_this_one',
         ]);
 
@@ -196,7 +196,7 @@ class ApiEntityUpdateTest extends TestCase
         ['entity' => $entity] = $this->makeEntityWithRelations();
 
         // PUT with only one field — required validation should reject it.
-        $response = $this->putJson("/api/entities/{$entity->id}", [
+        $response = $this->putJson("/api/entities/{$entity->slug}", [
             'instagram_username' => 'partial_only',
         ]);
 
