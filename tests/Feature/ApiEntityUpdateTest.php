@@ -192,6 +192,7 @@ class ApiEntityUpdateTest extends TestCase
 
     public function test_put_requires_full_payload(): void
     {
+        $this->withExceptionHandling();
         $this->authenticatedUser();
         ['entity' => $entity] = $this->makeEntityWithRelations();
 

@@ -718,7 +718,6 @@ class EntitiesController extends Controller
             'facebook_username',
             'twitter_username',
             'instagram_username',
-            'entity_address_id',
             'started_at',
         ];
         foreach ($optionalFields as $field) {
