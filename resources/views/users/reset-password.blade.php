@@ -13,7 +13,7 @@
 
     <!-- Action Menu -->
     <div class="flex flex-wrap gap-3 mb-6">
-        <a href="{{ route('users.show', ['user' => $user->id]) }}" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-border rounded-lg hover:bg-accent/80 transition-colors">
+        <a href="{{ route('users.show', ['user' => $user]) }}" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-border rounded-lg hover:bg-accent/80 transition-colors">
             <i class="bi bi-arrow-left mr-2"></i>
             Back to Profile
         </a>
@@ -61,7 +61,7 @@
                         <i class="bi bi-key mr-2"></i>
                         Reset Password
                     </button>
-                    <a href="{{ route('users.show', ['user' => $user->id]) }}" class="inline-flex items-center px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
+                    <a href="{{ route('users.show', ['user' => $user]) }}" class="inline-flex items-center px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
                         Cancel
                     </a>
                 </div>

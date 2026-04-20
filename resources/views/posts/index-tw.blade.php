@@ -181,7 +181,7 @@
 								<td class="px-4 py-3">
 									@if (isset($post->user))
 										@include('users.avatar', ['user' => $post->user])
-										{!! link_to_route('users.show', $post->user->name, [$post->user->id], ['class' => 'text-primary hover:underline']) !!}
+										{!! link_to_route('users.show', $post->user->name, [$post->user], ['class' => 'text-primary hover:underline']) !!}
 									@else
 										<span class="text-muted-foreground italic">User deleted</span>
 									@endif

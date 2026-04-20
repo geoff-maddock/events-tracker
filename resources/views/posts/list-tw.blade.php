@@ -8,7 +8,7 @@
         <div class="hidden sm:flex flex-col items-center gap-2 py-5 px-3 bg-muted/30 border-r border-border w-28 flex-shrink-0 text-center">
             @if (isset($post->user))
             @include('users.avatar', ['user' => $post->user, 'size' => 'lg'])
-            <a href="{{ route('users.show', [$post->user->id]) }}"
+            <a href="{{ route('users.show', [$post->user]) }}"
                class="text-xs font-medium text-foreground hover:text-primary leading-tight break-all">
                 {{ $post->user->name }}
             </a>
@@ -29,7 +29,7 @@
                 @if (isset($post->user))
                 @include('users.avatar', ['user' => $post->user, 'size' => 'sm'])
                 <div class="min-w-0">
-                    <a href="{{ route('users.show', [$post->user->id]) }}" class="text-sm font-medium hover:text-primary">{{ $post->user->name }}</a>
+                    <a href="{{ route('users.show', [$post->user]) }}" class="text-sm font-medium hover:text-primary">{{ $post->user->name }}</a>
                     <div class="text-xs text-muted-foreground">{{ $post->created_at->diffForHumans() }}</div>
                 </div>
                 @else

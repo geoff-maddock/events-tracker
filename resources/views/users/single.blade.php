@@ -9,7 +9,7 @@
 		</div>
 	@endif
 	<span>
-	{!! link_to_route('users.show', $user->name, [$user->id]) !!}
+	{!! link_to_route('users.show', $user->name, [$user]) !!}
 	</span>
 	@if ($signedIn && (Auth::user()->id === $user->id || Auth::user()->id === Config::get('app.superuser') || Auth::user()->hasGroup('super_admin') ))
 

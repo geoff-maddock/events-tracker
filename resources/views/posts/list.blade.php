@@ -9,7 +9,7 @@
 		    @if (isset($post->user))
 		      @include('users.avatar', ['user' => $post->user])
 			  <span class="hidden md:inline">
-		      {!! link_to_route('users.show', $post->user->name, [$post->user->id], ['class' => 'text-primary hover:underline']) !!}
+		      {!! link_to_route('users.show', $post->user->name, [$post->user], ['class' => 'text-primary hover:underline']) !!}
 			  </span>
 		    @else
 		    <span class="text-muted-foreground italic">User deleted</span>

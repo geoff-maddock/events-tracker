@@ -4,13 +4,13 @@
         <!-- User Avatar -->
         <div class="mb-4">
             @if ($photo = $user->getPrimaryPhoto())
-            <a href="{{ route('users.show', [$user->id]) }}">
+            <a href="{{ route('users.show', [$user]) }}">
                 <img src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}"
                     alt="{{ $user->name }}"
                     class="w-24 h-24 rounded-full object-cover border-2 border-border hover:border-primary transition-colors">
             </a>
             @else
-            <a href="{{ route('users.show', [$user->id]) }}">
+            <a href="{{ route('users.show', [$user]) }}">
                 <div class="w-24 h-24 rounded-full bg-card flex items-center justify-center border-2 border-border hover:border-primary transition-colors">
                     <i class="bi bi-person text-4xl text-muted-foreground/50"></i>
                 </div>
@@ -20,7 +20,7 @@
 
         <!-- User Name -->
         <h3 class="text-lg font-semibold text-foreground hover:text-primary transition-colors mb-2">
-            <a href="{{ route('users.show', [$user->id]) }}">{{ $user->name }}</a>
+            <a href="{{ route('users.show', [$user]) }}">{{ $user->name }}</a>
         </h3>
 
         <!-- User Status Badge -->
@@ -81,7 +81,7 @@
     @if ($signedIn)
     <div class="px-4 py-3 border-t border-border flex items-center justify-center gap-3">
         <!-- View Profile Button -->
-        <a href="{{ route('users.show', [$user->id]) }}"
+        <a href="{{ route('users.show', [$user]) }}"
             class="text-muted-foreground hover:text-primary transition-colors"
             title="View profile">
             <i class="bi bi-person-circle"></i>

@@ -82,7 +82,7 @@
                             <div class="flex items-center gap-2">
                                 @include('users.avatar', ['user' => $thread->user])
                                 <span class="hidden xl:inline">
-                                    <a href="{{ route('users.show', [$thread->user->id]) }}" class="text-sm text-muted-foreground hover:text-primary transition-colors">
+                                    <a href="{{ route('users.show', [$thread->user]) }}" class="text-sm text-muted-foreground hover:text-primary transition-colors">
                                         {{ $thread->user->name }}
                                     </a>
                                 </span>
