@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Filters\MenuFilters;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\MenuPatchRequest;
 use App\Http\Requests\MenuRequest;
 use App\Http\Resources\MenuCollection;
 use App\Http\Resources\MenuResource;
@@ -91,9 +92,33 @@ class MenusController extends Controller
         return response()->json(new MenuResource($menu), 201);
     }
 
+    /**
+     * PUT: full replacement of the resource. Optional fillable scalars
+     * omitted from the body are reset to null.
+     */
     public function update(Menu $menu, MenuRequest $request): JsonResponse
     {
-        $menu->fill($request->all())->save();
+        $input = $request->all();
+
+        if (!array_key_exists('menu_parent_id', $input)) {
+            $input['menu_parent_id'] = null;
+        }
+
+        $menu->fill($input)->save();
+
+        return response()->json(new MenuResource($menu));
+    }
+
+    /**
+     * PATCH: partial update. Only fields present in the body are touched.
+     */
+    public function patch(Menu $menu, MenuPatchRequest $request): JsonResponse
+    {
+        $input = $request->all();
+        $scalarInput = array_intersect_key($input, array_flip($menu->getFillable()));
+        if (!empty($scalarInput)) {
+            $menu->fill($scalarInput)->save();
+        }
 
         return response()->json(new MenuResource($menu));
     }

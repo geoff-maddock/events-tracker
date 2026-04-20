@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Filters\BlogFilters;
+use App\Http\Requests\BlogPatchRequest;
 use App\Http\Requests\BlogRequest;
 use App\Http\Resources\BlogCollection;
 use App\Http\Resources\BlogResource;
@@ -263,22 +264,74 @@ class BlogsController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * PUT: full replacement of the resource.
+     *
+     * Optional fillable scalars omitted from the body are reset to null, and
+     * relations (tags, entities) sync to the supplied arrays — missing keys
+     * mean "detach all".
      */
-    public function update(Blog $blog, BlogRequest $request):  JsonResponse
+    public function update(Blog $blog, BlogRequest $request): JsonResponse
     {
-        $msg = '';
-
-        $blog->fill($request->input())->save();
-
         if (!$blog->ownedBy($this->user)) {
             $this->unauthorized($request);
         }
 
-        $tagArray = $request->input('tag_list', []);
+        $input = $request->all();
+
+        foreach (['description', 'menu_id', 'sort_order'] as $field) {
+            if (!array_key_exists($field, $input)) {
+                $input[$field] = null;
+            }
+        }
+
+        $blog->fill($input)->save();
+
+        $blog->tags()->sync($this->resolveTagIds($request->input('tag_list', [])));
+        $blog->entities()->sync($request->input('entity_list', []));
+
+        Activity::log($blog, $this->user, Action::UPDATE);
+
+        return response()->json($blog);
+    }
+
+    /**
+     * PATCH: partial update. Only fields present in the body are touched;
+     * scalars and relations not in the request are left untouched.
+     */
+    public function patch(Blog $blog, BlogPatchRequest $request): JsonResponse
+    {
+        if (!$blog->ownedBy($this->user)) {
+            $this->unauthorized($request);
+        }
+
+        $input = $request->all();
+
+        $scalarInput = array_intersect_key($input, array_flip($blog->getFillable()));
+        if (!empty($scalarInput)) {
+            $blog->fill($scalarInput)->save();
+        }
+
+        if ($request->has('tag_list')) {
+            $blog->tags()->sync($this->resolveTagIds((array) $request->input('tag_list', [])));
+        }
+
+        if ($request->has('entity_list')) {
+            $blog->entities()->sync((array) $request->input('entity_list', []));
+        }
+
+        Activity::log($blog, $this->user, Action::UPDATE);
+
+        return response()->json($blog);
+    }
+
+    /**
+     * Resolve a list of tag identifiers to ids, creating any tags that don't
+     * already exist by id. Accepts a mix of existing tag ids and new tag names.
+     */
+    private function resolveTagIds(array $tagArray): array
+    {
         $syncArray = [];
 
-        // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
             if (!Tag::find($tag)) {
                 $newTag = new Tag();
@@ -287,24 +340,15 @@ class BlogsController extends Controller
                 $newTag->tag_type_id = 1;
                 $newTag->save();
 
-                // log adding of new tag
                 Activity::log($newTag, $this->user, Action::CREATE);
 
                 $syncArray[strtolower($tag)] = $newTag->id;
-
-                $msg .= ' Added tag '.$tag.'.';
             } else {
                 $syncArray[$key] = $tag;
             }
         }
 
-        $blog->tags()->sync($syncArray);
-        $blog->entities()->sync($request->input('entity_list', []));
-
-        // add to activity log
-        Activity::log($blog, $this->user, Action::UPDATE);
-
-        return response()->json($blog);
+        return $syncArray;
     }
 
     /**

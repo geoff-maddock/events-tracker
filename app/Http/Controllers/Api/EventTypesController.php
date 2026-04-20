@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Filters\EventTypeFilters;
 use App\Models\Activity;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EventTypePatchRequest;
 use App\Http\Requests\EventTypeRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use Illuminate\Http\Request;
@@ -182,12 +183,26 @@ class EventTypesController extends Controller
 
 
     /**
-     * Update the specified resource in storage.
-     *
+     * PUT: full replacement of the resource. All EventTypeRequest fields
+     * are required.
      */
     public function update(EventType $eventType, EventTypeRequest $request): JsonResponse
     {
-        $eventType->fill($request->input())->save();
+        $eventType->fill($request->all())->save();
+
+        return response()->json($eventType);
+    }
+
+    /**
+     * PATCH: partial update. Only fields present in the body are touched.
+     */
+    public function patch(EventType $eventType, EventTypePatchRequest $request): JsonResponse
+    {
+        $input = $request->all();
+        $scalarInput = array_intersect_key($input, array_flip($eventType->getFillable()));
+        if (!empty($scalarInput)) {
+            $eventType->fill($scalarInput)->save();
+        }
 
         return response()->json($eventType);
     }

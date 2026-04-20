@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Filters\EntityStatusFilters;
 use App\Models\Activity;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EntityStatusPatchRequest;
 use App\Http\Requests\EntityStatusRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use Illuminate\Http\Request;
@@ -180,12 +181,26 @@ class EntityStatusesController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
+     * PUT: full replacement of the resource. Only `name` is fillable, so
+     * PUT and PATCH differ only in validation strictness.
      */
     public function update(EntityStatus $entityStatus, EntityStatusRequest $request): JsonResponse
     {
-        $entityStatus->fill($request->input())->save();
+        $entityStatus->fill($request->all())->save();
+
+        return response()->json($entityStatus);
+    }
+
+    /**
+     * PATCH: partial update. Only fields present in the body are touched.
+     */
+    public function patch(EntityStatus $entityStatus, EntityStatusPatchRequest $request): JsonResponse
+    {
+        $input = $request->all();
+        $scalarInput = array_intersect_key($input, array_flip($entityStatus->getFillable()));
+        if (!empty($scalarInput)) {
+            $entityStatus->fill($scalarInput)->save();
+        }
 
         return response()->json($entityStatus);
     }

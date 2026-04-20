@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "cc58a79b-8dd4-42d8-87f8-8c667838eaa1",
-		"name": "Arcane City",
+		"_postman_id": "cc58a79b-8dd4-42d8-87f8-8c667838ea12",
+		"name": "Arcane City [updated]",
 		"description": "REST API for working with Arcane City data\n\nContact Support:\n Name: Geoff Maddock\n Email: geoff.maddock@gmail.com",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_uid": "21955993-cc58a79b-8dd4-42d8-87f8-8c667838eaa1"
@@ -96,7 +96,7 @@
 									]
 								},
 								{
-									"name": "Update Events",
+									"name": "Update Event (PUT — full replace)",
 									"id": "1ab4e59a-a1bf-4042-9e61-f53e0dde9708",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
@@ -139,7 +139,8 @@
 													"description": "(Required) The unique identifier of the event"
 												}
 											]
-										}
+										},
+										"description": "Full replacement of the event per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and `tag_list` and `entity_list` sync to exactly the supplied arrays — omitting a list detaches all rows for that relation. Use PATCH for partial updates."
 									},
 									"response": [
 										{
@@ -157,6 +158,108 @@
 												"body": {
 													"mode": "raw",
 													"raw": "{\n  \"id\": 1,\n  \"name\": \"October's Lazercrunk at the Brillobox\",\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"short\": \"a really fun dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_status_id\": 1,\n  \"event_type_id\": 1,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"series_id\": 1,\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": 1,\n  \"updated_by\": 1\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/events/:eventId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"events",
+														":eventId"
+													],
+													"variable": [
+														{
+															"key": "eventId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the event"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"id\": 1,\n  \"name\": \"October's Lazercrunk at the Brillobox\",\n  \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n  \"short\": \"a really fun dj night featuring performers from around the world\",\n  \"visibility\": {\n    \"name\": \"Public\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"description\": \"a really fun dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_status\": {\n    \"name\": \"Active\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"event_type\": {\n    \"name\": \"Concert\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"promoter\": {\n    \"id\": 1,\n    \"name\": \"Brillobox\",\n    \"slug\": \"brillobox-bar\",\n    \"short\": \"A two level bar and venue\",\n    \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n    \"entity_type\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"group-slug\",\n      \"short\": \"A multi-member entity\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"entity_status\": {\n      \"name\": \"Active\",\n      \"id\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"created_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"updated_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\",\n    \"started_at\": \"2018-03-20T09:12:28Z\",\n    \"facebook_username\": \"johnsmith\",\n    \"twitter_username\": \"johnsmith\",\n    \"links\": [\n      {\n        \"id\": 1,\n        \"title\": \"This is the lazercrunk website.\",\n        \"text\": \"Lazercrunk Website\",\n        \"url\": \"https://lazercrunk.com\",\n        \"is_primary\": true,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      },\n      {\n        \"id\": 1,\n        \"title\": \"This is the lazercrunk website.\",\n        \"text\": \"Lazercrunk Website\",\n        \"url\": \"https://lazercrunk.com\",\n        \"is_primary\": true,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      }\n    ]\n  },\n  \"venue\": {\n    \"id\": 1,\n    \"name\": \"Brillobox\",\n    \"slug\": \"brillobox-bar\",\n    \"short\": \"A two level bar and venue\",\n    \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n    \"entity_type\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"group-slug\",\n      \"short\": \"A multi-member entity\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"entity_status\": {\n      \"name\": \"Active\",\n      \"id\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"created_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"updated_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\",\n    \"started_at\": \"2018-03-20T09:12:28Z\",\n    \"facebook_username\": \"johnsmith\",\n    \"twitter_username\": \"johnsmith\",\n    \"links\": [\n      {\n        \"id\": 1,\n        \"title\": \"This is the lazercrunk website.\",\n        \"text\": \"Lazercrunk Website\",\n        \"url\": \"https://lazercrunk.com\",\n        \"is_primary\": true,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      },\n      {\n        \"id\": 1,\n        \"title\": \"This is the lazercrunk website.\",\n        \"text\": \"Lazercrunk Website\",\n        \"url\": \"https://lazercrunk.com\",\n        \"is_primary\": true,\n        \"created_at\": \"2018-03-20T09:12:28Z\",\n        \"updated_at\": \"2018-03-20T09:12:28Z\"\n      }\n    ]\n  },\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"series\": {\n    \"id\": 1,\n    \"name\": \"Lazercrunk, First Fridays of the Month\",\n    \"slug\": \"lazercrunk-first-fridays-of-the-month\",\n    \"short\": \"a really fun monthly dj night featuring performers from around the world\",\n    \"visibility\": {\n      \"name\": \"Public\",\n      \"id\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"description\": \"a really fun monthly dj night featuring performers from around the world and locally playing new electronic music\",\n    \"event_type\": {\n      \"name\": \"Concert\",\n      \"id\": 1,\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"occurrence_type\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n      \"short\": \"A multi-member occurrence\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"occurrence_week\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n      \"short\": \"A multi-member occurrence\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"occurrence_day\": {\n      \"name\": \"Group\",\n      \"id\": 1,\n      \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n      \"short\": \"A multi-member occurrence\",\n      \"created_at\": \"2018-03-20T09:12:28Z\",\n      \"updated_at\": \"2018-03-20T09:12:28Z\"\n    },\n    \"hold_date\": true,\n    \"promoter_id\": 1,\n    \"venue_id\": 1,\n    \"is_benefit\": true,\n    \"attending\": 10,\n    \"like\": 10,\n    \"presale_price\": 9.99,\n    \"door_price\": 19.99,\n    \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n    \"door_at\": \"2018-03-20T09:12:28Z\",\n    \"start_at\": \"2018-03-20T09:12:28Z\",\n    \"end_at\": \"2018-03-20T09:12:28Z\",\n    \"min_age\": 21,\n    \"primary_link\": \"http://lazercrunk.com/october-2022\",\n    \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\",\n    \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n    \"created_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    },\n    \"updated_by\": {\n      \"id\": 1,\n      \"name\": \"john.smith\",\n      \"email\": \"john.smith@gmail.com\"\n    }\n  },\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": {\n    \"id\": 1,\n    \"name\": \"john.smith\",\n    \"email\": \"john.smith@gmail.com\"\n  },\n  \"updated_by\": {\n    \"id\": 1,\n    \"name\": \"john.smith\",\n    \"email\": \"john.smith@gmail.com\"\n  }\n}"
+										}
+									]
+								},
+								{
+									"name": "Patch Event (PATCH — partial update)",
+									"id": "3e660daf-26da-4dc2-b02e-c39034542012",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"short\": \"updated short blurb\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/events/:eventId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"events",
+												":eventId"
+											],
+											"variable": [
+												{
+													"key": "eventId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the event"
+												}
+											]
+										},
+										"description": "Partial update per REST PATCH semantics. Only the fields present in the body are modified; scalars and relations not included are left untouched. To clear a relation explicitly, send an empty array (e.g. `\"tag_list\": []`)."
+									},
+									"response": [
+										{
+											"id": "60ac4ce3-ba51-4492-921e-0314aad2f41b",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "PATCH",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"short\": \"updated short blurb\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -973,13 +1076,14 @@
 									]
 								},
 								{
-									"name": "Update Entity",
+									"name": "Update Entity (PUT — full replace)",
 									"id": "68aac17f-003a-4564-8028-455c0a8299a6",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
 									},
 									"request": {
 										"method": "PUT",
+										"description": "Full replacement of the entity per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and `tag_list`, `role_list`, and `alias_list` sync to exactly the supplied arrays — omitting a list detaches all rows for that relation. Use PATCH for partial updates.",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -992,7 +1096,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"name\": \"Brillobox\",\n  \"slug\": \"brillobox-bar\",\n  \"short\": \"A two level bar and venue\",\n  \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n  \"entity_type_id\": 1,\n  \"entity_status_id\": 1,\n  \"created_by\": 1,\n  \"updated_by\": 1,\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"started_at\": \"2018-03-20T09:12:28Z\",\n  \"facebook_username\": \"johnsmith\",\n  \"twitter_username\": \"johnsmith\"\n}",
+											"raw": "{\n  \"name\": \"Brillobox\",\n  \"slug\": \"brillobox-bar\",\n  \"short\": \"A two level bar and venue\",\n  \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n  \"entity_type_id\": 1,\n  \"entity_status_id\": 1,\n  \"started_at\": \"2018-03-20T09:12:28Z\",\n  \"facebook_username\": \"johnsmith\",\n  \"twitter_username\": \"johnsmith\",\n  \"instagram_username\": \"johnsmith\",\n  \"tag_list\": [],\n  \"role_list\": [],\n  \"alias_list\": []\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -1033,7 +1137,109 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"name\": \"Brillobox\",\n  \"slug\": \"brillobox-bar\",\n  \"short\": \"A two level bar and venue\",\n  \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n  \"entity_type_id\": 1,\n  \"entity_status_id\": 1,\n  \"created_by\": 1,\n  \"updated_by\": 1,\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"started_at\": \"2018-03-20T09:12:28Z\",\n  \"facebook_username\": \"johnsmith\",\n  \"twitter_username\": \"johnsmith\"\n}",
+													"raw": "{\n  \"name\": \"Brillobox\",\n  \"slug\": \"brillobox-bar\",\n  \"short\": \"A two level bar and venue\",\n  \"description\": \"A two level bar and venue that specializes in indie music and vegetarian food\",\n  \"entity_type_id\": 1,\n  \"entity_status_id\": 1,\n  \"started_at\": \"2018-03-20T09:12:28Z\",\n  \"facebook_username\": \"johnsmith\",\n  \"twitter_username\": \"johnsmith\",\n  \"instagram_username\": \"johnsmith\",\n  \"tag_list\": [],\n  \"role_list\": [],\n  \"alias_list\": []\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/entities/:slug",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"entities",
+														":slug"
+													],
+													"variable": [
+														{
+															"key": "slug",
+															"value": "cutups",
+															"description": "(Required) The unique identifier of the entity"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"value\": \"reference #/components/schemas/Entity not found in the OpenAPI spec\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Patch Entity (PATCH — partial update)",
+									"id": "2ae0fe3b-9124-478d-a2fd-99772484e4b3",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "PATCH",
+										"description": "Partial update per REST PATCH semantics. Only the fields present in the body are modified; scalar fields and relations not included are left untouched. To clear a relation explicitly, send an empty array (e.g. `\"tag_list\": []`).",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"instagram_username\": \"boom_concepts\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/entities/:slug",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"entities",
+												":slug"
+											],
+											"variable": [
+												{
+													"key": "slug",
+													"value": "cutups",
+													"description": "(Required) The unique identifier of the entity"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "fa063ede-0e4e-4029-b5b1-f16f13d1b3a5",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "PATCH",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"instagram_username\": \"boom_concepts\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -1524,7 +1730,7 @@
 									]
 								},
 								{
-									"name": "Update Entity Status",
+									"name": "Update Entity Status (PUT — full replace)",
 									"id": "2f6b8ec7-b899-4401-9b66-7a4eb5414092",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
@@ -1567,7 +1773,8 @@
 													"description": "(Required) The unique identifier of the entity status"
 												}
 											]
-										}
+										},
+										"description": "Full replacement per REST PUT semantics. Use PATCH for partial updates."
 									},
 									"response": [
 										{
@@ -1585,6 +1792,108 @@
 												"body": {
 													"mode": "raw",
 													"raw": "{\n  \"name\": \"Active\",\n  \"id\": 1\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/entity-statuses/:entityStatusId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"entity-statuses",
+														":entityStatusId"
+													],
+													"variable": [
+														{
+															"key": "entityStatusId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the entity status"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"name\": \"Active\",\n  \"id\": 1,\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Patch Entity Status (PATCH — partial update)",
+									"id": "7421bb96-ab11-49fa-a404-d641fe7c65eb",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"Renamed Status\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/entity-statuses/:entityStatusId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"entity-statuses",
+												":entityStatusId"
+											],
+											"variable": [
+												{
+													"key": "entityStatusId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the entity status"
+												}
+											]
+										},
+										"description": "Partial update per REST PATCH semantics. Only fields present in the body are modified."
+									},
+									"response": [
+										{
+											"id": "ff8cf8c5-b049-4f47-9a75-2bf7e25c65d9",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "PATCH",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"name\": \"Renamed Status\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -1974,7 +2283,7 @@
 									]
 								},
 								{
-									"name": "Update Entity Type",
+									"name": "Update Entity Type (PUT — full replace)",
 									"id": "96c54e5c-4e7f-4ef7-b50a-375315b9191c",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
@@ -2017,7 +2326,8 @@
 													"description": "(Required) The unique identifier of the entity type"
 												}
 											]
-										}
+										},
+										"description": "Full replacement per REST PUT semantics. Use PATCH for partial updates."
 									},
 									"response": [
 										{
@@ -2035,6 +2345,108 @@
 												"body": {
 													"mode": "raw",
 													"raw": "{\n  \"name\": \"Group\",\n  \"id\": 1,\n  \"slug\": \"group-slug\",\n  \"short\": \"A multi-member entity\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/entity-types/:entityTypeId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"entity-types",
+														":entityTypeId"
+													],
+													"variable": [
+														{
+															"key": "entityTypeId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the entity type"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"name\": \"Group\",\n  \"id\": 1,\n  \"slug\": \"group-slug\",\n  \"short\": \"A multi-member entity\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Patch Entity Type (PATCH — partial update)",
+									"id": "323aee75-ee0a-4c49-aeeb-f156db780f85",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"short\": \"Updated short description\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/entity-types/:entityTypeId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"entity-types",
+												":entityTypeId"
+											],
+											"variable": [
+												{
+													"key": "entityTypeId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the entity type"
+												}
+											]
+										},
+										"description": "Partial update per REST PATCH semantics. Only fields present in the body are modified."
+									},
+									"response": [
+										{
+											"id": "56028216-1293-4f10-8231-8407f59ee47b",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "PATCH",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"short\": \"Updated short description\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -2873,7 +3285,7 @@
 									]
 								},
 								{
-									"name": "Update Series",
+									"name": "Update Series (PUT — full replace)",
 									"id": "20949c09-04ba-4e18-939b-82ab730a4314",
 									"protocolProfileBehavior": {
 										"disableBodyPruning": true
@@ -2916,7 +3328,8 @@
 													"description": "(Required) The unique identifier of the series"
 												}
 											]
-										}
+										},
+										"description": "Full replacement of the series per REST PUT semantics. Optional scalar fields omitted from the body are reset to null, and `tag_list` and `entity_list` sync to exactly the supplied arrays — omitting a list detaches all rows for that relation. Use PATCH for partial updates."
 									},
 									"response": [
 										{
@@ -2934,6 +3347,108 @@
 												"body": {
 													"mode": "raw",
 													"raw": "{\n  \"id\": 1,\n  \"name\": \"Lazercrunk, First Fridays of the Month\",\n  \"slug\": \"lazercrunk-first-fridays-of-the-month\",\n  \"short\": \"a really fun monthly dj night featuring performers from around the world\",\n  \"visibility_id\": 1,\n  \"description\": \"a really fun monthly dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_type_id\": 1,\n  \"occurrence_type_id\": 1,\n  \"occurrence_week_id\": 1,\n  \"occurrence_day_id\": 1,\n  \"hold_date\": true,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": 1,\n  \"updated_by\": 1\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/series/:seriesId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"series",
+														":seriesId"
+													],
+													"variable": [
+														{
+															"key": "seriesId",
+															"value": "1",
+															"description": "(Required) The unique identifier of the series"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"id\": 1,\n  \"name\": \"Lazercrunk, First Fridays of the Month\",\n  \"slug\": \"lazercrunk-first-fridays-of-the-month\",\n  \"short\": \"a really fun monthly dj night featuring performers from around the world\",\n  \"visibility\": {\n    \"name\": \"Public\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"description\": \"a really fun monthly dj night featuring performers from around the world and locally playing new electronic music\",\n  \"event_type\": {\n    \"name\": \"Concert\",\n    \"id\": 1,\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"occurrence_type\": {\n    \"name\": \"Group\",\n    \"id\": 1,\n    \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n    \"short\": \"A multi-member occurrence\",\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"occurrence_week\": {\n    \"name\": \"Group\",\n    \"id\": 1,\n    \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n    \"short\": \"A multi-member occurrence\",\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"occurrence_day\": {\n    \"name\": \"Group\",\n    \"id\": 1,\n    \"slug\": \"octobers-lazercrunk-at-the-brillobox\",\n    \"short\": \"A multi-member occurrence\",\n    \"created_at\": \"2018-03-20T09:12:28Z\",\n    \"updated_at\": \"2018-03-20T09:12:28Z\"\n  },\n  \"hold_date\": true,\n  \"promoter_id\": 1,\n  \"venue_id\": 1,\n  \"is_benefit\": true,\n  \"attending\": 10,\n  \"like\": 10,\n  \"presale_price\": 9.99,\n  \"door_price\": 19.99,\n  \"soundcheck_at\": \"2018-03-20T09:12:28Z\",\n  \"door_at\": \"2018-03-20T09:12:28Z\",\n  \"start_at\": \"2018-03-20T09:12:28Z\",\n  \"end_at\": \"2018-03-20T09:12:28Z\",\n  \"min_age\": 21,\n  \"primary_link\": \"http://lazercrunk.com/october-2022\",\n  \"ticket_link\": \"http://lazercrunk.com/october-2022/tickets\",\n  \"created_at\": \"2018-03-20T09:12:28Z\",\n  \"updated_at\": \"2018-03-20T09:12:28Z\",\n  \"cancelled_at\": \"2018-03-20T09:12:28Z\",\n  \"created_by\": {\n    \"id\": 1,\n    \"name\": \"john.smith\",\n    \"email\": \"john.smith@gmail.com\"\n  },\n  \"updated_by\": {\n    \"id\": 1,\n    \"name\": \"john.smith\",\n    \"email\": \"john.smith@gmail.com\"\n  }\n}"
+										}
+									]
+								},
+								{
+									"name": "Patch Series (PATCH — partial update)",
+									"id": "bd23eb85-b72c-4b34-b57d-4f20169a8b0c",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"short\": \"updated short blurb\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/series/:seriesId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"series",
+												":seriesId"
+											],
+											"variable": [
+												{
+													"key": "seriesId",
+													"value": "1",
+													"description": "(Required) The unique identifier of the series"
+												}
+											]
+										},
+										"description": "Partial update per REST PATCH semantics. Only fields present in the body are modified; scalars and relations not included are left untouched. To clear a relation explicitly, send an empty array (e.g. `\"tag_list\": []`)."
+									},
+									"response": [
+										{
+											"id": "48cfdc36-a94a-4c14-8eac-bb1f5bd6f6ef",
+											"name": "Successful response",
+											"originalRequest": {
+												"method": "PATCH",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: basic",
+														"key": "Authorization",
+														"value": "Basic <credentials>"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"short\": \"updated short blurb\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"

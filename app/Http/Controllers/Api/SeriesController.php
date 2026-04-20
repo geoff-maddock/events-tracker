@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Filters\SeriesFilters;
+use App\Http\Requests\SeriesPatchRequest;
 use App\Http\Requests\SeriesRequest;
 use App\Http\Resources\SeriesCollection;
 use App\Http\Resources\SeriesResource;
@@ -731,26 +732,111 @@ class SeriesController extends Controller
         ->with(['series' => $series]);
     }
 
+    /**
+     * PUT: full replacement of the resource.
+     *
+     * Optional fillable scalars omitted from the body are reset to null, and
+     * relations (tags, entities) sync to the supplied arrays — missing keys
+     * mean "detach all".
+     */
     public function update(Series $series, SeriesRequest $request): JsonResponse
     {
-
-        $msg = '';
-
-        $input = $request->input();
-
         if (!$series->ownedBy($this->user)) {
             $this->unauthorized($request);
         }
 
-        // Set the user fields explicitly
+        $input = $request->all();
         $input['updated_by'] = $this->user->id;
+
+        foreach ($this->optionalSeriesFields() as $field) {
+            if (!array_key_exists($field, $input)) {
+                $input[$field] = null;
+            }
+        }
 
         $series->fill($input)->save();
 
-        $tagArray = $request->input('tag_list', []);
+        $series->tags()->sync($this->resolveTagIds($request->input('tag_list', [])));
+        $series->entities()->sync($request->input('entity_list', []));
+
+        Activity::log($series, $this->user, 2);
+
+        return response()->json(new SeriesResource($series));
+    }
+
+    /**
+     * PATCH: partial update. Only fields present in the body are touched;
+     * scalars and relations not in the request are left untouched.
+     */
+    public function patch(Series $series, SeriesPatchRequest $request): JsonResponse
+    {
+        if (!$series->ownedBy($this->user)) {
+            $this->unauthorized($request);
+        }
+
+        $input = $request->all();
+
+        $scalarInput = array_intersect_key($input, array_flip($series->getFillable()));
+        if (!empty($scalarInput)) {
+            $scalarInput['updated_by'] = $this->user->id;
+            $series->fill($scalarInput)->save();
+        }
+
+        if ($request->has('tag_list')) {
+            $series->tags()->sync($this->resolveTagIds((array) $request->input('tag_list', [])));
+        }
+
+        if ($request->has('entity_list')) {
+            $series->entities()->sync((array) $request->input('entity_list', []));
+        }
+
+        Activity::log($series, $this->user, 2);
+
+        return response()->json(new SeriesResource($series));
+    }
+
+    /**
+     * Fillable scalar fields that aren't required by SeriesRequest. PUT resets
+     * any omitted from the body to null. `created_by` is excluded because it
+     * tracks ownership and shouldn't be cleared on update.
+     */
+    private function optionalSeriesFields(): array
+    {
+        return [
+            'description',
+            'occurrence_week_id',
+            'occurrence_day_id',
+            'benefit_id',
+            'promoter_id',
+            'venue_id',
+            'location_id',
+            'presale_price',
+            'door_price',
+            'soundcheck_at',
+            'founded_at',
+            'cancelled_at',
+            'door_at',
+            'start_at',
+            'end_at',
+            'length',
+            'min_age',
+            'hold_date',
+            'primary_link',
+            'ticket_link',
+            'facebook_username',
+            'instagram_username',
+            'twitter_username',
+        ];
+    }
+
+    /**
+     * Resolve a list of tag identifiers to ids, creating any tags that don't
+     * already exist by id. Accepts a mix of existing tag ids and new tag names.
+     */
+    private function resolveTagIds(array $tagArray): array
+    {
         $syncArray = [];
 
-        // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
             if (!Tag::find($tag)) {
                 $newTag = new Tag();
@@ -758,27 +844,15 @@ class SeriesController extends Controller
                 $newTag->slug = Str::slug($tag);
                 $newTag->tag_type_id = 1;
                 $newTag->save();
-                // log adding of new tag
                 Activity::log($newTag, $this->user, 1);
 
                 $syncArray[strtolower($tag)] = $newTag->id;
-
-                $msg .= ' Added tag '.$tag.'.';
             } else {
                 $syncArray[$key] = $tag;
             }
         }
 
-        $series->tags()->sync($syncArray);
-        $series->entities()->sync($request->input('entity_list', []));
-
-        // add to activity log
-        Activity::log($series, $this->user, 2);
-
-        // flash('Success', 'Your event template has been updated');
-
-        //return redirect('series');
-        return response()->json(new SeriesResource($series));
+        return $syncArray;
     }
 
     protected function unauthorized(SeriesRequest $request): RedirectResponse | Response
