@@ -92,7 +92,8 @@ class BlogsController extends Controller
         $listParamSessionStore->setIndexTab(action([BlogsController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Blog::query()->select('blogs.*');
+        // eager-load relations consumed by the blog card + JSON-LD (user, primary photo)
+        $baseQuery = Blog::query()->select('blogs.*')->with(['user', 'photos']);
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -147,7 +148,8 @@ class BlogsController extends Controller
         $listParamSessionStore->setIndexTab(action([BlogsController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Blog::query()->select('blogs.*');
+        // eager-load relations consumed by the blog card + JSON-LD (user, primary photo)
+        $baseQuery = Blog::query()->select('blogs.*')->with(['user', 'photos']);
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -270,6 +272,9 @@ class BlogsController extends Controller
      */
     public function show(Blog $blog): View
     {
+        // eager-load relations consumed by the page + JSON-LD
+        $blog->loadMissing(['user', 'photos']);
+
         return view('blogs.show-tw', compact('blog'));
     }
 

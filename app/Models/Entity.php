@@ -778,6 +778,10 @@ class Entity extends Eloquent
 
     public function hasRole(string $role): int
     {
+        if ($this->relationLoaded('roles')) {
+            return $this->roles->where('name', $role)->count();
+        }
+
         return $this->roles()->where('name', $role)->count();
     }
 
