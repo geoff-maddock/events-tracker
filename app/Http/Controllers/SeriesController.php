@@ -651,7 +651,10 @@ class SeriesController extends Controller
 
     public function show(Series $series, OembedExtractor $embedExtractor): View
     {
-        $events = $series->events()->paginate($this->childLimit);
+        // eager-load relations consumed by the page + JSON-LD
+        $series->loadMissing(['photos', 'venue.locations']);
+
+        $events = $series->events()->with('venue')->paginate($this->childLimit);
         $threads = $series->threads()->paginate($this->childLimit);
 
         return view('series.show-tw', compact('series', 'events', 'threads'));

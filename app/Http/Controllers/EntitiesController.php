@@ -667,10 +667,14 @@ class EntitiesController extends Controller
             abort(404);
         }
 
+        // eager-load relations consumed by the page + JSON-LD
+        $entity->loadMissing(['roles', 'aliases', 'photos', 'tags', 'locations.visibility', 'links', 'entityType']);
+
         // get related events (up to 12, sorted by date descending)
         $relatedEvents = $entity->events()
             ->with([
                 'venue.locations',
+                'venue.links',
                 'promoter.links',
                 'photos',
                 'entities.roles',
@@ -779,6 +783,9 @@ class EntitiesController extends Controller
             abort(404);
         }
 
+        // eager-load relations consumed by the page + JSON-LD (getJsonLd, getBreadcrumbJsonLd, getSchemaType)
+        $entity->loadMissing(['roles', 'aliases', 'photos', 'tags', 'locations.visibility', 'links', 'entityType']);
+
         // get the threads for the entity
         $threads = $entity->threads()->paginate($this->limit);
 
@@ -805,6 +812,7 @@ class EntitiesController extends Controller
         $relatedEventsQuery = $entity->events()
             ->with([
                 'venue.locations',
+                'venue.links',
                 'promoter.links',
                 'photos',
                 'entities.roles',

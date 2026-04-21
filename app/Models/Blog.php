@@ -264,7 +264,10 @@ class Blog extends Eloquent
      **/
     public function getPrimaryPhoto(): ?Photo
     {
-        // gets the first photo related to this blog
+        if ($this->relationLoaded('photos')) {
+            return $this->photos->firstWhere('is_primary', 1);
+        }
+
         return $this->photos()->where('photos.is_primary', '=', '1')->first();
     }
 
