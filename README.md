@@ -10,7 +10,7 @@ Run an instance to create your own community where events, event series, entitie
 
 ## FEATURES (v2025.01.01 - Stable Release)
 
-* Public filterable and sortable event listings, with built in views by time, type and topic.
+* Public filterable and sortable event listings, with built in views by time, type and tags.
 * Event creation, editing and following for registered users.
 * User registration for private homepage with customized private event listings and account settings.
 * Enduser driven entity, event and relationship creation for venues, artists, musicians, promoters, etc.
@@ -24,6 +24,7 @@ Run an instance to create your own community where events, event series, entitie
 * Links to bandcamp and soundcloud audio dynamically transform to widget players.
 * File asset storage for images in S3 config.
 * Export events to ical format or refer to a static link for a feed.
+* (Optional) Instagram integration to pull in posts from a specific account and tag them to events and entities.
 
 Read new feature release notes in the [changelog](docs/feature_notes.md).
 
@@ -31,12 +32,12 @@ Read new feature release notes in the [changelog](docs/feature_notes.md).
 * PHP 8.1
 * Laravel 10
 * MySQL 8 (can be database agnostic)
-* Bootstrap 5
-* Optional Integrations: Facebook, Twitter
+* Tailwind CSS 4
+* Optional Integrations: Instagram
 
 ### Roadmap
-* Adding to the site API to facilitate external embedding of event and entity data.
-* Building a more lightweight frontend that connects to the API
+* Improved experience on mobile
+* Additional tools for promoters, artists and fans
 
 ## Installing / Getting started
 
