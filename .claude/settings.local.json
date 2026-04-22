@@ -37,7 +37,9 @@
       "Bash(xargs:*)",
       "Bash(if [ -f \"/var/www/dev-events/resources/views/$dir/show-tw.blade.php\" ])",
       "Bash(elif [ -f \"/var/www/dev-events/resources/views/$dir/show.blade.php\" ])",
-      "WebFetch(domain:schema.org)"
+      "WebFetch(domain:schema.org)",
+      "Bash(git -C /var/www/dev-events log --oneline --follow -- Jenkinsfile)",
+      "Bash(git *)"
     ],
     "deny": [],
     "ask": []

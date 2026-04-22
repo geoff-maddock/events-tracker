@@ -28,6 +28,7 @@
 .env
 .htaccess
 .phpunit.result.cache
+_ide_helper.php
 /.vagrant
 composer.phar
 Homestead.yaml
