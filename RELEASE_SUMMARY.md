@@ -1,8 +1,8 @@
-# Release v2026.02.01 - Summary and Next Steps
+# Release v2026.05.01 - Summary and Next Steps
 
 ## Summary
 
-This PR prepares all necessary documentation and updates for creating release version **v2026.02.01** of the Events Tracker application.
+This PR prepares all necessary documentation and updates for creating release version **v2026.05.01** of the Events Tracker application.
 
 ### What This Release Includes
 
@@ -15,7 +15,7 @@ This is a **minor maintenance release** that includes one bug fix merged since t
 
 ### Changes Made in This PR
 
-1. **Created Release Notes** (`docs/release_v2026.02.01.md`)
+1. **Created Release Notes** (`docs/release_v2026.05.01.md`)
    - Comprehensive release notes documenting the bug fix
    - Installation instructions for new deployments
    - Upgrade instructions for existing installations
@@ -24,15 +24,15 @@ This is a **minor maintenance release** that includes one bug fix merged since t
    - Roadmap for future releases
 
 2. **Updated CHANGELOG.md**
-   - Added v2026.02.01 section with bug fix details
+   - Added v2026.05.01 section with bug fix details
    - Updated version comparison links
    - Maintains proper changelog format
 
 3. **Updated README.md**
-   - Changed version reference from v2025.01.01 to v2026.02.01
+   - Changed version reference from v2025.01.01 to v2026.05.01
    - Keeps readme in sync with current release
 
-4. **Created Release Process Guide** (`docs/RELEASE_PROCESS_v2026.02.01.md`)
+4. **Created Release Process Guide** (`docs/RELEASE_PROCESS_v2026.05.01.md`)
    - Step-by-step instructions for creating the GitHub release
    - Pre-release checklist
    - Command-line examples for git tagging
@@ -64,8 +64,8 @@ Once this PR is merged to main:
 ```bash
 git checkout main
 git pull origin main
-git tag -a v2026.02.01 -m "Release v2026.02.01 - Instagram notification improvements"
-git push origin v2026.02.01
+git tag -a v2026.05.01 -m "Release v2026.05.01 - Instagram notification improvements"
+git push origin v2026.05.01
 ```
 
 ### 4. Create the GitHub Release
@@ -74,17 +74,17 @@ You have two options:
 
 **Option A: Use GitHub Web Interface**
 1. Go to https://github.com/geoff-maddock/events-tracker/releases/new
-2. Select tag `v2026.02.01`
-3. Use title: `v2026.02.01 - Instagram Notification Improvements`
-4. Copy release notes from `docs/RELEASE_PROCESS_v2026.02.01.md` (GitHub Release Notes section)
+2. Select tag `v2026.05.01`
+3. Use title: `v2026.05.01 - Instagram Notification Improvements`
+4. Copy release notes from `docs/RELEASE_PROCESS_v2026.05.01.md` (GitHub Release Notes section)
 5. Set as latest release
 6. Publish
 
 **Option B: Use GitHub CLI**
 ```bash
-gh release create v2026.02.01 \
-  --title "v2026.02.01 - Instagram Notification Improvements" \
-  --notes-file docs/release_v2026.02.01.md \
+gh release create v2026.05.01 \
+  --title "v2026.05.01 - Instagram Notification Improvements" \
+  --notes-file docs/release_v2026.05.01.md \
   --latest
 ```
 
@@ -104,11 +104,11 @@ If applicable:
 ## Files Changed
 
 ```
-├── CHANGELOG.md                           (Updated: Added v2026.02.01 entry)
+├── CHANGELOG.md                           (Updated: Added v2026.05.01 entry)
 ├── README.md                              (Updated: Version number)
 ├── docs/
-│   ├── release_v2026.02.01.md            (New: Comprehensive release notes)
-│   └── RELEASE_PROCESS_v2026.02.01.md    (New: Release creation guide)
+│   ├── release_v2026.05.01.md            (New: Comprehensive release notes)
+│   └── RELEASE_PROCESS_v2026.05.01.md    (New: Release creation guide)
 ```
 
 ## Key Points
@@ -123,12 +123,12 @@ If applicable:
 
 ✅ **Fully Documented**: Comprehensive documentation for users and maintainers
 
-📝 **Note on CHANGELOG**: The project historically used GitHub Releases for detailed changelogs. The CHANGELOG.md file has been updated for v2026.02.01, but previous releases (like v2025.01.01) may only be documented in GitHub Releases. See: https://github.com/geoff-maddock/events-tracker/releases
+📝 **Note on CHANGELOG**: The project historically used GitHub Releases for detailed changelogs. The CHANGELOG.md file has been updated for v2026.05.01, but previous releases (like v2025.01.01) may only be documented in GitHub Releases. See: https://github.com/geoff-maddock/events-tracker/releases
 
 ## Reference Documentation
 
-- **Full Release Notes**: See `docs/release_v2026.02.01.md`
-- **Release Process**: See `docs/RELEASE_PROCESS_v2026.02.01.md`
+- **Full Release Notes**: See `docs/release_v2026.05.01.md`
+- **Release Process**: See `docs/RELEASE_PROCESS_v2026.05.01.md`
 - **Deployment Guide**: See `docs/deployment_notes.md`
 - **Previous Release**: https://github.com/geoff-maddock/events-tracker/releases/tag/v2025.01.01
 

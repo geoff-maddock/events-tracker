@@ -100,8 +100,8 @@ $ npm install
 * Run `npm install`
 * Run node build for your environment
   - ```npm run build```
-* Run migrations to create the initial database.
-  - php artisan migrate:fresh
+* Run migrations to create the initial database (new installs only — never use `migrate:fresh` on an existing deployment as it drops all data).
+  - ```php artisan migrate```
 * Seed database tables from one of the provided default seeders.  Only run this when starting the production app the first time.
   - ```php artisan db:seed --class=ProdBasicDatabaseSeeder```
     - The most basic data to run the app, some additional config will be required.
@@ -186,3 +186,61 @@ Run parts of CI manually:
 * Dev environment notes
 * Testing environment notes
 * Prod environment notes
+
+---
+
+## Upgrading to v2026.05.01
+
+This is a major release with a full UI refresh (Tailwind CSS / Vite), new features, and database schema changes. Follow these steps to upgrade an existing installation.
+
+### Pre-upgrade checklist
+- [ ] Back up the database before making any changes
+- [ ] Put the app into maintenance mode: `php artisan down`
+- [ ] Confirm you are on PHP 8.4+ and Node 24+
+
+### 1. Pull the latest code
+```bash
+git pull origin master
+```
+
+### 2. Update PHP dependencies
+```bash
+composer install --no-dev --optimize-autoloader
+```
+
+### 3. Update Node dependencies and rebuild assets
+The build pipeline has migrated from Laravel Mix/webpack to Vite. If you have old `webpack.mix.js`-based build artifacts, they will be replaced.
+```bash
+npm install
+npm run build
+```
+
+### 4. Run database migrations
+Five new migrations are included. Run them against the existing database — **do not use `migrate:fresh`** as that will drop all data.
+```bash
+php artisan migrate
+```
+
+Migrations included in this release:
+- `add_description_to_tags_table`
+- `create_event_shares_table`
+- `create_click_tracks_table`
+- `add_user_id_to_click_tracks_table`
+- `create_blog_photo_table`
+
+### 5. Clear caches
+```bash
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+### 6. Bring the app back online
+```bash
+php artisan up
+```
+
+### 7. Verify
+- Log in and confirm the UI loads correctly (dark theme by default)
+- Check that events, entities, and series pages render as expected
+- Confirm click-tracking redirects (`/go/evt-{id}`, `/go/ser-{id}`) are working if you use ticket links
