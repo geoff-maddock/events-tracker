@@ -1,9 +1,22 @@
 {{-- Past Events Grid Card --}}
 {{-- Displays a compact image grid of past events within the space of a single event card, --}}
 {{-- matching the style of the events/grid-tw view (cell-compact-tw cells).              --}}
-<article class="event-card-tw h-full flex flex-col" id="past-events-grid-card">
-
-    @php $hasMore = $pastEvents->count() > 20; $displayEvents = $pastEvents->take(20); @endphp
+@php
+    $hasMore = $pastEvents->count() > 20;
+    $displayEvents = $pastEvents->take(20);
+    $count = $pastEvents->count();
+    if ($count <= 4) {
+        $colSpan   = 'col-span-1';
+        $innerCols = 'grid-cols-2';
+    } elseif ($count <= 8) {
+        $colSpan   = 'col-span-1 md:col-span-2';
+        $innerCols = 'grid-cols-3 md:grid-cols-4';
+    } else {
+        $colSpan   = 'col-span-1 md:col-span-2 event-3col:col-span-3 event-4col:col-span-4';
+        $innerCols = 'grid-cols-4 md:grid-cols-6';
+    }
+@endphp
+<article class="event-card-tw h-full flex flex-col {{ $colSpan }}" id="past-events-grid-card">
     {{-- Card Header --}}
     <div class="px-3 py-2 border-b border-border flex items-center gap-2 flex-shrink-0">
         <i class="bi bi-clock-history text-muted-foreground text-sm"></i>
@@ -15,7 +28,7 @@
 
     {{-- Inner compact grid of event cells --}}
     <div class="flex-1 overflow-y-auto p-2">
-        <div class="grid gap-1 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
+        <div class="grid gap-1 {{ $innerCols }}">
             @php $lastDate = ''; @endphp
             @foreach ($displayEvents as $pastEvent)
                 @php
