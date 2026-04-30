@@ -501,7 +501,8 @@ class Entity extends Eloquent
             return new Collection();
         }
 
-        return Entity::select('entities.*')
+        return Entity::active()
+            ->select('entities.*')
             ->selectRaw('COUNT(entity_event.event_id) as frequency')
             ->join('entity_event', 'entities.id', '=', 'entity_event.entity_id')
             ->whereIn('entity_event.event_id', $eventIds)
@@ -530,7 +531,8 @@ class Entity extends Eloquent
             return new Collection();
         }
 
-        return Entity::select('entities.*')
+        return Entity::active()
+            ->select('entities.*')
             ->selectRaw('COUNT(events.id) as frequency')
             ->join('events', 'entities.id', '=', 'events.venue_id')
             ->whereIn('events.id', $eventIds)

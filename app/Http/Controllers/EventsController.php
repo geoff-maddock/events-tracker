@@ -367,7 +367,7 @@ class EventsController extends Controller
             'seriesOptions' => ['' => ''] + Series::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'entityOptions' => Entity::active()->orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
         ];
     }
@@ -2878,7 +2878,7 @@ class EventsController extends Controller
             'eventTypeOptions' => ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'entityOptions' => Entity::active()->orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'occurrenceTypeOptions' => ['' => ''] + OccurrenceType::pluck('name', 'id')->all(),
             'dayOptions' => ['' => ''] + OccurrenceDay::pluck('name', 'id')->all(),
             'weekOptions' => ['' => ''] + OccurrenceWeek::pluck('name', 'id')->all(),

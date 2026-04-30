@@ -628,7 +628,7 @@ class SeriesController extends Controller
             'eventTypeOptions' => ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'entityOptions' => Entity::active()->orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'occurrenceTypeOptions' => ['' => ''] + OccurrenceType::pluck('name', 'id')->all(),
             'dayOptions' => ['' => ''] + OccurrenceDay::pluck('name', 'id')->all(),
             'weekOptions' => ['' => ''] + OccurrenceWeek::pluck('name', 'id')->all(),
