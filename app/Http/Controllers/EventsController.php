@@ -2104,9 +2104,15 @@ class EventsController extends Controller
         }
     }
 
-    public function edit(Event $event): View
+    public function edit(Event $event): View|RedirectResponse
     {
         $this->middleware('auth');
+
+        if (!$event->ownedBy($this->user) && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin')) {
+            Session::flash('flash_message', ['title' => 'Access Denied', 'message' => 'You do not have permission to edit this event.', 'level' => 'error']);
+
+            return redirect()->route('events.show', compact('event'));
+        }
 
         return view('events.edit', compact('event'))->with($this->getFormOptions());
     }
@@ -2115,14 +2121,14 @@ class EventsController extends Controller
     {
         $msg = '';
 
+        if (!$event->ownedBy($this->user) && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin')) {
+            return $this->unauthorized($request);
+        }
+
         $input = $request->input();
         $input['updated_by'] = $this->user->id;
 
         $event->fill($input)->save();
-
-        if (!$event->ownedBy(auth()->user())) {
-            $this->unauthorized($request);
-        }
 
         $tagArray = $request->input('tag_list', []);
         $syncArray = [];
@@ -2162,10 +2168,10 @@ class EventsController extends Controller
     protected function unauthorized(EventRequest $request): RedirectResponse | Response
     {
         if ($request->ajax()) {
-            return response(['message' => 'No way.'], 403);
+            return response(['message' => 'You do not have permission to edit this event.'], 403);
         }
 
-        Session::flash('flash_message', 'Not authorized');
+        Session::flash('flash_message', ['title' => 'Access Denied', 'message' => 'You do not have permission to edit this event.', 'level' => 'error']);
 
         return redirect('/');
     }

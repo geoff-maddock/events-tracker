@@ -949,9 +949,15 @@ class EntitiesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Entity $entity): View
+    public function edit(Entity $entity): View|RedirectResponse
     {
         $this->middleware('auth');
+
+        if ($entity->created_by !== $this->user->id && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin')) {
+            \Session::flash('flash_message', ['title' => 'Access Denied', 'message' => 'You do not have permission to edit this entity.', 'level' => 'error']);
+
+            return redirect()->route('entities.show', compact('entity'));
+        }
 
         return view('entities.edit', compact('entity'))
         ->with($this->getFormOptions());
@@ -963,6 +969,10 @@ class EntitiesController extends Controller
     public function update(Entity $entity, EntityRequest $request): RedirectResponse
     {
         $msg = '';
+
+        if ($entity->created_by !== $this->user->id && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin')) {
+            return $this->unauthorized($request);
+        }
 
         $input = $request->all();
 
@@ -1529,10 +1539,10 @@ class EntitiesController extends Controller
     protected function unauthorized(EntityRequest $request): RedirectResponse | Response
     {
         if ($request->ajax()) {
-            return response(['message' => 'No way.'], 403);
+            return response(['message' => 'You do not have permission to edit this entity.'], 403);
         }
 
-        \Session::flash('flash_message', 'Not authorized');
+        \Session::flash('flash_message', ['title' => 'Access Denied', 'message' => 'You do not have permission to edit this entity.', 'level' => 'error']);
 
         return redirect('/');
     }

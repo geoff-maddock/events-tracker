@@ -712,8 +712,14 @@ class SeriesController extends Controller
         return redirect()->route('series.show', compact('series'));
     }
 
-    public function edit(Series $series): View
+    public function edit(Series $series): View|RedirectResponse
     {
+        if (!$series->ownedBy($this->user) && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin')) {
+            Session::flash('flash_message', ['title' => 'Access Denied', 'message' => 'You do not have permission to edit this series.', 'level' => 'error']);
+
+            return redirect()->route('series.show', compact('series'));
+        }
+
         return view('series.edit', compact('series'))
             ->with($this->getSeriesFormOptions());
     }
@@ -797,11 +803,11 @@ class SeriesController extends Controller
     {
         $msg = '';
 
-        $series->fill($request->input())->save();
-
-        if (!$series->ownedBy($this->user)) {
-            $this->unauthorized($request);
+        if (!$series->ownedBy($this->user) && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin')) {
+            return $this->unauthorized($request);
         }
+
+        $series->fill($request->input())->save();
 
         $tagArray = $request->input('tag_list', []);
         $syncArray = [];
@@ -840,10 +846,10 @@ class SeriesController extends Controller
     protected function unauthorized(SeriesRequest $request): RedirectResponse | Response
     {
         if ($request->ajax()) {
-            return response(['message' => 'No way.'], 403);
+            return response(['message' => 'You do not have permission to edit this series.'], 403);
         }
 
-        Session::flash('flash_message', 'Not authorized');
+        Session::flash('flash_message', ['title' => 'Access Denied', 'message' => 'You do not have permission to edit this series.', 'level' => 'error']);
 
         return redirect('/');
     }
