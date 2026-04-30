@@ -19,9 +19,6 @@
 				<h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-3">
 					{{ config('app.tagline')}}
 				</h1>
-				<p class="text-base md:text-lg text-muted-foreground max-w-3xl">
-					{{ config('app.app_name') }} is your calendar and guide to the vibrant Pittsburgh scene — events, weekly series, venues, artists, promoters, and everything in between.
-				</p>
 			</div>
 			<button
 				id="home-toggle"
@@ -33,6 +30,9 @@
 
 		<!-- Collapsible Content -->
 		<div id="home-content" class="space-y-6 pt-4">
+			<p class="text-base md:text-lg text-muted-foreground max-w-3xl">
+				{{ config('app.app_name') }} is your calendar and guide to the vibrant Pittsburgh scene — events, weekly series, venues, artists, promoters, and everything in between.
+			</p>
 			<!-- Features Grid -->
 			<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
 				<div class="flex items-start gap-3 p-4 rounded-lg bg-card/50 border border-border/50">

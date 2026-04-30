@@ -173,6 +173,10 @@ class EventsController extends Controller
             ])
             ->paginate($listResultSet->getLimit());
 
+        // persist resolved sort values so subsequent requests (e.g. filter form) don't revert to a different default
+        $listParamSessionStore->setSortDirection($listResultSet->getSortDirection());
+        $listParamSessionStore->setSortFieldName($listResultSet->getSort());
+
         // saves the updated session
         $listParamSessionStore->save();
 
@@ -394,7 +398,7 @@ class EventsController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['events.start_at' => 'desc']);
+            ->setDefaultSort(['events.start_at' => 'asc']);
 
         // nothing really happens until here in cadence
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
@@ -407,6 +411,10 @@ class EventsController extends Controller
         $events = $query->visible($this->user)
             ->with('visibility', 'venue')
             ->paginate($listResultSet->getLimit());
+
+        // persist resolved sort values so subsequent requests don't revert to a different default
+        $listParamSessionStore->setSortDirection($listResultSet->getSortDirection());
+        $listParamSessionStore->setSortFieldName($listResultSet->getSort());
 
         // saves the updated session
         $listParamSessionStore->save();
