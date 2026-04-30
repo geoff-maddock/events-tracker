@@ -16,19 +16,26 @@
 </div>
 
 <!-- Action Buttons -->
-<div class="mb-6 flex flex-wrap gap-2">
+<div class="mb-6 flex flex-wrap gap-2 items-center">
 	<a href="{!! URL::route('events.create') !!}" class="inline-flex items-center px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
 		<i class="bi bi-plus-lg mr-2"></i>
-		Create Event
+		Add Event
 	</a>
-	<a href="{!! URL::route('events.export') !!}" class="inline-flex items-center px-3 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-card transition-colors text-sm" target="_blank">
-		<i class="bi bi-download mr-2"></i>
-		Export TXT
-	</a>
-	<a href="{!! URL::route('events.indexIcal') !!}" class="inline-flex items-center px-3 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-card transition-colors text-sm" target="_blank">
-		<i class="bi bi-calendar-event mr-2"></i>
-		Export iCal
-	</a>
+	<div class="ml-auto relative" id="actions-menu-container">
+		<button id="actions-menu-btn" class="inline-flex items-center px-3 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-accent transition-colors text-sm" aria-haspopup="true" aria-expanded="false">
+			<i class="bi bi-three-dots"></i>
+		</button>
+		<div id="actions-menu-dropdown" class="hidden absolute right-0 mt-1 w-44 bg-card border border-border rounded-lg shadow-lg z-10">
+			<a href="{!! URL::route('events.export') !!}" class="flex items-center px-4 py-2 text-sm text-muted-foreground hover:bg-accent rounded-t-lg transition-colors" target="_blank">
+				<i class="bi bi-download mr-2"></i>
+				Export TXT
+			</a>
+			<a href="{!! URL::route('events.indexIcal') !!}" class="flex items-center px-4 py-2 text-sm text-muted-foreground hover:bg-accent rounded-b-lg transition-colors" target="_blank">
+				<i class="bi bi-calendar-event mr-2"></i>
+				Export iCal
+			</a>
+		</div>
+	</div>
 </div>
 
 <!-- Filters Section -->
@@ -266,6 +273,25 @@
 
 @section('footer')
 <script>
+    // Actions menu toggle
+    (function() {
+        const btn = document.getElementById('actions-menu-btn');
+        const dropdown = document.getElementById('actions-menu-dropdown');
+        if (!btn || !dropdown) return;
+
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const open = !dropdown.classList.contains('hidden');
+            dropdown.classList.toggle('hidden', open);
+            btn.setAttribute('aria-expanded', String(!open));
+        });
+
+        document.addEventListener('click', function() {
+            dropdown.classList.add('hidden');
+            btn.setAttribute('aria-expanded', 'false');
+        });
+    })();
+
     // Filter toggle functionality
     document.getElementById('filters-toggle-btn')?.addEventListener('click', function() {
         const panel = document.getElementById('filter-panel');
