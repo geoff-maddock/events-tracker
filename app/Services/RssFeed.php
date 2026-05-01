@@ -17,14 +17,7 @@ class RssFeed
      */
     public function getEventExportRSS(Collection $events): string
     {
-        if (Cache::has('event-export-rss-feed')) {
-            return Cache::get('event-export-rss-feed');
-        }
-
-        $rss = $this->buildRssData($events);
-        Cache::add('event-export-rss-feed', $rss, 7200);
-
-        return $rss;
+        return Cache::remember('event-export-rss-feed', 7200, fn () => $this->buildRssData($events));
     }
 
     /**
@@ -32,16 +25,11 @@ class RssFeed
      */
     public function getRSS(): string
     {
-        if (Cache::has('rss-feed')) {
-            return Cache::get('rss-feed');
-        }
+        return Cache::remember('rss-feed', 7200, function () {
+            $events = Event::future()->orderBy('start_at', 'desc')->take(config('event.rss_size'))->with('eventType', 'series')->get();
 
-        $events = Event::future()->orderBy('start_at', 'desc')->take(config('event.rss_size'))->with('eventType','series')->get();
-
-        $rss = $this->buildRssData($events);
-        Cache::add('rss-feed', $rss, 7200);
-
-        return $rss;
+            return $this->buildRssData($events);
+        });
     }
 
     /**
@@ -49,20 +37,15 @@ class RssFeed
      */
     public function getTagRSS(string $tag): string
     {
-        if (Cache::has('rss-feed-'.$tag)) {
-            return Cache::get('rss-feed'.$tag);
-        }
+        return Cache::remember('rss-feed-'.$tag, 7200, function () use ($tag) {
+            $events = Event::getByTag(ucfirst($tag))
+                ->future()
+                ->orderBy('start_at', 'desc')
+                ->take(config('event.rss_size'))
+                ->get();
 
-        $events = Event::getByTag(ucfirst($tag))
-            ->future()
-            ->orderBy('start_at', 'desc')
-            ->take(config('event.rss_size'))
-            ->get();
-
-        $rss = $this->buildRssData($events);
-        Cache::add('rss-feed'.$tag, $rss, 7200);
-
-        return $rss;
+            return $this->buildRssData($events);
+        });
     }
 
     /**

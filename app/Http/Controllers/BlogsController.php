@@ -19,6 +19,7 @@ use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -516,19 +517,19 @@ class BlogsController extends Controller
     protected function getFilterOptions(): array
     {
         return [
-            'userOptions' => ['' => '&nbsp;'] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
+            'userOptions' => ['' => '&nbsp;'] + Cache::remember('filter-opts-users-name', 3600, fn () => User::orderBy('name', 'ASC')->pluck('name', 'name')->all()),
+            'tagOptions' => ['' => '&nbsp;'] + Cache::remember('filter-opts-tags-slug', 3600, fn () => Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all()),
         ];
     }
 
     protected function getFormOptions(): array
     {
         return [
-            'visibilityOptions' => ['' => ''] + Visibility::pluck('name', 'id')->all(),
-            'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'menuOptions' => ['' => ''] + Menu::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'contentTypeOptions' => ['' => ''] + ContentType::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'visibilityOptions' => ['' => ''] + Cache::remember('form-opts-visibilities', 86400, fn () => Visibility::pluck('name', 'id')->all()),
+            'tagOptions' => Cache::remember('form-opts-tags', 3600, fn () => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
+            'entityOptions' => Cache::remember('form-opts-entities-all', 3600, fn () => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
+            'menuOptions' => ['' => ''] + Cache::remember('form-opts-menus', 3600, fn () => Menu::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
+            'contentTypeOptions' => ['' => ''] + Cache::remember('form-opts-content-types', 86400, fn () => ContentType::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
         ];
     }
 }

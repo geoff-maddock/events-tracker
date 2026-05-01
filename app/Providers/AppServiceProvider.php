@@ -14,6 +14,7 @@ use App\Services\SessionStore\ListParameterStore;
 use Illuminate\Session\Store;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -75,11 +76,11 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('series.createOccurrence', function ($view) {
-            $view->with('userList', ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all());
+            $view->with('userList', ['' => ''] + Cache::remember('form-opts-users', 3600, fn () => User::orderBy('name', 'ASC')->pluck('name', 'id')->all()));
         });
 
         View::composer('events.createSeries', function ($view) {
-            $view->with('userList', ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all());
+            $view->with('userList', ['' => ''] + Cache::remember('form-opts-users', 3600, fn () => User::orderBy('name', 'ASC')->pluck('name', 'id')->all()));
         });
     }
 
