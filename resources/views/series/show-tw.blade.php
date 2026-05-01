@@ -450,6 +450,13 @@ $(document).ready(function(){
                 }
             });
         }
+
+        // Invalidate embed cache when returning from a save
+        @if(session('flash_message') && session('flash_message.level') === 'success')
+        if (typeof EmbedLoader !== 'undefined') {
+            EmbedLoader.invalidateCache('series', '{{ $series->slug }}');
+        }
+        @endif
     });
 </script>
 

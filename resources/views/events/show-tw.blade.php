@@ -520,6 +520,13 @@ $(document).ready(function(){
             });
         }
 
+        // Invalidate embed cache when returning from a save
+        @if(session('flash_message') && session('flash_message.level') === 'success')
+        if (typeof EmbedLoader !== 'undefined') {
+            EmbedLoader.invalidateCache('events', '{{ $event->slug }}');
+        }
+        @endif
+
         // Refresh embeds button handler
         const refreshEmbedsBtn = document.getElementById('refresh-embeds-btn');
         if (refreshEmbedsBtn) {
