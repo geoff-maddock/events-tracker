@@ -966,7 +966,7 @@ class EntitiesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Entity $entity, EntityRequest $request): RedirectResponse
+    public function update(Entity $entity, EntityRequest $request): RedirectResponse|Response
     {
         $msg = '';
 
