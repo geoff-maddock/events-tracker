@@ -12,6 +12,7 @@
 	<meta name="description" content="@yield('description', 'A calender of events, concerts, club nights, weekly and monthly events series, promoters, artists, producers, djs, venues and other entities.')">
 	<meta property="fb:app_id" content="{{ config('app.fb_app_id') }}">
 	@yield('canonical')
+	@yield('meta.robots')
 	@yield('facebook.meta')
 	@yield('google.event.json')
 	@yield('entity.json')

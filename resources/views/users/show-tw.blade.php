@@ -2,6 +2,10 @@
 
 @section('title', 'User Profile View')
 
+@section('meta.robots')
+<meta name="robots" content="noindex, nofollow">
+@endsection
+
 @section('content')
 
 <div class="max-w-7xl mx-auto">

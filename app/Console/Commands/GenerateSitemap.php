@@ -93,6 +93,11 @@ class GenerateSitemap extends Command
                     return;
                 }
 
+                // skip events/related-to pages - filtered list pages, not canonical content
+                if (strpos($url->path(), '/events/related-to') !== false) {
+                    return;
+                }
+
                 // skip day_offset urls
                 if (strpos($url->segment(1), '?day_offset') !== false) {
                     return;
@@ -196,6 +201,11 @@ class GenerateSitemap extends Command
 
                 // Skip events by-date
                 if (strpos($url->getPath(), '/events/by-date') !== false) {
+                    return false;
+                }
+
+                // Skip events/related-to - filtered list pages, not canonical content
+                if (strpos($url->getPath(), '/events/related-to') !== false) {
                     return false;
                 }
 
