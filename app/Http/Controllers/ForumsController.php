@@ -17,6 +17,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View as ViewView;
@@ -481,9 +482,9 @@ class ForumsController extends Controller
     protected function getFilterOptions(): array
     {
         return [
-            'userOptions' => ['' => '&nbsp;'] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'seriesOptions' => ['' => ''] + Series::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'userOptions' => ['' => '&nbsp;'] + Cache::remember('filter-opts-users-name', 3600, fn () => User::orderBy('name', 'ASC')->pluck('name', 'name')->all()),
+            'tagOptions' => ['' => '&nbsp;'] + Cache::remember('filter-opts-tags-name', 3600, fn () => Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all()),
+            'seriesOptions' => ['' => ''] + Cache::remember('form-opts-series', 3600, fn () => Series::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
         ];
     }
 
