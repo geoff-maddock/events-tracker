@@ -52,6 +52,7 @@ class TagsController extends Controller
 
     public function __construct(Tag $tag)
     {
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
         $this->middleware('verified', ['only' => ['create', 'edit', 'store', 'update']]);
         $this->tag = $tag;
 

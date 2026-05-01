@@ -61,6 +61,22 @@ class VerificationController extends Controller
         $this->middleware('throttle:6,1')->only('verify', 'resend');
     }
 
+    // Override the trait method to guard against null user on session timeout
+    public function resend(Request $request)
+    {
+        if (!$request->user()) {
+            return redirect()->route('login');
+        }
+
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect($this->redirectPath());
+        }
+
+        $request->user()->sendEmailVerificationNotification();
+
+        return back()->with('resent', true);
+    }
+
     // Override the trait method to not rely on $request->user()
     public function verify(Request $request)
     {

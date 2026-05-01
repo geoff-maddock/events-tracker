@@ -82,6 +82,7 @@ class EventsController extends Controller
 
     public function __construct(EventFilters $filter)
     {
+        $this->middleware('auth', ['only' => ['create', 'edit', 'duplicate', 'store', 'update', 'indexAttending']]);
         $this->middleware('verified', ['only' => ['create', 'edit', 'duplicate','store', 'update', 'indexAttending']]);
         $this->filter = $filter;
 

@@ -56,6 +56,7 @@ class CalendarController extends Controller
 
     public function __construct(EventFilters $filter)
     {
+        $this->middleware('auth', ['only' => ['create', 'edit', 'duplicate', 'store', 'update', 'indexAttending', 'calendarAttending']]);
         $this->middleware('verified', ['only' => ['create', 'edit', 'duplicate','store', 'update', 'indexAttending', 'calendarAttending']]);
         $this->filter = $filter;
 
