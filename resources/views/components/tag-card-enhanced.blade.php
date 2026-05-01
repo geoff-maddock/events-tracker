@@ -30,8 +30,8 @@
         <!-- Primary Image -->
         <div class="aspect-video w-full overflow-hidden bg-muted">
             @if($primaryPhoto)
-                <img src="{{ Storage::disk('external')->url($primaryPhoto->getStoragePath()) }}" 
-                     alt="{{ $tag->name }}" 
+                <img src="{{ Storage::disk('external')->url($primaryPhoto->getStorageThumbnail()) }}"
+                     alt="{{ $tag->name }}"
                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
             @else
                 <div class="w-full h-full flex items-center justify-center">

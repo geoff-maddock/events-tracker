@@ -164,7 +164,7 @@ class Photo extends Eloquent
     }
 
 
-    public function makeThumbnail(?int $size = 400): Photo
+    public function makeThumbnail(?int $size = 600): Photo
     {
         // builds an image given the path of the file on the external disk, then creates a version
         $image = Image::make(Storage::disk('external')->url($this->path))

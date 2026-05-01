@@ -125,7 +125,7 @@
                 <div class="flex-shrink-0">
                     <div class="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden bg-muted">
                         @if ($photo = $thread->user->getPrimaryPhoto())
-                        <img src="{!! str_replace(' ','%20', Storage::disk('external')->url($photo->getStoragePath()) ) !!}" 
+                        <img src="{!! str_replace(' ','%20', Storage::disk('external')->url($photo->getStorageThumbnail()) ) !!}"
                              alt="{{ $thread->user->name}}" 
                              class="w-full h-full object-cover" 
                              title="{{ $thread->user->name }}">
