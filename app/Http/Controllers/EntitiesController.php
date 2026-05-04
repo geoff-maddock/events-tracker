@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -766,6 +767,12 @@ class EntitiesController extends Controller
         // add to activity log
         Activity::log($entity, $this->user, Action::CREATE);
 
+        Cache::forget('form-opts-venues');
+        Cache::forget('form-opts-promoters');
+        Cache::forget('form-opts-entities-active');
+        Cache::forget('filter-opts-venues-slug');
+        Cache::forget('filter-opts-entities-slug');
+
         flash()->success('Success', 'Your entity has been created');
         return redirect()->route('entities.show', compact('entity'));
     }
@@ -1031,6 +1038,12 @@ class EntitiesController extends Controller
 
         // add to activity log
         Activity::log($entity, $this->user, Action::UPDATE);
+
+        Cache::forget('form-opts-venues');
+        Cache::forget('form-opts-promoters');
+        Cache::forget('form-opts-entities-active');
+        Cache::forget('filter-opts-venues-slug');
+        Cache::forget('filter-opts-entities-slug');
 
         // flash this message
         flash()->success('Success', $msg);
