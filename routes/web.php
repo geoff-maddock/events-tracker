@@ -685,4 +685,8 @@ Route::get('visualist/{slug}', 'EntitiesController@showByRoleAndSlug')->defaults
 Route::get('go/evt-{id}', 'ClickTrackController@redirectEvent')->name('clicktrack.event')->where('id', '[0-9]+');
 Route::get('go/ser-{id}', 'ClickTrackController@redirectSeries')->name('clicktrack.series')->where('id', '[0-9]+');
 
+// Short URLs – create a short URL and resolve it
+Route::post('short-url', 'ShortUrlController@shorten')->name('short-url.shorten');
+Route::get('s/{code}', 'ShortUrlController@redirect')->name('short-url.redirect')->where('code', '[a-zA-Z0-9]+');
+
 Auth::routes();
