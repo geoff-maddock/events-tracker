@@ -22,7 +22,7 @@
         "eslint": "^10.0.1",
         "laravel-vite-plugin": "^2.1.0",
         "lodash": "^4.17.23",
-        "postcss": "^8.4.33",
+        "postcss": "^8.5.13",
         "prettier": "^3.2.0",
         "prettier-plugin-blade": "^2.0.0",
         "pusher-js": "^8.4.0-rc2",
