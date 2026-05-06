@@ -39,6 +39,10 @@ at {{ $event->start_at->format('g:i A') }}
 ${{ number_format($event->door_price,0) }}
 @endif
 
+@if ($event->age_format)
+{{ $event->age_format }}
+@endif
+
 
 @unless ($event->entities->isEmpty())
 <br>
