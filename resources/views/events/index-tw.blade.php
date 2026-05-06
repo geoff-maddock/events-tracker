@@ -61,6 +61,13 @@ Events @include('events.title-crumbs')
 				<i class="bi bi-calendar-event mr-2"></i>
 				Export iCal
 			</a>
+			@if ($signedIn && $user && $user->hasGroup('super_admin'))
+			<div class="border-t border-border my-1"></div>
+			<a href="{!! URL::route('events.instagramWeekendPreview') !!}" class="flex items-center px-4 py-2 text-sm text-muted-foreground hover:bg-accent rounded-b-lg transition-colors">
+				<i class="bi bi-instagram mr-2"></i>
+				Weekend Preview
+			</a>
+			@endif
 		</div>
 	</div>
 </div>

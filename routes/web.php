@@ -280,6 +280,7 @@ Route::get('fb-access', 'EventsController@fbAuthToken');
 Route::get('events/{id}/instagram-post', 'Api\\EventInstagramController@postCarouselToInstagram')->name('events.instagramPost');
 Route::get('events/{id}/instagram-post-single', 'Api\\EventInstagramController@postToInstagram')->name('events.instagramPostSingle');
 Route::get('events/instagram-post-week', 'Api\\EventInstagramController@postWeekToInstagram')->name('events.instagramPostWeek');
+Route::get('events/instagram-weekend-preview', 'Api\\EventInstagramController@postWeekendPreviewToInstagram')->name('events.instagramWeekendPreview');
 
 Route::get('events/tag/{tag}', 'EventsController@indexTags')->name('events.tag');
 Route::get('events/venue/{slug}', 'EventsController@indexVenues')->name('events.venue');
