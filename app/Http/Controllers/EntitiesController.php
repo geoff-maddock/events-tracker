@@ -100,6 +100,7 @@ class EntitiesController extends Controller
 
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
+        $activeRange = $this->getActiveRangeFilter($request, $listParamSessionStore);
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = Entity::query()
@@ -131,6 +132,8 @@ class EntitiesController extends Controller
             ->withCount('follows')
             ;    
         }
+
+        $baseQuery = $this->addPopularityScoreToQuery($baseQuery, $activeRange);
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -196,6 +199,7 @@ class EntitiesController extends Controller
 
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
+        $activeRange = $this->getActiveRangeFilter($request, $listParamSessionStore);
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = Entity::query()
@@ -205,6 +209,8 @@ class EntitiesController extends Controller
             ->where('follows.user_id', '=', $this->user->id)
             ->select('entities.*')
                         ->withCount('follows');
+
+        $baseQuery = $this->addPopularityScoreToQuery($baseQuery, $activeRange);
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -271,9 +277,10 @@ class EntitiesController extends Controller
         $listParamSessionStore->setKeyPrefix('internal_entity_roles');
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
+        $activeRange = $this->getActiveRangeFilter($request, $listParamSessionStore);
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = $this->getBaseQuery();
+        $baseQuery = $this->addPopularityScoreToQuery($this->getBaseQuery(), $activeRange);
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -330,14 +337,15 @@ class EntitiesController extends Controller
         $listParamSessionStore->setKeyPrefix('internal_entity_roles');
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
+        $activeRange = $this->getActiveRangeFilter($request, $listParamSessionStore);
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = $this->getBaseQuery();
+        $baseQuery = $this->addPopularityScoreToQuery($this->getBaseQuery(), $activeRange);
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['entities.name' => 'asc'])
+            ->setDefaultSort(['popularity_score' => 'desc'])
             ->setParentFilter(['role' => $role]);
 
         // get the result set from the builder
@@ -387,12 +395,15 @@ class EntitiesController extends Controller
 
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
+        $activeRange = $this->getActiveRangeFilter($request, $listParamSessionStore);
 
         // create the base query including any required joins; needs select to make sure only entities are returned
         $baseQuery = Entity::query()
                         ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
                         ->leftJoin('entity_statuses', 'entities.entity_status_id', '=', 'entity_statuses.id')
                         ->select('entities.*');
+
+        $baseQuery = $this->addPopularityScoreToQuery($baseQuery, $activeRange);
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -533,9 +544,10 @@ class EntitiesController extends Controller
         $listParamSessionStore->setKeyPrefix('internal_entity_tags');
         // Set the index tab in the session
         $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
+        $activeRange = $this->getActiveRangeFilter($request, $listParamSessionStore);
 
         // Create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = $this->getBaseQuery();
+        $baseQuery = $this->addPopularityScoreToQuery($this->getBaseQuery(), $activeRange);
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -590,9 +602,11 @@ class EntitiesController extends Controller
         $listParamSessionStore->setKeyPrefix('internal_entity_tags');
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
+        $activeRange = $this->getActiveRangeFilter($request, $listParamSessionStore);
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = Entity::getByAlias($alias)->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')->select('entities.*');
+        $baseQuery = $this->addPopularityScoreToQuery($baseQuery, $activeRange);
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -1564,9 +1578,78 @@ class EntitiesController extends Controller
     {
         return [
             'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
-            'sortOptions' => ['entities.name' => 'Name', 'entity_types.name' => 'Entity Type', 'entities.created_at' => 'Created At', 'follows_count' => 'Popularity'],
+            'sortOptions' => ['entities.name' => 'Name', 'entity_types.name' => 'Entity Type', 'entities.created_at' => 'Created At', 'popularity_score' => 'Popularity'],
             'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
         ];
+    }
+
+    /**
+     * Resolve the active_range filter value from request input or persisted session filters.
+     */
+    protected function getActiveRangeFilter(Request $request, ListParameterSessionStore $listParamSessionStore): ?string
+    {
+        $filters = $request->input('filters', $listParamSessionStore->getFilters() ?? []);
+        if (!is_array($filters)) {
+            return null;
+        }
+
+        $activeRange = $filters['active_range'] ?? null;
+
+        return is_string($activeRange) ? $activeRange : null;
+    }
+
+    /**
+     * Add a computed popularity_score select to the query.
+     *
+     * popularity_score = follows_count + events_in_period_count
+     *
+     * @param Builder $query Base entity listing query.
+     * @param string|null $activeRange Optional range slug (for example: 1-day, 1-week, 1-month, 3-months, 1-year).
+     */
+    protected function addPopularityScoreToQuery(Builder $query, ?string $activeRange): Builder
+    {
+        $fromDate = $this->getActiveRangeStartDate($activeRange);
+
+        $followsSubquery = DB::table('follows')
+            ->selectRaw('follows.object_id, COUNT(*) as follows_total')
+            ->where('follows.object_type', '=', 'entity')
+            ->groupBy('follows.object_id');
+
+        $eventsSubquery = DB::table('entity_event')
+            ->join('events', 'events.id', '=', 'entity_event.event_id')
+            ->selectRaw('entity_event.entity_id, COUNT(*) as events_total')
+            ->when($fromDate, function ($subQuery) use ($fromDate) {
+                $subQuery->where('events.start_at', '>=', $fromDate);
+            })
+            ->groupBy('entity_event.entity_id');
+
+        return $query
+            ->leftJoinSub($followsSubquery, 'entity_follows', function ($join) {
+                $join->on('entity_follows.object_id', '=', 'entities.id');
+            })
+            ->leftJoinSub($eventsSubquery, 'entity_events_in_period', function ($join) {
+                $join->on('entity_events_in_period.entity_id', '=', 'entities.id');
+            })
+            ->addSelect(DB::raw('COALESCE(entity_follows.follows_total, 0) + COALESCE(entity_events_in_period.events_total, 0) as popularity_score'));
+    }
+
+    /**
+     * Convert an active_range filter string into a Carbon range start date.
+     *
+     * @param string|null $activeRange Range slug such as 1-day, 1-week, 1-month, 3-months, 1-year, 2-years, 5-years.
+     */
+    protected function getActiveRangeStartDate(?string $activeRange): ?Carbon
+    {
+        return match ($activeRange) {
+            '1-day' => Carbon::now()->subDay(),
+            '1-week' => Carbon::now()->subWeek(),
+            '1-month' => Carbon::now()->subMonth(),
+            '3-months' => Carbon::now()->subMonths(3),
+            '1-year' => Carbon::now()->subYear(),
+            '2-years' => Carbon::now()->subYears(2),
+            '5-years' => Carbon::now()->subYears(5),
+            default => null,
+        };
     }
 
     protected function getFilterOptions(): array

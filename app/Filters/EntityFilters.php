@@ -178,6 +178,11 @@ class EntityFilters extends QueryFilter
             return $this->builder;
         }
 
+        // For web entity listings, active_range is used to scope popularity score calculations only.
+        if (!request()->is('api/*')) {
+            return $this->builder;
+        }
+
         // Parse the value to determine the time period
         // Expected formats: "1-month", "1-year", "2-years", "5-years"
         $fromDate = null;
