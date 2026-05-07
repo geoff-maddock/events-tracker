@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\Event;
 use App\Models\EventShare;
+use App\Models\Visibility;
 use App\Services\Integrations\Instagram;
 use App\Services\ImageHandler;
 use Carbon\Carbon;
@@ -772,6 +773,173 @@ class EventInstagramController extends Controller
         return back();
     }
 
+
+    /**
+     * Endpoint to post a weekend preview to Instagram Stories.
+     * Selects the top events for the upcoming weekend (Fri–Sun), ranked by follower count.
+     * Only accessible by admins.
+     *
+     * Selection rules:
+     *  - If <= 10 weekend events: post all of them.
+     *  - If > 10: rank by follower count descending and take top 10.
+     *  - If the 10th and 11th events are tied in follower count (can't distinguish): fall back to
+     *    5 from Friday + 5 from Saturday, each sorted by follower count.
+     *
+     * Each selected event is posted as an individual Instagram Story.
+     */
+    public function postWeekendPreviewToInstagram(Instagram $instagram): RedirectResponse
+    {
+        // Admin-only guard
+        if (!$this->user || !$this->user->hasGroup('super_admin')) {
+            flash()->error('Error', 'You must be an admin to post the weekend preview to Instagram.');
+
+            return back();
+        }
+
+        // Determine the upcoming weekend window (Friday 00:00 through Sunday 23:59)
+        $today = Carbon::today();
+        $dayOfWeek = $today->dayOfWeek; // 0 = Sunday, 5 = Friday, 6 = Saturday
+
+        if ($dayOfWeek === Carbon::FRIDAY) {
+            $fridayStart = $today->copy()->startOfDay();
+        } elseif ($dayOfWeek === Carbon::SATURDAY) {
+            $fridayStart = $today->copy()->previous(Carbon::FRIDAY)->startOfDay();
+        } elseif ($dayOfWeek === Carbon::SUNDAY) {
+            $fridayStart = $today->copy()->previous(Carbon::FRIDAY)->startOfDay();
+        } else {
+            // Mon–Thu: look to the coming Friday
+            $fridayStart = $today->copy()->next(Carbon::FRIDAY)->startOfDay();
+        }
+
+        $sundayEnd = $fridayStart->copy()->next(Carbon::SUNDAY)->endOfDay();
+
+        // Fetch all weekend events ranked by number of attending responses (EventResponse count)
+        // Exclude cancelled events and non-public events
+        $allWeekendEvents = Event::where('start_at', '>=', $fridayStart)
+            ->where('start_at', '<=', $sundayEnd)
+            ->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
+            ->whereNull('cancelled_at')
+            ->withCount(['eventResponses as response_count'])
+            ->orderBy('response_count', 'desc')
+            ->orderBy('start_at', 'asc')
+            ->get();
+
+        if ($allWeekendEvents->isEmpty()) {
+            flash()->error('Error', 'No events found for the upcoming weekend.');
+
+            return back();
+        }
+
+        // Apply selection rules
+        if ($allWeekendEvents->count() <= 10) {
+            $selectedEvents = $allWeekendEvents;
+        } else {
+            // Check if there is a clear attending-count cutoff between position 10 and 11.
+            // If the 10th and 11th events have different response counts we can take a clean top 10.
+            // When the counts are equal (tied), fall back to the day-based distribution.
+            $tenth = $allWeekendEvents->get(9);
+            $eleventh = $allWeekendEvents->get(10);
+
+            if ($tenth && $eleventh && $tenth->response_count !== $eleventh->response_count) {
+                // Clear cutoff at position 10 — take top 10 by attending count
+                $selectedEvents = $allWeekendEvents->take(10);
+            } else {
+                // Tie at the cutoff — fall back to 5 Fri + 5 Sat (per issue spec; Sunday excluded)
+                $fridayEvents = $allWeekendEvents
+                    ->filter(fn ($e) => Carbon::parse($e->start_at)->isFriday())
+                    ->take(5);
+                $saturdayEvents = $allWeekendEvents
+                    ->filter(fn ($e) => Carbon::parse($e->start_at)->isSaturday())
+                    ->take(5);
+                $selectedEvents = $fridayEvents->merge($saturdayEvents);
+            }
+        }
+
+        if ($selectedEvents->isEmpty()) {
+            flash()->error('Error', 'No events selected for the weekend preview.');
+
+            return back();
+        }
+
+        // Validate Instagram credentials
+        if (!$instagram->getIgUserId()) {
+            flash()->error('Error', 'You must have an Instagram user account linked to post to Instagram.');
+
+            return back();
+        }
+
+        if (!$instagram->getPageAccessToken()) {
+            flash()->error('Error', 'You must have an Instagram page linked to post to Instagram.');
+
+            return back();
+        }
+
+        $postedCount = 0;
+        $skippedCount = 0;
+
+        foreach ($selectedEvents as $event) {
+            $photo = $event->getPrimaryPhoto();
+
+            if (!$photo) {
+                Log::info('Weekend preview: no photo for event '.$event->id.', skipping.');
+                $skippedCount++;
+                continue;
+            }
+
+            $imageUrl = Storage::disk('external')->url($photo->getStoragePath());
+
+            if (!$imageUrl) {
+                Log::info('Weekend preview: no image url for event '.$event->id.', skipping.');
+                $skippedCount++;
+                continue;
+            }
+
+            $caption = urlEncode($event->getInstagramFormat());
+            $eventUrl = route('events.show', $event->id);
+
+            try {
+                $igContainerId = $instagram->uploadStoryPhoto($imageUrl, $caption, $eventUrl);
+            } catch (Exception $e) {
+                Log::info('Weekend preview: error uploading story for event '.$event->id.': '.$e->getMessage());
+                $skippedCount++;
+                continue;
+            }
+
+            if ($instagram->checkStatus($igContainerId) === false) {
+                Log::info('Weekend preview: container status check failed for event '.$event->id);
+                $skippedCount++;
+                continue;
+            }
+
+            $result = $instagram->publishStoryMedia($igContainerId);
+
+            if ($result === false) {
+                Log::info('Weekend preview: failed to publish story for event '.$event->id);
+                $skippedCount++;
+                continue;
+            }
+
+            Log::info('Weekend preview: published story for event '.$event->id.', ig id: '.$result);
+
+            Activity::log($event, $this->user, 16);
+            $this->logEventShare($event, $result, $this->user?->id);
+            $postedCount++;
+        }
+
+        if ($postedCount === 0) {
+            flash()->error('Error', 'No stories could be posted. Ensure the selected events have photos.');
+
+            return back();
+        }
+
+        flash()->success(
+            'Success',
+            "Weekend preview posted: {$postedCount} stor".($postedCount === 1 ? 'y' : 'ies').' published'
+                .($skippedCount > 0 ? ", {$skippedCount} skipped (no photo)." : '.')
+        );
+
+        return back();
+    }
 
 
 }

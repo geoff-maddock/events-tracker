@@ -51,10 +51,13 @@ class Instagram
         return $response['data']['id'];
     }
 
-    public function uploadStoryPhoto(string $imageUrl, string $caption): int
+    public function uploadStoryPhoto(string $imageUrl, string $caption, ?string $linkUrl = null): int
     {
         $params = [];
         $endpoint = 'https://graph.facebook.com/'.$this->apiVersion.'/'.$this->igUserId.'/media?media_type=STORIES&image_url='.$imageUrl.'&access_token='.$this->pageAccessToken;
+        if ($linkUrl) {
+            $endpoint .= '&link_url='.urlencode($linkUrl);
+        }
         $response = $this->makeApiCall($endpoint, 'POST', $params);
 
         // check if data is not null

@@ -61,6 +61,7 @@ use App\Models\User;
  * @property int|null                                                                                                  $entities_count
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\EventResponse[]                                      $eventResponses
  * @property int|null                                                                                                  $event_responses_count
+ * @property int|null                                                                                                  $response_count
  * @property \App\Models\EventStatus|null                                                                              $eventStatus
  * @property \App\Models\EventType|null                                                                                $eventType
  * @property mixed                                                                                                     $attending_count
