@@ -25,6 +25,10 @@ at {{ $event->venue->name  }}
 ${{ number_format($event->door_price,0) }}
 @endif
 
+@if ($event->age_format)
+{{ $event->age_format }}
+@endif
+
 @unless ($event->tags->isEmpty())
 @php 
 $start = 0;
