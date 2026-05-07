@@ -202,10 +202,12 @@ class ActivityController extends Controller
         $rows = $graphData['rows'];
         $filename = 'activity-graph-'.Carbon::now()->format('Ymd-His').'.csv';
 
-        return response()->streamDownload(function () use ($rows, $graphData): void {
+        return response()->streamDownload(function () use ($rows, $graphData, $filters): void {
             $output = fopen('php://output', 'w');
             if ($output === false) {
-                Log::error('Failed to open output stream for activity graph export');
+                Log::error('Failed to open output stream for activity graph export', [
+                    'filters' => $filters,
+                ]);
                 return;
             }
 
