@@ -73,6 +73,7 @@
         <span class="text-sm text-muted-foreground">{{ $startDate->toDateString() }} to {{ $endDate->toDateString() }}</span>
     </div>
     <canvas id="activityGraph" height="120"></canvas>
+    <p id="activityGraphEmpty" class="hidden mt-3 text-sm text-muted-foreground">No data available for the selected filters.</p>
 </div>
 
 <div class="card-tw p-4">
@@ -121,7 +122,13 @@
         });
 
         const canvas = document.getElementById('activityGraph');
-        if (!canvas || datasets.length === 0) {
+        const emptyMessage = document.getElementById('activityGraphEmpty');
+        if (!canvas) {
+            return;
+        }
+
+        if (datasets.length === 0) {
+            emptyMessage?.classList.remove('hidden');
             return;
         }
 
