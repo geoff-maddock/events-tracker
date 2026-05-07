@@ -65,7 +65,7 @@ class ActivityGraphTest extends TestCase
         Activity::factory()->create([
             'user_id' => $admin->id,
             'object_table' => 'Event',
-            'action_id' => Action::LOGIN,
+            'action_id' => Action::CREATE,
             'created_at' => Carbon::today(),
             'updated_at' => Carbon::today(),
         ]);
@@ -75,6 +75,6 @@ class ActivityGraphTest extends TestCase
         $response->assertOk();
         $this->assertStringContainsString('text/csv', (string) $response->headers->get('content-type'));
         $response->assertSee('Date,Activity Type,Count');
-        $response->assertSee('Login Event');
+        $response->assertSee('Create Event');
     }
 }
