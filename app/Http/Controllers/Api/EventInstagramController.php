@@ -895,9 +895,10 @@ class EventInstagramController extends Controller
             }
 
             $caption = urlEncode($event->getInstagramFormat());
+            $eventUrl = route('events.show', $event->id);
 
             try {
-                $igContainerId = $instagram->uploadStoryPhoto($imageUrl, $caption);
+                $igContainerId = $instagram->uploadStoryPhoto($imageUrl, $caption, $eventUrl);
             } catch (Exception $e) {
                 Log::info('Weekend preview: error uploading story for event '.$event->id.': '.$e->getMessage());
                 $skippedCount++;
