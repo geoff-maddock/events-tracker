@@ -1583,6 +1583,9 @@ class EntitiesController extends Controller
         ];
     }
 
+    /**
+     * Resolve the active_range filter value from request input or persisted session filters.
+     */
     protected function getActiveRangeFilter(Request $request, ListParameterSessionStore $listParamSessionStore): ?string
     {
         $filters = $request->input('filters', $listParamSessionStore->getFilters() ?? []);
@@ -1595,6 +1598,11 @@ class EntitiesController extends Controller
         return is_string($activeRange) ? $activeRange : null;
     }
 
+    /**
+     * Add a computed popularity_score select to the query.
+     *
+     * popularity_score = follows_count + events_in_period_count
+     */
     protected function addPopularityScoreToQuery(Builder $query, ?string $activeRange): Builder
     {
         $fromDate = $this->getActiveRangeStartDate($activeRange);
@@ -1622,6 +1630,9 @@ class EntitiesController extends Controller
             ->addSelect(DB::raw('COALESCE(entity_follows.follows_total, 0) + COALESCE(entity_events_in_period.events_total, 0) as popularity_score'));
     }
 
+    /**
+     * Convert an active_range filter string into a Carbon range start date.
+     */
     protected function getActiveRangeStartDate(?string $activeRange): ?Carbon
     {
         return match ($activeRange) {
