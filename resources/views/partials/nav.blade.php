@@ -156,6 +156,7 @@
 								<li class="nav-item"><a href="{{ url('/menus')}}" class="dropdown-item">Menus</a></li>
 								<li class="nav-item"><a href="{{ url('/permissions')}}" title="Show a list of user permissions" class="dropdown-item">Permissions</a></li>
 								<li class="nav-item"><a href="{{ url('/posts')}}" title="Show all the latests posts" class="dropdown-item">Posts</a></li>
+								<li class="nav-item"><a href="{{ route('activities.graph') }}" class="dropdown-item">Activity Graph</a></li>
 								<li class="nav-item"><a href="{{ url('/tools')}}" class="dropdown-item">Tools</a></li>
 							@endcan
 

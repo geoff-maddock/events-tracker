@@ -66,6 +66,7 @@
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				@php
 				$adminModules = [
+					['name' => 'Activity Graph', 'url' => '/activity/graph', 'icon' => 'bi-activity', 'description' => 'Visualize and export activity trends'],
 					['name' => 'Blogs', 'url' => '/blogs', 'icon' => 'bi-journal-text', 'description' => 'Manage blog posts'],
 					['name' => 'Categories', 'url' => '/categories', 'icon' => 'bi-folder', 'description' => 'Manage forum categories'],
 					['name' => 'Entity Types', 'url' => '/entity-types', 'icon' => 'bi-diagram-3', 'description' => 'Manage entity types'],
