@@ -19,7 +19,6 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use App\Models\Follow;
 use App\Models\User;
 
 /**
@@ -385,14 +384,6 @@ class Event extends Model
     public function comments(): MorphMany
     {
         return $this->morphMany('App\Models\Comment', 'commentable')->orderBy('created_at', 'DESC');
-    }
-
-    /**
-     * Get all follows for this event.
-     */
-    public function follows(): MorphMany
-    {
-        return $this->morphMany(Follow::class, 'object', 'object_type', 'object_id');
     }
 
     /**

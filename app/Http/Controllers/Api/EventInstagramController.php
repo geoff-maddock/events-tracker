@@ -812,11 +812,11 @@ class EventInstagramController extends Controller
 
         $sundayEnd = $fridayStart->copy()->next(Carbon::SUNDAY)->endOfDay();
 
-        // Fetch all weekend events with their follower counts
+        // Fetch all weekend events ranked by number of attending responses (EventResponse count)
         $allWeekendEvents = Event::where('start_at', '>=', $fridayStart)
             ->where('start_at', '<=', $sundayEnd)
-            ->withCount(['follows as follow_count'])
-            ->orderBy('follow_count', 'desc')
+            ->withCount(['eventResponses as response_count'])
+            ->orderBy('response_count', 'desc')
             ->orderBy('start_at', 'asc')
             ->get();
 
@@ -830,14 +830,14 @@ class EventInstagramController extends Controller
         if ($allWeekendEvents->count() <= 10) {
             $selectedEvents = $allWeekendEvents;
         } else {
-            // Check if there is a clear follower-count cutoff between position 10 and 11.
-            // If the 10th and 11th events have different follow counts we can take a clean top 10.
+            // Check if there is a clear attending-count cutoff between position 10 and 11.
+            // If the 10th and 11th events have different response counts we can take a clean top 10.
             // When the counts are equal (tied), fall back to the day-based distribution.
             $tenth = $allWeekendEvents->get(9);
             $eleventh = $allWeekendEvents->get(10);
 
-            if ($tenth && $eleventh && $tenth->follow_count !== $eleventh->follow_count) {
-                // Clear cutoff at position 10 — take top 10 by followers
+            if ($tenth && $eleventh && $tenth->response_count !== $eleventh->response_count) {
+                // Clear cutoff at position 10 — take top 10 by attending count
                 $selectedEvents = $allWeekendEvents->take(10);
             } else {
                 // Tie at the cutoff — fall back to 5 Fri + 5 Sat (per issue spec; Sunday excluded)
