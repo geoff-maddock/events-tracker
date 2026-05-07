@@ -1619,7 +1619,7 @@ class EntitiesController extends Controller
             ->leftJoinSub($eventsSubquery, 'entity_events_in_period', function ($join) {
                 $join->on('entity_events_in_period.entity_id', '=', 'entities.id');
             })
-            ->selectRaw('COALESCE(entity_follows.follows_total, 0) + COALESCE(entity_events_in_period.events_total, 0) as popularity_score');
+            ->addSelect(DB::raw('COALESCE(entity_follows.follows_total, 0) + COALESCE(entity_events_in_period.events_total, 0) as popularity_score'));
     }
 
     protected function getActiveRangeStartDate(?string $activeRange): ?Carbon
