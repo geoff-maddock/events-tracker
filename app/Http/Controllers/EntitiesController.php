@@ -1602,6 +1602,9 @@ class EntitiesController extends Controller
      * Add a computed popularity_score select to the query.
      *
      * popularity_score = follows_count + events_in_period_count
+     *
+     * @param Builder $query Base entity listing query.
+     * @param string|null $activeRange Optional range slug (for example: 1-day, 1-week, 1-month, 3-months, 1-year).
      */
     protected function addPopularityScoreToQuery(Builder $query, ?string $activeRange): Builder
     {
@@ -1632,6 +1635,8 @@ class EntitiesController extends Controller
 
     /**
      * Convert an active_range filter string into a Carbon range start date.
+     *
+     * @param string|null $activeRange Range slug such as 1-day, 1-week, 1-month, 3-months, 1-year, 2-years, 5-years.
      */
     protected function getActiveRangeStartDate(?string $activeRange): ?Carbon
     {
