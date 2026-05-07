@@ -15,11 +15,14 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ActivityController extends Controller
 {
+    private const UNKNOWN_LABEL = 'Unknown';
+
     protected string $prefix;
 
     protected int $defaultLimit;
@@ -202,6 +205,7 @@ class ActivityController extends Controller
         return response()->streamDownload(function () use ($rows, $graphData): void {
             $output = fopen('php://output', 'w');
             if ($output === false) {
+                Log::error('Failed to open output stream for activity graph export');
                 return;
             }
 
@@ -340,11 +344,13 @@ class ActivityController extends Controller
 
     protected function getActivityTypeExpression(): string
     {
+        $unknown = self::UNKNOWN_LABEL;
+
         if (DB::connection()->getDriverName() === 'sqlite') {
-            return "COALESCE(actions.name, 'Unknown') || ' ' || COALESCE(activities.object_table, 'Unknown')";
+            return "COALESCE(actions.name, '{$unknown}') || ' ' || COALESCE(activities.object_table, '{$unknown}')";
         }
 
-        return "CONCAT(COALESCE(actions.name, 'Unknown'), ' ', COALESCE(activities.object_table, 'Unknown'))";
+        return "CONCAT(COALESCE(actions.name, '{$unknown}'), ' ', COALESCE(activities.object_table, '{$unknown}'))";
     }
 
     protected function unauthorized(SeriesRequest $request): Response | RedirectResponse
