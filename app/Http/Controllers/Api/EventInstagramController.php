@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\Event;
 use App\Models\EventShare;
+use App\Models\Visibility;
 use App\Services\Integrations\Instagram;
 use App\Services\ImageHandler;
 use Carbon\Carbon;
@@ -813,8 +814,11 @@ class EventInstagramController extends Controller
         $sundayEnd = $fridayStart->copy()->next(Carbon::SUNDAY)->endOfDay();
 
         // Fetch all weekend events ranked by number of attending responses (EventResponse count)
+        // Exclude cancelled events and non-public events
         $allWeekendEvents = Event::where('start_at', '>=', $fridayStart)
             ->where('start_at', '<=', $sundayEnd)
+            ->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
+            ->whereNull('cancelled_at')
             ->withCount(['eventResponses as response_count'])
             ->orderBy('response_count', 'desc')
             ->orderBy('start_at', 'asc')
