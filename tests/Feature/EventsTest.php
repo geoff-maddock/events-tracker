@@ -34,13 +34,16 @@ class EventsTest extends TestCase
 
     public function testCreateFormAllowsUnspecifiedAgeLimit()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create([
+            'user_status_id' => \App\Models\UserStatus::ACTIVE,
+            'email_verified_at' => now(),
+        ]);
 
         $this->actingAs($user)
             ->get('/events/create')
             ->assertOk()
             ->assertSee('No age limit specified')
-            ->assertSee('option value="" selected', false);
+            ->assertSeeInOrder(['id="min_age"', 'option value="" selected'], false);
     }
 
     /**
