@@ -55,6 +55,8 @@ class ShortUrlTest extends TestCase
     /** @test */
     public function shorten_endpoint_rejects_invalid_url()
     {
+        $this->withExceptionHandling();
+
         $response = $this->postJson(route('short-url.shorten'), ['url' => 'not-a-url']);
 
         $response->assertStatus(422);
@@ -63,6 +65,8 @@ class ShortUrlTest extends TestCase
     /** @test */
     public function shorten_endpoint_rejects_missing_url()
     {
+        $this->withExceptionHandling();
+
         $response = $this->postJson(route('short-url.shorten'), []);
 
         $response->assertStatus(422);
@@ -98,6 +102,8 @@ class ShortUrlTest extends TestCase
     /** @test */
     public function redirect_endpoint_returns_404_for_unknown_code()
     {
+        $this->withExceptionHandling();
+
         $response = $this->get(route('short-url.redirect', ['code' => 'deadbeef']));
 
         $response->assertStatus(404);
