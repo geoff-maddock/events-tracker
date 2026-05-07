@@ -267,8 +267,9 @@
 		const baseUrl = '{{ Route::has('series.applyFilterFromUrl') ? route('series.applyFilterFromUrl') : route('series.filter') }}';
 		const fullUrl = `${baseUrl}?${params.toString()}`;
 
-		navigator.clipboard.writeText(fullUrl).then(function() {
-			const btn = document.getElementById('copy-filter-url-btn');
+		const btn = document.getElementById('copy-filter-url-btn');
+
+		function showCopiedFeedback() {
 			const originalContent = btn.innerHTML;
 			btn.innerHTML = '<i class="bi bi-check2"></i><span>Copied!</span>';
 			btn.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
@@ -276,10 +277,28 @@
 				btn.innerHTML = originalContent;
 				btn.classList.remove('bg-green-100', 'border-green-500', 'text-green-700');
 			}, 2000);
-		}).catch(function(err) {
-			alert('Failed to copy URL. Please copy manually: ' + fullUrl);
-			console.error('Could not copy text: ', err);
-		});
+		}
+
+		function copyToClipboard(url) {
+			navigator.clipboard.writeText(url).then(showCopiedFeedback).catch(function() {
+				alert('Failed to copy URL. Please copy manually: ' + url);
+			});
+		}
+
+		// Shorten the URL before copying
+		const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+		fetch('{{ route('short-url.shorten') }}', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRF-TOKEN': csrfToken,
+				'Accept': 'application/json',
+			},
+			body: JSON.stringify({ url: fullUrl }),
+		})
+		.then(function(response) { return response.json(); })
+		.then(function(data) { copyToClipboard(data.short_url || fullUrl); })
+		.catch(function() { copyToClipboard(fullUrl); });
 	});
 </script>
 @include('partials.filter-js')
