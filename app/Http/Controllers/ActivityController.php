@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ActivityController extends Controller
@@ -219,9 +220,19 @@ class ActivityController extends Controller
 
     protected function getGraphFilters(Request $request): array
     {
-        $days = max(1, (int) $request->integer('days', 7));
-        $startDateInput = $request->input('start_date');
-        $endDateInput = $request->input('end_date');
+        $validated = Validator::make($request->all(), [
+            'days' => ['nullable', 'integer', 'min:1', 'max:365'],
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date'],
+            'action_id' => ['nullable', 'integer', 'min:1'],
+            'user_id' => ['nullable', 'integer', 'min:1'],
+            'line_limit' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'object_table' => ['nullable', 'string', 'max:100'],
+        ])->validate();
+
+        $days = max(1, min(365, (int) ($validated['days'] ?? 7)));
+        $startDateInput = $validated['start_date'] ?? null;
+        $endDateInput = $validated['end_date'] ?? null;
         $today = Carbon::today();
 
         if ($startDateInput || $endDateInput) {
@@ -240,10 +251,10 @@ class ActivityController extends Controller
             'days' => $days,
             'start_date' => $startDate->toDateString(),
             'end_date' => $endDate->toDateString(),
-            'action_id' => $request->filled('action_id') ? (int) $request->integer('action_id') : null,
-            'object_table' => $request->filled('object_table') ? (string) $request->input('object_table') : null,
-            'user_id' => $request->filled('user_id') ? (int) $request->integer('user_id') : null,
-            'line_limit' => max(1, (int) $request->integer('line_limit', 10)),
+            'action_id' => isset($validated['action_id']) ? (int) $validated['action_id'] : null,
+            'object_table' => isset($validated['object_table']) && $validated['object_table'] !== '' ? (string) $validated['object_table'] : null,
+            'user_id' => isset($validated['user_id']) ? (int) $validated['user_id'] : null,
+            'line_limit' => max(1, min(100, (int) ($validated['line_limit'] ?? 10))),
         ];
     }
 
@@ -252,7 +263,6 @@ class ActivityController extends Controller
         $startDate = Carbon::parse($filters['start_date'])->startOfDay();
         $endDate = Carbon::parse($filters['end_date'])->endOfDay();
         $days = $startDate->diffInDays($endDate) + 1;
-        $days = max(1, $days);
         $lineLimit = max(1, (int) $filters['line_limit']);
 
         $baseQuery = Activity::query()
