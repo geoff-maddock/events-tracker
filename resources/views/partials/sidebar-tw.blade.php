@@ -152,6 +152,10 @@
             <i class="bi bi-grid-3x3-gap text-lg"></i>
             <span>All Modules</span>
         </a>
+        <a href="{{ route('activities.graph') }}" class="nav-item-tw mt-1 {{ Request::is('activity/graph*') ? 'nav-item-active-tw' : '' }}">
+            <i class="bi bi-activity text-lg"></i>
+            <span>Activity Graph</span>
+        </a>
         @endcan
         <a href="{{ route('logout') }}"
             onclick="event.preventDefault(); document.getElementById('sidebar-logout-form').submit();"
@@ -312,6 +316,10 @@
         <a href="{{ route('pages.allModules') }}" class="nav-item-tw mt-1 {{ Request::is('all-modules') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-grid-3x3-gap text-lg"></i>
             <span>All Modules</span>
+        </a>
+        <a href="{{ route('activities.graph') }}" class="nav-item-tw mt-1 {{ Request::is('activity/graph*') ? 'nav-item-active-tw' : '' }}">
+            <i class="bi bi-activity text-lg"></i>
+            <span>Activity Graph</span>
         </a>
         @endcan
         @endif
