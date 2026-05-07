@@ -40,7 +40,7 @@ class EventsTest extends TestCase
             ->get('/events/create')
             ->assertOk()
             ->assertSee('No age limit specified')
-            ->assertSee('option value="" selected', false);
+            ->assertSeeInOrder(['id="min_age"', 'option value="" selected'], false);
     }
 
     /**
