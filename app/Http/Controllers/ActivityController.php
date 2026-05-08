@@ -299,7 +299,14 @@ class ActivityController extends Controller
             ->groupBy(DB::raw($dateExpression), DB::raw($activityTypeExpression))
             ->orderBy('activity_date', 'asc')
             ->orderBy('activity_type', 'asc')
-            ->get();
+            ->get()
+            ->map(function ($row): array {
+                return [
+                    'activity_date' => (string) $row->activity_date,
+                    'activity_type' => (string) $row->activity_type,
+                    'activity_count' => (int) $row->activity_count,
+                ];
+            });
 
         $topTypes = (clone $baseQuery)
             ->selectRaw("{$activityTypeExpression} as activity_type, COUNT(*) as total_count")
@@ -307,22 +314,25 @@ class ActivityController extends Controller
             ->orderByDesc('total_count')
             ->limit($lineLimit)
             ->pluck('activity_type')
+            ->map(function ($activityType): string {
+                return (string) $activityType;
+            })
             ->all();
 
-        $dailyRows = $dailyRows->filter(function ($row) use ($topTypes) {
-            return in_array($row->activity_type, $topTypes, true);
+        $dailyRows = $dailyRows->filter(function (array $row) use ($topTypes) {
+            return in_array($row['activity_type'], $topTypes, true);
         })->values();
 
         $bucketed = [];
         foreach ($dailyRows as $row) {
-            $bucket = $this->getBucketLabel(Carbon::parse($row->activity_date), $groupBy);
+            $bucket = $this->getBucketLabel(Carbon::parse($row['activity_date']), $groupBy);
             if (!isset($bucketed[$bucket])) {
                 $bucketed[$bucket] = [];
             }
-            if (!isset($bucketed[$bucket][$row->activity_type])) {
-                $bucketed[$bucket][$row->activity_type] = 0;
+            if (!isset($bucketed[$bucket][$row['activity_type']])) {
+                $bucketed[$bucket][$row['activity_type']] = 0;
             }
-            $bucketed[$bucket][$row->activity_type] += (int) $row->activity_count;
+            $bucketed[$bucket][$row['activity_type']] += $row['activity_count'];
         }
 
         $labels = $this->buildBucketLabels($startDate, $endDate, $groupBy);

@@ -132,6 +132,34 @@
 
         const canvas = document.getElementById('activityGraph');
         const emptyMessage = document.getElementById('activityGraphEmpty');
+        const daysSelect = document.getElementById('days');
+        const startDateInput = document.getElementById('start_date');
+        const endDateInput = document.getElementById('end_date');
+
+        const toInputDate = (date) => {
+            const year = date.getFullYear();
+            const month = `${date.getMonth() + 1}`.padStart(2, '0');
+            const day = `${date.getDate()}`.padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        if (daysSelect && startDateInput && endDateInput) {
+            daysSelect.addEventListener('change', () => {
+                const days = Number(daysSelect.value || 7);
+                if (!Number.isFinite(days) || days < 1) {
+                    return;
+                }
+
+                const today = new Date();
+                const endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                const startDate = new Date(endDate);
+                startDate.setDate(startDate.getDate() - (days - 1));
+
+                startDateInput.value = toInputDate(startDate);
+                endDateInput.value = toInputDate(endDate);
+            });
+        }
+
         if (!canvas) {
             return;
         }
