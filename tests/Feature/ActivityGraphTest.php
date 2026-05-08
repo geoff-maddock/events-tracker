@@ -74,8 +74,9 @@ class ActivityGraphTest extends TestCase
 
         $response->assertOk();
         $this->assertStringContainsString('text/csv', (string) $response->headers->get('content-type'));
-        $response->assertSee('Period,Activity Type,Count');
-        $response->assertSee('Create Event');
+        $content = $response->streamedContent();
+        $this->assertStringContainsString('Period,"Activity Type",Count', $content);
+        $this->assertStringContainsString('"Create Event"', $content);
     }
 
     public function test_admin_can_group_activity_graph_by_week(): void
@@ -112,7 +113,8 @@ class ActivityGraphTest extends TestCase
         ]));
 
         $response->assertOk();
-        $response->assertSee($weekStart.',Create Event,2');
-        $response->assertSee('Grouping,week');
+        $content = $response->streamedContent();
+        $this->assertStringContainsString($weekStart.',"Create Event",2', $content);
+        $this->assertStringContainsString('Grouping,week', $content);
     }
 }

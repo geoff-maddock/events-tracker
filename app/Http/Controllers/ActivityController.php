@@ -300,7 +300,8 @@ class ActivityController extends Controller
             ->orderBy('activity_date', 'asc')
             ->orderBy('activity_type', 'asc')
             ->get()
-            ->map(function ($row): array {
+            ->map(function (mixed $row): array {
+                /** @var object{activity_date: string, activity_type: string, activity_count: int} $row */
                 return [
                     'activity_date' => (string) $row->activity_date,
                     'activity_type' => (string) $row->activity_type,
