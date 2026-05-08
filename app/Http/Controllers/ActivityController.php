@@ -191,6 +191,7 @@ class ActivityController extends Controller
                 'userOptions' => ['' => 'All users'] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
                 'daysOptions' => [7 => 'Last 7 days', 14 => 'Last 14 days', 30 => 'Last 30 days', 90 => 'Last 90 days'],
                 'lineLimitOptions' => [5 => 'Top 5', 10 => 'Top 10', 20 => 'Top 20', 50 => 'Top 50'],
+                'groupByOptions' => ['day' => 'Day', 'week' => 'Week', 'month' => 'Month', 'year' => 'Year'],
             ]))
             ->render();
     }
@@ -211,12 +212,13 @@ class ActivityController extends Controller
                 return;
             }
 
-            fputcsv($output, ['Date', 'Activity Type', 'Count']);
+            fputcsv($output, ['Period', 'Activity Type', 'Count']);
             foreach ($rows as $row) {
                 fputcsv($output, [$row->activity_date, $row->activity_type, $row->activity_count]);
             }
 
             fputcsv($output, []);
+            fputcsv($output, ['Grouping', $filters['group_by'] ?? 'day']);
             fputcsv($output, ['Included dates', $graphData['startDate']->toDateString().' to '.$graphData['endDate']->toDateString()]);
             fclose($output);
         }, $filename, [
@@ -234,6 +236,7 @@ class ActivityController extends Controller
             'user_id' => ['nullable', 'integer', 'min:1'],
             'line_limit' => ['nullable', 'integer', 'min:1', 'max:100'],
             'object_table' => ['nullable', 'string', 'max:100'],
+            'group_by' => ['nullable', 'in:day,week,month,year'],
         ])->validate();
 
         $days = max(1, min(365, (int) ($validated['days'] ?? 7)));
@@ -261,6 +264,7 @@ class ActivityController extends Controller
             'object_table' => isset($validated['object_table']) && $validated['object_table'] !== '' ? (string) $validated['object_table'] : null,
             'user_id' => isset($validated['user_id']) ? (int) $validated['user_id'] : null,
             'line_limit' => max(1, min(100, (int) ($validated['line_limit'] ?? 10))),
+            'group_by' => $validated['group_by'] ?? 'day',
         ];
     }
 
@@ -268,8 +272,8 @@ class ActivityController extends Controller
     {
         $startDate = Carbon::parse($filters['start_date'])->startOfDay();
         $endDate = Carbon::parse($filters['end_date'])->endOfDay();
-        $days = $startDate->diffInDays($endDate) + 1;
         $lineLimit = max(1, (int) $filters['line_limit']);
+        $groupBy = $filters['group_by'] ?? 'day';
 
         $baseQuery = Activity::query()
             ->leftJoin('actions', 'activities.action_id', '=', 'actions.id')
@@ -290,7 +294,7 @@ class ActivityController extends Controller
         $activityTypeExpression = $this->getActivityTypeExpression();
         $dateExpression = 'DATE(activities.created_at)';
 
-        $rows = (clone $baseQuery)
+        $dailyRows = (clone $baseQuery)
             ->selectRaw("{$dateExpression} as activity_date, {$activityTypeExpression} as activity_type, COUNT(*) as activity_count")
             ->groupBy(DB::raw($dateExpression), DB::raw($activityTypeExpression))
             ->orderBy('activity_date', 'asc')
@@ -305,15 +309,36 @@ class ActivityController extends Controller
             ->pluck('activity_type')
             ->all();
 
-        $rows = $rows->filter(function ($row) use ($topTypes) {
+        $dailyRows = $dailyRows->filter(function ($row) use ($topTypes) {
             return in_array($row->activity_type, $topTypes, true);
         })->values();
 
-        $labels = [];
-        $cursor = $startDate->copy()->startOfDay();
-        for ($i = 0; $i < $days; $i++) {
-            $labels[] = $cursor->format('Y-m-d');
-            $cursor->addDay();
+        $bucketed = [];
+        foreach ($dailyRows as $row) {
+            $bucket = $this->getBucketLabel(Carbon::parse($row->activity_date), $groupBy);
+            if (!isset($bucketed[$bucket])) {
+                $bucketed[$bucket] = [];
+            }
+            if (!isset($bucketed[$bucket][$row->activity_type])) {
+                $bucketed[$bucket][$row->activity_type] = 0;
+            }
+            $bucketed[$bucket][$row->activity_type] += (int) $row->activity_count;
+        }
+
+        $labels = $this->buildBucketLabels($startDate, $endDate, $groupBy);
+
+        $rows = collect();
+        foreach ($labels as $bucketLabel) {
+            if (!isset($bucketed[$bucketLabel])) {
+                continue;
+            }
+            foreach ($bucketed[$bucketLabel] as $activityType => $count) {
+                $rows->push((object) [
+                    'activity_date' => $bucketLabel,
+                    'activity_type' => $activityType,
+                    'activity_count' => $count,
+                ]);
+            }
         }
 
         $datasetsMap = [];
@@ -341,7 +366,76 @@ class ActivityController extends Controller
             'rows' => $rows,
             'startDate' => $startDate,
             'endDate' => $endDate,
+            'groupBy' => $groupBy,
         ];
+    }
+
+    protected function buildBucketLabels(Carbon $startDate, Carbon $endDate, string $groupBy): array
+    {
+        $labels = [];
+        $cursor = $this->getBucketStart($startDate, $groupBy);
+        $endBucket = $this->getBucketStart($endDate, $groupBy);
+
+        while ($cursor->lte($endBucket)) {
+            $labels[] = $this->getBucketLabel($cursor, $groupBy);
+            $this->advanceBucketCursor($cursor, $groupBy);
+        }
+
+        return $labels;
+    }
+
+    protected function getBucketLabel(Carbon $date, string $groupBy): string
+    {
+        if ($groupBy === 'week') {
+            return $date->copy()->startOfWeek(Carbon::MONDAY)->format('Y-m-d');
+        }
+
+        if ($groupBy === 'month') {
+            return $date->copy()->startOfMonth()->format('Y-m');
+        }
+
+        if ($groupBy === 'year') {
+            return $date->copy()->startOfYear()->format('Y');
+        }
+
+        return $date->copy()->startOfDay()->format('Y-m-d');
+    }
+
+    protected function getBucketStart(Carbon $date, string $groupBy): Carbon
+    {
+        if ($groupBy === 'week') {
+            return $date->copy()->startOfWeek(Carbon::MONDAY);
+        }
+
+        if ($groupBy === 'month') {
+            return $date->copy()->startOfMonth();
+        }
+
+        if ($groupBy === 'year') {
+            return $date->copy()->startOfYear();
+        }
+
+        return $date->copy()->startOfDay();
+    }
+
+    protected function advanceBucketCursor(Carbon $cursor, string $groupBy): void
+    {
+        if ($groupBy === 'week') {
+            $cursor->addWeek();
+            return;
+        }
+
+        if ($groupBy === 'month') {
+            $cursor->addMonth();
+            return;
+        }
+
+        if ($groupBy === 'year') {
+            $cursor->addYear();
+            return;
+        }
+
+        $cursor->addDay();
     }
 
     protected function getActivityTypeExpression(): string

@@ -74,7 +74,45 @@ class ActivityGraphTest extends TestCase
 
         $response->assertOk();
         $this->assertStringContainsString('text/csv', (string) $response->headers->get('content-type'));
-        $response->assertSee('Date,Activity Type,Count');
+        $response->assertSee('Period,Activity Type,Count');
         $response->assertSee('Create Event');
+    }
+
+    public function test_admin_can_group_activity_graph_by_week(): void
+    {
+        $admin = User::factory()->create(['user_status_id' => 1]);
+        $admin->assignGroup('admin');
+        $this->actingAs($admin);
+
+        $firstDate = Carbon::parse('2026-01-14 10:00:00');
+        $secondDate = Carbon::parse('2026-01-15 11:00:00');
+        $weekStart = $firstDate->copy()->startOfWeek(Carbon::MONDAY)->format('Y-m-d');
+
+        Activity::factory()->create([
+            'user_id' => $admin->id,
+            'object_table' => 'Event',
+            'action_id' => Action::CREATE,
+            'created_at' => $firstDate,
+            'updated_at' => $firstDate,
+        ]);
+
+        Activity::factory()->create([
+            'user_id' => $admin->id,
+            'object_table' => 'Event',
+            'action_id' => Action::CREATE,
+            'created_at' => $secondDate,
+            'updated_at' => $secondDate,
+        ]);
+
+        $response = $this->get(route('activities.graph.export', [
+            'group_by' => 'week',
+            'start_date' => '2026-01-01',
+            'end_date' => '2026-01-31',
+            'line_limit' => 10,
+        ]));
+
+        $response->assertOk();
+        $response->assertSee($weekStart.',Create Event,2');
+        $response->assertSee('Grouping,week');
     }
 }

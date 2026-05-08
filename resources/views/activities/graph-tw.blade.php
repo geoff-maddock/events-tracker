@@ -35,6 +35,14 @@
             </select>
         </div>
         <div>
+            <label for="group_by" class="block text-sm text-muted-foreground mb-1">Group by</label>
+            <select id="group_by" name="group_by" class="form-select-tw">
+                @foreach($groupByOptions as $value => $label)
+                    <option value="{{ $value }}" {{ ($filters['group_by'] ?? 'day') === $value ? 'selected' : '' }}>{{ $label }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div>
             <label for="action_id" class="block text-sm text-muted-foreground mb-1">Action</label>
             <select id="action_id" name="action_id" class="form-select-tw">
                 @foreach($actionOptions as $value => $label)
@@ -69,7 +77,7 @@
 
 <div class="card-tw p-4 mb-6">
     <div class="flex justify-between items-center mb-4">
-        <h2 class="text-lg font-semibold">Activity counts by date</h2>
+        <h2 class="text-lg font-semibold">Activity counts by {{ $groupBy }}</h2>
         <span class="text-sm text-muted-foreground">{{ $startDate->toDateString() }} to {{ $endDate->toDateString() }}</span>
     </div>
     <canvas id="activityGraph" height="120"></canvas>
@@ -82,7 +90,7 @@
         <table class="min-w-full text-sm">
             <thead>
                 <tr class="text-left border-b border-border">
-                    <th class="py-2 pr-4">Date</th>
+                    <th class="py-2 pr-4">Period</th>
                     <th class="py-2 pr-4">Activity type</th>
                     <th class="py-2 pr-4">Count</th>
                 </tr>
@@ -110,6 +118,7 @@
 <script>
     (function () {
         const labels = @json($labels);
+        const groupBy = @json($groupBy);
         const datasets = @json($datasets).map((dataset, index) => {
             const hue = (index * 57) % 360;
             return {
@@ -141,7 +150,7 @@
                 plugins: { legend: { position: 'bottom' } },
                 scales: {
                     y: { beginAtZero: true, title: { display: true, text: 'Count' } },
-                    x: { title: { display: true, text: 'Date' } }
+                    x: { title: { display: true, text: `Period (${groupBy})` } }
                 }
             }
         });
