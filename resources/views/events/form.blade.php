@@ -275,7 +275,8 @@
                 name="min_age"
                 id="min_age"
                 :hasError="$errors->has('min_age')">
-                <option value="0" {{ old('min_age', $event->min_age ?? '0') == '0' ? 'selected' : '' }}>All Ages</option>
+                <option value="" {{ old('min_age', $event->min_age ?? '') == '' ? 'selected' : '' }}>No age limit specified</option>
+                <option value="0" {{ old('min_age', $event->min_age ?? '') == '0' ? 'selected' : '' }}>All Ages</option>
                 <option value="18" {{ old('min_age', $event->min_age ?? '') == '18' ? 'selected' : '' }}>18+</option>
                 <option value="21" {{ old('min_age', $event->min_age ?? '') == '21' ? 'selected' : '' }}>21+</option>
             </x-ui.select>
