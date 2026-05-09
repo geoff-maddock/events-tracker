@@ -3,8 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\Entity;
+use App\Models\Event;
+use App\Models\Follow;
 use App\Models\Role;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -117,5 +120,70 @@ class SemanticEntityRoutesTest extends TestCase
         $response = $this->get('/producer/multi-role-artist');
         $response->assertStatus(200);
         $response->assertSee('Multi Role Artist');
+    }
+
+    /**
+     * Active range should scope popularity scoring without filtering entities out.
+     */
+    public function testRoleRoutePopularityUsesFollowsPlusEventsWithinActiveRange()
+    {
+        Carbon::setTestNow(Carbon::parse('2026-01-15 12:00:00'));
+
+        $user = User::factory()->create(['user_status_id' => 2]);
+        $this->actingAs($user);
+
+        $promoterRole = Role::where('slug', 'promoter')->firstOrFail();
+
+        $highFollowOldEvent = Entity::factory()->create([
+            'name' => 'High Follow Old Event',
+            'slug' => 'high-follow-old-event',
+        ]);
+        $highFollowOldEvent->roles()->attach($promoterRole);
+
+        $recentEventOnly = Entity::factory()->create([
+            'name' => 'Recent Event Only',
+            'slug' => 'recent-event-only',
+        ]);
+        $recentEventOnly->roles()->attach($promoterRole);
+
+        $noActivity = Entity::factory()->create([
+            'name' => 'No Activity',
+            'slug' => 'no-activity',
+        ]);
+        $noActivity->roles()->attach($promoterRole);
+
+        Follow::create([
+            'object_type' => 'entity',
+            'object_id' => $highFollowOldEvent->id,
+            'user_id' => User::factory()->create()->id,
+        ]);
+        Follow::create([
+            'object_type' => 'entity',
+            'object_id' => $highFollowOldEvent->id,
+            'user_id' => User::factory()->create()->id,
+        ]);
+
+        $oldEvent = Event::factory()->create([
+            'name' => 'Old Event',
+            'start_at' => Carbon::now()->subYears(2),
+        ]);
+        $oldEvent->entities()->attach($highFollowOldEvent->id);
+
+        $recentEvent = Event::factory()->create([
+            'name' => 'Recent Event',
+            'start_at' => Carbon::now()->subMonths(2),
+        ]);
+        $recentEvent->entities()->attach($recentEventOnly->id);
+
+        $response = $this->get('/entities/role/promoter?filters[active_range]=1-year');
+
+        $response->assertStatus(200);
+        $response->assertSeeInOrder([
+            'High Follow Old Event',
+            'Recent Event Only',
+            'No Activity',
+        ]);
+
+        Carbon::setTestNow();
     }
 }
