@@ -63,6 +63,10 @@ components:
     basicAuth:
       type: http
       scheme: basic
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     Activity:
       type: object
@@ -757,154 +761,6 @@ components:
           description: An array of Entity PK ids related to the event
           type: array
           items: { "type": "integer" }
-    Event:
-      type: object
-      required:
-        - id
-        - name
-        - slug
-      properties:
-        id:
-          type: integer
-          readOnly: true
-          example: 1
-        name:
-          type: string
-          example: October's Lazercrunk at the Brillobox
-          description: The cannonical name of the event
-          maxLength: 255
-        slug:
-          type: string
-          maxLength: 255
-          description: A unique identifier name for the event in kebab-case
-          example: octobers-lazercrunk-at-the-brillobox
-        short:
-          type: string
-          example: a really fun dj night featuring performers from around the world
-          description: A brief description of the event
-          maxLength: 255
-        visibility_id:
-          type: integer
-          readOnly: true
-          example: 1
-          description: Relation to the visibility table that defines the visibility of events
-        description:
-          type: string
-          description: Full description of the event
-          example: a really fun dj night featuring performers from around the world and locally playing new electronic music
-          maxLength: 65535
-        event_status_id:
-          type: integer
-          readOnly: true
-          example: 1
-          description: Relation to the event type table that defines the status of the event
-        event_type_id:
-          type: integer
-          readOnly: true
-          example: 1
-          description: Relation to the event type table that defines the type of event
-        promoter_id:
-          type: integer
-          readOnly: true
-          example: 1
-          description: Relation to the entity table that defines the promoter of the event
-        venue_id:
-          type: integer
-          readOnly: true
-          example: 1
-          description: Relation to the entity table that defines the venue for the event
-        is_benefit:
-          type: boolean
-          description: Flag indicating if the event is a benefit
-          example: true
-        do_not_repost:
-          type: boolean
-          description: Flag indicating if the event should not be reposted on social media
-          example: false
-        attendees:
-          type: array
-          description: List of users attending the event
-          items: { "$ref": "#/components/schemas/MinimalUser" }
-        like:
-          description: The number of users who marked that they like the event
-          type: integer
-          example: 10
-        presale_price:
-          description: The price for a presale price for the event
-          type: number
-          example: 9.99
-        door_price:
-          description: The price of the show at the door
-          type: number
-          example: 19.99
-        popularity_score:
-          type: integer
-          description: Calculated popularity for the event
-          readOnly: true
-        soundcheck_at:
-          type: string
-          example: "2018-03-20T09:12:28Z"
-          format: date-time
-          description: Date and time that the event soundcheck is scheduled
-        door_at:
-          type: string
-          example: "2018-03-20T09:12:28Z"
-          format: date-time
-          description: Date and time that the event doors are scheduled to open
-        start_at:
-          type: string
-          example: "2018-03-20T09:12:28Z"
-          format: date-time
-          description: Date and time that the event starts
-        end_at:
-          type: string
-          example: "2018-03-20T09:12:28Z"
-          format: date-time
-          description: Date and time that the event starts
-        series_id:
-          type: integer
-          readOnly: true
-          example: 1
-          description: Relation to the series table that defines the series for the event
-        min_age:
-          description: The minimum age requirement for the event in years
-          type: integer
-          example: 21
-        primary_link:
-          type: string
-          description: The primary URL related to this event
-          example: http://lazercrunk.com/october-2022
-          maxLength: 255
-        ticket_link:
-          type: string
-          description: The URL for buying a ticket to the event
-          example: http://lazercrunk.com/october-2022/tickets
-          maxLength: 255
-        created_at:
-          type: string
-          example: "2018-03-20T09:12:28Z"
-          format: date-time
-          description: Date and time that the event was created
-        updated_at:
-          type: string
-          example: "2018-03-20T09:12:28Z"
-          format: date-time
-          description: Date and time that the event was last updated
-        cancelled_at:
-          type: string
-          example: "2018-03-20T09:12:28Z"
-          format: date-time
-          description: Date and time that the event was cancelled
-        created_by:
-          type: integer
-          readOnly: true
-          example: 1
-          description: Relation to the user table that defines the user who created the event
-        updated_by:
-          type: integer
-          readOnly: true
-          example: 1
-          description: Relation to the user table that defines the user who last updated the event
     EventResponse:
       type: object
       properties:
@@ -1407,12 +1263,12 @@ components:
           type: string
           maxLength: 5
           description: State of the location
-          example: Pittsburgh
+          example: PA
         postal_code:
           type: string
           maxLength: 15
           description: Postal code of the location
-          example: 15224
+          example: "15224"
         country:
           type: string
           maxLength: 64
@@ -1486,12 +1342,12 @@ components:
           type: string
           maxLength: 5
           description: State of the location
-          example: Pittsburgh
+          example: PA
         postal_code:
           type: string
           maxLength: 15
           description: Postal code of the location
-          example: 15224
+          example: "15224"
         country:
           type: string
           maxLength: 64
@@ -2354,70 +2210,6 @@ components:
         setting_public_profile:
           type: integer
           example: 1
-    User:
-      type: object
-      properties:
-        id:
-          type: integer
-          readOnly: true
-          example: 1
-        name:
-          type: string
-          description: Name of the user
-          example: john.smith
-          maxLength: 255
-        password:
-          type: string
-          description: Encrypted password of the user
-          example: abcdefg
-          maxLength: 60
-        email:
-          type: string
-          description: Email address of the user
-          example: john.smith@gmail.com
-          maxLength: 255
-        user_status_id:
-          type: integer
-          readOnly: true
-          example: 1
-          description: Relation to the user status table that defines the status of the user
-        remember_token:
-          type: string
-          description: Token used to remember the user's logged in status
-          example: ABCDEFGHI
-          maxLength: 100
-        email_verified_at:
-          type: string
-          example: "2018-03-20T09:12:28Z"
-          format: date-time
-          description: Date and time that the user's email was verified
-          readOnly: true
-        created_at:
-          type: string
-          example: "2018-03-20T09:12:28Z"
-          format: date-time
-          description: Date and time that the user was created
-          readOnly: true
-        updated_at:
-          type: string
-          example: "2018-03-20T09:12:28Z"
-          format: date-time
-          description: Date and time that the user was last updated
-          readOnly: true
-        profile:
-          $ref: "#/components/schemas/ProfileResponse"
-        followed_tags:
-          type: array
-          items: { "$ref": "#/components/schemas/Tag" }
-        followed_entities:
-          type: array
-          items: { "$ref": "#/components/schemas/EntityResponse" }
-        followed_series:
-          type: array
-          items: { "$ref": "#/components/schemas/SeriesResponse" }
-        followed_threads:
-          type: array
-          items: { "$ref": "#/components/schemas/Thread" }
     UserSimple:
       type: object
       properties:
@@ -2760,6 +2552,7 @@ paths:
       tags:
         - activities
       summary: Get Activities
+      description: Returns a paginated list of site activities.
       operationId: getActivities
       parameters:
         - name: filters[user_id]
@@ -2824,7 +2617,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Pagination"
+                $ref: "#/components/schemas/Activities"
+        "500":
+          $ref: "#/components/responses/Unexpected"
   /api/activities/{id}:
     get:
       parameters:
@@ -2840,6 +2635,7 @@ paths:
       tags:
         - activities
       summary: Get Activity
+      description: Returns a single activity by its ID.
       operationId: getActivityById
       responses:
         "200":
@@ -2848,11 +2644,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Activity"
+        "404":
+          $ref: "#/components/responses/NotFound"
   /api/blogs:
     get:
       tags:
         - blogs
       summary: Get Blogs
+      description: Returns a paginated list of blog posts.
       operationId: getBlogs
       parameters:
         - name: filters[name]
@@ -2896,11 +2695,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Pagination"
+                $ref: "#/components/schemas/Blogs"
     post:
       tags:
         - blogs
       summary: Create blog
+      description: Creates a new blog post.
       operationId: createBlog
       requestBody:
         content:
@@ -2927,6 +2727,7 @@ paths:
       tags:
         - blogs
       summary: Get Blog
+      description: Returns a single blog post by its slug.
       operationId: getBlogById
       responses:
         "200":
@@ -3008,6 +2809,7 @@ paths:
       tags:
         - blogs
       summary: Delete Blog
+      description: Deletes a blog post by its slug.
       operationId: deleteBlogById
       responses:
         "201":
@@ -3021,6 +2823,7 @@ paths:
       tags:
         - events
       summary: Create Event
+      description: Creates a new event.
       operationId: createEvent
       requestBody:
         content:
@@ -3028,19 +2831,19 @@ paths:
             schema:
               $ref: "#/components/schemas/EventRequest"
       responses:
-        200:
+        "200":
           description: Successful response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/EventResponse"
-        201:
+        "201":
           description: Successful response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/EventResponse"
-        500:
+        "500":
           description: Unexpected error
           content:
             application/json:
@@ -3050,6 +2853,7 @@ paths:
       tags:
         - events
       summary: Get Events
+      description: Returns a paginated, filterable list of events.
       operationId: getEvents
       parameters:
         - name: filters[name]
@@ -3289,6 +3093,7 @@ paths:
       tags:
         - events
       summary: Get Events the Authenticated User is Attending
+      description: Returns events the authenticated user has marked as attending.
       operationId: getAttendingEvents
       responses:
         "200":
@@ -3302,6 +3107,7 @@ paths:
       tags:
         - events
       summary: Get Most Popular Events
+      description: Returns a ranked list of popular events.
       operationId: getPopularEvents
       parameters:
         - name: days
@@ -3345,6 +3151,7 @@ paths:
       tags:
         - events
       summary: Get Events by Year
+      description: Returns events occurring in the given year.
       operationId: getEventByYear
       responses:
         "200":
@@ -3373,7 +3180,8 @@ paths:
       tags:
         - events
       summary: Get Events by Year and Month
-      operationId: getEventByDate
+      description: Returns events occurring in the given year and month.
+      operationId: getEventsByMonth
       responses:
         "200":
           description: Successful response
@@ -3408,6 +3216,7 @@ paths:
       tags:
         - events
       summary: Get Events by Date
+      description: Returns events occurring on the given date.
       operationId: getEventByDate
       responses:
         "200":
@@ -3429,6 +3238,7 @@ paths:
       tags:
         - events
       summary: Get Event
+      description: Returns a single event by its slug.
       operationId: getEventById
       responses:
         "200":
@@ -3500,7 +3310,6 @@ paths:
           description: A unique string identifier of the event
           in: path
           required: true
-          example: 1
           schema:
             type: string
             readOnly: true
@@ -3508,6 +3317,7 @@ paths:
       tags:
         - events
       summary: Delete Event
+      description: Deletes an event by its slug.
       operationId: deleteEventById
       responses:
         "201":
@@ -3530,6 +3340,7 @@ paths:
       tags:
         - events
       summary: Get Event Embeds
+      description: Returns embed objects associated with the event.
       operationId: getEventEmbedsBySlug
       responses:
         "200":
@@ -3552,6 +3363,7 @@ paths:
       tags:
         - events
       summary: Get Event MinimalEmbeds
+      description: Returns minimal embed objects associated with the event.
       operationId: getEventMinimalEmbedsBySlug
       responses:
         "200":
@@ -3574,6 +3386,7 @@ paths:
       tags:
         - events
       summary: Get Events Photos
+      description: Returns photos associated with the event.
       operationId: getEventPhotosBySlug
       responses:
         "200":
@@ -3582,8 +3395,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Photos"
-  /api/events/{slug}/all-photos:
-    get:
+    post:
       parameters:
         - name: slug
           description: The unique identifier of the event
@@ -3595,30 +3407,9 @@ paths:
             example: "strobe"
       tags:
         - events
-      summary: Get All Related Events Photos
-      operationId: getAllEventPhotosBySlug
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Photos"
-  /api/events/{id}/photos:
-    post:
-      parameters:
-        - name: id
-          description: The unique identifier of the event
-          in: path
-          required: true
-          schema:
-            type: integer
-            readOnly: true
-            example: 1
-      tags:
-        - events
       summary: Add Event Photo
-      operationId: addEventPhotoById
+      description: Uploads a photo for the event.
+      operationId: addEventPhotoBySlug
       requestBody:
         content:
           multipart/form-data:
@@ -3635,6 +3426,29 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PhotoResponse"
+  /api/events/{slug}/all-photos:
+    get:
+      parameters:
+        - name: slug
+          description: The unique identifier of the event
+          in: path
+          required: true
+          schema:
+            type: string
+            readOnly: true
+            example: "strobe"
+      tags:
+        - events
+      summary: Get All Related Events Photos
+      description: Returns all photos including related events.
+      operationId: getAllEventPhotosBySlug
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Photos"
   /api/events/{id}/instagram-post:
     post:
       parameters:
@@ -3649,6 +3463,7 @@ paths:
       tags:
         - events
       summary: Post Event to Instagram
+      description: Creates an Instagram post for the event.
       operationId: postEventToInstagramById
       responses:
         "200":
@@ -3671,6 +3486,7 @@ paths:
       tags:
         - events
       summary: Attend Event
+      description: Marks the authenticated user as attending the event.
       operationId: attendEventBySlug
       responses:
         "200":
@@ -3692,6 +3508,7 @@ paths:
       tags:
         - events
       summary: Unattend Event
+      description: Removes the authenticated user's attendance for the event.
       operationId: unattendEventBySlug
       responses:
         "204":
@@ -3703,6 +3520,7 @@ paths:
       tags:
         - entities
       summary: Create Entity
+      description: Creates a new entity.
       operationId: createEntity
       requestBody:
         content:
@@ -3720,6 +3538,7 @@ paths:
       tags:
         - entities
       summary: Get Entities
+      description: Returns a paginated, filterable list of entities.
       operationId: getEntities
       parameters:
         - name: filters[name]
@@ -3797,6 +3616,7 @@ paths:
       tags:
         - entities
       summary: Get Most Popular Entities
+      description: Returns a ranked list of popular entities.
       operationId: getPopularEntities
       parameters:
         - name: days
@@ -3832,6 +3652,7 @@ paths:
       tags:
         - entities
       summary: Get Entities Followed by Authenticated User
+      description: Returns entities followed by the authenticated user.
       operationId: getFollowingEntities
       security:
         - bearerAuth: []
@@ -3907,11 +3728,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Entities"
         "401":
-          description: Unauthorized - authentication required
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: "#/components/responses/Unauthorized"
   /api/entities/{slug}:
     get:
       parameters:
@@ -3925,6 +3742,7 @@ paths:
       tags:
         - entities
       summary: Get Entity
+      description: Returns a single entity by its slug.
       operationId: getEntityBySlug
       responses:
         "200":
@@ -4000,6 +3818,7 @@ paths:
       tags:
         - entities
       summary: Delete Entity
+      description: Deletes an entity by its slug.
       operationId: deleteEntityBySlug
       responses:
         "204":
@@ -4020,6 +3839,7 @@ paths:
       tags:
         - entities
       summary: Get Entity Embeds
+      description: Returns embed objects associated with the entity.
       operationId: getEntityEmbedsBySlug
       responses:
         "200":
@@ -4042,6 +3862,7 @@ paths:
       tags:
         - entities
       summary: Get Entity MinimalEmbeds
+      description: Returns minimal embed objects associated with the entity.
       operationId: getEntityMinimalEmbedsBySlug
       responses:
         "200":
@@ -4064,6 +3885,7 @@ paths:
       tags:
         - entities
       summary: Get Entity Photos
+      description: Returns photos associated with the entity.
       operationId: getEntityPhotosBySlug
       responses:
         "200":
@@ -4072,6 +3894,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Photos"
+    post:
+      parameters:
+        - name: slug
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: string
+            readOnly: true
+            example: "strobe"
+      tags:
+        - entities
+      summary: Add Entity Photo
+      description: Uploads a photo for the entity.
+      operationId: addEntityPhotoBySlug
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhotoResponse"
   /api/entities/{slug}/links:
     get:
       parameters:
@@ -4086,6 +3939,7 @@ paths:
       tags:
         - entities
       summary: Get Entity Links
+      description: Returns links associated with the entity.
       operationId: getEntityLinksBySlug
       responses:
         "200":
@@ -4094,6 +3948,33 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Links"
+    post:
+      parameters:
+        - name: slug
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: string
+            readOnly: true
+            example: "strobe"
+      tags:
+        - entities
+      summary: Add Entity Link
+      description: Adds a link to the entity.
+      operationId: addEntityLinkBySlug
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Link"
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Link"
   /api/entities/{slug}/locations:
     get:
       parameters:
@@ -4108,9 +3989,37 @@ paths:
       tags:
         - entities
       summary: Get Entity Locations
+      description: Returns locations associated with the entity.
       operationId: getEntityLocationsBySlug
       responses:
         "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Location"
+    post:
+      parameters:
+        - name: slug
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: string
+            readOnly: true
+            example: "strobe"
+      tags:
+        - entities
+      summary: Add Entity Location
+      description: Adds a location to the entity.
+      operationId: addEntityLocationBySlug
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LocationRequest"
+      responses:
+        "201":
           description: Successful response
           content:
             application/json:
@@ -4130,6 +4039,7 @@ paths:
       tags:
         - entities
       summary: Get Entity Contacts
+      description: Returns contacts associated with the entity.
       operationId: getEntityContactsBySlug
       responses:
         "200":
@@ -4138,64 +4048,33 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Contacts"
-  /api/entities/{id}/photos:
     post:
       parameters:
-        - name: id
+        - name: slug
           description: The unique identifier of the entity
           in: path
           required: true
           schema:
-            type: integer
+            type: string
             readOnly: true
-            example: 1
+            example: "strobe"
       tags:
         - entities
-      summary: Add Entity Photo
-      operationId: addEntityPhotoById
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-      responses:
-        "201":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PhotoResponse"
-  /api/entities/{id}/links:
-    post:
-      parameters:
-        - name: id
-          description: The unique identifier of the entity
-          in: path
-          required: true
-          schema:
-            type: integer
-            readOnly: true
-            example: 1
-      tags:
-        - entities
-      summary: Add Entity Link
-      operationId: addEntityLinkById
+      summary: Add Entity Contact
+      description: Adds a contact to the entity.
+      operationId: addEntityContactBySlug
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Link"
+              $ref: "#/components/schemas/Contact"
       responses:
         "201":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Link"
+                $ref: "#/components/schemas/Contact"
   /api/entities/{id}/links/{linkId}:
     put:
       parameters:
@@ -4291,39 +4170,13 @@ paths:
       tags:
         - entities
       summary: Delete Entity Link
+      description: Removes a link from the entity.
       operationId: deleteEntityLinkById
       responses:
         "204":
           description: Successful response
           content:
             application/json: {}
-  /api/entities/{id}/locations:
-    post:
-      parameters:
-        - name: id
-          description: The unique identifier of the entity
-          in: path
-          required: true
-          schema:
-            type: integer
-            readOnly: true
-            example: 1
-      tags:
-        - entities
-      summary: Add Entity Location
-      operationId: addEntityLocationById
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/LocationRequest"
-      responses:
-        "201":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Location"
   /api/entities/{id}/locations/{locationId}:
     put:
       parameters:
@@ -4419,39 +4272,13 @@ paths:
       tags:
         - entities
       summary: Delete Entity Location
+      description: Removes a location from the entity.
       operationId: deleteEntityLocationById
       responses:
         "204":
           description: Successful response
           content:
             application/json: {}
-  /api/entities/{id}/contacts:
-    post:
-      parameters:
-        - name: id
-          description: The unique identifier of the entity
-          in: path
-          required: true
-          schema:
-            type: integer
-            readOnly: true
-            example: 1
-      tags:
-        - entities
-      summary: Add Entity Contact
-      operationId: addEntityContactById
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Contact"
-      responses:
-        "201":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Contact"
   /api/entities/{id}/contacts/{contactId}:
     put:
       parameters:
@@ -4547,6 +4374,7 @@ paths:
       tags:
         - entities
       summary: Delete Entity Contact
+      description: Removes a contact from the entity.
       operationId: deleteEntityContactById
       responses:
         "204":
@@ -4567,6 +4395,7 @@ paths:
       tags:
         - entities
       summary: Follow Entity
+      description: Follows the entity as the authenticated user.
       operationId: followEntityBySlug
       responses:
         "200":
@@ -4589,6 +4418,7 @@ paths:
       tags:
         - entities
       summary: Unfollow Entity
+      description: Unfollows the entity as the authenticated user.
       operationId: unfollowEntityBySlug
       responses:
         "204":
@@ -4600,6 +4430,7 @@ paths:
       tags:
         - entity-statuses
       summary: Get Entity Statuses
+      description: Returns a list of entity statuses.
       operationId: getEntityStatuses
       parameters:
         - name: filters[name]
@@ -4648,6 +4479,7 @@ paths:
       tags:
         - entity-statuses
       summary: Create entity status
+      description: Creates a new entity status.
       operationId: createEntityStatus
       requestBody:
         content:
@@ -4674,6 +4506,7 @@ paths:
       tags:
         - entity-statuses
       summary: Get EntityStatus
+      description: Returns a single entity status by its ID.
       operationId: getEntityStatusById
       responses:
         "200":
@@ -4755,6 +4588,7 @@ paths:
       tags:
         - entity-statuses
       summary: Delete Entity Status
+      description: Deletes an entity status by its ID.
       operationId: deleteEntityStatusById
       responses:
         "204":
@@ -4766,6 +4600,7 @@ paths:
       tags:
         - entity-types
       summary: Get Entity Types
+      description: Returns a list of entity types.
       operationId: getEntityTypes
       parameters:
         - name: filters[name]
@@ -4809,11 +4644,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Pagination"
+                $ref: "#/components/schemas/EntityTypes"
     post:
       tags:
         - entity-types
       summary: Create entity type
+      description: Creates a new entity type.
       operationId: createEntityType
       requestBody:
         content:
@@ -4839,6 +4675,7 @@ paths:
       tags:
         - entity-types
       summary: Get EntityType
+      description: Returns a single entity type by its ID.
       operationId: getEntityTypeById
       responses:
         "200":
@@ -4890,6 +4727,7 @@ paths:
       tags:
         - entity-types
       summary: Delete Entity Type
+      description: Deletes an entity type by its ID.
       operationId: deleteEntityTypeById
       responses:
         "204":
@@ -4901,6 +4739,7 @@ paths:
       tags:
         - event-types
       summary: Get Event Types
+      description: Returns a list of event types.
       operationId: updateEventTypes
       parameters:
         - name: filters[name]
@@ -4949,6 +4788,7 @@ paths:
       tags:
         - event-types
       summary: Create event type
+      description: Creates a new event type.
       operationId: createEventType
       requestBody:
         content:
@@ -4974,6 +4814,7 @@ paths:
       tags:
         - event-types
       summary: Get EventType
+      description: Returns a single event type by its ID.
       operationId: getEventTypeById
       responses:
         "200":
@@ -5025,6 +4866,7 @@ paths:
       tags:
         - event-types
       summary: Delete Event Type
+      description: Deletes an event type by its ID.
       operationId: deleteEventTypeById
       responses:
         "204":
@@ -5036,6 +4878,7 @@ paths:
       tags:
         - event-statuses
       summary: Get Event Statuses
+      description: Returns a list of event statuses.
       operationId: getEventStatuses
       parameters:
         - name: filters[name]
@@ -5079,11 +4922,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Pagination"
+                $ref: "#/components/schemas/EventStatuses"
     post:
       tags:
         - event-statuses
       summary: Create event status
+      description: Creates a new event status.
       operationId: createEventStatus
       requestBody:
         content:
@@ -5110,6 +4954,7 @@ paths:
       tags:
         - event-statuses
       summary: Get EventStatus
+      description: Returns a single event status by its ID.
       operationId: getEventStatusById
       responses:
         "200":
@@ -5191,6 +5036,7 @@ paths:
       tags:
         - event-statuses
       summary: Delete Event Status
+      description: Deletes an event status by its ID.
       operationId: deleteEventStatusById
       responses:
         "204":
@@ -5202,6 +5048,7 @@ paths:
       tags:
         - forums
       summary: Get Forums
+      description: Returns a list of forums.
       operationId: getForums
       parameters:
         - name: filters[name]
@@ -5250,6 +5097,7 @@ paths:
       tags:
         - forums
       summary: Create forum
+      description: Creates a new forum.
       operationId: createForum
       requestBody:
         content:
@@ -5276,6 +5124,7 @@ paths:
       tags:
         - forums
       summary: Get Forum
+      description: Returns a single forum by its ID.
       operationId: getForumId
       responses:
         "200":
@@ -5357,6 +5206,7 @@ paths:
       tags:
         - forums
       summary: Delete Forum
+      description: Deletes a forum by its ID.
       operationId: deleteForumById
       responses:
         "204":
@@ -5368,6 +5218,7 @@ paths:
       tags:
         - links
       summary: Get Links
+      description: Returns a list of links.
       operationId: getLinks
       parameters:
         - name: title
@@ -5414,6 +5265,7 @@ paths:
       tags:
         - links
       summary: Create link
+      description: Creates a new link.
       operationId: createLink
       requestBody:
         content:
@@ -5439,6 +5291,7 @@ paths:
       tags:
         - links
       summary: Get Link
+      description: Returns a single link by its ID.
       operationId: getLinkById
       responses:
         "200":
@@ -5451,6 +5304,7 @@ paths:
       tags:
         - links
       summary: Update link
+      description: Fully replaces a link.
       operationId: updateLinkById
       requestBody:
         content:
@@ -5468,6 +5322,7 @@ paths:
       tags:
         - links
       summary: Delete Link
+      description: Deletes a link by its ID.
       operationId: deleteLinkById
       responses:
         "204":
@@ -5479,6 +5334,7 @@ paths:
       tags:
         - menus
       summary: Get Menus
+      description: Returns a list of menus.
       operationId: getMenus
       parameters:
         - name: limit
@@ -5520,6 +5376,7 @@ paths:
       tags:
         - menus
       summary: Create menu
+      description: Creates a new menu.
       operationId: createMenu
       requestBody:
         content:
@@ -5545,6 +5402,7 @@ paths:
       tags:
         - menus
       summary: Get Menu
+      description: Returns a single menu by its ID.
       operationId: getMenuById
       responses:
         "200":
@@ -5557,6 +5415,7 @@ paths:
       tags:
         - menus
       summary: Update menu
+      description: Partially updates a menu.
       operationId: updateMenuById
       requestBody:
         content:
@@ -5574,6 +5433,7 @@ paths:
       tags:
         - menus
       summary: Delete Menu
+      description: Deletes a menu by its ID.
       operationId: deleteMenuById
       responses:
         "204":
@@ -5585,6 +5445,7 @@ paths:
       tags:
         - locations
       summary: Get Locations
+      description: Returns a list of locations.
       operationId: getLocations
       parameters:
         - name: name
@@ -5631,6 +5492,7 @@ paths:
       tags:
         - locations
       summary: Create location
+      description: Creates a new location.
       operationId: createLocation
       requestBody:
         content:
@@ -5656,6 +5518,7 @@ paths:
       tags:
         - locations
       summary: Get Location
+      description: Returns a single location by its ID.
       operationId: getLocationById
       responses:
         "200":
@@ -5707,6 +5570,7 @@ paths:
       tags:
         - locations
       summary: Delete Location
+      description: Deletes a location by its ID.
       operationId: deleteLocationById
       responses:
         "204":
@@ -5718,6 +5582,7 @@ paths:
       tags:
         - occurrence-types
       summary: Get Occurrence Types
+      description: Returns a list of occurrence types.
       operationId: getOccurrenceTypes
       parameters:
         - name: filters[name]
@@ -5776,6 +5641,7 @@ paths:
       tags:
         - occurrence-types
       summary: Get Occurrence Type
+      description: Returns a single occurrence type by its ID.
       operationId: getOccurrenceTypeById
       responses:
         "200":
@@ -5789,6 +5655,7 @@ paths:
       tags:
         - occurrence-weeks
       summary: Get Occurrence Weeks
+      description: Returns a list of occurrence weeks.
       operationId: getOccurrenceWeeks
       parameters:
         - name: filters[name]
@@ -5847,6 +5714,7 @@ paths:
       tags:
         - occurrence-weeks
       summary: Get Occurrence Week
+      description: Returns a single occurrence week by its ID.
       operationId: getOccurrenceWeekById
       responses:
         "200":
@@ -5860,6 +5728,7 @@ paths:
       tags:
         - occurrence-days
       summary: Get Occurrence Days
+      description: Returns a list of occurrence days.
       operationId: getOccurrenceDays
       parameters:
         - name: filters[name]
@@ -5918,6 +5787,7 @@ paths:
       tags:
         - occurrence-days
       summary: Get Occurrence Day
+      description: Returns a single occurrence day by its ID.
       operationId: getOccurrenceDayById
       responses:
         "200":
@@ -5931,6 +5801,7 @@ paths:
       tags:
         - posts
       summary: Get Posts
+      description: Returns a list of forum posts.
       operationId: getPosts
       parameters:
         - name: filters[name]
@@ -5980,6 +5851,7 @@ paths:
       tags:
         - series
       summary: Create Series
+      description: Creates a new series.
       operationId: createSeries
       requestBody:
         content:
@@ -5997,6 +5869,7 @@ paths:
       tags:
         - series
       summary: Get Series by filters
+      description: Returns a paginated, filterable list of series.
       operationId: geSeries
       parameters:
         - name: filters[name]
@@ -6130,6 +6003,7 @@ paths:
       tags:
         - series
       summary: Get Most Popular Series
+      description: Returns a ranked list of popular series.
       operationId: getPopularSeries
       parameters:
         - name: days
@@ -6169,11 +6043,12 @@ paths:
         schema:
           type: string
           readOnly: true
-          example: 1
+          example: "my-series"
     get:
       tags:
         - series
       summary: Get one Series
+      description: Returns a single series by its slug.
       operationId: getSeriesBySlug
       responses:
         "200":
@@ -6225,6 +6100,7 @@ paths:
       tags:
         - series
       summary: Delete Series
+      description: Deletes a series by its slug.
       operationId: deleteSeriesById
       responses:
         "204":
@@ -6245,6 +6121,7 @@ paths:
       tags:
         - series
       summary: Get All Related Series Photos
+      description: Returns all photos associated with the series.
       operationId: getAllSeriesPhotosBySlug
       responses:
         "200":
@@ -6267,6 +6144,7 @@ paths:
       tags:
         - series
       summary: Add Series Photo
+      description: Uploads a photo for the series.
       operationId: addSeriesPhotoById
       requestBody:
         content:
@@ -6298,6 +6176,7 @@ paths:
       tags:
         - series
       summary: Follow Series
+      description: Follows the series as the authenticated user.
       operationId: followSeriesBySlug
       responses:
         "200":
@@ -6320,6 +6199,7 @@ paths:
       tags:
         - series
       summary: Unfollow Series
+      description: Unfollows the series as the authenticated user.
       operationId: unfollowSeriesBySlug
       responses:
         "204":
@@ -6340,6 +6220,7 @@ paths:
       tags:
         - tags
       summary: Follow Tag
+      description: Follows the tag as the authenticated user.
       operationId: followTagBySlug
       responses:
         "200":
@@ -6362,6 +6243,7 @@ paths:
       tags:
         - tags
       summary: Unfollow Tag
+      description: Unfollows the tag as the authenticated user.
       operationId: unfollowTagBySlug
       responses:
         "204":
@@ -6373,6 +6255,7 @@ paths:
       tags:
         - tags
       summary: Create Tag
+      description: Creates a new tag.
       operationId: createTag
       requestBody:
         content:
@@ -6390,6 +6273,7 @@ paths:
       tags:
         - tags
       summary: Get Tags
+      description: Returns a paginated, filterable list of tags.
       operationId: getTags
       parameters:
         - name: filters[name]
@@ -6437,6 +6321,7 @@ paths:
       tags:
         - tags
       summary: Get Most Popular Tags
+      description: Returns a ranked list of popular tags.
       operationId: getPopularTags
       parameters:
         - name: days
@@ -6481,6 +6366,7 @@ paths:
       tags:
         - tags
       summary: Get one Tag
+      description: Returns a single tag by its slug.
       operationId: getTagBySlug
       responses:
         "200":
@@ -6493,6 +6379,7 @@ paths:
       tags:
         - tags
       summary: Update Tag
+      description: Fully replaces a tag.
       operationId: updateTagBySlug
       requestBody:
         content:
@@ -6508,6 +6395,7 @@ paths:
       tags:
         - tags
       summary: Delete Tag
+      description: Deletes a tag by its slug.
       operationId: deleteTagBySlug
       responses:
         "204":
@@ -6528,8 +6416,8 @@ paths:
       tags:
         - tags
       summary: Get Related Tags
+      description: Returns tags that are related to the specified tag based on co-occurrence in events.
       operationId: getRelatedTags
-      description: Returns tags that are related to the specified tag based on co-occurrence in events
       responses:
         "200":
           description: Successful response containing related tags with their occurrence counts
@@ -6555,6 +6443,7 @@ paths:
       tags:
         - tag-types
       summary: Get Tag Types
+      description: Returns a list of tag types.
       operationId: getTagTypes
       parameters:
         - name: filters[name]
@@ -6613,6 +6502,7 @@ paths:
       tags:
         - tag-types
       summary: Get Tag Type
+      description: Returns a single tag type by its ID.
       operationId: getTagTypeById
       responses:
         "200":
@@ -6626,6 +6516,7 @@ paths:
       tags:
         - threads
       summary: Get Threads
+      description: Returns a list of forum threads.
       operationId: getThreads
       parameters:
         - name: filters[name]
@@ -6674,6 +6565,7 @@ paths:
       tags:
         - threads
       summary: Create thread
+      description: Creates a new forum thread.
       operationId: createThread
       requestBody:
         content:
@@ -6700,6 +6592,7 @@ paths:
       tags:
         - threads
       summary: Get Thread
+      description: Returns a single forum thread by its ID.
       operationId: getThreadId
       responses:
         "200":
@@ -6781,6 +6674,7 @@ paths:
       tags:
         - threads
       summary: Delete Thread
+      description: Deletes a forum thread by its ID.
       operationId: deleteThreadById
       responses:
         "204":
@@ -6802,6 +6696,7 @@ paths:
       tags:
         - threads
       summary: Get Posts in Thread
+      description: Returns posts in a forum thread.
       operationId: getPostsInThreadById
       responses:
         "200":
@@ -6842,6 +6737,7 @@ paths:
       tags:
         - threads
       summary: Get Post in Thread
+      description: Returns a single post in a forum thread.
       operationId: getPostInThreadById
       responses:
         "200":
@@ -6855,6 +6751,7 @@ paths:
       tags:
         - users
       summary: Create User Bearer Token
+      description: Creates an API authentication token.
       operationId: createUserBearerToken
       requestBody:
         content:
@@ -6873,6 +6770,7 @@ paths:
       tags:
         - users
       summary: Validate User Token
+      description: Validates an API authentication token.
       operationId: validateUserToken
       responses:
         "200":
@@ -6891,6 +6789,7 @@ paths:
       tags:
         - users
       summary: Get Authenticated User
+      description: Returns the authenticated user's profile.
       operationId: getAuthenticatedUser
       responses:
         "200":
@@ -6943,6 +6842,7 @@ paths:
       tags:
         - roles
       summary: Get Roles
+      description: Returns a list of user roles.
       operationId: getRoles
       parameters:
         - name: filters[name]
@@ -6991,6 +6891,7 @@ paths:
       tags:
         - roles
       summary: Create Role
+      description: Creates a new user role.
       operationId: createRole
       requestBody:
         content:
@@ -7018,6 +6919,7 @@ paths:
       tags:
         - roles
       summary: Get Role
+      description: Returns a single role by its ID.
       operationId: getRoleById
       responses:
         "200":
@@ -7069,6 +6971,7 @@ paths:
       tags:
         - roles
       summary: Delete Role
+      description: Deletes a role by its ID.
       operationId: deleteRoleById
       responses:
         "204":
@@ -7080,6 +6983,7 @@ paths:
       tags:
         - users
       summary: Create User
+      description: Creates a new user account.
       operationId: createUser
       requestBody:
         content:
@@ -7097,6 +7001,7 @@ paths:
       tags:
         - users
       summary: Get Users
+      description: Returns a paginated list of users.
       operationId: getUsers
       parameters:
         - name: filters[status]
@@ -7169,6 +7074,7 @@ paths:
       tags:
         - users
       summary: Get one User by id
+      description: Returns a single user by their ID.
       operationId: getUserById
       responses:
         "200":
@@ -7181,6 +7087,7 @@ paths:
       tags:
         - users
       summary: Update User
+      description: Fully replaces a user's profile.
       operationId: updateUserById
       requestBody:
         content:
@@ -7198,6 +7105,7 @@ paths:
       tags:
         - users
       summary: Delete User
+      description: Deletes a user account by its ID.
       operationId: deleteUserById
       responses:
         "204":
@@ -7330,6 +7238,7 @@ paths:
       tags:
         - users
       summary: Get Events the User is Attending
+      description: Returns events the specified user is attending.
       operationId: getUserAttendingEvents
       responses:
         "200":
@@ -7343,11 +7252,10 @@ paths:
       parameters:
         - name: userId
           description: The unique identifier of the user
-          in: path
-          required: true
+          in: query
+          required: false
           schema:
             type: integer
-            readOnly: true
             example: 1
         - name: limit
           in: query
@@ -7380,6 +7288,7 @@ paths:
       tags:
         - users
       summary: Get Events the User is Recommended
+      description: Returns events recommended for the specified user.
       operationId: getUserRecommendedEvents
       responses:
         "200":
@@ -7402,6 +7311,7 @@ paths:
       tags:
         - photos
       summary: Set Photo Primary
+      description: Sets the specified photo as the primary photo for its parent resource.
       operationId: setPhotoPrimary
       responses:
         "200":
@@ -7424,6 +7334,7 @@ paths:
       tags:
         - photos
       summary: Unset Photo Primary
+      description: Removes the primary designation from the specified photo.
       operationId: unsetPhotoPrimary
       responses:
         "200":
@@ -7446,6 +7357,7 @@ paths:
       tags:
         - photos
       summary: Delete Photo
+      description: Deletes a photo by its ID.
       operationId: deletePhoto
       responses:
         "204":
@@ -7457,6 +7369,7 @@ paths:
       tags:
         - visibilities
       summary: Get Visibilities
+      description: Returns a list of visibility options.
       operationId: getVisibilities
       parameters:
         - name: filters[name]
@@ -7515,6 +7428,7 @@ paths:
       tags:
         - visibilities
       summary: Get Visibility
+      description: Returns a single visibility option by its ID.
       operationId: getVisibilityById
       responses:
         "200":
@@ -7528,6 +7442,7 @@ paths:
       tags:
         - users
       summary: Send Password Reset Email
+      description: Sends a password reset email to the specified user.
       operationId: sendPasswordResetEmail
       requestBody:
         content:
@@ -7546,6 +7461,7 @@ paths:
       tags:
         - users
       summary: Reset Password
+      description: Resets the user's password using a reset token.
       operationId: resetPassword
       requestBody:
         content:
