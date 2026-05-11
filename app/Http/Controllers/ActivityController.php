@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Filters\ActivityFilters;
-use App\Http\Requests\SeriesRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Action;
 use App\Models\Activity;
@@ -12,16 +11,15 @@ use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ActivityController extends Controller
 {
     private const UNKNOWN_LABEL = 'Unknown';
+
+    private const ALLOWED_GROUP_BY = ['day', 'week', 'month', 'year'];
 
     protected string $prefix;
 
@@ -66,58 +64,6 @@ class ActivityController extends Controller
         $this->sortDirection = 'desc';
 
         parent::__construct();
-    }
-
-    public function filter(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore,
-        ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_activity');
-        $listParamSessionStore->setKeyPrefix('internal_activity_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([ActivityController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Activity::query()->select('activities.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['activities.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the activities
-        $activities = $query
-            ->with('user', 'action')
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('activities.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('activities'))
-            ->render();
     }
 
     public function index(
@@ -178,21 +124,7 @@ class ActivityController extends Controller
         $graphData = $this->buildGraphData($filters);
 
         return view('activities.graph-tw')
-            ->with(array_merge($graphData, [
-                'filters' => $filters,
-                'actionOptions' => ['' => 'All actions'] + Action::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-                'tableOptions' => ['' => 'All tables'] + Activity::query()
-                    ->whereNotNull('object_table')
-                    ->where('object_table', '!=', '')
-                    ->orderBy('object_table', 'asc')
-                    ->distinct()
-                    ->pluck('object_table', 'object_table')
-                    ->all(),
-                'userOptions' => ['' => 'All users'] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-                'daysOptions' => [7 => 'Last 7 days', 14 => 'Last 14 days', 30 => 'Last 30 days', 90 => 'Last 90 days'],
-                'lineLimitOptions' => [5 => 'Top 5', 10 => 'Top 10', 20 => 'Top 20', 50 => 'Top 50'],
-                'groupByOptions' => ['day' => 'Day', 'week' => 'Week', 'month' => 'Month', 'year' => 'Year'],
-            ]))
+            ->with(array_merge($graphData, ['filters' => $filters], $this->getGraphOptions()))
             ->render();
     }
 
@@ -228,7 +160,9 @@ class ActivityController extends Controller
 
     protected function getGraphFilters(Request $request): array
     {
-        $validated = Validator::make($request->all(), [
+        $input = $request->only(['days', 'start_date', 'end_date', 'action_id', 'user_id', 'line_limit', 'object_table', 'group_by']);
+
+        $validator = validator($input, [
             'days' => ['nullable', 'integer', 'min:1', 'max:365'],
             'start_date' => ['nullable', 'date'],
             'end_date' => ['nullable', 'date'],
@@ -236,8 +170,10 @@ class ActivityController extends Controller
             'user_id' => ['nullable', 'integer', 'min:1'],
             'line_limit' => ['nullable', 'integer', 'min:1', 'max:100'],
             'object_table' => ['nullable', 'string', 'max:100'],
-            'group_by' => ['nullable', 'in:day,week,month,year'],
-        ])->validate();
+            'group_by' => ['nullable', 'in:' . implode(',', self::ALLOWED_GROUP_BY)],
+        ]);
+
+        $validated = $validator->fails() ? [] : $validator->validated();
 
         $days = max(1, min(365, (int) ($validated['days'] ?? 7)));
         $startDateInput = $validated['start_date'] ?? null;
@@ -282,21 +218,58 @@ class ActivityController extends Controller
         if (!empty($filters['action_id'])) {
             $baseQuery->where('activities.action_id', $filters['action_id']);
         }
-
         if (!empty($filters['object_table'])) {
             $baseQuery->where('activities.object_table', $filters['object_table']);
         }
-
         if (!empty($filters['user_id'])) {
             $baseQuery->where('activities.user_id', $filters['user_id']);
         }
 
-        $activityTypeExpression = $this->getActivityTypeExpression();
-        $dateExpression = 'DATE(activities.created_at)';
+        $topTypes = $this->resolveTopTypes(clone $baseQuery, $lineLimit);
+        $dailyRows = $this->queryDailyRows(clone $baseQuery, $topTypes);
+        $labels = $this->buildBucketLabels($startDate, $endDate, $groupBy);
+        $rows = $this->bucketRows($dailyRows, $labels, $groupBy);
+        $datasets = $this->buildDatasets($topTypes, $labels, $rows);
+        $total = array_sum(array_map(fn($row) => (int) $row->activity_count, $rows->all()));
 
-        $dailyRows = (clone $baseQuery)
-            ->selectRaw("{$dateExpression} as activity_date, {$activityTypeExpression} as activity_type, COUNT(*) as activity_count")
-            ->groupBy(DB::raw($dateExpression), DB::raw($activityTypeExpression))
+        return [
+            'labels' => $labels,
+            'datasets' => $datasets,
+            'rows' => $rows,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'groupBy' => $groupBy,
+            'total' => $total,
+        ];
+    }
+
+    private function resolveTopTypes(\Illuminate\Database\Eloquent\Builder $query, int $limit): array
+    {
+        $expr = $this->getActivityTypeExpression();
+
+        return $query
+            ->selectRaw("{$expr} as activity_type, COUNT(*) as total_count")
+            ->groupBy(DB::raw($expr))
+            ->orderByDesc('total_count')
+            ->limit($limit)
+            ->pluck('activity_type')
+            ->map(fn($t): string => (string) $t)
+            ->all();
+    }
+
+    private function queryDailyRows(\Illuminate\Database\Eloquent\Builder $query, array $topTypes): \Illuminate\Support\Collection
+    {
+        if (empty($topTypes)) {
+            return collect();
+        }
+
+        $expr = $this->getActivityTypeExpression();
+        $dateExpr = 'DATE(activities.created_at)';
+
+        return $query
+            ->selectRaw("{$dateExpr} as activity_date, {$expr} as activity_type, COUNT(*) as activity_count")
+            ->groupBy(DB::raw($dateExpr), DB::raw($expr))
+            ->havingRaw("activity_type IN (" . implode(',', array_fill(0, count($topTypes), '?')) . ")", $topTypes)
             ->orderBy('activity_date', 'asc')
             ->orderBy('activity_type', 'asc')
             ->get()
@@ -308,42 +281,19 @@ class ActivityController extends Controller
                     'activity_count' => (int) $row->activity_count,
                 ];
             });
+    }
 
-        $topTypes = (clone $baseQuery)
-            ->selectRaw("{$activityTypeExpression} as activity_type, COUNT(*) as total_count")
-            ->groupBy(DB::raw($activityTypeExpression))
-            ->orderByDesc('total_count')
-            ->limit($lineLimit)
-            ->pluck('activity_type')
-            ->map(function ($activityType): string {
-                return (string) $activityType;
-            })
-            ->all();
-
-        $dailyRows = $dailyRows->filter(function (array $row) use ($topTypes) {
-            return in_array($row['activity_type'], $topTypes, true);
-        })->values();
-
+    private function bucketRows(\Illuminate\Support\Collection $dailyRows, array $labels, string $groupBy): \Illuminate\Support\Collection
+    {
         $bucketed = [];
         foreach ($dailyRows as $row) {
             $bucket = $this->getBucketLabel(Carbon::parse($row['activity_date']), $groupBy);
-            if (!isset($bucketed[$bucket])) {
-                $bucketed[$bucket] = [];
-            }
-            if (!isset($bucketed[$bucket][$row['activity_type']])) {
-                $bucketed[$bucket][$row['activity_type']] = 0;
-            }
-            $bucketed[$bucket][$row['activity_type']] += $row['activity_count'];
+            $bucketed[$bucket][$row['activity_type']] = ($bucketed[$bucket][$row['activity_type']] ?? 0) + $row['activity_count'];
         }
-
-        $labels = $this->buildBucketLabels($startDate, $endDate, $groupBy);
 
         $rows = collect();
         foreach ($labels as $bucketLabel) {
-            if (!isset($bucketed[$bucketLabel])) {
-                continue;
-            }
-            foreach ($bucketed[$bucketLabel] as $activityType => $count) {
+            foreach ($bucketed[$bucketLabel] ?? [] as $activityType => $count) {
                 $rows->push((object) [
                     'activity_date' => $bucketLabel,
                     'activity_type' => $activityType,
@@ -352,6 +302,11 @@ class ActivityController extends Controller
             }
         }
 
+        return $rows;
+    }
+
+    private function buildDatasets(array $topTypes, array $labels, \Illuminate\Support\Collection $rows): array
+    {
         $datasetsMap = [];
         foreach ($topTypes as $type) {
             $datasetsMap[$type] = array_fill_keys($labels, 0);
@@ -365,20 +320,10 @@ class ActivityController extends Controller
 
         $datasets = [];
         foreach ($datasetsMap as $type => $countsByDate) {
-            $datasets[] = [
-                'label' => $type,
-                'data' => array_values($countsByDate),
-            ];
+            $datasets[] = ['label' => $type, 'data' => array_values($countsByDate)];
         }
 
-        return [
-            'labels' => $labels,
-            'datasets' => $datasets,
-            'rows' => $rows,
-            'startDate' => $startDate,
-            'endDate' => $endDate,
-            'groupBy' => $groupBy,
-        ];
+        return $datasets;
     }
 
     protected function buildBucketLabels(Carbon $startDate, Carbon $endDate, string $groupBy): array
@@ -397,56 +342,32 @@ class ActivityController extends Controller
 
     protected function getBucketLabel(Carbon $date, string $groupBy): string
     {
-        if ($groupBy === 'week') {
-            return $date->copy()->startOfWeek(Carbon::MONDAY)->format('Y-m-d');
-        }
-
-        if ($groupBy === 'month') {
-            return $date->copy()->startOfMonth()->format('Y-m');
-        }
-
-        if ($groupBy === 'year') {
-            return $date->copy()->startOfYear()->format('Y');
-        }
-
-        return $date->copy()->startOfDay()->format('Y-m-d');
+        return match ($groupBy) {
+            'week' => $date->copy()->startOfWeek(Carbon::MONDAY)->format('Y-m-d'),
+            'month' => $date->copy()->startOfMonth()->format('Y-m'),
+            'year' => $date->copy()->startOfYear()->format('Y'),
+            default => $date->copy()->startOfDay()->format('Y-m-d'),
+        };
     }
 
     protected function getBucketStart(Carbon $date, string $groupBy): Carbon
     {
-        if ($groupBy === 'week') {
-            return $date->copy()->startOfWeek(Carbon::MONDAY);
-        }
-
-        if ($groupBy === 'month') {
-            return $date->copy()->startOfMonth();
-        }
-
-        if ($groupBy === 'year') {
-            return $date->copy()->startOfYear();
-        }
-
-        return $date->copy()->startOfDay();
+        return match ($groupBy) {
+            'week' => $date->copy()->startOfWeek(Carbon::MONDAY),
+            'month' => $date->copy()->startOfMonth(),
+            'year' => $date->copy()->startOfYear(),
+            default => $date->copy()->startOfDay(),
+        };
     }
 
     protected function advanceBucketCursor(Carbon $cursor, string $groupBy): void
     {
-        if ($groupBy === 'week') {
-            $cursor->addWeek();
-            return;
-        }
-
-        if ($groupBy === 'month') {
-            $cursor->addMonth();
-            return;
-        }
-
-        if ($groupBy === 'year') {
-            $cursor->addYear();
-            return;
-        }
-
-        $cursor->addDay();
+        match ($groupBy) {
+            'week' => $cursor->addWeek(),
+            'month' => $cursor->addMonth(),
+            'year' => $cursor->addYear(),
+            default => $cursor->addDay(),
+        };
     }
 
     protected function getActivityTypeExpression(): string
@@ -458,17 +379,6 @@ class ActivityController extends Controller
         }
 
         return "CONCAT(COALESCE(actions.name, '{$unknown}'), ' ', COALESCE(activities.object_table, '{$unknown}'))";
-    }
-
-    protected function unauthorized(SeriesRequest $request): Response | RedirectResponse
-    {
-        if ($request->ajax()) {
-            return response(['message' => 'No way.'], 403);
-        }
-
-        Session::flash('flash_message', 'Not authorized');
-
-        return redirect('/');
     }
 
     public function destroy(Activity $activity): RedirectResponse
@@ -523,6 +433,24 @@ class ActivityController extends Controller
         $listParamSessionStore->clearSort();
 
         return redirect()->route($request->get('redirect') ?? 'activities.index');
+    }
+
+    protected function getGraphOptions(): array
+    {
+        return [
+            'actionOptions' => ['' => 'All actions'] + Action::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'tableOptions' => ['' => 'All tables'] + Activity::query()
+                ->whereNotNull('object_table')
+                ->where('object_table', '!=', '')
+                ->orderBy('object_table', 'asc')
+                ->distinct()
+                ->pluck('object_table', 'object_table')
+                ->all(),
+            'userOptions' => ['' => 'All users'] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'daysOptions' => [7 => 'Last 7 days', 14 => 'Last 14 days', 30 => 'Last 30 days', 90 => 'Last 90 days'],
+            'lineLimitOptions' => [5 => 'Top 5', 10 => 'Top 10', 20 => 'Top 20', 50 => 'Top 50'],
+            'groupByOptions' => array_combine(self::ALLOWED_GROUP_BY, array_map('ucfirst', self::ALLOWED_GROUP_BY)),
+        ];
     }
 
     protected function getListControlOptions(): array
