@@ -46,9 +46,22 @@
         </div>
     </div>
 
-    <!-- Details button -->
-    <a href="{{ route('events.show', ['event' => $event->slug]) }}"
-       class="mt-1 w-full px-3 py-1.5 text-xs font-medium text-center text-foreground bg-transparent border border-border rounded hover:bg-card transition-colors">
-        Details
-    </a>
+    @if ($ticketLink = $event->ticket_link)
+        <div class="mt-1 grid grid-cols-2 gap-1">
+            <a href="{{ route('events.show', ['event' => $event->slug]) }}"
+               class="w-full px-2 py-1.5 text-xs font-medium text-center text-foreground bg-transparent border border-border rounded hover:bg-card transition-colors">
+                Details
+            </a>
+            <a href="{{ $event->getTicketTrackingLink() }}" target="_blank" rel="noopener noreferrer"
+               class="w-full px-2 py-1.5 text-xs font-medium text-center text-foreground bg-transparent border border-border rounded hover:bg-card transition-colors">
+                Tickets
+            </a>
+        </div>
+    @else
+        <!-- Details button -->
+        <a href="{{ route('events.show', ['event' => $event->slug]) }}"
+           class="mt-1 w-full px-3 py-1.5 text-xs font-medium text-center text-foreground bg-transparent border border-border rounded hover:bg-card transition-colors">
+            Details
+        </a>
+    @endif
 </div>
