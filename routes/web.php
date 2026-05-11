@@ -97,8 +97,10 @@ Route::get('users/{id}/notify', [
     'as' => 'users.notify',
     'uses' => 'UsersController@notifyUser',
 ]);
-Route::match(['get', 'post'], 'activity/filter', ['as' => 'activities.filter', 'uses' => 'ActivityController@filter']);
+Route::match(['get', 'post'], 'activity/filter', ['as' => 'activities.filter', 'uses' => 'ActivityController@index']);
 Route::get('activity', 'ActivityController@index')->name('activities.index');
+Route::get('activity/graph', 'ActivityController@graph')->name('activities.graph')->middleware(['auth', 'can:admin']);
+Route::get('activity/graph/export', 'ActivityController@exportGraph')->name('activities.graph.export')->middleware(['auth', 'can:admin']);
 Route::get('activity/reset', ['as' => 'activities.reset', 'uses' => 'ActivityController@reset']);
 Route::get('activity/rpp-reset', ['as' => 'activities.rppReset', 'uses' => 'ActivityController@rppReset']);
 

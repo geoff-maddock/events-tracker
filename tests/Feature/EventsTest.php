@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Entity;
 use App\Models\Tag;
 use App\Models\User;
+use App\Models\UserStatus;
 use App\Models\Events;
 use Carbon\Carbon;
 use Laravel\Dusk\Dusk;
@@ -34,7 +35,7 @@ class EventsTest extends TestCase
 
     public function testCreateFormAllowsUnspecifiedAgeLimit()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
 
         $this->actingAs($user)
             ->get('/events/create')

@@ -28,6 +28,10 @@ window.flatpickr = flatpickr;
 // init visibility
 Visibility.init('#event-repo');
 
+// chart.js — exposed globally for inline page scripts (e.g. activity graph)
+import Chart from 'chart.js/auto';
+window.Chart = Chart;
+
 // add vue - not currently using
 // window.Vue = require('vue');
 //
