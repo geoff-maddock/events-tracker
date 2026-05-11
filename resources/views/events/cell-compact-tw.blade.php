@@ -52,7 +52,7 @@
                class="w-full px-2 py-1.5 text-xs font-medium text-center text-foreground bg-transparent border border-border rounded hover:bg-card transition-colors">
                 Details
             </a>
-            <a href="{{ $ticketUrl }}" target="_blank" rel="noopener"
+            <a href="{{ $ticketUrl }}" target="_blank" rel="noopener noreferrer"
                class="w-full px-2 py-1.5 text-xs font-medium text-center text-foreground bg-transparent border border-border rounded hover:bg-card transition-colors">
                 Tickets
             </a>
