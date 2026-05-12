@@ -25,12 +25,11 @@ class LinkFactory extends Factory
         return [
             'url' => $this->faker->url,
             'text' => $this->faker->url,
-            'image' => $this->faker->optional->paragraph,
+            'image' => $this->faker->optional->imageUrl(),
             'api' => $this->faker->optional->url,
             'title' => $this->faker->sentence(random_int(1, 6)),
             'confirm' => $this->faker->boolean,
             'is_primary' => $this->faker->boolean,
-            'is_active' => $this->faker->boolean,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
         ];

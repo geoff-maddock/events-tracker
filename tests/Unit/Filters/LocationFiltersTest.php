@@ -3,7 +3,6 @@
 namespace Tests\Unit\Filters;
 
 use App\Filters\LocationFilters;
-use App\Models\Entity;
 use App\Models\Location;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
@@ -25,25 +24,7 @@ class LocationFiltersTest extends TestCase
 
     private function makeLocation(array $attrs = []): Location
     {
-        // NOTE: LocationFactory calls $this->faker->random_int (not a faker
-        // method) and is currently broken. Build via Eloquent directly until
-        // it's fixed.
-        $entity = Entity::factory()->create();
-
-        return Location::create(array_merge([
-            'name' => 'Location '.uniqid(),
-            'slug' => 'slug-'.uniqid(),
-            'entity_id' => $entity->id,
-            'location_type_id' => 1,
-            'visibility_id' => 1,
-            'address_one' => '123 Test St',
-            'city' => 'Testville',
-            'state' => 'PA',
-            'postcode' => '15201',
-            'capacity' => 50,
-            'created_by' => 1,
-            'updated_by' => 1,
-        ], $attrs));
+        return Location::factory()->create($attrs);
     }
 
     public function test_name_filter_does_partial_match(): void

@@ -56,8 +56,6 @@ Route::get('tokens/test', function () {
 
 Route::view('/api/docs', 'docs.swagger');
 
-Route::get('/redirect', 'SocialAuthFacebookController@redirect');
-Route::get('/callback', 'SocialAuthFacebookController@callback');
 
 // Authentication Routes...
 $this->get('login', 'Auth\LoginController@showLoginForm')->name('login');

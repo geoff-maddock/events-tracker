@@ -104,13 +104,7 @@ class ResourceSerializationTest extends TestCase
 
     public function test_menu_resource_exposes_expected_keys(): void
     {
-        // MenuFactory is self-referential; build directly.
-        $menu = Menu::create([
-            'name' => 'Test menu',
-            'slug' => 'test-menu-'.uniqid(),
-            'body' => 'Body',
-            'visibility_id' => 1,
-        ]);
+        $menu = Menu::factory()->create();
 
         $data = (new MenuResource($menu))->toArray($this->request());
 

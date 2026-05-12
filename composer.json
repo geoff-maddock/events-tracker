@@ -10,7 +10,6 @@
 	"require": {
 		"laravel/framework": "^10.0",
 		"laravelcollective/html": "^6.0",
-		"laravel/socialite": "~5.0",
 		"suin/php-rss-writer": "^1.5",
 		"pusher/pusher-php-server": "^7.0",
 		"eluceo/ical": "^2.14.0",
