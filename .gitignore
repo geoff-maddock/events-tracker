@@ -28,6 +28,7 @@
 .env
 .htaccess
 .phpunit.result.cache
+.phpunit.cache
 /coverage
 /storage/coverage
 /storage/coverage-summary.txt
