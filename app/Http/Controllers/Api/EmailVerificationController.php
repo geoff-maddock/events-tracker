@@ -32,7 +32,10 @@ class EmailVerificationController extends Controller
         // Defense in depth: the `signed` middleware on the route already
         // enforces this, but reject unsigned requests here too in case a
         // future route refactor drops the middleware.
-        if (! $request->hasValidSignature()) {
+        // The verification URL is generated with a relative signature (see
+        // AuthServiceProvider::VerifyEmail::createUrlUsing) so it can be
+        // prefixed by a frontend host; validate it accordingly.
+        if (! $request->hasValidSignature(absolute: false)) {
             return response()->json(['message' => 'Invalid verification link.'], 403);
         }
 

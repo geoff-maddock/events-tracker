@@ -38,7 +38,8 @@ class ApiEmailVerificationTest extends TestCase
         $verificationUrl = URL::temporarySignedRoute(
             'api.verification.verify',
             now()->addMinutes(60),
-            ['id' => $user->id, 'hash' => sha1($user->email)]
+            ['id' => $user->id, 'hash' => sha1($user->email)],
+            false
         );
 
         // Make request to verification URL
@@ -71,7 +72,8 @@ class ApiEmailVerificationTest extends TestCase
         $verificationUrl = URL::temporarySignedRoute(
             'api.verification.verify',
             now()->addMinutes(60),
-            ['id' => $user->id, 'hash' => 'invalid-hash']
+            ['id' => $user->id, 'hash' => 'invalid-hash'],
+            false
         );
 
         $response = $this->getJson($verificationUrl);
@@ -99,7 +101,8 @@ class ApiEmailVerificationTest extends TestCase
         $verificationUrl = URL::temporarySignedRoute(
             'api.verification.verify',
             now()->addMinutes(60),
-            ['id' => $user->id, 'hash' => sha1($user->email)]
+            ['id' => $user->id, 'hash' => sha1($user->email)],
+            false
         );
 
         $response = $this->getJson($verificationUrl);
@@ -119,7 +122,8 @@ class ApiEmailVerificationTest extends TestCase
         $verificationUrl = URL::temporarySignedRoute(
             'api.verification.verify',
             now()->addMinutes(60),
-            ['id' => 99999, 'hash' => sha1('nonexistent@example.com')]
+            ['id' => 99999, 'hash' => sha1('nonexistent@example.com')],
+            false
         );
 
         $response = $this->getJson($verificationUrl);
@@ -141,7 +145,8 @@ class ApiEmailVerificationTest extends TestCase
         $verificationUrl = URL::temporarySignedRoute(
             'api.verification.verify',
             now()->addMinutes(60),
-            ['id' => $user->id, 'hash' => 'wrong-hash']
+            ['id' => $user->id, 'hash' => 'wrong-hash'],
+            false
         );
 
         // Make 7 requests (throttle is set to 6 per minute)

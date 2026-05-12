@@ -67,7 +67,10 @@ class VerificationController extends Controller
         // Defense in depth: the `signed` middleware on the route already
         // enforces this, but reject unsigned requests here too in case a
         // future route refactor drops the middleware.
-        abort_unless($request->hasValidSignature(), 403);
+        // The verification URL is generated with a relative signature (see
+        // AuthServiceProvider::VerifyEmail::createUrlUsing) so it can be
+        // prefixed by a frontend host; validate it accordingly.
+        abort_unless($request->hasValidSignature(absolute: false), 403);
 
         $userId = (int) $request->route('id');
         $hash = (string) $request->route('hash');

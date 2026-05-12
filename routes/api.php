@@ -257,7 +257,7 @@ Route::post('register', 'Api\\RegisterController@register');
 // Email verification endpoint — signature enforced to prevent
 // account takeover via crafted URLs.
 Route::get('email/verify/{id}/{hash}', 'Api\\EmailVerificationController@verify')
-    ->middleware(['signed', 'throttle:6,1'])
+    ->middleware(['signed:relative', 'throttle:6,1'])
     ->name('api.verification.verify');
 
 // password reset endpoints

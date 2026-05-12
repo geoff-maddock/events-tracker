@@ -45,7 +45,7 @@ Auth::routes();
 Route::get('email/verify', 'Auth\VerificationController@show')
     ->name('verification.notice');
 Route::get('email/verify/{id}/{hash}', 'Auth\VerificationController@verify')
-    ->middleware(['signed', 'throttle:6,1'])
+    ->middleware(['signed:relative', 'throttle:6,1'])
     ->name('verification.verify');
 Route::post('email/resend', 'Auth\VerificationController@resend')
     ->name('verification.resend');
