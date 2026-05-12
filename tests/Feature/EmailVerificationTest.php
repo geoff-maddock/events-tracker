@@ -4,7 +4,9 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Models\UserStatus;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
@@ -63,6 +65,8 @@ class EmailVerificationTest extends TestCase
 
     public function test_authenticated_user_can_resend_verification_email(): void
     {
+        Notification::fake();
+
         $user = User::factory()->create([
             'email_verified_at' => null,
             'user_status_id' => UserStatus::PENDING,
@@ -73,5 +77,6 @@ class EmailVerificationTest extends TestCase
         $response = $this->post(route('verification.resend'));
 
         $response->assertSessionHas('resent', true);
+        Notification::assertSentTo($user, VerifyEmail::class);
     }
 }
