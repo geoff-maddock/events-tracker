@@ -191,9 +191,6 @@ return [
         App\Providers\RouteServiceProvider::class,
         \App\Providers\ViewComposerServiceProvider::class,
 
-        // for social logins - fb, google, github
-        Laravel\Socialite\SocialiteServiceProvider::class,
-
         // for image processing, thumbnails
         Intervention\Image\ImageServiceProvider::class,
 
@@ -253,7 +250,6 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
         'Image' => \Intervention\Image\Facades\Image::class,
         // 'Calendar' => \MaddHatter\LaravelFullcalendar\Facades\Calendar::class,
         'Form' => Collective\Html\FormFacade::class,

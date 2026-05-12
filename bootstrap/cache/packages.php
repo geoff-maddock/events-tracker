@@ -67,17 +67,6 @@
       0 => 'Laravel\\Sanctum\\SanctumServiceProvider',
     ),
   ),
-  'laravel/socialite' => 
-  array (
-    'aliases' => 
-    array (
-      'Socialite' => 'Laravel\\Socialite\\Facades\\Socialite',
-    ),
-    'providers' => 
-    array (
-      0 => 'Laravel\\Socialite\\SocialiteServiceProvider',
-    ),
-  ),
   'laravel/tinker' => 
   array (
     'providers' => 
