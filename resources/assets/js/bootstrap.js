@@ -42,6 +42,37 @@ if (token) {
 Visibility.init('body');
 console.log('assets js bootstrap.js visibility init')
 
+/**
+ * Global confirm-modal handler.
+ *
+ * Any <form data-confirm="message"> or <button data-confirm="message"> will
+ * show a SweetAlert2 modal in place of the native window.confirm() dialog.
+ * Optional attributes: data-confirm-title, data-confirm-button.
+ */
+document.addEventListener('submit', function (e) {
+    const form = e.target;
+    if (!(form instanceof HTMLFormElement)) return;
+    if (form.dataset.confirmed === 'true') return;
+    const message = form.dataset.confirm;
+    if (!message) return;
+
+    e.preventDefault();
+    Swal.fire({
+        title: form.dataset.confirmTitle || 'Are you sure?',
+        text: message,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#DD6B55',
+        confirmButtonText: form.dataset.confirmButton || 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+    }).then((result) => {
+        if (result.value) {
+            form.dataset.confirmed = 'true';
+            form.submit();
+        }
+    });
+}, true);
+
 window.Pusher = Pusher;
 
 const pusherKey = import.meta.env.VITE_PUSHER_APP_KEY;

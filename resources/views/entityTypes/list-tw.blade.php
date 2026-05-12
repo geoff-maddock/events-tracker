@@ -36,7 +36,7 @@
 										<a href="{{ route('entity-types.edit', $entityType->id) }}" class="p-2 hover:bg-muted rounded transition-colors" title="Edit">
 											<i class="bi bi-pencil text-primary"></i>
 										</a>
-										<form action="{{ route('entity-types.destroy', $entityType->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this entity type?');">
+										<form action="{{ route('entity-types.destroy', $entityType->id) }}" method="POST" class="inline" data-confirm="Are you sure you want to delete this entity type?">
 											@csrf
 											@method('DELETE')
 											<button type="submit" class="p-2 hover:bg-muted rounded transition-colors" title="Delete">

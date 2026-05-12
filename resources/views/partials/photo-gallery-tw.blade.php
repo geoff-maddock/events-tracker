@@ -58,7 +58,7 @@
 			@if (isset($galleryOwner) && Auth::check() && (Auth::user()->id == $galleryOwner->user?->id || Auth::user()->hasGroup('super_admin')) && ($manageablePhotoIds === null || $manageablePhotoIds->contains($photo->id)))
 			<div class="absolute top-2 right-2 flex flex-col gap-2 z-50">
 				{{-- Delete --}}
-				<form method="POST" action="/photos/{{ $photo->id }}" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this photo?');">
+				<form method="POST" action="/photos/{{ $photo->id }}" class="inline-block" data-confirm="Are you sure you want to delete this photo?" data-confirm-button="Yes, delete it">
 					@csrf
 					@method('DELETE')
 					<button type="submit" class="p-2 bg-red-600 text-white rounded shadow-md hover:bg-red-700 transition-colors" title="Delete photo">

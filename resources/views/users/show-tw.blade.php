@@ -310,7 +310,7 @@
                                                 </button>
                                             </form>
                                         @endif
-                                        <form action="{{ route('photos.destroy', $photo->id) }}" method="POST" class="inline" onsubmit="return confirm('Delete this photo?')">
+                                        <form action="{{ route('photos.destroy', $photo->id) }}" method="POST" class="inline" data-confirm="Delete this photo?" data-confirm-button="Yes, delete it">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" title="Delete photo" class="p-1 bg-destructive text-destructive-foreground rounded text-xs">

@@ -27,10 +27,10 @@
 							<a href="{!! route('posts.edit', ['post' => $post->id]) !!}" title="Edit this post" class="text-gray-400 hover:text-white">
 								<i class="bi bi-pencil-fill"></i>
 							</a>
-							<form action="{{ route('posts.destroy', $post) }}" method="POST" class="inline">
+							<form action="{{ route('posts.destroy', $post) }}" method="POST" class="inline" data-confirm="Are you sure you want to delete this post?">
 								@csrf
 								@method('DELETE')
-								<button type="submit" class="text-gray-400 hover:text-red-500" onclick="return confirm('Are you sure you want to delete this post?')" title="Delete the post">
+								<button type="submit" class="text-gray-400 hover:text-red-500" title="Delete the post">
 									<i class="bi bi-trash-fill"></i>
 								</button>
 							</form>

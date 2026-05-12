@@ -29,7 +29,7 @@
         <!-- Delete Button -->
         @if ($user && ($thread->ownedBy($user) || $user->hasGroup('super_admin')))
         <div class="mt-6 pt-6 border-t border-border">
-            <form method="POST" action="{{ route('threads.destroy', $thread->id) }}" onsubmit="return confirm('Are you sure you want to delete this thread? This action cannot be undone.');">
+            <form method="POST" action="{{ route('threads.destroy', $thread->id) }}" data-confirm="Are you sure you want to delete this thread? This action cannot be undone.">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="inline-flex items-center px-4 py-2 bg-destructive text-destructive-foreground rounded-md hover:bg-destructive/90 transition-colors">

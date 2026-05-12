@@ -66,7 +66,7 @@
         @can('edit_group')
             <div class="mt-6 pt-6 border-t border-border">
                 <form action="{{ route('groups.destroy', $group->id) }}" method="POST"
-                    onsubmit="return confirm('Are you sure you want to delete this group?')">
+                    data-confirm="Are you sure you want to delete this group?">
                     @csrf
                     @method('DELETE')
                     <x-ui.button type="submit" variant="destructive">

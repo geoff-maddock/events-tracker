@@ -22,7 +22,7 @@
 										<a href="{{ route('forums.edit', $forum->id) }}" class="text-primary hover:text-primary/80" title="Edit">
 											<i class="bi bi-pencil text-sm"></i>
 										</a>
-										<form action="{{ route('forums.destroy', $forum->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this forum?');">
+										<form action="{{ route('forums.destroy', $forum->id) }}" method="POST" class="inline" data-confirm="Are you sure you want to delete this forum?">
 											@csrf
 											@method('DELETE')
 											<button type="submit" class="text-destructive hover:text-destructive/80" title="Delete">

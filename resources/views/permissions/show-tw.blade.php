@@ -53,7 +53,7 @@
         @can('edit_permission')
             <div class="mt-6 pt-6 border-t border-border">
                 <form action="{{ route('permissions.destroy', $permission->id) }}" method="POST"
-                    onsubmit="return confirm('Are you sure you want to delete this permission?')">
+                    data-confirm="Are you sure you want to delete this permission?">
                     @csrf
                     @method('DELETE')
                     <x-ui.button type="submit" variant="destructive">

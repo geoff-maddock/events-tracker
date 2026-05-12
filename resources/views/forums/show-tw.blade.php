@@ -86,7 +86,7 @@
                 @if ($signedIn && $thread->ownedBy($user))
                     <div class="mt-4">
                         <form action="{{ route('threads.destroy', ['id' => $thread->id]) }}" method="POST"
-                            onsubmit="return confirm('Are you sure you want to delete this thread?')">
+                            data-confirm="Are you sure you want to delete this thread?">
                             @csrf
                             @method('DELETE')
                             <x-ui.button type="submit" variant="destructive" size="sm">

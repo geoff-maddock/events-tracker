@@ -37,7 +37,7 @@
         @can('edit_category')
             <div class="mt-6 pt-6 border-t border-border">
                 <form action="{{ route('categories.destroy', $category->id) }}" method="POST"
-                    onsubmit="return confirm('Are you sure you want to delete this category?')">
+                    data-confirm="Are you sure you want to delete this category?">
                     @csrf
                     @method('DELETE')
                     <x-ui.button type="submit" variant="destructive">

@@ -47,7 +47,7 @@
 				<!-- Delete Button -->
 				@if ($user && (($series->user && Auth::user()->id == $series->user->id) || $user->hasGroup('super_admin')))
 				<div class="mt-6 pt-6 border-t border-border">
-					<form method="POST" action="{{ route('series.destroy', $series->id) }}" onsubmit="return confirm('Are you sure you want to delete this series? This action cannot be undone.');">
+					<form method="POST" action="{{ route('series.destroy', $series->id) }}" data-confirm="Are you sure you want to delete this series? This action cannot be undone.">
 						@csrf
 						@method('DELETE')
 						<button type="submit" class="inline-flex items-center px-4 py-2 bg-destructive text-destructive-foreground rounded-md hover:bg-destructive/90 transition-colors">
@@ -80,11 +80,10 @@
 						@if ($user && (($series->user && Auth::user()->id == $series->user->id) || $user->hasGroup('super_admin')))
 						<div class="absolute top-1 right-1 flex gap-1">
 							<!-- Delete Photo -->
-							<form method="POST" action="{{ route('photos.destroy', $photo->id) }}" class="inline">
+							<form method="POST" action="{{ route('photos.destroy', $photo->id) }}" class="inline" data-confirm="Delete this photo?" data-confirm-button="Yes, delete it">
 								@csrf
 								@method('DELETE')
 								<button type="submit"
-									onclick="return confirm('Delete this photo?')"
 									class="p-1 bg-destructive/80 text-destructive-foreground rounded hover:bg-destructive transition-colors"
 									title="Delete photo">
 									<i class="bi bi-trash text-xs"></i>
