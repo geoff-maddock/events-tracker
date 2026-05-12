@@ -195,12 +195,10 @@ class SimpleNameFiltersTest extends TestCase
 
     public function test_menu_filter_returns_all_when_empty(): void
     {
-        // MenuFactory is self-referential (uses Menu::all()->random() for
-        // menu_parent_id) which fails on a fresh test DB. Verify the filter
-        // is a passthrough using the raw model query against whatever rows
-        // happen to exist.
+        Menu::factory()->count(2)->create();
+
         $results = $this->apply(MenuFilters::class, Menu::class, []);
 
-        $this->assertNotNull($results);
+        $this->assertGreaterThanOrEqual(2, $results->count());
     }
 }

@@ -27,9 +27,7 @@ class MenuFactory extends Factory
             'name' => $this->faker->word,
             'slug' => $this->faker->slug,
             'body' => $this->faker->sentence,
-            'menu_parent_id' => function () {
-                return Menu::all()->random()->id;
-            },
+            'menu_parent_id' => null,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
             'visibility_id' => function () {

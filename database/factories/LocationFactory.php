@@ -35,25 +35,17 @@ class LocationFactory extends Factory
             'city' => $this->faker->city,
             'state' => $this->faker->state,
             'postcode' => $this->faker->postcode,
-            'location_type_id' => function () {
-                return LocationType::all()->random()->id;
-            },
-            'entity_id' => function () {
-                return Entity::all()->random()->id;
-            },
-            'capacity' => $this->faker->random_int(0, 100),
+            'location_type_id' => fn () => LocationType::query()->inRandomOrder()->value('id')
+                ?? LocationType::factory(),
+            'entity_id' => fn () => Entity::factory(),
+            'capacity' => $this->faker->numberBetween(0, 100),
             'map_url' => $this->faker->optional->url,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
-            'created_by' => function () {
-                return User::all()->random()->id;
-            },
-            'updated_by' => function () {
-                return User::all()->random()->id;
-            },
-            'visibility_id' => function () {
-                return Visibility::all()->random()->id;
-            },
+            'created_by' => fn () => User::factory(),
+            'updated_by' => fn () => User::factory(),
+            'visibility_id' => fn () => Visibility::query()->inRandomOrder()->value('id')
+                ?? Visibility::factory(),
         ];
     }
 }
