@@ -254,10 +254,10 @@ Route::get('tag-calendar-events', 'EventsController@tagCalendarEventsApi')->name
 // user registration endpoint
 Route::post('register', 'Api\\RegisterController@register');
 
-// email verification endpoint
-// disabled signature for testing
+// Email verification endpoint — signature enforced to prevent
+// account takeover via crafted URLs.
 Route::get('email/verify/{id}/{hash}', 'Api\\EmailVerificationController@verify')
-    ->middleware('throttle:6,1')
+    ->middleware(['signed:relative', 'throttle:6,1'])
     ->name('api.verification.verify');
 
 // password reset endpoints

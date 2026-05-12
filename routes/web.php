@@ -35,7 +35,20 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Auth::routes(['verify' => true]);
+// NOTE: we register `verify` routes explicitly below so that the
+// `verification.verify` route gets the `signed` middleware. The version
+// of Auth::routes(['verify' => true]) shipped by laravel/ui does NOT
+// apply it, leaving accounts open to verification via crafted URLs.
+Auth::routes();
+
+// Email verification routes — `verification.verify` MUST be signed.
+Route::get('email/verify', 'Auth\VerificationController@show')
+    ->name('verification.notice');
+Route::get('email/verify/{id}/{hash}', 'Auth\VerificationController@verify')
+    ->middleware(['signed:relative', 'throttle:6,1'])
+    ->name('verification.verify');
+Route::post('email/resend', 'Auth\VerificationController@resend')
+    ->name('verification.resend');
 
 Route::get('tokens/test', function () {
     return ['data' => 'has event check'];
