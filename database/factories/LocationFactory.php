@@ -28,7 +28,7 @@ class LocationFactory extends Factory
     {
         return [
             'name' => $this->faker->word,
-            'slug' => $this->faker->slug,
+            'slug' => substr($this->faker->slug, 0, 50),
             'attn' => $this->faker->optional->name,
             'address_one' => $this->faker->streetAddress,
             'address_two' => $this->faker->optional->streetAddress,
