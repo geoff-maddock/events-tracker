@@ -39,13 +39,15 @@
 
 	@yield('select2.include')
 
-	<!-- Icons -->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+	<!-- Icons (deferred to avoid render-blocking) -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css" media="print" onload="this.onload=null;this.removeAttribute('media');">
+	<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css"></noscript>
 	<!-- Fonts -->
 	<link rel="DNS-prefetch" href="//fonts.googleapis.com"/>
 	<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin/>
 	<link href="//fonts.googleapis.com/css?family=Roboto:400,300&display=swap" rel="stylesheet" type="text/css" media="print" onload="this.onload=null;this.removeAttribute('media');">
-	<link href="https://fonts.bunny.net/css?family=nunito:400,600,700,800" rel="stylesheet" />
+	<link href="https://fonts.bunny.net/css?family=nunito:400,600,700,800&display=swap" rel="stylesheet" media="print" onload="this.onload=null;this.removeAttribute('media');">
+	<noscript><link href="https://fonts.bunny.net/css?family=nunito:400,600,700,800&display=swap" rel="stylesheet"></noscript>
 	<!-- Lightbox -->
 	<link href="{{ asset('/css/lightbox.min.css') }}" rel="stylesheet" type="text/css" media="print" onload="this.onload=null;this.removeAttribute('media');">
 
@@ -55,6 +57,17 @@
 	@if (config('app.google_tags') !== "")
 	@include ('partials.analytics')
 	@endif
+
+	<style>
+		/* WCAG 1.4.1: links within prose/content must be distinguishable by more than color */
+		.prose a,
+		.event-card-content-tw a:not(.badge-tw),
+		main p a,
+		main li a {
+			text-decoration: underline;
+			text-underline-offset: 2px;
+		}
+	</style>
 </head>
 <body>
 	<script>

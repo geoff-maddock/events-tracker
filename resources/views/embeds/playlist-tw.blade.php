@@ -21,7 +21,7 @@
         <div id="playlist-{{ $event->id}}" class="playlist-id rounded-lg border bg-card shadow p-6" data-url="/events/{{ $event->id }}/load-embeds" data-slug="{{ $event->slug }}" data-resource-type="events">
             <div class="flex items-center gap-2 mb-4">
                 <i class="bi bi-music-note-beamed text-lg"></i>
-                <h3 class="text-xl font-semibold">Audio</h3>
+                <h2 class="text-xl font-semibold">Audio</h2>
             </div>
             <div class="flex items-center justify-center py-8">
                 <div class="load-spinner">
@@ -35,7 +35,7 @@
         <div id="playlist-{{ $entity->id}}" class="playlist-id rounded-lg border bg-card shadow p-6" data-url="/entities/{{ $entity->id }}/load-embeds" data-slug="{{ $entity->slug }}" data-resource-type="entities">
             <div class="flex items-center gap-2 mb-4">
                 <i class="bi bi-music-note-beamed text-lg"></i>
-                <h3 class="text-xl font-semibold">Audio</h3>
+                <h2 class="text-xl font-semibold">Audio</h2>
             </div>
             <div class="flex items-center justify-center py-8">
                 <div class="load-spinner">
@@ -49,7 +49,7 @@
         <div id="playlist-{{ $series->id}}" class="playlist-id rounded-lg border bg-card shadow p-6" data-url="/series/{{ $series->id }}/load-embeds" data-slug="{{ $series->slug }}" data-resource-type="series">
             <div class="flex items-center gap-2 mb-4">
                 <i class="bi bi-music-note-beamed text-lg"></i>
-                <h3 class="text-xl font-semibold">Audio</h3>
+                <h2 class="text-xl font-semibold">Audio</h2>
             </div>
             <div class="flex items-center justify-center py-8">
                 <div class="load-spinner">

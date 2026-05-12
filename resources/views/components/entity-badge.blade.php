@@ -31,10 +31,11 @@
         {{ $entity->name }}
     </a>
     @if ($context)
-    <a href="{{ $contextRoute }}" 
-       class="opacity-60 hover:opacity-100 transition-opacity" 
-       title="Filter {{ $context }} by {{ $entity->name }}">
-        <i class="bi bi-funnel text-xs"></i>
+    <a href="{{ $contextRoute }}"
+       class="p-1 -mr-1 opacity-60 hover:opacity-100 transition-opacity"
+       title="Filter {{ $context }} by {{ $entity->name }}"
+       aria-label="Filter {{ $context }} by {{ $entity->name }}">
+        <i class="bi bi-funnel text-xs" aria-hidden="true"></i>
     </a>
     @else
     <i class="bi bi-box-arrow-up-right text-xs opacity-60"></i>

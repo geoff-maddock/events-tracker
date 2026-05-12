@@ -15,93 +15,113 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="flex flex-wrap gap-2 mb-6">
-        @if ($canViewFullProfile)
-            <a href="{{ route('users.attending', ['id' => $user->id]) }}" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
-                <i class="bi bi-calendar-check mr-2"></i>
-                Attending
-            </a>
+    <div class="flex items-center justify-between flex-wrap gap-2 mb-6">
+        <!-- Primary actions (left) -->
+        <div class="flex flex-wrap gap-2">
+            @if ($canViewFullProfile)
+                <a href="{{ route('users.attending', ['id' => $user->id]) }}" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+                    <i class="bi bi-calendar-check mr-2"></i>
+                    Attending
+                </a>
 
-            <!-- iCal Dropdown -->
-            <div class="relative" x-data="{ open: false }">
-                <button @click="open = !open" type="button" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
-                    <i class="bi bi-calendar-plus mr-2"></i>
-                    iCal
-                    <i class="bi bi-chevron-down ml-2 text-xs"></i>
-                </button>
-                <div x-show="open" @click.away="open = false" class="absolute left-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-10">
-                    <a href="{{ route('users.attendingIcal', ['id' => $user->id]) }}" class="block px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors rounded-t-lg">
-                        Attending iCal
-                    </a>
-                    <a href="{{ route('users.interestedIcal', ['id' => $user->id]) }}" class="block px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors rounded-b-lg">
-                        Interested iCal
-                    </a>
+                <!-- iCal Dropdown -->
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" type="button" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+                        <i class="bi bi-calendar-plus mr-2"></i>
+                        iCal
+                        <i class="bi bi-chevron-down ml-2 text-xs"></i>
+                    </button>
+                    <div x-show="open" @click.away="open = false" class="absolute left-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-10">
+                        <a href="{{ route('users.attendingIcal', ['id' => $user->id]) }}" class="block px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors rounded-t-lg">
+                            Attending iCal
+                        </a>
+                        <a href="{{ route('users.interestedIcal', ['id' => $user->id]) }}" class="block px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors rounded-b-lg">
+                            Interested iCal
+                        </a>
+                    </div>
                 </div>
-            </div>
-        @endif
-
-        @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser')))
-            <a href="{{ route('users.edit', ['user' => $user->id]) }}" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
-                <i class="bi bi-pencil mr-2"></i>
-                Edit Profile
-            </a>
-
-            <form action="{{ route('users.exportData', ['id' => $user->id]) }}" method="POST" style="display: inline;">
-                @csrf
-                <button 
-                    type="submit" 
-                    class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors confirm" 
-                    data-confirm-message="This will generate a ZIP file with all your data and email you a download link. Continue?"
-                >
-                    <i class="bi bi-download mr-2"></i>
-                    Export My Data
-                </button>
-            </form>
-
-            @can('grant_access')
-                @if (!$user->isActive)
-                    <a href="{{ route('users.activate', ['id' => $user->id]) }}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors confirm">
-                        <i class="bi bi-check-circle mr-2"></i>
-                        Activate
-                    </a>
-                @endif
-                @if ($user->isActive)
-                    <a href="{{ route('users.reminder', ['id' => $user->id]) }}" title="Shows all future events you are attending" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors confirm">
-                        <i class="bi bi-bell mr-2"></i>
-                        Send Reminder
-                    </a>
-                @endif
-            @endcan
-
-            @if ($user->isActive)
-                <a href="{{ route('users.weekly', ['id' => $user->id]) }}" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors confirm">
-                    <i class="bi bi-envelope mr-2"></i>
-                    Send Weekly Update
-                </a>
             @endif
+        </div>
 
-            <a href="{{ url('/password/reset') }}" class="inline-flex items-center px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors">
-                <i class="bi bi-key mr-2"></i>
-                Reset Password
+        <!-- Secondary actions (right, three-dots menu) -->
+        <div class="flex items-center gap-2">
+            <a href="{{ URL::route('users.index') }}" class="inline-flex items-center px-3 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors text-sm">
+                <i class="bi bi-arrow-left mr-1"></i>
+                Back
             </a>
-            @can('grant_access')
-                <a href="{!! route('users.showResetPassword', ['id' => $user->id]) !!}" class="inline-flex items-center px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors">
-                                <i class="bi bi-key mr-2"></i>
-                    Reset User Password
-                </a>
-            @endcan
-            @can('impersonate_user')
-                <a href="{{ route('user.impersonate', ['user' => $user->id]) }}" title="Impersonate user" class="inline-flex items-center px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors confirm">
-                    <i class="bi bi-person-badge mr-2"></i>
-                    Impersonate
-                </a>
-            @endcan
-        @endif
 
-        <a href="{{ URL::route('users.index') }}" class="inline-flex items-center px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors">
-            <i class="bi bi-arrow-left mr-2"></i>
-            Return to list
-        </a>
+            @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser')))
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" type="button" class="inline-flex items-center justify-center w-10 h-10 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors" title="More actions">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <div x-show="open" @click.away="open = false" x-cloak
+                         class="absolute right-0 mt-2 w-56 bg-card border border-border rounded-lg shadow-lg z-20 py-1">
+
+                        <a href="{{ route('users.edit', ['user' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
+                            <i class="bi bi-pencil mr-3 w-4 text-center"></i>
+                            Edit Profile
+                        </a>
+
+                        <div class="border-t border-border my-1"></div>
+
+                        <form action="{{ route('users.exportData', ['id' => $user->id]) }}" method="POST">
+                            @csrf
+                            <button type="submit"
+                                class="w-full flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors confirm"
+                                data-confirm-message="This will generate a ZIP file with all your data and email you a download link. Continue?">
+                                <i class="bi bi-download mr-3 w-4 text-center"></i>
+                                Export My Data
+                            </button>
+                        </form>
+
+                        @can('grant_access')
+                            @if (!$user->isActive)
+                                <a href="{{ route('users.activate', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-green-600 hover:bg-accent transition-colors confirm">
+                                    <i class="bi bi-check-circle mr-3 w-4 text-center"></i>
+                                    Activate
+                                </a>
+                            @endif
+                            @if ($user->isActive)
+                                <a href="{{ route('users.reminder', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors confirm">
+                                    <i class="bi bi-bell mr-3 w-4 text-center"></i>
+                                    Send Reminder
+                                </a>
+                            @endif
+                        @endcan
+
+                        @if ($user->isActive)
+                            <a href="{{ route('users.weekly', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors confirm">
+                                <i class="bi bi-envelope mr-3 w-4 text-center"></i>
+                                Send Weekly Update
+                            </a>
+                        @endif
+
+                        <div class="border-t border-border my-1"></div>
+
+                        <a href="{{ url('/password/reset') }}" class="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
+                            <i class="bi bi-key mr-3 w-4 text-center"></i>
+                            Reset Password
+                        </a>
+
+                        @can('grant_access')
+                            <a href="{!! route('users.showResetPassword', ['id' => $user->id]) !!}" class="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
+                                <i class="bi bi-key mr-3 w-4 text-center"></i>
+                                Reset User Password
+                            </a>
+                        @endcan
+
+                        @can('impersonate_user')
+                            <div class="border-t border-border my-1"></div>
+                            <a href="{{ route('user.impersonate', ['user' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-amber-600 hover:bg-accent transition-colors confirm">
+                                <i class="bi bi-person-badge mr-3 w-4 text-center"></i>
+                                Impersonate
+                            </a>
+                        @endcan
+                    </div>
+                </div>
+            @endif
+        </div>
     </div>
 
     <!-- Main Content Grid -->

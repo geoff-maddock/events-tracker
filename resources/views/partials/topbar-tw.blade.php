@@ -2,8 +2,8 @@
 <header class="lg:hidden border-b border-border bg-card">
     <div class="flex items-center justify-between px-4 py-3 gap-3">
         <!-- Hamburger Menu -->
-        <button id="mobile-menu-toggle-top" class="text-foreground hover:text-muted-foreground transition-colors flex-shrink-0">
-            <i class="bi bi-list text-2xl"></i>
+        <button id="mobile-menu-toggle-top" class="p-2 rounded text-foreground hover:text-muted-foreground transition-colors flex-shrink-0" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-sidebar">
+            <i class="bi bi-list text-2xl" aria-hidden="true"></i>
         </button>
 
         <!-- Logo for mobile -->
@@ -54,8 +54,10 @@
                     const sidebar = document.getElementById('mobile-sidebar');
                     const overlay = document.getElementById('mobile-sidebar-overlay');
                     if (sidebar && overlay) {
+                        const isOpen = !sidebar.classList.contains('-translate-x-full');
                         sidebar.classList.toggle('-translate-x-full');
                         overlay.classList.toggle('hidden');
+                        button.setAttribute('aria-expanded', String(isOpen ? 'false' : 'true'));
                     }
                 });
             }

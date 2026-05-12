@@ -5,16 +5,20 @@
         @if ($primary = $event->getPrimaryPhoto())
         <a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
             data-title="{!! $event->start_at->format('l F jS Y') !!} - {{ $event->name }} @ {{ $event->venue ? $event->venue->name : '' }}"
-            data-lightbox="{{ $primary->path }}">
+            data-lightbox="{{ $primary->path }}"
+            aria-label="View photo for {{ $event->name }}">
             <img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}"
                 alt="{{ $event->name }}"
-                class="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300">
+                class="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300"
+                width="400"
+                height="400"
+                loading="lazy">
         </a>
         @else
-        <a href="/images/event-placeholder.png"
-            data-lightbox="event-{{ $event->id }}">
+        <a href="{{ route('events.show', [$event->slug]) }}"
+            aria-label="{{ $event->name }}">
             <div class="w-full aspect-square bg-card flex items-center justify-center">
-                <i class="bi bi-calendar-event text-4xl text-muted-foreground"></i>
+                <i class="bi bi-calendar-event text-4xl text-muted-foreground" aria-hidden="true"></i>
             </div>
         </a>
         @endif
@@ -26,22 +30,25 @@
                 <a href="{!! route('events.unattend', ['id' => $event->id]) !!}"
                     data-target="#event-card-{{ $event->id }}"
                     class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
-                    title="{{ $response->responseType->name }}">
-                    <i class="bi bi-star-fill text-primary text-lg"></i>
+                    title="{{ $response->responseType->name }} — click to remove"
+                    aria-label="{{ $response->responseType->name }} {{ $event->name }} — click to remove">
+                    <i class="bi bi-star-fill text-primary text-lg" aria-hidden="true"></i>
                 </a>
                 @else
                 <a href="{!! route('events.attend', ['id' => $event->id]) !!}"
                     data-target="#event-card-{{ $event->id }}"
                     class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
-                    title="Click to mark as attending">
-                    <i class="bi bi-star text-muted-foreground hover:text-primary text-lg"></i>
+                    title="Mark as attending"
+                    aria-label="Mark {{ $event->name }} as attending">
+                    <i class="bi bi-star text-muted-foreground hover:text-primary text-lg" aria-hidden="true"></i>
                 </a>
                 @endif
             @else
                 <a href="{!! route('login') !!}"
                     class="p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
-                    title="Sign in to mark as attending">
-                    <i class="bi bi-star text-muted-foreground hover:text-primary text-lg"></i>
+                    title="Sign in to mark as attending"
+                    aria-label="Sign in to mark {{ $event->name }} as attending">
+                    <i class="bi bi-star text-muted-foreground hover:text-primary text-lg" aria-hidden="true"></i>
                 </a>
             @endif
         </div>
@@ -96,8 +103,11 @@
                 <i class="bi bi-geo-alt"></i>
                 <a href="/entities/{{ $event->venue->slug }}" class="hover:text-primary">{{ $event->venue->name }}</a>
                 @if ($event->venue->getPrimaryLocationMap())
-                <a href="{{ $event->venue->getPrimaryLocationMap() }}" target="_blank" rel="noopener" title="{{ $event->venue->getPrimaryLocationAddress() }}" class="text-primary hover:text-primary/90">
-                    <i class="bi bi-box-arrow-up-right text-xs"></i>
+                <a href="{{ $event->venue->getPrimaryLocationMap() }}" target="_blank" rel="noopener"
+                    title="{{ $event->venue->getPrimaryLocationAddress() }}"
+                    aria-label="Map for {{ $event->venue->name }}"
+                    class="p-1 rounded text-primary hover:text-primary/90">
+                    <i class="bi bi-box-arrow-up-right text-xs" aria-hidden="true"></i>
                 </a>
                 @endif
             </div>
@@ -129,8 +139,11 @@
 									@endif
 								@endif
 								@if ($ticket = $event->getTicketTrackingLink())
-								<a href="{{ $ticket }}" target="_blank" rel="noopener noreferrer" class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Buy tickets">
-									<i class="bi bi-ticket-perforated text-muted-foreground"></i>
+								<a href="{{ $ticket }}" target="_blank" rel="noopener noreferrer"
+									class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+									title="Buy tickets for {{ $event->name }}"
+									aria-label="Buy tickets for {{ $event->name }}">
+									<i class="bi bi-ticket-perforated text-muted-foreground" aria-hidden="true"></i>
 								</a>
 								@endif
 							</div>
@@ -173,36 +186,40 @@
             <!-- Edit Button -->
             @if ($signedIn && ($event->ownedBy($user) || $user->hasGroup('super_admin')))
             <a href="{{ route('events.edit', ['event' => $event->slug]) }}"
-                class="text-muted-foreground hover:text-primary transition-colors"
-                title="Edit this event">
-                <i class="bi bi-pencil"></i>
+                class="p-2 rounded text-muted-foreground hover:text-primary transition-colors"
+                title="Edit {{ $event->name }}"
+                aria-label="Edit {{ $event->name }}">
+                <i class="bi bi-pencil" aria-hidden="true"></i>
             </a>
             @endif
 
             <!-- Thread Link -->
             @if ($thread = $event->threads->first())
             <a href="{{ route('threads.show', ['thread' => $thread->id]) }}"
-                class="text-muted-foreground hover:text-primary transition-colors"
-                title="View discussion">
-                <i class="bi bi-chat"></i>
+                class="p-2 rounded text-muted-foreground hover:text-primary transition-colors"
+                title="Discussion for {{ $event->name }}"
+                aria-label="Discussion for {{ $event->name }}">
+                <i class="bi bi-chat" aria-hidden="true"></i>
             </a>
             @endif
 
             <!-- External Link -->
             @if ($link = $event->primary_link)
             <a href="{{ $link }}" target="_blank" rel="noopener"
-                class="text-muted-foreground hover:text-primary transition-colors"
-                title="External link">
-                <i class="bi bi-link-45deg"></i>
+                class="p-2 rounded text-muted-foreground hover:text-primary transition-colors"
+                title="External link for {{ $event->name }}"
+                aria-label="External link for {{ $event->name }}">
+                <i class="bi bi-link-45deg" aria-hidden="true"></i>
             </a>
             @endif
 
             <!-- Ticket Link -->
             @if ($ticket = $event->ticket_link)
             <a href="{{ $event->getTicketTrackingLink() }}" target="_blank" rel="noopener"
-                class="text-muted-foreground hover:text-primary transition-colors"
-                title="Buy tickets">
-                <i class="bi bi-ticket-perforated"></i>
+                class="p-2 rounded text-muted-foreground hover:text-primary transition-colors"
+                title="Buy tickets for {{ $event->name }}"
+                aria-label="Buy tickets for {{ $event->name }}">
+                <i class="bi bi-ticket-perforated" aria-hidden="true"></i>
             </a>
             @endif
         </div>

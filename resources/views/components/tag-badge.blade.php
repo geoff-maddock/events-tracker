@@ -32,9 +32,10 @@
        title="Filter {{ $context ?? 'items' }} by {{ $tag->name }}">
         {{ $tag->name }}
     </a>
-    <a href="{{ route('tags.show', $tag->slug) }}" 
-       class="opacity-60 hover:opacity-100 transition-opacity" 
-       title="View tag details">
-        <i class="bi bi-info-circle text-xs"></i>
+    <a href="{{ route('tags.show', $tag->slug) }}"
+       class="p-1 -mr-1 opacity-60 hover:opacity-100 transition-opacity"
+       title="View tag details"
+       aria-label="View details for {{ $tag->name }}">
+        <i class="bi bi-info-circle text-xs" aria-hidden="true"></i>
     </a>
 </span>
