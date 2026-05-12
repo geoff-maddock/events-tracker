@@ -4,7 +4,7 @@ namespace Tests\Feature\Services\Embeds;
 
 use App\Services\Embeds\Provider;
 use App\Services\Embeds\OembedExtractor;
-use Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class OembedExtractorTest extends TestCase
 {
@@ -17,14 +17,16 @@ class OembedExtractorTest extends TestCase
     }
 
     /** @test */
-    public function default_config_is_medium()
+    public function default_config_has_medium_layouts()
     {
         $provider = new Provider();
         $extractor = new OembedExtractor($provider);
         $extractor->setLayout("medium");
         $results = $extractor->getLayoutConfig();
 
-        $this->assertEquals(166, $results["height"]);
+        $this->assertArrayHasKey('bandcamp_layout', $results);
+        $this->assertArrayHasKey('soundcloud_layout', $results);
+        $this->assertStringContainsString('height: 120px', $results['soundcloud_layout']);
     }
 
     /** @test */
@@ -35,7 +37,10 @@ class OembedExtractorTest extends TestCase
         $extractor->setLayout("large");
         $results = $extractor->getLayoutConfig();
 
-        $this->assertEquals(300, $results["height"]);
+        $this->assertArrayHasKey('bandcamp_layout', $results);
+        $this->assertArrayHasKey('soundcloud_layout', $results);
+        $this->assertStringContainsString('height: 300px', $results['soundcloud_layout']);
+        $this->assertStringContainsString('height: 300px', $results['bandcamp_layout']);
     }
 
     /** @test */
@@ -46,7 +51,25 @@ class OembedExtractorTest extends TestCase
         $extractor->setLayout("small");
         $results = $extractor->getLayoutConfig();
 
-        $this->assertEquals(20, $results["height"]);
+        $this->assertArrayHasKey('bandcamp_layout', $results);
+        $this->assertArrayHasKey('soundcloud_layout', $results);
+        $this->assertStringContainsString('height: 24px', $results['soundcloud_layout']);
+        $this->assertStringContainsString('height: 42px', $results['bandcamp_layout']);
+    }
+
+    /** @test */
+    public function soundcloud_layout_is_set_for_each_size()
+    {
+        $provider = new Provider();
+        $extractor = new OembedExtractor($provider);
+
+        foreach (['large', 'medium', 'small'] as $size) {
+            $extractor->setLayout($size);
+            $results = $extractor->getLayoutConfig();
+            $this->assertArrayHasKey('soundcloud_layout', $results, "soundcloud_layout missing for size: $size");
+            $this->assertStringContainsString('<iframe', $results['soundcloud_layout']);
+            $this->assertStringContainsString('SoundCloud audio player', $results['soundcloud_layout']);
+        }
     }
 
     /** @test */
@@ -54,8 +77,7 @@ class OembedExtractorTest extends TestCase
     {
         $provider = new Provider();
         $extractor = new OembedExtractor($provider);
-        $urls = [];
-        $results = $extractor->extractEmbedsFromUrls($urls, "medium");
+        $results = $extractor->extractEmbedsFromUrls([], "medium");
 
         $this->assertIsArray($results);
         $this->assertEmpty($results);
@@ -70,8 +92,7 @@ class OembedExtractorTest extends TestCase
             'https://soundcloud.com/user/track',
             'https://example.com/other'
         ];
-        
-        // We can't test actual API calls without mocking, so we just verify it doesn't crash
+
         $results = $extractor->extractEmbedsFromUrls($urls, "medium");
         $this->assertIsArray($results);
     }
@@ -85,8 +106,7 @@ class OembedExtractorTest extends TestCase
             'https://artist.bandcamp.com/track/song',
             'https://example.com/other'
         ];
-        
-        // We can't test actual API calls without mocking, so we just verify it doesn't crash
+
         $results = $extractor->extractEmbedsFromUrls($urls, "medium");
         $this->assertIsArray($results);
     }

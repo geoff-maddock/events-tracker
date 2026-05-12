@@ -31,9 +31,9 @@ class Provider
     }
 
     /**
-     * @return string $response
+     * @return string|null $response
      */
-    public function getResponse(): string
+    public function getResponse(): ?string
     {
         return $this->response;
     }
