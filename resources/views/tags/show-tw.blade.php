@@ -68,7 +68,7 @@ Tags
 								<i class="bi bi-pencil"></i>
 								Edit Tag
 							</a>
-							<form method="POST" action="{{ route('tags.destroy', $tagObject->id) }}" class="inline-block w-full" onsubmit="return confirm('Are you sure you want to delete this tag?');">
+							<form method="POST" action="{{ route('tags.destroy', $tagObject->id) }}" class="inline-block w-full" data-confirm="Are you sure you want to delete this tag?">
 								@csrf
 								@method('DELETE')
 								<button type="submit" class="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950 transition-colors w-full text-left">

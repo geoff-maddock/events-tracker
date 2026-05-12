@@ -35,7 +35,7 @@
 									<a href="{{ route('roles.edit', $role->id) }}" class="p-2 hover:bg-muted rounded transition-colors" title="Edit">
 										<i class="bi bi-pencil text-primary"></i>
 									</a>
-									<form action="{{ route('roles.destroy', $role->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this role?');">
+									<form action="{{ route('roles.destroy', $role->id) }}" method="POST" class="inline" data-confirm="Are you sure you want to delete this role?">
 										@csrf
 										@method('DELETE')
 										<button type="submit" class="p-2 hover:bg-muted rounded transition-colors" title="Delete">

@@ -29,7 +29,7 @@
 			<h2 class="text-lg font-semibold text-destructive mb-2">Danger Zone</h2>
 			<p class="text-sm text-muted-foreground mb-4">Once you delete a forum, there is no going back. Please be certain.</p>
 
-			<form action="{{ route('forums.destroy', $forum->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this forum? This action cannot be undone.');">
+			<form action="{{ route('forums.destroy', $forum->id) }}" method="POST" class="inline" data-confirm="Are you sure you want to delete this forum? This action cannot be undone.">
 				@csrf
 				@method('DELETE')
 				<button type="submit" class="inline-flex items-center px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors">

@@ -69,7 +69,7 @@
         @can('edit_entity')
             <div class="mt-6 pt-6 border-t border-border">
                 <form action="{{ route('entities.comments.destroy', ['entity' => $entity->slug, 'comment' => $comment->id]) }}" method="POST"
-                    onsubmit="return confirm('Are you sure you want to delete this comment?')">
+                    data-confirm="Are you sure you want to delete this comment?">
                     @csrf
                     @method('DELETE')
                     <x-ui.button type="submit" variant="destructive">

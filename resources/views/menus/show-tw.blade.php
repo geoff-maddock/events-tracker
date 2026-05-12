@@ -40,7 +40,7 @@
         @can('edit_menu')
             <div class="mt-6 pt-6 border-t border-border">
                 <form action="{{ route('menus.destroy', $menu->id) }}" method="POST"
-                    onsubmit="return confirm('Are you sure you want to delete this menu?')">
+                    data-confirm="Are you sure you want to delete this menu?">
                     @csrf
                     @method('DELETE')
                     <x-ui.button type="submit" variant="destructive">

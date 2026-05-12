@@ -110,7 +110,7 @@
         @can('edit_entity')
             <div class="mt-6 pt-6 border-t border-border">
                 <form action="{{ route('entities.locations.destroy', ['entity' => $entity->slug, 'location' => $location->id]) }}" method="POST"
-                    onsubmit="return confirm('Are you sure you want to delete this location?')">
+                    data-confirm="Are you sure you want to delete this location?">
                     @csrf
                     @method('DELETE')
                     <x-ui.button type="submit" variant="destructive">

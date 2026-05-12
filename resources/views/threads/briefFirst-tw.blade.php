@@ -12,10 +12,10 @@
                     <i class="bi bi-pencil-fill"></i>
                 </a>
                 
-                <form action="{{ route('threads.destroy', $thread) }}" method="POST" class="inline">
+                <form action="{{ route('threads.destroy', $thread) }}" method="POST" class="inline" data-confirm="Are you sure you want to delete this thread?">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="text-muted-foreground hover:text-red-500" onclick="return confirm('Are you sure you want to delete this thread?')" title="Delete the thread">
+                    <button type="submit" class="text-muted-foreground hover:text-red-500" title="Delete the thread">
                         <i class="bi bi-trash-fill"></i>
                     </button>
                 </form>

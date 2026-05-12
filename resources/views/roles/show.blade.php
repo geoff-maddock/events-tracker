@@ -53,7 +53,7 @@
 
 			<!-- Delete Form -->
 			<div class="mt-6">
-				<form action="{{ route('roles.destroy', $role->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this role?');">
+				<form action="{{ route('roles.destroy', $role->id) }}" method="POST" data-confirm="Are you sure you want to delete this role?">
 					@csrf
 					@method('DELETE')
 					<button type="submit" class="inline-flex items-center px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors">

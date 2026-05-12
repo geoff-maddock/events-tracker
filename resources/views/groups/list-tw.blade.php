@@ -36,7 +36,7 @@
 										<a href="{{ route('groups.edit', $group->id) }}" class="p-2 hover:bg-muted rounded transition-colors" title="Edit">
 											<i class="bi bi-pencil text-primary"></i>
 										</a>
-										<form action="{{ route('groups.destroy', $group->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this group?');">
+										<form action="{{ route('groups.destroy', $group->id) }}" method="POST" class="inline" data-confirm="Are you sure you want to delete this group?">
 											@csrf
 											@method('DELETE')
 											<button type="submit" class="p-2 hover:bg-muted rounded transition-colors" title="Delete">
