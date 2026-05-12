@@ -62,6 +62,12 @@
   body {
     @apply bg-background text-foreground;
   }
+
+
+
+  a {
+    text-decoration: none;
+  }
 }
 
 /* Legacy custom component classes - will be migrated to Blade components */

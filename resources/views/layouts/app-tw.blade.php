@@ -59,9 +59,8 @@
 	@endif
 
 	<style>
-		/* WCAG 1.4.1: links within prose/content must be distinguishable by more than color */
+		/* WCAG 1.4.1: links within prose/body-text must be distinguishable by more than color */
 		.prose a,
-		.event-card-content-tw a:not(.badge-tw),
 		main p a,
 		main li a {
 			text-decoration: underline;
