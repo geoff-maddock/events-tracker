@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /var/www/dev-events/app/Console/Commands</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../../_css/bootstrap.min.css?v=9.2.32" rel="stylesheet" type="text/css">
+  <link href="../../_css/nv.d3.min.css?v=9.2.32" rel="stylesheet" type="text/css">
+  <link href="../../_css/style.css?v=9.2.32" rel="stylesheet" type="text/css">
+  <link href="../../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../../index.html">/var/www/dev-events/app</a></li>
+         <li class="breadcrumb-item"><a href="../index.html">Console</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Commands</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AdminTest.php.html#10">App\Console\Commands\AdminTest</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CleanupExports.php.html#11">App\Console\Commands\CleanupExports</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DailyTweet.php.html#13">App\Console\Commands\DailyTweet</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GenerateSitemap.php.html#14">App\Console\Commands\GenerateSitemap</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InitializeEventShares.php.html#12">App\Console\Commands\InitializeEventShares</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Notify.php.html#14">App\Console\Commands\Notify</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="NotifyEntities.php.html#16">App\Console\Commands\NotifyEntities</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="NotifyWeekly.php.html#13">App\Console\Commands\NotifyWeekly</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserCleanup.php.html#13">App\Console\Commands\UserCleanup</a></td><td class="text-right">9%</td></tr>
+       <tr><td><a href="PublicizeFiles.php.html#12">App\Console\Commands\PublicizeFiles</a></td><td class="text-right">14%</td></tr>
+       <tr><td><a href="AutomateInstagramPosts.php.html#16">App\Console\Commands\AutomateInstagramPosts</a></td><td class="text-right">21%</td></tr>
+       <tr><td><a href="AdminActivitySummary.php.html#13">App\Console\Commands\AdminActivitySummary</a></td><td class="text-right">70%</td></tr>
+       <tr><td><a href="CreateSeriesEvents.php.html#13">App\Console\Commands\CreateSeriesEvents</a></td><td class="text-right">86%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="GenerateSitemap.php.html#14">App\Console\Commands\GenerateSitemap</a></td><td class="text-right">2652</td></tr>
+       <tr><td><a href="Notify.php.html#14">App\Console\Commands\Notify</a></td><td class="text-right">812</td></tr>
+       <tr><td><a href="NotifyWeekly.php.html#13">App\Console\Commands\NotifyWeekly</a></td><td class="text-right">756</td></tr>
+       <tr><td><a href="NotifyEntities.php.html#16">App\Console\Commands\NotifyEntities</a></td><td class="text-right">600</td></tr>
+       <tr><td><a href="AutomateInstagramPosts.php.html#16">App\Console\Commands\AutomateInstagramPosts</a></td><td class="text-right">462</td></tr>
+       <tr><td><a href="InitializeEventShares.php.html#12">App\Console\Commands\InitializeEventShares</a></td><td class="text-right">90</td></tr>
+       <tr><td><a href="DailyTweet.php.html#13">App\Console\Commands\DailyTweet</a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="AdminActivitySummary.php.html#13">App\Console\Commands\AdminActivitySummary</a></td><td class="text-right">17</td></tr>
+       <tr><td><a href="UserCleanup.php.html#13">App\Console\Commands\UserCleanup</a></td><td class="text-right">16</td></tr>
+       <tr><td><a href="CreateSeriesEvents.php.html#13">App\Console\Commands\CreateSeriesEvents</a></td><td class="text-right">11</td></tr>
+       <tr><td><a href="PublicizeFiles.php.html#12">App\Console\Commands\PublicizeFiles</a></td><td class="text-right">8</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AdminTest.php.html#29"><abbr title="App\Console\Commands\AdminTest::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AutomateInstagramPosts.php.html#37"><abbr title="App\Console\Commands\AutomateInstagramPosts::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AutomateInstagramPosts.php.html#152"><abbr title="App\Console\Commands\AutomateInstagramPosts::postEventToInstagram">postEventToInstagram</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AutomateInstagramPosts.php.html#296"><abbr title="App\Console\Commands\AutomateInstagramPosts::sendFailureEmail">sendFailureEmail</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CleanupExports.php.html#30"><abbr title="App\Console\Commands\CleanupExports::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DailyTweet.php.html#34"><abbr title="App\Console\Commands\DailyTweet::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GenerateSitemap.php.html#35"><abbr title="App\Console\Commands\GenerateSitemap::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InitializeEventShares.php.html#35"><abbr title="App\Console\Commands\InitializeEventShares::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Notify.php.html#35"><abbr title="App\Console\Commands\Notify::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="NotifyEntities.php.html#39"><abbr title="App\Console\Commands\NotifyEntities::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="NotifyWeekly.php.html#34"><abbr title="App\Console\Commands\NotifyWeekly::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PublicizeFiles.php.html#43"><abbr title="App\Console\Commands\PublicizeFiles::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserCleanup.php.html#44"><abbr title="App\Console\Commands\UserCleanup::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AdminActivitySummary.php.html#32"><abbr title="App\Console\Commands\AdminActivitySummary::handle">handle</abbr></a></td><td class="text-right">70%</td></tr>
+       <tr><td><a href="CreateSeriesEvents.php.html#34"><abbr title="App\Console\Commands\CreateSeriesEvents::handle">handle</abbr></a></td><td class="text-right">86%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="GenerateSitemap.php.html#35"><abbr title="App\Console\Commands\GenerateSitemap::handle">handle</abbr></a></td><td class="text-right">2652</td></tr>
+       <tr><td><a href="Notify.php.html#35"><abbr title="App\Console\Commands\Notify::handle">handle</abbr></a></td><td class="text-right">812</td></tr>
+       <tr><td><a href="NotifyWeekly.php.html#34"><abbr title="App\Console\Commands\NotifyWeekly::handle">handle</abbr></a></td><td class="text-right">756</td></tr>
+       <tr><td><a href="NotifyEntities.php.html#39"><abbr title="App\Console\Commands\NotifyEntities::handle">handle</abbr></a></td><td class="text-right">600</td></tr>
+       <tr><td><a href="AutomateInstagramPosts.php.html#152"><abbr title="App\Console\Commands\AutomateInstagramPosts::postEventToInstagram">postEventToInstagram</abbr></a></td><td class="text-right">306</td></tr>
+       <tr><td><a href="InitializeEventShares.php.html#35"><abbr title="App\Console\Commands\InitializeEventShares::handle">handle</abbr></a></td><td class="text-right">90</td></tr>
+       <tr><td><a href="AutomateInstagramPosts.php.html#37"><abbr title="App\Console\Commands\AutomateInstagramPosts::handle">handle</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="DailyTweet.php.html#34"><abbr title="App\Console\Commands\DailyTweet::handle">handle</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="AdminActivitySummary.php.html#32"><abbr title="App\Console\Commands\AdminActivitySummary::handle">handle</abbr></a></td><td class="text-right">17</td></tr>
+       <tr><td><a href="UserCleanup.php.html#44"><abbr title="App\Console\Commands\UserCleanup::handle">handle</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="CreateSeriesEvents.php.html#34"><abbr title="App\Console\Commands\CreateSeriesEvents::handle">handle</abbr></a></td><td class="text-right">11</td></tr>
+       <tr><td><a href="AutomateInstagramPosts.php.html#296"><abbr title="App\Console\Commands\AutomateInstagramPosts::sendFailureEmail">sendFailureEmail</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="PublicizeFiles.php.html#43"><abbr title="App\Console\Commands\PublicizeFiles::handle">handle</abbr></a></td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 9.2.32</a> using <a href="https://secure.php.net/" target="_top">PHP 8.4.21</a> and <a href="https://phpunit.de/">PHPUnit 9.6.34</a> at Tue May 12 0:32:07 EST 2026.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../../_js/jquery.min.js?v=9.2.32" type="text/javascript"></script>
+  <script src="../../_js/d3.min.js?v=9.2.32" type="text/javascript"></script>
+  <script src="../../_js/nv.d3.min.js?v=9.2.32" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([8,1,1,1,0,0,0,0,1,1,0,0], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([13,0,0,0,0,0,0,0,1,1,1,2], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[70.49180327868852,13,"<a href=\"AdminActivitySummary.php.html#13\">App\\Console\\Commands\\AdminActivitySummary<\/a>"],[0,1,"<a href=\"AdminTest.php.html#10\">App\\Console\\Commands\\AdminTest<\/a>"],[21.678321678321677,30,"<a href=\"AutomateInstagramPosts.php.html#16\">App\\Console\\Commands\\AutomateInstagramPosts<\/a>"],[0,1,"<a href=\"CleanupExports.php.html#11\">App\\Console\\Commands\\CleanupExports<\/a>"],[86.56716417910447,11,"<a href=\"CreateSeriesEvents.php.html#13\">App\\Console\\Commands\\CreateSeriesEvents<\/a>"],[0,4,"<a href=\"DailyTweet.php.html#13\">App\\Console\\Commands\\DailyTweet<\/a>"],[0,51,"<a href=\"GenerateSitemap.php.html#14\">App\\Console\\Commands\\GenerateSitemap<\/a>"],[0,9,"<a href=\"InitializeEventShares.php.html#12\">App\\Console\\Commands\\InitializeEventShares<\/a>"],[0,28,"<a href=\"Notify.php.html#14\">App\\Console\\Commands\\Notify<\/a>"],[0,24,"<a href=\"NotifyEntities.php.html#16\">App\\Console\\Commands\\NotifyEntities<\/a>"],[0,27,"<a href=\"NotifyWeekly.php.html#13\">App\\Console\\Commands\\NotifyWeekly<\/a>"],[14.285714285714285,3,"<a href=\"PublicizeFiles.php.html#12\">App\\Console\\Commands\\PublicizeFiles<\/a>"],[9.090909090909092,4,"<a href=\"UserCleanup.php.html#13\">App\\Console\\Commands\\UserCleanup<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[70.49180327868852,13,"<a href=\"AdminActivitySummary.php.html#32\">App\\Console\\Commands\\AdminActivitySummary::handle<\/a>"],[0,1,"<a href=\"AdminTest.php.html#29\">App\\Console\\Commands\\AdminTest::handle<\/a>"],[0,4,"<a href=\"AutomateInstagramPosts.php.html#37\">App\\Console\\Commands\\AutomateInstagramPosts::handle<\/a>"],[96.875,7,"<a href=\"AutomateInstagramPosts.php.html#86\">App\\Console\\Commands\\AutomateInstagramPosts::getEventsToPost<\/a>"],[0,17,"<a href=\"AutomateInstagramPosts.php.html#152\">App\\Console\\Commands\\AutomateInstagramPosts::postEventToInstagram<\/a>"],[0,2,"<a href=\"AutomateInstagramPosts.php.html#296\">App\\Console\\Commands\\AutomateInstagramPosts::sendFailureEmail<\/a>"],[0,1,"<a href=\"CleanupExports.php.html#30\">App\\Console\\Commands\\CleanupExports::handle<\/a>"],[86.56716417910447,11,"<a href=\"CreateSeriesEvents.php.html#34\">App\\Console\\Commands\\CreateSeriesEvents::handle<\/a>"],[0,4,"<a href=\"DailyTweet.php.html#34\">App\\Console\\Commands\\DailyTweet::handle<\/a>"],[0,51,"<a href=\"GenerateSitemap.php.html#35\">App\\Console\\Commands\\GenerateSitemap::handle<\/a>"],[0,9,"<a href=\"InitializeEventShares.php.html#35\">App\\Console\\Commands\\InitializeEventShares::handle<\/a>"],[0,28,"<a href=\"Notify.php.html#35\">App\\Console\\Commands\\Notify::handle<\/a>"],[0,24,"<a href=\"NotifyEntities.php.html#39\">App\\Console\\Commands\\NotifyEntities::handle<\/a>"],[0,27,"<a href=\"NotifyWeekly.php.html#34\">App\\Console\\Commands\\NotifyWeekly::handle<\/a>"],[100,1,"<a href=\"PublicizeFiles.php.html#33\">App\\Console\\Commands\\PublicizeFiles::__construct<\/a>"],[0,2,"<a href=\"PublicizeFiles.php.html#43\">App\\Console\\Commands\\PublicizeFiles::handle<\/a>"],[100,1,"<a href=\"UserCleanup.php.html#34\">App\\Console\\Commands\\UserCleanup::__construct<\/a>"],[0,3,"<a href=\"UserCleanup.php.html#44\">App\\Console\\Commands\\UserCleanup::handle<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>

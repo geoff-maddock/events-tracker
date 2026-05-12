@@ -1,0 +1,634 @@
+
+
+Code Coverage Report:         
+  2026-05-12 00:27:25         
+                              
+ Summary:                     
+  Classes:  6.98% (21/301)    
+  Methods: 16.34% (321/1965)  
+  Lines:   18.69% (3312/17725)
+
+App\Auth\RememberMeSessionGuard
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  1)
+App\Console\Commands\AdminActivitySummary
+  Methods:   0.00% ( 0/ 1)   Lines:  70.49% ( 86/122)
+App\Console\Commands\AdminTest
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  7)
+App\Console\Commands\AutomateInstagramPosts
+  Methods:   0.00% ( 0/ 4)   Lines:  21.68% ( 31/143)
+App\Console\Commands\CleanupExports
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  5)
+App\Console\Commands\CreateSeriesEvents
+  Methods:   0.00% ( 0/ 1)   Lines:  86.57% ( 58/ 67)
+App\Console\Commands\DailyTweet
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  8)
+App\Console\Commands\GenerateSitemap
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 94)
+App\Console\Commands\InitializeEventShares
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 52)
+App\Console\Commands\Notify
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 51)
+App\Console\Commands\NotifyEntities
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/115)
+App\Console\Commands\NotifyWeekly
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 54)
+App\Console\Commands\PublicizeFiles
+  Methods:  50.00% ( 1/ 2)   Lines:  14.29% (  1/  7)
+App\Console\Commands\UserCleanup
+  Methods:  50.00% ( 1/ 2)   Lines:   9.09% (  1/ 11)
+App\Console\Kernel
+  Methods:  50.00% ( 1/ 2)   Lines:  11.11% (  2/ 18)
+App\Events\EventCreated
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  3)
+App\Events\EventUpdated
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  3)
+App\Events\UserBanned
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  2)
+App\Exceptions\Handler
+  Methods:  50.00% ( 1/ 2)   Lines:  83.33% (  5/  6)
+App\Filters\ActivityFilters
+  Methods:   0.00% ( 0/ 7)   Lines:  16.00% (  4/ 25)
+App\Filters\BlogFilters
+  Methods:   0.00% ( 0/ 4)   Lines:   0.00% (  0/ 16)
+App\Filters\EntityFilters
+  Methods:   0.00% ( 0/12)   Lines:  26.19% ( 33/126)
+App\Filters\EntityStatusFilters
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  3)
+App\Filters\EntityTypeFilters
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  3)
+App\Filters\EventFilters
+  Methods:   0.00% ( 0/19)   Lines:  21.37% ( 28/131)
+App\Filters\EventStatusFilters
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  3)
+App\Filters\EventTypeFilters
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  3)
+App\Filters\ForumFilters
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  3)
+App\Filters\GroupFilters
+  Methods:   0.00% ( 0/ 3)   Lines:   0.00% (  0/  9)
+App\Filters\LinkFilters
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  6)
+App\Filters\LocationFilters
+  Methods:   0.00% ( 0/18)   Lines:   0.00% (  0/ 60)
+App\Filters\MenuFilters
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  6)
+App\Filters\OccurrenceDayFilters
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  3)
+App\Filters\OccurrenceTypeFilters
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  3)
+App\Filters\OccurrenceWeekFilters
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  3)
+App\Filters\PermissionFilters
+  Methods:   0.00% ( 0/ 3)   Lines:   0.00% (  0/  9)
+App\Filters\PhotoFilters
+  Methods:   0.00% ( 0/ 6)   Lines:   0.00% (  0/ 31)
+App\Filters\PostFilters
+  Methods:   0.00% ( 0/ 5)   Lines:   0.00% (  0/ 23)
+App\Filters\QueryFilter
+  Methods:  50.00% ( 2/ 4)   Lines:  50.00% (  6/ 12)
+App\Filters\ReviewFilters
+  Methods:   0.00% ( 0/ 3)   Lines:   0.00% (  0/ 13)
+App\Filters\RoleFilters
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  3)
+App\Filters\SeriesFilters
+  Methods:   0.00% ( 0/16)   Lines:   0.00% (  0/ 94)
+App\Filters\TagFilters
+  Methods:   0.00% ( 0/ 4)   Lines:   0.00% (  0/ 17)
+App\Filters\TagTypeFilters
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  3)
+App\Filters\ThreadCategoryFilters
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  3)
+App\Filters\ThreadFilters
+  Methods:   0.00% ( 0/ 8)   Lines:  22.86% (  8/ 35)
+App\Filters\UserFilters
+  Methods:   0.00% ( 0/ 4)   Lines:   0.00% (  0/ 16)
+App\Filters\VisibilityFilters
+  Methods:   0.00% ( 0/ 1)   Lines:  66.67% (  2/  3)
+App\Helpers\BotDetector
+  Methods:   0.00% ( 0/ 1)   Lines:  85.71% (  6/  7)
+App\Http\Controllers\ActivityController
+  Methods:  45.45% (10/22)   Lines:  74.59% (182/244)
+App\Http\Controllers\Api\ActivityController
+  Methods:  27.27% ( 3/11)   Lines:  30.86% ( 25/ 81)
+App\Http\Controllers\Api\BlogsController
+  Methods:   0.00% ( 0/20)   Lines:   0.00% (  0/184)
+App\Http\Controllers\Api\DocsController
+  Methods:  ( 0/ 0)   Lines:  (  0/  0)
+App\Http\Controllers\Api\EmailVerificationController
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% ( 24/ 24)
+App\Http\Controllers\Api\EntitiesController
+  Methods:   5.88% ( 3/51)   Lines:  18.83% (139/738)
+App\Http\Controllers\Api\EntityStatusesController
+  Methods:   0.00% ( 0/12)   Lines:   0.00% (  0/ 61)
+App\Http\Controllers\Api\EntityTypesController
+  Methods:   0.00% ( 0/12)   Lines:   0.00% (  0/ 61)
+App\Http\Controllers\Api\EventInstagramController
+  Methods:  18.18% ( 2/11)   Lines:  14.05% ( 60/427)
+App\Http\Controllers\Api\EventStatusesController
+  Methods:   0.00% ( 0/12)   Lines:   0.00% (  0/ 59)
+App\Http\Controllers\Api\EventTypesController
+  Methods:   0.00% ( 0/12)   Lines:   0.00% (  0/ 61)
+App\Http\Controllers\Api\EventsController
+  Methods:   8.51% ( 4/47)   Lines:  13.41% (118/880)
+App\Http\Controllers\Api\ForumsController
+  Methods:   0.00% ( 0/17)   Lines:   0.00% (  0/164)
+App\Http\Controllers\Api\LinksController
+  Methods:   0.00% ( 0/ 9)   Lines:   0.00% (  0/ 50)
+App\Http\Controllers\Api\LocationsController
+  Methods:   0.00% ( 0/ 7)   Lines:   0.00% (  0/ 58)
+App\Http\Controllers\Api\MenusController
+  Methods:   0.00% ( 0/ 7)   Lines:   0.00% (  0/ 38)
+App\Http\Controllers\Api\OccurrenceDaysController
+  Methods:   0.00% ( 0/ 4)   Lines:   0.00% (  0/ 15)
+App\Http\Controllers\Api\OccurrenceTypesController
+  Methods:   0.00% ( 0/ 4)   Lines:   0.00% (  0/ 15)
+App\Http\Controllers\Api\OccurrenceWeeksController
+  Methods:   0.00% ( 0/ 4)   Lines:   0.00% (  0/ 15)
+App\Http\Controllers\Api\PasswordResetController
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 50)
+App\Http\Controllers\Api\PhotosController
+  Methods:   0.00% ( 0/ 4)   Lines:   0.00% (  0/ 36)
+App\Http\Controllers\Api\PostsController
+  Methods:   0.00% ( 0/20)   Lines:   0.00% (  0/268)
+App\Http\Controllers\Api\RegisterController
+  Methods:  66.67% ( 2/ 3)   Lines:  97.78% ( 44/ 45)
+App\Http\Controllers\Api\RolesController
+  Methods:   0.00% ( 0/12)   Lines:   0.00% (  0/ 61)
+App\Http\Controllers\Api\SeriesController
+  Methods:   0.00% ( 0/33)   Lines:   0.00% (  0/496)
+App\Http\Controllers\Api\TagTypesController
+  Methods:   0.00% ( 0/ 4)   Lines:   0.00% (  0/ 15)
+App\Http\Controllers\Api\TagsController
+  Methods:  23.53% ( 4/17)   Lines:  14.15% ( 30/212)
+App\Http\Controllers\Api\ThreadsController
+  Methods:   0.00% ( 0/18)   Lines:   0.00% (  0/195)
+App\Http\Controllers\Api\UsersController
+  Methods:   0.00% ( 0/28)   Lines:   0.00% (  0/319)
+App\Http\Controllers\Api\VisibilitiesController
+  Methods:  75.00% ( 3/ 4)   Lines:  93.33% ( 14/ 15)
+App\Http\Controllers\Auth\AuthController
+  Methods:   0.00% ( 0/ 6)   Lines:   0.00% (  0/ 23)
+App\Http\Controllers\Auth\ConfirmPasswordController
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  1)
+App\Http\Controllers\Auth\ForgotPasswordController
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 18)
+App\Http\Controllers\Auth\LoginController
+  Methods:   0.00% ( 0/ 3)   Lines:   0.00% (  0/ 11)
+App\Http\Controllers\Auth\PasswordController
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  1)
+App\Http\Controllers\Auth\RegisterController
+  Methods:   0.00% ( 0/ 4)   Lines:   0.00% (  0/ 13)
+App\Http\Controllers\Auth\ResetPasswordController
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 16)
+App\Http\Controllers\Auth\VerificationController
+  Methods:   0.00% ( 0/ 3)   Lines:   0.00% (  0/ 18)
+App\Http\Controllers\BlogsController
+  Methods:  10.53% ( 2/19)   Lines:   7.11% ( 14/197)
+App\Http\Controllers\CalendarController
+  Methods:   0.00% ( 0/21)   Lines:   0.00% (  0/532)
+App\Http\Controllers\CategoriesController
+  Methods:   0.00% ( 0/15)   Lines:   0.00% (  0/120)
+App\Http\Controllers\ClickTrackController
+  Methods:  33.33% ( 1/ 3)   Lines:  89.29% ( 50/ 56)
+App\Http\Controllers\CommentsController
+  Methods:   0.00% ( 0/ 7)   Lines:   0.00% (  0/ 48)
+App\Http\Controllers\ContactsController
+  Methods:   0.00% ( 0/ 7)   Lines:   0.00% (  0/ 22)
+App\Http\Controllers\Controller
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  6/  6)
+App\Http\Controllers\EntitiesController
+  Methods:  23.08% ( 9/39)   Lines:  32.20% (247/767)
+App\Http\Controllers\EntityTypesController
+  Methods:   0.00% ( 0/14)   Lines:   0.00% (  0/104)
+App\Http\Controllers\EventReviewsController
+  Methods:   0.00% ( 0/ 9)   Lines:   0.00% (  0/ 41)
+App\Http\Controllers\EventsController
+  Methods:  12.50% (10/80)   Lines:  14.04% (218/1553)
+App\Http\Controllers\FlyerAnalysisController
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 26)
+App\Http\Controllers\ForumsController
+  Methods:   0.00% ( 0/17)   Lines:   0.00% (  0/202)
+App\Http\Controllers\GroupsController
+  Methods:   0.00% ( 0/14)   Lines:   0.00% (  0/108)
+App\Http\Controllers\HomeController
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  2)
+App\Http\Controllers\LinksController
+  Methods:   0.00% ( 0/ 8)   Lines:   0.00% (  0/ 35)
+App\Http\Controllers\LocationsController
+  Methods:   0.00% ( 0/ 8)   Lines:   0.00% (  0/ 35)
+App\Http\Controllers\MenusController
+  Methods:   0.00% ( 0/15)   Lines:   0.00% (  0/112)
+App\Http\Controllers\PagesController
+  Methods:   9.09% ( 2/22)   Lines:  33.99% (103/303)
+App\Http\Controllers\PermissionsController
+  Methods:   0.00% ( 0/14)   Lines:   0.00% (  0/106)
+App\Http\Controllers\PhotosController
+  Methods:   0.00% ( 0/17)   Lines:   0.00% (  0/193)
+App\Http\Controllers\PostsController
+  Methods:   5.26% ( 1/19)   Lines:  19.41% ( 59/304)
+App\Http\Controllers\ReviewsController
+  Methods:   0.00% ( 0/18)   Lines:   0.00% (  0/175)
+App\Http\Controllers\RolesController
+  Methods:   0.00% ( 0/14)   Lines:   0.00% (  0/127)
+App\Http\Controllers\SeriesController
+  Methods:  12.90% ( 4/31)   Lines:   7.30% ( 36/493)
+App\Http\Controllers\ShortUrlController
+  Methods:  75.00% ( 3/ 4)   Lines:  84.62% ( 22/ 26)
+App\Http\Controllers\SocialAuthFacebookController
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  4)
+App\Http\Controllers\TagsController
+  Methods:   0.00% ( 0/28)   Lines:   0.00% (  0/242)
+App\Http\Controllers\ThreadsController
+  Methods:  12.90% ( 4/31)   Lines:  34.21% (169/494)
+App\Http\Controllers\UsersController
+  Methods:   3.03% ( 1/33)   Lines:   3.12% ( 12/384)
+App\Http\Flash
+  Methods:  50.00% ( 2/ 4)   Lines:  50.00% ( 10/ 20)
+App\Http\Forms\Form
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  5)
+App\Http\Kernel
+  Methods:  ( 0/ 0)   Lines:  (  0/  0)
+App\Http\Middleware\Authenticate
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  1/  1)
+App\Http\Middleware\AuthenticateEither
+  Methods:   0.00% ( 0/ 2)   Lines:  33.33% (  2/  6)
+App\Http\Middleware\CheckBanned
+  Methods:   0.00% ( 0/ 1)   Lines:  87.50% ( 14/ 16)
+App\Http\Middleware\EncryptCookies
+  Methods:  ( 0/ 0)   Lines:  (  0/  0)
+App\Http\Middleware\PreventRequestsDuringMaintenance
+  Methods:  ( 0/ 0)   Lines:  (  0/  0)
+App\Http\Middleware\RedirectIfAuthenticated
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  5)
+App\Http\Middleware\SecurityHeaders
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  8/  8)
+App\Http\Middleware\TrackPreviousUrl
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% ( 14/ 14)
+App\Http\Middleware\TrimStrings
+  Methods:  ( 0/ 0)   Lines:  (  0/  0)
+App\Http\Middleware\TrustHosts
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  3)
+App\Http\Middleware\TrustProxies
+  Methods:  ( 0/ 0)   Lines:  (  0/  0)
+App\Http\Middleware\ValidateSignature
+  Methods:  ( 0/ 0)   Lines:  (  0/  0)
+App\Http\Middleware\VerifyCsrfToken
+  Methods:  ( 0/ 0)   Lines:  (  0/  0)
+App\Http\Requests\AdminPasswordResetRequest
+  Methods:   0.00% ( 0/ 3)   Lines:   0.00% (  0/ 10)
+App\Http\Requests\ArticleRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  6)
+App\Http\Requests\BlogPatchRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 13)
+App\Http\Requests\BlogRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 13)
+App\Http\Requests\ContactRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  6)
+App\Http\Requests\EntityPatchRequest
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% ( 16/ 16)
+App\Http\Requests\EntityRequest
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% ( 15/ 15)
+App\Http\Requests\EntityStatusPatchRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  4)
+App\Http\Requests\EntityStatusRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  4)
+App\Http\Requests\EntityTypePatchRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 13)
+App\Http\Requests\EntityTypeRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 12)
+App\Http\Requests\EventPatchRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 22)
+App\Http\Requests\EventRequest
+  Methods:  66.67% ( 2/ 3)   Lines:  97.62% ( 41/ 42)
+App\Http\Requests\EventReviewRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  5)
+App\Http\Requests\EventStatusPatchRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  4)
+App\Http\Requests\EventStatusRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  4)
+App\Http\Requests\EventTypePatchRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 12)
+App\Http\Requests\EventTypeRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 11)
+App\Http\Requests\ForumPatchRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  6)
+App\Http\Requests\ForumRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  6)
+App\Http\Requests\GroupRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  6)
+App\Http\Requests\ListQueryParameters
+  Methods:  33.33% ( 4/12)   Lines:  80.65% ( 50/ 62)
+App\Http\Requests\ListRequest
+  Methods:  66.67% ( 6/ 9)   Lines:  82.35% ( 14/ 17)
+App\Http\Requests\LocationPatchRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  8)
+App\Http\Requests\LocationRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 10)
+App\Http\Requests\MenuPatchRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  7)
+App\Http\Requests\MenuRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  7)
+App\Http\Requests\PermissionRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  6)
+App\Http\Requests\PostPatchRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  6)
+App\Http\Requests\PostRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  6)
+App\Http\Requests\ProfileRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  4)
+App\Http\Requests\Request
+  Methods:  ( 0/ 0)   Lines:  (  0/  0)
+App\Http\Requests\RolePatchRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 13)
+App\Http\Requests\RoleRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 12)
+App\Http\Requests\SeriesPatchRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 23)
+App\Http\Requests\SeriesRequest
+  Methods:   0.00% ( 0/ 3)   Lines:   0.00% (  0/ 54)
+App\Http\Requests\TagRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 12)
+App\Http\Requests\ThreadCategoryRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  5)
+App\Http\Requests\ThreadPatchRequest
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  7)
+App\Http\Requests\ThreadRequest
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  7/  7)
+App\Http\Requests\UserRequest
+  Methods:   0.00% ( 0/ 3)   Lines:   0.00% (  0/ 21)
+App\Http\Resources\ActivityCollection
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% ( 14/ 14)
+App\Http\Resources\ActivityResource
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% ( 18/ 18)
+App\Http\Resources\AuthUserResource
+  Methods:   0.00% ( 0/ 1)   Lines:  79.17% ( 19/ 24)
+App\Http\Resources\BlogCollection
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 14)
+App\Http\Resources\BlogResource
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 12)
+App\Http\Resources\CommentResource
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  9)
+App\Http\Resources\EmbedCollection
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 14)
+App\Http\Resources\EntityCollection
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% ( 14/ 14)
+App\Http\Resources\EntityResource
+  Methods:   0.00% ( 0/ 1)   Lines:  69.77% ( 30/ 43)
+App\Http\Resources\EntityTypeResource
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  1)
+App\Http\Resources\EntityTypesCollection
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  1)
+App\Http\Resources\EventCollection
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% ( 14/ 14)
+App\Http\Resources\EventResource
+  Methods:   0.00% ( 0/ 1)   Lines:  86.96% ( 40/ 46)
+App\Http\Resources\ForumCollection
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 14)
+App\Http\Resources\ForumResource
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 10)
+App\Http\Resources\GroupResource
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  5/  5)
+App\Http\Resources\LinkCollection
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 14)
+App\Http\Resources\LinkResource
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 12)
+App\Http\Resources\LocationCollection
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 14)
+App\Http\Resources\LocationResource
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 21)
+App\Http\Resources\MenuCollection
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 14)
+App\Http\Resources\MenuResource
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 10)
+App\Http\Resources\MinimalResource
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  4/  4)
+App\Http\Resources\MinimalSlugResource
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  5/  5)
+App\Http\Resources\MinimalUserResource
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  4)
+App\Http\Resources\PermissionResource
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  5/  5)
+App\Http\Resources\PhotoResource
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  6)
+App\Http\Resources\PostCollection
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 14)
+App\Http\Resources\PostResource
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 17)
+App\Http\Resources\ProfileResource
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% ( 21/ 21)
+App\Http\Resources\PromoterResource
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% ( 21/ 21)
+App\Http\Resources\SeriesCollection
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 14)
+App\Http\Resources\SeriesResource
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 44)
+App\Http\Resources\TagCollection
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 14)
+App\Http\Resources\TagResource
+  Methods:   0.00% ( 0/ 1)   Lines:  93.33% ( 14/ 15)
+App\Http\Resources\ThreadCollection
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 14)
+App\Http\Resources\UserCollection
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 14)
+App\Http\Resources\UserResource
+  Methods:   0.00% ( 0/ 1)   Lines:  77.27% ( 17/ 22)
+App\Http\Resources\VenueResource
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% ( 21/ 21)
+App\Http\Response\ResultSet\ListResultSet
+  Methods:  81.82% (18/22)   Lines:  81.82% ( 18/ 22)
+App\Http\ResultBuilder\ListEntityResultBuilder
+  Methods:  56.25% ( 9/16)   Lines:  78.33% ( 47/ 60)
+App\Jobs\ExportUserDataJob
+  Methods:   0.00% ( 0/ 3)   Lines:   0.00% (  0/ 27)
+App\Listeners\ActivateVerifiedUserListener
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  4)
+App\Listeners\LogFailedLogin
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 15)
+App\Listeners\LogSuccessfulLogin
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  3)
+App\Listeners\RouterMatchedListener
+  Methods:  50.00% ( 1/ 2)   Lines:  83.33% (  5/  6)
+App\Listeners\SendBannedNotification
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  2)
+App\Listeners\SendCustomEmailVerificationNotification
+  Methods:   0.00% ( 0/ 1)   Lines:  50.00% (  4/  8)
+App\Mail\AdminActivitySummary
+  Methods:  50.00% ( 1/ 2)   Lines:  85.71% ( 18/ 21)
+App\Mail\AdminMailer
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  9)
+App\Mail\DailyReminder
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 13)
+App\Mail\EntityOutreachAdminSummary
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 12)
+App\Mail\EntityReminder
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 13)
+App\Mail\EntityUpdateSummary
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 13)
+App\Mail\FollowingPostUpdate
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 13)
+App\Mail\FollowingThreadUpdate
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 12)
+App\Mail\FollowingUpdate
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 12)
+App\Mail\InstagramPostFailure
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 12)
+App\Mail\LoginFailure
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 11)
+App\Mail\UserActivation
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 10)
+App\Mail\UserDataExportReady
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 11)
+App\Mail\UserRegistration
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 10)
+App\Mail\UserSuspended
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 10)
+App\Mail\UserUpdate
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 13)
+App\Mail\WeeklyUpdate
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 13)
+App\Models\AccessType
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  1)
+App\Models\Action
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  1)
+App\Models\Activity
+  Methods:  30.00% ( 3/10)   Lines:  44.00% ( 22/ 50)
+App\Models\Alias
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  1)
+App\Models\Blog
+  Methods:  17.24% ( 5/29)   Lines:  24.53% ( 13/ 53)
+App\Models\ClickTrack
+  Methods:   0.00% ( 0/ 4)   Lines:   0.00% (  0/  4)
+App\Models\Comment
+  Methods:   0.00% ( 0/ 3)   Lines:   0.00% (  0/  3)
+App\Models\Contact
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  1)
+App\Models\ContentType
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  1)
+App\Models\Entity
+  Methods:  41.79% (28/67)   Lines:  51.06% (192/376)
+App\Models\EntityStatus
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 11)
+App\Models\EntityType
+  Methods:  ( 0/ 0)   Lines:  (  0/  0)
+App\Models\Event
+  Methods:  31.94% (23/72)   Lines:  39.93% (107/268)
+App\Models\EventResponse
+  Methods:  66.67% ( 2/ 3)   Lines:  66.67% (  2/  3)
+App\Models\EventReview
+  Methods:   0.00% ( 0/ 6)   Lines:   0.00% (  0/  8)
+App\Models\EventShare
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  2)
+App\Models\EventStatus
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  1)
+App\Models\EventType
+  Methods:  33.33% ( 1/ 3)   Lines:   8.33% (  1/ 12)
+App\Models\Follow
+  Methods:   0.00% ( 0/ 4)   Lines:   0.00% (  0/  6)
+App\Models\Forum
+  Methods:   0.00% ( 0/10)   Lines:  31.82% (  7/ 22)
+App\Models\Group
+  Methods:  25.00% ( 2/ 8)   Lines:  26.67% (  4/ 15)
+App\Models\Like
+  Methods:  33.33% ( 1/ 3)   Lines:  20.00% (  1/  5)
+App\Models\Link
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  2)
+App\Models\Location
+  Methods:   0.00% ( 0/ 4)   Lines:   0.00% (  0/  4)
+App\Models\LocationType
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  1)
+App\Models\Menu
+  Methods:   0.00% ( 0/ 5)   Lines:   0.00% (  0/  7)
+App\Models\OccurrenceDay
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  2)
+App\Models\OccurrenceType
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  1)
+App\Models\OccurrenceWeek
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  1)
+App\Models\Permission
+  Methods:  33.33% ( 1/ 3)   Lines:  20.00% (  1/  5)
+App\Models\Photo
+  Methods:  10.53% ( 2/19)   Lines:   2.60% (  2/ 77)
+App\Models\Post
+  Methods:  33.33% ( 9/27)   Lines:  38.78% ( 19/ 49)
+App\Models\Profile
+  Methods:  33.33% ( 1/ 3)   Lines:  33.33% (  1/  3)
+App\Models\ResponseType
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  1)
+App\Models\ReviewType
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  1)
+App\Models\Role
+  Methods:  33.33% ( 1/ 3)   Lines:  33.33% (  1/  3)
+App\Models\Series
+  Methods:  32.84% (22/67)   Lines:  57.46% (131/228)
+App\Models\ShortUrl
+  Methods:  ( 0/ 0)   Lines:  (  0/  0)
+App\Models\SocialFacebookAccount
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  1)
+App\Models\Tag
+  Methods:  50.00% ( 7/14)   Lines:  47.22% ( 17/ 36)
+App\Models\TagType
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  1)
+App\Models\Thread
+  Methods:  53.49% (23/43)   Lines:  56.57% ( 56/ 99)
+App\Models\ThreadCategory
+  Methods:   0.00% ( 0/ 3)   Lines:   0.00% (  0/  3)
+App\Models\User
+  Methods:  34.55% (19/55)   Lines:  37.95% ( 85/224)
+App\Models\UserStatus
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  1)
+App\Models\Visibility
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  2)
+App\Notifications\EventPublished
+  Methods:   0.00% ( 0/ 5)   Lines:   0.00% (  0/ 14)
+App\Policies\EventPolicy
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/  4)
+App\Policies\ForumPolicy
+  Methods:   0.00% ( 0/ 3)   Lines:   0.00% (  0/  3)
+App\Policies\PostPolicy
+  Methods:   0.00% ( 0/ 3)   Lines:   0.00% (  0/  3)
+App\Policies\ThreadPolicy
+  Methods:   0.00% ( 0/ 6)   Lines:   0.00% (  0/ 12)
+App\Providers\AppServiceProvider
+  Methods:  50.00% ( 1/ 2)   Lines:  95.12% ( 39/ 41)
+App\Providers\AuthServiceProvider
+  Methods:   0.00% ( 0/ 2)   Lines:  52.78% ( 19/ 36)
+App\Providers\BroadcastServiceProvider
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  2/  2)
+App\Providers\ConfigServiceProvider
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  2)
+App\Providers\EventServiceProvider
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  1/  1)
+App\Providers\RouteServiceProvider
+  Methods:  80.00% ( 4/ 5)   Lines:  84.21% ( 16/ 19)
+App\Providers\ViewComposerServiceProvider
+  Methods:  66.67% ( 2/ 3)   Lines:  30.77% (  4/ 13)
+App\Services\Calendar\ICalBuilder
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 73)
+App\Services\DataExportService
+  Methods:   0.00% ( 0/13)   Lines:   0.00% (  0/214)
+App\Services\Embeds\EmbedExtractor
+  Methods:  14.29% ( 2/14)   Lines:   5.33% ( 13/244)
+App\Services\Embeds\OembedExtractor
+  Methods:  27.27% ( 3/11)   Lines:  49.38% ( 79/160)
+App\Services\Embeds\Provider
+  Methods:  16.67% ( 1/ 6)   Lines:  60.42% ( 29/ 48)
+App\Services\FlyerAnalysisService
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 53)
+App\Services\ImageHandler
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 41)
+App\Services\Integrations\Instagram
+  Methods:   0.00% ( 0/12)   Lines:   0.00% (  0/108)
+App\Services\RssFeed
+  Methods:   0.00% ( 0/ 4)   Lines:   0.00% (  0/ 47)
+App\Services\SessionStore\ListParameterSessionStore
+  Methods:  78.95% (15/19)   Lines:  82.00% ( 41/ 50)
+App\Services\SocialFacebookAccountService
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 19)
+App\Services\StringHelper
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/  1)
+App\Traits\Followable
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 24)
+App\Traits\Likeable
+  Methods:   0.00% ( 0/ 2)   Lines:   0.00% (  0/ 24)
+App\Traits\Notify
+  Methods:   0.00% ( 0/ 1)   Lines:   0.00% (  0/ 23)
