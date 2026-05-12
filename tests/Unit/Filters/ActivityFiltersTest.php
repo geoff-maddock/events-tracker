@@ -3,6 +3,7 @@
 namespace Tests\Unit\Filters;
 
 use App\Filters\ActivityFilters;
+use App\Models\Action;
 use App\Models\Activity;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -61,6 +62,65 @@ class ActivityFiltersTest extends TestCase
         Activity::factory()->create(['object_table' => 'users']);
 
         $results = $this->applyFilters(['object_table' => 'event'])->get();
+
+        $this->assertCount(1, $results);
+    }
+
+    public function test_action_filter_matches_by_action_name(): void
+    {
+        $loginAction = Action::find(Action::LOGIN);
+        $this->assertNotNull($loginAction);
+
+        $activity = new Activity();
+        $activity->forceFill([
+            'user_id' => User::factory()->create()->id,
+            'object_id' => 1,
+            'object_table' => 'User',
+            'object_name' => 'test',
+            'action_id' => Action::LOGIN,
+        ])->save();
+
+        // Another activity with a different action
+        $activity2 = new Activity();
+        $activity2->forceFill([
+            'user_id' => User::factory()->create()->id,
+            'object_id' => 1,
+            'object_table' => 'User',
+            'object_name' => 'test',
+            'action_id' => Action::CREATE,
+        ])->save();
+
+        $results = $this->applyFilters(['action' => $loginAction->name])->get();
+
+        $this->assertGreaterThanOrEqual(1, $results->count());
+        foreach ($results as $row) {
+            $this->assertSame(Action::LOGIN, $row->action_id);
+        }
+    }
+
+    public function test_user_filter_matches_username(): void
+    {
+        $user = User::factory()->create(['name' => 'ZZActivityActor']);
+
+        $a = new Activity();
+        $a->forceFill([
+            'user_id' => $user->id,
+            'object_id' => 1,
+            'object_table' => 'User',
+            'object_name' => 'test',
+            'action_id' => Action::LOGIN,
+        ])->save();
+
+        $b = new Activity();
+        $b->forceFill([
+            'user_id' => User::factory()->create()->id,
+            'object_id' => 2,
+            'object_table' => 'User',
+            'object_name' => 'test',
+            'action_id' => Action::LOGIN,
+        ])->save();
+
+        $results = $this->applyFilters(['user' => 'ZZActivityActor'])->get();
 
         $this->assertCount(1, $results);
     }
