@@ -64,6 +64,11 @@ class VerificationController extends Controller
     // Override the trait method to not rely on $request->user()
     public function verify(Request $request)
     {
+        // Defense in depth: the `signed` middleware on the route already
+        // enforces this, but reject unsigned requests here too in case a
+        // future route refactor drops the middleware.
+        abort_unless($request->hasValidSignature(), 403);
+
         $userId = (int) $request->route('id');
         $hash = (string) $request->route('hash');
 

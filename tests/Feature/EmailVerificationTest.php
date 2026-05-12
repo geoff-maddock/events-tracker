@@ -45,10 +45,80 @@ class EmailVerificationTest extends TestCase
 
     public function test_email_verification_requires_valid_signature(): void
     {
-        // SECURITY: investigation needed — unsigned verification URLs currently
-        // succeed in verifying the user, which would allow account takeover via
-        // crafted URLs. Un-skip and tighten once the route/middleware is fixed.
-        $this->markTestSkipped('Pending fix: unsigned verification URLs still verify the user.');
+        $user = User::factory()->create([
+            'email_verified_at' => null,
+            'user_status_id' => UserStatus::PENDING,
+        ]);
+
+        // Unsigned URL — knows the id+hash but lacks the HMAC signature.
+        $unsignedUrl = route('verification.verify', [
+            'id' => $user->id,
+            'hash' => sha1($user->email),
+        ]);
+
+        $response = $this->get($unsignedUrl);
+
+        $response->assertStatus(403);
+        $this->assertFalse($user->fresh()->hasVerifiedEmail());
+    }
+
+    public function test_email_verification_rejects_tampered_signature(): void
+    {
+        $user = User::factory()->create([
+            'email_verified_at' => null,
+            'user_status_id' => UserStatus::PENDING,
+        ]);
+
+        $verificationUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => $user->id, 'hash' => sha1($user->email)]
+        );
+
+        $tamperedUrl = $verificationUrl.'x';
+
+        $response = $this->get($tamperedUrl);
+
+        $response->assertStatus(403);
+        $this->assertFalse($user->fresh()->hasVerifiedEmail());
+    }
+
+    public function test_api_email_verification_requires_valid_signature(): void
+    {
+        $user = User::factory()->create([
+            'email_verified_at' => null,
+            'user_status_id' => UserStatus::PENDING,
+        ]);
+
+        $unsignedUrl = route('api.verification.verify', [
+            'id' => $user->id,
+            'hash' => sha1($user->email),
+        ]);
+
+        $response = $this->getJson($unsignedUrl);
+
+        $response->assertStatus(403);
+        $this->assertFalse($user->fresh()->hasVerifiedEmail());
+    }
+
+    public function test_api_email_verification_succeeds_with_valid_signature(): void
+    {
+        $user = User::factory()->create([
+            'email_verified_at' => null,
+            'user_status_id' => UserStatus::PENDING,
+        ]);
+
+        $verificationUrl = URL::temporarySignedRoute(
+            'api.verification.verify',
+            now()->addMinutes(60),
+            ['id' => $user->id, 'hash' => sha1($user->email)]
+        );
+
+        $response = $this->getJson($verificationUrl);
+
+        $response->assertStatus(200);
+        $response->assertJson(['verified' => true]);
+        $this->assertTrue($user->fresh()->hasVerifiedEmail());
     }
 
     public function test_email_verification_resend_requires_authentication(): void

@@ -29,6 +29,13 @@ class EmailVerificationController extends Controller
      */
     public function verify(Request $request): JsonResponse
     {
+        // Defense in depth: the `signed` middleware on the route already
+        // enforces this, but reject unsigned requests here too in case a
+        // future route refactor drops the middleware.
+        if (! $request->hasValidSignature()) {
+            return response()->json(['message' => 'Invalid verification link.'], 403);
+        }
+
         $userId = (int) $request->route('id');
         $hash = (string) $request->route('hash');
 
@@ -44,8 +51,6 @@ class EmailVerificationController extends Controller
         if (! hash_equals($hash, sha1($user->getEmailForVerification()))) {
             return response()->json([
                 'message' => 'Invalid verification link.',
-                'hash' => $hash,
-                'expected' => sha1($user->getEmailForVerification())
             ], 400);
         }
 
