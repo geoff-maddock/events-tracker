@@ -95,7 +95,8 @@
 
                     {{-- Details button --}}
                     <a href="{{ route('events.show', ['event' => $pastEvent->slug]) }}"
-                       class="mt-0.5 w-full px-1 py-1 text-xs font-medium text-center text-foreground bg-transparent border border-border rounded hover:bg-card transition-colors">
+                       class="mt-0.5 w-full px-1 py-1 text-xs font-medium text-center text-foreground bg-transparent border border-border rounded hover:bg-card transition-colors"
+                       aria-label="Details for {{ $pastEvent->name }}">
                         Details
                     </a>
                 </div>

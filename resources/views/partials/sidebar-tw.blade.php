@@ -153,13 +153,13 @@
             <span>All Modules</span>
         </a>
         @endcan
-        <a href="{{ route('logout') }}"
-            onclick="event.preventDefault(); document.getElementById('sidebar-logout-form').submit();"
-            class="nav-item-tw mt-1">
-            <i class="bi bi-box-arrow-right text-lg"></i>
-            <span>Log out</span>
-        </a>
-        <form id="sidebar-logout-form" action="{{ route('logout') }}" method="POST" class="hidden">{{ csrf_field() }}</form>
+        <form action="{{ route('logout') }}" method="POST" class="w-full">
+            @csrf
+            <button type="submit" class="nav-item-tw mt-1 w-full text-left">
+                <i class="bi bi-box-arrow-right text-lg" aria-hidden="true"></i>
+                <span>Log out</span>
+            </button>
+        </form>
         @endif
     </div>
 
@@ -177,8 +177,8 @@
 <!-- Mobile Sidebar -->
 <aside id="mobile-sidebar" class="sidebar fixed inset-y-0 left-0 z-50 w-64 transform -translate-x-full transition-transform duration-200 ease-in-out lg:hidden bg-card border-r border-border flex flex-col">
     <!-- Close button -->
-    <button onclick="closeMobileSidebar()" class="absolute top-4 right-4 text-muted-foreground hover:text-foreground">
-        <i class="bi bi-x-lg text-xl"></i>
+    <button onclick="closeMobileSidebar()" class="absolute top-4 right-4 p-2 rounded text-muted-foreground hover:text-foreground" aria-label="Close navigation">
+        <i class="bi bi-x-lg text-xl" aria-hidden="true"></i>
     </button>
 
     <!-- Logo/Brand -->

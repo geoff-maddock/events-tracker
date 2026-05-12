@@ -42,16 +42,18 @@
 				<div class="flex items-center gap-2">
 					@if ($signedIn)
 						@if ($follow = $entity->followedBy($user))
-						<a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}" 
-							class="p-2 rounded-md hover:bg-accent" 
-							title="Following - click to unfollow">
-							<i class="bi bi-star-fill text-yellow-500 text-xl"></i>
+						<a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}"
+							class="p-2 rounded-md hover:bg-accent"
+							title="Following - click to unfollow"
+							aria-label="Unfollow {{ $entity->name }}">
+							<i class="bi bi-star-fill text-yellow-500 text-xl" aria-hidden="true"></i>
 						</a>
 						@else
-						<a href="{!! route('entities.follow', ['id' => $entity->id]) !!}" 
-							class="p-2 rounded-md hover:bg-accent" 
-							title="Click to follow">
-							<i class="bi bi-star text-muted-foreground text-xl"></i>
+						<a href="{!! route('entities.follow', ['id' => $entity->id]) !!}"
+							class="p-2 rounded-md hover:bg-accent"
+							title="Click to follow"
+							aria-label="Follow {{ $entity->name }}">
+							<i class="bi bi-star text-muted-foreground text-xl" aria-hidden="true"></i>
 						</a>
 						@endif
 					@endif
@@ -60,8 +62,11 @@
 						<button type="button"
                             id="entity-menu-button"
                             class="p-1 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
-                            title="Actions">
-							<i class="bi bi-three-dots text-xl"></i>
+                            title="Actions"
+                            aria-label="Actions"
+                            aria-haspopup="true"
+                            aria-expanded="false">
+							<i class="bi bi-three-dots text-xl" aria-hidden="true"></i>
 						</button>
 
                         <div id="entity-actions-menu" class="hidden absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-card border border-border ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
@@ -127,10 +132,12 @@
 			<a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}"
 				data-lightbox="entity-main"
 				class="block w-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-				<img src="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" 
+				<img src="{{ Storage::disk('external')->url($photo->getStoragePath()) }}"
 					 alt="{{ $entity->name }}"
 					 class="object-contain w-full max-h-[600px] cursor-pointer hover:opacity-90 transition-opacity"
-					 loading="lazy">
+					 width="1200"
+					 height="600"
+					 fetchpriority="high">
 			</a>
 		</div>
 		@endif
@@ -155,10 +162,10 @@
 
 			@if (!empty($frequentlyPerformsWith) && $frequentlyPerformsWith->isNotEmpty())
 			<div class="rounded-lg border border-border bg-card shadow p-6">
-				<h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+				<h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
 					<i class="bi bi-people"></i>
 					Frequently Performs With
-				</h3>
+				</h2>
 				<div class="flex flex-wrap gap-2">
 					@foreach ($frequentlyPerformsWith as $coPerformer)
 						<x-entity-badge :entity="$coPerformer" />
@@ -169,10 +176,10 @@
 
 			@if (!empty($frequentlyPerformsAt) && $frequentlyPerformsAt->isNotEmpty())
 			<div class="rounded-lg border border-border bg-card shadow p-6">
-				<h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+				<h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
 					<i class="bi bi-geo-alt"></i>
 					Frequently Performs At
-				</h3>
+				</h2>
 				<div class="flex flex-wrap gap-2">
 					@foreach ($frequentlyPerformsAt as $venue)
 						<x-entity-badge :entity="$venue" />
@@ -197,7 +204,7 @@
 					@if ($entity->entityType)
 					<div class="text-sm">
 						<i class="bi bi-building mr-2"></i>
-						<span class="font-bold text-muted-foreground/50">{{ $entity->entityType->name }}</span>
+						<span class="font-bold text-muted-foreground">{{ $entity->entityType->name }}</span>
 					</div>
 					@endif
 
@@ -270,17 +277,19 @@
 						<a href="https://facebook.com/{{ $entity->facebook_username }}"
 							target="_blank"
 							title="Facebook"
-							class="text-muted-foreground hover:text-primary transition-colors">
-							<i class="bi bi-facebook text-lg"></i>
+							aria-label="Facebook page for {{ $entity->name }}"
+							class="p-2 rounded text-muted-foreground hover:text-primary transition-colors">
+							<i class="bi bi-facebook text-lg" aria-hidden="true"></i>
 						</a>
 						@endif
 
 						@if ($entity->twitter_username)
 						<a href="https://twitter.com/{{ $entity->twitter_username }}"
 							target="_blank"
-							title="Twitter"
-							class="text-muted-foreground hover:text-primary transition-colors">
-							<i class="bi bi-twitter text-lg"></i>
+							title="Twitter / X"
+							aria-label="Twitter / X profile for {{ $entity->name }}"
+							class="p-2 rounded text-muted-foreground hover:text-primary transition-colors">
+							<i class="bi bi-twitter text-lg" aria-hidden="true"></i>
 						</a>
 						@endif
 
@@ -288,8 +297,9 @@
 						<a href="https://instagram.com/{{ $entity->instagram_username }}"
 							target="_blank"
 							title="Instagram"
-							class="text-muted-foreground hover:text-primary transition-colors">
-							<i class="bi bi-instagram text-lg"></i>
+							aria-label="Instagram profile for {{ $entity->name }}"
+							class="p-2 rounded text-muted-foreground hover:text-primary transition-colors">
+							<i class="bi bi-instagram text-lg" aria-hidden="true"></i>
 						</a>
 						@endif
 					</div>
@@ -305,10 +315,10 @@
 		<!-- Locations -->
 		@if ($canEditEntity || !$entity->locations->isEmpty())
 		<div class="rounded-lg border border-border bg-card shadow p-6">
-			<h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+			<h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
 				<i class="bi bi-geo-alt"></i>
 				Locations
-			</h3>
+			</h2>
 			@if ($entity->locations->isEmpty())
 				<p class="text-muted-foreground mb-4">No locations found.</p>
 			@else
@@ -367,10 +377,10 @@
 		<!-- Contacts -->
 		@if ($canEditEntity || !$entity->contacts->isEmpty())
 		<div class="rounded-lg border border-border bg-card shadow p-6">
-			<h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+			<h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
 				<i class="bi bi-person"></i>
 				Contacts
-			</h3>
+			</h2>
 			@if ($entity->contacts->isEmpty())
 				<p class="text-muted-foreground mb-4">No contacts found.</p>
 			@else
@@ -412,10 +422,10 @@
 		<!-- Links -->
 		@if ($canEditEntity || !$entity->links->isEmpty())
 		<div class="rounded-lg border border-border bg-card shadow p-6">
-			<h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+			<h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
 				<i class="bi bi-link-45deg"></i>
 				Links
-			</h3>
+			</h2>
 			@if ($entity->links->isEmpty())
 				<p class="text-muted-foreground mb-4">No links found.</p>
 			@else
@@ -468,10 +478,10 @@
 <!-- Related Events - Full Width -->
 <div class="mt-6 rounded-lg border border-border bg-card shadow p-6">
 	<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-		<h3 class="text-xl font-semibold flex items-center gap-2">
+		<h2 class="text-xl font-semibold flex items-center gap-2">
 			<i class="bi bi-calendar-event"></i>
 			Upcoming Events
-		</h3>
+		</h2>
 		<!-- Date Filter -->
 		<form method="GET" action="{{ route('entities.show', $entity->slug) }}" class="flex items-center gap-2">
 			<label for="start_at" class="text-sm text-muted-foreground whitespace-nowrap">From date:</label>
@@ -591,12 +601,14 @@ $(document).ready(function(){
         if (menuButton && menu) {
             menuButton.addEventListener('click', function(e) {
                 e.stopPropagation();
-                menu.classList.toggle('hidden');
+                const isHidden = menu.classList.toggle('hidden');
+                menuButton.setAttribute('aria-expanded', String(!isHidden));
             });
 
             document.addEventListener('click', function(e) {
                 if (!menu.contains(e.target) && !menuButton.contains(e.target)) {
                     menu.classList.add('hidden');
+                    menuButton.setAttribute('aria-expanded', 'false');
                 }
             });
         }
