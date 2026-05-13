@@ -60,9 +60,7 @@
 
 	<style>
 		/* WCAG 1.4.1: links within prose/body-text must be distinguishable by more than color */
-		.prose a,
-		main p a,
-		main li a {
+		.prose a {
 			text-decoration: underline;
 			text-underline-offset: 2px;
 		}
