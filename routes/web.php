@@ -291,6 +291,7 @@ Route::get('fb-access', 'EventsController@fbAuthToken');
 
 // POST to Instagram
 Route::get('events/{id}/instagram-post', 'Api\\EventInstagramController@postCarouselToInstagram')->name('events.instagramPost');
+Route::get('events/{id}/instagram-story-post', 'Api\\EventInstagramController@postStoryToInstagram')->name('events.instagramStoryPost');
 Route::get('events/{id}/instagram-post-single', 'Api\\EventInstagramController@postToInstagram')->name('events.instagramPostSingle');
 Route::get('events/instagram-post-week', 'Api\\EventInstagramController@postWeekToInstagram')->name('events.instagramPostWeek');
 Route::get('events/instagram-weekend-preview', 'Api\\EventInstagramController@postWeekendPreviewToInstagram')->name('events.instagramWeekendPreview');

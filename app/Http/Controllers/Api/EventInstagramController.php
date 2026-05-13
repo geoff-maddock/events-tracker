@@ -469,6 +469,14 @@ class EventInstagramController extends Controller
      */
     public function postStoryToInstagram(int $id, Instagram $instagram): RedirectResponse
     {
+        // admin-only action
+        $user = Auth::user();
+        if (!$user || !$user->hasGroup('super_admin')) {
+            flash()->error('Error', 'You are not authorized to post stories to Instagram.');
+
+            return back();
+        }
+
         // load the event
         if (!$event = Event::find($id)) {
             flash()->error('Error', 'No such event');

@@ -74,6 +74,11 @@
 												<a href="{!! route('events.instagramPost', ['id' => $event->id]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
 													<i class="bi bi-instagram mr-2"></i>Post to Instagram
 												</a>
+												@if ($user->hasGroup('super_admin'))
+													<a href="{!! route('events.instagramStoryPost', ['id' => $event->id]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
+														<i class="bi bi-instagram mr-2"></i>Post to Instagram Story
+													</a>
+												@endif
 
 												<div class="border-t border-border my-1"></div>
 												<form action="{!! route('events.destroy', ['event' => $event->id]) !!}" method="POST" class="block">
