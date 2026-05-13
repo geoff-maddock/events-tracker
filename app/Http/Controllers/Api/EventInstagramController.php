@@ -517,106 +517,34 @@ class EventInstagramController extends Controller
 
         // get the instagram caption
         $caption = urlEncode($event->getInstagramFormat());
-        $caption = $event->getInstagramFormat();
+        $eventUrl = route('events.show', $event->id);
 
-        // make the instagram api calls
-        $igContainerIds = [];
-
-        // upload the image
+        // upload the story photo
         try {
-            $id = $instagram->uploadCarouselPhoto($imageUrl);
-            $igContainerIds[] = $id;
+            $igContainerId = $instagram->uploadStoryPhoto($imageUrl, $caption, $eventUrl);
         } catch (Exception $e) {
             flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
-            Log::info('Carousel photo error: '. $e->getMessage());
+            Log::info('Story photo upload error: '. $e->getMessage());
             return back();
         }
 
-        Log::info('Carousel photo uploaded: '.$id);
+        Log::info('Story photo uploaded: '.$igContainerId);
 
-        // add other photos related to the event to the carousel
-        foreach ($event->getOtherPhotos() as $otherPhotos) {
-            $imageUrl = Storage::disk('external')->url($otherPhotos->getStoragePath());
-
-            if (!$imageUrl) {
-                flash()->error('Error', 'You must have an image url to post to Instagram');
-                Log::info('No image url found for event: '.$event->id);
-                continue;
-            }
-
-            try {
-                $igContainerId = $instagram->uploadCarouselPhoto($imageUrl);
-                $igContainerIds[] = $igContainerId;
-                Log::info('Added container id: '.$igContainerId);
-            } catch (Exception $e) {
-                flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
-                Log::info('Carousel photo error: '. $e->getMessage());
-                return back();
-            }
-
-            Log::info('Carousel photo uploaded: '.$id);
-        }
-
-        // only do this if there are any other related photos
-        foreach ($event->entities as $entity) {
-            foreach ($entity->photos as $photo) {
-                if ($photo->is_primary) {
-                    // process the photo
-                    $imageUrl = Storage::disk('external')->url($photo->getStoragePath());
-                    $images[] = $imageUrl;
-
-                    if (!$imageUrl) {
-                        flash()->error('Error', 'You must have an image url to post to Instagram');
-            
-                        return back();
-                    }
-
-                    // make the instagram api calls
-                    // upload the image
-                    try {
-                        $igContainerId = $instagram->uploadCarouselPhoto($imageUrl);
-                        $igContainerIds[] = $igContainerId;
-                        Log::info('Added container id: '.$igContainerId);
-                    } catch (Exception $e) {
-                        flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
-                        Log::info('Error uploading carousel photo');
-                        return back();
-                    }
-                }
-            }
-        }
-
-        // Check status of all uploaded photos in batch (more efficient than individual checks)
-        if ($instagram->checkBatchStatus($igContainerIds) === false) {
+        // check the story container status
+        if ($instagram->checkStatus($igContainerId) === false) {
             flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
-            Log::info('Error checking batch status of carousel photos');
+            Log::info('Story container status check failed for event '.$event->id);
             return back();
         }
 
-        // create a carousel container
-        try {
-            $igCarouselId = $instagram->createCarousel($igContainerIds, $caption);
-        } catch (Exception $e) {
-            flash()->error('Error', 'There was an error posting carousel to Instagram.  Please try again.');
-            Log::info('Error creating carousel');
-            return back();
-        }
-
-        // check the carousel container status
-        if ($instagram->checkStatus($igCarouselId) === false) {
-            flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
-
-            return back();
-        }
-
-        // pubish the image
-        $result = $instagram->publishStoryMedia($igCarouselId);
+        // publish the story
+        $result = $instagram->publishStoryMedia($igContainerId);
         if ($result === false) {
             flash()->error('Error', 'There was an error posting to Instagram.  Please try again.');
 
             return back();
         }
-        Log::info('Carousel published: '.$igCarouselId);
+        Log::info('Story published for event '.$event->id.', ig id: '.$result);
 
         // log the post to instagram
         Activity::log($event, $this->user, 16);
@@ -625,7 +553,7 @@ class EventInstagramController extends Controller
         $this->logEventShare($event, $result, $this->user?->id);
 
         // post was successful
-        flash()->success('Success', 'Successfully published to Instagram, returned id: '.$result);
+        flash()->success('Success', 'Successfully published story to Instagram, returned id: '.$result);
 
         return back();
     }
