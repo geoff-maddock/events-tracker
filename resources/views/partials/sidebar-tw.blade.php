@@ -211,8 +211,8 @@
             </div>
         </div>
 
-        <!-- Calendar -->
-        <div class="pt-2">
+        <!-- Calendar (hidden on the smallest viewports) -->
+        <div class="pt-2 hidden sm:block">
             <a href="{{ url('/calendar') }}" class="nav-item-tw {{ Request::is('calendar') && !Request::is('calendar/attending') ? 'nav-item-active-tw' : '' }}">
                 <i class="bi bi-calendar3 text-lg"></i>
                 <span>Event Calendar</span>
