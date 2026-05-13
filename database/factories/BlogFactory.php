@@ -24,8 +24,8 @@ class BlogFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->name,
-            'slug' => $this->faker->name,
+            'name' => $this->faker->sentence(3),
+            'slug' => $this->faker->unique()->slug(3),
             'body' => $this->faker->paragraph,
             'menu_id' => null,
             'content_type_id' => null,

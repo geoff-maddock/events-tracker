@@ -278,10 +278,9 @@ class BlogsController extends Controller
 
         $input = $request->all();
 
-        foreach (['description', 'menu_id', 'sort_order'] as $field) {
-            if (!array_key_exists($field, $input)) {
-                $input[$field] = null;
-            }
+        // Reset truly optional (nullable) fields not supplied in the body.
+        if (!array_key_exists('menu_id', $input)) {
+            $input['menu_id'] = null;
         }
 
         $blog->fill($input)->save();
