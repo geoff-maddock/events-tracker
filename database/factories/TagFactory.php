@@ -24,9 +24,11 @@ class TagFactory extends Factory
      */
     public function definition()
     {
+        $word = $this->faker->unique()->word;
+
         return [
-            'name' => $this->faker->word,
-            'slug' => Str::slug($this->faker->word, '_'),
+            'name' => $word,
+            'slug' => Str::slug($word, '_').'-'.uniqid(),
             'tag_type_id' => function () {
                 return TagType::all()->random()->id;
             },
