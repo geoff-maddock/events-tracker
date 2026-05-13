@@ -270,18 +270,17 @@ class BlogsController extends Controller
      * relations (tags, entities) sync to the supplied arrays — missing keys
      * mean "detach all".
      */
-    public function update(Blog $blog, BlogRequest $request): JsonResponse
+    public function update(Blog $blog, BlogRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         if (!$blog->ownedBy($this->user)) {
-            $this->unauthorized($request);
+            return $this->unauthorized($request);
         }
 
         $input = $request->all();
 
-        foreach (['description', 'menu_id', 'sort_order'] as $field) {
-            if (!array_key_exists($field, $input)) {
-                $input[$field] = null;
-            }
+        // Reset truly optional (nullable) fields not supplied in the body.
+        if (!array_key_exists('menu_id', $input)) {
+            $input['menu_id'] = null;
         }
 
         $blog->fill($input)->save();
@@ -298,10 +297,10 @@ class BlogsController extends Controller
      * PATCH: partial update. Only fields present in the body are touched;
      * scalars and relations not in the request are left untouched.
      */
-    public function patch(Blog $blog, BlogPatchRequest $request): JsonResponse
+    public function patch(Blog $blog, BlogPatchRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         if (!$blog->ownedBy($this->user)) {
-            $this->unauthorized($request);
+            return $this->unauthorized($request);
         }
 
         $input = $request->all();

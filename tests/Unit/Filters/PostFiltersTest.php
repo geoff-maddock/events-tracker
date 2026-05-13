@@ -3,7 +3,10 @@
 namespace Tests\Unit\Filters;
 
 use App\Filters\PostFilters;
+use App\Models\Entity;
 use App\Models\Post;
+use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Tests\TestCase;
@@ -30,6 +33,56 @@ class PostFiltersTest extends TestCase
         $results = $this->applyFilters(['body' => 'synthesizers'])->get();
 
         $this->assertCount(1, $results);
+    }
+
+    public function test_tag_filter_matches_by_slug(): void
+    {
+        $tag = Tag::factory()->create(['slug' => 'zz-post-tag']);
+        $post = Post::factory()->create();
+        $post->tags()->attach($tag->id);
+        Post::factory()->create();
+
+        $results = $this->applyFilters(['tag' => 'zz-post-tag'])->get();
+
+        $this->assertCount(1, $results);
+    }
+
+    public function test_user_filter_matches_username_exactly(): void
+    {
+        $user = User::factory()->create(['name' => 'ZZUniquePoster']);
+        Post::factory()->create(['created_by' => $user->id]);
+        Post::factory()->create();
+
+        $results = $this->applyFilters(['user' => 'ZZUniquePoster'])->get();
+
+        $this->assertCount(1, $results);
+    }
+
+    public function test_related_filter_matches_entity_name(): void
+    {
+        $entity = Entity::factory()->create(['name' => 'Zz-the-band']);
+        $post = Post::factory()->create();
+        $post->entities()->attach($entity->id);
+        Post::factory()->create();
+
+        $results = $this->applyFilters(['related' => 'zz-the-band'])->get();
+
+        $this->assertCount(1, $results);
+    }
+
+    public function test_series_filter_traverses_thread_to_match_series_name(): void
+    {
+        $series = \App\Models\Series::factory()->create(['name' => 'Zz Mondays']);
+        $thread = \App\Models\Thread::factory()->create();
+        $thread->series()->attach($series->id);
+
+        $matching = Post::factory()->create(['thread_id' => $thread->id]);
+        Post::factory()->create();
+
+        $results = $this->applyFilters(['series' => 'zz Mondays'])->get();
+
+        $this->assertGreaterThanOrEqual(1, $results->count());
+        $this->assertTrue($results->pluck('id')->contains($matching->id));
     }
 
     public function test_empty_filters_return_all_records(): void

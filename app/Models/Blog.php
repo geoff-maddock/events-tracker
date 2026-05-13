@@ -97,7 +97,6 @@ class Blog extends Eloquent
     protected $fillable = [
         'name',
         'slug',
-        'description',
         'visibility_id',
         'content_type_id',
         'body',

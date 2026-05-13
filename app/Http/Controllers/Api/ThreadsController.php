@@ -385,19 +385,21 @@ class ThreadsController extends Controller
      * PUT: full replacement of the resource. Optional fillable scalars
      * omitted from the body are reset to null.
      */
-    public function update(ThreadRequest $request, Thread $thread): JsonResponse
+    public function update(ThreadRequest $request, Thread $thread): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         if (!$thread->ownedBy($this->user)) {
-            $this->unauthorized($request);
+            return $this->unauthorized($request);
         }
 
         $input = $request->all();
 
+        // Reset truly-nullable fillable fields not present in the request.
+        // `views` is NOT NULL with a default of 0 and is never user-supplied,
+        // so it should never be reset here.
         $optionalFields = [
             'description',
             'slug',
             'thread_category_id',
-            'views',
             'event_id',
             'locked_at',
             'locked_by',
@@ -418,10 +420,10 @@ class ThreadsController extends Controller
     /**
      * PATCH: partial update. Only fields present in the body are touched.
      */
-    public function patch(ThreadPatchRequest $request, Thread $thread): JsonResponse
+    public function patch(ThreadPatchRequest $request, Thread $thread): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         if (!$thread->ownedBy($this->user)) {
-            $this->unauthorized($request);
+            return $this->unauthorized($request);
         }
 
         $input = $request->all();

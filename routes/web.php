@@ -202,7 +202,7 @@ Route::get('users/rpp-reset', ['as' => 'users.rppReset', 'uses' => 'UsersControl
 Route::resource('users', 'UsersController')->except(['show'])->middleware('auth');
 Route::get('users/{user}', 'UsersController@show')->name('users.show');
 
-Route::get('profile/{id}', 'UsersController@show')->name('users.profile-show');
+Route::get('profile/{user}', 'UsersController@show')->name('users.profile-show');
 Route::get('profile', 'UsersController@profile')->name('users.profile');
 // PHOTOS
 Route::get('photos/reset', ['as' => 'photos.reset', 'uses' => 'PhotosController@reset']);

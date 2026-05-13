@@ -517,13 +517,15 @@ class PagesController extends Controller
         $request->session()->put($this->prefix.$attribute, $value);
     }
 
-    public function tools(Request $request): View
+    public function tools(Request $request): View|RedirectResponse
     {
         $this->middleware('auth');
 
         $user = $request->user();
         if (!$user->can('show_admin')) {
-            exit('cannot show admin)');
+            flash()->error('Unauthorized', 'You cannot view the admin tools.');
+
+            return redirect()->route('home');
         }
 
         // get all the events with a link but no photo

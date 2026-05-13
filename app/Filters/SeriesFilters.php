@@ -193,9 +193,13 @@ class SeriesFilters extends QueryFilter
             return $this->builder;
         }
     }
-    public function ages(?string $order = 'desc'): Builder
+    public function ages(?string $value = null): Builder
     {
-        return $this->builder->orderBy('ages_id', $order);
+        if (isset($value)) {
+            return $this->builder->where('series.min_age', '=', $value);
+        }
+
+        return $this->builder;
     }
 
     public function visibility(?string $value = null): Builder
