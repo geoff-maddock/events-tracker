@@ -1060,7 +1060,7 @@ class EventsController extends Controller
      * relations (tags, entities) sync to the supplied arrays — missing keys
      * mean "detach all".
      */
-    public function update(Event $event, EventRequest $request): JsonResponse
+    public function update(Event $event, EventRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         $this->user = $request->user();
 
@@ -1092,7 +1092,7 @@ class EventsController extends Controller
      * PATCH: partial update. Only fields present in the body are touched;
      * scalars and relations not in the request are left untouched.
      */
-    public function patch(Event $event, EventPatchRequest $request): JsonResponse
+    public function patch(Event $event, EventPatchRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         $this->user = $request->user();
 

@@ -739,7 +739,7 @@ class SeriesController extends Controller
      * relations (tags, entities) sync to the supplied arrays — missing keys
      * mean "detach all".
      */
-    public function update(Series $series, SeriesRequest $request): JsonResponse
+    public function update(Series $series, SeriesRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         if (!$series->ownedBy($this->user)) {
             $this->unauthorized($request);
@@ -768,7 +768,7 @@ class SeriesController extends Controller
      * PATCH: partial update. Only fields present in the body are touched;
      * scalars and relations not in the request are left untouched.
      */
-    public function patch(Series $series, SeriesPatchRequest $request): JsonResponse
+    public function patch(Series $series, SeriesPatchRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         if (!$series->ownedBy($this->user)) {
             $this->unauthorized($request);
