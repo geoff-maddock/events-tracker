@@ -447,10 +447,10 @@ class PostsController extends Controller
      * relations (tags, entities) sync to the supplied arrays — missing keys
      * mean "detach all".
      */
-    public function update(Post $post, PostRequest $request): JsonResponse
+    public function update(Post $post, PostRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         if (!$post->ownedBy($this->user)) {
-            $this->unauthorized($request);
+            return $this->unauthorized($request);
         }
 
         $input = $request->all();
@@ -475,10 +475,10 @@ class PostsController extends Controller
      * PATCH: partial update. Only fields present in the body are touched;
      * scalars and relations not in the request are left untouched.
      */
-    public function patch(Post $post, PostPatchRequest $request): JsonResponse
+    public function patch(Post $post, PostPatchRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         if (!$post->ownedBy($this->user)) {
-            $this->unauthorized($request);
+            return $this->unauthorized($request);
         }
 
         $input = $request->all();
