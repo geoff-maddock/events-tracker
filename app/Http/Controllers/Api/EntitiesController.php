@@ -827,8 +827,12 @@ class EntitiesController extends Controller
      *
      * @throws \Exception
      */
-    public function destroy(Entity $entity): JsonResponse
+    public function destroy(Entity $entity, Request $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
+        if ($entity->created_by !== $this->user->id) {
+            return $this->unauthorized($request);
+        }
+
         // add to activity log
         Activity::log($entity, $this->user, 3);
 
@@ -1454,7 +1458,7 @@ class EntitiesController extends Controller
         return ['id' => 'desc'];
     }
 
-    protected function unauthorized(EntityRequest $request): RedirectResponse | Response
+    protected function unauthorized(Request $request): RedirectResponse | Response
     {
         if ($request->ajax()) {
             return response(['message' => 'No way.'], 403);

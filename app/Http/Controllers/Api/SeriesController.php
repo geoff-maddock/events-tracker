@@ -742,7 +742,7 @@ class SeriesController extends Controller
     public function update(Series $series, SeriesRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         if (!$series->ownedBy($this->user)) {
-            $this->unauthorized($request);
+            return $this->unauthorized($request);
         }
 
         $input = $request->all();
@@ -771,7 +771,7 @@ class SeriesController extends Controller
     public function patch(Series $series, SeriesPatchRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         if (!$series->ownedBy($this->user)) {
-            $this->unauthorized($request);
+            return $this->unauthorized($request);
         }
 
         $input = $request->all();
@@ -855,7 +855,7 @@ class SeriesController extends Controller
         return $syncArray;
     }
 
-    protected function unauthorized(SeriesRequest $request): RedirectResponse | Response
+    protected function unauthorized(Request $request): RedirectResponse | Response
     {
         if ($request->ajax()) {
             return response(['message' => 'No way.'], 403);
@@ -866,8 +866,12 @@ class SeriesController extends Controller
         return redirect('/');
     }
 
-    public function destroy(Series $series): JsonResponse
+    public function destroy(Series $series, Request $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
+        if (!$series->ownedBy($this->user)) {
+            return $this->unauthorized($request);
+        }
+
         // add to activity log
         Activity::log($series, $this->user, 3);
 

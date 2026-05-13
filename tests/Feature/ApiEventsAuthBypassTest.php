@@ -99,4 +99,44 @@ class ApiEventsAuthBypassTest extends TestCase
 
         $this->assertSame('Original Series ZZ', $series->fresh()->name);
     }
+
+    public function test_event_destroy_rejects_non_owner(): void
+    {
+        $event = Event::factory()->create(['created_by' => $this->owner->id]);
+
+        $this->actingAs($this->attacker, 'sanctum');
+        $this->deleteJson('/api/events/'.$event->slug);
+
+        $this->assertNotNull(Event::find($event->id), 'Event should still exist.');
+    }
+
+    public function test_event_destroy_succeeds_for_owner(): void
+    {
+        $event = Event::factory()->create(['created_by' => $this->owner->id]);
+
+        $this->actingAs($this->owner, 'sanctum');
+        $this->deleteJson('/api/events/'.$event->slug)->assertStatus(204);
+
+        $this->assertNull(Event::find($event->id));
+    }
+
+    public function test_series_destroy_rejects_non_owner(): void
+    {
+        $series = Series::factory()->create(['created_by' => $this->owner->id]);
+
+        $this->actingAs($this->attacker, 'sanctum');
+        $this->deleteJson('/api/series/'.$series->slug);
+
+        $this->assertNotNull(Series::find($series->id), 'Series should still exist.');
+    }
+
+    public function test_entity_destroy_rejects_non_owner(): void
+    {
+        $entity = \App\Models\Entity::factory()->create(['created_by' => $this->owner->id]);
+
+        $this->actingAs($this->attacker, 'sanctum');
+        $this->deleteJson('/api/entities/'.$entity->slug);
+
+        $this->assertNotNull(\App\Models\Entity::find($entity->id), 'Entity should still exist.');
+    }
 }

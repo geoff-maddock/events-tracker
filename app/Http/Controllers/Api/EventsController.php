@@ -1065,7 +1065,7 @@ class EventsController extends Controller
         $this->user = $request->user();
 
         if (!$event->ownedBy($this->user)) {
-            $this->unauthorized($request);
+            return $this->unauthorized($request);
         }
 
         $input = $request->all();
@@ -1097,7 +1097,7 @@ class EventsController extends Controller
         $this->user = $request->user();
 
         if (!$event->ownedBy($this->user)) {
-            $this->unauthorized($request);
+            return $this->unauthorized($request);
         }
 
         $input = $request->all();
@@ -1176,7 +1176,7 @@ class EventsController extends Controller
         return $syncArray;
     }
 
-    protected function unauthorized(EventRequest $request): RedirectResponse | Response
+    protected function unauthorized(Request $request): RedirectResponse | Response
     {
         if ($request->ajax()) {
             return response(['message' => 'No way.'], 403);
@@ -1187,8 +1187,12 @@ class EventsController extends Controller
         return redirect('/');
     }
 
-    public function destroy(Event $event): JsonResponse
+    public function destroy(Event $event, Request $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
+        if (!$event->ownedBy($this->user)) {
+            return $this->unauthorized($request);
+        }
+
         // add to activity log
         Activity::log($event, $this->user, 3);
 
