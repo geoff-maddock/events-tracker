@@ -184,17 +184,17 @@ class SeriesFiltersTest extends TestCase
         $this->assertCount(1, $results);
     }
 
-    public function test_ages_filter_currently_references_nonexistent_column(): void
+    public function test_ages_filter_matches_min_age_exactly(): void
     {
-        // SeriesFilters::ages orders by `ages_id`, which does not exist on the
-        // `series` table. This is a real bug in the filter — captured here so
-        // it surfaces in CI rather than only at runtime. Once the filter is
-        // fixed, flip this assertion to a happy-path test.
-        Series::factory()->create();
+        Series::factory()->create(['min_age' => 18]);
+        Series::factory()->create(['min_age' => 21]);
 
-        $this->expectException(\Illuminate\Database\QueryException::class);
+        $results = $this->applyFilters(['ages' => 18])->get();
 
-        $this->applyFilters(['ages' => 'asc'])->get();
+        $this->assertGreaterThanOrEqual(1, $results->count());
+        foreach ($results as $row) {
+            $this->assertSame(18, (int) $row->min_age);
+        }
     }
 
     public function test_visibility_filter_matches_by_id(): void

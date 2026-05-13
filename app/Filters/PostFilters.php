@@ -29,12 +29,14 @@ class PostFilters extends QueryFilter
     public function series(?string $value = null): Builder
     {
         if (isset($value)) {
-            return $this->builder->whereHas('series', function ($q) use ($value) {
+            // Posts do not relate to Series directly. The chain is
+            // Post → Thread (BelongsTo) → Series (BelongsToMany).
+            return $this->builder->whereHas('thread.series', function ($q) use ($value) {
                 $q->where('name', '=', ucfirst($value));
             });
-        } else {
-            return $this->builder;
         }
+
+        return $this->builder;
     }
 
     public function user(?string $value = null): Builder

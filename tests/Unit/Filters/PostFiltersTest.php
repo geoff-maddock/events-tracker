@@ -70,16 +70,19 @@ class PostFiltersTest extends TestCase
         $this->assertCount(1, $results);
     }
 
-    public function test_series_filter_references_missing_relation_on_post(): void
+    public function test_series_filter_traverses_thread_to_match_series_name(): void
     {
-        // PostFilters::series calls whereHas('series'), but the Post model
-        // does not define a `series` relation. This is a real bug — record it
-        // here so the filter cannot regress further without a CI failure.
+        $series = \App\Models\Series::factory()->create(['name' => 'Zz Mondays']);
+        $thread = \App\Models\Thread::factory()->create();
+        $thread->series()->attach($series->id);
+
+        $matching = Post::factory()->create(['thread_id' => $thread->id]);
         Post::factory()->create();
 
-        $this->expectException(\BadMethodCallException::class);
+        $results = $this->applyFilters(['series' => 'zz Mondays'])->get();
 
-        $this->applyFilters(['series' => 'mondays'])->get();
+        $this->assertGreaterThanOrEqual(1, $results->count());
+        $this->assertTrue($results->pluck('id')->contains($matching->id));
     }
 
     public function test_empty_filters_return_all_records(): void
