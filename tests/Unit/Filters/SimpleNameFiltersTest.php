@@ -67,9 +67,7 @@ class SimpleNameFiltersTest extends TestCase
     public function test_role_filter_narrows_by_name(): void
     {
         $first = Role::first();
-        if (!$first) {
-            $this->markTestSkipped('Roles table not seeded.');
-        }
+        $this->assertNotNull($first, 'Roles table must be seeded by DatabaseSeeder.');
 
         $results = $this->apply(RoleFilters::class, Role::class, ['name' => $first->name]);
 
@@ -79,9 +77,7 @@ class SimpleNameFiltersTest extends TestCase
     public function test_event_type_filter_narrows_by_name(): void
     {
         $first = EventType::first();
-        if (!$first) {
-            $this->markTestSkipped('Event types not seeded.');
-        }
+        $this->assertNotNull($first, 'Event types must be seeded by DatabaseSeeder.');
 
         $results = $this->apply(EventTypeFilters::class, EventType::class, ['name' => $first->name]);
 
@@ -91,9 +87,7 @@ class SimpleNameFiltersTest extends TestCase
     public function test_event_status_filter_narrows_by_name(): void
     {
         $first = EventStatus::first();
-        if (!$first) {
-            $this->markTestSkipped('Event statuses not seeded.');
-        }
+        $this->assertNotNull($first, 'Event statuses must be seeded by DatabaseSeeder.');
 
         $results = $this->apply(EventStatusFilters::class, EventStatus::class, ['name' => $first->name]);
 
@@ -103,9 +97,7 @@ class SimpleNameFiltersTest extends TestCase
     public function test_entity_type_filter_narrows_by_name(): void
     {
         $first = EntityType::first();
-        if (!$first) {
-            $this->markTestSkipped('Entity types not seeded.');
-        }
+        $this->assertNotNull($first, 'Entity types must be seeded by DatabaseSeeder.');
 
         $results = $this->apply(EntityTypeFilters::class, EntityType::class, ['name' => $first->name]);
 
@@ -115,9 +107,7 @@ class SimpleNameFiltersTest extends TestCase
     public function test_entity_status_filter_narrows_by_name(): void
     {
         $first = EntityStatus::first();
-        if (!$first) {
-            $this->markTestSkipped('Entity statuses not seeded.');
-        }
+        $this->assertNotNull($first, 'Entity statuses must be seeded by DatabaseSeeder.');
 
         $results = $this->apply(EntityStatusFilters::class, EntityStatus::class, ['name' => $first->name]);
 
@@ -127,9 +117,7 @@ class SimpleNameFiltersTest extends TestCase
     public function test_occurrence_day_filter_narrows_by_name(): void
     {
         $first = OccurrenceDay::first();
-        if (!$first) {
-            $this->markTestSkipped('Occurrence days not seeded.');
-        }
+        $this->assertNotNull($first, 'Occurrence days must be seeded by DatabaseSeeder.');
 
         $results = $this->apply(OccurrenceDayFilters::class, OccurrenceDay::class, ['name' => $first->name]);
 
@@ -139,9 +127,7 @@ class SimpleNameFiltersTest extends TestCase
     public function test_occurrence_type_filter_narrows_by_name(): void
     {
         $first = OccurrenceType::first();
-        if (!$first) {
-            $this->markTestSkipped('Occurrence types not seeded.');
-        }
+        $this->assertNotNull($first, 'Occurrence types must be seeded by DatabaseSeeder.');
 
         $results = $this->apply(OccurrenceTypeFilters::class, OccurrenceType::class, ['name' => $first->name]);
 
@@ -151,9 +137,7 @@ class SimpleNameFiltersTest extends TestCase
     public function test_occurrence_week_filter_narrows_by_name(): void
     {
         $first = OccurrenceWeek::first();
-        if (!$first) {
-            $this->markTestSkipped('Occurrence weeks not seeded.');
-        }
+        $this->assertNotNull($first, 'Occurrence weeks must be seeded by DatabaseSeeder.');
 
         $results = $this->apply(OccurrenceWeekFilters::class, OccurrenceWeek::class, ['name' => $first->name]);
 
@@ -163,9 +147,7 @@ class SimpleNameFiltersTest extends TestCase
     public function test_tag_type_filter_narrows_by_name(): void
     {
         $first = TagType::first();
-        if (!$first) {
-            $this->markTestSkipped('Tag types not seeded.');
-        }
+        $this->assertNotNull($first, 'Tag types must be seeded by DatabaseSeeder.');
 
         $results = $this->apply(TagTypeFilters::class, TagType::class, ['name' => $first->name]);
 
@@ -175,9 +157,7 @@ class SimpleNameFiltersTest extends TestCase
     public function test_thread_category_filter_narrows_by_name(): void
     {
         $first = ThreadCategory::first();
-        if (!$first) {
-            $this->markTestSkipped('Thread categories not seeded.');
-        }
+        $this->assertNotNull($first, 'Thread categories must be seeded by DatabaseSeeder.');
 
         $results = $this->apply(ThreadCategoryFilters::class, ThreadCategory::class, ['name' => $first->name]);
 

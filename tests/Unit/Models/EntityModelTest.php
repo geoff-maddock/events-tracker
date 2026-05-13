@@ -2,10 +2,14 @@
 
 namespace Tests\Unit\Models;
 
+use App\Models\Alias;
 use App\Models\Entity;
 use App\Models\EntityStatus;
 use App\Models\EntityType;
+use App\Models\Event;
+use App\Models\Role;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -84,5 +88,48 @@ class EntityModelTest extends TestCase
         $entity = Entity::factory()->create();
 
         $this->assertSame('', $entity->getRoleString());
+    }
+
+    public function test_get_role_string_returns_comma_separated_role_names(): void
+    {
+        $entity = Entity::factory()->create();
+        $role = Role::first();
+        $this->assertNotNull($role);
+        $entity->roles()->attach($role->id);
+
+        $this->assertStringContainsString($role->name, $entity->fresh()->getRoleString());
+    }
+
+    public function test_get_alias_string_returns_comma_separated_alias_names(): void
+    {
+        $entity = Entity::factory()->create();
+        $alias = Alias::create(['name' => 'ZZ-Alias-One']);
+        $entity->aliases()->attach($alias->id);
+
+        $this->assertSame('ZZ-Alias-One', $entity->fresh()->getAliasString());
+    }
+
+    public function test_todays_events_returns_events_starting_today(): void
+    {
+        $entity = Entity::factory()->create();
+        $todayEvent = Event::factory()->create(['start_at' => Carbon::now()->setTime(20, 0)]);
+        $todayEvent->entities()->attach($entity->id);
+        Event::factory()->create(['start_at' => Carbon::now()->addDays(5)]); // future, different entity
+
+        $today = $entity->fresh()->todaysEvents();
+
+        $this->assertGreaterThanOrEqual(1, $today->count());
+        $this->assertTrue($today->pluck('id')->contains($todayEvent->id));
+    }
+
+    public function test_future_events_returns_paginator_of_future_events(): void
+    {
+        $entity = Entity::factory()->create();
+        $future = Event::factory()->create(['start_at' => Carbon::now()->addDays(7)]);
+        $future->entities()->attach($entity->id);
+
+        $paginator = $entity->fresh()->futureEvents();
+
+        $this->assertGreaterThanOrEqual(1, $paginator->total());
     }
 }
