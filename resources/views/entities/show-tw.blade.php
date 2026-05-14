@@ -503,7 +503,7 @@
 
 	@if (isset($relatedEvents) && count($relatedEvents) > 0)
 		<!-- Events Grid -->
-		<div class="grid grid-cols-1 md:grid-cols-2 event-3col:grid-cols-3 event-4col:grid-cols-4 gap-6 mb-6">
+		<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-6">
 			@foreach ($relatedEvents as $event)
 				@include('events.card-tw', ['event' => $event])
 			@endforeach
@@ -514,7 +514,7 @@
 	@else
 		<p class="text-muted-foreground mb-4">No upcoming related events found.</p>
 		@if (isset($pastEvents) && $pastEvents->count() > 0)
-			<div class="grid grid-cols-1 md:grid-cols-2 event-3col:grid-cols-3 event-4col:grid-cols-4 gap-6 mb-6">
+			<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-6">
 				@include('events.past-events-grid-card-tw', ['pastEvents' => $pastEvents, 'entity' => $entity])
 			</div>
 		@endif

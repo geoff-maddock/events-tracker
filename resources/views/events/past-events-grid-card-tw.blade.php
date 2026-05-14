@@ -12,7 +12,7 @@
         $colSpan   = 'col-span-1 md:col-span-2';
         $innerCols = 'grid-cols-3 md:grid-cols-4';
     } else {
-        $colSpan   = 'col-span-1 md:col-span-2 event-3col:col-span-3 event-4col:col-span-4';
+        $colSpan   = 'col-span-1 md:col-span-2 xl:col-span-3 2xl:col-span-4';
         $innerCols = 'grid-cols-4 md:grid-cols-6';
     }
 @endphp
