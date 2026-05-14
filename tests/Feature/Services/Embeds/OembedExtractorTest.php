@@ -98,6 +98,47 @@ class OembedExtractorTest extends TestCase
     }
 
     /** @test */
+    public function soundcloud_small_size_rewrites_visual_param_to_mini_player()
+    {
+        $provider = new Provider();
+        $extractor = new OembedExtractor($provider);
+        $extractor->setLayout('small');
+
+        $src = 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/123&visual=true&show_comments=false';
+        $result = $this->invokeApplySoundcloudSizeParams($extractor, $src);
+
+        $this->assertStringContainsString('visual=false', $result);
+        $this->assertStringNotContainsString('visual=true', $result);
+        $this->assertStringContainsString('inverse=true', $result);
+        $this->assertStringContainsString('show_artwork=false', $result);
+    }
+
+    /** @test */
+    public function soundcloud_medium_and_large_sizes_leave_src_unchanged()
+    {
+        $provider = new Provider();
+        $extractor = new OembedExtractor($provider);
+
+        $src = 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/123&visual=true';
+
+        foreach (['medium', 'large'] as $size) {
+            $extractor->setLayout($size);
+            $this->assertSame(
+                $src,
+                $this->invokeApplySoundcloudSizeParams($extractor, $src),
+                "src should be unchanged for size: $size"
+            );
+        }
+    }
+
+    private function invokeApplySoundcloudSizeParams(OembedExtractor $extractor, string $src): string
+    {
+        $ref = new \ReflectionMethod($extractor, 'applySoundcloudSizeParams');
+        $ref->setAccessible(true);
+        return $ref->invoke($extractor, $src);
+    }
+
+    /** @test */
     public function extract_embeds_filters_bandcamp_urls()
     {
         $provider = new Provider();

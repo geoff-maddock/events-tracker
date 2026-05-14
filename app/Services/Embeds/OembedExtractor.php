@@ -185,7 +185,28 @@ class OembedExtractor
             return null;
         }
 
-        return sprintf($this->config['soundcloud_layout'], $matches[1]);
+        $src = $this->applySoundcloudSizeParams($matches[1]);
+
+        return sprintf($this->config['soundcloud_layout'], $src);
+    }
+
+    /**
+     * SoundCloud's oembed always returns the visual (~300px) player. The "small"
+     * layout iframe is only ~24px tall, so the URL must be rewritten to the mini
+     * (non-visual) player or it renders squashed/wrong-format. Medium and large
+     * iframes are tall enough for the visual player as-is.
+     */
+    protected function applySoundcloudSizeParams(string $src): string
+    {
+        if ($this->size !== 'small') {
+            return $src;
+        }
+
+        return str_replace(
+            'visual=true',
+            'visual=false&show_artwork=false&inverse=true&color=%23333333',
+            $src
+        );
     }
 
     /**
