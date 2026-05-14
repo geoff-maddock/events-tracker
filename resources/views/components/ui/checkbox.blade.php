@@ -1,5 +1,6 @@
 @props([
     'hasError' => false,
+    'checked' => false,
 ])
 
 @php
@@ -9,4 +10,4 @@ if ($hasError) {
 }
 @endphp
 
-<input type="checkbox" {{ $attributes->merge(['class' => $classes]) }} />
+<input type="checkbox" @checked($checked) {{ $attributes->merge(['class' => $classes]) }} />

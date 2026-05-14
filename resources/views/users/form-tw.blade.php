@@ -227,6 +227,21 @@
 
         <div class="flex items-start gap-3">
             <x-ui.checkbox
+                name="setting_notify_threads_by_follow"
+                id="setting_notify_threads_by_follow"
+                value="1"
+                :checked="old('setting_notify_threads_by_follow', isset($user->profile) ? $user->profile->setting_notify_threads_by_follow : false)"
+                :hasError="$errors->has('setting_notify_threads_by_follow')" />
+            <div class="flex-1">
+                <x-ui.label for="setting_notify_threads_by_follow">Notify me of discussions based on who I follow</x-ui.label>
+                @if($errors->has('setting_notify_threads_by_follow'))
+                    <span class="text-xs text-destructive">{{ $errors->first('setting_notify_threads_by_follow') }}</span>
+                @endif
+            </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+            <x-ui.checkbox
                 name="setting_public_profile"
                 id="setting_public_profile"
                 value="1"
