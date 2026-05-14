@@ -59,12 +59,16 @@
                                     <img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}"
                                          alt="{{ $pastEvent->name }}"
                                          class="w-full h-full object-cover transition-transform duration-300"
+                                         width="600"
+                                         height="600"
                                          loading="lazy">
                                 </a>
                             @else
                                 <img src="/images/event-placeholder.png"
                                      alt="{{ $pastEvent->name }}"
-                                     class="w-full h-full object-cover opacity-50">
+                                     class="w-full h-full object-cover opacity-50"
+                                     width="600"
+                                     height="600">
                             @endif
                         </div>
 
