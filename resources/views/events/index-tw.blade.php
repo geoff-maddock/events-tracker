@@ -272,7 +272,7 @@ Events @include('events.title-crumbs')
 
 <!-- Events Grid -->
 @if (isset($events) && count($events) > 0)
-<div class="grid grid-cols-1 md:grid-cols-2 event-3col:grid-cols-3 event-4col:grid-cols-4 gap-6">
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
 	@foreach ($events as $event)
 	@include('events.card-tw', ['event' => $event])
 	@endforeach

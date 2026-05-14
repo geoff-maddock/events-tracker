@@ -24,10 +24,8 @@ module.exports = {
       sm: '640px',
       md: '768px',
       lg: '1024px',
-      'event-3col': '1264px',
       xl: '1280px',
       '2xl': '1600px',
-      'event-4col': '1984px',
       '3xl': '2000px',
     },
     extend: {
