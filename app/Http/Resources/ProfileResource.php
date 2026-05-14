@@ -34,6 +34,7 @@ class ProfileResource extends JsonResource
             'setting_daily_update' => $this->setting_daily_update,
             'setting_instant_update' => $this->setting_instant_update,
             'setting_forum_update' => $this->setting_forum_update,
+            'setting_notify_threads_by_follow' => $this->setting_notify_threads_by_follow,
             'setting_public_profile' => $this->setting_public_profile,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

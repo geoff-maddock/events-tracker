@@ -720,6 +720,10 @@ class ThreadsController extends Controller
                 if ($user?->profile?->setting_forum_update !== 1) {
                     continue;
                 }
+                // Indirect (follow-driven) thread notifications are opt-in per issue #1853.
+                if ($user?->profile?->setting_notify_threads_by_follow !== 1) {
+                    continue;
+                }
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
                     Mail::to($user->email)
@@ -737,6 +741,9 @@ class ThreadsController extends Controller
             foreach ($s->followers() as $user) {
                 // if the user does not have this setting, continue
                 if ($user?->profile?->setting_forum_update !== 1) {
+                    continue;
+                }
+                if ($user?->profile?->setting_notify_threads_by_follow !== 1) {
                     continue;
                 }
                 // if the user hasn't already been notified, then email them

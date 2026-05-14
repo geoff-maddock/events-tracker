@@ -169,6 +169,7 @@ class DataExportService
                 'setting_daily_update' => $user->profile->setting_daily_update,
                 'setting_instant_update' => $user->profile->setting_instant_update,
                 'setting_forum_update' => $user->profile->setting_forum_update,
+                'setting_notify_threads_by_follow' => $user->profile->setting_notify_threads_by_follow,
                 'setting_public_profile' => $user->profile->setting_public_profile,
             ] : null,
         ];

@@ -96,6 +96,12 @@
     {!! $errors->first('setting_forum_update','<span class="help-block">:message</span>') !!}
 </div>
 
+<div class="form-group col-md-2  {{$errors->has('setting_notify_threads_by_follow') ? 'has-error' : '' }}">
+    {!! Form::label('setting_notify_threads_by_follow','Setting: Notify me of discussions based on who I follow') !!}
+    {!! Form::checkbox('setting_notify_threads_by_follow', (isset($user->profile->setting_notify_threads_by_follow) ? $user->profile->setting_notify_threads_by_follow : NULL)) !!}
+    {!! $errors->first('setting_notify_threads_by_follow','<span class="help-block">:message</span>') !!}
+</div>
+
 <div class="form-group col-md-2  {{$errors->has('setting_public_profile') ? 'has-error' : '' }}">
     {!! Form::label('setting_public_profile','Setting: Public Profile') !!}
     {!! Form::checkbox('setting_public_profile', (isset($user->profile->setting_public_profile) ? $user->profile->setting_public_profile : NULL)) !!}

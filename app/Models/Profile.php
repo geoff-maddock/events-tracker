@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int|null                                                    $setting_daily_update
  * @property int|null                                                    $setting_instant_update
  * @property int|null                                                    $setting_forum_update
+ * @property int|null                                                    $setting_notify_threads_by_follow
  * @property int|null                                                    $setting_public_profile
  * @property mixed                                                       $full_name
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Link[] $links
@@ -64,7 +65,7 @@ class Profile extends Eloquent
     }
 
     protected $fillable = [
-        'first_name', 'last_name', 'bio', 'alias', 'location', 'facebook_username', 'twitter_username', 'instagram_username','default_theme', 'setting_weekly_update', 'setting_daily_update', 'setting_instant_update', 'setting_forum_update', 'setting_public_profile'
+        'first_name', 'last_name', 'bio', 'alias', 'location', 'facebook_username', 'twitter_username', 'instagram_username','default_theme', 'setting_weekly_update', 'setting_daily_update', 'setting_instant_update', 'setting_forum_update', 'setting_notify_threads_by_follow', 'setting_public_profile'
     ];
 
     protected $attributes = [

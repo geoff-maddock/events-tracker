@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Events Tracker — Laravel 10 CMS for tracking events, series, venues, artists, promoters, and related entities for music/arts communities. PHP 8.1+ on the local sandbox (CI uses PHP 8.4), MySQL 8, Vite + Tailwind 4 + Vue 3 / Alpine / jQuery on the frontend.
 
-Default branch for PRs is `master` (note: `agents.md` says `main` but the actual remote default and CI target is what the repo uses — confirm before opening a PR).
+Default branch for PRs is `main` 
 
 ## Common commands
 
