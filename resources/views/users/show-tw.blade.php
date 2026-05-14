@@ -220,6 +220,10 @@
                                     <i class="bi {{ $user->profile->setting_forum_update ? 'bi-check-circle text-green-500' : 'bi-x-circle text-muted-foreground' }}"></i>
                                     <span class="text-muted-foreground">Receive Forum Updates</span>
                                 </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="bi {{ $user->profile->setting_notify_threads_by_follow ? 'bi-check-circle text-green-500' : 'bi-x-circle text-muted-foreground' }}"></i>
+                                    <span class="text-muted-foreground">Notify Discussions by Follow</span>
+                                </div>
                             @endif
                             <div class="flex items-center gap-2">
                                 <i class="bi {{ $user->profile->setting_public_profile ? 'bi-check-circle text-green-500' : 'bi-x-circle text-muted-foreground' }}"></i>
@@ -268,7 +272,21 @@
                     <!-- Delete Button -->
                     @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser')))
                         <div class="pt-4 border-t border-border">
-                            {!! delete_form(['users.destroy', $user->id]) !!}
+                            <div class="card-tw border-destructive/20">
+                                <div class="p-6">
+                                    <h2 class="text-lg font-semibold text-destructive mb-2">Danger Zone</h2>
+                                    <p class="text-sm text-muted-foreground mb-4">Once you delete a user, there is no going back. Please be certain.</p>
+
+                                    <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="inline" data-confirm="Are you sure you want to delete this user? This action cannot be undone.">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors">
+                                            <i class="bi bi-trash mr-2"></i>
+                                            Delete User
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     @endif
                 </div>
