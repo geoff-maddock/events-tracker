@@ -128,13 +128,15 @@
 
 		<!-- Entity Image -->
 		@if ($photo = $entity->getPrimaryPhoto())
-		<div class="relative overflow-hidden rounded-lg border border-border bg-card shadow max-h-[600px] flex items-center justify-center">
+		{{-- Fixed aspect-ratio container reserves height before the image loads, preventing CLS.
+		     `object-contain` keeps the photo's true ratio visible inside the stable 2:1 box. --}}
+		<div class="relative overflow-hidden rounded-lg border border-border bg-card shadow aspect-[2/1] flex items-center justify-center">
 			<a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}"
 				data-lightbox="entity-main"
-				class="block w-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+				class="block w-full h-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
 				<img src="{{ Storage::disk('external')->url($photo->getStoragePath()) }}"
 					 alt="{{ $entity->name }}"
-					 class="object-contain w-full max-h-[600px] cursor-pointer hover:opacity-90 transition-opacity"
+					 class="object-contain w-full h-full cursor-pointer hover:opacity-90 transition-opacity"
 					 width="1200"
 					 height="600"
 					 fetchpriority="high">
