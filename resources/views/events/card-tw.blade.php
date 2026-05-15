@@ -140,10 +140,11 @@
 								@endif
 								@if ($ticket = $event->getTicketTrackingLink())
 								<a href="{{ $ticket }}" target="_blank" rel="noopener noreferrer"
-									class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+									class="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-muted-foreground"
 									title="Buy tickets for {{ $event->name }}"
 									aria-label="Buy tickets for {{ $event->name }}">
-									<i class="bi bi-ticket-perforated text-muted-foreground" aria-hidden="true"></i>
+									<i class="bi bi-ticket-perforated" aria-hidden="true"></i>
+									<span class="text-sm">Buy Tickets</span>
 								</a>
 								@endif
 							</div>
@@ -216,10 +217,11 @@
             <!-- Ticket Link -->
             @if ($ticket = $event->ticket_link)
             <a href="{{ $event->getTicketTrackingLink() }}" target="_blank" rel="noopener"
-                class="p-2 rounded text-muted-foreground hover:text-primary transition-colors"
+                class="inline-flex items-center gap-1 px-2 py-2 rounded text-muted-foreground hover:text-primary transition-colors"
                 title="Buy tickets for {{ $event->name }}"
                 aria-label="Buy tickets for {{ $event->name }}">
                 <i class="bi bi-ticket-perforated" aria-hidden="true"></i>
+                <span class="text-sm">Buy Tickets</span>
             </a>
             @endif
         </div>

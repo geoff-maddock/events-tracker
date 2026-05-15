@@ -117,6 +117,7 @@
                class="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors"
                title="Buy tickets" target="_blank" rel="noopener">
                 <i class="bi bi-ticket-perforated"></i>
+                <span>Buy Tickets</span>
             </a>
             @endif
             

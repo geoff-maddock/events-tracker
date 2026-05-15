@@ -48,7 +48,7 @@ Good morning!
 		@endif
 		@if ($ticket = $event->ticket_link)
 		<a href="{{ $event->getTicketTrackingLink() }}" target="_" title="Ticket link">
-			<i class="bi bi-ticket-perforated"></i>
+			<i class="bi bi-ticket-perforated"></i> Buy Tickets
 		</a>
 		@endif
 

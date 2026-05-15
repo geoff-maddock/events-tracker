@@ -45,7 +45,7 @@ Here is a reminder about this event that you are attending.
 	@endif
 	@if ($ticket = $event->ticket_link)
 	<a href="{{ $event->getTicketTrackingLink() }}" target="_" title="Ticket link">
-		<i class="bi bi-ticket-perforated"></i>
+		<i class="bi bi-ticket-perforated"></i> Buy Tickets
 	</a>
 	@endif
 

@@ -249,8 +249,9 @@
 					@endif
 
 					@if ($ticket = $series->ticket_link)
-						<a href="{{ $series->getTicketTrackingLink() }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Ticket link">
-							<i class="bi bi-ticket-perforated text-gray-600 dark:text-gray-400"></i>
+						<a href="{{ $series->getTicketTrackingLink() }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-400" title="Buy tickets">
+							<i class="bi bi-ticket-perforated"></i>
+							<span class="text-sm">Buy Tickets</span>
 						</a>
 					@endif
 

@@ -327,8 +327,9 @@
 									@endif
 								@endif
 								@if ($ticket = $event->getTicketTrackingLink())
-								<a href="{{ $ticket }}" target="_blank" rel="noopener noreferrer" class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Buy tickets">
-									<i class="bi bi-ticket-perforated text-muted-foreground"></i>
+								<a href="{{ $ticket }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-muted-foreground" title="Buy tickets">
+									<i class="bi bi-ticket-perforated"></i>
+									<span class="text-sm">Buy Tickets</span>
 								</a>
 								@endif
 							</div>
