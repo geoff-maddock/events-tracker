@@ -3,7 +3,7 @@
 
     Variants:
       - $variant = 'tw'        (Tailwind/sidebar) -- default
-      - $variant = 'tw-mobile' (Tailwind/topbar)
+      - $variant = 'tw-mobile' (Tailwind/topbar)  -- gets full-screen overlay below sm:
       - $variant = 'bs'        (legacy Bootstrap nav)
 
     Optional:
@@ -22,67 +22,91 @@
     };
 @endphp
 
-<div class="relative search-autocomplete-root"
-     x-data="searchAutocomplete({ endpoint: '{{ url('/api/search') }}', target: '/search' })"
-     x-on:keydown.escape.window="close()"
-     x-on:click.outside="close()">
-    <form role="search" action="/search" x-on:submit="onSubmit($event)" class="{{ $variant === 'bs' ? 'navbar-form navbar-left' : 'flex flex-1 min-w-0' }}">
-        @if($variant === 'bs')
-            <div class="form-group">
-                <input type="text"
-                    id="{{ $inputId }}"
-                    class="{{ $inputClass }}"
-                    placeholder="Search"
-                    name="keyword"
-                    autocomplete="off"
-                    title="Search"
-                    aria-label="Search"
-                    aria-autocomplete="list"
-                    role="combobox"
-                    x-bind:aria-expanded="open"
-                    x-model="query"
-                    x-on:input.debounce.200ms="fetch()"
-                    x-on:focus="open = hasResults"
-                    x-on:keydown.arrow-down.prevent="move(1)"
-                    x-on:keydown.arrow-up.prevent="move(-1)"
-                    x-on:keydown.enter="onEnter($event)"
-                    value="{{ $value }}">
-            </div>
-        @else
-            <div class="relative w-full">
-                <input type="text"
-                    id="{{ $inputId }}"
-                    class="{{ $inputClass }}"
-                    placeholder="{{ $variant === 'tw-mobile' ? 'Search...' : 'Search' }}"
-                    name="keyword"
-                    autocomplete="off"
-                    title="Search"
-                    aria-label="Search"
-                    aria-autocomplete="list"
-                    role="combobox"
-                    x-bind:aria-expanded="open"
-                    x-model="query"
-                    x-on:input.debounce.200ms="fetch()"
-                    x-on:focus="open = hasResults"
-                    x-on:keydown.arrow-down.prevent="move(1)"
-                    x-on:keydown.arrow-up.prevent="move(-1)"
-                    x-on:keydown.enter="onEnter($event)"
-                    value="{{ $value }}">
-                <i class="bi bi-search absolute {{ $variant === 'tw-mobile' ? 'left-2.5 text-sm' : 'left-3' }} top-1/2 -translate-y-1/2 text-muted-foreground"></i>
-            </div>
-        @endif
-    </form>
+<div class="search-autocomplete-root"
+     x-data="searchAutocomplete({ endpoint: '{{ url('/api/search') }}', target: '/search', variant: '{{ $variant }}' })"
+     x-bind:class="overlay ? 'fixed inset-0 z-[60] bg-background flex flex-col' : 'relative'"
+     x-on:keydown.escape.window="overlay ? closeOverlay() : close()"
+     x-on:click.outside="overlay ? null : close()">
 
-    <div x-show="open"
+    {{-- Top row: input (+ X button when overlay is active) --}}
+    <div x-bind:class="overlay ? 'flex items-center gap-2 px-3 py-2 border-b border-border bg-card' : ''">
+        <form role="search" action="/search"
+              x-on:submit="onSubmit($event)"
+              x-bind:class="overlay ? 'flex-1' : '{{ $variant === 'bs' ? 'navbar-form navbar-left' : 'flex flex-1 min-w-0' }}'">
+            @if($variant === 'bs')
+                <div class="form-group">
+                    <input type="text"
+                        id="{{ $inputId }}"
+                        x-ref="input"
+                        class="{{ $inputClass }}"
+                        placeholder="Search"
+                        name="keyword"
+                        autocomplete="off"
+                        title="Search"
+                        aria-label="Search"
+                        aria-autocomplete="list"
+                        role="combobox"
+                        x-bind:aria-expanded="open"
+                        x-model="query"
+                        x-on:input.debounce.200ms="fetch()"
+                        x-on:focus="open = hasResults"
+                        x-on:keydown.arrow-down.prevent="move(1)"
+                        x-on:keydown.arrow-up.prevent="move(-1)"
+                        x-on:keydown.enter="onEnter($event)"
+                        value="{{ $value }}">
+                </div>
+            @else
+                <div class="relative w-full">
+                    <input type="text"
+                        id="{{ $inputId }}"
+                        x-ref="input"
+                        x-bind:class="overlay ? 'w-full pl-10 pr-3 py-2 bg-transparent border border-input rounded-lg text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring' : '{{ $inputClass }}'"
+                        placeholder="{{ $variant === 'tw-mobile' ? 'Search...' : 'Search' }}"
+                        name="keyword"
+                        autocomplete="off"
+                        title="Search"
+                        aria-label="Search"
+                        aria-autocomplete="list"
+                        role="combobox"
+                        x-bind:aria-expanded="open || overlay"
+                        x-model="query"
+                        x-on:input.debounce.200ms="fetch()"
+                        x-on:focus="onFocus()"
+                        x-on:keydown.arrow-down.prevent="move(1)"
+                        x-on:keydown.arrow-up.prevent="move(-1)"
+                        x-on:keydown.enter="onEnter($event)"
+                        value="{{ $value }}">
+                    <i x-bind:class="overlay ? 'bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground' : 'bi bi-search absolute {{ $variant === 'tw-mobile' ? 'left-2.5 text-sm' : 'left-3' }} top-1/2 -translate-y-1/2 text-muted-foreground'"></i>
+                </div>
+            @endif
+        </form>
+
+        {{-- Close button: only rendered in overlay mode --}}
+        <button type="button"
+                x-show="overlay"
+                x-on:click="closeOverlay()"
+                class="flex-shrink-0 p-2 rounded text-muted-foreground hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                aria-label="Close search">
+            <i class="bi bi-x-lg text-lg" aria-hidden="true"></i>
+        </button>
+    </div>
+
+    {{-- Results panel: absolute dropdown in normal mode, inline full-width below input in overlay mode --}}
+    <div x-show="open || overlay"
          x-cloak
          x-transition.opacity
-         class="absolute z-50 mt-1 left-0 right-0 min-w-[18rem] max-w-md bg-card border border-border rounded-lg shadow-lg overflow-hidden text-sm"
-         role="listbox">
+         role="listbox"
+         x-bind:class="overlay
+            ? 'flex-1 overflow-y-auto bg-card text-sm'
+            : 'absolute z-50 mt-1 left-0 right-0 min-w-[18rem] max-w-md bg-card border border-border rounded-lg shadow-lg overflow-hidden text-sm'">
         <template x-if="loading">
             <div class="px-3 py-2 text-muted-foreground">Searching&hellip;</div>
         </template>
         <template x-if="!loading && totalCount === 0 && query.length > 0">
             <div class="px-3 py-2 text-muted-foreground">No matches for &ldquo;<span x-text="query"></span>&rdquo;.</div>
+        </template>
+        <template x-if="!loading && query.length === 0 && overlay">
+            <div class="px-3 py-3 text-muted-foreground">Start typing to search events, venues, artists, series, and tags.</div>
         </template>
 
         <template x-for="group in groups" :key="group.key">
@@ -123,13 +147,16 @@
         return {
             endpoint: config.endpoint,
             target: config.target,
+            variant: config.variant || 'tw',
             query: '',
             open: false,
+            overlay: false,
             loading: false,
             controller: null,
             results: { events: [], entities: [], series: [], tags: [] },
             activeKey: null,
             activeIdx: -1,
+            _savedBodyOverflow: '',
 
             init() {
                 // Prefill from the input value (Blade-rendered).
@@ -153,17 +180,44 @@
                 return this.totalCount > 0;
             },
 
+            // Mobile-only: tapping into the input opens the full-screen overlay
+            // for the smallest viewports. Desktop/tablet keeps the normal dropdown.
+            onFocus() {
+                if (this.variant === 'tw-mobile' && window.matchMedia('(max-width: 639px)').matches) {
+                    this.openOverlay();
+                } else {
+                    this.open = this.hasResults;
+                }
+            },
+
+            openOverlay() {
+                if (this.overlay) return;
+                this.overlay = true;
+                this._savedBodyOverflow = document.body.style.overflow;
+                document.body.style.overflow = 'hidden';
+                // Defer focus until after the overlay DOM swap.
+                this.$nextTick(() => this.$refs.input?.focus());
+            },
+
+            closeOverlay() {
+                if (!this.overlay) return;
+                this.overlay = false;
+                document.body.style.overflow = this._savedBodyOverflow || '';
+                this.open = false;
+                this.$refs.input?.blur();
+            },
+
             async fetch() {
                 const q = this.query.trim();
                 if (q.length < 2) {
                     this.results = { events: [], entities: [], series: [], tags: [] };
-                    this.open = false;
+                    if (!this.overlay) this.open = false;
                     return;
                 }
                 if (this.controller) this.controller.abort();
                 this.controller = new AbortController();
                 this.loading = true;
-                this.open = true;
+                if (!this.overlay) this.open = true;
                 try {
                     const res = await fetch(this.endpoint + '?q=' + encodeURIComponent(q) + '&limit=5', {
                         headers: { 'Accept': 'application/json' },
