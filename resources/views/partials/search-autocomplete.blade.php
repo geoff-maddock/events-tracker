@@ -3,12 +3,16 @@
 
     Variants:
       - $variant = 'tw'        (Tailwind/sidebar) -- default
-      - $variant = 'tw-mobile' (Tailwind/topbar)
+      - $variant = 'tw-mobile' (Tailwind/topbar)  -- gets full-screen overlay below sm:
       - $variant = 'bs'        (legacy Bootstrap nav)
 
     Optional:
       - $inputId  -- DOM id for the input
       - $value    -- prefilled keyword
+
+    The overlay variant is teleported to <body> via x-teleport so it escapes
+    every potential ancestor stacking context (header, sidebar, layout flex
+    containers, etc.) and reliably renders above all other site content.
 --}}
 @php
     $variant = $variant ?? 'tw';
@@ -22,15 +26,20 @@
     };
 @endphp
 
-<div class="relative search-autocomplete-root"
-     x-data="searchAutocomplete({ endpoint: '{{ url('/api/search') }}', target: '/search' })"
-     x-on:keydown.escape.window="close()"
-     x-on:click.outside="close()">
-    <form role="search" action="/search" x-on:submit="onSubmit($event)" class="{{ $variant === 'bs' ? 'navbar-form navbar-left' : 'flex flex-1 min-w-0' }}">
+<div class="search-autocomplete-root relative"
+     x-data="searchAutocomplete({ endpoint: '{{ url('/api/search') }}', target: '/search', variant: '{{ $variant }}' })"
+     x-on:keydown.escape.window="overlay ? closeOverlay() : close()"
+     x-on:click.outside="overlay ? null : close()">
+
+    {{-- Inline trigger input (always rendered, sits in nav/sidebar/topbar) --}}
+    <form role="search" action="/search"
+          x-on:submit="onSubmit($event)"
+          class="{{ $variant === 'bs' ? 'navbar-form navbar-left' : 'flex flex-1 min-w-0' }}">
         @if($variant === 'bs')
             <div class="form-group">
                 <input type="text"
                     id="{{ $inputId }}"
+                    x-ref="input"
                     class="{{ $inputClass }}"
                     placeholder="Search"
                     name="keyword"
@@ -42,7 +51,7 @@
                     x-bind:aria-expanded="open"
                     x-model="query"
                     x-on:input.debounce.200ms="fetch()"
-                    x-on:focus="open = hasResults"
+                    x-on:focus="onFocus()"
                     x-on:keydown.arrow-down.prevent="move(1)"
                     x-on:keydown.arrow-up.prevent="move(-1)"
                     x-on:keydown.enter="onEnter($event)"
@@ -52,6 +61,7 @@
             <div class="relative w-full">
                 <input type="text"
                     id="{{ $inputId }}"
+                    x-ref="input"
                     class="{{ $inputClass }}"
                     placeholder="{{ $variant === 'tw-mobile' ? 'Search...' : 'Search' }}"
                     name="keyword"
@@ -60,10 +70,10 @@
                     aria-label="Search"
                     aria-autocomplete="list"
                     role="combobox"
-                    x-bind:aria-expanded="open"
+                    x-bind:aria-expanded="open || overlay"
                     x-model="query"
                     x-on:input.debounce.200ms="fetch()"
-                    x-on:focus="open = hasResults"
+                    x-on:focus="onFocus()"
                     x-on:keydown.arrow-down.prevent="move(1)"
                     x-on:keydown.arrow-up.prevent="move(-1)"
                     x-on:keydown.enter="onEnter($event)"
@@ -73,48 +83,58 @@
         @endif
     </form>
 
-    <div x-show="open"
+    {{-- Inline dropdown (non-overlay desktop/tablet behavior) --}}
+    <div x-show="open && !overlay"
          x-cloak
          x-transition.opacity
-         class="absolute z-50 mt-1 left-0 right-0 min-w-[18rem] max-w-md bg-card border border-border rounded-lg shadow-lg overflow-hidden text-sm"
-         role="listbox">
-        <template x-if="loading">
-            <div class="px-3 py-2 text-muted-foreground">Searching&hellip;</div>
-        </template>
-        <template x-if="!loading && totalCount === 0 && query.length > 0">
-            <div class="px-3 py-2 text-muted-foreground">No matches for &ldquo;<span x-text="query"></span>&rdquo;.</div>
-        </template>
-
-        <template x-for="group in groups" :key="group.key">
-            <div x-show="group.items.length > 0">
-                <div class="px-3 py-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground bg-muted/50" x-text="group.label"></div>
-                <ul>
-                    <template x-for="(item, idx) in group.items" :key="group.key + '-' + item.id">
-                        <li>
-                            <a :href="item.url"
-                               class="block px-3 py-2 hover:bg-muted focus:bg-muted"
-                               :class="{ 'bg-muted': isActive(group.key, idx) }"
-                               x-on:mouseenter="setActive(group.key, idx)"
-                               role="option"
-                               :aria-selected="isActive(group.key, idx)">
-                                <div class="font-medium text-foreground" x-html="highlight(item.name)"></div>
-                                <template x-if="item.subtitle">
-                                    <div class="text-xs text-muted-foreground truncate" x-text="item.subtitle"></div>
-                                </template>
-                            </a>
-                        </li>
-                    </template>
-                </ul>
-            </div>
-        </template>
-
-        <template x-if="query.length > 0 && totalCount > 0">
-            <a x-bind:href="'/search?keyword=' + encodeURIComponent(query)"
-               class="block px-3 py-2 border-t border-border text-center text-xs font-medium text-foreground hover:bg-muted">
-                View all results for &ldquo;<span x-text="query"></span>&rdquo;
-            </a>
-        </template>
+         role="listbox"
+         class="absolute z-50 mt-1 left-0 right-0 min-w-[18rem] max-w-md bg-card border border-border rounded-lg shadow-lg overflow-hidden text-sm">
+        @include('partials.search-autocomplete-results')
     </div>
+
+    {{-- Teleported full-screen overlay: rendered as a direct child of <body>
+         to escape any ancestor stacking context. --}}
+    <template x-teleport="body">
+        <div x-show="overlay"
+             x-cloak
+             x-transition.opacity
+             role="dialog"
+             aria-modal="true"
+             aria-label="Search"
+             class="fixed inset-0 z-[2000] bg-background flex flex-col">
+            <div class="flex items-center gap-2 px-3 py-2 border-b border-border bg-card">
+                <form role="search" action="/search" x-on:submit="onSubmit($event)" class="flex-1">
+                    <div class="relative w-full">
+                        <input type="text"
+                            x-ref="overlayInput"
+                            class="w-full pl-10 pr-3 py-2 bg-transparent border border-input rounded-lg text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                            placeholder="Search..."
+                            name="keyword"
+                            autocomplete="off"
+                            aria-label="Search"
+                            aria-autocomplete="list"
+                            role="combobox"
+                            x-bind:aria-expanded="overlay"
+                            x-model="query"
+                            x-on:input.debounce.200ms="fetch()"
+                            x-on:keydown.arrow-down.prevent="move(1)"
+                            x-on:keydown.arrow-up.prevent="move(-1)"
+                            x-on:keydown.enter="onEnter($event)">
+                        <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"></i>
+                    </div>
+                </form>
+                <button type="button"
+                        x-on:click="closeOverlay()"
+                        class="flex-shrink-0 p-2 rounded text-muted-foreground hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                        aria-label="Close search">
+                    <i class="bi bi-x-lg text-lg" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div role="listbox" class="flex-1 overflow-y-auto bg-card text-sm">
+                @include('partials.search-autocomplete-results', ['inOverlay' => true])
+            </div>
+        </div>
+    </template>
 </div>
 
 @once
@@ -123,13 +143,16 @@
         return {
             endpoint: config.endpoint,
             target: config.target,
+            variant: config.variant || 'tw',
             query: '',
             open: false,
+            overlay: false,
             loading: false,
             controller: null,
             results: { events: [], entities: [], series: [], tags: [] },
             activeKey: null,
             activeIdx: -1,
+            _savedBodyOverflow: '',
 
             init() {
                 // Prefill from the input value (Blade-rendered).
@@ -153,17 +176,45 @@
                 return this.totalCount > 0;
             },
 
+            // Mobile-only: tapping into the input opens the full-screen overlay
+            // for the smallest viewports. Desktop/tablet keeps the normal dropdown.
+            onFocus() {
+                if (this.variant === 'tw-mobile' && window.matchMedia('(max-width: 639px)').matches) {
+                    this.openOverlay();
+                } else {
+                    this.open = this.hasResults;
+                }
+            },
+
+            openOverlay() {
+                if (this.overlay) return;
+                this.overlay = true;
+                this._savedBodyOverflow = document.body.style.overflow;
+                document.body.style.overflow = 'hidden';
+                this.$refs.input?.blur();
+                // Defer focus until after the overlay DOM swap.
+                this.$nextTick(() => this.$refs.overlayInput?.focus());
+            },
+
+            closeOverlay() {
+                if (!this.overlay) return;
+                this.overlay = false;
+                document.body.style.overflow = this._savedBodyOverflow || '';
+                this.open = false;
+                this.$refs.overlayInput?.blur();
+            },
+
             async fetch() {
                 const q = this.query.trim();
                 if (q.length < 2) {
                     this.results = { events: [], entities: [], series: [], tags: [] };
-                    this.open = false;
+                    if (!this.overlay) this.open = false;
                     return;
                 }
                 if (this.controller) this.controller.abort();
                 this.controller = new AbortController();
                 this.loading = true;
-                this.open = true;
+                if (!this.overlay) this.open = true;
                 try {
                     const res = await fetch(this.endpoint + '?q=' + encodeURIComponent(q) + '&limit=5', {
                         headers: { 'Accept': 'application/json' },
