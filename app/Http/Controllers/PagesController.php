@@ -11,6 +11,7 @@ use App\Models\Series;
 use App\Models\Tag;
 use App\Models\Thread;
 use App\Models\User;
+use App\Services\SearchService;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -109,96 +110,14 @@ class PagesController extends Controller
     /**
      * Primary site searchbar action.
      */
-    public function search(Request $request): View
+    public function search(Request $request, SearchService $searchService): View
     {
-        $search = $request->input('keyword');
-        $searchSlug = Str::slug($search, '-');
-
-        // override limit, while not breaking template that tries to render
+        $search = (string) $request->input('keyword', '');
         $this->limit = 20;
 
-        // find matching events by entity, tag or series or name
-        $eventQuery = Event::getByEntity(strtolower($searchSlug))
-                    ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
-                    ->orWhereHas('tags', function ($q) use ($search) {
-                        $q->where('name', '=', ucfirst($search));
-                    })
-                    ->orWhereHas('series', function ($q) use ($search) {
-                        $q->where('name', '=', ucfirst($search));
-                    })
-                    ->orWhereHas('venue', function ($q) use ($search) {
-                        $q->where('name', '=', ucfirst($search));
-                    })
-                    ->orWhereHas('promoter', function ($q) use ($search) {
-                        $q->where('name', '=', ucfirst($search));
-                    })
-                    ->orWhere('name', 'like', '%'.$search.'%')
-                    ->where(function ($query) {
-                        $query->visible($this->user);
-                    })
-                    ->orderBy('start_at', 'DESC')
-                    ->orderBy('name', 'ASC');
-        
-        $eventsCount = $eventQuery->count();
-        $events = $eventQuery->paginate($this->limit);
+        $results = $searchService->all($search, $this->user, $this->limit);
 
-        // find matching series by entity, tag or name
-        $seriesQuery = Series::getByEntity(strtolower($searchSlug))
-                    ->with('visibility', 'venue','tags', 'entities','eventType','threads','occurrenceType','occurrenceWeek','occurrenceDay')
-                    ->orWhereHas('tags', function ($q) use ($search) {
-                        $q->where('name', '=', ucfirst($search));
-                    })
-                    ->orWhere('name', 'like', '%'.$search.'%')
-                    ->where(function ($query) {
-                        $query->visible($this->user);
-                    })
-                    ->orderBy('start_at', 'DESC')
-                    ->orderBy('name', 'ASC');
-
-        $seriesCount = $seriesQuery->count();
-        $series = $seriesQuery->with('occurrenceWeek','occurrenceType','occurrenceDay')->paginate($this->limit);
-
-        // find entities by name, tags or aliases
-        $entitiesQuery = Entity::where('name', 'like', '%'.$search.'%')
-                ->with('tags', 'events','entityType','locations','entityStatus','user')
-                ->where('entity_status_id','<>',EntityStatus::UNLISTED)
-                ->orWhereHas('tags', function ($q) use ($search) {
-                    $q->where('name', '=', ucfirst($search));
-                })
-                ->orWherehas('aliases', function ($q) use ($search) {
-                    $q->where('name', '=', ucfirst($search));
-                })
-                ->orderBy('entity_type_id', 'ASC')
-                ->orderBy('name', 'ASC');
-
-        $entitiesCount = $entitiesQuery->count();
-        $entities = $entitiesQuery->paginate($this->limit);
-
-        // find tags by name
-        $tagsQuery = Tag::where('name', 'like', '%'.$search.'%')
-                ->orderBy('name', 'ASC');
-
-        $tagsCount = $tagsQuery->count();
-        $tags = $tagsQuery->simplePaginate($this->limit);
-
-        // find users by name
-        $usersQuery = User::where('name', 'like', '%'.$search.'%')
-                ->orderBy('name', 'ASC');
-
-        $usersCount = $usersQuery->count();
-        $users = $usersQuery->simplePaginate($this->limit);
-
-        // find threads by name
-        $threadsQuery = Thread::with('visibility','entities','tags','posts','event','user')->where('name', 'like', '%'.$search.'%')
-            ->orWhereHas('tags', function ($q) use ($search) {
-                $q->where('name', '=', ucfirst($search));
-            })
-            ->orderBy('name', 'ASC');
-            
-        $threadsCount = $threadsQuery->count();
-        $threads = $threadsQuery->paginate($this->limit);
-
-        return view('pages.search', compact('events', 'eventsCount', 'entities', 'entitiesCount', 'series', 'seriesCount', 'users', 'usersCount', 'threads', 'threadsCount', 'tags', 'tagsCount', 'search'));
+        return view('pages.search', array_merge($results, ['search' => $search]));
     }
 
     
