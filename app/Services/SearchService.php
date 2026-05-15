@@ -217,6 +217,113 @@ class SearchService
     }
 
     /**
+     * Lightweight grouped typeahead results: flat arrays per type.
+     *
+     * @param  array<int, string>|null  $types  Subset of ['events','entities','series','tags']. Null = all four.
+     * @return array{
+     *   query: string,
+     *   results: array<string, list<array{id:int,name:string,slug:?string,subtitle:?string,url:string}>>,
+     * }
+     */
+    public function lite(string $keyword, ?User $user, int $limit = 6, ?array $types = null): array
+    {
+        $keyword = trim(preg_replace('/\s+/', ' ', $keyword) ?? '');
+        $types = $types ?: ['events', 'entities', 'series', 'tags'];
+        $results = [];
+
+        if ($keyword === '') {
+            return ['query' => '', 'results' => array_fill_keys($types, [])];
+        }
+
+        $useFulltext = $this->useFulltext($keyword);
+
+        if (in_array('events', $types, true)) {
+            $q = Event::query()->select('id', 'name', 'slug', 'short', 'start_at')->visible($user);
+            $this->applyTextMatch($q, 'events', ['name', 'short', 'description'], $keyword, $useFulltext);
+            if ($useFulltext) {
+                $q->orderByRaw('MATCH(events.name, events.short, events.description) AGAINST (?) DESC', [$keyword]);
+            }
+            $q->orderBy('start_at', 'DESC');
+            $results['events'] = $q->limit($limit)->get()->map(fn ($e) => [
+                'id'       => $e->id,
+                'name'     => $e->name,
+                'slug'     => $e->slug,
+                'subtitle' => $e->start_at?->format('M j, Y'),
+                'url'      => url('/events/' . $e->id),
+            ])->all();
+        }
+
+        if (in_array('entities', $types, true)) {
+            $q = Entity::query()->select('id', 'name', 'slug', 'short')
+                ->where('entity_status_id', '<>', EntityStatus::UNLISTED);
+            $this->applyTextMatch($q, 'entities', ['name', 'short', 'description'], $keyword, $useFulltext);
+            if ($useFulltext) {
+                $q->orderByRaw('MATCH(entities.name, entities.short, entities.description) AGAINST (?) DESC', [$keyword]);
+            }
+            $q->orderBy('name', 'ASC');
+            $results['entities'] = $q->limit($limit)->get()->map(fn ($e) => [
+                'id'       => $e->id,
+                'name'     => $e->name,
+                'slug'     => $e->slug,
+                'subtitle' => $e->short,
+                'url'      => url('/entities/' . $e->slug),
+            ])->all();
+        }
+
+        if (in_array('series', $types, true)) {
+            $q = Series::query()->select('id', 'name', 'slug', 'short')->visible($user);
+            $this->applyTextMatch($q, 'series', ['name', 'short', 'description'], $keyword, $useFulltext);
+            if ($useFulltext) {
+                $q->orderByRaw('MATCH(series.name, series.short, series.description) AGAINST (?) DESC', [$keyword]);
+            }
+            $q->orderBy('name', 'ASC');
+            $results['series'] = $q->limit($limit)->get()->map(fn ($s) => [
+                'id'       => $s->id,
+                'name'     => $s->name,
+                'slug'     => $s->slug,
+                'subtitle' => $s->short,
+                'url'      => url('/series/' . $s->id),
+            ])->all();
+        }
+
+        if (in_array('tags', $types, true)) {
+            $tagResults = Tag::query()
+                ->select('id', 'name', 'slug')
+                ->where('name', 'like', '%' . $keyword . '%')
+                ->orderByRaw('CASE WHEN LOWER(name) = ? THEN 0 ELSE 1 END', [mb_strtolower($keyword)])
+                ->orderBy('name', 'ASC')
+                ->limit($limit)
+                ->get();
+            $results['tags'] = $tagResults->map(fn ($t) => [
+                'id'       => $t->id,
+                'name'     => $t->name,
+                'slug'     => $t->slug,
+                'subtitle' => null,
+                'url'      => url('/tags/' . $t->slug),
+            ])->all();
+        }
+
+        return ['query' => $keyword, 'results' => $results];
+    }
+
+    /**
+     * @param  Builder<\Illuminate\Database\Eloquent\Model>  $query
+     * @param  array<int, string>  $columns
+     */
+    private function applyTextMatch(Builder $query, string $table, array $columns, string $keyword, bool $useFulltext): void
+    {
+        if ($useFulltext) {
+            $cols = implode(',', array_map(fn ($c) => "$table.$c", $columns));
+            $query->whereRaw(
+                "MATCH($cols) AGAINST (? IN BOOLEAN MODE)",
+                [$this->booleanQuery($keyword)]
+            );
+        } else {
+            $query->where("$table.name", 'like', '%' . $keyword . '%');
+        }
+    }
+
+    /**
      * Case-insensitive name comparison closure for whereHas relationships.
      */
     private function ciNameMatch(string $keyword): \Closure

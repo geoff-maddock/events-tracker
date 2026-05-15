@@ -10,18 +10,7 @@
 
     <!-- Search -->
     <div class="p-4">
-        <form role="search" action="/search">
-            <div class="relative">
-                <input type="text"
-                    class="w-full pl-10 pr-4 py-2 bg-transparent border border-input rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-                    placeholder="Search"
-                    name="keyword"
-                    title="Search"
-                    aria-label="Search"
-                    value="{{ isset($search) ? $search : '' }}">
-                <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"></i>
-            </div>
-        </form>
+        @include('partials.search-autocomplete', ['variant' => 'tw', 'inputId' => 'search-sidebar'])
     </div>
 
     <!-- Navigation -->

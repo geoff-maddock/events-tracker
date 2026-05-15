@@ -32,6 +32,9 @@ Route::middleware('auth:sanctum')->get('tokens/test', function (Request $request
     return ['data' => 'token test'];
 });
 
+// Public typeahead search. Visibility scoping uses the optionally-authenticated user.
+Route::get('search', ['as' => 'api.search', 'uses' => 'Api\SearchController@index']);
+
 Route::middleware('auth:sanctum')->get('auth/me', function (Request $request) {
     // $user = $request->user()->load(['groups.permissions']);
     // return new AuthUserResource($user);

@@ -13,18 +13,9 @@
         </a>
 
         <!-- Mobile Search -->
-        <form class="flex flex-1 min-w-0" role="search" action="/search">
-            <div class="relative w-full">
-                <input type="text"
-                    class="w-full pl-8 pr-3 py-1.5 bg-transparent border border-input rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                    placeholder="Search..."
-                    name="keyword"
-                    title="Search"
-                    aria-label="Search"
-                    value="{{ isset($search) ? $search : '' }}">
-                <i class="bi bi-search absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground text-sm"></i>
-            </div>
-        </form>
+        <div class="flex-1 min-w-0">
+            @include('partials.search-autocomplete', ['variant' => 'tw-mobile', 'inputId' => 'search-topbar'])
+        </div>
 
         <!-- Right side actions -->
         <div class="flex items-center gap-2 flex-shrink-0">
