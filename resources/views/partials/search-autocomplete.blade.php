@@ -50,7 +50,7 @@
                     role="combobox"
                     x-bind:aria-expanded="open"
                     x-model="query"
-                    x-on:input.debounce.200ms="fetch()"
+                    x-on:input.debounce.400ms="fetch()"
                     x-on:focus="onFocus()"
                     x-on:keydown.arrow-down.prevent="move(1)"
                     x-on:keydown.arrow-up.prevent="move(-1)"
@@ -72,7 +72,7 @@
                     role="combobox"
                     x-bind:aria-expanded="open || overlay"
                     x-model="query"
-                    x-on:input.debounce.200ms="fetch()"
+                    x-on:input.debounce.400ms="fetch()"
                     x-on:focus="onFocus()"
                     x-on:keydown.arrow-down.prevent="move(1)"
                     x-on:keydown.arrow-up.prevent="move(-1)"
@@ -116,7 +116,7 @@
                             role="combobox"
                             x-bind:aria-expanded="overlay"
                             x-model="query"
-                            x-on:input.debounce.200ms="fetch()"
+                            x-on:input.debounce.400ms="fetch()"
                             x-on:keydown.arrow-down.prevent="move(1)"
                             x-on:keydown.arrow-up.prevent="move(-1)"
                             x-on:keydown.enter="onEnter($event)">
@@ -206,7 +206,7 @@
 
             async fetch() {
                 const q = this.query.trim();
-                if (q.length < 2) {
+                if (q.length < 3) {
                     this.results = { events: [], entities: [], series: [], tags: [] };
                     if (!this.overlay) this.open = false;
                     return;
