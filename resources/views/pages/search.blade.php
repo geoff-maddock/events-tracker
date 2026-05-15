@@ -94,12 +94,46 @@
 			</button>
 		</div>
 		<div id="search-events" class="p-4">
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-				@foreach($events as $event)
-				@include('events.card-tw', ['event' => $event])
-				@php unset($event); @endphp
-				@endforeach
+			@php
+				$now = \Carbon\Carbon::now();
+				$upcomingEvents = $events->getCollection()->filter(fn ($e) => $e->start_at && $e->start_at >= $now);
+				$pastEvents     = $events->getCollection()->reject(fn ($e) => $e->start_at && $e->start_at >= $now);
+			@endphp
+
+			@if ($upcomingEvents->isNotEmpty())
+			<div class="mb-5">
+				<h3 class="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3 flex items-center gap-2">
+					<i class="bi bi-calendar-event"></i>
+					Upcoming
+					<span class="badge-tw bg-muted text-foreground text-xs">{{ $upcomingEvents->count() }}</span>
+				</h3>
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+					@foreach($upcomingEvents as $event)
+					@include('events.card-tw', ['event' => $event])
+					@php unset($event); @endphp
+					@endforeach
+				</div>
 			</div>
+			@endif
+
+			@if ($pastEvents->isNotEmpty())
+			<div>
+				@if ($upcomingEvents->isNotEmpty())
+				<h3 class="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3 flex items-center gap-2">
+					<i class="bi bi-clock-history"></i>
+					Past
+					<span class="badge-tw bg-muted text-foreground text-xs">{{ $pastEvents->count() }}</span>
+				</h3>
+				@endif
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+					@foreach($pastEvents as $event)
+					@include('events.card-tw', ['event' => $event])
+					@php unset($event); @endphp
+					@endforeach
+				</div>
+			</div>
+			@endif
+
 			<div class="mt-4">
 				{!! $events->appends(['keyword' => $search])->links('vendor.pagination.tailwind') !!}
 			</div>
@@ -125,12 +159,46 @@
 			</button>
 		</div>
 		<div id="search-series" class="p-4">
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-				@foreach($series as $s)
-				@include('series.card-tw', ['series' => $s])
-				@php unset($s); @endphp
-				@endforeach
+			@php
+				$now = $now ?? \Carbon\Carbon::now();
+				$upcomingSeries = $series->getCollection()->filter(fn ($s) => $s->start_at && $s->start_at >= $now);
+				$pastSeries     = $series->getCollection()->reject(fn ($s) => $s->start_at && $s->start_at >= $now);
+			@endphp
+
+			@if ($upcomingSeries->isNotEmpty())
+			<div class="mb-5">
+				<h3 class="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3 flex items-center gap-2">
+					<i class="bi bi-calendar-event"></i>
+					Upcoming
+					<span class="badge-tw bg-muted text-foreground text-xs">{{ $upcomingSeries->count() }}</span>
+				</h3>
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+					@foreach($upcomingSeries as $s)
+					@include('series.card-tw', ['series' => $s])
+					@php unset($s); @endphp
+					@endforeach
+				</div>
 			</div>
+			@endif
+
+			@if ($pastSeries->isNotEmpty())
+			<div>
+				@if ($upcomingSeries->isNotEmpty())
+				<h3 class="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3 flex items-center gap-2">
+					<i class="bi bi-clock-history"></i>
+					Past
+					<span class="badge-tw bg-muted text-foreground text-xs">{{ $pastSeries->count() }}</span>
+				</h3>
+				@endif
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+					@foreach($pastSeries as $s)
+					@include('series.card-tw', ['series' => $s])
+					@php unset($s); @endphp
+					@endforeach
+				</div>
+			</div>
+			@endif
+
 			<div class="mt-4">
 				{!! $series->appends(['keyword' => $search])->links('vendor.pagination.tailwind') !!}
 			</div>

@@ -95,13 +95,15 @@ class SearchService
             })
             ->visible($user);
 
+        $this->applyRecencyOrder($query, 'events');
         if ($useFulltext) {
             $query->orderByRaw(
                 'MATCH(events.name, events.short, events.description) AGAINST (?) DESC',
                 [$keyword]
             );
         }
-        $query->orderBy('start_at', 'DESC')->orderBy('name', 'ASC');
+        $query->orderByRaw('ABS(TIMESTAMPDIFF(SECOND, NOW(), events.start_at)) ASC')
+            ->orderBy('events.name', 'ASC');
 
         return $query->paginate($perPage);
     }
@@ -127,13 +129,15 @@ class SearchService
             })
             ->visible($user);
 
+        $this->applyRecencyOrder($query, 'series');
         if ($useFulltext) {
             $query->orderByRaw(
                 'MATCH(series.name, series.short, series.description) AGAINST (?) DESC',
                 [$keyword]
             );
         }
-        $query->orderBy('start_at', 'DESC')->orderBy('name', 'ASC');
+        $query->orderByRaw('ABS(TIMESTAMPDIFF(SECOND, NOW(), series.start_at)) ASC')
+            ->orderBy('series.name', 'ASC');
 
         return $query->paginate($perPage);
     }
@@ -321,6 +325,27 @@ class SearchService
         } else {
             $query->where("$table.name", 'like', '%' . $keyword . '%');
         }
+    }
+
+    /**
+     * Order results into three time buckets so upcoming events always come
+     * before recent-past, which come before older — keeping discovery of
+     * upcoming events as the primary use case for the site.
+     *
+     * @param  Builder<\Illuminate\Database\Eloquent\Model>  $query
+     */
+    private function applyRecencyOrder(Builder $query, string $table): void
+    {
+        // start_at NULL is treated as "older" so undated rows don't outrank
+        // real upcoming events.
+        $query->orderByRaw(
+            "CASE
+                WHEN {$table}.start_at IS NULL                      THEN 2
+                WHEN {$table}.start_at >= NOW()                     THEN 0
+                WHEN {$table}.start_at >= NOW() - INTERVAL 60 DAY   THEN 1
+                ELSE                                                     2
+            END ASC"
+        );
     }
 
     /**
