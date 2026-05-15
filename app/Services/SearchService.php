@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Entity;
 use App\Models\EntityStatus;
 use App\Models\Event;
+use App\Models\SearchLog;
 use App\Models\Series;
 use App\Models\Tag;
 use App\Models\Thread;
@@ -12,7 +13,9 @@ use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Throwable;
 
 class SearchService
 {
@@ -53,6 +56,11 @@ class SearchService
         $users    = $this->users($keyword, $perPage);
         $threads  = $this->threads($keyword, $perPage);
 
+        $tagsCount    = $this->countLike(Tag::query(), ['name'], $keyword);
+        $usersCount   = $this->countLike(User::query(), ['name'], $keyword);
+
+        $this->logSearch($keyword, $user, 'web', $events->total() + $series->total() + $entities->total() + $tagsCount + $usersCount + $threads->total());
+
         return [
             'events'        => $events,
             'eventsCount'   => $events->total(),
@@ -61,9 +69,9 @@ class SearchService
             'entities'      => $entities,
             'entitiesCount' => $entities->total(),
             'tags'          => $tags,
-            'tagsCount'     => $this->countLike(Tag::query(), ['name'], $keyword),
+            'tagsCount'     => $tagsCount,
             'users'         => $users,
-            'usersCount'    => $this->countLike(User::query(), ['name'], $keyword),
+            'usersCount'    => $usersCount,
             'threads'       => $threads,
             'threadsCount'  => $threads->total(),
         ];
@@ -307,7 +315,37 @@ class SearchService
             ])->all();
         }
 
+        $totalCount = array_sum(array_map('count', $results));
+        $this->logSearch($keyword, $user, 'api', $totalCount);
+
         return ['query' => $keyword, 'results' => $results];
+    }
+
+    /**
+     * Record a search to the search_logs table for later analytics.
+     *
+     * Skipped for empty queries (typeahead returns early before any query
+     * is actually run). Failures are swallowed and logged to the default
+     * channel — telemetry must never break a user-facing search.
+     */
+    private function logSearch(string $keyword, ?User $user, string $source, int $resultsCount): void
+    {
+        if ($keyword === '') {
+            return;
+        }
+        try {
+            $request = request();
+            SearchLog::create([
+                'user_id'       => $user?->id,
+                'query'         => mb_substr($keyword, 0, 191),
+                'results_count' => $resultsCount,
+                'source'        => $source,
+                'ip_address'    => $request?->ip(),
+                'user_agent'    => $request ? mb_substr((string) $request->userAgent(), 0, 512) : null,
+            ]);
+        } catch (Throwable $e) {
+            Log::warning('search log write failed', ['err' => $e->getMessage()]);
+        }
     }
 
     /**
