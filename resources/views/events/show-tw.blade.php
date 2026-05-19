@@ -552,13 +552,13 @@ $(document).ready(function(){
                 }
 
                 if (typeof EmbedLoader !== 'undefined' && slug) {
-                    // Clear the cache and reload
-                    EmbedLoader.refresh('events', slug).then(function(data) {
+                    // Clear the cache and reload (full-size embeds, not minimal)
+                    EmbedLoader.refresh('events', slug, { endpoint: 'embeds' }).then(function(embeds) {
                         // Find the playlist container and update it
                         var playlistEl = document.querySelector('.playlist-id[data-resource-type="events"]');
-                        if (playlistEl && data && data.embeds && data.embeds.length > 0) {
+                        if (playlistEl && embeds && embeds.length > 0) {
                             var html = '<div class="space-y-4">';
-                            data.embeds.forEach(function(embed) {
+                            embeds.forEach(function(embed) {
                                 html += '<div class="rounded-md overflow-hidden">' + embed + '</div>';
                             });
                             html += '</div>';
