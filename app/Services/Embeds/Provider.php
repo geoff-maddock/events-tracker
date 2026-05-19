@@ -47,13 +47,13 @@ class Provider
             $this->response = $this->options['response'];
         } elseif (null === $this->response) {
             $options = [
-                CURLOPT_CONNECTTIMEOUT => 10,
+                CURLOPT_CONNECTTIMEOUT => 3,
                 CURLOPT_ENCODING => 'gzip',
                 CURLOPT_FAILONERROR => true,
                 CURLOPT_FOLLOWLOCATION => true,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_TCP_FASTOPEN => true,
-                CURLOPT_TIMEOUT => 10,
+                CURLOPT_TIMEOUT => 5,
                 CURLOPT_URL => $url,
                 CURLOPT_USERAGENT => 'Geoff-Maddock/Events-Tracker BrowserKit',
             ];

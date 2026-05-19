@@ -20,14 +20,20 @@ var App = (function () {
             var target = $(this).attr('id');
             var slug = $(this).attr('data-slug');
             var resourceType = $(this).attr('data-resource-type') || 'events';
+            var endpoint = $(this).attr('data-endpoint') || 'minimal-embeds';
 
             // Use EmbedLoader with caching if available and slug is provided
             if (typeof EmbedLoader !== 'undefined' && slug) {
                 EmbedLoader.load(resourceType, slug, {
-                    endpoint: 'minimal-embeds',
+                    endpoint: endpoint,
                     onSuccess: function (embeds) {
                         if (embeds && embeds.length > 0) {
-                            $('#' + target).html(embeds.join(''));
+                            var html = embeds.map(function (embed) {
+                                return endpoint === 'embeds'
+                                    ? '<div class="rounded-md overflow-hidden">' + embed + '</div>'
+                                    : embed;
+                            }).join('');
+                            $('#' + target).html(html);
                             $('#' + target).removeClass('playlist-id hidden');
                         }
                     },
