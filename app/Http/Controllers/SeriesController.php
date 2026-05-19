@@ -657,7 +657,10 @@ class SeriesController extends Controller
         $events = $series->events()->with('venue')->paginate($this->childLimit);
         $threads = $series->threads()->paginate($this->childLimit);
 
-        return view('series.show-tw', compact('series', 'events', 'threads'));
+        // Embeds are deferred to an AJAX call via the playlist-tw placeholder.
+        $embeds = [];
+
+        return view('series.show-tw', compact('series', 'events', 'threads', 'embeds'));
     }
 
     public function store(SeriesRequest $request, Series $series): RedirectResponse
@@ -1039,6 +1042,33 @@ class SeriesController extends Controller
         }
         flash()->success('Error', 'You cannot load embeds directly');
 
+        return back();
+    }
+
+    /**
+     * Load the full (medium-size) embeds by slug as JSON (no auth required).
+     */
+    public function loadEmbedsBySlug(string $slug, OembedExtractor $embedExtractor, Request $request): JsonResponse | RedirectResponse
+    {
+        if (!$series = Series::with('entities.links')->where('slug', $slug)->first()) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['error' => 'Series not found'], 404);
+            }
+            flash()->error('Error', 'No such series');
+            return back();
+        }
+
+        $embedExtractor->setLayout('medium');
+        $embeds = $embedExtractor->getEmbedsForSeries($series);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'data' => $embeds,
+                'message' => 'Embeds loaded successfully',
+            ]);
+        }
+
+        flash()->success('Error', 'You cannot load embeds directly');
         return back();
     }
 

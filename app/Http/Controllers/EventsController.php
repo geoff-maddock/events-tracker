@@ -1811,7 +1811,9 @@ class EventsController extends Controller
         // Load total follower count for admin display
         $event->loadCount('eventResponses');
 
-        $embeds = $oembedExtractor->getEmbedsForEvent($event);
+        // Embeds are deferred to an AJAX call (see resources/views/embeds/playlist-tw.blade.php).
+        // The placeholder div triggers /events/{slug}/embeds which is cached server-side.
+        $embeds = [];
 
         $relatedThreads = $event->threads()
             ->with(['posts.user', 'user'])
@@ -1893,6 +1895,33 @@ class EventsController extends Controller
         }
         flash()->success('Error', 'You cannot load embeds directly');
 
+        return back();
+    }
+
+    /**
+     * Load the full (medium-size) embeds by slug as JSON (no auth required).
+     */
+    public function loadEmbedsBySlug(string $slug, OembedExtractor $embedExtractor, Request $request): JsonResponse | RedirectResponse
+    {
+        if (!$event = Event::with('entities.links')->where('slug', $slug)->first()) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['error' => 'Event not found'], 404);
+            }
+            flash()->error('Error', 'No such event');
+            return back();
+        }
+
+        $embedExtractor->setLayout('medium');
+        $embeds = $embedExtractor->getEmbedsForEvent($event);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'data' => $embeds,
+                'message' => 'Embeds loaded successfully',
+            ]);
+        }
+
+        flash()->success('Error', 'You cannot load embeds directly');
         return back();
     }
 

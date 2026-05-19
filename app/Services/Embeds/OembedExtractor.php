@@ -8,6 +8,7 @@ use App\Models\Series;
 use DOMDocument;
 use DOMXPath;
 use Exception;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Extracts embed data using oEmbed APIs
@@ -15,6 +16,9 @@ use Exception;
 class OembedExtractor
 {
     const CONTAINER_LIMIT = 4;
+
+    // 7 days — matches the browser-side embed cache TTL in public/js/embed-cache.js.
+    const CACHE_TTL_SECONDS = 604800;
 
     protected Provider $provider;
 
@@ -63,16 +67,22 @@ class OembedExtractor
      */
     public function getEmbedsForEntity(Entity $entity, string $size = "medium"): array
     {
-        $urls = [];
+        return Cache::remember(
+            $this->embedsCacheKey('entity', $entity->slug ?? (string) $entity->id, $this->size, $entity->updated_at?->timestamp),
+            self::CACHE_TTL_SECONDS,
+            function () use ($entity, $size): array {
+                $urls = [];
 
-        foreach ($entity->links as $link) {
-            if (in_array($link->url, $urls)) {
-                continue;
+                foreach ($entity->links as $link) {
+                    if (in_array($link->url, $urls)) {
+                        continue;
+                    }
+                    $urls[] = $link->url;
+                }
+
+                return $this->extractEmbedsFromUrls($urls, $size);
             }
-            $urls[] = $link->url;
-        }
-
-        return $this->extractEmbedsFromUrls($urls, $size);
+        );
     }
 
     /**
@@ -80,22 +90,28 @@ class OembedExtractor
      */
     public function getEmbedsForEvent(Event $event, string $size = "medium"): array
     {
-        $body = $event->description;
+        return Cache::remember(
+            $this->embedsCacheKey('event', $event->slug ?? (string) $event->id, $this->size, $event->updated_at?->timestamp),
+            self::CACHE_TTL_SECONDS,
+            function () use ($event, $size): array {
+                $body = $event->description ?? '';
 
-        $regex = "/\b(?:(?:https|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i";
-        preg_match_all($regex, $body, $result, PREG_PATTERN_ORDER);
-        $urls = $result[0];
+                $regex = "/\b(?:(?:https|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i";
+                preg_match_all($regex, $body, $result, PREG_PATTERN_ORDER);
+                $urls = $result[0];
 
-        foreach ($event->entities as $entity) {
-            foreach ($entity->links as $link) {
-                if (in_array($link->url, $urls)) {
-                    continue;
+                foreach ($event->entities as $entity) {
+                    foreach ($entity->links as $link) {
+                        if (in_array($link->url, $urls)) {
+                            continue;
+                        }
+                        $urls[] = $link->url;
+                    }
                 }
-                $urls[] = $link->url;
-            }
-        }
 
-        return $this->extractEmbedsFromUrls($urls, $size);
+                return $this->extractEmbedsFromUrls($urls, $size);
+            }
+        );
     }
 
     /**
@@ -103,22 +119,36 @@ class OembedExtractor
      */
     public function getEmbedsForSeries(Series $series, string $size = "medium"): array
     {
-        $body = $series->description;
+        return Cache::remember(
+            $this->embedsCacheKey('series', $series->slug ?? (string) $series->id, $this->size, $series->updated_at?->timestamp),
+            self::CACHE_TTL_SECONDS,
+            function () use ($series, $size): array {
+                $body = $series->description ?? '';
 
-        $regex = "/\b(?:(?:https|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i";
-        preg_match_all($regex, $body, $result, PREG_PATTERN_ORDER);
-        $urls = $result[0];
+                $regex = "/\b(?:(?:https|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i";
+                preg_match_all($regex, $body, $result, PREG_PATTERN_ORDER);
+                $urls = $result[0];
 
-        foreach ($series->entities as $entity) {
-            foreach ($entity->links as $link) {
-                if (in_array($link->url, $urls)) {
-                    continue;
+                foreach ($series->entities as $entity) {
+                    foreach ($entity->links as $link) {
+                        if (in_array($link->url, $urls)) {
+                            continue;
+                        }
+                        $urls[] = $link->url;
+                    }
                 }
-                $urls[] = $link->url;
-            }
-        }
 
-        return $this->extractEmbedsFromUrls($urls, $size);
+                return $this->extractEmbedsFromUrls($urls, $size);
+            }
+        );
+    }
+
+    /**
+     * Build a cache key keyed by resource + slug + size + updated_at so saves auto-invalidate.
+     */
+    protected function embedsCacheKey(string $type, string $identifier, string $size, ?int $version): string
+    {
+        return sprintf('embeds:%s:%s:%s:%s', $type, $identifier, $size, $version ?? '0');
     }
 
     /**

@@ -934,6 +934,33 @@ class EntitiesController extends Controller
     }
 
     /**
+     * Load the full (medium-size) embeds by slug as JSON (no auth required).
+     */
+    public function loadEmbedsBySlug(string $slug, OembedExtractor $embedExtractor, Request $request): JsonResponse | RedirectResponse
+    {
+        if (!$entity = Entity::with('links')->where('slug', $slug)->first()) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['error' => 'Entity not found'], 404);
+            }
+            flash()->error('Error', 'No such entity');
+            return back();
+        }
+
+        $embedExtractor->setLayout('medium');
+        $embeds = $embedExtractor->getEmbedsForEntity($entity);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'data' => $embeds,
+                'message' => 'Embeds loaded successfully',
+            ]);
+        }
+
+        flash()->success('Error', 'You cannot load embeds directly');
+        return back();
+    }
+
+    /**
      * Load the minimal embeds by slug (no auth required)
      *
      * @throws \Throwable
