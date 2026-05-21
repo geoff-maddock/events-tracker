@@ -81,6 +81,16 @@
             <i class="bi bi-person text-lg"></i>
             <span>Users</span>
         </a>
+
+        <!-- Notifications -->
+        @php $unreadCount = Auth::user()->unreadNotifications()->count(); @endphp
+        <a href="{{ route('job-status.index') }}" class="nav-item-tw {{ Request::is('job-status*') ? 'nav-item-active-tw' : '' }}">
+            <i class="bi bi-bell text-lg"></i>
+            <span>Notifications</span>
+            @if ($unreadCount > 0)
+            <span class="ml-auto inline-flex items-center justify-center text-xs font-semibold rounded-full bg-red-600 text-white px-2 py-0.5">{{ $unreadCount }}</span>
+            @endif
+        </a>
         @endif
 
         <!-- Divider -->
@@ -240,6 +250,16 @@
         <a href="{{ url('/users') }}" class="nav-item-tw {{ Request::is('users') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-person text-lg"></i>
             <span>Users</span>
+        </a>
+
+        <!-- Notifications -->
+        @php $unreadCountMobile = Auth::user()->unreadNotifications()->count(); @endphp
+        <a href="{{ route('job-status.index') }}" class="nav-item-tw {{ Request::is('job-status*') ? 'nav-item-active-tw' : '' }}">
+            <i class="bi bi-bell text-lg"></i>
+            <span>Notifications</span>
+            @if ($unreadCountMobile > 0)
+            <span class="ml-auto inline-flex items-center justify-center text-xs font-semibold rounded-full bg-red-600 text-white px-2 py-0.5">{{ $unreadCountMobile }}</span>
+            @endif
         </a>
         @endauth
 
