@@ -65,7 +65,7 @@ class ApiEventInstagramTest extends TestCase
         $response->assertStatus(200)
                  ->assertJson([
                      'success' => true,
-                     'id' => 555,
+                     'queued' => true,
                  ]);
     }
 
@@ -167,7 +167,7 @@ class ApiEventInstagramTest extends TestCase
         $response->assertStatus(200)
                  ->assertJson([
                      'success' => true,
-                     'id' => 555,
+                     'queued' => true,
                  ]);
     }
 
@@ -220,7 +220,7 @@ class ApiEventInstagramTest extends TestCase
         $response->assertStatus(200)
                  ->assertJson([
                      'success' => true,
-                     'id' => 555,
+                     'queued' => true,
                  ]);
     }
 

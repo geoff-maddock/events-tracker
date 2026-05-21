@@ -297,6 +297,11 @@ Route::get('events/{id}/instagram-post-single', 'Api\\EventInstagramController@p
 Route::get('events/instagram-post-week', 'Api\\EventInstagramController@postWeekToInstagram')->name('events.instagramPostWeek');
 Route::get('events/instagram-weekend-preview', 'Api\\EventInstagramController@postWeekendPreviewToInstagram')->name('events.instagramWeekendPreview');
 
+// Background job status + notifications
+Route::get('job-status', 'JobStatusController@index')->name('job-status.index');
+Route::get('job-status/{id}', 'JobStatusController@show')->name('job-status.show')->where('id', '[0-9]+');
+Route::post('job-status/notifications/read', 'JobStatusController@markNotificationsRead')->name('job-status.notifications.read');
+
 Route::get('events/tag/{tag}', 'EventsController@indexTags')->name('events.tag');
 Route::get('events/venue/{slug}', 'EventsController@indexVenues')->name('events.venue');
 Route::get('events/related-to/{slug}', 'EventsController@indexRelatedTo')->name('events.relatedto');

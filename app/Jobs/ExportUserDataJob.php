@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Jobs\Concerns\TracksJobStatus;
 use App\Models\User;
 use App\Services\DataExportService;
 use App\Mail\UserDataExportReady;
@@ -15,7 +16,7 @@ use Illuminate\Support\Facades\Mail;
 
 class ExportUserDataJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TracksJobStatus;
 
     protected User $user;
 
@@ -25,6 +26,7 @@ class ExportUserDataJob implements ShouldQueue
     public function __construct(User $user)
     {
         $this->user = $user;
+        $this->initJobStatus('data_export', 'Account data export', $user, $user->id);
     }
 
     /**
@@ -32,6 +34,8 @@ class ExportUserDataJob implements ShouldQueue
      */
     public function handle(DataExportService $exportService): void
     {
+        $this->markRunning();
+
         try {
             Log::info('Starting data export for user: ' . $this->user->id);
             
@@ -57,7 +61,9 @@ class ExportUserDataJob implements ShouldQueue
             );
             
             Log::info('Export email sent to user: ' . $this->user->email);
-            
+
+            $this->markSucceeded('Your account data export is ready. Check your email for the download link.');
+
         } catch (\Exception $e) {
             Log::error('Failed to export user data', [
                 'user_id' => $this->user->id,
@@ -79,8 +85,7 @@ class ExportUserDataJob implements ShouldQueue
             'user_id' => $this->user->id,
             'error' => $exception->getMessage()
         ]);
-        
-        // Optionally notify user of failure
-        // Could send a "export failed" email here
+
+        $this->markFailed('Your account data export failed. Please try again or contact support.');
     }
 }

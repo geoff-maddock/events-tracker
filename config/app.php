@@ -96,6 +96,12 @@ return [
     'superuser' => env('APP_SUPERUSER'),
 
     /*
+    | When true, completion of a queued background job also emails the user
+    | (in addition to the in-app notifications bell). Off by default.
+    */
+    'queue_notify_email' => env('QUEUE_NOTIFY_EMAIL', false),
+
+    /*
     |--------------------------------------------------------------------------
     | Custom
     |--------------------------------------------------------------------------

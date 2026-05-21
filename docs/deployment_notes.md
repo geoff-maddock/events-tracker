@@ -244,3 +244,49 @@ php artisan up
 - Log in and confirm the UI loads correctly (dark theme by default)
 - Check that events, entities, and series pages render as expected
 - Confirm click-tracking redirects (`/go/evt-{id}`, `/go/ser-{id}`) are working if you use ticket links
+
+## Background queue worker
+
+Long-running actions (Instagram posting, account data exports) run as queued jobs
+instead of blocking the web request. This requires the **database** queue driver
+and a running worker process.
+
+### One-time setup
+```bash
+# In .env
+QUEUE_DRIVER=database
+# Optional: also email users when a queued job finishes
+QUEUE_NOTIFY_EMAIL=false
+
+# Create the queue tables (jobs, failed_jobs, job_batches, notifications, job_statuses)
+php artisan migrate
+```
+
+### Run the worker
+A worker must be running for queued jobs to process. In production, supervise it:
+
+```ini
+; /etc/supervisor/conf.d/events-worker.conf
+[program:events-queue]
+process_name=%(program_name)s_%(process_num)02d
+command=php /var/www/events/artisan queue:work --sleep=3 --tries=3 --timeout=700
+autostart=true
+autorestart=true
+stopwaitsecs=720
+user=www-data
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/var/www/events/storage/logs/queue-worker.log
+```
+
+```bash
+supervisorctl reread && supervisorctl update && supervisorctl start events-queue:*
+# Restart the worker after every deploy so it picks up new code:
+php artisan queue:restart
+```
+
+For local development, run `php artisan queue:work` in a separate terminal, or set
+`QUEUE_DRIVER=sync` to execute jobs inline (the test suite always uses `sync`).
+
+Users see queued job progress and completion under the **Notifications** item in
+the sidebar (`/job-status`).
