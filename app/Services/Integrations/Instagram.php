@@ -15,6 +15,8 @@ class Instagram
     protected string $mediaType = "IMAGE";
     protected string $endPoint;
 
+    protected ?string $lastError = null;
+
 
     public function __construct()
     {
@@ -35,6 +37,37 @@ class Instagram
     public function getPageAccessToken(): string
     {
         return $this->pageAccessToken;
+    }
+
+    public function getLastError(): ?string
+    {
+        return $this->lastError;
+    }
+
+    private function describeApiError(array $response): string
+    {
+        $data = $response['data'] ?? null;
+        if (is_array($data) && isset($data['error'])) {
+            $err = $data['error'];
+            $parts = [];
+            if (isset($err['message'])) {
+                $parts[] = $err['message'];
+            }
+            if (isset($err['code'])) {
+                $parts[] = 'code='.$err['code'];
+            }
+            if (isset($err['error_subcode'])) {
+                $parts[] = 'subcode='.$err['error_subcode'];
+            }
+            if (isset($err['error_user_msg'])) {
+                $parts[] = $err['error_user_msg'];
+            }
+            return $parts ? implode('; ', $parts) : 'Unknown Instagram API error.';
+        }
+        if ($data === null) {
+            return 'Empty response from Instagram API.';
+        }
+        return 'Unexpected Instagram API response: '.substr((string) json_encode($data), 0, 500);
     }
 
     public function uploadPhoto(string $imageUrl, string $caption): int
@@ -112,16 +145,35 @@ class Instagram
         $finished = false;
         $maxCount = 15;
         $count = 0;
+        $lastStatusCode = null;
+        $lastStatus = null;
         while (!$finished) {
             $params = [];
             $endpoint = 'https://graph.facebook.com/'.$this->apiVersion.'/'.$igContainerId.'?fields=status_code,status&access_token='.$this->pageAccessToken;
             $response = $this->makeApiCall($endpoint, 'GET', $params);
 
-            if (isset($response['data']['status_code']) && 'FINISHED' == $response['data']['status_code']) {
+            $lastStatusCode = $response['data']['status_code'] ?? null;
+            $lastStatus = $response['data']['status'] ?? null;
+
+            if ($lastStatusCode === 'FINISHED') {
                 $finished = true;
+            } elseif ($lastStatusCode === 'ERROR') {
+                $this->lastError = sprintf(
+                    'Container %d returned ERROR status: %s',
+                    $igContainerId,
+                    $lastStatus ?? $this->describeApiError($response)
+                );
+                return false;
             }
             $count++;
             if ($count > $maxCount) {
+                $this->lastError = sprintf(
+                    'Container %d did not finish after %d polls (last status_code=%s, status=%s).',
+                    $igContainerId,
+                    $maxCount,
+                    $lastStatusCode ?? 'null',
+                    $lastStatus ?? 'null'
+                );
                 return false;
             }
             sleep(3);
@@ -147,15 +199,31 @@ class Instagram
         $attempt = 0;
         $sleepTime = 3; // Reduced from 5 to 3 seconds for faster checking
 
+        $lastStatusCode = null;
+        $lastStatus = null;
+        $lastContainerId = null;
         while ($attempt < $maxAttempts) {
             $allFinished = true;
-            
+
             foreach ($igContainerIds as $igContainerId) {
                 $params = [];
                 $endpoint = 'https://graph.facebook.com/'.$this->apiVersion.'/'.$igContainerId.'?fields=status_code,status&access_token='.$this->pageAccessToken;
                 $response = $this->makeApiCall($endpoint, 'GET', $params);
 
-                if (!isset($response['data']['status_code']) || 'FINISHED' !== $response['data']['status_code']) {
+                $lastStatusCode = $response['data']['status_code'] ?? null;
+                $lastStatus = $response['data']['status'] ?? null;
+                $lastContainerId = $igContainerId;
+
+                if ($lastStatusCode === 'ERROR') {
+                    $this->lastError = sprintf(
+                        'Container %d returned ERROR status: %s',
+                        $igContainerId,
+                        $lastStatus ?? $this->describeApiError($response)
+                    );
+                    return false;
+                }
+
+                if ($lastStatusCode !== 'FINISHED') {
                     $allFinished = false;
                     break; // Exit early if any container isn't finished
                 }
@@ -171,6 +239,13 @@ class Instagram
             }
         }
 
+        $this->lastError = sprintf(
+            'Batch did not finish after %d attempts (last container=%s, status_code=%s, status=%s).',
+            $maxAttempts,
+            $lastContainerId ?? 'null',
+            $lastStatusCode ?? 'null',
+            $lastStatus ?? 'null'
+        );
         return false;
     }
 
@@ -182,6 +257,7 @@ class Instagram
 
         // check if data is not null
         if (!isset($response['data']['id'])) {
+            $this->lastError = 'publishMedia(container '.$igContainerId.'): '.$this->describeApiError($response);
             return false;
         }
 
@@ -196,6 +272,7 @@ class Instagram
 
         // check if data is not null
         if (!isset($response['data']['id'])) {
+            $this->lastError = 'publishStoryMedia(container '.$igContainerId.'): '.$this->describeApiError($response);
             return false;
         }
 
