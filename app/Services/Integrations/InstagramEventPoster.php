@@ -24,6 +24,17 @@ class InstagramEventPoster
     {
     }
 
+    private function failureMessage(string $stage): string
+    {
+        $detail = $this->instagram->getLastError();
+        $base = 'There was an error posting to Instagram during '.$stage.'.';
+        if ($detail) {
+            Log::error('Instagram '.$stage.' failed: '.$detail);
+            return $base.' '.$detail;
+        }
+        return $base.' Please try again.';
+    }
+
     /**
      * Post a single event photo to the Instagram feed.
      */
@@ -42,12 +53,12 @@ class InstagramEventPoster
         }
 
         if ($this->instagram->checkStatus($igContainerId) === false) {
-            throw new RuntimeException('There was an error posting to Instagram. Please try again.');
+            throw new RuntimeException($this->failureMessage('single photo status check'));
         }
 
         $result = $this->instagram->publishMedia($igContainerId);
         if ($result === false) {
-            throw new RuntimeException('There was an error posting to Instagram. Please try again.');
+            throw new RuntimeException($this->failureMessage('single photo publish'));
         }
 
         $this->recordShare($event, (int) $result, $userId);
@@ -110,7 +121,7 @@ class InstagramEventPoster
         }
 
         if ($this->instagram->checkBatchStatus($igContainerIds) === false) {
-            throw new RuntimeException('There was an error posting to Instagram. Please try again.');
+            throw new RuntimeException($this->failureMessage('carousel batch status check'));
         }
 
         try {
@@ -121,12 +132,12 @@ class InstagramEventPoster
         }
 
         if ($this->instagram->checkStatus($igCarouselId) === false) {
-            throw new RuntimeException('There was an error posting to Instagram. Please try again.');
+            throw new RuntimeException($this->failureMessage('carousel status check'));
         }
 
         $result = $this->instagram->publishMedia($igCarouselId);
         if ($result === false) {
-            throw new RuntimeException('There was an error posting to Instagram. Please try again.');
+            throw new RuntimeException($this->failureMessage('carousel publish'));
         }
 
         $this->recordShare($event, (int) $result, $userId);
@@ -153,12 +164,12 @@ class InstagramEventPoster
         }
 
         if ($this->instagram->checkStatus($igContainerId) === false) {
-            throw new RuntimeException('There was an error posting to Instagram. Please try again.');
+            throw new RuntimeException($this->failureMessage('story status check'));
         }
 
         $result = $this->instagram->publishStoryMedia($igContainerId);
         if ($result === false) {
-            throw new RuntimeException('There was an error posting to Instagram. Please try again.');
+            throw new RuntimeException($this->failureMessage('story publish'));
         }
 
         $this->recordShare($event, (int) $result, $userId);
