@@ -9,7 +9,8 @@
 	<div class="mb-6">
 		<h1 class="text-3xl md:text-4xl font-bold text-primary mb-2">Help &amp; Tutorials</h1>
 		<p class="text-base md:text-lg text-muted-foreground">
-			Everything you need to use {{ config('app.app_name') }} — browse the scene, follow what you love, and contribute your own events. New here? Start with the 60-second tour, then dig into whatever you need.
+			Everything you need to use {{ config('app.app_name') }} — browse, follow what you love, and contribute your own events. <br>
+			New here? Start with the 60-second tour, then dig in!
 		</p>
 		<p class="text-xs text-muted-foreground mt-2">Last updated: May 2026</p>
 	</div>
@@ -58,7 +59,7 @@
 						<li><strong class="text-foreground">Register.</strong> <a href="{{ route('register') }}" class="text-primary hover:underline">Create a free account</a> so you can follow, attend, and post.</li>
 						<li><strong class="text-foreground">Follow your first thing.</strong> Find a venue, artist, or genre you care about and hit <em>Follow</em>. You'll start getting digest emails about upcoming related events.</li>
 					</ol>
-					<p class="text-sm text-muted-foreground italic">That's the whole loop. Everything below is the long version.</p>
+					<p class="text-sm text-muted-foreground italic">That's the basics. Everything below is the long version.</p>
 				</div>
 			</section>
 
@@ -241,13 +242,13 @@
 						<div class="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center shrink-0">
 							<i class="bi bi-magic text-primary text-xl"></i>
 						</div>
-						Create an event from a flyer (AI)
+						Create an event from a flyer
 					</h2>
 					<p class="text-muted-foreground">
-						Have an event flyer image? Use the <strong class="text-foreground">Create from Flyer</strong> option on the event create page. We extract the date, venue, lineup, and ticket info with AI and pre-fill the form — you just review and save.
+						Have an event flyer image? Use the <strong class="text-foreground">Create from Flyer</strong> option on the event create page. We extract the date, venue, lineup, and ticket info and pre-fill the form — you just review and save.
 					</p>
 					<p class="text-muted-foreground text-sm">
-						Always double-check the parsed fields. The AI is good but not perfect, especially with stylized fonts and overlapping text.
+						Always double-check the parsed fields. The algorithm is decent but not perfect, especially with stylized fonts and overlapping text.
 					</p>
 				</div>
 			</section>
