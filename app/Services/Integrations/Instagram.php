@@ -10,7 +10,7 @@ class Instagram
     protected string $userAccessToken;
     protected string $pageAccessToken;
     protected int $pageId;
-    protected string $apiVersion = "v18.0";
+    protected string $apiVersion = "v23.0";
     protected int $igUserId = 17841406067178184;
     protected string $mediaType = "IMAGE";
     protected string $endPoint;
@@ -23,7 +23,7 @@ class Instagram
         $this->userAccessToken = config('app.facebook_system_user_access_token');
         $this->pageAccessToken = config('app.facebook_system_page_access_token');
         $this->pageId = 665944966869026;
-        $this->apiVersion = "v18.0";
+        $this->apiVersion = "v23.0";
         $this->igUserId = 17841406067178184;
         $this->mediaType = "IMAGE";
         $this->endPoint ="https://graph.facebook.com/".$this->apiVersion."/";
@@ -147,13 +147,25 @@ class Instagram
         $count = 0;
         $lastStatusCode = null;
         $lastStatus = null;
+        $lastResponse = null;
         while (!$finished) {
             $params = [];
             $endpoint = 'https://graph.facebook.com/'.$this->apiVersion.'/'.$igContainerId.'?fields=status_code,status&access_token='.$this->pageAccessToken;
             $response = $this->makeApiCall($endpoint, 'GET', $params);
+            $lastResponse = $response;
 
             $lastStatusCode = $response['data']['status_code'] ?? null;
             $lastStatus = $response['data']['status'] ?? null;
+
+            // If Graph returned an error object (or anything other than the status fields), bail out immediately.
+            if ($lastStatusCode === null && $lastStatus === null) {
+                $this->lastError = sprintf(
+                    'Container %d status check failed: %s',
+                    $igContainerId,
+                    $this->describeApiError($response)
+                );
+                return false;
+            }
 
             if ($lastStatusCode === 'FINISHED') {
                 $finished = true;
@@ -168,11 +180,12 @@ class Instagram
             $count++;
             if ($count > $maxCount) {
                 $this->lastError = sprintf(
-                    'Container %d did not finish after %d polls (last status_code=%s, status=%s).',
+                    'Container %d did not finish after %d polls (last status_code=%s, status=%s, last_response=%s).',
                     $igContainerId,
                     $maxCount,
                     $lastStatusCode ?? 'null',
-                    $lastStatus ?? 'null'
+                    $lastStatus ?? 'null',
+                    substr((string) json_encode($lastResponse['data'] ?? null), 0, 500)
                 );
                 return false;
             }
@@ -202,6 +215,7 @@ class Instagram
         $lastStatusCode = null;
         $lastStatus = null;
         $lastContainerId = null;
+        $lastResponse = null;
         while ($attempt < $maxAttempts) {
             $allFinished = true;
 
@@ -209,10 +223,21 @@ class Instagram
                 $params = [];
                 $endpoint = 'https://graph.facebook.com/'.$this->apiVersion.'/'.$igContainerId.'?fields=status_code,status&access_token='.$this->pageAccessToken;
                 $response = $this->makeApiCall($endpoint, 'GET', $params);
+                $lastResponse = $response;
 
                 $lastStatusCode = $response['data']['status_code'] ?? null;
                 $lastStatus = $response['data']['status'] ?? null;
                 $lastContainerId = $igContainerId;
+
+                // If Graph returned an error object (or anything other than the status fields), bail out immediately.
+                if ($lastStatusCode === null && $lastStatus === null) {
+                    $this->lastError = sprintf(
+                        'Container %d status check failed: %s',
+                        $igContainerId,
+                        $this->describeApiError($response)
+                    );
+                    return false;
+                }
 
                 if ($lastStatusCode === 'ERROR') {
                     $this->lastError = sprintf(
@@ -240,11 +265,12 @@ class Instagram
         }
 
         $this->lastError = sprintf(
-            'Batch did not finish after %d attempts (last container=%s, status_code=%s, status=%s).',
+            'Batch did not finish after %d attempts (last container=%s, status_code=%s, status=%s, last_response=%s).',
             $maxAttempts,
             $lastContainerId ?? 'null',
             $lastStatusCode ?? 'null',
-            $lastStatus ?? 'null'
+            $lastStatus ?? 'null',
+            substr((string) json_encode($lastResponse['data'] ?? null), 0, 500)
         );
         return false;
     }
