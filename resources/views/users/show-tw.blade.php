@@ -129,7 +129,17 @@
         <!-- Profile Card -->
         <div class="card-tw xl:col-span-2">
             <div class="p-6">
-                <div class="space-y-3">
+                @php $primaryPhoto = $user->getPrimaryPhoto(); @endphp
+                <div class="flex flex-col sm:flex-row gap-6">
+                    @if ($primaryPhoto)
+                        @php $primaryPhotoUrl = Storage::disk('external')->url($primaryPhoto->getStoragePath()); @endphp
+                        <div class="flex-shrink-0">
+                            <a href="{{ $primaryPhotoUrl }}" data-lightbox="user-photos" class="block w-40 h-40 sm:w-48 sm:h-48 overflow-hidden rounded-lg border border-border bg-card shadow">
+                                <img src="{{ $primaryPhotoUrl }}" alt="{{ $user->name }}" class="w-full h-full object-cover hover:opacity-90 transition-opacity">
+                            </a>
+                        </div>
+                    @endif
+                    <div class="space-y-3 flex-1 min-w-0">
                     <div class="flex items-center gap-2">
                         <span class="font-semibold text-foreground">Name:</span>
                         <span class="text-foreground">{{ $user->full_name }}</span>
@@ -289,6 +299,7 @@
                             </div>
                         </div>
                     @endif
+                    </div>
                 </div>
             </div>
         </div>
@@ -299,9 +310,11 @@
                 <h3 class="text-lg font-semibold text-foreground mb-4">Photos</h3>
 
                 @if ($canViewFullProfile && ($signedIn || $user->id == Config::get('app.superuser')))
-                    <form action="/users/{{ $user->id }}/photos" class="dropzone mb-4 border-2 border-dashed border-border rounded-lg" id="myDropzone" method="POST">
-                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                    </form>
+                    <div class="mb-4 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600 transition-colors p-2">
+                        <form action="/users/{{ $user->id }}/photos" class="dropzone !border-0 !rounded-md text-center cursor-pointer" id="myDropzone" method="POST">
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        </form>
+                    </div>
                 @endif
 
                 @if ($user->photos->count() > 0)
