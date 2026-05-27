@@ -42,57 +42,75 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="flex flex-wrap gap-2 mb-6">
-        <a href="{{ route('users.show', ['user' => $user]) }}" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
-            <i class="bi bi-person mr-2"></i>
-            Profile
-        </a>
+    <div class="flex items-center justify-between flex-wrap gap-2 mb-6">
+        <!-- Primary actions (left) -->
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ route('users.show', ['user' => $user]) }}" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+                <i class="bi bi-person mr-2"></i>
+                Profile
+            </a>
+        </div>
 
-        @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser')))
-            <a href="{{ route('users.edit', ['user' => $user->id]) }}" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
-                <i class="bi bi-pencil mr-2"></i>
-                Edit Profile
+        <!-- Secondary actions (right, three-dots menu) -->
+        <div class="flex items-center gap-2">
+            <a href="{{ URL::route('users.index') }}" class="inline-flex items-center px-3 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors text-sm">
+                <i class="bi bi-arrow-left mr-1"></i>
+                Back
             </a>
 
-            @can('grant_access')
-                @if (!$user->isActive)
-                    <a href="{{ route('users.activate', ['id' => $user->id]) }}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors confirm">
-                        <i class="bi bi-check-circle mr-2"></i>
-                        Activate
-                    </a>
-                @endif
-                @if ($user->isActive)
-                    <a href="{{ route('users.reminder', ['id' => $user->id]) }}" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors confirm">
-                        <i class="bi bi-bell mr-2"></i>
-                        Send Reminder
-                    </a>
-                @endif
-            @endcan
+            @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser')))
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" type="button" class="inline-flex items-center justify-center w-10 h-10 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors" title="More actions">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <div x-show="open" @click.away="open = false" x-cloak
+                         class="absolute right-0 mt-2 w-56 bg-card border border-border rounded-lg shadow-lg z-20 py-1">
 
-            @can('impersonate_user')
-                <a href="{{ route('user.impersonate', ['user' => $user->id]) }}" title="Impersonate user" class="inline-flex items-center px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors confirm">
-                    <i class="bi bi-person-badge mr-2"></i>
-                    Impersonate
-                </a>
-            @endcan
+                        <a href="{{ route('users.edit', ['user' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
+                            <i class="bi bi-pencil mr-3 w-4 text-center"></i>
+                            Edit Profile
+                        </a>
 
-            @if ($user->isActive)
-                <a href="{{ route('users.weekly', ['id' => $user->id]) }}" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors confirm">
-                    <i class="bi bi-envelope mr-2"></i>
-                    Send Weekly Update
-                </a>
+                        @can('grant_access')
+                            @if (!$user->isActive)
+                                <a href="{{ route('users.activate', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-green-600 hover:bg-accent transition-colors confirm">
+                                    <i class="bi bi-check-circle mr-3 w-4 text-center"></i>
+                                    Activate
+                                </a>
+                            @endif
+                            @if ($user->isActive)
+                                <a href="{{ route('users.reminder', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors confirm">
+                                    <i class="bi bi-bell mr-3 w-4 text-center"></i>
+                                    Send Reminder
+                                </a>
+                            @endif
+                        @endcan
+
+                        @if ($user->isActive)
+                            <a href="{{ route('users.weekly', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors confirm">
+                                <i class="bi bi-envelope mr-3 w-4 text-center"></i>
+                                Send Weekly Update
+                            </a>
+                        @endif
+
+                        <div class="border-t border-border my-1"></div>
+
+                        <a href="{{ url('/password/reset') }}" class="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
+                            <i class="bi bi-key mr-3 w-4 text-center"></i>
+                            Reset Password
+                        </a>
+
+                        @can('impersonate_user')
+                            <div class="border-t border-border my-1"></div>
+                            <a href="{{ route('user.impersonate', ['user' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-amber-600 hover:bg-accent transition-colors confirm">
+                                <i class="bi bi-person-badge mr-3 w-4 text-center"></i>
+                                Impersonate
+                            </a>
+                        @endcan
+                    </div>
+                </div>
             @endif
-
-            <a href="{{ url('/password/reset') }}" class="inline-flex items-center px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors">
-                <i class="bi bi-key mr-2"></i>
-                Reset Password
-            </a>
-        @endif
-
-        <a href="{{ URL::route('users.index') }}" class="inline-flex items-center px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors">
-            <i class="bi bi-arrow-left mr-2"></i>
-            Return to list
-        </a>
+        </div>
     </div>
 
     <!-- Filters Panel -->
