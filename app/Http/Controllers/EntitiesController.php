@@ -792,6 +792,62 @@ class EntitiesController extends Controller
     }
 
     /**
+     * Quickly create a minimal entity (venue or promoter) from the event form and return JSON.
+     * Lets users add a missing venue/promoter inline without leaving the event form.
+     */
+    public function quickStore(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|min:3|max:255',
+            'role' => 'nullable|string',
+        ]);
+
+        $roleName = in_array($request->input('role'), ['Venue', 'Promoter'], true)
+            ? $request->input('role')
+            : 'Venue';
+
+        // Generate a unique slug from the name
+        $baseSlug = Str::slug($validated['name']);
+        $slug = $baseSlug !== '' ? $baseSlug : 'entity';
+        $i = 1;
+        while (Entity::where('slug', $slug)->exists()) {
+            $slug = $baseSlug.'-'.$i++;
+        }
+
+        $entity = Entity::create([
+            'name' => $validated['name'],
+            'slug' => $slug,
+            'short' => $validated['name'],
+            'description' => $validated['name'],
+            'entity_type_id' => $roleName === 'Venue' ? EntityType::SPACE : EntityType::GROUP,
+            'entity_status_id' => EntityStatus::ACTIVE,
+            'created_by' => $this->user->id,
+            'started_at' => Carbon::now(),
+        ]);
+
+        $entity->updated_by = $this->user->id;
+        $entity->save();
+
+        if ($role = Role::where('name', $roleName)->first()) {
+            $entity->roles()->attach($role->id);
+        }
+
+        Activity::log($entity, $this->user, Action::CREATE);
+
+        Cache::forget('form-opts-venues');
+        Cache::forget('form-opts-promoters');
+        Cache::forget('form-opts-entities-active');
+        Cache::forget('filter-opts-venues-slug');
+        Cache::forget('filter-opts-entities-slug');
+
+        return response()->json([
+            'id' => $entity->id,
+            'name' => $entity->name,
+            'slug' => $entity->slug,
+        ], 201);
+    }
+
+    /**
      * Display the specified resource.
      */
     public function show(Entity $entity, OembedExtractor $embedExtractor, Request $request): View

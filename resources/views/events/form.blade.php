@@ -123,6 +123,15 @@
                 @endforeach
             </x-ui.select>
         </x-ui.form-group>
+        <div class="flex items-center justify-end gap-2 text-sm text-muted-foreground mt-1">
+            <button type="button" class="hover:text-foreground inline-flex items-center gap-1" data-quick-add="Promoter" data-target="promoter_id">
+                <i class="bi bi-plus-circle-fill"></i>
+                Add New Promoter
+            </button>
+            <button type="button" class="hover:text-foreground" title="Can't find the promoter? Add it here and it will be created and selected without leaving this form.">
+                <i class="bi bi-question-octagon-fill"></i>
+            </button>
+        </div>
     </div>
 
     <div class="col-span-12 md:col-span-6">
@@ -144,6 +153,15 @@
                 @endforeach
             </x-ui.select>
         </x-ui.form-group>
+        <div class="flex items-center justify-end gap-2 text-sm text-muted-foreground mt-1">
+            <button type="button" class="hover:text-foreground inline-flex items-center gap-1" data-quick-add="Venue" data-target="venue_id">
+                <i class="bi bi-plus-circle-fill"></i>
+                Add New Venue
+            </button>
+            <button type="button" class="hover:text-foreground" title="Can't find the venue? Add it here and it will be created and selected without leaving this form.">
+                <i class="bi bi-question-octagon-fill"></i>
+            </button>
+        </div>
     </div>
 </div>
 
@@ -466,6 +484,26 @@
     </x-ui.button>
 </div>
 
+{{-- Quick-add Venue/Promoter modal (inputs have no name attribute, so they are not submitted with the event form) --}}
+<x-ui.modal id="quick-add-entity-modal" title="Add Entity" size="md">
+    <input type="hidden" id="quick-add-role">
+    <input type="hidden" id="quick-add-target">
+    <x-ui.form-group name="quick_add_name" label="Name">
+        <x-ui.input type="text" id="quick-add-name" placeholder="e.g. The Smiling Moose" />
+    </x-ui.form-group>
+    <p id="quick-add-error" class="hidden mt-2 text-sm text-red-600 dark:text-red-400"></p>
+    <p class="mt-3 text-xs text-muted-foreground">This creates a basic entry so you can keep building your event. You can add a photo, links and details later from the entity's page.</p>
+
+    <x-slot:footer>
+        <x-ui.button type="button" variant="outline" onclick="document.getElementById('quick-add-entity-modal').classList.add('hidden')">
+            Cancel
+        </x-ui.button>
+        <x-ui.button type="button" variant="default" id="quick-add-submit">
+            Create &amp; Select
+        </x-ui.button>
+    </x-slot:footer>
+</x-ui.modal>
+
 @section('footer')
 <script>
     // Initialize Select2 with Tailwind theme
@@ -488,6 +526,79 @@
             placeholder: 'Choose a keyword tag that describes this event',
             maximumSelectionLength: 10,
             tags: false
+        });
+
+        // Inline quick-add for Venue / Promoter
+        const quickAddModal = document.getElementById('quick-add-entity-modal');
+        const quickAddName = document.getElementById('quick-add-name');
+        const quickAddRole = document.getElementById('quick-add-role');
+        const quickAddTarget = document.getElementById('quick-add-target');
+        const quickAddError = document.getElementById('quick-add-error');
+        const quickAddSubmit = document.getElementById('quick-add-submit');
+
+        function showQuickAddError(message) {
+            quickAddError.textContent = message;
+            quickAddError.classList.remove('hidden');
+        }
+
+        document.querySelectorAll('[data-quick-add]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const role = btn.getAttribute('data-quick-add');
+                quickAddRole.value = role;
+                quickAddTarget.value = btn.getAttribute('data-target');
+                quickAddName.value = '';
+                quickAddError.classList.add('hidden');
+                document.getElementById('quick-add-entity-modal-title').textContent = 'Add ' + role;
+                quickAddModal.classList.remove('hidden');
+                quickAddName.focus();
+            });
+        });
+
+        quickAddSubmit.addEventListener('click', function () {
+            const name = quickAddName.value.trim();
+            quickAddError.classList.add('hidden');
+
+            if (name.length < 3) {
+                showQuickAddError('Please enter a name of at least 3 characters.');
+                return;
+            }
+
+            quickAddSubmit.disabled = true;
+
+            fetch('{{ route('entities.quickStore') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ name: name, role: quickAddRole.value })
+            })
+            .then(function (response) {
+                return response.json().then(function (data) {
+                    return { ok: response.ok, data: data };
+                });
+            })
+            .then(function (result) {
+                if (!result.ok) {
+                    const msg = result.data && result.data.errors && result.data.errors.name
+                        ? result.data.errors.name[0]
+                        : (result.data.message || 'Could not create the entity. Please try again.');
+                    showQuickAddError(msg);
+                    return;
+                }
+
+                const select = $('#' + quickAddTarget.value);
+                const option = new Option(result.data.name, result.data.id, true, true);
+                select.append(option).trigger('change');
+                quickAddModal.classList.add('hidden');
+            })
+            .catch(function () {
+                showQuickAddError('Something went wrong. Please try again.');
+            })
+            .finally(function () {
+                quickAddSubmit.disabled = false;
+            });
         });
     });
 </script>
