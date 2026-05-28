@@ -546,6 +546,8 @@ Route::get('entities/apply-filter', ['as' => 'entities.applyFilterFromUrl', 'use
 Route::get('entities/reset', ['as' => 'entities.reset', 'uses' => 'EntitiesController@reset']);
 Route::get('entities/rpp-reset', ['as' => 'entities.rppReset', 'uses' => 'EntitiesController@rppReset']);
 
+Route::post('entities/quick-store', 'EntitiesController@quickStore')->name('entities.quickStore')->middleware('auth');
+
 Route::get('entities/tag/{tag}', 'EntitiesController@indexTags')->name('entities.tag');
 Route::get('entities/alias/{alias}', 'EntitiesController@indexAliases')->name('entities.alias');
 Route::get('entities/slug/{slug}', 'EntitiesController@indexSlug')->name('entities.slug');

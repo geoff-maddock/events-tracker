@@ -168,25 +168,19 @@ class EventInstagramController extends Controller
     /**
      * Queue an event to be posted to Instagram as a carousel.
      */
-    public function postCarouselToInstagram(int $id, Instagram $instagram): RedirectResponse
+    public function postCarouselToInstagram(int $id, Instagram $instagram): RedirectResponse|JsonResponse
     {
         if (!$event = Event::find($id)) {
-            flash()->error('Error', 'No such event');
-
-            return back();
+            return $this->instagramActionResponse(false, 'Error', 'No such event');
         }
 
         if ($error = $this->instagramCredentialError($instagram)) {
-            flash()->error('Error', $error);
-
-            return back();
+            return $this->instagramActionResponse(false, 'Error', $error);
         }
 
         PostEventToInstagram::dispatch($event, true, $this->user?->id);
 
-        flash()->success('Queued', 'This event is being posted to Instagram in the background. You will be notified when it finishes.');
-
-        return back();
+        return $this->instagramActionResponse(true, 'Queued', 'This event is being posted to Instagram in the background. You will be notified when it finishes.');
     }
 
     public function postCarouselToInstagramApi(int $id, Instagram $instagram, Request $request): JsonResponse
@@ -248,6 +242,25 @@ class EventInstagramController extends Controller
     }
 
     /**
+     * Respond to an Instagram post action. AJAX callers (the event page) get JSON
+     * so the request never navigates and stays out of the browser history;
+     * regular requests fall back to a flash message and redirect.
+     */
+    private function instagramActionResponse(bool $success, string $title, string $message): RedirectResponse|JsonResponse
+    {
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json(
+                ['success' => $success, 'title' => $title, 'message' => $message],
+                $success ? 200 : 422
+            );
+        }
+
+        flash()->{$success ? 'success' : 'error'}($title, $message);
+
+        return back();
+    }
+
+    /**
      * Log a share to the event_shares table.
      *
      * @param Event $event The event that was shared
@@ -269,33 +282,25 @@ class EventInstagramController extends Controller
     /**
      * Queue an event to be posted to Instagram as a STORY.
      */
-    public function postStoryToInstagram(int $id, Instagram $instagram): RedirectResponse
+    public function postStoryToInstagram(int $id, Instagram $instagram): RedirectResponse|JsonResponse
     {
         // admin-only action
         $user = Auth::user();
         if (!$user || !$user->hasGroup('super_admin')) {
-            flash()->error('Error', 'You are not authorized to post stories to Instagram.');
-
-            return back();
+            return $this->instagramActionResponse(false, 'Error', 'You are not authorized to post stories to Instagram.');
         }
 
         if (!$event = Event::find($id)) {
-            flash()->error('Error', 'No such event');
-
-            return back();
+            return $this->instagramActionResponse(false, 'Error', 'No such event');
         }
 
         if ($error = $this->instagramCredentialError($instagram)) {
-            flash()->error('Error', $error);
-
-            return back();
+            return $this->instagramActionResponse(false, 'Error', $error);
         }
 
         PostEventStoryToInstagram::dispatch($event, $user->id);
 
-        flash()->success('Queued', 'This story is being posted to Instagram in the background. You will be notified when it finishes.');
-
-        return back();
+        return $this->instagramActionResponse(true, 'Queued', 'This story is being posted to Instagram in the background. You will be notified when it finishes.');
     }
 
 

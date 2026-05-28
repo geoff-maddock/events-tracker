@@ -71,11 +71,11 @@
 												<a href="{!! route('events.createSeries', ['id' => $event->id]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
 													<i class="bi bi-collection mr-2"></i>Create Series from Event
 												</a>
-												<a href="{!! route('events.instagramPost', ['id' => $event->id]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
+												<a href="{!! route('events.instagramPost', ['id' => $event->id]) !!}" data-replace-history class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
 													<i class="bi bi-instagram mr-2"></i>Post to Instagram
 												</a>
 												@if ($user->hasGroup('super_admin'))
-													<a href="{!! route('events.instagramStoryPost', ['id' => $event->id]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
+													<a href="{!! route('events.instagramStoryPost', ['id' => $event->id]) !!}" data-replace-history class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
 														<i class="bi bi-instagram mr-2"></i>Post to Instagram Story
 													</a>
 												@endif
@@ -525,6 +525,45 @@ $(document).ready(function(){
                 }
             });
         }
+
+        // Fire-and-redirect actions (e.g. Post to Instagram) must not enter the
+        // browser history, otherwise clicking Back re-triggers the post. Fire
+        // them via fetch so the page never navigates and history is untouched.
+        document.querySelectorAll('a[data-replace-history]').forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                if (menu) {
+                    menu.classList.add('hidden');
+                }
+
+                fetch(this.href, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'same-origin'
+                }).then(function(response) {
+                    return response.json().then(function(data) {
+                        return { ok: response.ok, data: data };
+                    });
+                }).then(function(result) {
+                    fireAlert({
+                        title: result.data.title || (result.ok ? 'Queued' : 'Error'),
+                        text: result.data.message || 'Could not start the Instagram post. Please try again.',
+                        icon: result.ok ? 'success' : 'error',
+                        timer: result.ok ? 3000 : undefined,
+                        showConfirmButton: !result.ok
+                    });
+                }).catch(function() {
+                    fireAlert({
+                        title: 'Error',
+                        text: 'Could not start the Instagram post. Please try again.',
+                        icon: 'error'
+                    });
+                });
+            });
+        });
 
         // Invalidate embed cache when returning from a save
         @if(session('flash_message') && session('flash_message.level') === 'success')

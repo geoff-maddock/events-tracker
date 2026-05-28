@@ -23,6 +23,7 @@
 				<ul class="space-y-1.5">
 					<li><a href="#quick-start" class="text-muted-foreground hover:text-primary">60-second start</a></li>
 					<li><a href="#glossary" class="text-muted-foreground hover:text-primary">Glossary</a></li>
+					<li><a href="#how-to" class="text-muted-foreground hover:text-primary">How do I…?</a></li>
 					<li><a href="#register" class="text-muted-foreground hover:text-primary">Register &amp; log in</a></li>
 					<li><a href="#browse" class="text-muted-foreground hover:text-primary">Browse events</a></li>
 					<li><a href="#follow" class="text-muted-foreground hover:text-primary">Follow &amp; get updates</a></li>
@@ -85,6 +86,66 @@
 						<dt class="font-semibold text-foreground">Thread</dt>
 						<dd class="text-muted-foreground">A forum post in the community forum. Can be standalone or attached to an event.</dd>
 					</dl>
+				</div>
+			</section>
+
+			<!-- ========== How do I…? (task-oriented) ========== -->
+			<section id="how-to" class="card-tw">
+				<div class="p-6 space-y-6">
+					<h2 class="text-2xl font-semibold text-foreground flex items-center gap-3">
+						<div class="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center shrink-0">
+							<i class="bi bi-patch-question text-primary text-xl"></i>
+						</div>
+						How do I…?
+					</h2>
+					<p class="text-muted-foreground">
+						Quick walkthroughs for the most common tasks. Not sure whether the thing you want to add is a venue, a band, or an event? Almost everyone and everything is an <a href="#entities" class="text-primary hover:underline">entity</a> — the show itself is the <a href="#events" class="text-primary hover:underline">event</a>.
+					</p>
+
+					{{-- How to add my band --}}
+					<div class="rounded-lg border border-border p-4 space-y-2">
+						<h3 class="text-lg font-semibold text-foreground flex items-center gap-2">
+							<i class="bi bi-music-note-beamed text-primary"></i>
+							How to add my band (or DJ / artist / producer)
+						</h3>
+						<p class="text-muted-foreground text-sm">A band is an <strong class="text-foreground">entity</strong>, not an event. Add it once and then link it to every show you play.</p>
+						<ol class="list-decimal list-inside space-y-1 text-muted-foreground text-sm">
+							<li><a href="{{ route('entities.create') }}" class="text-primary hover:underline">Add a new entity</a>.</li>
+							<li>Enter your name and pick <em>Group</em> (band) or <em>Individual</em> (solo artist/DJ) as the entity type.</li>
+							<li>Under <em>Roles</em>, choose all that apply — <em>Band</em>, <em>Artist</em>, <em>DJ</em>, <em>Producer</em>. You can pick more than one.</li>
+							<li>Save, then open your new page to add a photo, links (Bandcamp, Instagram, SoundCloud), a description and tags.</li>
+							<li>Now when you <a href="{{ route('events.create') }}" class="text-primary hover:underline">add an event</a>, find yourself under <em>Related Entities</em>.</li>
+						</ol>
+					</div>
+
+					{{-- How to add a venue --}}
+					<div class="rounded-lg border border-border p-4 space-y-2">
+						<h3 class="text-lg font-semibold text-foreground flex items-center gap-2">
+							<i class="bi bi-geo-alt text-primary"></i>
+							How to add a venue
+						</h3>
+						<p class="text-muted-foreground text-sm">A venue is an <strong class="text-foreground">entity</strong> with the <em>Venue</em> role. It needs to exist before you can attach it to an event.</p>
+						<ol class="list-decimal list-inside space-y-1 text-muted-foreground text-sm">
+							<li><a href="{{ route('entities.create') }}" class="text-primary hover:underline">Add a new entity</a>, choose entity type <em>Space</em>, and select the <em>Venue</em> role.</li>
+							<li>Or — the fast way — open the <a href="{{ route('events.create') }}" class="text-primary hover:underline">event form</a> and click <em>Add New Venue</em> right under the Venue dropdown. It's created and selected on the spot without leaving the form.</li>
+							<li>Either way, you can flesh out the venue later from its page with an address/location, photo, and links.</li>
+						</ol>
+					</div>
+
+					{{-- How to add my event --}}
+					<div class="rounded-lg border border-border p-4 space-y-2">
+						<h3 class="text-lg font-semibold text-foreground flex items-center gap-2">
+							<i class="bi bi-calendar-plus text-primary"></i>
+							How to add my event
+						</h3>
+						<ol class="list-decimal list-inside space-y-1 text-muted-foreground text-sm">
+							<li><a href="{{ route('events.create') }}" class="text-primary hover:underline">Create an event</a>. Only <em>Name</em>, <em>Event Type</em>, and <em>Start At</em> are required.</li>
+							<li>Pick the <em>Venue</em>. Not listed? Hit <em>Add New Venue</em> beside the field to create it inline.</li>
+							<li>Add the <em>Promoter</em> and any performers under <em>Related Entities</em>. Missing one? Use the <em>Add New</em> link next to each field.</li>
+							<li>Add a flyer/cover photo, tags, price and ticket link to make it more discoverable.</li>
+						</ol>
+						<p class="text-muted-foreground text-sm">See <a href="#events" class="text-primary hover:underline">Add an event</a> below for the full field-by-field rundown.</p>
+					</div>
 				</div>
 			</section>
 
