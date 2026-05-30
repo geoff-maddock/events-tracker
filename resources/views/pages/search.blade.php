@@ -12,6 +12,21 @@
 	@endif
 </div>
 
+{{-- Interpreted date filter banner: shown when the query contained a recognized
+     date phrase alongside other text (a date-only query redirects instead). --}}
+@if(!empty($interpreted['dateRange'] ?? null))
+<div class="mb-6 rounded-md bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800 px-4 py-3 flex items-center justify-between gap-4">
+	<p class="text-sm text-indigo-800 dark:text-indigo-200">
+		Looks like you're searching for a date:
+		<span class="font-semibold">{{ $interpreted['dateRange']['label'] }}</span>
+	</p>
+	<a href="{{ route('events.index', ['filters' => ['start_at' => ['start' => $interpreted['dateRange']['start'], 'end' => $interpreted['dateRange']['end']]]]) }}"
+		class="shrink-0 text-sm font-medium text-indigo-700 dark:text-indigo-300 hover:text-indigo-900 dark:hover:text-indigo-100 underline">
+		View events for {{ $interpreted['dateRange']['label'] }} &rarr;
+	</a>
+</div>
+@endif
+
 <!-- Jump Links -->
 <div class="mb-6 flex flex-wrap gap-2">
 	@if (isset($entities) && $entitiesCount > 0)

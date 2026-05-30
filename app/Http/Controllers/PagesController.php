@@ -11,6 +11,7 @@ use App\Models\Series;
 use App\Models\Tag;
 use App\Models\Thread;
 use App\Models\User;
+use App\Services\SearchQueryParser;
 use App\Services\SearchService;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
@@ -109,15 +110,51 @@ class PagesController extends Controller
 
     /**
      * Primary site searchbar action.
+     *
+     * Before falling back to the full search page, the query is run through the
+     * SearchQueryParser. A query that resolves to a single, fully-recognized
+     * concept (a date, an exact entity, or an exact tag) redirects straight to
+     * the matching filtered/detail page. Anything else renders the search page,
+     * passing the interpretation through so a date banner can be shown.
      */
-    public function search(Request $request, SearchService $searchService): View
+    public function search(Request $request, SearchService $searchService, SearchQueryParser $parser): View|RedirectResponse
     {
         $search = (string) $request->input('keyword', '');
         $this->limit = 20;
 
-        $results = $searchService->all($search, $this->user, $this->limit);
+        $interpreted = $parser->parse($search);
 
-        return view('pages.search', array_merge($results, ['search' => $search]));
+        // Date-only query -> the filtered events list for that range.
+        if ($interpreted['dateRange'] && $interpreted['residualText'] === '') {
+            return redirect()->route('events.index', [
+                'filters' => [
+                    'start_at' => [
+                        'start' => $interpreted['dateRange']['start'],
+                        'end'   => $interpreted['dateRange']['end'],
+                    ],
+                ],
+            ]);
+        }
+
+        // Exact entity / tag name -> straight to that page (date-free queries only).
+        if (!$interpreted['dateRange'] && $interpreted['entity']) {
+            return redirect()->route('entities.show', $interpreted['entity']['slug']);
+        }
+
+        if (!$interpreted['dateRange'] && $interpreted['tag']) {
+            return redirect()->route('tags.show', $interpreted['tag']['slug']);
+        }
+
+        // Otherwise render search. Use the leftover text when a date was stripped
+        // (e.g. "techno this weekend" -> search "techno" with a date banner).
+        $term = $interpreted['residualText'] !== '' ? $interpreted['residualText'] : $search;
+
+        $results = $searchService->all($term, $this->user, $this->limit);
+
+        return view('pages.search', array_merge($results, [
+            'search'      => $search,
+            'interpreted' => $interpreted,
+        ]));
     }
 
     
