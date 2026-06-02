@@ -42,7 +42,7 @@ class SeriesRequest extends Request
                 Rule::unique('series', 'slug')->ignore($seriesSlug),
             ],
             'short' => 'required|min:3|max:255',
-            'length' => 'integer',
+            'length' => 'nullable|integer',
             'event_type_id' => 'required',
             'visibility_id' => 'required',
             'presale_price' => 'nullable|numeric|between:0,999.99',

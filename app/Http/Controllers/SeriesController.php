@@ -697,13 +697,16 @@ class SeriesController extends Controller
         $series = $series->create($input);
 
         $series->tags()->attach($syncArray);
-        $series->entities()->attach($request->input('entity_list'));
+        $series->entities()->attach($request->input('entity_list', []));
 
         // link the passed event if there was one to the series
         if ($request->eventLinkId) {
             if ($event = Event::find($request->eventLinkId)) {
                 $event->series_id = $series->id;
                 $event->save();
+
+                // copy the event's photos over to the new series
+                $series->photos()->attach($event->photos->pluck('id')->toArray());
             }
         }
 
