@@ -2948,6 +2948,10 @@ class EventsController extends Controller
             ]
         );
 
+        // pre-select the event's related entities and tags so they carry over to the series
+        $series->setRelation('entities', $event->entities);
+        $series->setRelation('tags', $event->tags);
+
         return view('events.createSeries-tw', compact('series'))
         ->with($this->getSeriesFormOptions())
         ->with(['event' => $event]);

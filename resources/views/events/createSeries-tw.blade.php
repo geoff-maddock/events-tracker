@@ -22,18 +22,6 @@
 			@csrf
 
 			@include('series.form', ['action' => 'createSeries', 'eventLinkId' => $event->id])
-
-			<!-- Submit Buttons -->
-			<div class="flex items-center gap-3 pt-6 border-t border-border">
-				<x-ui.button type="submit" variant="primary">
-					<i class="bi bi-plus-circle mr-2"></i>
-					Create Series
-				</x-ui.button>
-
-				<x-ui.button variant="ghost" href="{{ route('events.index') }}">
-					Cancel
-				</x-ui.button>
-			</div>
 		</form>
 	</div>
 
