@@ -9,6 +9,34 @@
 
 @section('content')
 
+<style>
+    /* Flyer analysis scan-line animation (see analyzeFlyer() in scripts.footer) */
+    .flyer-scan-line {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 2.5rem;
+        background: linear-gradient(to bottom,
+            transparent,
+            rgba(56, 189, 248, 0.55),
+            transparent);
+        box-shadow: 0 0 14px 3px rgba(56, 189, 248, 0.5);
+        animation: flyer-scan 1.6s ease-in-out infinite;
+    }
+    @keyframes flyer-scan {
+        0%   { top: -2.5rem; }
+        100% { top: 100%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .flyer-scan-line { animation: none; opacity: 0; }
+        #flyer-scan-overlay { animation: flyer-scan-pulse 1.5s ease-in-out infinite; }
+    }
+    @keyframes flyer-scan-pulse {
+        0%, 100% { opacity: 0.35; }
+        50%      { opacity: 0.7; }
+    }
+</style>
+
 <div class="max-w-7xl mx-auto">
     <h1 class="text-3xl font-bold text-foreground mb-6">Add a New Event</h1>
 
@@ -48,7 +76,14 @@
                     <p class="text-xs text-muted-foreground mt-2">Supports JPEG, PNG, GIF, WebP — max 10 MB</p>
                 </div>
                 <div id="flyer-preview-content" class="hidden">
-                    <img id="flyer-preview-img" src="" alt="Flyer preview" class="max-h-48 mx-auto rounded mb-2">
+                    <div id="flyer-preview-wrap" class="relative inline-block mb-2">
+                        <img id="flyer-preview-img" src="" alt="Flyer preview" class="max-h-48 mx-auto rounded block">
+                        {{-- Scan overlay: shown only while analysis is running --}}
+                        <div id="flyer-scan-overlay" class="hidden absolute inset-0 rounded overflow-hidden pointer-events-none">
+                            <div class="absolute inset-0 bg-black/30"></div>
+                            <div class="flyer-scan-line"></div>
+                        </div>
+                    </div>
                     <p id="flyer-preview-name" class="text-sm text-muted-foreground"></p>
                     <button type="button" onclick="clearFlyerSelection()"
                         class="mt-2 text-sm text-muted-foreground hover:text-foreground underline">
@@ -66,10 +101,7 @@
                     <i class="bi bi-stars mr-2"></i>
                     <span id="analyze-btn-text">Analyze Image</span>
                 </button>
-                <span id="analyze-spinner" class="hidden text-sm text-muted-foreground">
-                    <i class="bi bi-arrow-clockwise animate-spin mr-1"></i>
-                    Analyzing flyer&hellip;
-                </span>
+                <span id="analyze-status" role="status" aria-live="polite" class="sr-only"></span>
             </div>
         </div>
     </div>
@@ -158,6 +190,8 @@ function clearFlyerSelection() {
     document.getElementById('flyer-file-input').value = '';
     document.getElementById('flyer-drop-content').classList.remove('hidden');
     document.getElementById('flyer-preview-content').classList.add('hidden');
+    document.getElementById('flyer-scan-overlay')?.classList.add('hidden');
+    document.getElementById('analyze-status').textContent = '';
     document.getElementById('analyze-flyer-btn').disabled = true;
     // Clear any previously stored temp token since the user is picking a new image
     const tokenInput = document.getElementById('flyer_temp_token');
@@ -181,12 +215,14 @@ async function analyzeFlyer() {
     if (!selectedFlyerFile) return;
 
     const btn     = document.getElementById('analyze-flyer-btn');
-    const spinner = document.getElementById('analyze-spinner');
+    const overlay = document.getElementById('flyer-scan-overlay');
+    const status  = document.getElementById('analyze-status');
     const btnText = document.getElementById('analyze-btn-text');
 
     btn.disabled    = true;
     btnText.textContent = 'Analyzing…';
-    spinner.classList.remove('hidden');
+    overlay.classList.remove('hidden');
+    status.textContent = 'Analyzing flyer…';
     setFlyerStatus('', '');
 
     try {
@@ -223,7 +259,8 @@ async function analyzeFlyer() {
     } finally {
         btn.disabled    = false;
         btnText.textContent = 'Analyze Image';
-        spinner.classList.add('hidden');
+        overlay.classList.add('hidden');
+        status.textContent = '';
     }
 }
 
