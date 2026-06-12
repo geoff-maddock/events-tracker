@@ -20,7 +20,7 @@
         "axios": "^1.16.0",
         "cross-env": "^7",
         "eslint": "^10.0.1",
-        "laravel-vite-plugin": "^2.1.0",
+        "laravel-vite-plugin": "^3.1.0",
         "lodash": "^4.17.23",
         "postcss": "^8.5.13",
         "prettier": "^3.2.0",
@@ -28,7 +28,7 @@
         "pusher-js": "^8.4.0-rc2",
         "sass": "^1.56.1",
         "tailwindcss": "^4.1.12",
-        "vite": "^7.3.2",
+        "vite": "^8.0.16",
         "vue": "^3.2"
     },
     "dependencies": {
