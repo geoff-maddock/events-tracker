@@ -9,17 +9,19 @@
         "prod": "npm run build",
         "production": "npm run build",
         "preview": "vite preview",
-        "lint": "eslint resources/assets/js --ext .js,.vue",
+        "lint": "eslint resources/assets/js",
         "format": "prettier --write 'resources/**/*.{js,vue,blade.php,css}'"
     },
     "devDependencies": {
+        "@eslint/js": "^10.0.1",
         "@tailwindcss/forms": "^0.5.7",
-        "@tailwindcss/postcss": "^4.1.12",
         "@tailwindcss/line-clamp": "^0.4.4",
+        "@tailwindcss/postcss": "^4.1.12",
         "autoprefixer": "^10.4.17",
         "axios": "^1.16.0",
         "cross-env": "^7",
         "eslint": "^10.0.1",
+        "globals": "^17.6.0",
         "laravel-vite-plugin": "^3.1.0",
         "lodash": "^4.17.23",
         "postcss": "^8.5.13",
@@ -35,9 +37,9 @@
         "js-yaml": "^4.2.0"
     },
     "dependencies": {
-        "chart.js": "^4.4.3",
         "alpinejs": "^3.13.5",
         "bootstrap-icons": "^1.5.0",
+        "chart.js": "^4.4.3",
         "dotenv": "^16.0",
         "dropzone": "^6.0.0-beta.1",
         "flatpickr": "^4.6.13",
