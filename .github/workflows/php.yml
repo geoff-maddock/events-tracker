@@ -81,7 +81,7 @@ jobs:
         run: php artisan storage:link
 
       - name: Output the phpstan config
-        run: more phpstan.neon
+        run: more phpstan.neon.dist
 
       - name: Run php stan static analysis
         run: composer run-script phpstan
