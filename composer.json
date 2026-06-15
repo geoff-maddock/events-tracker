@@ -41,7 +41,7 @@
 		"mockery/mockery": "^1.0",
 		"symfony/dom-crawler": "^6.0",
 		"barryvdh/laravel-ide-helper": "^2.8",
-		"nunomaduro/larastan": "^2.11",
+		"larastan/larastan": "^2.11",
 		"laravel/dusk": "^7.7",
 		"phpunit/phpunit": "^10.0",
 		"barryvdh/laravel-debugbar": "^3.8"
@@ -96,6 +96,11 @@
 		"preferred-install": "dist",
 		"allow-plugins": {
 			"php-http/discovery": true
+		},
+		"audit": {
+			"ignore": {
+				"PKSA-mdq4-51ck-6kdq": "Laravel CRLF injection in default email validation rule. Patched only in Laravel 12.60+/13.10+ (all 10.x AND 11.x are affected), so it cannot be resolved without the deferred framework-upgrade track. Accepted/known risk; revisit when upgrading the framework."
+			}
 		}
 	},
 	"minimum-stability": "stable"
