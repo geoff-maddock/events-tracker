@@ -12,21 +12,14 @@ use Illuminate\Http\JsonResponse;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Blog;
-use App\Models\ContentType;
-use App\Models\Entity;
 use App\Models\Like;
-use App\Models\Menu;
 use App\Models\Tag;
-use App\Models\User;
-use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
-use Illuminate\View\View;
 use Str;
 use App\Models\Action;
 
@@ -50,8 +43,6 @@ class BlogsController extends Controller
 
     protected array $filters;
 
-    protected bool $hasFilter;
-
     // this is the class specifying the filters methods for each field
     protected BlogFilters $filter;
 
@@ -71,8 +62,6 @@ class BlogsController extends Controller
         $this->limit = $this->defaultLimit;
         $this->sort = $this->defaultSort;
         $this->sortDirection = $this->defaultSortDirection;
-
-        $this->hasFilter = false;
 
         parent::__construct();
     }
@@ -114,13 +103,13 @@ class BlogsController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Filtered listing of the resource (JSON).
      */
     public function filter(
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
+    ): JsonResponse {
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_blog');
         $listParamSessionStore->setKeyPrefix('internal_blog_index');
@@ -150,35 +139,7 @@ class BlogsController extends Controller
         // saves the updated session
         $listParamSessionStore->save();
 
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('blogs.index')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('blogs'))
-            ->render();
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create(): View
-    {
-        $blog = new Blog();
-        $blog->contentType = ContentType::find(ContentType::PLAIN_TEXT);
-        $blog->visibility = Visibility::find(Visibility::VISIBILITY_PUBLIC);
-
-        return view('blogs.create', compact('blog'))
-            ->with($this->getFormOptions());
+        return response()->json(new BlogCollection($blogs));
     }
 
     /**
@@ -250,17 +211,6 @@ class BlogsController extends Controller
     public function show(Blog $blog): JsonResponse
     {
         return response()->json($blog);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Blog $blog): View
-    {
-        $this->middleware('auth');
-
-        return view('blogs.edit', compact('blog'))
-            ->with($this->getFormOptions());
     }
 
     /**
@@ -357,12 +307,10 @@ class BlogsController extends Controller
      *
      * @internal param int $id
      */
-    public function destroy(Blog $blog): RedirectResponse
+    public function destroy(Blog $blog): JsonResponse
     {
         if ($this->user->cannot('destroy', $blog)) {
-            flash('Error', 'Your are not authorized to delete the blog.');
-
-            return redirect()->route('blogs.index');
+            return response()->json(['message' => 'Not authorized to delete the blog.'], 403);
         }
 
         // add to activity log
@@ -370,9 +318,7 @@ class BlogsController extends Controller
 
         $blog->delete();
 
-        flash()->success('Success', 'Your blog has been deleted!');
-
-        return redirect()->route('blogs.index');
+        return response()->json([], 204);
     }
 
     /**
@@ -493,31 +439,4 @@ class BlogsController extends Controller
         return redirect('/');
     }
 
-    protected function getListControlOptions(): array
-    {
-        return [
-            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
-            'sortOptions' => ['blogs.name' => 'Name', 'blogs.created_at' => 'Created At'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
-        ];
-    }
-
-    protected function getFilterOptions(): array
-    {
-        return [
-            'userOptions' => ['' => '&nbsp;'] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
-        ];
-    }
-
-    protected function getFormOptions(): array
-    {
-        return [
-            'visibilityOptions' => ['' => ''] + Visibility::pluck('name', 'id')->all(),
-            'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'menuOptions' => ['' => ''] + Menu::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'contentTypeOptions' => ['' => ''] + ContentType::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-        ];
-    }
 }
