@@ -71,7 +71,6 @@ class Forum extends Eloquent
     protected $fillable = [
         'name',
         'slug',
-        'short',
         'description',
         'visibility_id',
     ];

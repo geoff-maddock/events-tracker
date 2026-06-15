@@ -157,7 +157,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('forums/rpp-reset', ['as' => 'forums.rppReset', 'uses' => 'Api\ForumsController@rppReset']);
     Route::put('forums/{forum}', 'Api\ForumsController@update')->name('forums.update');
     Route::patch('forums/{forum}', 'Api\ForumsController@patch')->name('forums.patch');
-    Route::resource('forums', 'Api\ForumsController')->except(['update']);
+    Route::apiResource('forums', 'Api\ForumsController')->except(['update']);
 
     Route::match(['get', 'post'], 'links/filter', ['as' => 'links.filter', 'uses' => 'Api\LinksController@filter']);
     Route::get('links/reset', ['as' => 'links.reset', 'uses' => 'Api\LinksController@reset']);
