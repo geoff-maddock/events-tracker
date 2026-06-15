@@ -37,6 +37,7 @@ jobs:
         with:
           php-version: 8.4
           extensions: intl #optional
+          coverage: pcov
           ini-values: "post_max_size=256M" #optional
 
       - name: Check PHP Version
@@ -51,6 +52,10 @@ jobs:
       - name: Install dependencies
         run: composer install --quiet --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
 
+      # Fails the build on any unignored advisory; known-abandoned packages are reported, not gated.
+      - name: Composer security audit
+        run: composer audit --abandoned=report
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -59,6 +64,9 @@ jobs:
 
       - name: Install NPM Dependencies
         run: npm install
+
+      - name: NPM security audit
+        run: npm audit --audit-level=high
 
       - name: Clear Config
         run: php artisan config:clear
@@ -73,7 +81,7 @@ jobs:
         run: php artisan storage:link
 
       - name: Output the phpstan config
-        run: more phpstan.neon.dist
+        run: more phpstan.neon
 
       - name: Run php stan static analysis
         run: composer run-script phpstan
@@ -90,4 +98,8 @@ jobs:
           DB_PORT: 33306
           DB_USER: root
           DB_PASSWORD: db-password
-        run: composer run-script tests
+        # Equivalent to `composer run-script tests`, with coverage reporting added (pcov).
+        run: |
+          php artisan migrate --verbose
+          php artisan db:seed
+          ./vendor/bin/phpunit tests --coverage-text --coverage-clover=coverage.xml
