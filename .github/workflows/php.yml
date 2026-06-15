@@ -68,6 +68,9 @@ jobs:
       - name: NPM security audit
         run: npm audit --audit-level=high
 
+      - name: Lint JS
+        run: npm run lint
+
       - name: Clear Config
         run: php artisan config:clear
 

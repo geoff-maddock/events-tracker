@@ -26,7 +26,7 @@ const Visibility = {
         $(target).find('.toggler').on('click', (event) => { 
             const target = event.target.getAttribute("data-bs-target")
 
-            let state = '';
+            let state;
             // if the stored value is not close, then set to close
             if (localStorage.getItem(target) !== 'closed') {
                 localStorage.setItem(target, 'closed');

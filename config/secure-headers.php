@@ -441,7 +441,11 @@ return [
         'enable' => true,
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy-Report-Only
-        'report-only' => false,
+        // Report-only for now: violations are logged by the browser (and to
+        // report-uri/report-to if configured) but NOT enforced, so this cannot
+        // break the site. Review reports, tighten the directives below, then
+        // flip this to false to start enforcing.
+        'report-only' => true,
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/report-to
         'report-to' => '',
@@ -459,6 +463,7 @@ return [
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/base-uri
         'base-uri' => [
+            'self' => true,
         ],
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/child-src
@@ -467,33 +472,69 @@ return [
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/connect-src
         'connect-src' => [
+            'self' => true,
+            'allow' => [
+                'https://*.pusher.com',
+                'wss://*.pusher.com',
+                'https://*.ingest.sentry.io',
+                'https://www.google-analytics.com',
+                'https://fonts.bunny.net',
+            ],
         ],
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/default-src
         'default-src' => [
-//		'schemes' => [
-//			'https:'
-//		],
+            'self' => true,
         ],
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/font-src
         'font-src' => [
+            'self' => true,
+            'schemes' => [
+                'data:',
+            ],
+            'allow' => [
+                'https://fonts.gstatic.com',
+                'https://fonts.bunny.net',
+                'https://cdnjs.cloudflare.com',
+            ],
         ],
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/form-action
         'form-action' => [
+            'self' => true,
         ],
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors
         'frame-ancestors' => [
+            'self' => true,
         ],
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src
         'frame-src' => [
+            'self' => true,
+            'allow' => [
+                'https://www.youtube.com',
+                'https://www.youtube-nocookie.com',
+                'https://player.vimeo.com',
+                'https://w.soundcloud.com',
+                'https://open.spotify.com',
+                'https://bandcamp.com',
+                'https://www.mixcloud.com',
+                'https://www.instagram.com',
+                'https://www.facebook.com',
+                'https://platform.twitter.com',
+            ],
         ],
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/img-src
         'img-src' => [
+            'self' => true,
+            'schemes' => [
+                'data:',
+                'blob:',
+                'https:',
+            ],
         ],
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/manifest-src
@@ -502,6 +543,10 @@ return [
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/media-src
         'media-src' => [
+            'self' => true,
+            'schemes' => [
+                'https:',
+            ],
         ],
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/navigate-to
@@ -511,6 +556,7 @@ return [
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/object-src
         'object-src' => [
+            'none' => true,
         ],
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/plugin-types
@@ -562,12 +608,15 @@ return [
         'script-src' => [
             'none' => false,
 
-            'self' => false,
+            'self' => true,
 
             'report-sample' => false,
 
             'allow' => [
-                // 'url',
+                'https://cdnjs.cloudflare.com',
+                'https://cdn.jsdelivr.net',
+                'https://www.googletagmanager.com',
+                'https://www.google-analytics.com',
             ],
 
             'schemes' => [
@@ -577,9 +626,11 @@ return [
 
             /* followings are only work for `script` and `style` related directives */
 
-            'unsafe-inline' => false,
+            // Legacy Blade views ship many inline <script> blocks and Alpine
+            // needs eval; allow them for now and tighten to nonces/hashes later.
+            'unsafe-inline' => true,
 
-            'unsafe-eval' => false,
+            'unsafe-eval' => true,
 
             // https://www.w3.org/TR/CSP3/#unsafe-hashes-usage
             'unsafe-hashes' => false,
@@ -614,6 +665,14 @@ return [
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/style-src
         'style-src' => [
+            'self' => true,
+            'unsafe-inline' => true,
+            'allow' => [
+                'https://cdnjs.cloudflare.com',
+                'https://cdn.jsdelivr.net',
+                'https://fonts.googleapis.com',
+                'https://fonts.bunny.net',
+            ],
         ],
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/style-src-attr
