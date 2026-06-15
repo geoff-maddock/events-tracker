@@ -113,21 +113,37 @@ class ClickTrackController extends Controller
      */
     private function attachReferralParams(string $ticketUrl): string
     {
+        $ticketUrl = trim($ticketUrl);
+
         // Parse URL to add referral parameters
         $parsedUrl = parse_url($ticketUrl);
+
+        // Ticket links are sometimes stored without a scheme (e.g. "example.com/tickets"),
+        // which makes parse_url() omit 'scheme'/'host'. Normalize to https:// and re-parse
+        // so the redirect target is well-formed.
+        if ($parsedUrl === false || !isset($parsedUrl['scheme'])) {
+            $parsedUrl = parse_url('https://' . ltrim($ticketUrl, '/'));
+        }
+
+        // If the link is still unparseable / has no host, return it untouched rather than
+        // throwing on a missing array key.
+        if (!is_array($parsedUrl) || !isset($parsedUrl['host'])) {
+            return $ticketUrl;
+        }
+
         $query = [];
-        
+
         if (isset($parsedUrl['query'])) {
             parse_str($parsedUrl['query'], $query);
         }
-        
+
         // Add referral parameter
         $query['ref'] = config('app.name', 'events-tracker');
-        
+
         // Rebuild URL with parameters
         $newQuery = http_build_query($query);
-        $redirectUrl = $parsedUrl['scheme'] . '://' . $parsedUrl['host'];
-        
+        $redirectUrl = ($parsedUrl['scheme'] ?? 'https') . '://' . $parsedUrl['host'];
+
         if (isset($parsedUrl['port'])) {
             $redirectUrl .= ':' . $parsedUrl['port'];
         }

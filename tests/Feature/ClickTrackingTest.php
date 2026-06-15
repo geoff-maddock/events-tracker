@@ -309,4 +309,43 @@ class ClickTrackingTest extends TestCase
         // Assert no click was tracked
         $this->assertEquals(0, ClickTrack::count());
     }
+
+    /** @test */
+    public function event_with_schemeless_ticket_link_redirects_with_https_and_does_not_error()
+    {
+        // Regression: ticket links stored without a scheme (e.g. "example.com/...")
+        // previously raised "Undefined array key 'scheme'" instead of redirecting.
+        $event = Event::factory()->create([
+            'ticket_link' => 'example.com/tickets?utm=x',
+        ]);
+
+        $response = $this->get('/go/evt-' . $event->id);
+
+        $response->assertRedirect();
+        $redirectUrl = $response->headers->get('Location');
+
+        $this->assertStringStartsWith('https://example.com/tickets', $redirectUrl);
+        $this->assertStringContainsString('utm=x', $redirectUrl);
+        $this->assertStringContainsString('ref=', $redirectUrl);
+
+        $this->assertDatabaseHas('click_tracks', [
+            'event_id' => $event->id,
+        ]);
+    }
+
+    /** @test */
+    public function event_with_protocol_relative_ticket_link_redirects_with_https()
+    {
+        $event = Event::factory()->create([
+            'ticket_link' => '//tickets.example.com/buy',
+        ]);
+
+        $response = $this->get('/go/evt-' . $event->id);
+
+        $response->assertRedirect();
+        $this->assertStringStartsWith(
+            'https://tickets.example.com/buy',
+            $response->headers->get('Location')
+        );
+    }
 }
