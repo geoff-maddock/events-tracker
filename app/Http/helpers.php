@@ -22,21 +22,28 @@ function delete_form(array $routeParams, string $label = 'Delete'): string
  * Renders <a href="{route}" ...attributes>{title}</a> with the title and
  * attribute values HTML-escaped (matching the package default).
  *
+ * Guarded with function_exists() so this autoloaded file never triggers a
+ * "Cannot redeclare function" fatal if the laravelcollective package is still
+ * present in vendor/ during a deploy (i.e. before composer install removes it).
+ * The package's identical helper is used until then; ours takes over after.
+ *
  * @param array<int|string, mixed> $parameters
  * @param array<string, mixed>     $attributes
  */
-function link_to_route(string $name, ?string $title = null, array $parameters = [], array $attributes = []): string
-{
-    $url = route($name, $parameters);
+if (!function_exists('link_to_route')) {
+    function link_to_route(string $name, ?string $title = null, array $parameters = [], array $attributes = []): string
+    {
+        $url = route($name, $parameters);
 
-    $attrs = '';
-    foreach ($attributes as $key => $value) {
-        $attrs .= is_int($key)
-            ? ' ' . e($value)
-            : ' ' . $key . '="' . e($value) . '"';
+        $attrs = '';
+        foreach ($attributes as $key => $value) {
+            $attrs .= is_int($key)
+                ? ' ' . e($value)
+                : ' ' . $key . '="' . e($value) . '"';
+        }
+
+        return '<a href="' . e($url) . '"' . $attrs . '>' . e($title ?? $url) . '</a>';
     }
-
-    return '<a href="' . e($url) . '"' . $attrs . '>' . e($title ?? $url) . '</a>';
 }
 
 function getTableFromModelClass(string $class): string
