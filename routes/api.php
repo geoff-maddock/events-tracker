@@ -67,7 +67,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('blogs/rpp-reset', ['as' => 'blogs.rppReset', 'uses' => 'Api\BlogsController@rppReset']);
     Route::put('blogs/{blog}', 'Api\BlogsController@update')->name('blogs.update');
     Route::patch('blogs/{blog}', 'Api\BlogsController@patch')->name('blogs.patch');
-    Route::resource('blogs', 'Api\BlogsController')->except(['update']);
+    Route::apiResource('blogs', 'Api\BlogsController')->except(['update']);
 
     Route::get('events/attending', ['as' => 'events.attending', 'uses' => 'Api\EventsController@indexAttending']);
     Route::get('events/recommended', ['as' => 'events.recommended', 'uses' => 'Api\EventsController@indexRecommended'])->middleware('auth:sanctum');

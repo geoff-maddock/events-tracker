@@ -91,10 +91,48 @@ class ApiBlogsCrudTest extends TestCase
     {
         $blog = Blog::factory()->create(['created_by' => $this->user->id]);
 
-        // destroy returns a RedirectResponse (302) to blogs.index.
-        $this->deleteJson('/api/blogs/'.$blog->slug)->assertStatus(302);
+        // Normalized to a JSON API: destroy returns 204 No Content.
+        $this->deleteJson('/api/blogs/'.$blog->slug)->assertNoContent();
 
         $this->assertNull(Blog::find($blog->id));
+    }
+
+    public function test_destroy_is_forbidden_for_non_owner(): void
+    {
+        $other = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $blog = Blog::factory()->create(['created_by' => $other->id]);
+
+        $this->deleteJson('/api/blogs/'.$blog->slug)->assertStatus(403);
+
+        $this->assertNotNull(Blog::find($blog->id));
+    }
+
+    public function test_index_returns_json_collection(): void
+    {
+        $blog = Blog::factory()->create();
+
+        $this->getJson('/api/blogs')
+            ->assertStatus(200)
+            ->assertJsonStructure(['data', 'current_page', 'total'])
+            ->assertJsonFragment(['id' => $blog->id]);
+    }
+
+    public function test_filter_returns_json_collection(): void
+    {
+        Blog::factory()->create();
+
+        $this->getJson('/api/blogs/filter')
+            ->assertStatus(200)
+            ->assertJsonStructure(['data', 'current_page', 'total']);
+    }
+
+    public function test_create_and_edit_html_form_routes_are_removed(): void
+    {
+        $blog = Blog::factory()->create();
+
+        // The API is JSON-only (apiResource) — no HTML create/edit form endpoints.
+        $this->getJson('/api/blogs/create')->assertStatus(404);
+        $this->getJson('/api/blogs/'.$blog->slug.'/edit')->assertStatus(404);
     }
 
     public function test_show_returns_existing_blog(): void
