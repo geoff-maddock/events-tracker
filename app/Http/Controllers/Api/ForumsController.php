@@ -7,23 +7,17 @@ use App\Filters\ForumFilters;
 use App\Http\Requests\ForumPatchRequest;
 use App\Http\Requests\ForumRequest;
 use App\Http\Resources\ForumCollection;
+use App\Http\Resources\ForumResource;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Forum;
-use App\Models\Series;
-use App\Models\Tag;
-use App\Models\Thread;
-use App\Models\User;
-use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
-use Illuminate\View\View as ViewView;
 
 class ForumsController extends Controller
 {
@@ -39,8 +33,6 @@ class ForumsController extends Controller
     protected string $sortOrder;
 
     protected array $defaultCriteria;
-
-    protected bool $hasFilter;
 
     protected string $prefix;
 
@@ -73,7 +65,6 @@ class ForumsController extends Controller
         $this->sortBy = 'created_at';
         $this->sortOrder = 'desc';
         $this->defaultCriteria = [];
-        $this->hasFilter = false;
         $this->filter = $filter;
 
         // default list variables
@@ -137,12 +128,10 @@ class ForumsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
+    ): JsonResponse {
         // if the gate does not allow this user to show a forum redirect to home
         if (Gate::denies('show_forum')) {
-            flash()->error('Unauthorized', 'Your cannot view the forum index');
-
-            return redirect()->back();
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         // initialized listParamSessionStore with base index key
@@ -175,27 +164,7 @@ class ForumsController extends Controller
         // saves the updated session
         $listParamSessionStore->save();
 
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        // return json only
-        if (request()->wantsJson()) {
-            return $forums;
-        }
-
-        return view('forums.index')
-                ->with(array_merge(
-                    [
-                        'limit' => $listResultSet->getLimit(),
-                        'sort' => $listResultSet->getSort(),
-                        'direction' => $listResultSet->getSortDirection(),
-                        'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters(),
-                    ],
-                    $this->getFilterOptions(),
-                    $this->getListControlOptions()
-                ))
-                ->with(compact('forums'))
-                ->render();
+        return response()->json(new ForumCollection($forums));
     }
 
     /**
@@ -205,12 +174,10 @@ class ForumsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
+    ): JsonResponse {
         // if the gate does not allow this user to show a forum redirect to home
         if (Gate::denies('show_forum')) {
-            flash()->error('Unauthorized', 'Your cannot view the forum index');
-
-            return redirect()->back();
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         // initialized listParamSessionStore with base index key
@@ -243,138 +210,28 @@ class ForumsController extends Controller
         // saves the updated session
         $listParamSessionStore->save();
 
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        // return json only
-        if (request()->wantsJson()) {
-            return $forums;
-        }
-
-        return view('forums.index')
-                ->with(array_merge(
-                    [
-                        'limit' => $listResultSet->getLimit(),
-                        'sort' => $listResultSet->getSort(),
-                        'direction' => $listResultSet->getSortDirection(),
-                        'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters(),
-                    ],
-                    $this->getFilterOptions(),
-                    $this->getListControlOptions()
-                ))
-                ->with(compact('forums'))
-                ->render();
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create(): ViewView
-    {
-        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $forum = new Forum();
-        $forum->visibility_id = Visibility::VISIBILITY_PUBLIC;
-
-        return view('forums.create', compact('forum'))->with($this->getFormOptions());
+        return response()->json(new ForumCollection($forums));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ForumRequest $request, Forum $forum): RedirectResponse
+    public function store(ForumRequest $request, Forum $forum): JsonResponse
     {
-        $msg = '';
-
-        // get the request
-        $input = $request->all();
-
-        $forum = $forum->create($input);
+        $forum = $forum->create($request->all());
 
         // add to activity log
         Activity::log($forum, $this->user, 1);
 
-        flash()->success('Success', 'Your forum has been created');
-
-        return redirect()->route('forums.index');
+        return response()->json($forum);
     }
 
-    // /**
-    //  * Display the specified resource.
-    //  */
-    // public function show(
-    //     Forum $forum,
-    //     Request $request,
-    //     ListParameterSessionStore $listParamSessionStore,
-    //     ListEntityResultBuilder $listEntityResultBuilder
-    // ): RedirectResponse | View {
-    //     // if the gate does not allow this user to show a forum redirect to home
-    //     if (Gate::denies('show_forum')) {
-    //         flash()->error('Unauthorized', 'Your cannot view the forum');
-
-    //         return redirect()->back();
-    //     }
-
-    //     // initialized listParamSessionStore with base index key
-    //     $listParamSessionStore->setBaseIndex('internal_thread');
-    //     $listParamSessionStore->setKeyPrefix('internal_thread_index');
-
-    //     // set the index tab in the session
-    //     $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
-
-    //     // create the base query including any required joins; needs select to make sure only event entities are returned
-    //     $baseQuery = Thread::query()->where('forum_id', $forum->id)->orderBy('created_at', 'desc')
-    //     ->select('threads.*');
-
-    //     $listEntityResultBuilder
-    //         ->setFilter($this->filter)
-    //         ->setQueryBuilder($baseQuery)
-    //         ->setDefaultSort(['threads.created_at' => 'desc']);
-
-    //     // get the result set from the builder
-    //     $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-    //     // get the query builder
-    //     $query = $listResultSet->getList();
-
-    //     /* @phpstan-ignore-next-line */
-    //     $threads = $query->visible($this->user)
-    //         ->with('visibility')
-    //         ->paginate(10000000);
-
-    //     // saves the updated session
-    //     $listParamSessionStore->save();
-
-    //     $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-    //     $threads = Thread::whereRelation('visibility','name','Public')->where('forum_id', $forum->id)->orderBy('created_at', 'desc')->paginate(1000000);
-
-    //     // pass a slug for the forum
-    //     $slug = $forum->description;
-
-    //     return view('threads.index')
-    //         ->with(array_merge(
-    //             [
-    //                 'limit' => $listResultSet->getLimit(),
-    //                 'sort' => $listResultSet->getSort(),
-    //                 'direction' => $listResultSet->getSortDirection(),
-    //                 'hasFilter' => $this->hasFilter,
-    //                 'filters' => $listResultSet->getFilters(),
-    //             ],
-    //             $this->getFilterOptions(),
-    //             $this->getListControlOptions()
-    //         ))
-    //         ->with(compact('threads', 'slug'));
-    // }
-
     /**
-     * Show the form for editing the specified resource.
+     * Display the specified resource.
      */
-    public function edit(Forum $forum): View
+    public function show(Forum $forum): JsonResponse
     {
-        $this->middleware('auth');
-
-        return view('forums.edit', compact('forum'))->with($this->getFormOptions());
+        return response()->json(new ForumResource($forum));
     }
 
     /**
@@ -389,7 +246,7 @@ class ForumsController extends Controller
 
         $input = $request->all();
 
-        foreach (['short', 'description'] as $field) {
+        foreach (['description'] as $field) {
             if (!array_key_exists($field, $input)) {
                 $input[$field] = null;
             }
@@ -436,16 +293,14 @@ class ForumsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Forum $forum): RedirectResponse
+    public function destroy(Forum $forum): JsonResponse
     {
         // add to activity log
         Activity::log($forum, $this->user, 3);
 
         $forum->delete();
 
-        flash()->success('Success', 'Your forum has been deleted!');
-
-        return redirect('forums');
+        return response()->json([], 204);
     }
 
     /**
@@ -471,7 +326,7 @@ class ForumsController extends Controller
     /**
      * Reset the filtering of entities.
      *
-     * @return RedirectResponse|View
+     * @return RedirectResponse
      */
     public function reset(
         Request $request,
@@ -497,28 +352,4 @@ class ForumsController extends Controller
         return [];
     }
 
-    protected function getFilterOptions(): array
-    {
-        return [
-            'userOptions' => ['' => '&nbsp;'] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'seriesOptions' => ['' => ''] + Series::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-        ];
-    }
-
-    protected function getListControlOptions(): array
-    {
-        return [
-            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
-            'sortOptions' => ['forums.name' => 'Name', 'forums.created_at' => 'Created At'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
-        ];
-    }
-
-    protected function getFormOptions(): array
-    {
-        return [
-            'visibilities' => ['' => ''] + Visibility::pluck('name', 'id')->all(),
-        ];
-    }
 }
