@@ -16,6 +16,14 @@ class ActivityTest extends TestCase
     protected $seed = true;
 
     /** @test */
+    public function the_activity_index_loads()
+    {
+        // Exercises ListEntityResultBuilder::listResultSetFactory()/setSort(); must not
+        // 500 on a null sort field (EVENTREPO-TB).
+        $this->get('/activity')->assertOk();
+    }
+
+    /** @test */
     public function it_records_activity_when_a_thread_is_created()
     {
         $this->signIn();

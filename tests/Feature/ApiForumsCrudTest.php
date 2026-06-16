@@ -65,6 +65,20 @@ class ApiForumsCrudTest extends TestCase
         $this->assertDatabaseHas('forums', ['slug' => $slug]);
     }
 
+    public function test_store_ignores_non_fillable_short_field(): void
+    {
+        // 'short' is not a forums column; it must be ignored, not reach the INSERT
+        // and 500 with "Unknown column 'short'" (EVENTREPO-W0).
+        $slug = 'test-forum-short-'.uniqid();
+
+        $this->postJson('/api/forums', $this->payload([
+            'slug' => $slug,
+            'short' => 'should be ignored',
+        ]))->assertStatus(200);
+
+        $this->assertDatabaseHas('forums', ['slug' => $slug]);
+    }
+
     public function test_store_rejects_payload_missing_required_fields(): void
     {
         $this->postJson('/api/forums', ['description' => 'incomplete'])

@@ -71,7 +71,7 @@ class UsersController extends Controller
 
     public function __construct(UserFilters $filter)
     {
-        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'profile']]);
         $this->filter = $filter;
 
         // prefix for session storage
@@ -287,14 +287,22 @@ class UsersController extends Controller
 
     public function setTabs(Request $request): void
     {
-        if (null !== $request->input('tabs')) {
-            $request->session()->put($this->prefix.'tabs', $request->input('tabs'));
+        // Only persist a well-formed tabs array; a scalar like ?tabs=foo would otherwise
+        // poison the session and break array access in the view.
+        $tabs = $request->input('tabs');
+        if (is_array($tabs)) {
+            $request->session()->put($this->prefix.'tabs', $tabs);
         }
     }
 
     public function getTabs(Request $request): array
     {
-        return $request->session()->get($this->prefix.'tabs', $this->getDefaultTabs());
+        // Merge over the defaults so every expected key (events, following) is always
+        // present, even when only a subset was supplied, e.g. ?tabs[events]=created
+        // (EVENTREPO-TJ).
+        $stored = $request->session()->get($this->prefix.'tabs', []);
+
+        return array_merge($this->getDefaultTabs(), is_array($stored) ? $stored : []);
     }
 
     public function show(User $user, Request $request): RedirectResponse | View
@@ -345,9 +353,13 @@ class UsersController extends Controller
         return view('users.show-tw', compact('user', 'tabs', 'token', 'canViewFullProfile'));
     }
 
-    public function profile(User $user, Request $request): RedirectResponse
+    public function profile(Request $request): RedirectResponse
     {
-        $this->middleware('auth');
+        // The 'auth' middleware (registered in the constructor) guarantees a signed-in
+        // user here; guard anyway so a null user can never dereference ->id (EVENTREPO-HH).
+        if (!$this->user) {
+            return redirect()->guest(route('login'));
+        }
 
         return redirect('users/'.$this->user->id);
     }

@@ -28,13 +28,13 @@ class ListSortHardeningTest extends TestCase
         parent::tearDown();
     }
 
-    private function buildList(?string $sortField)
+    private function buildList(?string $sortField, ?string $sortDirection = 'desc')
     {
         $params = Mockery::mock(ListQueryParameters::class);
         $params->shouldReceive('getFilters')->andReturn([]);
         $params->shouldReceive('getIsEmptyFilter')->andReturn(false);
         $params->shouldReceive('getSortFieldName')->andReturn($sortField);
-        $params->shouldReceive('getSortDirection')->andReturn('desc');
+        $params->shouldReceive('getSortDirection')->andReturn($sortDirection);
         $params->shouldReceive('getLimit')->andReturn(25);
         $params->shouldReceive('getPage')->andReturn(1);
 
@@ -55,6 +55,29 @@ class ListSortHardeningTest extends TestCase
         // Fell back to the safe default rather than the malformed input...
         $this->assertSame('photos.created_at', $result->getSort());
         // ...and the built query executes without a bad-column SQLSTATE error.
+        $result->getList()->get();
+        $this->assertTrue(true);
+    }
+
+    public function test_malformed_sort_direction_falls_back_and_query_runs(): void
+    {
+        // A bad direction (e.g. from a stale session or fuzz probe) must normalize
+        // to a safe value rather than throwing "Order direction must be 'asc' or
+        // 'desc'" (EVENTREPO-V4 on /photos, EVENTREPO-TD on /series).
+        $result = $this->buildList('photos.name', 'garbage');
+
+        $this->assertSame('desc', $result->getSortDirection());
+        $result->getList()->get();
+        $this->assertTrue(true);
+    }
+
+    public function test_null_sort_field_does_not_break_set_sort(): void
+    {
+        // With no resolvable field and a multi-column default, appliedSortField is
+        // null; setSort() must still receive a string (EVENTREPO-TB).
+        $result = $this->buildList(null);
+
+        $this->assertIsString($result->getSort());
         $result->getList()->get();
         $this->assertTrue(true);
     }
