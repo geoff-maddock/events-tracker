@@ -169,57 +169,29 @@
                 <!-- Tag Filter -->
                 <div class="min-w-0">
                     <label for="filter_tag" class="block text-sm font-medium text-muted-foreground mb-1">Tags</label>
-                    {!! Form::select('filters[tag][]', array_filter($tagOptions ?? [], fn($key) => $key !== '', ARRAY_FILTER_USE_KEY), ($filters['tag'] ?? null),
-                    [
-                        'data-theme' => 'tailwind',
-                        'class' => 'form-select-tw select2',
-                        'data-placeholder' => 'Select tags',
-                        'id' => 'filter_tag',
-                        'multiple' => true
-                  ])
-                    !!}
+                    <x-ui.select-field name="filters[tag][]" :options="array_filter($tagOptions ?? [], fn($key) => $key !== '', ARRAY_FILTER_USE_KEY)" :selected="$filters['tag'] ?? null"
+                        data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select tags" id="filter_tag" multiple />
                 </div>
 
                 <!-- Venue Filter -->
                 <div class="min-w-0">
                     <label for="filter_venue" class="block text-sm font-medium text-muted-foreground mb-1">Venue</label>
-                    {!! Form::select('filter_venue', $venueOptions ?? [''=>''], ($filters['venue'] ?? null),
-                    [
-                        'data-theme' => 'tailwind',
-                        'class' => 'form-select-tw select2',
-                        'data-placeholder' => 'Select a venue',
-                        'name' => 'filters[venue]',
-                        'id' => 'filter_venue'
-                    ])
-                    !!}
+                    <x-ui.select-field name="filters[venue]" :options="$venueOptions ?? ['' => '']" :selected="$filters['venue'] ?? null"
+                        data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select a venue" id="filter_venue" />
                 </div>
 
                 <!-- Related Entity Filter -->
                 <div class="min-w-0">
                     <label for="filter_related" class="block text-sm font-medium text-muted-foreground mb-1">Related Entity</label>
-                    {!! Form::select('filter_related', $relatedOptions ?? [''=>''], ($filters['related'] ?? null),
-                    [
-                        'data-theme' => 'tailwind',
-                        'class' => 'form-select-tw select2',
-                        'data-placeholder' => 'Select an entity',
-                        'name' => 'filters[related]',
-                        'id' => 'filter_related'
-                    ])
-                    !!}
+                    <x-ui.select-field name="filters[related]" :options="$relatedOptions ?? ['' => '']" :selected="$filters['related'] ?? null"
+                        data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select an entity" id="filter_related" />
                 </div>
 
                 <!-- Event Type Filter -->
                 <div class="min-w-0">
                     <label for="filter_event_type" class="block text-sm font-medium text-muted-foreground mb-1">Event Type</label>
-                    {!! Form::select('filter_event_type', $eventTypeOptions ?? [''=>''], ($filters['event_type'] ?? null),
-                    [
-                        'data-theme' => 'tailwind',
-                        'class' => 'form-select-tw select2',
-                        'data-placeholder' => 'Select a type',
-                        'name' => 'filters[event_type]',
-                        'id' => 'filter_event_type'
-                    ])
-                    !!}
+                    <x-ui.select-field name="filters[event_type]" :options="$eventTypeOptions ?? ['' => '']" :selected="$filters['event_type'] ?? null"
+                        data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select a type" id="filter_event_type" />
                 </div>
 
                 @auth

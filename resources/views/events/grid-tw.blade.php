@@ -106,7 +106,8 @@
 
 <!-- Filter Panel -->
 <div id="filter-panel" class="@if(!$hasFilter) hidden @endif bg-card border border-border rounded-lg p-4 mb-6 overflow-hidden">
-	{!! Form::open(['route' => ['events.grid'], 'name' => 'filters', 'method' => 'POST']) !!}
+	<form method="POST" action="{{ route('events.grid') }}" accept-charset="UTF-8" name="filters">
+	@csrf
 
 	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
 		<!-- Name Filter -->
@@ -123,57 +124,29 @@
 		<!-- Venue Filter -->
 		<div class="min-w-0">
 			<label for="filter_venue" class="block text-sm font-medium text-muted-foreground mb-1">Venue</label>
-			{!! Form::select('filter_venue', $venueOptions, ($filters['venue'] ?? null),
-			[
-				'data-theme' => 'tailwind',
-				'class' => 'form-select-tw select2',
-				'data-placeholder' => 'Select a venue',
-				'name' => 'filters[venue]',
-				'id' => 'filter_venue'
-			])
-			!!}
+			<x-ui.select-field name="filters[venue]" :options="$venueOptions" :selected="$filters['venue'] ?? null"
+				data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select a venue" id="filter_venue" />
 		</div>
 
 		<!-- Tag Filter -->
 		<div class="min-w-0">
 			<label for="filter_tag" class="block text-sm font-medium text-muted-foreground mb-1">Tags</label>
-			{!! Form::select('filters[tag][]', array_filter($tagOptions, fn($key) => $key !== '', ARRAY_FILTER_USE_KEY), ($filters['tag'] ?? null),
-			[
-				'data-theme' => 'tailwind',
-				'class' => 'form-select-tw select2',
-				'data-placeholder' => 'Select tags',
-				'id' => 'filter_tag',
-				'multiple' => true
-	])
-			!!}
+			<x-ui.select-field name="filters[tag][]" :options="array_filter($tagOptions, fn($key) => $key !== '', ARRAY_FILTER_USE_KEY)" :selected="$filters['tag'] ?? null"
+				data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select tags" id="filter_tag" multiple />
 		</div>
 
 		<!-- Related Entity Filter -->
 		<div class="min-w-0">
 			<label for="filter_related" class="block text-sm font-medium text-muted-foreground mb-1">Related Entity</label>
-			{!! Form::select('filter_related', $relatedOptions, ($filters['related'] ?? null),
-			[
-				'data-theme' => 'tailwind',
-				'class' => 'form-select-tw select2',
-				'data-placeholder' => 'Select an entity',
-				'name' => 'filters[related]',
-				'id' => 'filter_related'
-			])
-			!!}
+			<x-ui.select-field name="filters[related]" :options="$relatedOptions" :selected="$filters['related'] ?? null"
+				data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select an entity" id="filter_related" />
 		</div>
 
 		<!-- Event Type Filter -->
 		<div class="min-w-0">
 			<label for="filter_event_type" class="block text-sm font-medium text-muted-foreground mb-1">Event Type</label>
-			{!! Form::select('filter_event_type', $eventTypeOptions, ($filters['event_type'] ?? null),
-			[
-				'data-theme' => 'tailwind',
-				'class' => 'form-select-tw select2',
-				'data-placeholder' => 'Select a type',
-				'name' => 'filters[event_type]',
-				'id' => 'filter_event_type'
-			])
-			!!}
+			<x-ui.select-field name="filters[event_type]" :options="$eventTypeOptions" :selected="$filters['event_type'] ?? null"
+				data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select a type" id="filter_event_type" />
 		</div>
 
 		<!-- Date Range Filter -->
@@ -217,14 +190,14 @@
 		<button type="submit" class="px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
 			Apply
 		</button>
-		{!! Form::close() !!}
-		{!! Form::open(['route' => ['events.reset'], 'method' => 'GET']) !!}
-		{!! Form::hidden('redirect', 'events.grid') !!}
-		{!! Form::hidden('key', 'internal_event_grid') !!}
+		</form>
+		<form method="GET" action="{{ route('events.reset') }}" accept-charset="UTF-8">
+		<input type="hidden" name="redirect" value="events.grid">
+		<input type="hidden" name="key" value="internal_event_grid">
 		<button id="filters-reset-open" type="submit" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors @if(!$hasFilter) hidden @endif">
 			Reset
 		</button>
-		{!! Form::close() !!}
+		</form>
 		@if($hasFilter)
 		<button type="button" id="copy-filter-url-btn" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors flex items-center gap-2">
 			<i class="bi bi-link-45deg"></i>

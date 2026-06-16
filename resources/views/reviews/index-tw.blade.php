@@ -30,7 +30,8 @@
 
 	<!-- Filter Panel -->
 	<div id="filter-panel" class="@if(!$hasFilter) hidden @endif bg-card border border-border rounded-lg p-4 mb-6">
-		{!! Form::open(['route' => [$filterRoute ?? 'reviews.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
+		<form method="POST" action="{{ route($filterRoute ?? 'reviews.filter') }}" accept-charset="UTF-8" name="filters">
+		@csrf
 
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 			<!-- Review Filter -->
@@ -47,29 +48,15 @@
 			<!-- User Filter -->
 			<div>
 				<label for="filter_user" class="block text-sm font-medium text-muted-foreground mb-1">User</label>
-				{!! Form::select('filter_user', $userOptions, ($filters['user'] ?? null),
-				[
-					'data-theme' => 'bootstrap-5',
-					'class' => 'form-select-tw select2',
-					'data-placeholder' => 'Select a user',
-					'name' => 'filters[user]',
-					'id' => 'filter_user'
-				])
-				!!}
+				<x-ui.select-field name="filters[user]" :options="$userOptions" :selected="$filters['user'] ?? null"
+					data-theme="bootstrap-5" class="form-select-tw select2" data-placeholder="Select a user" id="filter_user" />
 			</div>
 
 			<!-- Review Type Filter -->
 			<div>
 				<label for="filter_review_type" class="block text-sm font-medium text-muted-foreground mb-1">Type</label>
-				{!! Form::select('filter_review_type', $reviewTypeOptions, ($filters['review_type'] ?? null),
-				[
-					'data-theme' => 'bootstrap-5',
-					'class' => 'form-select-tw select2',
-					'data-placeholder' => 'Select a type',
-					'name' => 'filters[review_type]',
-					'id' => 'filter_review_type'
-				])
-				!!}
+				<x-ui.select-field name="filters[review_type]" :options="$reviewTypeOptions" :selected="$filters['review_type'] ?? null"
+					data-theme="bootstrap-5" class="form-select-tw select2" data-placeholder="Select a type" id="filter_review_type" />
 			</div>
 		</div>
 
@@ -78,12 +65,12 @@
 			<button type="submit" class="px-4 py-2 bg-accent text-foreground border-2 border-primary rounded-lg hover:bg-accent/80 transition-colors">
 				Apply
 			</button>
-			{!! Form::close() !!}
-			{!! Form::open(['route' => ['reviews.reset'], 'method' => 'GET']) !!}
+			</form>
+			<form method="GET" action="{{ route('reviews.reset') }}" accept-charset="UTF-8">
 			<button type="submit" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
 				Reset
 			</button>
-			{!! Form::close() !!}
+			</form>
 		</div>
 	</div>
 

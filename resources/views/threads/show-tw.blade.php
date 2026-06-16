@@ -76,13 +76,8 @@ Forum Thread "{{ $thread->name }}"
 
 					<div>
 						<label for="tag_list" class="block text-sm font-medium text-muted-foreground mb-2">Tags:</label>
-						{!! Form::select('tag_list[]', $tags, null, [
-							'id' => 'tag_list',
-							'class' => 'form-select-tw select2',
-							'data-placeholder' => 'Choose a tag',
-							'data-tags' => 'true',
-							'multiple' => true
-						]) !!}
+						<x-ui.select-field name="tag_list[]" :options="$tags" :selected="null"
+							id="tag_list" class="form-select-tw select2" data-placeholder="Choose a tag" data-tags="true" multiple />
 						@error('tags')
 							<span class="text-sm text-destructive mt-1 block">{{ $message }}</span>
 						@enderror

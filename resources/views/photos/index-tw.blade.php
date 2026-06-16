@@ -32,7 +32,8 @@
 
 	<!-- Filter Panel -->
 	<div id="filter-panel" class="@if(!$hasFilter) hidden @endif bg-card border border-border rounded-lg p-4 mb-6">
-		{!! Form::open(['route' => [$filterRoute ?? 'photos.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
+		<form method="POST" action="{{ route($filterRoute ?? 'photos.filter') }}" accept-charset="UTF-8" name="filters">
+		@csrf
 
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
 			<!-- Name Filter -->
@@ -60,29 +61,15 @@
 			<!-- Tag Filter -->
 			<div>
 				<label for="filter_tag" class="block text-sm font-medium text-muted-foreground mb-1">Tag</label>
-				{!! Form::select('filter_tag', $tagOptions, ($filters['tag'] ?? null),
-				[
-					'data-theme' => 'bootstrap-5',
-					'class' => 'form-select-tw select2',
-					'data-placeholder' => 'Select a tag',
-					'name' => 'filters[tag]',
-					'id' => 'filter_tag'
-				])
-				!!}
+				<x-ui.select-field name="filters[tag]" :options="$tagOptions" :selected="$filters['tag'] ?? null"
+					data-theme="bootstrap-5" class="form-select-tw select2" data-placeholder="Select a tag" id="filter_tag" />
 			</div>
 
 			<!-- Related Entity Filter -->
 			<div>
 				<label for="filter_related" class="block text-sm font-medium text-muted-foreground mb-1">Related Entity</label>
-				{!! Form::select('filter_related', $relatedOptions, ($filters['related'] ?? null),
-				[
-					'data-theme' => 'bootstrap-5',
-					'class' => 'form-select-tw select2',
-					'data-placeholder' => 'Select an entity',
-					'name' => 'filters[related]',
-					'id' => 'filter_related'
-				])
-				!!}
+				<x-ui.select-field name="filters[related]" :options="$relatedOptions" :selected="$filters['related'] ?? null"
+					data-theme="bootstrap-5" class="form-select-tw select2" data-placeholder="Select an entity" id="filter_related" />
 			</div>
 
 			<!-- Is Event Filter -->
@@ -102,14 +89,14 @@
 			<button type="submit" class="px-4 py-2 bg-accent text-foreground border-2 border-primary rounded-lg hover:bg-accent/80 transition-colors">
 				Apply
 			</button>
-			{!! Form::close() !!}
-			{!! Form::open(['route' => ['photos.reset'], 'method' => 'GET']) !!}
-			{!! Form::hidden('redirect', $redirect ?? 'photos.index') !!}
-			{!! Form::hidden('key', $key ?? 'internal_photo_index') !!}
+			</form>
+			<form method="GET" action="{{ route('photos.reset') }}" accept-charset="UTF-8">
+			<input type="hidden" name="redirect" value="{{ $redirect ?? 'photos.index' }}">
+			<input type="hidden" name="key" value="{{ $key ?? 'internal_photo_index' }}">
 			<button type="submit" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
 				Reset
 			</button>
-			{!! Form::close() !!}
+			</form>
 		</div>
 	</div>
 

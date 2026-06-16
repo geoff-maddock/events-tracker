@@ -49,7 +49,8 @@
 
 <!-- Filter Panel -->
 <div id="filter-panel" class="@if(!$hasFilter) hidden @endif bg-card border border-border rounded-lg p-4 mb-6">
-	{!! Form::open(['route' => [$filterRoute ?? 'threads.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
+	<form method="POST" action="{{ route($filterRoute ?? 'threads.filter') }}" accept-charset="UTF-8" name="filters">
+	@csrf
 
 	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 		<!-- Name Filter -->
@@ -66,46 +67,22 @@
 		<!-- User Filter -->
 		<div>
 			<label for="filter_user" class="block text-sm font-medium text-muted-foreground mb-1">User</label>
-			{!! Form::select('filter_user', $userOptions, ($filters['user'] ?? null),
-			[
-				'class' => 'form-select-tw select2',
-				'data-placeholder' => 'Select a user',
-				'data-theme' => 'tailwind',
-				'data-allow-clear' => 'true',
-				'name' => 'filters[user]',
-				'id' => 'filter_user'
-			])
-			!!}
+			<x-ui.select-field name="filters[user]" :options="$userOptions" :selected="$filters['user'] ?? null"
+				class="form-select-tw select2" data-placeholder="Select a user" data-theme="tailwind" data-allow-clear="true" id="filter_user" />
 		</div>
 
 		<!-- Tag Filter -->
 		<div>
 			<label for="filter_tag" class="block text-sm font-medium text-muted-foreground mb-1">Tag</label>
-			{!! Form::select('filter_tag', $tagOptions, ($filters['tag'] ?? null),
-			[
-				'class' => 'form-select-tw select2',
-				'data-placeholder' => 'Select a tag',
-				'data-theme' => 'tailwind',
-				'data-allow-clear' => 'true',
-				'name' => 'filters[tag]',
-				'id' => 'filter_tag'
-			])
-			!!}
+			<x-ui.select-field name="filters[tag]" :options="$tagOptions" :selected="$filters['tag'] ?? null"
+				class="form-select-tw select2" data-placeholder="Select a tag" data-theme="tailwind" data-allow-clear="true" id="filter_tag" />
 		</div>
 
 		<!-- Series Filter -->
 		<div>
 			<label for="filter_series" class="block text-sm font-medium text-muted-foreground mb-1">Series</label>
-			{!! Form::select('filter_series', $seriesOptions, ($filters['series'] ?? null),
-			[
-				'class' => 'form-select-tw select2',
-				'data-placeholder' => 'Select a series',
-				'data-theme' => 'tailwind',
-				'data-allow-clear' => 'true',
-				'name' => 'filters[series]',
-				'id' => 'filter_series'
-			])
-			!!}
+			<x-ui.select-field name="filters[series]" :options="$seriesOptions" :selected="$filters['series'] ?? null"
+				class="form-select-tw select2" data-placeholder="Select a series" data-theme="tailwind" data-allow-clear="true" id="filter_series" />
 		</div>
 	</div>
 
@@ -114,12 +91,12 @@
 		<button type="submit" class="px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
 			Apply
 		</button>
-		{!! Form::close() !!}
-		{!! Form::open(['route' => ['threads.reset'], 'method' => 'GET']) !!}
+		</form>
+		<form method="GET" action="{{ route('threads.reset') }}" accept-charset="UTF-8">
 		<button type="submit" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
 			Reset
 		</button>
-		{!! Form::close() !!}
+		</form>
 	</div>
 </div>
 
