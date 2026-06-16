@@ -3,11 +3,13 @@
 	<?php $month = '';?>
 	@foreach ($series as $s)
 
-		@if ($month != $s->start_at->format('F'))
-		<?php $month = $s->start_at->format('F')?>
-		@endif
+		@if ($s->start_at)
+			@if ($month != $s->start_at->format('F'))
+			<?php $month = $s->start_at->format('F')?>
+			@endif
 
-		{!! $s->start_at->format('l F jS Y') !!} <br>
+			{!! $s->start_at->format('l F jS Y') !!} <br>
+		@endif
 		{{ $s->name }}
 
 

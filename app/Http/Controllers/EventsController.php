@@ -928,11 +928,20 @@ class EventsController extends Controller
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
+        // $date is a user-supplied route param; crawlers hit this with non-date junk
+        // (e.g. /events/upcoming/www.parktildark.com), which makes Carbon::parse() throw.
+        // Treat anything that isn't a real date as a missing page rather than a 500.
+        try {
+            $baseDate = $date === '' ? Carbon::now() : Carbon::parse($date);
+        } catch (\Throwable $e) {
+            abort(404);
+        }
+
         // use the window to get the last date and set the criteria between
-        $next_day = Carbon::parse($date)->addDays(1);
-        $next_day_window = Carbon::parse($date)->addDays($this->defaultWindow);
-        $prev_day = Carbon::parse($date)->subDays(1);
-        $prev_day_window = Carbon::parse($date)->subDays($this->defaultWindow);
+        $next_day = $baseDate->copy()->addDays(1);
+        $next_day_window = $baseDate->copy()->addDays($this->defaultWindow);
+        $prev_day = $baseDate->copy()->subDays(1);
+        $prev_day_window = $baseDate->copy()->subDays($this->defaultWindow);
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
@@ -985,11 +994,20 @@ class EventsController extends Controller
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
+        // $date is a user-supplied route param; crawlers hit this with non-date junk
+        // (e.g. /events/upcoming/www.parktildark.com), which makes Carbon::parse() throw.
+        // Treat anything that isn't a real date as a missing page rather than a 500.
+        try {
+            $baseDate = $date === '' ? Carbon::now() : Carbon::parse($date);
+        } catch (\Throwable $e) {
+            abort(404);
+        }
+
         // use the window to get the last date and set the criteria between
-        $next_day = Carbon::parse($date)->addDays(1);
-        $next_day_window = Carbon::parse($date)->addDays($this->defaultWindow);
-        $prev_day = Carbon::parse($date)->subDays(1);
-        $prev_day_window = Carbon::parse($date)->subDays($this->defaultWindow);
+        $next_day = $baseDate->copy()->addDays(1);
+        $next_day_window = $baseDate->copy()->addDays($this->defaultWindow);
+        $prev_day = $baseDate->copy()->subDays(1);
+        $prev_day_window = $baseDate->copy()->subDays($this->defaultWindow);
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');

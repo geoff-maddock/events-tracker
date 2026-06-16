@@ -54,6 +54,17 @@ class EventsControllerTest extends TestCase
         $this->get('/events/upcoming')->assertOk();
     }
 
+    public function test_index_upcoming_with_valid_date_loads(): void
+    {
+        $this->get('/events/upcoming/2026-06-16')->assertOk();
+    }
+
+    public function test_index_upcoming_with_invalid_date_returns_404(): void
+    {
+        // Crawlers hit this route with non-date junk; it must 404, not 500. (EVENTREPO-EB)
+        $this->get('/events/upcoming/www.parktildark.com')->assertNotFound();
+    }
+
     public function test_show_loads_for_existing_event(): void
     {
         $event = Event::factory()->create();
