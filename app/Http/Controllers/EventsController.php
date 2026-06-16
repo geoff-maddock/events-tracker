@@ -2197,6 +2197,11 @@ class EventsController extends Controller
         $input = $request->input();
         $input['updated_by'] = $this->user->id;
 
+        // created_by is immutable after creation; never let request input (e.g. an
+        // empty hidden field coerced to null) overwrite it and trip the NOT NULL
+        // constraint (EVENTREPO-VM).
+        unset($input['created_by']);
+
         $event->fill($input)->save();
 
         $tagArray = $request->input('tag_list', []);

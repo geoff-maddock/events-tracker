@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Entity;
+use App\Models\Event;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserStatus;
@@ -42,6 +43,27 @@ class EventsTest extends TestCase
             ->assertOk()
             ->assertSee('No age limit specified')
             ->assertSeeInOrder(['id="min_age"', 'option value="" selected'], false);
+    }
+
+    public function testUpdateDoesNotNullCreatedByFromEmptyInput()
+    {
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $event = Event::factory()->create(['created_by' => $user->id]);
+
+        $response = $this->actingAs($user)->put('/events/'.$event->id, [
+            'name' => 'Updated Event Name',
+            'slug' => 'updated-event-name-'.$event->id,
+            'start_at' => '2026-07-01 20:00:00',
+            'event_type_id' => $event->event_type_id,
+            'visibility_id' => $event->visibility_id,
+            // An empty hidden field becomes null via ConvertEmptyStringsToNull and
+            // must not overwrite created_by and trip the NOT NULL constraint
+            // (EVENTREPO-VM).
+            'created_by' => '',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertSame($user->id, (int) $event->fresh()->created_by);
     }
 
     /**
