@@ -56,6 +56,21 @@ class SeriesTest extends TestCase
     }
 
     /**
+     * The /series/export feed must render even when a series has no start_at.
+     *
+     * @return void
+     */
+    public function testExportHandlesSeriesWithNullStartAt()
+    {
+        Series::factory()->create([
+            'start_at' => null,
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+        ]);
+
+        $this->get('/series/export')->assertStatus(200);
+    }
+
+    /**
      * Check the series name appears on the series show page
      *
      * @return void
