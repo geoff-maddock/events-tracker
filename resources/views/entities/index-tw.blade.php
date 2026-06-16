@@ -110,7 +110,8 @@ Entities @include('entities.title-crumbs')
 
 <!-- Filter Panel -->
 <div id="filter-panel" class="hidden bg-card border border-border rounded-lg p-4 mb-6 overflow-hidden">
-	{!! Form::open(['route' => ['entities.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
+	<form method="POST" action="{{ route('entities.filter') }}" accept-charset="UTF-8" name="filters">
+	@csrf
 
 	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
 		<!-- Name Filter -->
@@ -127,71 +128,36 @@ Entities @include('entities.title-crumbs')
 		<!-- Role Filter -->
 		<div class="min-w-0">
 			<label for="filter_role" class="block text-sm font-medium text-muted-foreground mb-1">Role</label>
-			{!! Form::select('filter_role', $roleOptions, ($filters['role'] ?? null),
-			[
-				'data-theme' => 'tailwind',
-				'class' => 'form-select-tw select2',
-				'data-placeholder' => 'Select a role',
-				'name' => 'filters[role]',
-				'id' => 'filter_role'
-			])
-			!!}
+			<x-ui.select-field name="filters[role]" :options="$roleOptions" :selected="$filters['role'] ?? null"
+				data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select a role" id="filter_role" />
 		</div>
 
 		<!-- Tag Filter -->
 		<div class="min-w-0">
 			<label for="filter_tag" class="block text-sm font-medium text-muted-foreground mb-1">Tag</label>
-			{!! Form::select('filter_tag', $tagOptions, ($filters['tag'] ?? null),
-			[
-				'data-theme' => 'tailwind',
-				'class' => 'form-select-tw select2',
-				'data-placeholder' => 'Select a tag',
-				'name' => 'filters[tag]',
-				'id' => 'filter_tag'
-			])
-			!!}
+			<x-ui.select-field name="filters[tag]" :options="$tagOptions" :selected="$filters['tag'] ?? null"
+				data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select a tag" id="filter_tag" />
 		</div>
 
 		<!-- Entity Type Filter -->
 		<div class="min-w-0">
 			<label for="filter_entity_type" class="block text-sm font-medium text-muted-foreground mb-1">Entity Type</label>
-			{!! Form::select('filter_entity_type', $entityTypeOptions, ($filters['entity_type'] ?? null),
-			[
-				'data-theme' => 'tailwind',
-				'class' => 'form-select-tw select2',
-				'data-placeholder' => 'Select a type',
-				'name' => 'filters[entity_type]',
-				'id' => 'filter_entity_type'
-			])
-			!!}
+			<x-ui.select-field name="filters[entity_type]" :options="$entityTypeOptions" :selected="$filters['entity_type'] ?? null"
+				data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select a type" id="filter_entity_type" />
 		</div>
 
 		<!-- Entity Status Filter -->
 		<div class="min-w-0">
 			<label for="filter_entity_status" class="block text-sm font-medium text-muted-foreground mb-1">Status</label>
-			{!! Form::select('filter_entity_status', $entityStatusOptions, ($filters['entity_status'] ?? null),
-			[
-				'data-theme' => 'tailwind',
-				'class' => 'form-select-tw select2',
-				'data-placeholder' => 'Select a status',
-				'name' => 'filters[entity_status]',
-				'id' => 'filter_entity_status'
-			])
-			!!}
+			<x-ui.select-field name="filters[entity_status]" :options="$entityStatusOptions" :selected="$filters['entity_status'] ?? null"
+				data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select a status" id="filter_entity_status" />
 		</div>
 
 		<!-- Active Range Filter -->
 		<div class="min-w-0">
 			<label for="filter_active_range" class="block text-sm font-medium text-muted-foreground mb-1">Active Range</label>
-			{!! Form::select('filter_active_range', ['' => 'Any', '1-day' => '1 Day', '1-week' => '1 Week', '1-month' => '1 Month', '3-months' => '3 Months', '1-year' => '1 Year', '2-years' => '2 Years', '5-years' => '5 Years'], ($filters['active_range'] ?? null),
-			[
-				'data-theme' => 'tailwind',
-				'class' => 'form-select-tw',
-				'data-placeholder' => 'Select active range',
-				'name' => 'filters[active_range]',
-				'id' => 'filter_active_range'
-			])
-			!!}
+			<x-ui.select-field name="filters[active_range]" :options="['' => 'Any', '1-day' => '1 Day', '1-week' => '1 Week', '1-month' => '1 Month', '3-months' => '3 Months', '1-year' => '1 Year', '2-years' => '2 Years', '5-years' => '5 Years']" :selected="$filters['active_range'] ?? null"
+				data-theme="tailwind" class="form-select-tw" data-placeholder="Select active range" id="filter_active_range" />
 		</div>
 
 		@auth
@@ -215,13 +181,13 @@ Entities @include('entities.title-crumbs')
 			<i class="bi bi-check-lg mr-2"></i>
 			Apply Filters
 		</button>
-		{!! Form::close() !!}
-		{!! Form::open(['route' => ['entities.reset'], 'method' => 'GET']) !!}
+		</form>
+		<form method="GET" action="{{ route('entities.reset') }}" accept-charset="UTF-8">
 		<button id="filters-reset-open" type="submit" class="inline-flex items-center px-4 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-accent transition-colors hidden">
 			<i class="bi bi-arrow-clockwise mr-2"></i>
 			Reset
 		</button>
-		{!! Form::close() !!}
+		</form>
 		@if($hasFilter)
 		<button type="button" id="copy-filter-url-btn" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors flex items-center gap-2">
 			<i class="bi bi-link-45deg"></i>

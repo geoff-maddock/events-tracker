@@ -1521,43 +1521,6 @@ class EventsController extends Controller
         ];
     }
 
-    /**
-     * @return string|View
-     */
-    public function createSeries(Request $request)
-    {
-        // create a series from a single event
-
-        $event = Event::find($request->id);
-
-        // initialize the form object with the values from the template
-        $series = new Series(
-            [
-                'name' => $event->name,
-                'slug' => $event->slug,
-                'short' => $event->short,
-                'venue_id' => $event->venue_id,
-                'description' => $event->description,
-                'event_type_id' => $event->event_type_id,
-                'promoter_id' => $event->promoter_id,
-                'soundcheck_at' => $event->soundcheck_at,
-                'door_at' => $event->door_at,
-                'founded_at' => $event->start_at,
-                'start_at' => $event->start_at,
-                'end_at' => $event->end_at,
-                'presale_price' => $event->presale_price,
-                'door_price' => $event->door_price,
-                'min_age' => $event->min_age,
-                'visibility_id' => $event->visibility_id,
-                'length' => null,
-            ]
-        );
-
-        return view('events.createSeries', compact('series'))
-        ->with($this->getSeriesFormOptions())
-        ->with(['event' => $event]);
-    }
-
     public function createThread(Request $request): RedirectResponse
     {
         // create a thread from a single event

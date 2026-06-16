@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Filters\LinkFilters;
 use App\Models\Entity;
 use App\Models\Link;
-use App\Models\Visibility;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -44,7 +43,7 @@ class LinksController extends Controller
 
     public function __construct(LinkFilters $filter)
     {
-        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
+        $this->middleware('auth', ['only' => ['store', 'update']]);
 
         // default list variables
         $this->defaultLimit = 5;
@@ -60,15 +59,6 @@ class LinksController extends Controller
         $this->filter = $filter;
 
         parent::__construct();
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create(Entity $entity): View
-    {
-        return view('links.create', compact('entity'))
-            ->with($this->getFormOptions());
     }
 
     /**
@@ -103,15 +93,6 @@ class LinksController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Entity $entity, Link $link): View
-    {
-        return view('links.edit', compact('entity', 'link'))
-            ->with($this->getFormOptions());
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Entity $entity, Link $link): RedirectResponse
@@ -138,13 +119,6 @@ class LinksController extends Controller
         flash()->success('Success', 'Your link has been deleted!');
 
         return redirect()->route('entities.show', $entity->slug);
-    }
-
-    protected function getFormOptions(): array
-    {
-        return [
-            'visibilities' => ['' => ''] + Visibility::pluck('name', 'id')->all(),
-        ];
     }
 
         /**

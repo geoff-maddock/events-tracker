@@ -33,25 +33,23 @@
     29 => 'Laravel\\Sanctum\\SanctumServiceProvider',
     30 => 'Laravel\\Tinker\\TinkerServiceProvider',
     31 => 'Laravel\\Ui\\UiServiceProvider',
-    32 => 'Collective\\Html\\HtmlServiceProvider',
-    33 => 'Carbon\\Laravel\\ServiceProvider',
-    34 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
-    35 => 'Termwind\\Laravel\\TermwindServiceProvider',
-    36 => 'Sentry\\Laravel\\ServiceProvider',
-    37 => 'Sentry\\Laravel\\Tracing\\ServiceProvider',
-    38 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
-    39 => 'Spatie\\Sitemap\\SitemapServiceProvider',
-    40 => 'Vinkla\\Shield\\ShieldServiceProvider',
-    41 => 'Collective\\Html\\HtmlServiceProvider',
-    42 => 'App\\Providers\\AppServiceProvider',
-    43 => 'App\\Providers\\AuthServiceProvider',
-    44 => 'App\\Providers\\BroadcastServiceProvider',
-    45 => 'App\\Providers\\EventServiceProvider',
-    46 => 'App\\Providers\\RouteServiceProvider',
-    47 => 'App\\Providers\\ViewComposerServiceProvider',
-    48 => 'Intervention\\Image\\ImageServiceProvider',
-    49 => 'Laravel\\Tinker\\TinkerServiceProvider',
-    50 => 'NotificationChannels\\Twitter\\TwitterServiceProvider',
+    32 => 'Carbon\\Laravel\\ServiceProvider',
+    33 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
+    34 => 'Termwind\\Laravel\\TermwindServiceProvider',
+    35 => 'Sentry\\Laravel\\ServiceProvider',
+    36 => 'Sentry\\Laravel\\Tracing\\ServiceProvider',
+    37 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
+    38 => 'Spatie\\Sitemap\\SitemapServiceProvider',
+    39 => 'Vinkla\\Shield\\ShieldServiceProvider',
+    40 => 'App\\Providers\\AppServiceProvider',
+    41 => 'App\\Providers\\AuthServiceProvider',
+    42 => 'App\\Providers\\BroadcastServiceProvider',
+    43 => 'App\\Providers\\EventServiceProvider',
+    44 => 'App\\Providers\\RouteServiceProvider',
+    45 => 'App\\Providers\\ViewComposerServiceProvider',
+    46 => 'Intervention\\Image\\ImageServiceProvider',
+    47 => 'Laravel\\Tinker\\TinkerServiceProvider',
+    48 => 'NotificationChannels\\Twitter\\TwitterServiceProvider',
   ),
   'eager' => 
   array (
@@ -234,10 +232,6 @@
     'command.ide-helper.generate' => 'Barryvdh\\LaravelIdeHelper\\IdeHelperServiceProvider',
     'command.ide-helper.models' => 'Barryvdh\\LaravelIdeHelper\\IdeHelperServiceProvider',
     'command.tinker' => 'Laravel\\Tinker\\TinkerServiceProvider',
-    'html' => 'Collective\\Html\\HtmlServiceProvider',
-    'form' => 'Collective\\Html\\HtmlServiceProvider',
-    'Collective\\Html\\HtmlBuilder' => 'Collective\\Html\\HtmlServiceProvider',
-    'Collective\\Html\\FormBuilder' => 'Collective\\Html\\HtmlServiceProvider',
   ),
   'when' => 
   array (
@@ -281,9 +275,6 @@
     array (
     ),
     'Laravel\\Tinker\\TinkerServiceProvider' => 
-    array (
-    ),
-    'Collective\\Html\\HtmlServiceProvider' => 
     array (
     ),
   ),

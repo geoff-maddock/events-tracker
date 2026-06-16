@@ -247,7 +247,7 @@ class SeriesController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
+    ): JsonResponse {
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_series');
         $listParamSessionStore->setKeyPrefix('internal_series_index');
@@ -286,23 +286,7 @@ class SeriesController extends Controller
         // saves the updated session
         $listParamSessionStore->save();
 
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('series.index')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(['type' => 'Following'])
-            ->with(compact('series'))
-            ->render();
+        return response()->json(new SeriesCollection($series));
     }
 
     protected function getListControlOptions(): array
@@ -458,7 +442,7 @@ class SeriesController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder,
         string $slug
-    ): string {
+    ): JsonResponse {
         // get the entity by the slug name
         $related = Entity::where('slug', '=', $slug)->firstOrFail();
 
@@ -493,21 +477,7 @@ class SeriesController extends Controller
         // saves the updated session
         $listParamSessionStore->save();
 
-        return view('series.index')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('series'))
-            ->with(compact('related'))
-            ->render();
+        return response()->json(new SeriesCollection($series));
     }
 
     /**
@@ -521,7 +491,7 @@ class SeriesController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         string $slug,
         StringHelper $stringHelper
-    ): string {
+    ): JsonResponse {
         // get the tag by the slug name
         $tag = Tag::where('slug', '=', $slug)->firstOrFail();
 
@@ -559,21 +529,7 @@ class SeriesController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('series.index')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('series'))
-            ->with(compact('tag'))
-            ->render();
+        return response()->json(new SeriesCollection($series));
     }
 
     protected function getSeriesFormOptions(): array
@@ -692,44 +648,6 @@ class SeriesController extends Controller
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('series.feed', compact('series'));
-    }
-
-    public function createOccurrence(Request $request): View
-    {
-        // create an event occurrence based on the series template
-
-        $series = Series::find($request->id);
-
-        $seriesOptions = ['' => ''] + Series::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $userOptions = ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        // calculate the next occurrence date based on template settings
-        $nextDate = $series->nextOccurrenceDate();
-        $endDate = $nextDate->copy()->addHours($series->length);
-
-        // initialize the form object with the values from the template
-        $event = new Event(['name' => $series->name,
-            'slug' => $series->slug,
-            'short' => $series->short,
-            'venue_id' => $series->venue_id,
-            'series_id' => $series->id,
-            'description' => $series->description,
-            'event_type_id' => $series->event_type_id,
-            'promoter_id' => $series->promoter_id,
-            'soundcheck_at' => $series->soundcheck_at,
-            'door_at' => $series->door_at,
-            'start_at' => $nextDate,
-            'end_at' => $endDate,
-            'presale_price' => $series->presale_price,
-            'door_price' => $series->door_price,
-            'min_age' => $series->min_age,
-            'visibility_id' => $series->visibility_id,
-            'length' => 0,
-        ]);
-
-        return view('series.createOccurrence', compact('seriesOptions', 'userOptions', 'event'))
-        ->with($this->getSeriesFormOptions())
-        ->with(['series' => $series]);
     }
 
     /**

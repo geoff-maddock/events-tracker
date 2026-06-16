@@ -87,7 +87,8 @@
 
 <!-- Filter Panel -->
 <div id="filter-panel" class="hidden bg-card border border-border rounded-lg p-4 mb-6 overflow-hidden">
-	{!! Form::open(['route' => [$filterRoute ?? 'series.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
+	<form method="POST" action="{{ route($filterRoute ?? 'series.filter') }}" accept-charset="UTF-8" name="filters">
+	@csrf
 
 	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
 		<!-- Name Filter -->
@@ -104,57 +105,29 @@
 		<!-- Occurrence Type Filter -->
 		<div class="min-w-0">
 			<label for="filter_occurrence_type" class="block text-sm font-medium text-muted-foreground mb-1">Occurrence</label>
-			{!! Form::select('filter_occurrence_type', $occurrenceTypeOptions, ($filters['occurrence_type'] ?? null),
-			[
-				'data-theme' => 'tailwind',
-				'class' => 'form-select-tw select2',
-				'data-placeholder' => 'Select occurrence',
-				'name' => 'filters[occurrence_type]',
-				'id' => 'filter_occurrence_type'
-			])
-			!!}
+			<x-ui.select-field name="filters[occurrence_type]" :options="$occurrenceTypeOptions" :selected="$filters['occurrence_type'] ?? null"
+				data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select occurrence" id="filter_occurrence_type" />
 		</div>
 
 		<!-- Venue Filter -->
 		<div class="min-w-0">
 			<label for="filter_venue" class="block text-sm font-medium text-muted-foreground mb-1">Venue</label>
-			{!! Form::select('filter_venue', $venueOptions, ($filters['venue'] ?? null),
-			[
-				'data-theme' => 'tailwind',
-				'class' => 'form-select-tw select2',
-				'data-placeholder' => 'Select a venue',
-				'name' => 'filters[venue]',
-				'id' => 'filter_venue'
-			])
-			!!}
+			<x-ui.select-field name="filters[venue]" :options="$venueOptions" :selected="$filters['venue'] ?? null"
+				data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select a venue" id="filter_venue" />
 		</div>
 
 		<!-- Tag Filter -->
 		<div class="min-w-0">
 			<label for="filter_tag" class="block text-sm font-medium text-muted-foreground mb-1">Tag</label>
-			{!! Form::select('filter_tag', $tagOptions, ($filters['tag'] ?? null),
-			[
-				'data-theme' => 'tailwind',
-				'class' => 'form-select-tw select2',
-				'data-placeholder' => 'Select a tag',
-				'name' => 'filters[tag]',
-				'id' => 'filter_tag'
-			])
-			!!}
+			<x-ui.select-field name="filters[tag]" :options="$tagOptions" :selected="$filters['tag'] ?? null"
+				data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select a tag" id="filter_tag" />
 		</div>
 
 		<!-- Related Entity Filter -->
 		<div class="min-w-0">
 			<label for="filter_related" class="block text-sm font-medium text-muted-foreground mb-1">Related Entity</label>
-			{!! Form::select('filter_related', $relatedOptions, ($filters['related'] ?? null),
-			[
-				'data-theme' => 'tailwind',
-				'class' => 'form-select-tw select2',
-				'data-placeholder' => 'Select an entity',
-				'name' => 'filters[related]',
-				'id' => 'filter_related'
-			])
-			!!}
+			<x-ui.select-field name="filters[related]" :options="$relatedOptions" :selected="$filters['related'] ?? null"
+				data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select an entity" id="filter_related" />
 		</div>
 	</div>
 
@@ -163,12 +136,12 @@
 		<button type="submit" class="px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
 			Apply
 		</button>
-		{!! Form::close() !!}
-		{!! Form::open(['route' => ['series.reset'], 'method' => 'GET']) !!}
+		</form>
+		<form method="GET" action="{{ route('series.reset') }}" accept-charset="UTF-8">
 		<button id="filters-reset-open" type="submit" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors hidden">
 			Reset
 		</button>
-		{!! Form::close() !!}
+		</form>
 		@if($hasFilter)
 		<button type="button" id="copy-filter-url-btn" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors flex items-center gap-2">
 			<i class="bi bi-link-45deg"></i>

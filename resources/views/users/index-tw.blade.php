@@ -56,7 +56,8 @@
 
 <!-- Filter Panel -->
 <div id="filter-panel" class="hidden bg-card border border-border rounded-lg p-4 mb-6 overflow-hidden">
-	{!! Form::open(['route' => ['users.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
+	<form method="POST" action="{{ route('users.filter') }}" accept-charset="UTF-8" name="filters">
+	@csrf
 
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 		<!-- Email Filter -->
@@ -84,15 +85,8 @@
 		<!-- Status Filter -->
 		<div class="min-w-0">
 			<label for="filter_status" class="block text-sm font-medium text-muted-foreground mb-1">Status</label>
-			{!! Form::select('filter_status', $userStatusOptions, ($filters['status'] ?? null),
-			[
-				'data-theme' => 'tailwind',
-				'class' => 'form-select-tw select2',
-				'data-placeholder' => 'Select a status',
-				'name' => 'filters[status]',
-				'id' => 'filter_status'
-			])
-			!!}
+			<x-ui.select-field name="filters[status]" :options="$userStatusOptions" :selected="$filters['status'] ?? null"
+				data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select a status" id="filter_status" />
 		</div>
 	</div>
 
@@ -101,12 +95,12 @@
 		<button type="submit" class="px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
 			Apply
 		</button>
-		{!! Form::close() !!}
-		{!! Form::open(['route' => ['users.reset'], 'method' => 'GET']) !!}
+		</form>
+		<form method="GET" action="{{ route('users.reset') }}" accept-charset="UTF-8">
 		<button id="filters-reset-open" type="submit" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors hidden">
 			Reset
 		</button>
-		{!! Form::close() !!}
+		</form>
 	</div>
 </div>
 

@@ -74,14 +74,6 @@ class AppServiceProvider extends ServiceProvider
             }
             $view->with('theme', $theme);
         });
-
-        View::composer('series.createOccurrence', function ($view) {
-            $view->with('userList', ['' => ''] + Cache::remember('form-opts-users', 3600, fn () => User::orderBy('name', 'ASC')->pluck('name', 'id')->all()));
-        });
-
-        View::composer('events.createSeries', function ($view) {
-            $view->with('userList', ['' => ''] + Cache::remember('form-opts-users', 3600, fn () => User::orderBy('name', 'ASC')->pluck('name', 'id')->all()));
-        });
     }
 
     /**

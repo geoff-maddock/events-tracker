@@ -30,9 +30,11 @@ class EventReviewsController extends Controller
      *
      * @param  Event 		$event
      */
-    public function index(Event $event): View
+    public function index(Event $event): RedirectResponse
     {
-        return view('reviews.index', compact('event'));
+        // Event reviews are shown inline on the event page; the standalone
+        // listing view was retired with the Form:: helpers.
+        return redirect()->route('events.show', $event->id);
     }
 
     /**

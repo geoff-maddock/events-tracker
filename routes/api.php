@@ -162,7 +162,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::match(['get', 'post'], 'links/filter', ['as' => 'links.filter', 'uses' => 'Api\LinksController@filter']);
     Route::get('links/reset', ['as' => 'links.reset', 'uses' => 'Api\LinksController@reset']);
     Route::get('links/rpp-reset', ['as' => 'links.rppReset', 'uses' => 'Api\LinksController@rppReset']);
-    Route::resource('links', 'Api\LinksController');
+    Route::apiResource('links', 'Api\LinksController');
     Route::put('menus/{menu}', 'Api\MenusController@update')->name('menus.update');
     Route::patch('menus/{menu}', 'Api\MenusController@patch')->name('menus.patch');
     Route::resource('menus', 'Api\MenusController')->except(['update']);
@@ -184,7 +184,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('series/popular', ['as' => 'series.popular', 'uses' => 'Api\SeriesController@popular']);
     Route::put('series/{series}', 'Api\SeriesController@update')->name('series.update');
     Route::patch('series/{series}', 'Api\SeriesController@patch')->name('series.patch');
-    Route::resource('series', 'Api\SeriesController')->except(['update']);
+    Route::apiResource('series', 'Api\SeriesController')->except(['update']);
 
     Route::match(['get', 'post'], 'tags/filter', ['as' => 'tags.filter', 'uses' => 'Api\TagsController@filter']);
     Route::get('tags/reset', ['as' => 'tags.reset', 'uses' => 'Api\TagsController@reset']);
@@ -212,7 +212,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('posts/rpp-reset', ['as' => 'posts.rppReset', 'uses' => 'Api\PostsController@rppReset']);
     Route::put('posts/{post}', 'Api\PostsController@update')->name('posts.update');
     Route::patch('posts/{post}', 'Api\PostsController@patch')->name('posts.patch');
-    Route::resource('posts', 'Api\PostsController')->except(['update']);
+    Route::apiResource('posts', 'Api\PostsController')->except(['update']);
 
     Route::match(['get', 'post'], 'threads/filter', ['as' => 'threads.filter', 'uses' => 'Api\ThreadsController@filter']);
     Route::get('threads/reset', ['as' => 'threads.reset', 'uses' => 'Api\ThreadsController@reset']);
@@ -220,13 +220,13 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('threads/{threadId}/posts', ['as' => 'threads.posts', 'uses' => 'Api\ThreadsController@posts']);
     Route::put('threads/{thread}', 'Api\ThreadsController@update')->name('threads.update');
     Route::patch('threads/{thread}', 'Api\ThreadsController@patch')->name('threads.patch');
-    Route::resource('threads', 'Api\ThreadsController')->except(['update']);
+    Route::apiResource('threads', 'Api\ThreadsController')->except(['update']);
 
     Route::match(['get', 'post'], 'users/filter', ['as' => 'users.filter', 'uses' => 'Api\UsersController@filter']);
     Route::get('users/reset', ['as' => 'users.reset', 'uses' => 'Api\UsersController@reset']);
     Route::get('users/rpp-reset', ['as' => 'users.rppReset', 'uses' => 'Api\UsersController@rppReset']);
     Route::get('users/{user}/events-attending', ['as' => 'users.events-attending', 'uses' => 'Api\UsersController@eventsAttending']);
-    Route::resource('users', 'Api\UsersController');
+    Route::apiResource('users', 'Api\UsersController');
 
     Route::match(['get', 'post'], 'visibilities/filter', ['as' => 'visibilities.filter', 'uses' => 'Api\VisibilitiesController@filter']);
     Route::resource('visibilities', 'Api\VisibilitiesController')->only(['index', 'show']);

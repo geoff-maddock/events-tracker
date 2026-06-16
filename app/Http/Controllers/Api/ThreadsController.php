@@ -139,12 +139,10 @@ class ThreadsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
+    ): JsonResponse {
         // if the gate does not allow this user to show a thread redirect to home
         if (Gate::denies('show_thread')) {
-            flash()->error('Unauthorized', 'Your cannot view the thread index');
-
-            return redirect()->back();
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         // initialized listParamSessionStore with base index key
@@ -178,27 +176,7 @@ class ThreadsController extends Controller
         // saves the updated session
         $listParamSessionStore->save();
 
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        // return json only
-        if (request()->wantsJson()) {
-            return $threads;
-        }
-
-        return view('threads.index')
-                ->with(array_merge(
-                    [
-                        'limit' => $listResultSet->getLimit(),
-                        'sort' => $listResultSet->getSort(),
-                        'direction' => $listResultSet->getSortDirection(),
-                        'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters(),
-                    ],
-                    $this->getFilterOptions(),
-                    $this->getListControlOptions()
-                ))
-                ->with(compact('threads'))
-                ->render();
+        return response()->json(new ThreadCollection($threads));
     }
 
     /**
@@ -208,12 +186,10 @@ class ThreadsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
+    ): JsonResponse {
         // if the gate does not allow this user to show a thread redirect to home
         if (Gate::denies('show_thread')) {
-            flash()->error('Unauthorized', 'Your cannot view the thread index');
-
-            return redirect()->back();
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         // initialized listParamSessionStore with base index key
@@ -247,27 +223,7 @@ class ThreadsController extends Controller
         // saves the updated session
         $listParamSessionStore->save();
 
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        // return json only
-        if (request()->wantsJson()) {
-            return $threads;
-        }
-
-        return view('threads.index')
-                ->with(array_merge(
-                    [
-                        'limit' => $listResultSet->getLimit(),
-                        'sort' => $listResultSet->getSort(),
-                        'direction' => $listResultSet->getSortDirection(),
-                        'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters(),
-                    ],
-                    $this->getFilterOptions(),
-                    $this->getListControlOptions()
-                ))
-                ->with(compact('threads'))
-                ->render();
+        return response()->json(new ThreadCollection($threads));
     }
 
     /**

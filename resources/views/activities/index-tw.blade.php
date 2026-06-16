@@ -33,48 +33,29 @@
 
 <!-- Filter Panel -->
 <div id="filter-panel" class="@if (!$hasFilter) hidden @endif bg-card border border-border rounded-lg p-4 mb-6 overflow-hidden">
-    {!! Form::open(['route' => [$filterRoute ?? 'activities.filter'], 'name' => 'filters', 'method' => 'POST']) !!}
+    <form method="POST" action="{{ route($filterRoute ?? 'activities.filter') }}" accept-charset="UTF-8" name="filters">
+    @csrf
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="min-w-0">
             <label for="filter_message" class="block text-sm font-medium text-muted-foreground mb-1">Message</label>
-            {!! Form::text('filter_message', ($filters['message'] ?? null), [
-                'class' => 'form-input-tw',
-                'name' => 'filters[message]',
-                'id' => 'filter_message',
-                'placeholder' => 'Filter by message'
-            ]) !!}
+            <input type="text" name="filters[message]" id="filter_message" value="{{ $filters['message'] ?? '' }}" class="form-input-tw" placeholder="Filter by message">
         </div>
 
         <div class="min-w-0">
             <label for="filter_object_table" class="block text-sm font-medium text-muted-foreground mb-1">Table</label>
-            {!! Form::text('filter_object_table', ($filters['object_table'] ?? null), [
-                'class' => 'form-input-tw',
-                'name' => 'filters[object_table]',
-                'id' => 'filter_object_table',
-                'placeholder' => 'Filter by table'
-            ]) !!}
+            <input type="text" name="filters[object_table]" id="filter_object_table" value="{{ $filters['object_table'] ?? '' }}" class="form-input-tw" placeholder="Filter by table">
         </div>
 
         <div class="min-w-0">
             <label for="filter_action" class="block text-sm font-medium text-muted-foreground mb-1">Action</label>
-            {!! Form::select('filter_action', $actionOptions, ($filters['action'] ?? null), [
-                'class' => 'form-select-tw',
-                'data-placeholder' => 'Select an action',
-                'name' => 'filters[action]',
-                'id' => 'filter_action'
-            ]) !!}
+            <x-ui.select-field name="filters[action]" :options="$actionOptions" :selected="$filters['action'] ?? null"
+                class="form-select-tw" data-placeholder="Select an action" id="filter_action" />
         </div>
 
         <div class="min-w-0">
             <label for="filter_user" class="block text-sm font-medium text-muted-foreground mb-1">User</label>
-            {!! Form::select('filter_user', $userOptions, ($filters['user'] ?? null), [
-                'class' => 'form-select-tw select2',
-                'data-placeholder' => 'Select a user',
-                'data-theme' => 'tailwind',
-                'data-allow-clear' => 'true',
-                'name' => 'filters[user]',
-                'id' => 'filter_user'
-            ]) !!}
+            <x-ui.select-field name="filters[user]" :options="$userOptions" :selected="$filters['user'] ?? null"
+                class="form-select-tw select2" data-placeholder="Select a user" data-theme="tailwind" data-allow-clear="true" id="filter_user" />
         </div>
     </div>
 
@@ -83,12 +64,12 @@
         <button type="submit" class="px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
             Apply
         </button>
-        {!! Form::close() !!}
-        {!! Form::open(['route' => ['activities.reset'], 'method' => 'GET']) !!}
+        </form>
+        <form method="GET" action="{{ route('activities.reset') }}" accept-charset="UTF-8">
         <button type="submit" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
             Reset
         </button>
-        {!! Form::close() !!}
+        </form>
     </div>
 </div>
 
