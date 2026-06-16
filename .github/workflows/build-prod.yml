@@ -19,4 +19,20 @@ jobs:
             git checkout main
             git remote update
             git pull
-            npm run prod
+
+            # Drop stale bootstrap caches before any artisan command boots Laravel,
+            # so a cached config referencing a removed provider can't fatal
+            # (this is what threw "HtmlServiceProvider not found" after a deploy).
+            rm -f bootstrap/cache/*.php
+
+            # Keep PHP + JS deps in sync with the committed lockfiles. The missing
+            # composer install here is what caused the link_to_route "cannot
+            # redeclare" outage when a package was removed from composer.json.
+            composer install --no-dev --optimize-autoloader --no-interaction
+            npm install
+            npm run build
+
+            # Rebuild the production caches from the freshly deployed code.
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
