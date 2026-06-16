@@ -162,7 +162,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::match(['get', 'post'], 'links/filter', ['as' => 'links.filter', 'uses' => 'Api\LinksController@filter']);
     Route::get('links/reset', ['as' => 'links.reset', 'uses' => 'Api\LinksController@reset']);
     Route::get('links/rpp-reset', ['as' => 'links.rppReset', 'uses' => 'Api\LinksController@rppReset']);
-    Route::resource('links', 'Api\LinksController');
+    Route::apiResource('links', 'Api\LinksController');
     Route::put('menus/{menu}', 'Api\MenusController@update')->name('menus.update');
     Route::patch('menus/{menu}', 'Api\MenusController@patch')->name('menus.patch');
     Route::resource('menus', 'Api\MenusController')->except(['update']);
@@ -212,7 +212,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('posts/rpp-reset', ['as' => 'posts.rppReset', 'uses' => 'Api\PostsController@rppReset']);
     Route::put('posts/{post}', 'Api\PostsController@update')->name('posts.update');
     Route::patch('posts/{post}', 'Api\PostsController@patch')->name('posts.patch');
-    Route::resource('posts', 'Api\PostsController')->except(['update']);
+    Route::apiResource('posts', 'Api\PostsController')->except(['update']);
 
     Route::match(['get', 'post'], 'threads/filter', ['as' => 'threads.filter', 'uses' => 'Api\ThreadsController@filter']);
     Route::get('threads/reset', ['as' => 'threads.reset', 'uses' => 'Api\ThreadsController@reset']);
@@ -226,7 +226,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('users/reset', ['as' => 'users.reset', 'uses' => 'Api\UsersController@reset']);
     Route::get('users/rpp-reset', ['as' => 'users.rppReset', 'uses' => 'Api\UsersController@rppReset']);
     Route::get('users/{user}/events-attending', ['as' => 'users.events-attending', 'uses' => 'Api\UsersController@eventsAttending']);
-    Route::resource('users', 'Api\UsersController');
+    Route::apiResource('users', 'Api\UsersController');
 
     Route::match(['get', 'post'], 'visibilities/filter', ['as' => 'visibilities.filter', 'uses' => 'Api\VisibilitiesController@filter']);
     Route::resource('visibilities', 'Api\VisibilitiesController')->only(['index', 'show']);

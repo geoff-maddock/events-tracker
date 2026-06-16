@@ -422,25 +422,6 @@ class PostsController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Post $post): View
-    {
-        $this->middleware('auth');
-
-        return view('posts.edit', compact('post'))->with($this->getFormOptions());
-    }
-
-    protected function getFormOptions(): array
-    {
-        return [
-            'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-        ];
-    }
-
-    /**
      * PUT: full replacement of the resource.
      *
      * Optional fillable scalars omitted from the body are reset to null, and

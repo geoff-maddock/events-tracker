@@ -150,7 +150,7 @@ class UsersController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
+    ): JsonResponse {
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_user');
         $listParamSessionStore->setKeyPrefix('internal_user_index');
@@ -188,22 +188,7 @@ class UsersController extends Controller
         // saves the updated session
         $listParamSessionStore->save();
 
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('users.index')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('users'))
-            ->render();
+        return response()->json(new UserCollection($users));
     }
 
     /**
@@ -261,15 +246,6 @@ class UsersController extends Controller
     public function getDefaultTabs(): array
     {
         return ['events' => 'created', 'following' => 'tags'];
-    }
-
-    /**
-     * Show a form to create a new user.
-     *
-     **/
-    public function create(): View
-    {
-        return view('users.create')->with($this->getFormOptions());
     }
 
     public function setTabs(Request $request): void
