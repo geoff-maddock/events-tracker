@@ -164,6 +164,20 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
             $this->appliedSortDirection = $this->defaultSort[$this->appliedSortField];
         }
 
+        // Guard against malformed / injected sort input reaching orderBy (e.g. a
+        // stray quote -> SQLSTATE error). Fall back to the default sort column and
+        // normalize the direction to a known-safe value.
+        if (!$this->isValidSortField($this->appliedSortField)) {
+            $this->appliedSortField = 1 === count($this->defaultSort)
+                ? array_keys($this->defaultSort)[0]
+                : null;
+        }
+        $this->appliedSortDirection = strtolower((string) $this->appliedSortDirection) === 'asc' ? 'asc' : 'desc';
+
+        if (is_null($this->appliedSortField)) {
+            return;
+        }
+
         // If sorting by a relationship count column (e.g. follows_count), add withCount
         if (str_ends_with($this->appliedSortField, '_count')) {
             $relationship = str_replace('_count', '', $this->appliedSortField);
@@ -171,6 +185,16 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
         }
 
         $this->queryBuilder->orderBy($this->appliedSortField, $this->appliedSortDirection);
+    }
+
+    /**
+     * A sort field is only safe to pass to orderBy() if it's a plain SQL
+     * identifier ("column" or "table.column") — no quotes, spaces, etc.
+     */
+    private function isValidSortField(?string $field): bool
+    {
+        return is_string($field)
+            && preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)?$/', $field) === 1;
     }
 
     public function setMultiSort(array $multiSort): void

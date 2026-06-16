@@ -334,6 +334,7 @@ class CalendarController extends Controller
         $eventList = [];
 
         $events = Event::getByTag($tag->name)
+            ->with('visibility')
             ->orderBy('start_at', 'ASC')
             ->orderBy('name', 'ASC')
             ->get();
@@ -343,7 +344,7 @@ class CalendarController extends Controller
         });
 
         // get all the upcoming series events
-        $series = Series::getByTag($tag->name)->active()->get();
+        $series = Series::getByTag($tag->name)->active()->with('visibility', 'occurrenceType')->get();
 
         // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
