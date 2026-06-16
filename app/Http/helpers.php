@@ -4,13 +4,39 @@ use App\Http\Flash;
 
 function delete_form(array $routeParams, string $label = 'Delete'): string
 {
-    $form = Form::open(['method' => 'DELETE', 'route' => $routeParams, 'id' => 'deleteForm', 'style' => 'display: inline;']);
+    $name = array_shift($routeParams);
+    $action = route($name, $routeParams);
 
-    $form .= Form::submit($label, ['class' => 'btn btn-danger delete confirm']);
+    // Native equivalent of the old Form::open(DELETE) helper: keeps the
+    // id="deleteForm" and the submit's "delete confirm" class that the
+    // SweetAlert confirmation JS hooks onto, plus method spoofing + CSRF.
+    return '<form method="POST" action="' . e($action) . '" accept-charset="UTF-8" id="deleteForm" style="display: inline;">'
+        . '<input name="_method" type="hidden" value="DELETE">'
+        . '<input name="_token" type="hidden" value="' . e(csrf_token()) . '">'
+        . '<input class="btn btn-danger delete confirm" type="submit" value="' . e($label) . '">'
+        . '</form>';
+}
 
-    $form .= Form::close();
+/**
+ * Native replacement for laravelcollective/html's link_to_route() global.
+ * Renders <a href="{route}" ...attributes>{title}</a> with the title and
+ * attribute values HTML-escaped (matching the package default).
+ *
+ * @param array<int|string, mixed> $parameters
+ * @param array<string, mixed>     $attributes
+ */
+function link_to_route(string $name, ?string $title = null, array $parameters = [], array $attributes = []): string
+{
+    $url = route($name, $parameters);
 
-    return $form;
+    $attrs = '';
+    foreach ($attributes as $key => $value) {
+        $attrs .= is_int($key)
+            ? ' ' . e($value)
+            : ' ' . $key . '="' . e($value) . '"';
+    }
+
+    return '<a href="' . e($url) . '"' . $attrs . '>' . e($title ?? $url) . '</a>';
 }
 
 function getTableFromModelClass(string $class): string

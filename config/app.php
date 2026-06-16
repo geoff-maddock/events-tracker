@@ -179,9 +179,6 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
 
-        // lavelcollective forms
-        Collective\Html\HtmlServiceProvider::class,
-
         // HTML5 forms
         //'Braunson\LaravelHTML5Forms\LaravelHTML5FormsServiceProvider',
 
@@ -258,7 +255,5 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Image' => \Intervention\Image\Facades\Image::class,
         // 'Calendar' => \MaddHatter\LaravelFullcalendar\Facades\Calendar::class,
-        'Form' => Collective\Html\FormFacade::class,
-        'Html' => Collective\Html\HtmlFacade::class,
     ],
 ];
