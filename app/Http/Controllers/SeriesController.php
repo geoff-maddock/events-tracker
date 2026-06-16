@@ -654,8 +654,22 @@ class SeriesController extends Controller
         // eager-load relations consumed by the page + JSON-LD
         $series->loadMissing(['photos', 'venue.locations']);
 
-        $events = $series->events()->with('venue')->paginate($this->childLimit);
-        $threads = $series->threads()->paginate($this->childLimit);
+        // Each event renders through events/card-tw, which touches venue, eventType,
+        // visibility, tags, photos (getPrimaryPhoto), entities and threads per card —
+        // eager-load them so the grid is a fixed number of queries, not N per event.
+        $eventEager = ['venue', 'eventType', 'visibility', 'tags', 'photos', 'entities', 'threads'];
+        if ($this->user) {
+            // The attend/unattend button reads getEventResponse($user)->responseType per card.
+            $eventEager['eventResponses'] = function ($query) {
+                $query->where('user_id', $this->user->id)->with('responseType');
+            };
+        }
+        $events = $series->events()->with($eventEager)->paginate($this->childLimit);
+
+        // posts/briefList renders each thread's posts with their user/tags/entities.
+        $threads = $series->threads()
+            ->with(['posts.user', 'posts.tags', 'posts.entities'])
+            ->paginate($this->childLimit);
 
         // Embeds are deferred to an AJAX call via the playlist-tw placeholder.
         $embeds = [];
