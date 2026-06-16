@@ -903,7 +903,10 @@ class EntitiesController extends Controller
         $relatedEvents = $relatedEventsQuery->limit(16)->get();
 
         // get past events (prior to today, most recent first); fetch 21 to detect overflow past the 20 shown
+        // Eager-load the relations the past-events grid card reads per event
+        // (primary photo, venue, event type, tags) to avoid an N+1.
         $pastEvents = $entity->events()
+            ->with(['eventType', 'tags', 'venue', 'photos'])
             ->where('start_at', '<', Carbon::today()->startOfDay())
             ->orderBy('start_at', 'desc')
             ->limit(21)
