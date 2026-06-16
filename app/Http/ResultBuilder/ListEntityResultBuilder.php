@@ -212,7 +212,9 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
         // getQueryResult() must be called first otherwise sort isn't set correctly
         $listResult->setList($this->getQueryResult());
 
-        $listResult->setSort($this->appliedSortField);
+        // appliedSortField can be null when no valid sort resolves and the builder has
+        // no single default column; setSort() requires a string (EVENTREPO-TB).
+        $listResult->setSort($this->appliedSortField ?? '');
         $listResult->setSortDirection($this->appliedSortDirection);
         $listResult->setFilters($this->userFilters);
         $listResult->setDefaultFilters($this->defaultFilters);
