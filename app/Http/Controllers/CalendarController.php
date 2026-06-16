@@ -271,16 +271,17 @@ class CalendarController extends Controller
         // get all events related to the entity
         // \PHPStan\dumpType(Event::getByEntity(strtolower($slug))->get());
         $events = Event::getByEntity(strtolower($slug))
+            ->with('visibility')
             ->orderBy('start_at', 'ASC')
             ->orderBy('name', 'ASC')
             ->get();
 
-        $events->filter(function ($e) {
+        $events = $events->filter(function ($e) {
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
         // get all the upcoming series events
-        $series = Series::getByEntity(strtolower($slug))->active()->get();
+        $series = Series::getByEntity(strtolower($slug))->active()->with('visibility', 'occurrenceType')->get();
 
         $series = $series->filter(function ($e) {
             return (('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
@@ -339,7 +340,7 @@ class CalendarController extends Controller
             ->orderBy('name', 'ASC')
             ->get();
 
-        $events->filter(function ($e) {
+        $events = $events->filter(function ($e) {
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
@@ -572,10 +573,10 @@ class CalendarController extends Controller
         $events = Event::where(function ($query) {
             /* @phpstan-ignore-next-line */
             $query->visible($this->user);
-        })->get();
+        })->with('eventType')->get();
 
         // get all the upcoming series events
-        $series = Series::active()->get();
+        $series = Series::active()->with('visibility', 'occurrenceType')->get();
 
         // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
@@ -704,7 +705,7 @@ class CalendarController extends Controller
             })->get();
 
         // get all the upcoming series events
-        $series = Series::active()->get();
+        $series = Series::active()->with('visibility', 'occurrenceType')->get();
 
         // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
@@ -756,16 +757,16 @@ class CalendarController extends Controller
         $start = $request->query('start', Carbon::now()->startOfMonth());
         $end = $request->query('end', Carbon::now()->endOfMonth());
 
-        // get all public events
+        // get all public events (eager-load tags for the $event->tagNames accessor)
         $events = Event::where('start_at', '>=', $start)
             ->where('start_at', '<=', $end)
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
                 $query->visible($this->user);
-            })->get();
+            })->with('tags')->get();
 
         // get all the upcoming series events
-        $series = Series::active()->get();
+        $series = Series::active()->with('visibility', 'occurrenceType')->get();
 
         // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
@@ -1030,7 +1031,7 @@ class CalendarController extends Controller
             ->with('visibility','eventType')
             ->get();
 
-        $events->filter(function ($e) {
+        $events = $events->filter(function ($e) {
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 

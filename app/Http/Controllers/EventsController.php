@@ -312,7 +312,7 @@ class EventsController extends Controller
             })
             ->orderBy('start_at', 'ASC')
             ->orderBy('name', 'ASC')
-            ->with('visibility', 'venue')
+            ->with($this->cardEventEagerLoad())
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -345,6 +345,27 @@ class EventsController extends Controller
             'sortOptions' => ['events.name' => 'Name', 'events.start_at' => 'Start At', 'event_types.name' => 'Event Type', 'events.updated_at' => 'Updated At'],
             'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
         ];
+    }
+
+    /**
+     * Relations consumed by events/card-tw for every event in the listing grids.
+     * Eager-loading these keeps each index/filter page a fixed number of queries
+     * instead of running venue/type/tag/photo/entity/thread lookups once per card (N+1).
+     *
+     * @return array<int|string, string|\Closure>
+     */
+    protected function cardEventEagerLoad(): array
+    {
+        $eager = ['visibility', 'venue', 'eventType', 'tags', 'photos', 'entities', 'threads'];
+
+        if ($this->user) {
+            // The attend/unattend button reads getEventResponse($user)->responseType per card.
+            $eager['eventResponses'] = function ($query) {
+                $query->where('user_id', $this->user->id)->with('responseType');
+            };
+        }
+
+        return $eager;
     }
 
     protected function getFilterOptions(): array
@@ -410,7 +431,7 @@ class EventsController extends Controller
         // get the events
         // @phpstan-ignore-next-line
         $events = $query->visible($this->user)
-            ->with('visibility', 'venue')
+            ->with($this->cardEventEagerLoad())
             ->paginate($listResultSet->getLimit());
 
         // persist resolved sort values so subsequent requests don't revert to a different default
@@ -867,7 +888,7 @@ class EventsController extends Controller
                 /* @phpstan-ignore-next-line */
                 $query->visible($this->user);
             })
-            ->with('visibility', 'venue')
+            ->with($this->cardEventEagerLoad())
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -1052,7 +1073,7 @@ class EventsController extends Controller
 
         // get the events
         $events = $query
-            ->with('visibility', 'venue')
+            ->with($this->cardEventEagerLoad())
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -1112,7 +1133,7 @@ class EventsController extends Controller
                 /* @phpstan-ignore-next-line */
                 $query->visible($this->user);
             })
-            ->with('visibility', 'venue')
+            ->with($this->cardEventEagerLoad())
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -1174,7 +1195,7 @@ class EventsController extends Controller
 
         // get the events
         $events = $query
-            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
+            ->with($this->cardEventEagerLoad())
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -1236,7 +1257,7 @@ class EventsController extends Controller
         // get the events
         // @phpstan-ignore-next-line
         $events = $query->visible($this->user)
-            ->with('visibility', 'venue','eventType','entities','tags')
+            ->with('visibility', 'venue', 'eventType', 'entities', 'tags', 'series')
             ->paginate(1000);
 
         return view('events.feed-tw', compact('events'));
@@ -2410,14 +2431,11 @@ class EventsController extends Controller
 
         // @phpstan-ignore-next-line
         $events = $query
-            ->with('visibility', 'venue','tags','entities','series','eventType','threads')
+            ->visible($this->user)
+            ->with($this->cardEventEagerLoad())
             ->orderBy('events.start_at', 'DESC')
             ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
-
-        $events->filter(function (Event $e): bool {
-            return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
-        });
 
         // saves the updated session
         $listParamSessionStore->save();
@@ -2476,14 +2494,11 @@ class EventsController extends Controller
 
         // @phpstan-ignore-next-line
         $events = $query
-            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
+            ->visible($this->user)
+            ->with($this->cardEventEagerLoad())
             ->orderBy('events.start_at', 'ASC')
             ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
-
-        $events->filter(function (\App\Models\Event $e) {
-            return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
-        });
 
         // saves the updated session
         $listParamSessionStore->save();
@@ -2543,7 +2558,7 @@ class EventsController extends Controller
         $cdate_tomorrow = Carbon::parse($date)->addDay();
 
         $future_events = Event::where('events.start_at', '>', $cdate_yesterday->toDateString())
-            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
+            ->with($this->cardEventEagerLoad())
             ->where('events.start_at', '<', $cdate_tomorrow->toDateString())
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
@@ -2606,7 +2621,7 @@ class EventsController extends Controller
         $query = $listResultSet->getList();
 
         $future_events = Event::getByVenue(strtolower($slug))
-            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
+            ->with($this->cardEventEagerLoad())
             ->future()
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
@@ -2617,7 +2632,7 @@ class EventsController extends Controller
             ->paginate($this->limit);
 
         $past_events = Event::getByVenue(strtolower($slug))
-            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
+            ->with($this->cardEventEagerLoad())
             ->past()
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
@@ -2683,7 +2698,7 @@ class EventsController extends Controller
         // @phpstan-ignore-next-line
         $events = $query
             ->select('events.*')
-            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
+            ->with($this->cardEventEagerLoad())
             ->orderBy('events.start_at', 'ASC')
             ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
@@ -2745,27 +2760,21 @@ class EventsController extends Controller
 
         // @phpstan-ignore-next-line
         $future_events = $futureQuery
-            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
+            ->visible($this->user)
+            ->with($this->cardEventEagerLoad())
             ->future()
             ->orderBy('events.start_at', 'ASC')
             ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
 
-        $future_events->filter(function ($e) {
-            return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
-        });
-
         // @phpstan-ignore-next-line
         $past_events = $pastQuery
-            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
+            ->visible($this->user)
+            ->with($this->cardEventEagerLoad())
             ->past()
             ->orderBy('events.start_at', 'ASC')
             ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
-
-        $past_events->filter(function ($e) {
-            return ($e->visibility && 'Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
-        });
 
         // saves the updated session
         $listParamSessionStore->save();
@@ -2798,11 +2807,8 @@ class EventsController extends Controller
      */
     public function indexWeek(Request $request)
     {
-        // no filters or sorting applied, just future events
-        $events = Event::with('visibility')->future()->get();
-        $events->filter(function ($e) {
-            return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
-        });
+        // no filters or sorting applied, just future events the user may see
+        $events = Event::visible($this->user)->with('venue')->future()->get();
 
         return view('events.indexWeek-tw', compact('events'));
     }
@@ -3125,7 +3131,7 @@ class EventsController extends Controller
 
         // get the events
         $events = $query
-            ->with('visibility', 'venue')
+            ->with($this->cardEventEagerLoad())
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session

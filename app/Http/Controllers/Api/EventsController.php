@@ -558,7 +558,7 @@ class EventsController extends Controller
             ->orderBy('name', 'ASC')
             ->get();
 
-        $events->filter(function ($e) {
+        $events = $events->filter(function ($e) {
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
@@ -621,7 +621,7 @@ class EventsController extends Controller
             ->orderBy('name', 'ASC')
             ->get();
 
-        $events->filter(function ($e) {
+        $events = $events->filter(function ($e) {
             return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
         });
 
@@ -1441,11 +1441,8 @@ class EventsController extends Controller
      */
     public function indexWeek(Request $request)
     {
-        // no filters or sorting applied, just future events
-        $events = Event::future()->get();
-        $events->filter(function ($e) {
-            return ('Public' == $e->visibility->name) || ($this->user && $e->created_by == $this->user->id);
-        });
+        // no filters or sorting applied, just future events the user may see
+        $events = Event::visible($this->user)->with('visibility')->future()->get();
 
         return view('events.indexWeek', compact('events'));
     }

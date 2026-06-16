@@ -249,13 +249,13 @@ class TagsController extends Controller
 
         // get all the events linked to the tag
         $events = Event::getByTag(ucfirst($tag))
+                    ->where(function ($query) {
+                        /* @phpstan-ignore-next-line */
+                        $query->visible($this->user);
+                    })
                     ->orderBy('start_at', 'DESC')
                     ->orderBy('name', 'ASC')
                     ->simplePaginate($this->limit);
-
-        $events->filter(function ($e) {
-            return ($e->visibility->name == 'Public') || ($this->user && $e->created_by == $this->user->id);
-        });
 
         // get all entities linked to the tag
         $entities = Entity::getByTag(ucfirst($tag))
