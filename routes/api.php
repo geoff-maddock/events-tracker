@@ -184,7 +184,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('series/popular', ['as' => 'series.popular', 'uses' => 'Api\SeriesController@popular']);
     Route::put('series/{series}', 'Api\SeriesController@update')->name('series.update');
     Route::patch('series/{series}', 'Api\SeriesController@patch')->name('series.patch');
-    Route::resource('series', 'Api\SeriesController')->except(['update']);
+    Route::apiResource('series', 'Api\SeriesController')->except(['update']);
 
     Route::match(['get', 'post'], 'tags/filter', ['as' => 'tags.filter', 'uses' => 'Api\TagsController@filter']);
     Route::get('tags/reset', ['as' => 'tags.reset', 'uses' => 'Api\TagsController@reset']);
@@ -220,7 +220,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('threads/{threadId}/posts', ['as' => 'threads.posts', 'uses' => 'Api\ThreadsController@posts']);
     Route::put('threads/{thread}', 'Api\ThreadsController@update')->name('threads.update');
     Route::patch('threads/{thread}', 'Api\ThreadsController@patch')->name('threads.patch');
-    Route::resource('threads', 'Api\ThreadsController')->except(['update']);
+    Route::apiResource('threads', 'Api\ThreadsController')->except(['update']);
 
     Route::match(['get', 'post'], 'users/filter', ['as' => 'users.filter', 'uses' => 'Api\UsersController@filter']);
     Route::get('users/reset', ['as' => 'users.reset', 'uses' => 'Api\UsersController@reset']);
