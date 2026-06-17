@@ -81,6 +81,13 @@ Route::get('tos', 'PagesController@tos');
 Route::get('radar', 'PagesController@radar')->middleware('auth')->name('radar');
 Route::get('popular', 'PagesController@popular')->name('pages.popular');
 
+// Post-signup "Getting To Know You" onboarding (issue #901)
+Route::middleware('auth')->group(function () {
+    Route::get('onboarding/data', 'OnboardingController@data')->name('onboarding.data');
+    Route::post('onboarding/follow', 'OnboardingController@store')->name('onboarding.store');
+    Route::post('onboarding/dismiss', 'OnboardingController@dismiss')->name('onboarding.dismiss');
+});
+
 Route::get('help', 'PagesController@help');
 Route::get('all-modules', 'PagesController@allModules')->name('pages.allModules');
 

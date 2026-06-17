@@ -118,5 +118,11 @@
 	@yield('scripts.footer')
 	@yield('footer')
 	@include('flash')
+
+	@auth
+		@if(auth()->user()->shouldSeeOnboarding())
+			@include('partials.onboarding-modal')
+		@endif
+	@endauth
 </body>
 </html>
