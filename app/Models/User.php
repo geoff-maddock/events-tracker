@@ -347,6 +347,29 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     }
 
     /**
+     * Whether the post-signup "Getting To Know You" onboarding prompt should be
+     * shown to this user (issue #901).
+     *
+     * It surfaces for verified users who are not following anything yet and who
+     * have neither completed nor dismissed it. Once completed or dismissed it
+     * never auto-shows again.
+     */
+    public function shouldSeeOnboarding(): bool
+    {
+        if (! $this->hasVerifiedEmail()) {
+            return false;
+        }
+
+        $profile = $this->profile;
+
+        if ($profile && ($profile->onboarding_completed_at || $profile->onboarding_dismissed_at)) {
+            return false;
+        }
+
+        return $this->follows()->count() === 0;
+    }
+
+    /**
      * A user can own many objects.
      */
     public function owns(Event | Entity | Forum $object): bool
