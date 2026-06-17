@@ -65,7 +65,7 @@
         multiple
         :hasError="$errors->has('entities')">
         @foreach($entityOptions as $id => $name)
-            <option value="{{ $id }}">{{ $name }}</option>
+            <option value="{{ $id }}" {{ in_array($id, old('entity_list', isset($thread) ? $thread->entities->pluck('id')->toArray() : [])) ? 'selected' : '' }}>{{ $name }}</option>
         @endforeach
     </x-ui.select>
 </x-ui.form-group>
@@ -86,7 +86,7 @@
         multiple
         :hasError="$errors->has('tags')">
         @foreach($tagOptions as $id => $name)
-            <option value="{{ $id }}">{{ $name }}</option>
+            <option value="{{ $id }}" {{ in_array($id, old('tag_list', isset($thread) ? $thread->tags->pluck('id')->toArray() : [])) ? 'selected' : '' }}>{{ $name }}</option>
         @endforeach
     </x-ui.select>
 </x-ui.form-group>
