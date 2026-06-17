@@ -42,9 +42,15 @@
                 @endif
             </div>
 
-            {{-- Tags (all sizes, max 3) --}}
-            @unless ($thread->tags->isEmpty())
+            {{-- Related entities + tags (all sizes, max 3 each) --}}
+            @unless ($thread->entities->isEmpty() && $thread->tags->isEmpty())
             <div class="flex flex-wrap gap-1 mt-1.5">
+                @foreach ($thread->entities->take(3) as $entity)
+                    <x-entity-badge :entity="$entity" context="threads" variant="primary" />
+                @endforeach
+                @if ($thread->entities->count() > 3)
+                <span class="text-xs text-muted-foreground/50">+{{ $thread->entities->count() - 3 }}</span>
+                @endif
                 @foreach ($thread->tags->take(3) as $tag)
                     <x-tag-badge :tag="$tag" context="threads" />
                 @endforeach
