@@ -63,6 +63,14 @@
                             Edit Profile
                         </a>
 
+                        <form action="{{ route('users.restartOnboarding', ['id' => $user->id]) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="w-full flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
+                                <i class="bi bi-arrow-clockwise mr-3 w-4 text-center"></i>
+                                Restart Onboarding
+                            </button>
+                        </form>
+
                         <div class="border-t border-border my-1"></div>
 
                         <form action="{{ route('users.exportData', ['id' => $user->id]) }}" method="POST">

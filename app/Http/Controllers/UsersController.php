@@ -978,6 +978,52 @@ class UsersController extends Controller
     }
 
     /**
+     * Re-enable the post-signup "Getting To Know You" onboarding prompt (issue #901)
+     * by clearing the completed/dismissed flags on the user's profile.
+     */
+    public function restartOnboarding(int $id, Request $request): RedirectResponse
+    {
+        if (!$this->user) {
+            flash()->error('Error', 'No user is logged in.');
+
+            return back();
+        }
+
+        if (!$user = User::find($id)) {
+            flash()->error('Error', 'No such user');
+
+            return back();
+        }
+
+        // Authorization: a user can restart their own onboarding; the superuser can restart anyone's.
+        if ($this->user->id != $user->id && $this->user->id != config('app.superuser')) {
+            flash()->error('Error', 'You are not authorized to restart onboarding for this user.');
+
+            return back();
+        }
+
+        $profile = $user->profile;
+        if (!$profile) {
+            $profile = new Profile(['user_id' => $user->id]);
+            $profile->user_id = $user->id;
+        }
+
+        $profile->onboarding_completed_at = null;
+        $profile->onboarding_dismissed_at = null;
+        $profile->save();
+
+        flash()->success('Success', 'Onboarding has been re-enabled.');
+
+        // When restarting their own onboarding, send the user home and force the
+        // prompt to reappear on the next page even if they already follow things.
+        if ($this->user->id == $user->id) {
+            return redirect('/')->with('show_onboarding', true);
+        }
+
+        return redirect()->route('users.show', ['user' => $user]);
+    }
+
+    /**
      * Download a generated export file via signed URL.
      */
     public function downloadExport(string $filename, Request $request, DataExportService $exportService): BinaryFileResponse

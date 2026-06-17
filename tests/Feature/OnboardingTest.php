@@ -138,6 +138,43 @@ class OnboardingTest extends TestCase
     }
 
     /** @test */
+    public function restart_onboarding_clears_the_completed_and_dismissed_flags(): void
+    {
+        $user = User::factory()->create(['user_status_id' => 1]);
+        $user->profile()->create([
+            'user_id' => $user->id,
+            'onboarding_completed_at' => now(),
+            'onboarding_dismissed_at' => now(),
+        ]);
+
+        $this->assertFalse($user->fresh()->shouldSeeOnboarding());
+
+        $response = $this->actingAs($user)
+            ->post(route('users.restartOnboarding', ['id' => $user->id]));
+
+        $response->assertRedirect('/');
+        $response->assertSessionHas('show_onboarding', true);
+
+        $profile = $user->fresh()->profile;
+        $this->assertNull($profile->onboarding_completed_at);
+        $this->assertNull($profile->onboarding_dismissed_at);
+    }
+
+    /** @test */
+    public function a_user_cannot_restart_onboarding_for_another_user(): void
+    {
+        $user = User::factory()->create(['user_status_id' => 1]);
+        $other = User::factory()->create(['user_status_id' => 1]);
+        $other->profile()->create(['user_id' => $other->id, 'onboarding_completed_at' => now()]);
+
+        $this->actingAs($user)
+            ->post(route('users.restartOnboarding', ['id' => $other->id]));
+
+        // The other user's completed flag is untouched.
+        $this->assertNotNull($other->fresh()->profile->onboarding_completed_at);
+    }
+
+    /** @test */
     public function data_endpoint_returns_popular_lists(): void
     {
         $user = User::factory()->create(['user_status_id' => 1]);

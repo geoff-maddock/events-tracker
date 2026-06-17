@@ -120,7 +120,7 @@
 	@include('flash')
 
 	@auth
-		@if(auth()->user()->shouldSeeOnboarding())
+		@if(auth()->user()->shouldSeeOnboarding() || session('show_onboarding'))
 			@include('partials.onboarding-modal')
 		@endif
 	@endauth

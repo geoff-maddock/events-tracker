@@ -10,21 +10,21 @@
 <div x-data="onboarding()" x-init="init()" x-show="open" x-cloak
      class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
      role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
-    <div class="bg-card rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col border border-border"
+    <div class="bg-secondary rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col border border-border ring-1 ring-black/5"
          @click.stop>
         <!-- Header -->
         <div class="flex items-center justify-between p-4 border-b border-border">
             <h2 id="onboarding-title" class="text-lg font-semibold text-foreground">Get to know your scene</h2>
             <button type="button" @click="dismiss()" title="Skip for now"
-                    class="p-1 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors">
+                    class="p-1 rounded-md hover:bg-background text-muted-foreground hover:text-foreground transition-colors">
                 <i class="bi bi-x-lg"></i>
             </button>
         </div>
 
         <!-- Body -->
-        <div class="flex-1 overflow-y-auto p-6 space-y-6">
+        <div class="flex-1 overflow-y-auto px-6 pb-6 pt-3 space-y-6">
             <p class="text-sm text-muted-foreground">
-                Follow a few artists, venues, genres, or events below and we'll tailor your radar and recommendations to what you care about.
+                Follow a few artists, venues, genres, or events below and we'll tailor your radar and recommendations to what you care about. Or skip for now and you can always browse the site to discover and follow more later.
             </p>
 
             <template x-if="loading">
@@ -40,7 +40,7 @@
                         <h3 class="text-sm font-semibold text-foreground mb-2">Popular artists &amp; venues</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <template x-for="item in entities" :key="'entity-' + item.id">
-                                <label class="flex items-center gap-3 p-2 rounded-md border border-border hover:bg-accent cursor-pointer">
+                                <label class="flex items-center gap-3 p-2 rounded-md border border-border hover:bg-background cursor-pointer">
                                     <input type="checkbox" :value="item.id" x-model.number="selected.entities" class="rounded border-border">
                                     <img x-show="item.image" :src="item.image" alt="" class="w-8 h-8 rounded object-cover">
                                     <span class="min-w-0">
@@ -71,7 +71,7 @@
                         <h3 class="text-sm font-semibold text-foreground mb-2">Upcoming events</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <template x-for="item in events" :key="'event-' + item.id">
-                                <label class="flex items-center gap-3 p-2 rounded-md border border-border hover:bg-accent cursor-pointer">
+                                <label class="flex items-center gap-3 p-2 rounded-md border border-border hover:bg-background cursor-pointer">
                                     <input type="checkbox" :value="item.id" x-model.number="selected.events" class="rounded border-border">
                                     <span class="min-w-0">
                                         <span class="block text-sm text-foreground truncate" x-text="item.name"></span>
@@ -92,7 +92,7 @@
         <!-- Footer -->
         <div class="p-4 border-t border-border flex justify-between items-center gap-2">
             <button type="button" @click="dismiss()" :disabled="saving"
-                    class="px-4 py-2 text-sm rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors">
+                    class="px-4 py-2 text-sm rounded-md text-muted-foreground hover:text-foreground hover:bg-background transition-colors">
                 Skip for now
             </button>
             <button type="button" @click="save()" :disabled="saving || totalSelected === 0"

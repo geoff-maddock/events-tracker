@@ -189,6 +189,11 @@ Route::post('users/{id}/export-data', [
     'uses' => 'UsersController@exportData',
 ])->middleware('auth');
 
+Route::post('users/{id}/restart-onboarding', [
+    'as' => 'users.restartOnboarding',
+    'uses' => 'UsersController@restartOnboarding',
+])->middleware('auth');
+
 Route::get('exports/download/{filename}', [
     'as' => 'exports.download',
     'uses' => 'UsersController@downloadExport',
