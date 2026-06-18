@@ -334,6 +334,10 @@
             height: getCalendarHeight(),
             initialDate: '{{ $initialDate }}',
             eventDisplay: 'block',
+            // Require an event to run until at least 6 AM of the next day before it
+            // renders on that day, so late-night events that spill past midnight
+            // don't appear duplicated on the following calendar cell.
+            nextDayThreshold: '06:00:00',
             eventTimeFormat: {
                 hour: 'numeric',
                 minute: '2-digit',
