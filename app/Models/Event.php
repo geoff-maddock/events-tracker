@@ -807,6 +807,41 @@ class Event extends Model
     }
 
     /**
+     * Build a cache fingerprint for the event-card partials.
+     *
+     * Combines the event's own updated_at with the freshness of the related data
+     * the card renders (photos, tags, related entities, venue) so editing any of
+     * them busts the cached fragment — including changes that do NOT touch the
+     * event's own timestamp, e.g. attaching a photo via the BelongsToMany pivot.
+     * Only already-loaded relations are inspected, so this adds no queries when
+     * the caller has eager-loaded them (the entity show controller does).
+     */
+    public function cardFingerprint(): string
+    {
+        $stamp = function (string $relation): string {
+            if (!$this->relationLoaded($relation)) {
+                return '-';
+            }
+            $related = $this->getRelation($relation);
+            if ($related instanceof \Illuminate\Support\Collection) {
+                return ($related->max('updated_at')?->getTimestamp() ?? '0').':'.$related->count();
+            }
+
+            // belongsTo (venue) — single model or null
+            return (string) ($related?->updated_at?->getTimestamp() ?? '0');
+        };
+
+        return implode('|', [
+            $this->id,
+            $this->updated_at?->getTimestamp() ?? '0',
+            'ph'.$stamp('photos'),
+            'tg'.$stamp('tags'),
+            'en'.$stamp('entities'),
+            've'.$stamp('venue'),
+        ]);
+    }
+
+    /**
      * Return the primary photo for this event.
      *
      **/
