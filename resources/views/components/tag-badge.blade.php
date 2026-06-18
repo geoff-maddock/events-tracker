@@ -27,13 +27,13 @@
 @endphp
 
 <span class="badge-tw {{ $variantClass }} text-xs inline-flex items-center gap-1 group">
-    <a href="{{ $contextRoute }}" 
-       class="hover:underline" 
+    <a href="{{ $contextRoute }}"
+       class="inline-flex items-center min-h-[24px] hover:underline"
        title="Filter {{ $context ?? 'items' }} by {{ $tag->name }}">
         {{ $tag->name }}
     </a>
     <a href="{{ route('tags.show', $tag->slug) }}"
-       class="p-1 -mr-1 opacity-60 hover:opacity-100 transition-opacity"
+       class="inline-flex items-center justify-center min-w-[24px] min-h-[24px] -mr-1 opacity-60 hover:opacity-100 transition-opacity"
        title="View tag details"
        aria-label="View details for {{ $tag->name }}">
         <i class="bi bi-info-circle text-xs" aria-hidden="true"></i>

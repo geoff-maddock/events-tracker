@@ -62,6 +62,13 @@ return [
             'region' => env('DIGITALOCEAN_SPACES_REGION'),
             'bucket' => env('DIGITALOCEAN_SPACES_BUCKET'),
             'root' => env('DIGITALOCEAN_SPACES_ROOT'),
+            // Send a long-lived Cache-Control header with every uploaded object.
+            // Photo filenames are content-addressed (timestamped/unique), so cached
+            // copies never go stale. Fixes Lighthouse "Use efficient cache lifetimes"
+            // (uploaded images were served with no Cache-Control => cacheLifetimeMs 0).
+            'options' => [
+                'CacheControl' => 'public, max-age=31536000, immutable',
+            ],
         ],
     ],
 ];

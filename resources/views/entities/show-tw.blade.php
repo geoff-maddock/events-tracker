@@ -501,21 +501,30 @@
 		</form>
 	</div>
 
+	{{-- Fragment caching: the event-card partial has per-user content (attend/edit
+	     buttons), so it is only cached for guests — signed-in users (incl. editors)
+	     always render live and see edits immediately. The past-events grid has no
+	     per-user content, so it is cached for everyone. Keys fingerprint the event +
+	     its rendered relations (see Event::cardFingerprint) so any edit busts them. --}}
 	@if (isset($relatedEvents) && count($relatedEvents) > 0)
 		<!-- Events Grid -->
 		<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-6">
 			@foreach ($relatedEvents as $event)
-				@include('events.card-tw', ['event' => $event])
+				@guest
+					{!! Cache::remember('event-card-tw:'.$event->cardFingerprint(), now()->addHours(6), fn () => view('events.card-tw', ['event' => $event])->render()) !!}
+				@else
+					@include('events.card-tw', ['event' => $event])
+				@endguest
 			@endforeach
 			@if (isset($pastEvents) && $pastEvents->count() > 0)
-				@include('events.past-events-grid-card-tw', ['pastEvents' => $pastEvents, 'entity' => $entity])
+				{!! Cache::remember('past-events-grid:'.$entity->id.':'.($entity->updated_at?->getTimestamp() ?? '0').':'.md5($pastEvents->map->cardFingerprint()->implode('|')), now()->addHours(6), fn () => view('events.past-events-grid-card-tw', ['pastEvents' => $pastEvents, 'entity' => $entity])->render()) !!}
 			@endif
 		</div>
 	@else
 		<p class="text-muted-foreground mb-4">No upcoming related events found.</p>
 		@if (isset($pastEvents) && $pastEvents->count() > 0)
 			<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-6">
-				@include('events.past-events-grid-card-tw', ['pastEvents' => $pastEvents, 'entity' => $entity])
+				{!! Cache::remember('past-events-grid:'.$entity->id.':'.($entity->updated_at?->getTimestamp() ?? '0').':'.md5($pastEvents->map->cardFingerprint()->implode('|')), now()->addHours(6), fn () => view('events.past-events-grid-card-tw', ['pastEvents' => $pastEvents, 'entity' => $entity])->render()) !!}
 			</div>
 		@endif
 	@endif
