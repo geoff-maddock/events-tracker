@@ -2990,7 +2990,27 @@ class EventsController extends Controller
     {
         // create a thread from a single event
 
+        // must be logged in
+        if (!$this->user) {
+            flash()->error('Error', 'No user is logged in.');
+
+            return redirect('/login');
+        }
+
         $event = Event::find($request->id);
+
+        if (!$event) {
+            abort(404);
+        }
+
+        // only the event owner (or an admin) may spin up its discussion thread
+        if ($event->created_by !== $this->user->id
+            && !$this->user->hasGroup('admin')
+            && !$this->user->hasGroup('super_admin')) {
+            flash()->error('Unauthorized', 'You cannot create a thread for this event.');
+
+            return redirect()->route('events.show', ['event' => $event->id]);
+        }
 
         // initialize the form object with the values from the template
         $thread = new Thread([

@@ -707,8 +707,12 @@ class EntitiesController extends Controller
      * relations (tags, aliases, roles) sync to the supplied arrays — missing
      * keys mean "detach all", per strict REST semantics.
      */
-    public function update(Entity $entity, EntityRequest $request): JsonResponse
+    public function update(Entity $entity, EntityRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
+        if ($entity->created_by !== $this->user->id) {
+            return $this->unauthorized($request);
+        }
+
         $input = $request->all();
         $input['slug'] = Str::slug($request->input('slug', '-'));
 
@@ -741,8 +745,12 @@ class EntitiesController extends Controller
      * PATCH: partial update. Only fields present in the body are touched;
      * scalars and relations not in the request are left untouched.
      */
-    public function patch(Entity $entity, EntityPatchRequest $request): JsonResponse
+    public function patch(Entity $entity, EntityPatchRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
+        if ($entity->created_by !== $this->user->id) {
+            return $this->unauthorized($request);
+        }
+
         $input = $request->all();
 
         if (array_key_exists('slug', $input)) {

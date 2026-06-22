@@ -29,6 +29,8 @@ class ApiEntityUpdateTest extends TestCase
     private function makeEntityWithRelations(): array
     {
         $entity = Entity::factory()->create([
+            // owned by the currently-authenticated user so update/patch pass the ownership guard
+            'created_by' => auth('sanctum')->id(),
             'slug' => 'fixture-entity',
             'instagram_username' => 'original_ig',
             'twitter_username' => 'original_tw',
