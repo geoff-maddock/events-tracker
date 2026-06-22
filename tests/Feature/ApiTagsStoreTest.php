@@ -24,6 +24,7 @@ class ApiTagsStoreTest extends TestCase
     public function it_returns_validation_error_when_slug_already_exists(): void
     {
         $user = User::factory()->create(['user_status_id' => 1]);
+        $user->assignGroup('admin'); // tag CRUD is admin-gated
         $this->actingAs($user, 'sanctum');
 
         Tag::factory()->create(['slug' => 'existing-slug']);
@@ -41,6 +42,7 @@ class ApiTagsStoreTest extends TestCase
     public function it_creates_a_tag_with_unique_slug(): void
     {
         $user = User::factory()->create(['user_status_id' => 1]);
+        $user->assignGroup('admin'); // tag CRUD is admin-gated
         $this->actingAs($user, 'sanctum');
 
         $response = $this->postJson('/api/tags', [

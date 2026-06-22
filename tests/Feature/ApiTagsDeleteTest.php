@@ -18,6 +18,7 @@ class ApiTagsDeleteTest extends TestCase
     {
         $user = User::factory()->create();
         $user->user_status_id = 1;
+        $user->assignGroup('admin'); // tag deletion is admin-gated
         $this->actingAs($user, 'sanctum');
 
         $tag = Tag::factory()->create();

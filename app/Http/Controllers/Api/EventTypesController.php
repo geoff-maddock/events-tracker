@@ -166,6 +166,10 @@ class EventTypesController extends Controller
      */
     public function store(EventTypeRequest $request): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $input = $request->all();
 
         $eventType = EventType::create($input);
@@ -188,6 +192,10 @@ class EventTypesController extends Controller
      */
     public function update(EventType $eventType, EventTypeRequest $request): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $eventType->fill($request->all())->save();
 
         return response()->json($eventType);
@@ -198,6 +206,10 @@ class EventTypesController extends Controller
      */
     public function patch(EventType $eventType, EventTypePatchRequest $request): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $input = $request->all();
         $scalarInput = array_intersect_key($input, array_flip($eventType->getFillable()));
         if (!empty($scalarInput)) {
@@ -212,6 +224,10 @@ class EventTypesController extends Controller
      */
     public function destroy(EventType $eventType): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $name = $eventType->name;
 
         try {

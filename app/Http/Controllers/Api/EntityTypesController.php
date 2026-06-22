@@ -166,6 +166,10 @@ class EntityTypesController extends Controller
      */
     public function store(EntityTypeRequest $request): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $input = $request->all();
 
         $entityType = EntityType::create($input);
@@ -189,6 +193,10 @@ class EntityTypesController extends Controller
      */
     public function update(EntityType $entityType, EntityTypeRequest $request): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $entityType->fill($request->all())->save();
 
         return response()->json($entityType);
@@ -199,6 +207,10 @@ class EntityTypesController extends Controller
      */
     public function patch(EntityType $entityType, EntityTypePatchRequest $request): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $input = $request->all();
         $scalarInput = array_intersect_key($input, array_flip($entityType->getFillable()));
         if (!empty($scalarInput)) {
@@ -213,6 +225,10 @@ class EntityTypesController extends Controller
      */
     public function destroy(EntityType $entityType): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $name = $entityType->name;
 
         try {
