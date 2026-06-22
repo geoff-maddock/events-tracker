@@ -150,6 +150,7 @@ class EventsController extends Controller
         // get the events
         // @phpstan-ignore-next-line
         $events = $query
+            ->visible($this->user)
             ->with([
                 'visibility',
                 'venue.links',
@@ -195,6 +196,7 @@ class EventsController extends Controller
             ->filter($this->filter);
 
         $events = $query
+            ->visible($this->user)
             ->with([
                 'visibility',
                 'venue.links',

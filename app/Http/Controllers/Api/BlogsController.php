@@ -97,7 +97,8 @@ class BlogsController extends Controller
         $query = $listResultSet->getList();
 
         // get the blogs
-        $blogs = $query->paginate($listResultSet->getLimit());
+        /* @phpstan-ignore-next-line */
+        $blogs = $query->visible($this->user)->paginate($listResultSet->getLimit());
 
         return response()->json(new BlogCollection($blogs));
     }
