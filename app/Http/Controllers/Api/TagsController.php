@@ -384,12 +384,14 @@ class TagsController extends Controller
             return back();
         }
 
-        // add to activity log
-        Activity::log($tag, $this->user, 7);
-
         // delete the follow
         $response = Follow::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', $type)->first();
-        $response->delete();
+        if ($response) {
+            $response->delete();
+
+            // add to activity log
+            Activity::log($tag, $this->user, 7);
+        }
 
         // handle the request if ajax
         if ($request->ajax()) {

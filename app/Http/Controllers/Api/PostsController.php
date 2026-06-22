@@ -127,15 +127,6 @@ class PostsController extends Controller
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the posts
-        $posts = $query->paginate($listResultSet->getLimit());
-
         return response()->json(new PostCollection($posts));
     }
 
@@ -592,13 +583,15 @@ class PostsController extends Controller
             return back();
         }
 
-        // update the likes
-        --$post->likes;
-        $post->save();
-
         // delete the like
         $response = Like::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'post')->first();
-        $response->delete();
+        if ($response) {
+            $response->delete();
+
+            // update the likes
+            --$post->likes;
+            $post->save();
+        }
 
         flash()->success('Success', 'You are no longer liking the post.');
 

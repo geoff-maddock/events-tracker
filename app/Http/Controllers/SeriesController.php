@@ -977,10 +977,12 @@ class SeriesController extends Controller
 
         // delete the follow
         $response = Follow::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'series')->first();
-        $response->delete();
+        if ($response) {
+            $response->delete();
 
-        // add to activity log
-        Activity::log($series, $this->user, 7);
+            // add to activity log
+            Activity::log($series, $this->user, 7);
+        }
 
         if ($request->ajax()) {
             return [

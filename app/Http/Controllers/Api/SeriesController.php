@@ -576,7 +576,7 @@ class SeriesController extends Controller
 
         // check the elements in the tag list, and if any don't match, add the tag
         foreach ($tagArray as $key => $tag) {
-            if (count(DB::table('tags')->where('id', $tag)->get()) > 0) {
+            if (!is_numeric($tag) || count(DB::table('tags')->where('id', $tag)->get()) === 0) {
                 $newTag = new Tag();
                 $newTag->name = ucwords(strtolower($tag));
                 $newTag->slug = Str::slug($tag);
@@ -904,10 +904,12 @@ class SeriesController extends Controller
 
         // delete the follow
         $response = Follow::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'series')->first();
-        $response->delete();
+        if ($response) {
+            $response->delete();
 
-        // add to activity log
-        Activity::log($series, $this->user, 7);
+            // add to activity log
+            Activity::log($series, $this->user, 7);
+        }
 
         if ($request->ajax()) {
             return [
