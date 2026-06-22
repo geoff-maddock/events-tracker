@@ -2843,6 +2843,11 @@ class EventsController extends Controller
      */
     public function addPhoto(int $id, Request $request, ImageHandler $imageHandler): void
     {
+        // must be logged in
+        if (!$this->user) {
+            abort(401);
+        }
+
         // confirm the file is one of these types
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif,webp',
@@ -2850,6 +2855,13 @@ class EventsController extends Controller
 
         // get the event
         if ($event = Event::find($id)) {
+
+            // only the event owner (or an admin) may add photos
+            if (!$event->ownedBy($this->user)
+                && !$this->user->hasGroup('admin')
+                && !$this->user->hasGroup('super_admin')) {
+                abort(403);
+            }
 
             // make the photo object from the file in the request, returning photo object
             $photo = $imageHandler->makePhoto($request->file('file'));

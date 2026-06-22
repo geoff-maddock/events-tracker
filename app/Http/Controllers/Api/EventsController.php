@@ -1670,6 +1670,13 @@ class EventsController extends Controller
         ]);
 
         if ($event = Event::find($id)) {
+
+            // only the event owner (or an admin) may add photos
+            if (!$this->user
+                || (!$event->ownedBy($this->user) && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin'))) {
+                return response()->json(['message' => 'Not authorized.'], 403);
+            }
+
             $photo = $imageHandler->makePhoto($request->file('file'));
 
             if (isset($event->photos) && 0 === count($event->photos)) {

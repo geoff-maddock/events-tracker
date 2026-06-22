@@ -810,6 +810,12 @@ class SeriesController extends Controller
         // attach to series
         if ($series = Series::find($id)) {
 
+            // only the series owner (or an admin) may add photos
+            if (!$this->user
+                || (!$series->ownedBy($this->user) && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin'))) {
+                return response()->json(['message' => 'Not authorized.'], 403);
+            }
+
             // make the photo object from the file in the request
             $photo = $imageHandler->makePhoto($request->file('file'));
 

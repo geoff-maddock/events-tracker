@@ -858,6 +858,15 @@ class EntitiesController extends Controller
             'file' => 'required|mimes:jpg,jpeg,png,gif,webp',
         ]);
 
+        // only the entity owner (or an admin) may add photos — checked
+        // before any file is written to storage
+        $entity = Entity::find($id);
+        if ($entity
+            && (!$this->user
+                || ($entity->created_by !== $this->user->id && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin')))) {
+            return response()->json(['message' => 'Not authorized.'], 403);
+        }
+
         $fileName = time().'_'.$request->file->getClientOriginalName();
         $filePath = $request->file('file')->storePubliclyAs('photos', $fileName, 'external');
 

@@ -1171,12 +1171,25 @@ class EntitiesController extends Controller
      */
     public function addPhoto(int $id, Request $request, ImageHandler $imageHandler): void
     {
+        // must be logged in
+        if (!$this->user) {
+            abort(401);
+        }
+
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif,webp',
         ]);
 
         // attach to entity
         if ($entity = Entity::find($id)) {
+
+            // only the entity owner (or an admin) may add photos
+            if ($entity->created_by !== $this->user->id
+                && !$this->user->hasGroup('admin')
+                && !$this->user->hasGroup('super_admin')) {
+                abort(403);
+            }
+
             $photo = $imageHandler->makePhoto($request->file('file'));
 
             // count existing photos, and if zero, make this primary
