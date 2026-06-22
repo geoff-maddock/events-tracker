@@ -183,8 +183,8 @@ class EventsController extends Controller
      */
     public function popular(Request $request): JsonResponse
     {
-        $days = (int) $request->get('days', 30);
-        $limit = (int) $request->get('limit', 30);
+        $days = min(max((int) $request->get('days', 30), 1), 365);
+        $limit = min(max((int) $request->get('limit', 30), 1), \App\Http\Requests\ListQueryParameters::MAX_LIMIT);
         $from = Carbon::now()->subDays($days);
 
         $query = Event::query()

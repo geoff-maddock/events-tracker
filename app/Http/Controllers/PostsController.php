@@ -185,7 +185,7 @@ class PostsController extends Controller
         /* @phpstan-ignore-next-line */
         $posts = $query->visible($this->user)
             ->with('visibility')
-            ->paginate(1000000);
+            ->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();

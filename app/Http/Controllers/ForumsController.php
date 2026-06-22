@@ -176,7 +176,7 @@ class ForumsController extends Controller
         /* @phpstan-ignore-next-line */
         $forums = $query->visible($this->user)
             ->with('visibility')
-            ->paginate(1000000);
+            ->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();
@@ -346,14 +346,14 @@ class ForumsController extends Controller
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
             ->with('visibility')
-            ->paginate(10000000);
+            ->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        $threads = Thread::whereRelation('visibility','name','Public')->where('forum_id', $forum->id)->orderBy('created_at', 'desc')->paginate(1000000);
+        $threads = Thread::whereRelation('visibility', 'name', 'Public')->where('forum_id', $forum->id)->orderBy('created_at', 'desc')->paginate(\App\Http\Requests\ListQueryParameters::MAX_LIMIT);
 
         // pass a slug for the forum
         $slug = $forum->description;

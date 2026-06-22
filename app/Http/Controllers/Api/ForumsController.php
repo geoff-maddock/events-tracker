@@ -159,7 +159,7 @@ class ForumsController extends Controller
         /* @phpstan-ignore-next-line */
         $forums = $query->visible($this->user)
             ->with(['visibility', 'threadsCount'])
-            ->paginate(1000000);
+            ->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();

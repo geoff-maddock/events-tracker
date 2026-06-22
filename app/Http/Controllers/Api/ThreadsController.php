@@ -171,7 +171,7 @@ class ThreadsController extends Controller
         $threads = $query->visible($this->user)
             ->with(['visibility', 'forum', 'user', 'tags', 'threadCategory', 'lastPost'])
             ->withCount('posts')
-            ->paginate(1000000);
+            ->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();
