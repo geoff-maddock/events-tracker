@@ -759,7 +759,7 @@ class EntitiesController extends Controller
 
         // check the elements in the alias list, and if any don't match, add the alias
         foreach ($aliasArray as $key => $alias) {
-            if (DB::table('aliases')->where('id', $alias)->count() > 0) {
+            if (!is_numeric($alias) || DB::table('aliases')->where('id', $alias)->count() === 0) {
                 $newAlias = new Alias();
                 $newAlias->name = ucwords(strtolower($alias));
                 $newAlias->save();
@@ -1272,10 +1272,12 @@ class EntitiesController extends Controller
 
         // delete the follow
         $follow = Follow::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'entity')->first();
-        $follow->delete();
+        if ($follow) {
+            $follow->delete();
 
-        // add to activity log
-        Activity::log($entity, $this->user, Action::UNFOLLOW);
+            // add to activity log
+            Activity::log($entity, $this->user, Action::UNFOLLOW);
+        }
 
         // handle the request if ajax
         if ($request->ajax()) {

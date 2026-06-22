@@ -645,13 +645,15 @@ class PostsController extends Controller
             return back();
         }
 
-        // update the likes
-        --$post->likes;
-        $post->save();
-
         // delete the like
         $response = Like::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'post')->first();
-        $response->delete();
+        if ($response) {
+            $response->delete();
+
+            // update the likes
+            --$post->likes;
+            $post->save();
+        }
 
         flash()->success('Success', 'You are no longer liking the post.');
 
