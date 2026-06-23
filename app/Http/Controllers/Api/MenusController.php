@@ -87,6 +87,10 @@ class MenusController extends Controller
 
     public function store(MenuRequest $request, Menu $menu): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $menu = $menu->create($request->all());
 
         return response()->json(new MenuResource($menu), 201);
@@ -98,6 +102,10 @@ class MenusController extends Controller
      */
     public function update(Menu $menu, MenuRequest $request): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $input = $request->all();
 
         if (!array_key_exists('menu_parent_id', $input)) {
@@ -114,6 +122,10 @@ class MenusController extends Controller
      */
     public function patch(Menu $menu, MenuPatchRequest $request): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $input = $request->all();
         $scalarInput = array_intersect_key($input, array_flip($menu->getFillable()));
         if (!empty($scalarInput)) {
@@ -125,6 +137,10 @@ class MenusController extends Controller
 
     public function destroy(Menu $menu): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $menu->delete();
 
         return response()->json([], 204);

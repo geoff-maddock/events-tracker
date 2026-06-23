@@ -889,12 +889,25 @@ class SeriesController extends Controller
      */
     public function addPhoto(int $id, Request $request, ImageHandler $imageHandler): void
     {
+        // must be logged in
+        if (!$this->user) {
+            abort(401);
+        }
+
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif,webp',
         ]);
 
         // attach to series
         if ($series = Series::find($id)) {
+
+            // only the series owner (or an admin) may add photos
+            if (!$series->ownedBy($this->user)
+                && !$this->user->hasGroup('admin')
+                && !$this->user->hasGroup('super_admin')) {
+                abort(403);
+            }
+
             // make the photo object from the file in the request
             $photo = $imageHandler->makePhoto($request->file('file'));
 

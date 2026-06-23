@@ -103,6 +103,10 @@ class RolesController extends Controller
 
     public function store(RoleRequest $request): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $input = $request->all();
         $role = Role::create($input);
 
@@ -120,6 +124,10 @@ class RolesController extends Controller
      */
     public function update(Role $role, RoleRequest $request): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $input = $request->all();
 
         if (!array_key_exists('short', $input)) {
@@ -136,6 +144,10 @@ class RolesController extends Controller
      */
     public function patch(Role $role, RolePatchRequest $request): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $input = $request->all();
         $scalarInput = array_intersect_key($input, array_flip($role->getFillable()));
         if (!empty($scalarInput)) {
@@ -147,6 +159,10 @@ class RolesController extends Controller
 
     public function destroy(Role $role): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $name = $role->name;
 
         try {

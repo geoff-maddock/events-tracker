@@ -109,7 +109,8 @@ class ApiBlogsCrudTest extends TestCase
 
     public function test_index_returns_json_collection(): void
     {
-        $blog = Blog::factory()->create();
+        // public so it is visible to the acting user under the index visibility scope
+        $blog = Blog::factory()->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC]);
 
         $this->getJson('/api/blogs')
             ->assertStatus(200)

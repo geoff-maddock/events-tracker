@@ -164,8 +164,8 @@ class EntitiesController extends Controller
      */
     public function popular(Request $request): JsonResponse
     {
-        $days = (int) $request->get('days', 30);
-        $limit = (int) $request->get('limit', 30);
+        $days = min(max((int) $request->get('days', 30), 1), 365);
+        $limit = min(max((int) $request->get('limit', 30), 1), \App\Http\Requests\ListQueryParameters::MAX_LIMIT);
         $from = Carbon::now()->subDays($days);
 
         $query = Entity::query()
@@ -707,8 +707,12 @@ class EntitiesController extends Controller
      * relations (tags, aliases, roles) sync to the supplied arrays — missing
      * keys mean "detach all", per strict REST semantics.
      */
-    public function update(Entity $entity, EntityRequest $request): JsonResponse
+    public function update(Entity $entity, EntityRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
+        if ($entity->created_by !== $this->user->id) {
+            return $this->unauthorized($request);
+        }
+
         $input = $request->all();
         $input['slug'] = Str::slug($request->input('slug', '-'));
 
@@ -741,8 +745,12 @@ class EntitiesController extends Controller
      * PATCH: partial update. Only fields present in the body are touched;
      * scalars and relations not in the request are left untouched.
      */
-    public function patch(Entity $entity, EntityPatchRequest $request): JsonResponse
+    public function patch(Entity $entity, EntityPatchRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
+        if ($entity->created_by !== $this->user->id) {
+            return $this->unauthorized($request);
+        }
+
         $input = $request->all();
 
         if (array_key_exists('slug', $input)) {
@@ -849,6 +857,15 @@ class EntitiesController extends Controller
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif,webp',
         ]);
+
+        // only the entity owner (or an admin) may add photos — checked
+        // before any file is written to storage
+        $entity = Entity::find($id);
+        if ($entity
+            && (!$this->user
+                || ($entity->created_by !== $this->user->id && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin')))) {
+            return response()->json(['message' => 'Not authorized.'], 403);
+        }
 
         $fileName = time().'_'.$request->file->getClientOriginalName();
         $filePath = $request->file('file')->storePubliclyAs('photos', $fileName, 'external');

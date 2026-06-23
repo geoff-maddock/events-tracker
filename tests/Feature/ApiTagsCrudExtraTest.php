@@ -20,6 +20,7 @@ class ApiTagsCrudExtraTest extends TestCase
         parent::setUp();
         $this->withExceptionHandling();
         $this->user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $this->user->assignGroup('admin'); // tag CRUD is admin-gated
         $this->actingAs($this->user, 'sanctum');
     }
 

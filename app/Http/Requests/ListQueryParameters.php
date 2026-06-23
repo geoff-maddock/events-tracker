@@ -10,6 +10,13 @@ use App\Services\SessionStore\ListParameterStore;
 class ListQueryParameters
 {
     /**
+     * Hard ceiling on page size for any list endpoint, to prevent a
+     * single request from pulling an unbounded result set (DoS). Matches
+     * the largest value offered in the UI `limitOptions` (1000).
+     */
+    public const MAX_LIMIT = 1000;
+
+    /**
      * @var ListRequest
      */
     private $listRequest;
@@ -86,6 +93,11 @@ class ListQueryParameters
         } elseif ($this->listParamStore->getLimit()) {
             $limit = $this->listParamStore->getLimit();
         }
+
+        // clamp to a sane range so neither a crafted request nor a poisoned
+        // session value can request an unbounded page size
+        $limit = max(1, min((int) $limit, self::MAX_LIMIT));
+
         $this->listParamStore->setLimit($limit);
 
         return $limit;

@@ -171,7 +171,7 @@ class ThreadsController extends Controller
         $threads = $query->visible($this->user)
             ->with(['visibility', 'forum', 'user', 'tags', 'threadCategory', 'lastPost'])
             ->withCount('posts')
-            ->paginate(1000000);
+            ->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();
@@ -407,8 +407,12 @@ class ThreadsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Thread $thread): RedirectResponse
+    public function destroy(Thread $thread): RedirectResponse|JsonResponse
     {
+        if (!$thread->ownedBy($this->user)) {
+            return response()->json(['message' => 'No way.'], 403);
+        }
+
         // add to activity log
         Activity::log($thread, $this->user, 3);
 

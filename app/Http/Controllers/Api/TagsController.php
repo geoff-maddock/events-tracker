@@ -93,6 +93,10 @@ class TagsController extends Controller
      */
     public function destroy(Tag $tag): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $tag->delete();
 
         return response()->json([], 204);
@@ -287,6 +291,10 @@ class TagsController extends Controller
      */
     public function store(Request $request, Tag $tag): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $input = $request->only(['name', 'slug', 'tag_type_id', 'description']);
 
         $input['slug'] = $input['slug'] ?? Str::slug($input['name'], '-');
@@ -513,6 +521,10 @@ class TagsController extends Controller
      */
     public function update(Tag $tag, Request $request): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $tag->fill($request->only(['name', 'slug', 'tag_type_id', 'description']))->save();
 
         return response()->json(new TagResource($tag));

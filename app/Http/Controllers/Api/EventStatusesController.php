@@ -113,6 +113,10 @@ class EventStatusesController extends Controller
 
     public function store(EventStatusRequest $request): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $input = $request->all();
 
         $eventStatus = EventStatus::create($input);
@@ -130,6 +134,10 @@ class EventStatusesController extends Controller
      */
     public function update(EventStatus $eventStatus, EventStatusRequest $request): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $eventStatus->fill($request->all())->save();
 
         return response()->json($eventStatus);
@@ -140,6 +148,10 @@ class EventStatusesController extends Controller
      */
     public function patch(EventStatus $eventStatus, EventStatusPatchRequest $request): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $input = $request->all();
         $scalarInput = array_intersect_key($input, array_flip($eventStatus->getFillable()));
         if (!empty($scalarInput)) {
@@ -151,6 +163,10 @@ class EventStatusesController extends Controller
 
     public function destroy(EventStatus $eventStatus): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $name = $eventStatus->name;
 
         try {

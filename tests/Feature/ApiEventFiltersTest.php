@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\EventType;
+use App\Models\Visibility;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -47,23 +48,27 @@ class ApiEventFiltersTest extends TestCase
             'slug' => 'test-house-filter',
         ]);
 
-        // Create events
+        // Create events (public so they are visible to the acting user
+        // now that the index endpoint applies the visibility scope)
         $this->jungleEvent = Event::factory()->create([
             'name' => 'Jungle Night',
             'slug' => 'jungle-night',
             'start_at' => Carbon::now()->addDays(1),
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
         ]);
 
         $this->technoEvent = Event::factory()->create([
             'name' => 'Techno Party',
             'slug' => 'techno-party',
             'start_at' => Carbon::now()->addDays(2),
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
         ]);
 
         $this->houseEvent = Event::factory()->create([
             'name' => 'House Music',
             'slug' => 'house-music',
             'start_at' => Carbon::now()->addDays(3),
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
         ]);
 
         // Attach tags to events
@@ -132,6 +137,7 @@ class ApiEventFiltersTest extends TestCase
             'name' => 'Multi Genre Night',
             'slug' => 'multi-genre-night',
             'start_at' => Carbon::now()->addDays(1),
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
         ]);
 
         // Attach multiple tags to the same event

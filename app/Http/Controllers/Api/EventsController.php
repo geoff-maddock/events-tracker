@@ -150,6 +150,7 @@ class EventsController extends Controller
         // get the events
         // @phpstan-ignore-next-line
         $events = $query
+            ->visible($this->user)
             ->with([
                 'visibility',
                 'venue.links',
@@ -182,8 +183,8 @@ class EventsController extends Controller
      */
     public function popular(Request $request): JsonResponse
     {
-        $days = (int) $request->get('days', 30);
-        $limit = (int) $request->get('limit', 30);
+        $days = min(max((int) $request->get('days', 30), 1), 365);
+        $limit = min(max((int) $request->get('limit', 30), 1), \App\Http\Requests\ListQueryParameters::MAX_LIMIT);
         $from = Carbon::now()->subDays($days);
 
         $query = Event::query()
@@ -195,6 +196,7 @@ class EventsController extends Controller
             ->filter($this->filter);
 
         $events = $query
+            ->visible($this->user)
             ->with([
                 'visibility',
                 'venue.links',
@@ -1668,6 +1670,13 @@ class EventsController extends Controller
         ]);
 
         if ($event = Event::find($id)) {
+
+            // only the event owner (or an admin) may add photos
+            if (!$this->user
+                || (!$event->ownedBy($this->user) && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin'))) {
+                return response()->json(['message' => 'Not authorized.'], 403);
+            }
+
             $photo = $imageHandler->makePhoto($request->file('file'));
 
             if (isset($event->photos) && 0 === count($event->photos)) {

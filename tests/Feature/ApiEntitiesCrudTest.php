@@ -60,7 +60,10 @@ class ApiEntitiesCrudTest extends TestCase
 
     public function test_update_replaces_entity_fields(): void
     {
-        $entity = Entity::factory()->create(['slug' => 'zz-update-target-'.uniqid()]);
+        $entity = Entity::factory()->create([
+            'created_by' => $this->user->id,
+            'slug' => 'zz-update-target-'.uniqid(),
+        ]);
 
         $payload = $this->validPayload([
             'name' => 'ZZ-Updated-Name',
@@ -76,6 +79,7 @@ class ApiEntitiesCrudTest extends TestCase
     public function test_patch_partial_update_only_touches_supplied_fields(): void
     {
         $entity = Entity::factory()->create([
+            'created_by' => $this->user->id,
             'name' => 'ZZ-Original',
             'slug' => 'zz-patch-target-'.uniqid(),
         ]);
