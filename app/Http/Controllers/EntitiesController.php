@@ -896,6 +896,7 @@ class EntitiesController extends Controller
                 'entities.links',
                 'eventStatus',
                 'visibility',
+                'eventType',
             ])
             ->where('start_at', '>=', $filterStartAt)
             ->orderBy('start_at', 'asc');

@@ -86,4 +86,34 @@ class EntitiesControllerTest extends TestCase
             'Past-event primary photos should be eager-loaded, not queried per event (N+1).'
         );
     }
+
+    public function test_show_eager_loads_related_event_type_without_n_plus_one(): void
+    {
+        $entity = Entity::factory()->create();
+
+        // Two upcoming events for the related-events card, each with an event type.
+        // (Limited to 2, not 3+, to stay below the entity's "frequently performs with"
+        // computation threshold, which is unrelated to this regression.)
+        for ($i = 1; $i <= 2; $i++) {
+            $event = Event::factory()->create([
+                'start_at' => now()->addDays($i),
+                'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+            ]);
+            $entity->events()->attach($event);
+        }
+
+        DB::enableQueryLog();
+        $this->get('/entities/'.$entity->slug)->assertOk();
+        $queries = collect(DB::getQueryLog())->pluck('query');
+
+        // The per-event event-type lookup must be eager-loaded, not run once per event.
+        $perEventTypeQueries = $queries->filter(fn ($q) => str_contains($q, 'event_types')
+            && str_contains($q, 'limit 1'));
+
+        $this->assertLessThanOrEqual(
+            1,
+            $perEventTypeQueries->count(),
+            'Related-event event types should be eager-loaded, not queried per event (N+1).'
+        );
+    }
 }
