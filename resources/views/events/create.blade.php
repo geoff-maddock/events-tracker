@@ -40,26 +40,16 @@
 <div class="max-w-7xl mx-auto">
     <h1 class="text-3xl font-bold text-foreground mb-6">Add a New Event</h1>
 
-    {{-- Flyer Import Section --}}
+    {{-- Event Image Section --}}
     <div class="bg-card rounded-lg border border-border shadow-sm p-6 mb-6">
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                 <i class="bi bi-image-fill text-primary"></i>
-                Import from Flyer
+                Event Image
             </h2>
-            <button type="button" id="flyer-toggle-btn"
-                class="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1">
-                <i class="bi bi-chevron-down" id="flyer-toggle-icon"></i>
-                <span id="flyer-toggle-label">Show</span>
-            </button>
         </div>
 
-        <div id="flyer-import-panel" class="hidden">
-            <p class="text-sm text-muted-foreground mb-4">
-                Upload an event flyer and the app will attempt to extract the event details and pre-fill the form below.
-                You can review and edit the information before saving.
-            </p>
-
+        <div id="flyer-import-panel">
             <div id="flyer-drop-zone"
                 class="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 transition-colors mb-4"
                 ondragover="event.preventDefault();"
@@ -91,6 +81,11 @@
                     </button>
                 </div>
             </div>
+
+            <p class="text-sm text-muted-foreground mb-4">
+                Upload an event flyer and the app will attempt to extract the event details and pre-fill the form below.
+                You can review and edit the information before saving.
+            </p>
 
             <div id="flyer-status" class="hidden text-sm mb-4 p-3 rounded-md"></div>
 
@@ -136,22 +131,6 @@ const FLYER_DJ_KEYWORDS = [
     'dj', 'club', 'electronic', 'techno', 'house', 'drum and bass',
     'jungle', 'dnb', 'edm', 'rave', 'dance music', 'club night',
 ];
-
-// ── Flyer import panel toggle ──────────────────────────────────────────────
-(function () {
-    const btn   = document.getElementById('flyer-toggle-btn');
-    const panel = document.getElementById('flyer-import-panel');
-    const icon  = document.getElementById('flyer-toggle-icon');
-    const label = document.getElementById('flyer-toggle-label');
-    if (btn) {
-        btn.addEventListener('click', function () {
-            const open = !panel.classList.contains('hidden');
-            panel.classList.toggle('hidden', open);
-            icon.className  = open ? 'bi bi-chevron-down' : 'bi bi-chevron-up';
-            label.textContent = open ? 'Show' : 'Hide';
-        });
-    }
-})();
 
 // ── File selection ─────────────────────────────────────────────────────────
 let selectedFlyerFile = null;

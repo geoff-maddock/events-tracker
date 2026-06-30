@@ -29,7 +29,7 @@
 
             <a href="{{ url('/events') }}" class="nav-item-tw {{ Request::is('events') && !Request::is('events/*') ? 'nav-item-active-tw' : '' }}">
                 <i class="bi bi-calendar-event text-lg"></i>
-                <span>Event Listings</span>
+                <span>Events</span>
             </a>
             <div class="ml-8 space-y-1 mt-1">
                 <a href="{{ url('/events/grid') }}" class="nav-item-tw text-sm {{ Request::is('events/grid') ? 'nav-item-active-tw' : '' }}">
@@ -52,14 +52,14 @@
         <div class="pt-2">
             <a href="{{ url('/entities') }}" class="nav-item-tw {{ Request::is('entities') && !Request::is('entities/*') ? 'nav-item-active-tw' : '' }}">
                 <i class="bi bi-people text-lg"></i>
-                <span>Entity Listings</span>
+                <span>Entities</span>
             </a>
         </div>
 
         <!-- Series Listings -->
         <a href="{{ url('/series') }}" class="nav-item-tw {{ Request::is('series') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-collection text-lg"></i>
-            <span>Series Listings</span>
+            <span>Series</span>
         </a>
 
         <!-- Tags -->
@@ -87,7 +87,7 @@
         <div class="border-t border-border my-4"></div>
 
         <!-- About -->
-        <a href="{{ url('/menus/1/content') }}" class="nav-item-tw {{ Request::is('menus/1/content') ? 'nav-item-active-tw' : '' }}">
+        <a href="{{ url('/about') }}" class="nav-item-tw {{ Request::is('about') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-info-circle text-lg"></i>
             <span>About</span>
         </a>
@@ -114,10 +114,6 @@
             <span>Help</span>
         </a>
 
-        <a href="{{ url('/privacy') }}" class="nav-item-tw {{ Request::is('privacy') ? 'nav-item-active-tw' : '' }}">
-            <i class="bi bi-shield-check text-lg"></i>
-            <span>Privacy</span>
-        </a>
     </nav>
 
     <!-- User Section -->
@@ -199,7 +195,7 @@
             @endauth
             <a href="{{ url('/events') }}" class="nav-item-tw {{ Request::is('events') && !Request::is('events/*') ? 'nav-item-active-tw' : '' }}">
                 <i class="bi bi-calendar-event text-lg"></i>
-                <span>Event Listings</span>
+                <span>Events</span>
             </a>
             <div class="ml-8 space-y-1 mt-1">
                 <a href="{{ url('/events/grid') }}" class="nav-item-tw text-sm {{ Request::is('events/grid') ? 'nav-item-active-tw' : '' }}">
@@ -221,14 +217,14 @@
         <div class="pt-2">
             <a href="{{ url('/entities') }}" class="nav-item-tw {{ Request::is('entities') && !Request::is('entities/*') ? 'nav-item-active-tw' : '' }}">
                 <i class="bi bi-people text-lg"></i>
-                <span>Entity Listings</span>
+                <span>Entities</span>
             </a>
         </div>
 
         <!-- Series Listings -->
         <a href="{{ url('/series') }}" class="nav-item-tw {{ Request::is('series') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-collection text-lg"></i>
-            <span>Series Listings</span>
+            <span>Series</span>
         </a>
 
         <!-- Tags -->
@@ -256,7 +252,7 @@
         <div class="border-t border-border my-4"></div>
 
         <!-- About -->
-        <a href="{{ url('/menus/1/content') }}" class="nav-item-tw {{ Request::is('menus/1/content') ? 'nav-item-active-tw' : '' }}">
+        <a href="{{ url('/about') }}" class="nav-item-tw {{ Request::is('about') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-info-circle text-lg"></i>
             <span>About</span>
         </a>
@@ -284,10 +280,6 @@
             <span>Help</span>
         </a>
 
-        <a href="{{ url('/privacy') }}" class="nav-item-tw {{ Request::is('privacy') ? 'nav-item-active-tw' : '' }}">
-            <i class="bi bi-shield-check text-lg"></i>
-            <span>Privacy</span>
-        </a>
     </nav>
 
     <!-- User Section -->
