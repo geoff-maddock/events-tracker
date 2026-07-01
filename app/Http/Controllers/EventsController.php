@@ -356,7 +356,8 @@ class EventsController extends Controller
      */
     protected function cardEventEagerLoad(): array
     {
-        $eager = ['visibility', 'venue', 'eventType', 'tags', 'photos', 'entities', 'threads'];
+        // venue.locations avoids an N+1 in card-tw's getPrimaryLocationMap()/getPrimaryLocationAddress() (EVENTREPO-W5).
+        $eager = ['visibility', 'venue.locations', 'eventType', 'tags', 'photos', 'entities', 'threads'];
 
         if ($this->user) {
             // The attend/unattend button reads getEventResponse($user)->responseType per card.
