@@ -468,7 +468,9 @@ class CalendarController extends Controller
         $events = $eventsQuery->with('eventType', 'visibility')->get();
 
         // get all the upcoming series events
-        $seriesQuery = Series::active()->with('visibility','occurrenceType');
+        // eager-load upcomingEvent so Series::nextEvent() uses the loaded relation
+        // instead of issuing a query per series (Sentry N+1 on /calendar)
+        $seriesQuery = Series::active()->with('visibility', 'occurrenceType', 'upcomingEvent');
         
         // Apply same filters to series if present
         if ($request->has('filters')) {
@@ -576,7 +578,7 @@ class CalendarController extends Controller
         })->with('eventType')->get();
 
         // get all the upcoming series events
-        $series = Series::active()->with('visibility', 'occurrenceType')->get();
+        $series = Series::active()->with('visibility', 'occurrenceType', 'upcomingEvent')->get();
 
         // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
@@ -705,7 +707,7 @@ class CalendarController extends Controller
             })->get();
 
         // get all the upcoming series events
-        $series = Series::active()->with('visibility', 'occurrenceType')->get();
+        $series = Series::active()->with('visibility', 'occurrenceType', 'upcomingEvent')->get();
 
         // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
@@ -766,7 +768,7 @@ class CalendarController extends Controller
             })->with('tags')->get();
 
         // get all the upcoming series events
-        $series = Series::active()->with('visibility', 'occurrenceType')->get();
+        $series = Series::active()->with('visibility', 'occurrenceType', 'upcomingEvent')->get();
 
         // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
