@@ -537,6 +537,9 @@
 						<a href="{{ url('/privacy') }}" class="inline-flex items-center px-3 py-2 bg-accent text-foreground border border-border rounded-lg hover:bg-accent/80 transition-colors text-sm">
 							<i class="bi bi-shield-check mr-2"></i> Privacy
 						</a>
+						<a href="{{ url('/tos') }}" class="inline-flex items-center px-3 py-2 bg-accent text-foreground border border-border rounded-lg hover:bg-accent/80 transition-colors text-sm">
+							<i class="bi bi-file-earmark-text mr-2"></i> Terms of Service
+						</a>
 					</div>
 				</div>
 			</section>

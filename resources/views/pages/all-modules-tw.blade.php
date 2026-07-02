@@ -55,6 +55,40 @@
 		</div>
 	</div>
 
+	<!-- Policies & Info -->
+	<div class="card-tw mb-6">
+		<div class="p-6">
+			<h2 class="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
+				<i class="bi bi-shield-check text-primary"></i>
+				Policies &amp; Info
+			</h2>
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+				@php
+				$policyModules = [
+					['name' => 'Privacy Policy', 'url' => '/privacy', 'icon' => 'bi-shield-check', 'description' => 'How we handle your data'],
+					['name' => 'Terms of Service', 'url' => '/tos', 'icon' => 'bi-file-earmark-text', 'description' => 'Terms and conditions of use'],
+					['name' => 'About', 'url' => '/about', 'icon' => 'bi-info-circle', 'description' => 'About this site'],
+					['name' => 'Help', 'url' => '/help', 'icon' => 'bi-question-circle', 'description' => 'How to use the site'],
+				];
+				@endphp
+
+				@foreach($policyModules as $module)
+				<a href="{{ url($module['url']) }}" class="block p-4 bg-muted/50 hover:bg-muted rounded-lg border border-border hover:border-primary transition-all group">
+					<div class="flex items-start gap-3">
+						<div class="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+							<i class="{{ $module['icon'] }} text-primary text-xl"></i>
+						</div>
+						<div class="flex-1">
+							<h3 class="font-semibold text-foreground group-hover:text-primary transition-colors">{{ $module['name'] }}</h3>
+							<p class="text-sm text-muted-foreground mt-1">{{ $module['description'] }}</p>
+						</div>
+					</div>
+				</a>
+				@endforeach
+			</div>
+		</div>
+	</div>
+
 	<!-- Admin Modules -->
 	@can('admin')
 	<div class="card-tw">
