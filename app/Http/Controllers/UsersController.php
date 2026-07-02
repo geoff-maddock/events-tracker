@@ -402,7 +402,8 @@ class UsersController extends Controller
         $input['setting_public_profile'] = isset($input['setting_public_profile']) ? 1 : 0;
 
         $user->fill($input)->save();
-        $user->profile->fill($input)->save();
+        // Some legacy users have no profile row yet (EVENTREPO-VW); create one on demand.
+        $user->profile()->firstOrCreate([])->fill($input)->save();
 
         if ($request->has('group_list')) {
             $user->groups()->sync($request->input('group_list', []));
