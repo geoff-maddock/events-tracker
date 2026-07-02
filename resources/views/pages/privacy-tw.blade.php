@@ -44,7 +44,7 @@
                 </li>
                 <li>
                     <strong class="text-foreground">Facebook Data.</strong>
-                    When you auth using the FB integration, we collect the account ID for future authentications. When you grant access to your attended events, and choose to import that data, we store public data related to FB events you are attending. This data is collected to allow you to log in more easily as well as share your event information more easily.
+                    We no longer offer any Facebook integration. The app does not collect, use, or store any private Facebook data, and no previously imported private Facebook data is retained.
                 </li>
                 <li>
                     <strong class="text-foreground">Settings and Account information.</strong>

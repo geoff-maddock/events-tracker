@@ -39,6 +39,14 @@
         </div>
     @endif
 
+    <div class="card-tw p-4 md:p-6 mt-4 md:mt-6">
+        <h2 class="text-lg font-semibold text-foreground mb-3">Policies &amp; Info</h2>
+        <ul class="space-y-2 text-muted-foreground">
+            <li><a href="{{ url('/privacy') }}" class="text-primary hover:underline"><i class="bi bi-shield-check mr-2"></i>Privacy Policy</a></li>
+            <li><a href="{{ url('/tos') }}" class="text-primary hover:underline"><i class="bi bi-file-earmark-text mr-2"></i>Terms of Service</a></li>
+        </ul>
+    </div>
+
     @include('partials.social-footer-tw')
 </div>
 @stop
