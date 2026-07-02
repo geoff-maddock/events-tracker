@@ -35,6 +35,11 @@
 					['name' => 'Threads', 'url' => '/threads', 'icon' => 'bi-chat-dots', 'description' => 'Forum discussions'],
 					['name' => 'Users', 'url' => '/users', 'icon' => 'bi-person', 'description' => 'Community members'],
 				];
+				$notificationsUnread = 0;
+				if (Auth::check()) {
+					$notificationsUnread = Auth::user()->unreadNotifications()->count();
+					$publicModules[] = ['name' => 'Notifications', 'url' => '/job-status', 'icon' => 'bi-bell', 'description' => 'Background jobs and notifications'];
+				}
 				sort($publicModules);
 				@endphp
 
@@ -45,7 +50,12 @@
 							<i class="{{ $module['icon'] }} text-primary text-xl"></i>
 						</div>
 						<div class="flex-1">
-							<h3 class="font-semibold text-foreground group-hover:text-primary transition-colors">{{ $module['name'] }}</h3>
+							<h3 class="font-semibold text-foreground group-hover:text-primary transition-colors">
+								{{ $module['name'] }}
+								@if($module['url'] === '/job-status' && $notificationsUnread > 0)
+								<span class="ml-2 inline-flex items-center justify-center text-xs font-semibold rounded-full bg-red-600 text-white px-2 py-0.5">{{ $notificationsUnread }}</span>
+								@endif
+							</h3>
 							<p class="text-sm text-muted-foreground mt-1">{{ $module['description'] }}</p>
 						</div>
 					</div>
