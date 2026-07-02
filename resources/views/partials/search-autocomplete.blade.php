@@ -8,7 +8,12 @@
 
     Optional:
       - $inputId  -- DOM id for the input
-      - $value    -- prefilled keyword
+
+    The input is prefilled from an ambient $search variable when one is in
+    scope (e.g. the /search results page); otherwise it starts empty. Do NOT
+    prefill from an ambient $value: this partial is pulled into the layout via
+    @include, which forwards get_defined_vars(), so a leaked loop variable
+    (e.g. @foreach(... as $value => $label)) would otherwise land in the box.
 
     The overlay variant is teleported to <body> via x-teleport so it escapes
     every potential ancestor stacking context (header, sidebar, layout flex
@@ -17,7 +22,7 @@
 @php
     $variant = $variant ?? 'tw';
     $inputId = $inputId ?? 'search-autocomplete-' . uniqid();
-    $value   = $value ?? (isset($search) ? $search : '');
+    $value   = isset($search) ? $search : '';
 
     $inputClass = match ($variant) {
         'tw-mobile' => 'w-full pl-8 pr-3 py-1.5 bg-transparent border border-input rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring',
