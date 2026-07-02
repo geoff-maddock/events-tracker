@@ -132,15 +132,6 @@
             <i class="bi bi-person-circle text-lg"></i>
             <a href="{{ url('/users/'.Auth::user()->id) }}" class="hover:text-foreground">{{ Auth::user()->name }}</a>
         </div>
-        <!-- Notifications -->
-        @php $unreadCount = Auth::user()->unreadNotifications()->count(); @endphp
-        <a href="{{ route('job-status.index') }}" class="nav-item-tw mt-1 {{ Request::is('job-status*') ? 'nav-item-active-tw' : '' }}">
-            <i class="bi bi-bell text-lg"></i>
-            <span>Notifications</span>
-            @if ($unreadCount > 0)
-            <span class="ml-auto inline-flex items-center justify-center text-xs font-semibold rounded-full bg-red-600 text-white px-2 py-0.5">{{ $unreadCount }}</span>
-            @endif
-        </a>
         @can('admin')
         <a href="{{ route('pages.allModules') }}" class="nav-item-tw mt-1 {{ Request::is('all-modules') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-grid-3x3-gap text-lg"></i>
@@ -298,15 +289,6 @@
             <i class="bi bi-person-circle text-lg shrink-0"></i>
             <a href="{{ url('/users/'.Auth::user()->id) }}" class="hover:text-foreground truncate">{{ Auth::user()->name }}</a>
         </div>
-        <!-- Notifications -->
-        @php $unreadCountMobile = Auth::user()->unreadNotifications()->count(); @endphp
-        <a href="{{ route('job-status.index') }}" class="nav-item-tw mt-1 {{ Request::is('job-status*') ? 'nav-item-active-tw' : '' }}">
-            <i class="bi bi-bell text-lg"></i>
-            <span>Notifications</span>
-            @if ($unreadCountMobile > 0)
-            <span class="ml-auto inline-flex items-center justify-center text-xs font-semibold rounded-full bg-red-600 text-white px-2 py-0.5">{{ $unreadCountMobile }}</span>
-            @endif
-        </a>
         @can('admin')
         <a href="{{ route('pages.allModules') }}" class="nav-item-tw mt-1 {{ Request::is('all-modules') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-grid-3x3-gap text-lg"></i>

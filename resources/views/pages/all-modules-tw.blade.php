@@ -51,6 +51,26 @@
 					</div>
 				</a>
 				@endforeach
+
+				@auth
+				@php $notificationsUnread = Auth::user()->unreadNotifications()->count(); @endphp
+				<a href="{{ route('job-status.index') }}" class="block p-4 bg-muted/50 hover:bg-muted rounded-lg border border-border hover:border-primary transition-all group">
+					<div class="flex items-start gap-3">
+						<div class="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+							<i class="bi bi-bell text-primary text-xl"></i>
+						</div>
+						<div class="flex-1">
+							<h3 class="font-semibold text-foreground group-hover:text-primary transition-colors">
+								Notifications
+								@if($notificationsUnread > 0)
+								<span class="ml-2 inline-flex items-center justify-center text-xs font-semibold rounded-full bg-red-600 text-white px-2 py-0.5">{{ $notificationsUnread }}</span>
+								@endif
+							</h3>
+							<p class="text-sm text-muted-foreground mt-1">Background jobs and notifications</p>
+						</div>
+					</div>
+				</a>
+				@endauth
 			</div>
 		</div>
 	</div>
