@@ -68,6 +68,62 @@ class UsersTest extends TestCase
     }
 
     /** @test */
+    public function an_invalid_sort_param_redirects_instead_of_500(): void
+    {
+        // /users?sort=start_at reaches orderBy() on a column that does not exist
+        // on the users table, throwing a QueryException. Rather than 500, the
+        // exception handler should strip the sort params, flash a notice, and
+        // redirect back to the list (#1942).
+        $this->withExceptionHandling();
+
+        $admin = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $admin->assignGroup('admin');
+        $this->actingAs($admin);
+
+        $response = $this->get('/users?limit=25&sort=start_at&direction=desc');
+
+        // Redirects back to the list with the bad sort params stripped but other
+        // params (e.g. limit) preserved.
+        $response->assertStatus(302);
+        $location = $response->headers->get('Location');
+        $this->assertStringStartsWith(route('users.index'), $location);
+        $this->assertStringNotContainsString('sort', $location);
+        $this->assertStringNotContainsString('direction', $location);
+        $response->assertSessionHas('flash_message');
+    }
+
+    /** @test */
+    public function following_the_invalid_sort_redirect_renders_the_list(): void
+    {
+        $this->withExceptionHandling();
+
+        $admin = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $admin->assignGroup('admin');
+        $this->actingAs($admin);
+
+        // The redirect target carries no sort params, so the list falls back to
+        // the default order and renders normally.
+        $response = $this->get(route('users.index'));
+
+        $response->assertStatus(200);
+    }
+
+    /** @test */
+    public function a_valid_sort_param_still_works(): void
+    {
+        $this->withExceptionHandling();
+
+        $admin = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $admin->assignGroup('admin');
+        $this->actingAs($admin);
+
+        // A real column and a computed/aliased column (last_active, added via
+        // addSelect) must both continue to sort without error.
+        $this->get('/users?sort=name&direction=asc')->assertStatus(200);
+        $this->get('/users?sort=last_active&direction=desc')->assertStatus(200);
+    }
+
+    /** @test */
     public function updating_a_user_with_no_profile_row_does_not_error(): void
     {
         // UserFactory doesn't create a profile row (EVENTREPO-VW regression).
