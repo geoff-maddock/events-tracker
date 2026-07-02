@@ -562,7 +562,10 @@ class EntitiesController extends Controller
         $query = $listResultSet->getList();
 
         // Get the entities
+        // roles is eager-loaded because index-json-ld calls getSchemaType(), which checks
+        // hasRole() per entity; without it that's an N+1 query per row (EVENTREPO-VN).
         $entities = $query
+            ->with('roles')
             ->paginate($listResultSet->getLimit());
 
         // Save the updated session
