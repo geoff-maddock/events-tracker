@@ -154,7 +154,7 @@
             overlay: false,
             loading: false,
             controller: null,
-            results: { events: [], entities: [], series: [], tags: [] },
+            results: { events: [], entities: [], series: [], tags: [], modules: [] },
             activeKey: null,
             activeIdx: -1,
             _savedBodyOverflow: '',
@@ -170,6 +170,7 @@
                     { key: 'entities', label: 'Entities', items: this.results.entities || [] },
                     { key: 'series',   label: 'Series',   items: this.results.series   || [] },
                     { key: 'tags',     label: 'Tags',     items: this.results.tags     || [] },
+                    { key: 'modules',  label: 'Pages',    items: this.results.modules  || [] },
                 ];
             },
 
@@ -212,7 +213,7 @@
             async fetch() {
                 const q = this.query.trim();
                 if (q.length < 3) {
-                    this.results = { events: [], entities: [], series: [], tags: [] };
+                    this.results = { events: [], entities: [], series: [], tags: [], modules: [] };
                     if (!this.overlay) this.open = false;
                     return;
                 }
@@ -229,7 +230,7 @@
                     if (!res.ok) throw new Error('search request failed');
                     const data = await res.json();
                     this.results = Object.assign(
-                        { events: [], entities: [], series: [], tags: [] },
+                        { events: [], entities: [], series: [], tags: [], modules: [] },
                         data.results || {}
                     );
                     this.activeKey = null;

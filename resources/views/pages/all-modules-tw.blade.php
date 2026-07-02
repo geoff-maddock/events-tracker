@@ -20,25 +20,11 @@
 			</h2>
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				@php
-				$publicModules = [
-					['name' => 'Activity', 'url' => '/activity', 'icon' => 'bi-activity', 'description' => 'View recent site activity'],
-					['name' => 'Calendar', 'url' => '/calendar', 'icon' => 'bi-calendar3', 'description' => 'Browse events by calendar'],
-					['name' => 'Entities', 'url' => '/entities', 'icon' => 'bi-people', 'description' => 'Artists, venues, promoters'],
-					['name' => 'Events', 'url' => '/events', 'icon' => 'bi-calendar-event', 'description' => 'Concerts and club nights'],
-					['name' => 'Photos', 'url' => '/photos', 'icon' => 'bi-images', 'description' => 'Browse event photos'],
-					['name' => 'Popular', 'url' => '/popular', 'icon' => 'bi-graph-up-arrow', 'description' => 'Popular events, entities, and tags'],
-					['name' => 'Posts', 'url' => '/posts', 'icon' => 'bi-file-text', 'description' => 'Community posts'],
-					['name' => 'Reviews', 'url' => '/reviews', 'icon' => 'bi-star', 'description' => 'Event reviews'],
-					['name' => 'Search', 'url' => '/search', 'icon' => 'bi-search', 'description' => 'Search events, entities, series, and more'],
-					['name' => 'Series', 'url' => '/series', 'icon' => 'bi-collection', 'description' => 'Recurring event series'],
-					['name' => 'Tags', 'url' => '/tags', 'icon' => 'bi-tags', 'description' => 'Browse by tags'],
-					['name' => 'Threads', 'url' => '/threads', 'icon' => 'bi-chat-dots', 'description' => 'Forum discussions'],
-					['name' => 'Users', 'url' => '/users', 'icon' => 'bi-person', 'description' => 'Community members'],
-				];
+				$publicModules = config('modules.public', []);
 				$notificationsUnread = 0;
 				if (Auth::check()) {
 					$notificationsUnread = Auth::user()->unreadNotifications()->count();
-					$publicModules[] = ['name' => 'Notifications', 'url' => '/job-status', 'icon' => 'bi-bell', 'description' => 'Background jobs and notifications'];
+					$publicModules = array_merge($publicModules, config('modules.auth', []));
 				}
 				sort($publicModules);
 				@endphp
@@ -74,12 +60,7 @@
 			</h2>
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				@php
-				$policyModules = [
-					['name' => 'Privacy Policy', 'url' => '/privacy', 'icon' => 'bi-shield-check', 'description' => 'How we handle your data'],
-					['name' => 'Terms of Service', 'url' => '/tos', 'icon' => 'bi-file-earmark-text', 'description' => 'Terms and conditions of use'],
-					['name' => 'About', 'url' => '/about', 'icon' => 'bi-info-circle', 'description' => 'About this site'],
-					['name' => 'Help', 'url' => '/help', 'icon' => 'bi-question-circle', 'description' => 'How to use the site'],
-				];
+				$policyModules = config('modules.policy', []);
 				@endphp
 
 				@foreach($policyModules as $module)
@@ -109,17 +90,7 @@
 			</h2>
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				@php
-				$adminModules = [
-					['name' => 'Activity Graph', 'url' => '/activity/graph', 'icon' => 'bi-activity', 'description' => 'Visualize and export activity trends'],
-					['name' => 'Blogs', 'url' => '/blogs', 'icon' => 'bi-journal-text', 'description' => 'Manage blog posts'],
-					['name' => 'Categories', 'url' => '/categories', 'icon' => 'bi-folder', 'description' => 'Manage forum categories'],
-					['name' => 'Entity Types', 'url' => '/entity-types', 'icon' => 'bi-diagram-3', 'description' => 'Manage entity types'],
-					['name' => 'Forums', 'url' => '/forums', 'icon' => 'bi-chat-square-text', 'description' => 'Manage forum sections'],
-					['name' => 'Groups', 'url' => '/groups', 'icon' => 'bi-people-fill', 'description' => 'Manage user groups'],
-					['name' => 'Menus', 'url' => '/menus', 'icon' => 'bi-menu-button-wide', 'description' => 'Manage navigation menus'],
-					['name' => 'Permissions', 'url' => '/permissions', 'icon' => 'bi-key', 'description' => 'Manage permissions'],
-					['name' => 'Roles', 'url' => '/roles', 'icon' => 'bi-person-badge', 'description' => 'Manage entity roles'],
-				];
+				$adminModules = config('modules.admin', []);
 				sort($adminModules);
 				@endphp
 
