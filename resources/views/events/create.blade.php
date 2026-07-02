@@ -83,8 +83,7 @@
             </div>
 
             <p class="text-sm text-muted-foreground mb-4">
-                Upload an event flyer and the app will attempt to extract the event details and pre-fill the form below.
-                You can review and edit the information before saving.
+                Upload a primary event image here and optionally use the "Analyze Image" button to automatically pre-fill the event form with details extracted from the flyer.
             </p>
 
             <div id="flyer-status" class="hidden text-sm mb-4 p-3 rounded-md"></div>

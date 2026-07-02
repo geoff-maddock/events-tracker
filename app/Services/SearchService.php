@@ -26,6 +26,10 @@ class SearchService
      */
     private const FULLTEXT_MIN_LENGTH = 3;
 
+    public function __construct(private readonly ModuleRegistry $moduleRegistry = new ModuleRegistry)
+    {
+    }
+
     /**
      * Run all six section searches and return an associative array of paginators.
      *
@@ -42,6 +46,8 @@ class SearchService
      *   usersCount: int,
      *   threads: LengthAwarePaginator,
      *   threadsCount: int,
+     *   modules: \Illuminate\Support\Collection<int, array{name:string, url:string, icon:string, description:string}>,
+     *   modulesCount: int,
      * }
      */
     public function all(string $keyword, ?User $user, int $perPage = 20): array
@@ -55,11 +61,12 @@ class SearchService
         $tags     = $this->tags($keyword, $perPage);
         $users    = $this->users($keyword, $perPage);
         $threads  = $this->threads($keyword, $perPage);
+        $modules  = collect($this->moduleRegistry->search($keyword, $user));
 
         $tagsCount    = $this->countLike(Tag::query(), ['name'], $keyword);
         $usersCount   = $this->countLike(User::query(), ['name'], $keyword);
 
-        $this->logSearch($keyword, $user, 'web', $events->total() + $series->total() + $entities->total() + $tagsCount + $usersCount + $threads->total());
+        $this->logSearch($keyword, $user, 'web', $events->total() + $series->total() + $entities->total() + $tagsCount + $usersCount + $threads->total() + $modules->count());
 
         return [
             'events'        => $events,
@@ -74,6 +81,8 @@ class SearchService
             'usersCount'    => $usersCount,
             'threads'       => $threads,
             'threadsCount'  => $threads->total(),
+            'modules'       => $modules,
+            'modulesCount'  => $modules->count(),
         ];
     }
 
@@ -231,7 +240,7 @@ class SearchService
     /**
      * Lightweight grouped typeahead results: flat arrays per type.
      *
-     * @param  array<int, string>|null  $types  Subset of ['events','entities','series','tags']. Null = all four.
+     * @param  array<int, string>|null  $types  Subset of ['events','entities','series','tags','modules']. Null = all.
      * @return array{
      *   query: string,
      *   results: array<string, list<array{id:int,name:string,slug:?string,subtitle:?string,url:string}>>,
@@ -240,7 +249,7 @@ class SearchService
     public function lite(string $keyword, ?User $user, int $limit = 6, ?array $types = null): array
     {
         $keyword = trim(preg_replace('/\s+/', ' ', $keyword) ?? '');
-        $types = $types ?: ['events', 'entities', 'series', 'tags'];
+        $types = $types ?: ['events', 'entities', 'series', 'tags', 'modules'];
         $results = [];
 
         if ($keyword === '') {
@@ -313,6 +322,17 @@ class SearchService
                 'subtitle' => null,
                 'url'      => url('/tags/' . $t->slug),
             ])->all();
+        }
+
+        if (in_array('modules', $types, true)) {
+            $modules = array_slice($this->moduleRegistry->search($keyword, $user), 0, $limit);
+            $results['modules'] = array_map(fn ($module, $index) => [
+                'id'       => $index,
+                'name'     => $module['name'],
+                'slug'     => null,
+                'subtitle' => $module['description'],
+                'url'      => url($module['url']),
+            ], $modules, array_keys($modules));
         }
 
         $totalCount = array_sum(array_map('count', $results));

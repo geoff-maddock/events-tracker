@@ -33,7 +33,7 @@ class SearchController extends Controller
 
         $types = null;
         if (! empty($validated['types'])) {
-            $allowed = ['events', 'entities', 'series', 'tags'];
+            $allowed = ['events', 'entities', 'series', 'tags', 'modules'];
             $requested = array_map('trim', explode(',', $validated['types']));
             $types = array_values(array_intersect($allowed, $requested)) ?: null;
         }
