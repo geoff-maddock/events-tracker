@@ -14,6 +14,13 @@
 
 <!-- Jump Links -->
 <div class="mb-6 flex flex-wrap gap-2">
+	@if (isset($events) && count($events) > 0)
+	<a href="#events-results" class="inline-flex items-center px-4 py-2 bg-card border-2 border-primary text-foreground rounded-lg hover:bg-accent transition-colors text-sm font-medium">
+		<i class="bi bi-calendar-event mr-2"></i>
+		Events ({{ $eventsCount }})
+	</a>
+	@endif
+
 	@if (isset($modulesCount) && $modulesCount > 0)
 	<a href="#modules-results" class="inline-flex items-center px-4 py-2 bg-card border-2 border-primary text-foreground rounded-lg hover:bg-accent transition-colors text-sm font-medium">
 		<i class="bi bi-grid-3x3-gap mr-2"></i>
@@ -27,14 +34,7 @@
 		Entities ({{ $entitiesCount }})
 	</a>
 	@endif
-	
-	@if (isset($events) && count($events) > 0)
-	<a href="#events-results" class="inline-flex items-center px-4 py-2 bg-card border-2 border-primary text-foreground rounded-lg hover:bg-accent transition-colors text-sm font-medium">
-		<i class="bi bi-calendar-event mr-2"></i>
-		Events ({{ $eventsCount }})
-	</a>
-	@endif
-	
+
 	@if (isset($series) && count($series) > 0)
 	<a href="#series-results" class="inline-flex items-center px-4 py-2 bg-card border-2 border-primary text-foreground rounded-lg hover:bg-accent transition-colors text-sm font-medium">
 		<i class="bi bi-collection mr-2"></i>
@@ -58,68 +58,6 @@
 </div>
 
 <div class="space-y-6">
-	<!-- Pages / Modules Results -->
-	@if (isset($modules) && $modulesCount > 0)
-	<div id="modules-results" class="card-tw scroll-mt-6">
-		<div class="p-4 border-b border-border flex items-center justify-between">
-			<div class="flex items-center gap-3">
-				<h2 class="text-xl font-semibold text-foreground">Pages</h2>
-				<span class="badge-tw bg-muted text-foreground">{{ $modulesCount }}</span>
-			</div>
-			<button class="text-muted-foreground hover:text-foreground" onclick="toggleSection('search-modules')">
-				<i class="bi bi-eye-fill"></i>
-			</button>
-		</div>
-		<div id="search-modules" class="p-4">
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-				@foreach($modules as $module)
-				<a href="{{ url($module['url']) }}" class="block p-4 bg-muted/50 hover:bg-muted rounded-lg border border-border hover:border-primary transition-all group">
-					<div class="flex items-start gap-3">
-						<div class="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
-							<i class="{{ $module['icon'] }} text-primary text-xl"></i>
-						</div>
-						<div class="flex-1">
-							<h3 class="font-semibold text-foreground group-hover:text-primary transition-colors">{{ $module['name'] }}</h3>
-							<p class="text-sm text-muted-foreground mt-1">{{ $module['description'] }}</p>
-						</div>
-					</div>
-				</a>
-				@endforeach
-			</div>
-		</div>
-	</div>
-	@endif
-
-	<!-- Entities Results -->
-	@if (isset($entities) && $entitiesCount > 0)
-	<div id="entities-results" class="card-tw scroll-mt-6">
-		<div class="p-4 border-b border-border flex items-center justify-between">
-			<div class="flex items-center gap-3">
-				<h2 class="text-xl font-semibold text-foreground">Entities</h2>
-				<span class="badge-tw bg-muted text-foreground">{{ $entitiesCount }}</span>
-			</div>
-			<button class="text-muted-foreground hover:text-foreground" onclick="toggleSection('search-entities')">
-				<i class="bi bi-eye-fill"></i>
-			</button>
-		</div>
-		<div id="search-entities" class="p-4">
-			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-				@foreach($entities as $entity)
-				@include('entities.card-tw', ['entity' => $entity])
-				@endforeach
-			</div>
-			<div class="mt-4">
-				{!! $entities->appends(['keyword' => $search])->links('vendor.pagination.tailwind') !!}
-			</div>
-		</div>
-	</div>
-	@else
-	<div class="card-tw p-6 text-center">
-		<i class="bi bi-people text-4xl text-muted-foreground mb-3"></i>
-		<p class="text-muted-foreground">No matching entities found.</p>
-	</div>
-	@endif
-
 	<!-- Events Results -->
 	@if (isset($events) && count($events) > 0)
 	<div id="events-results" class="card-tw scroll-mt-6">
@@ -182,6 +120,68 @@
 	<div class="card-tw p-6 text-center">
 		<i class="bi bi-calendar-x text-4xl text-muted-foreground mb-3"></i>
 		<p class="text-muted-foreground">No matching events found.</p>
+	</div>
+	@endif
+
+	<!-- Pages / Modules Results -->
+	@if (isset($modules) && $modulesCount > 0)
+	<div id="modules-results" class="card-tw scroll-mt-6">
+		<div class="p-4 border-b border-border flex items-center justify-between">
+			<div class="flex items-center gap-3">
+				<h2 class="text-xl font-semibold text-foreground">Pages</h2>
+				<span class="badge-tw bg-muted text-foreground">{{ $modulesCount }}</span>
+			</div>
+			<button class="text-muted-foreground hover:text-foreground" onclick="toggleSection('search-modules')">
+				<i class="bi bi-eye-fill"></i>
+			</button>
+		</div>
+		<div id="search-modules" class="p-4">
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+				@foreach($modules as $module)
+				<a href="{{ url($module['url']) }}" class="block p-4 bg-muted/50 hover:bg-muted rounded-lg border border-border hover:border-primary transition-all group">
+					<div class="flex items-start gap-3">
+						<div class="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+							<i class="{{ $module['icon'] }} text-primary text-xl"></i>
+						</div>
+						<div class="flex-1">
+							<h3 class="font-semibold text-foreground group-hover:text-primary transition-colors">{{ $module['name'] }}</h3>
+							<p class="text-sm text-muted-foreground mt-1">{{ $module['description'] }}</p>
+						</div>
+					</div>
+				</a>
+				@endforeach
+			</div>
+		</div>
+	</div>
+	@endif
+
+	<!-- Entities Results -->
+	@if (isset($entities) && $entitiesCount > 0)
+	<div id="entities-results" class="card-tw scroll-mt-6">
+		<div class="p-4 border-b border-border flex items-center justify-between">
+			<div class="flex items-center gap-3">
+				<h2 class="text-xl font-semibold text-foreground">Entities</h2>
+				<span class="badge-tw bg-muted text-foreground">{{ $entitiesCount }}</span>
+			</div>
+			<button class="text-muted-foreground hover:text-foreground" onclick="toggleSection('search-entities')">
+				<i class="bi bi-eye-fill"></i>
+			</button>
+		</div>
+		<div id="search-entities" class="p-4">
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+				@foreach($entities as $entity)
+				@include('entities.card-tw', ['entity' => $entity])
+				@endforeach
+			</div>
+			<div class="mt-4">
+				{!! $entities->appends(['keyword' => $search])->links('vendor.pagination.tailwind') !!}
+			</div>
+		</div>
+	</div>
+	@else
+	<div class="card-tw p-6 text-center">
+		<i class="bi bi-people text-4xl text-muted-foreground mb-3"></i>
+		<p class="text-muted-foreground">No matching entities found.</p>
 	</div>
 	@endif
 
