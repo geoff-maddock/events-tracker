@@ -3285,6 +3285,11 @@ class EventsController extends Controller
 
         $events = $user->followedEvents();
 
+        // Eager-load the relations ICalBuilder touches per event (venue, the
+        // promoter and its contacts, and photos for the primary image) so the
+        // feed doesn't fire a query per event (EVENTREPO-T6 N+1).
+        $events->load(['venue', 'promoter.contacts', 'photos']);
+
         // create a calendar object for the user
         $calendar = $iCalBuilder->buildCalendar('arcane-city-interested-ical.ics', $events);
 
