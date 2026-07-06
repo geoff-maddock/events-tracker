@@ -13,6 +13,7 @@ use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\SessionStore\ListParameterStore;
 use Illuminate\Session\Store;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
@@ -23,12 +24,37 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 class AppServiceProvider extends ServiceProvider
 {
     /**
+     * Upper bound for the resolved pagination page number.
+     *
+     * When rendering pagination links Laravel builds a range() of page URLs;
+     * a crafted `?page=<huge>` (e.g. page=792390418) makes that range()
+     * allocate gigabytes and exhaust the request's memory limit before any
+     * output is produced (EVENTREPO-WB). Clamp the page to a value far beyond
+     * any real list depth. Mirrors the MAX_LIMIT page-size clamp in
+     * ListQueryParameters, which hardened the sibling `?limit=<huge>` vector.
+     */
+    public const MAX_PAGE = 100000;
+
+    /**
      * Bootstrap any application services.
      *
      * @return void
      */
     public function boot()
     {
+        // Clamp the resolved pagination page so a hostile ?page value can't
+        // blow up range()/URL generation. Replicates Laravel's default
+        // resolver (valid int >= 1, else 1) and adds the upper bound.
+        Paginator::currentPageResolver(function (string $pageName = 'page') {
+            $page = request()->input($pageName);
+
+            if (filter_var($page, FILTER_VALIDATE_INT) !== false && (int) $page >= 1) {
+                return min((int) $page, self::MAX_PAGE);
+            }
+
+            return 1;
+        });
+
         Auth::extend('session-1yr', function ($app, $name, array $config) {
             $guard = new RememberMeSessionGuard(
                 $name,
