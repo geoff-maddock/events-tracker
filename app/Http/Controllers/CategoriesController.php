@@ -126,6 +126,63 @@ class CategoriesController extends Controller
     }
 
     /**
+     * Display a listing of all categories.
+     *
+     * Backs the `categories/all` route, mirroring index() (EVENTREPO-VX: the
+     * route referenced a non-existent indexAll method).
+     */
+    public function indexAll(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder
+    ): string {
+        // initialized listParamSessionStore with baseindex key
+        $listParamSessionStore->setBaseIndex('internal_category');
+        $listParamSessionStore->setKeyPrefix('internal_category_index');
+
+        // set the index tab in the session
+        $listParamSessionStore->setIndexTab(action([CategoriesController::class, 'index']));
+
+        // create the base query including any required joins; needs select to make sure only event entities are returned
+        $baseQuery = ThreadCategory::query()->select('thread_categories.*');
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultLimit($this->defaultLimit)
+            ->setDefaultSort($this->defaultSortCriteria);
+
+        // get the result set from the builder
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        // get the query builder
+        $query = $listResultSet->getList();
+
+        // query and paginate the categories
+        $categories = $query->paginate($listResultSet->getLimit());
+
+        // saves the updated session
+        $listParamSessionStore->save();
+
+        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+
+        return view('categories.index-tw')
+            ->with(array_merge(
+                [
+                    'limit' => $listResultSet->getLimit(),
+                    'sort' => $listResultSet->getSort(),
+                    'direction' => $listResultSet->getSortDirection(),
+                    'hasFilter' => $this->hasFilter,
+                    'filters' => $listResultSet->getFilters()
+                ],
+                $this->getFilterOptions(),
+                $this->getListControlOptions()
+            ))
+            ->with(compact('categories'))
+            ->render();
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function filter(
