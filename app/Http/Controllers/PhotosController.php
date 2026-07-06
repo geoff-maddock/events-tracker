@@ -121,7 +121,11 @@ class PhotosController extends Controller
         $query = $listResultSet->getList();
 
         // get the photos
+        // Eager-load each photo's events and their venue; the grid card (photos/cell-tw)
+        // reads $photo->events->first()->venue per row, which otherwise fires an N+1
+        // lookup on the entities table (the venue) for every photo (EVENTREPO-WD).
         $photos = $query
+            ->with('events.venue')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -187,7 +191,11 @@ class PhotosController extends Controller
         $query = $listResultSet->getList();
 
         // get the photos
+        // Eager-load each photo's events and their venue; the grid card (photos/cell-tw)
+        // reads $photo->events->first()->venue per row, which otherwise fires an N+1
+        // lookup on the entities table (the venue) for every photo (EVENTREPO-WD).
         $photos = $query
+            ->with('events.venue')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -247,7 +255,11 @@ class PhotosController extends Controller
         $query = $listResultSet->getList();
 
         // get the photos
+        // Eager-load each photo's events and their venue; the grid card (photos/cell-tw)
+        // reads $photo->events->first()->venue per row, which otherwise fires an N+1
+        // lookup on the entities table (the venue) for every photo (EVENTREPO-WD).
         $photos = $query
+            ->with('events.venue')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
