@@ -2443,7 +2443,7 @@ class EventsController extends Controller
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
-            ->setQueryBuilder(Event::query())
+            ->setQueryBuilder(Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'))
             ->setDefaultSort(['events.start_at' => 'desc'])
             ->setParentFilter(['tag' => $slug]);
 
@@ -2506,7 +2506,7 @@ class EventsController extends Controller
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
-            ->setQueryBuilder(Event::query())
+            ->setQueryBuilder(Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'))
             ->setDefaultSort(['events.start_at' => 'desc'])
             ->setParentFilter(['related' => $related->slug]);
 
@@ -2568,7 +2568,7 @@ class EventsController extends Controller
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
-            ->setQueryBuilder(Event::query())
+            ->setQueryBuilder(Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'))
             ->setDefaultSort(['evebts.start_at' => 'desc']);
 
         // get the result set from the builder
@@ -2635,7 +2635,7 @@ class EventsController extends Controller
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
-            ->setQueryBuilder(Event::query())
+            ->setQueryBuilder(Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'))
             ->setDefaultSort(['events.start_at' => 'desc']);
 
         // get the result set from the builder
@@ -2771,7 +2771,7 @@ class EventsController extends Controller
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
-            ->setQueryBuilder(Event::query())
+            ->setQueryBuilder(Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'))
             ->setDefaultSort(['events.start_at' => 'desc'])
             ->setParentFilter(['series' => $slug]);
 
