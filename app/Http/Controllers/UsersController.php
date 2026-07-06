@@ -123,7 +123,8 @@ class UsersController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
-            ->setDefaultSort($this->defaultSortCriteria);
+            ->setDefaultSort($this->defaultSortCriteria)
+            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']));
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
@@ -186,7 +187,8 @@ class UsersController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['users.name' => 'asc']);
+            ->setDefaultSort(['users.name' => 'asc'])
+            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']));
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();

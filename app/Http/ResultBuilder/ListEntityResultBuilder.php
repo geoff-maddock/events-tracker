@@ -30,6 +30,8 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
 
     private array $multiSort;
 
+    private array $allowedSortFields = [];
+
     private ?string $appliedSortField;
 
     private ?string $appliedSortDirection;
@@ -81,6 +83,22 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
     public function setDefaultSort(array $defaultSort): ListEntityResultBuilder
     {
         $this->defaultSort = $defaultSort;
+
+        return $this;
+    }
+
+    /**
+     * Restrict which sort fields may reach orderBy(). A syntactically valid
+     * identifier (e.g. "start_at") can still be a column that doesn't exist on
+     * the current table, which crashes the query (EVENTREPO-WC). When a
+     * non-empty allowlist is set, any field outside it falls back to the
+     * default sort. Pass the keys of the controller's sortOptions.
+     *
+     * @param array<int, string> $allowedSortFields
+     */
+    public function setAllowedSortFields(array $allowedSortFields): ListEntityResultBuilder
+    {
+        $this->allowedSortFields = $allowedSortFields;
 
         return $this;
     }
@@ -193,8 +211,19 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
      */
     private function isValidSortField(?string $field): bool
     {
-        return is_string($field)
-            && preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)?$/', $field) === 1;
+        if (!is_string($field)
+            || preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)?$/', $field) !== 1) {
+            return false;
+        }
+
+        // When an allowlist is configured, the field must be one of the columns
+        // the caller actually exposes for sorting; otherwise a valid-looking but
+        // non-existent column (e.g. a stale session sort) would reach orderBy().
+        if (!empty($this->allowedSortFields)) {
+            return in_array($field, $this->allowedSortFields, true);
+        }
+
+        return true;
     }
 
     public function setMultiSort(array $multiSort): void
