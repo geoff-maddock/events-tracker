@@ -248,4 +248,40 @@ class EventModelTest extends TestCase
 
         $this->assertNull($event->getEventResponse($user));
     }
+
+    public function test_slug_starting_with_digit_gets_dash_prepended(): void
+    {
+        $event = Event::factory()->create(['slug' => '123-zz-numeric-slug']);
+
+        $this->assertSame('-123-zz-numeric-slug', $event->slug);
+    }
+
+    public function test_fully_numeric_slug_gets_dash_prepended(): void
+    {
+        $event = Event::factory()->create(['slug' => '987654321']);
+
+        $this->assertSame('-987654321', $event->slug);
+    }
+
+    public function test_slug_generated_from_digit_leading_name_gets_dash_prepended(): void
+    {
+        $event = Event::factory()->make(['name' => '1984 Zz Party', 'slug' => 'placeholder']);
+        $event->slug = '';
+
+        $this->assertSame('-1984-zz-party', $event->slug);
+    }
+
+    public function test_slug_not_starting_with_digit_is_unchanged(): void
+    {
+        $event = Event::factory()->create(['slug' => 'zz-foo-123']);
+
+        $this->assertSame('zz-foo-123', $event->slug);
+    }
+
+    public function test_slug_already_dash_prefixed_is_unchanged(): void
+    {
+        $event = Event::factory()->create(['slug' => '-123-zz-already-prefixed']);
+
+        $this->assertSame('-123-zz-already-prefixed', $event->slug);
+    }
 }

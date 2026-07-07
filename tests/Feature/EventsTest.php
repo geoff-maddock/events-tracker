@@ -7,6 +7,7 @@ use App\Models\Event;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserStatus;
+use App\Models\Visibility;
 use App\Models\Events;
 use Carbon\Carbon;
 use Laravel\Dusk\Dusk;
@@ -64,6 +65,58 @@ class EventsTest extends TestCase
 
         $response->assertRedirect();
         $this->assertSame($user->id, (int) $event->fresh()->created_by);
+    }
+
+    public function testShowResolvesEventBySlugAndById()
+    {
+        $event = Event::factory()->create([
+            'slug' => 'zz-binding-test',
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+        ]);
+
+        $this->get('/events/'.$event->slug)->assertOk();
+        $this->get('/events/'.$event->id)->assertOk();
+    }
+
+    public function testShowReturns404ForIdPrefixedNonexistentSlug()
+    {
+        $this->withExceptionHandling();
+        $event = Event::factory()->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC]);
+
+        // The old orWhere('id', ...) binding let MySQL cast '<id>-no-such-slug'
+        // to the id and wrongly serve that event (issue #1964).
+        $this->get('/events/'.$event->id.'-no-such-slug')->assertNotFound();
+    }
+
+    public function testStorePrependsDashToDigitLeadingSlug()
+    {
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+
+        $this->actingAs($user)->post('/events', [
+            'name' => '1984 Test Party',
+            'slug' => '1984-test-party',
+            'start_at' => '2026-08-01 20:00:00',
+            'event_type_id' => 1,
+            'visibility_id' => 1,
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('events', ['slug' => '-1984-test-party']);
+        $this->assertDatabaseMissing('events', ['slug' => '1984-test-party']);
+    }
+
+    public function testStoreRejectsDigitLeadingSlugCollidingWithDashPrefixedSlug()
+    {
+        $this->withExceptionHandling();
+        Event::factory()->create(['slug' => '-1984-test-party']);
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+
+        $this->actingAs($user)->post('/events', [
+            'name' => '1984 Test Party',
+            'slug' => '1984-test-party',
+            'start_at' => '2026-08-01 20:00:00',
+            'event_type_id' => 1,
+            'visibility_id' => 1,
+        ])->assertSessionHasErrors('slug');
     }
 
     /**
