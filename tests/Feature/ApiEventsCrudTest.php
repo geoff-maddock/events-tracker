@@ -55,6 +55,18 @@ class ApiEventsCrudTest extends TestCase
         $this->assertSame($this->user->id, $event->created_by);
     }
 
+    public function test_store_prepends_dash_to_digit_leading_slug(): void
+    {
+        $response = $this->postJson('/api/events', $this->validPayload([
+            'name' => 'ZZ-Numeric-Slug-Event',
+            'slug' => '1984-zz-numeric-slug',
+        ]));
+
+        $response->assertOk();
+        $this->assertDatabaseHas('events', ['slug' => '-1984-zz-numeric-slug']);
+        $this->assertDatabaseMissing('events', ['slug' => '1984-zz-numeric-slug']);
+    }
+
     public function test_store_rejects_invalid_payload(): void
     {
         $response = $this->postJson('/api/events', ['name' => 'x']);
@@ -108,6 +120,21 @@ class ApiEventsCrudTest extends TestCase
 
         $response->assertOk();
         $this->assertSame('ZZ-Patched-Only-Name', $event->fresh()->name);
+    }
+
+    public function test_patch_prepends_dash_to_digit_leading_slug(): void
+    {
+        $event = Event::factory()->create([
+            'created_by' => $this->user->id,
+            'slug' => 'zz-patch-slug-event-'.uniqid(),
+        ]);
+
+        $response = $this->patchJson('/api/events/'.$event->slug, [
+            'slug' => '1984-zz-patched-slug',
+        ]);
+
+        $response->assertOk();
+        $this->assertSame('-1984-zz-patched-slug', $event->fresh()->slug);
     }
 
     public function test_destroy_deletes_event_for_creator(): void

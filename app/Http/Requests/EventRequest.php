@@ -18,6 +18,19 @@ class EventRequest extends Request
     }
 
     /**
+     * Prepend a dash to digit-leading slugs before validation so the
+     * unique rule checks the value that will actually be stored.
+     */
+    protected function prepareForValidation(): void
+    {
+        $slug = $this->input('slug');
+
+        if (is_string($slug) && '' !== $slug && ctype_digit($slug[0])) {
+            $this->merge(['slug' => '-'.$slug]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array

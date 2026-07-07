@@ -180,7 +180,9 @@ class Event extends Model
 
     public function resolveRouteBinding($value, $field = null)
     {
-        return $this->where('slug', $value)->orWhere('id', $value)->firstOrFail();
+        return is_numeric($value)
+            ? $this->where('id', $value)->firstOrFail()
+            : $this->where('slug', $value)->firstOrFail();
     }
 
 
@@ -873,10 +875,15 @@ class Event extends Model
     {
         // grab the title and slugify it
         if ('' === $value) {
-            $this->attributes['slug'] = Str::slug($this->name);
-        } else {
-            $this->attributes['slug'] = $value;
+            $value = Str::slug($this->name);
         }
+
+        // slugs starting with a digit are ambiguous with id-based lookups
+        if (is_string($value) && '' !== $value && ctype_digit($value[0])) {
+            $value = '-'.$value;
+        }
+
+        $this->attributes['slug'] = $value;
     }
 
     public function getGoogleCalendarLink(): ?string
