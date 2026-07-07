@@ -900,6 +900,7 @@ class EntitiesController extends Controller
                 'eventStatus',
                 'visibility',
                 'eventType',
+                'tags',
             ])
             ->where('start_at', '>=', $filterStartAt)
             ->orderBy('start_at', 'asc');
