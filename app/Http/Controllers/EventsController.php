@@ -3020,7 +3020,7 @@ class EventsController extends Controller
         if ($event->created_by !== $this->user->id
             && !$this->user->hasGroup('admin')
             && !$this->user->hasGroup('super_admin')) {
-            flash()->error('Unauthorized', 'You cannot create a thread for this event.');
+            flash()->error('Unauthorized', 'Only the user who created this event or an admin can create a thread for it. You can still start a thread about this event from the Forum menu.');
 
             return redirect()->route('events.show', ['event' => $event->id]);
         }
