@@ -285,7 +285,7 @@ class TagsController extends Controller
 
         // get limited entities linked to the tag (8 for preview)
         $entities = Entity::getByTag($slug)
-            ->with('tags', 'events','entityType','locations','entityStatus','user')
+            ->with('tags', 'events','entityType','locations','entityStatus','user','photos')
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
                 $query->active();
