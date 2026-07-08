@@ -229,10 +229,13 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      **/
     public function getPrimaryPhoto(): ?Photo
     {
-        // get a list of events that start on the passed date
-        $primary = $this->photos()->where('photos.is_primary', '=', '1')->first();
+        // Use the eager-loaded photos when available to avoid an N+1 query when
+        // rendering many users' avatars in a list (EVENTREPO-WE).
+        if ($this->relationLoaded('photos')) {
+            return $this->photos->firstWhere('is_primary', 1);
+        }
 
-        return $primary;
+        return $this->photos()->where('photos.is_primary', '=', '1')->first();
     }
 
     /**
