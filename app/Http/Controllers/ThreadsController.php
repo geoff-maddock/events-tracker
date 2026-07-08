@@ -188,7 +188,7 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user', 'lastPost.user')
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user.photos', 'lastPost.user')
             ->withCount('posts')
             ->paginate($listResultSet->getLimit());
 
@@ -254,7 +254,7 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user', 'lastPost.user')
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user.photos', 'lastPost.user')
             ->withCount('posts')
             ->paginate($listResultSet->getLimit());
 
@@ -357,7 +357,7 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user', 'lastPost.user')
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user.photos', 'lastPost.user')
             ->withCount('posts')
             ->paginate($listResultSet->getLimit());
 
@@ -423,7 +423,7 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user', 'lastPost.user')
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user.photos', 'lastPost.user')
             ->withCount('posts')
             ->paginate($listResultSet->getLimit());
 
@@ -483,7 +483,7 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user', 'lastPost.user')
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user.photos', 'lastPost.user')
             ->withCount('posts')
             ->paginate($listResultSet->getLimit());
 
@@ -545,7 +545,7 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user', 'lastPost.user')
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user.photos', 'lastPost.user')
             ->withCount('posts')
             ->paginate($listResultSet->getLimit());
 
@@ -607,7 +607,7 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user', 'lastPost.user')
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user.photos', 'lastPost.user')
             ->withCount('posts')
             ->paginate($listResultSet->getLimit());
 
