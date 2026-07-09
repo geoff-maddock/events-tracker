@@ -193,6 +193,38 @@ class QueuedInstagramPostTest extends TestCase
         ]);
     }
 
+    public function test_carousel_upload_failure_preserves_underlying_cause(): void
+    {
+        $user = User::factory()->create(['user_status_id' => 1]);
+        $event = $this->eventWithPhoto($user);
+
+        Storage::shouldReceive('disk')->with('external')->andReturnSelf()->byDefault();
+        Storage::shouldReceive('url')->andReturn('http://example.com/test.jpg')->byDefault();
+
+        $instagram = Mockery::mock(Instagram::class);
+        $instagram->shouldReceive('getIgUserId')->andReturn(123);
+        $instagram->shouldReceive('getPageAccessToken')->andReturn('token');
+        $instagram->shouldReceive('uploadCarouselPhoto')
+            ->andThrow(new RuntimeException('IG API 400: media aspect ratio not supported'));
+
+        $poster = new InstagramEventPoster($instagram);
+
+        try {
+            $poster->postCarousel($event, $user->id);
+            $this->fail('Expected a RuntimeException to be thrown.');
+        } catch (RuntimeException $e) {
+            // The underlying cause is surfaced in the message so Sentry groups by
+            // actual failure instead of one opaque "Please try again." bucket...
+            $this->assertStringContainsString('media aspect ratio not supported', $e->getMessage());
+            // ...and the original exception is chained so the stack trace survives.
+            $this->assertNotNull($e->getPrevious());
+            $this->assertSame(
+                'IG API 400: media aspect ratio not supported',
+                $e->getPrevious()->getMessage()
+            );
+        }
+    }
+
     public function test_job_status_show_endpoint_returns_json_for_owner(): void
     {
         $user = User::factory()->create(['user_status_id' => 1]);

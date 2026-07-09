@@ -36,6 +36,27 @@ class InstagramEventPoster
     }
 
     /**
+     * Wrap a thrown SDK/HTTP exception from an upload/create call.
+     *
+     * These call-sites previously threw a hardcoded "Please try again." message
+     * and logged the real cause only at info level, so every distinct Instagram
+     * failure (rate limit, rejected image, expired token, …) collapsed into one
+     * opaque Sentry issue (EVENTREPO-VB). Surfacing the underlying message and
+     * chaining the original exception lets Sentry group by actual cause and
+     * preserves the full stack trace for triage.
+     */
+    private function uploadFailure(string $stage, Exception $e): RuntimeException
+    {
+        Log::error('Instagram '.$stage.' failed: '.$e->getMessage());
+
+        return new RuntimeException(
+            'There was an error posting to Instagram during '.$stage.'. '.$e->getMessage(),
+            0,
+            $e
+        );
+    }
+
+    /**
      * Post a single event photo to the Instagram feed.
      */
     public function postSingle(Event $event, ?int $userId): int
@@ -48,8 +69,7 @@ class InstagramEventPoster
         try {
             $igContainerId = $this->instagram->uploadPhoto($imageUrl, $caption);
         } catch (Exception $e) {
-            Log::info('Instagram single post upload error: ' . $e->getMessage());
-            throw new RuntimeException('There was an error posting to Instagram. Please try again.');
+            throw $this->uploadFailure('single photo upload', $e);
         }
 
         if ($this->instagram->checkStatus($igContainerId) === false) {
@@ -81,8 +101,7 @@ class InstagramEventPoster
         try {
             $igContainerIds[] = $this->instagram->uploadCarouselPhoto($imageUrl);
         } catch (Exception $e) {
-            Log::info('Carousel photo error: ' . $e->getMessage());
-            throw new RuntimeException('There was an error posting to Instagram. Please try again.');
+            throw $this->uploadFailure('carousel photo upload', $e);
         }
 
         // Additional photos directly attached to the event.
@@ -95,8 +114,7 @@ class InstagramEventPoster
             try {
                 $igContainerIds[] = $this->instagram->uploadCarouselPhoto($otherUrl);
             } catch (Exception $e) {
-                Log::info('Carousel photo error: ' . $e->getMessage());
-                throw new RuntimeException('There was an error posting to Instagram. Please try again.');
+                throw $this->uploadFailure('carousel photo upload', $e);
             }
         }
 
@@ -127,8 +145,7 @@ class InstagramEventPoster
         try {
             $igCarouselId = $this->instagram->createCarousel($igContainerIds, $caption);
         } catch (Exception $e) {
-            Log::info('Error creating carousel: ' . $e->getMessage());
-            throw new RuntimeException('There was an error posting carousel to Instagram. Please try again.');
+            throw $this->uploadFailure('carousel creation', $e);
         }
 
         if ($this->instagram->checkStatus($igCarouselId) === false) {
@@ -159,8 +176,7 @@ class InstagramEventPoster
         try {
             $igContainerId = $this->instagram->uploadStoryPhoto($imageUrl, $caption, $eventUrl);
         } catch (Exception $e) {
-            Log::info('Story photo upload error: ' . $e->getMessage());
-            throw new RuntimeException('There was an error posting to Instagram. Please try again.');
+            throw $this->uploadFailure('story photo upload', $e);
         }
 
         if ($this->instagram->checkStatus($igContainerId) === false) {
