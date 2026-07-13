@@ -169,7 +169,10 @@ class ThreadsController extends Controller
         $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
+        // leftJoin users so the shared 'internal_thread_index' session sort by users.name
+        // resolves here too (same class of error as EVENTREPO-W2).
         $baseQuery = Thread::join('follows', 'threads.id', '=', 'follows.object_id')
+        ->leftJoin('users', 'threads.created_by', '=', 'users.id')
         ->where('follows.object_type', '=', 'thread')
         ->where('follows.user_id', '=', $this->user->id)
         ->orderBy('follows.created_at', 'desc')
@@ -341,7 +344,11 @@ class ThreadsController extends Controller
         $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
+        // leftJoin users so the shared 'internal_thread_index' session sort by users.name
+        // (offered on the main threads index) resolves here instead of throwing
+        // "Unknown column 'users.name' in order clause" (EVENTREPO-W2).
         $baseQuery = Thread::query()
+        ->leftJoin('users', 'threads.created_by', '=', 'users.id')
         ->select('threads.*');
 
         $listEntityResultBuilder
