@@ -241,9 +241,13 @@ class EventsController extends Controller
         $query = $listResultSet->getList();
 
         // get the events
+        // Eager-load the relations ICalBuilder reads per event: venue, the
+        // promoter and its contacts (organizer lookup), and photos for
+        // getPrimaryPhoto(). Without photos/promoter.contacts each event
+        // triggers its own query while rendering the feed (EVENTREPO-T5).
         /* @phpstan-ignore-next-line */
         $events = $query->visible($this->user)
-            ->with('visibility', 'venue')
+            ->with('visibility', 'venue', 'promoter.contacts', 'photos')
             ->paginate($listResultSet->getLimit());
 
         // create a calendar object
