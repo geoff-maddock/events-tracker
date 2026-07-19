@@ -122,7 +122,7 @@ class ThreadsController extends Controller
 
         /* @phpstan-ignore-next-line */
         $threads = $query->visible($this->user)
-            ->with('visibility','entities','tags','posts','event','user')
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user.photos', 'lastPost.user')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
