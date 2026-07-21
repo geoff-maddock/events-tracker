@@ -18,7 +18,7 @@
         "@tailwindcss/line-clamp": "^0.4.4",
         "@tailwindcss/postcss": "^4.1.12",
         "autoprefixer": "^10.4.17",
-        "axios": "^1.16.0",
+        "axios": "^1.18.1",
         "cross-env": "^7",
         "eslint": "^10.0.1",
         "globals": "^17.6.0",
