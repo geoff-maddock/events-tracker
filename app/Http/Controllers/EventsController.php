@@ -273,17 +273,19 @@ class EventsController extends Controller
         $dateFilterDescription = $this->formatDateFilterDescription($year, $month, $day);
 
         // set the start_at from and to dates based on the passed params
+        // Cast the route params to integers so single-digit months/days (e.g. /events/by-date/2026/8)
+        // produce a valid date instead of an unparseable string like "2026801" (EVENTREPO-WG).
         if ($year && !$month && !$day) {
-            $start_at_from = $year.'0101';
-            $start_at_to = $year.'1231';
+            $start_at_from = Carbon::create((int) $year, 1, 1)->startOfDay();
+            $start_at_to = Carbon::create((int) $year, 12, 31)->startOfDay();
             $slug = $dateFilterDescription;
         } elseif (!$day) {
-            $start_at_from = Carbon::parse($year.$month.'01');
-            $start_at_to = Carbon::parse($start_at_from)->endOfMonth();
+            $start_at_from = Carbon::create((int) $year, (int) $month, 1)->startOfDay();
+            $start_at_to = $start_at_from->copy()->endOfMonth();
             $slug = $dateFilterDescription;
         } else {
-            $start_at_from = Carbon::parse($year.$month.$day);
-            $start_at_to = Carbon::parse($start_at_from)->addDay();
+            $start_at_from = Carbon::create((int) $year, (int) $month, (int) $day)->startOfDay();
+            $start_at_to = $start_at_from->copy()->addDay();
             $slug = $dateFilterDescription;
         }
 

@@ -86,6 +86,18 @@ class EventsControllerSmokeTest extends TestCase
         $this->get('/events/by-date/'.$year)->assertOk();
     }
 
+    public function test_events_by_date_single_digit_month_renders(): void
+    {
+        // A single-digit month previously built the unparseable string "2026801"
+        // and threw a Carbon InvalidFormatException (EVENTREPO-WG).
+        $this->get('/events/by-date/2026/8')->assertOk();
+    }
+
+    public function test_events_by_date_single_digit_month_and_day_renders(): void
+    {
+        $this->get('/events/by-date/2026/8/5')->assertOk();
+    }
+
     public function test_events_week_renders(): void
     {
         Event::factory()->create(['start_at' => Carbon::now()->setTime(20, 0)]);
