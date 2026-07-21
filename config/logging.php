@@ -35,7 +35,12 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            // Use the rotating "daily" channel (7-day retention) by default rather
+            // than the unbounded "single" laravel.log, which grows without limit and
+            // fills the disk over time (Sentry EVENTREPO-SP / EVENTREPO-SN:
+            // "Writing to the log file failed ... No space left on device").
+            // LOG_STACK can override the channel list per environment without a deploy.
+            'channels' => explode(',', env('LOG_STACK', 'daily')),
         ],
 
         'single' => [
