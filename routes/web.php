@@ -76,6 +76,18 @@ Route::get('/', 'PagesController@home')->name('home');
 Route::get('/home', 'PagesController@home')->name('pages.home');
 
 Route::get('about', 'PagesController@about');
+
+// Public newsletter subscription - Essential Events digest, no account required (issue #1978)
+Route::post('newsletter/subscribe', 'NewsletterSubscribersController@subscribe')
+    ->middleware('throttle:6,1')
+    ->name('newsletter.subscribe');
+Route::get('newsletter/confirm/{token}', 'NewsletterSubscribersController@confirm')
+    ->middleware('throttle:12,1')
+    ->name('newsletter.confirm');
+// POST supports RFC 8058 one-click unsubscribe from mail clients
+Route::match(['get', 'post'], 'newsletter/unsubscribe/{token}', 'NewsletterSubscribersController@unsubscribe')
+    ->middleware('throttle:12,1')
+    ->name('newsletter.unsubscribe');
 Route::get('privacy', 'PagesController@privacy');
 Route::get('tos', 'PagesController@tos');
 Route::get('radar', 'PagesController@radar')->middleware('auth')->name('radar');
@@ -367,6 +379,12 @@ Route::get('events/{id}/unattend', [
     'as' => 'events.unattend',
     'uses' => 'EventsController@unattend',
 ]);
+
+// One-click admin curation flag for the Essential Events digest (issue #1978)
+Route::get('events/{id}/toggle-essential', [
+    'as' => 'events.toggleEssential',
+    'uses' => 'EventsController@toggleEssential',
+])->middleware(['auth', 'can:admin']);
 
 Route::post('events/{id}/photos', 'EventsController@addPhoto');
 Route::delete('events/{id}/photos/{photo_id}', 'EventsController@deletePhoto');

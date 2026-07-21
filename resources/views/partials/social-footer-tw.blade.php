@@ -1,4 +1,5 @@
 <footer class="mt-8">
+    <x-newsletter-signup source="footer" class="max-w-xl mb-4" />
     <div class="flex flex-wrap gap-2">
         @if (config('app.social_facebook') !== "")
             <a href="{{ config('app.social_facebook') }}"

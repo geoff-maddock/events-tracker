@@ -57,7 +57,7 @@
                         type="email"
                         name="email"
                         id="email"
-                        :value="old('email')"
+                        :value="old('email', request('email'))"
                         placeholder="Enter your email address"
                         :hasError="$errors->has('email')"
                         autocomplete="email"
