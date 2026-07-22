@@ -1682,7 +1682,12 @@ class EventsController extends Controller
 
             $photo = $imageHandler->makePhoto($request->file('file'));
 
-            if (isset($event->photos) && 0 === count($event->photos)) {
+            // count existing photos BEFORE attaching; isset($event->photos)
+            // used to cache the relation here, so the post-attach count read
+            // stale data and the notification fired on the second photo
+            $existingPhotoCount = $event->photos()->count();
+
+            if (0 === $existingPhotoCount) {
                 $photo->is_primary = 1;
             }
 
@@ -1690,7 +1695,8 @@ class EventsController extends Controller
             $event->addPhoto($photo);
 
             if ($event->start_at >= Carbon::now()) {
-                if (1 === count($event->photos)) {
+                // notify followers only when this is the event's first photo
+                if (0 === $existingPhotoCount) {
                     $this->notifyFollowing($event);
                 }
             }

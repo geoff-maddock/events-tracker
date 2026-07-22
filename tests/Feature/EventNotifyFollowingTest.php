@@ -7,12 +7,17 @@ use App\Mail\FollowingUpdate;
 use App\Models\Entity;
 use App\Models\Event;
 use App\Models\Follow;
+use App\Models\Photo;
 use App\Models\Profile;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
+use Mockery;
 use ReflectionMethod;
 use Tests\TestCase;
 
@@ -33,6 +38,12 @@ class EventNotifyFollowingTest extends TestCase
     {
         parent::setUp();
         Mail::fake();
+    }
+
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
     }
 
     private function follower(string $email, int $instantUpdate = 1): User
@@ -127,6 +138,95 @@ class EventNotifyFollowingTest extends TestCase
         // Pre-fix the entity pass could not see tag-pass notifications
         // (they were filed under the null key) and double-mailed.
         $this->assertSame(1, $this->sentTo('tag-and-entity@example.com'));
+    }
+
+    /**
+     * Stub Intervention's Image facade (same pattern as ImageHandlerTest) so
+     * the real upload endpoint runs against the fake external disk.
+     */
+    private function stubImageFacade(): void
+    {
+        $mock = Mockery::mock();
+        $mock->shouldReceive('fit')->andReturnSelf();
+        $mock->shouldReceive('encode')->andReturnSelf();
+        $mock->shouldReceive('save')->andReturnSelf();
+        $mock->shouldReceive('destroy')->andReturnNull();
+        $mock->shouldReceive('basePath')->andReturnUsing(function () {
+            return tempnam(sys_get_temp_dir(), 'notifytest-');
+        });
+
+        Image::shouldReceive('make')->andReturn($mock);
+    }
+
+    /**
+     * Upload-trigger regression: isset($event->photos) cached the relation
+     * pre-attach, so `1 === count($event->photos)` read stale data — the
+     * notification fired on the SECOND photo upload instead of the first.
+     */
+    private function uploadPhoto(Event $event, User $owner): void
+    {
+        $this->actingAs($owner, 'sanctum');
+        $this->post('/api/events/'.$event->id.'/photos',
+            ['file' => UploadedFile::fake()->image('flyer.jpg')],
+            ['Accept' => 'application/json'])
+            ->assertStatus(201);
+    }
+
+    /** @test */
+    public function first_photo_upload_notifies_followers(): void
+    {
+        Storage::fake('external');
+        $this->stubImageFacade();
+
+        $owner = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $tag = Tag::factory()->create();
+        $event = Event::factory()->create([
+            'created_by' => $owner->id,
+            'start_at' => now()->addDays(2),
+        ]);
+        $event->tags()->attach($tag->id);
+
+        $follower = $this->follower('first-photo@example.com');
+        $this->follow($follower, 'tag', $tag->id);
+
+        $this->uploadPhoto($event, $owner);
+
+        $this->assertSame(1, $this->sentTo('first-photo@example.com'));
+        $this->assertSame(1, $event->photos()->first()->is_primary);
+    }
+
+    /** @test */
+    public function second_photo_upload_does_not_renotify(): void
+    {
+        Storage::fake('external');
+        $this->stubImageFacade();
+
+        $owner = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $tag = Tag::factory()->create();
+        $event = Event::factory()->create([
+            'created_by' => $owner->id,
+            'start_at' => now()->addDays(2),
+        ]);
+        $event->tags()->attach($tag->id);
+
+        // The event already has a photo before this upload.
+        $existing = Photo::factory()->create([
+            'name' => 'existing.webp',
+            'path' => 'photos/existing.webp',
+            'thumbnail' => 'photos/tn-existing.webp',
+            'is_primary' => 1,
+            'created_by' => $owner->id,
+            'updated_by' => null,
+        ]);
+        $event->addPhoto($existing);
+
+        $follower = $this->follower('second-photo@example.com');
+        $this->follow($follower, 'tag', $tag->id);
+
+        $this->uploadPhoto($event, $owner);
+
+        // Pre-fix this was the (only) case that sent mail.
+        $this->assertSame(0, $this->sentTo('second-photo@example.com'));
     }
 
     /** @test */
