@@ -536,11 +536,13 @@ class ThreadsController extends Controller
         $baseQuery = Post::where('thread_id', $threadId)
             ->select('posts.*');
 
+        // Sort by the posts table, not the controller-wide thread default —
+        // the base query has no threads join to order by.
         $listEntityResultBuilder
             ->setFilter($postFilter)
             ->setQueryBuilder($baseQuery)
             ->setDefaultLimit($this->defaultLimit)
-            ->setDefaultSort($this->defaultSortCriteria);
+            ->setDefaultSort(['posts.created_at' => 'desc']);
 
         // Get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
