@@ -24,11 +24,15 @@ class ImageHandler
 
         // from here, this file has been stored publicly under it's unique name and original format
         $filePath = $file->storePubliclyAs('photos', $fileName, 'external');
-        
+
         // sets all the photo private name and path values
         $photo = Photo::named($fileName);
 
-        // make a webp version of the image 
+        // attribute the photo to the uploader; without this the column keeps
+        // its DB default of 1 and photo management breaks for everyone else
+        $photo->created_by = auth()->id() ?? 1;
+
+        // make a webp version of the image
         $webp = $photo->makeWebp();
 
         return $photo->makeThumbnail();
