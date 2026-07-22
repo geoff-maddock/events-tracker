@@ -1022,13 +1022,16 @@ class EventsController extends Controller
                     continue;
                 }
 
-                // if the user hasn't already been notified, then email them
-                if (!array_key_exists($user->user_id, $users)) {
+                // if the user hasn't already been notified, then email them.
+                // key on $user->id — followers() selects users.*, so there is
+                // no user_id attribute (it was always null, collapsing every
+                // follower onto one key and skipping all but the first)
+                if (!array_key_exists($user->id, $users)) {
                     Mail::to($user->email)
                         ->send(new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $tag));
-                    $users[$user->user_id] = $tag->name;
+                    $users[$user->id] = $tag->name;
                 } else {
-                    $users[$user->user_id] = $users[$user->user_id].', '.$tag->name;
+                    $users[$user->id] = $users[$user->id].', '.$tag->name;
                 }
             }
         }
