@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use App\Auth\RememberMeSessionGuard;
+use App\Models\Blog;
 use App\Models\Entity;
 use App\Models\Event;
 use App\Models\Post;
+use App\Models\Series;
 use App\Models\Tag;
 use App\Models\Thread;
 use App\Models\User;
@@ -70,11 +72,18 @@ class AppServiceProvider extends ServiceProvider
             return $guard;
         });
 
+        // Aliases must match the object_type/commentable_type strings the
+        // controllers write, which are ALWAYS singular ('tag', 'event',
+        // 'series', ...). The old plural 'tags'/'events' entries matched
+        // nothing, so Tag::follows() (tags/popular follow counts) and
+        // morphTo resolution for event rows silently returned empty.
         Relation::morphMap([
+            'blog' => Blog::class,
             'entity' => Entity::class,
-            'events' => Event::class,
-            'tags' => Tag::class,
+            'event' => Event::class,
             'post' => Post::class,
+            'series' => Series::class,
+            'tag' => Tag::class,
             'thread' => Thread::class,
         ]);
 
