@@ -2395,6 +2395,44 @@ class EventsController extends Controller
     }
 
     /**
+     * Toggle the essential flag used to curate the Essential Events digest (issue #1978).
+     *
+     * @throws \Throwable
+     */
+    public function toggleEssential(int $id, Request $request): RedirectResponse | array
+    {
+        if (!$event = Event::find($id)) {
+            flash()->error('Error', 'No such event');
+
+            return back();
+        }
+
+        $event->is_essential = !$event->is_essential;
+        $event->save();
+
+        $message = $event->is_essential
+            ? 'Marked essential - '.$event->name
+            : 'No longer essential - '.$event->name;
+
+        // add to activity log
+        Activity::log($event, $this->user, 2, $message); // 2 = Update
+
+        // handle the request if ajax
+        if ($request->ajax()) {
+            return [
+                'Message' => $message,
+                'Success' => view('events.card-tw')
+                    ->with(compact('event'))
+                    ->with('month', '')
+                    ->render(),
+            ];
+        }
+        flash()->success('Success', $message);
+
+        return back();
+    }
+
+    /**
      * Record a user's review of the event.
      */
     public function review(int $id, Request $request): RedirectResponse

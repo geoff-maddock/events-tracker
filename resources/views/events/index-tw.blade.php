@@ -264,6 +264,8 @@ Events @include('events.title-crumbs')
 <br>
 @include('events.index-sort-pagination')
 
+<x-newsletter-signup source="event-page" class="max-w-xl mt-8" />
+
 @stop
 
 @section('footer')
