@@ -24,7 +24,7 @@
         "globals": "^17.6.0",
         "laravel-vite-plugin": "^3.1.0",
         "lodash": "^4.17.23",
-        "postcss": "^8.5.13",
+        "postcss": "^8.5.23",
         "prettier": "^3.2.0",
         "prettier-plugin-blade": "^2.0.0",
         "pusher-js": "^8.4.0-rc2",
