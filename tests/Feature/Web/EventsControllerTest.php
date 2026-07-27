@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Visibility;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
@@ -56,7 +57,11 @@ class EventsControllerTest extends TestCase
 
     public function test_index_upcoming_with_valid_date_loads(): void
     {
-        $this->get('/events/upcoming/2026-06-16')->assertOk();
+        // dated variants only resolve inside the range of real event data
+        Event::factory()->create(['start_at' => now()]);
+        Cache::forget('event-date-range');
+
+        $this->get('/events/upcoming/'.now()->format('Ymd'))->assertOk();
     }
 
     public function test_index_upcoming_with_invalid_date_returns_404(): void

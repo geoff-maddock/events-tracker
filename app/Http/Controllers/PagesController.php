@@ -11,6 +11,7 @@ use App\Models\Series;
 use App\Models\Tag;
 use App\Models\Thread;
 use App\Models\User;
+use App\Services\EventDateRange;
 use App\Services\SearchService;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
@@ -354,6 +355,8 @@ class PagesController extends Controller
         $prev_day = Carbon::parse($date)->subDays(1);
         $prev_day_window = Carbon::parse($date)->subDays($this->defaultWindow);
 
+        $dateRange = new EventDateRange();
+
         // handle the request if ajax
         if ($request->ajax()) {
             return view('events.4daysAjax-tw')
@@ -364,6 +367,10 @@ class PagesController extends Controller
                         'next_day_window' => $next_day_window,
                         'prev_day' => $prev_day,
                         'prev_day_window' => $prev_day_window,
+                        'hasPrev' => $dateRange->contains($prev_day),
+                        'hasPrevWindow' => $dateRange->contains($prev_day_window),
+                        'hasNext' => $dateRange->contains($next_day),
+                        'hasNextWindow' => $dateRange->contains($next_day_window),
                     ])
                     ->render();
         }
@@ -377,6 +384,10 @@ class PagesController extends Controller
                             'next_day_window' => $next_day_window,
                             'prev_day' => $prev_day,
                             'prev_day_window' => $prev_day_window,
+                            'hasPrev' => $dateRange->contains($prev_day),
+                            'hasPrevWindow' => $dateRange->contains($prev_day_window),
+                            'hasNext' => $dateRange->contains($next_day),
+                            'hasNextWindow' => $dateRange->contains($next_day_window),
                         ]
                     );
     }

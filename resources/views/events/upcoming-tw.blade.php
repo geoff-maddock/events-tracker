@@ -2,6 +2,16 @@
 
 @section('title'){{ config('app.tagline')}}@endsection
 
+{{-- dated variants are navigation state, not distinct pages --}}
+@if (($date ?? '') !== '')
+@section('canonical')
+<link rel="canonical" href="{{ url('/events/upcoming') }}">
+@endsection
+@section('meta.robots')
+<meta name="robots" content="noindex, follow">
+@endsection
+@endif
+
 @section('content')
 
 <!-- Hero Section -->
