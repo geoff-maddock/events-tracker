@@ -2,6 +2,10 @@
 
 @section('title', 'User Events Attending')
 
+@section('meta.robots')
+<meta name="robots" content="noindex, follow">
+@endsection
+
 @if (isset($past_events) && count($past_events) > 0)
     @php
         $first = $past_events[0];
