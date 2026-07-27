@@ -258,6 +258,28 @@ class EventsController extends Controller
 
 
     /**
+     * Display a browsable month-by-month archive of past and future events,
+     * linking into the by-date listings so old events stay reachable.
+     */
+    public function indexArchive(): View
+    {
+        $months = Cache::remember('event-archive-months', 86400, function () {
+            return Event::query()
+                ->where('visibility_id', Visibility::VISIBILITY_PUBLIC)
+                ->whereNotNull('start_at')
+                ->selectRaw('YEAR(start_at) as year, MONTH(start_at) as month, COUNT(*) as event_count')
+                ->groupBy('year', 'month')
+                ->orderBy('year', 'desc')
+                ->orderBy('month', 'desc')
+                ->toBase()
+                ->get();
+        });
+
+        return view('events.archive-tw')
+            ->with(['years' => $months->groupBy('year')]);
+    }
+
+    /**
      * Display a listing of events by date.
      *
      * @throws \Throwable

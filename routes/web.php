@@ -281,6 +281,7 @@ Route::get('events/{id}/load-embeds', 'EventsController@loadEmbeds');
 Route::get('events/{id}/load-minimal-embeds', 'EventsController@loadMinimalEmbeds');
 Route::get('events/{slug}/minimal-embeds', 'EventsController@loadMinimalEmbedsBySlug');
 Route::get('events/{slug}/embeds', 'EventsController@loadEmbedsBySlug');
+Route::get('events/archive', 'EventsController@indexArchive')->name('events.archive');
 Route::get('events/by-date/{year}/{month?}/{day?}', 'EventsController@indexByDate')
     ->where('year', '[1-9][0-9][0-9][0-9]')
     ->where('month', '(0?[1-9]|1[012])$')
