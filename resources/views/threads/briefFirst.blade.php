@@ -57,8 +57,8 @@
         @unless ($thread->tags->isEmpty())
             Tags:
             @foreach ($thread->tags as $tag)
-                <span class="badge rounded-pill bg-dark"><a href="/threads/tag/{{ urlencode($tag->name) }}">{{ $tag->name }}</a>
-                            <a href="{!! route('tags.show', ['tag' => $tag->name]) !!}" title="Show this tag."><i class="bi bi-link-45deg text-info"></i></a>
+                <span class="badge rounded-pill bg-dark"><a href="/threads/tag/{{ $tag->slug }}">{{ $tag->name }}</a>
+                            <a href="{!! route('tags.show', ['tag' => $tag->slug]) !!}" title="Show this tag."><i class="bi bi-link-45deg text-info"></i></a>
                         </span>
             @endforeach
         @endunless

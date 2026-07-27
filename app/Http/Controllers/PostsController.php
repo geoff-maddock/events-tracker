@@ -293,6 +293,10 @@ class PostsController extends Controller
         // convert the slug to name
         $tag = $stringHelper->SlugToName($slug);
 
+        // unknown terms are a 404, not an empty 200 (GSC soft-404); links may
+        // carry either the slug or the display name
+        Tag::where('slug', '=', $slug)->orWhere('name', '=', $tag)->firstOrFail();
+
         // initialized listParamSessionStore with baseindex key
         // list entity result builder
         $listParamSessionStore->setBaseIndex('internal_post');
@@ -340,6 +344,7 @@ class PostsController extends Controller
                 'direction' => $listResultSet->getSortDirection(),
                 'hasFilter' => $this->hasFilter,
                 'filters' => $listResultSet->getFilters(),
+                'seoNoindex' => $posts->total() === 0,
             ],
             $this->getFilterOptions(),
             $this->getListControlOptions()
