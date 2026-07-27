@@ -2,10 +2,10 @@ User-agent: MJ12bot
 Disallow: /
 
 User-agent: *
-Disallow: /*?sort=
-Disallow: /*?direction=
-Disallow: /*?limit=
-Disallow: /*?filters
+Disallow: /*sort=
+Disallow: /*direction=
+Disallow: /*limit=
+Disallow: /*filters
 Disallow: /search
 Disallow: /go/
 Disallow: /users/
