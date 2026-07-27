@@ -57,9 +57,13 @@ Events @include('events.title-crumbs')
 				<i class="bi bi-download mr-2"></i>
 				Export TXT
 			</a>
-			<a href="{!! URL::route('events.indexIcal') !!}" class="flex items-center px-4 py-2 text-sm text-muted-foreground hover:bg-accent rounded-b-lg transition-colors" target="_blank">
+			<a href="{!! URL::route('events.indexIcal') !!}" class="flex items-center px-4 py-2 text-sm text-muted-foreground hover:bg-accent transition-colors" target="_blank">
 				<i class="bi bi-calendar-event mr-2"></i>
 				Export iCal
+			</a>
+			<a href="{{ route('events.archive') }}" class="flex items-center px-4 py-2 text-sm text-muted-foreground hover:bg-accent rounded-b-lg transition-colors">
+				<i class="bi bi-archive mr-2"></i>
+				Archive
 			</a>
 			@if ($signedIn && $user && $user->hasGroup('super_admin'))
 			<div class="border-t border-border my-1"></div>
