@@ -1,5 +1,10 @@
 @extends('layouts.app-tw')
 
+{{-- the id-based URL also resolves; the slug route is the canonical one --}}
+@section('canonical')
+<link rel="canonical" href="{{ url('/events/'.$event->slug) }}">
+@endsection
+
 @section('google.event.json')
 @if (config('app.spider_blacklist') !== null && $event->venue !== null)
 @if (strtolower($event->venue->name) !== strtolower(config('app.spider_blacklist')))
