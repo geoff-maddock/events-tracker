@@ -59,13 +59,15 @@ class ClickTrackingTest extends TestCase
     }
 
     /** @test */
-    public function nonexistent_event_redirects_to_home()
+    public function nonexistent_event_returns_not_found()
     {
+        $this->withExceptionHandling();
+
         // Visit the tracking URL for non-existent event
         $response = $this->get('/go/evt-99999');
 
-        // Assert redirect to home
-        $response->assertRedirect(route('home'));
+        // A tracking link for a missing event is a dead URL, not a redirect
+        $response->assertNotFound();
 
         // Assert no click was tracked
         $this->assertEquals(0, ClickTrack::count());

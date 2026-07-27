@@ -25,6 +25,7 @@ use App\Models\Thread;
 use App\Models\User;
 use App\Models\Visibility;
 use App\Notifications\EventPublished;
+use App\Services\EventDateRange;
 use App\Services\ImageHandler;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
@@ -944,6 +945,13 @@ class EventsController extends Controller
             abort(404);
         }
 
+        // dated variants outside the range of real event data are navigation
+        // state, not pages — 404 them so crawlers can't walk into empty decades
+        $dateRange = new EventDateRange();
+        if ($date !== '' && !$dateRange->contains($baseDate)) {
+            abort(404);
+        }
+
         // use the window to get the last date and set the criteria between
         $next_day = $baseDate->copy()->addDays(1);
         $next_day_window = $baseDate->copy()->addDays($this->defaultWindow);
@@ -970,6 +978,10 @@ class EventsController extends Controller
                         'next_day_window' => $next_day_window,
                         'prev_day' => $prev_day,
                         'prev_day_window' => $prev_day_window,
+                        'hasPrev' => $dateRange->contains($prev_day),
+                        'hasPrevWindow' => $dateRange->contains($prev_day_window),
+                        'hasNext' => $dateRange->contains($next_day),
+                        'hasNextWindow' => $dateRange->contains($next_day_window),
                     ])
                     ->render();
         }
@@ -982,6 +994,10 @@ class EventsController extends Controller
             'next_day_window' => $next_day_window,
             'prev_day' => $prev_day,
             'prev_day_window' => $prev_day_window,
+            'hasPrev' => $dateRange->contains($prev_day),
+            'hasPrevWindow' => $dateRange->contains($prev_day_window),
+            'hasNext' => $dateRange->contains($next_day),
+            'hasNextWindow' => $dateRange->contains($next_day_window),
         ]);
     }
 
@@ -1007,6 +1023,13 @@ class EventsController extends Controller
         try {
             $baseDate = $date === '' ? Carbon::now() : Carbon::parse($date);
         } catch (\Throwable $e) {
+            abort(404);
+        }
+
+        // dated variants outside the range of real event data are navigation
+        // state, not pages — 404 them so crawlers can't walk into empty decades
+        $dateRange = new EventDateRange();
+        if ($date !== '' && !$dateRange->contains($baseDate)) {
             abort(404);
         }
 
@@ -1036,6 +1059,7 @@ class EventsController extends Controller
                         'next_day_window' => $next_day_window,
                         'prev_day' => $prev_day,
                         'prev_day_window' => $prev_day_window,
+                        'hasNextWindow' => $dateRange->contains($next_day_window),
                     ])
                     ->render();
         }
@@ -1048,6 +1072,10 @@ class EventsController extends Controller
             'next_day_window' => $next_day_window,
             'prev_day' => $prev_day,
             'prev_day_window' => $prev_day_window,
+            'hasPrev' => $dateRange->contains($prev_day),
+            'hasPrevWindow' => $dateRange->contains($prev_day_window),
+            'hasNext' => $dateRange->contains($next_day),
+            'hasNextWindow' => $dateRange->contains($next_day_window),
         ]);
     }
 
@@ -1502,7 +1530,13 @@ class EventsController extends Controller
 
             return back();
         }
-        $day = Carbon::parse($day);
+
+        // route regex allows shapes like 2026-19-99 that still fail to parse
+        try {
+            $day = Carbon::parse($day);
+        } catch (\Throwable $e) {
+            abort(404);
+        }
 
         return view('events.day-tw')
             ->with([
@@ -2586,9 +2620,15 @@ class EventsController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
-        $cdate = Carbon::parse($date);
-        $cdate_yesterday = Carbon::parse($date)->subDay();
-        $cdate_tomorrow = Carbon::parse($date)->addDay();
+        // $date is a user-supplied route param; crawlers hit this with non-date
+        // junk, which makes Carbon::parse() throw. Treat it as a missing page.
+        try {
+            $cdate = Carbon::parse($date);
+        } catch (\Throwable $e) {
+            abort(404);
+        }
+        $cdate_yesterday = $cdate->copy()->subDay();
+        $cdate_tomorrow = $cdate->copy()->addDay();
 
         $future_events = Event::where('events.start_at', '>', $cdate_yesterday->toDateString())
             ->with($this->cardEventEagerLoad())

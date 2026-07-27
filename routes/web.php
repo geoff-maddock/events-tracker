@@ -276,7 +276,8 @@ Route::get('events/add/{date?}', 'EventsController@indexAdd')->name('events.add'
     ->where('date', '[1-2][0-9][0-9][0-9][0-3][0-9][0-9][0-9]');    
 Route::get('events/past', 'EventsController@indexPast');
 Route::get('events/week', 'EventsController@indexWeek')->name('events.week');
-Route::get('events/starting/{date}', 'EventsController@indexStarting');
+Route::get('events/starting/{date}', 'EventsController@indexStarting')
+    ->where('date', '[0-9]{8}|[0-9]{4}-[0-9]{2}-[0-9]{2}');
 Route::get('events/{id}/load-embeds', 'EventsController@loadEmbeds');
 Route::get('events/{id}/load-minimal-embeds', 'EventsController@loadMinimalEmbeds');
 Route::get('events/{slug}/minimal-embeds', 'EventsController@loadMinimalEmbedsBySlug');
@@ -285,14 +286,9 @@ Route::get('events/by-date/{year}/{month?}/{day?}', 'EventsController@indexByDat
     ->where('year', '[1-9][0-9][0-9][0-9]')
     ->where('month', '(0?[1-9]|1[012])$')
     ->where('day', '(0?[1-9]|[12][0-9]|3[01])');
-// Use this route for the front page to display a window of events
-Route::get('events/window/{year}/{month?}/{day?}', 'EventsController@indexWindow')
-    ->where('year', '[1-9][0-9][0-9][0-9]')
-    ->where('month', '(0?[1-9]|1[012])$')
-    ->where('day', '[0-3][0-9]');
 Route::get('events/daily', 'EventsController@daily');
 Route::get('events/day/{day}', 'EventsController@day')->name('events.day')
-    ->where('day', '[1-2][0-9][0-9][0-9]-[0-3][0-9]-[0-9][0-9]');    
+    ->where('day', '[12][0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])');
 Route::match(['get', 'post'], 'events/attending', 'EventsController@indexAttending')->name('events.attending');
 Route::match(['get', 'post'], 'events/filter', ['as' => 'events.filter', 'uses' => 'EventsController@filter']);
 Route::get('events/apply-filter', ['as' => 'events.applyFilterFromUrl', 'uses' => 'EventsController@applyFilterFromUrl']);
