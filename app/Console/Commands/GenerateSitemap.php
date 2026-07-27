@@ -2,241 +2,249 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Blog;
 use App\Models\Entity;
 use App\Models\Event;
 use App\Models\Series;
+use App\Models\Tag;
+use App\Models\Visibility;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Psr\Http\Message\UriInterface;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\Sitemap\Sitemap;
-use Spatie\Sitemap\SitemapGenerator;
+use Spatie\Sitemap\SitemapIndex;
+use Spatie\Sitemap\Tags\Sitemap as SitemapTag;
 use Spatie\Sitemap\Tags\Url;
 
 class GenerateSitemap extends Command
 {
     /**
-     * The console command name.
+     * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'sitemap:generate';
+    protected $signature = 'sitemap:generate {--path= : Directory to write sitemap files into (defaults to public/)}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Generate the sitemap.';
+    protected $description = 'Generate a sitemap index and per-type sitemaps from the database';
 
     /**
-     * Execute the console command.
-     *
-     * @return mixed
+     * Sitemap spec allows 50k URLs per file; leave headroom.
      */
-    public function handle()
+    protected const MAX_URLS_PER_FILE = 45000;
+
+    /**
+     * Static landing pages worth indexing. Keep in sync with routes/web.php.
+     */
+    protected const PAGES = [
+        '/',
+        '/events',
+        '/entities',
+        '/series',
+        '/tags',
+        '/blogs',
+        '/calendar',
+    ];
+
+    protected string $baseUrl;
+
+    public function handle(): int
     {
-        $this->line('<fg=white;bg=black>Creating sitemap for: '.config('app.url').'</>');
-        $this->line('<fg=white;bg=green>Output to '.public_path('sitemap.xml').'</>');
-        // modify this to your own needs
-        $sitemap = SitemapGenerator::create(config('app.url'))
-            ->hasCrawled(function (Url $url) {
-                if (strpos($url->segment(1), 'email') !== false) {
-                    return;
-                }
+        $path = rtrim($this->option('path') ?: public_path(), '/');
+        $this->baseUrl = rtrim(config('app.url'), '/');
 
-                // skip the redirect page
-                if (strpos($url->segment(1), 'redirect') !== false) {
-                    return;
-                }
+        $this->info('Generating sitemaps for '.$this->baseUrl.' into '.$path);
 
-                // skip click tracking redirect links
-                if (strpos($url->segment(1), 'go') !== false) {
-                    return;
-                }
+        $index = SitemapIndex::create();
 
-                // skip user tabs
-                if (strpos($url->url, '?') !== false) {
-                    return;
-                }
+        $sections = [
+            'pages' => $this->pageUrls(),
+            'events' => $this->eventUrls(),
+            'entities' => $this->entityUrls(),
+            'series' => $this->seriesUrls(),
+            'tags' => $this->tagUrls(),
+            'blogs' => $this->blogUrls(),
+        ];
 
-                // skip event add links
-                if (strpos($url->path(), '/events/add') !== false) {
-                    return;
-                }               
-                                    
-                // skip create routes
-                if (strpos($url->path(), '/create') !== false) {
-                    return;
+        foreach ($sections as $name => $urls) {
+            foreach ($this->writeChunked($name, $urls, $path) as [$file, $count, $lastmod]) {
+                $entry = SitemapTag::create($this->baseUrl.'/'.$file);
+                if ($lastmod) {
+                    $entry->setLastModificationDate($lastmod);
                 }
+                $index->add($entry);
+                $this->info(sprintf('  %s: %d urls', $file, $count));
+            }
+        }
 
-                // skip edit links
-                if (strpos($url->path(), '/edit') !== false) {
-                    return;
+        $index->writeToFile($path.'/sitemap.xml');
+        $this->info('Wrote sitemap index to '.$path.'/sitemap.xml');
+
+        return self::SUCCESS;
+    }
+
+    /**
+     * Write a section's URLs into one or more sitemap files, splitting at
+     * MAX_URLS_PER_FILE. Returns [filename, url count, max lastmod] per file.
+     *
+     * @param iterable<Url> $urls
+     * @return array<array{0: string, 1: int, 2: Carbon|null}>
+     */
+    protected function writeChunked(string $name, iterable $urls, string $path): array
+    {
+        $files = [];
+        $sitemap = Sitemap::create();
+        $count = 0;
+        $chunk = 1;
+        $lastmod = null;
+
+        $flush = function () use (&$files, &$sitemap, &$count, &$chunk, &$lastmod, $name, $path) {
+            if ($count === 0) {
+                return;
+            }
+            $file = 'sitemap-'.$name.($chunk > 1 ? '-'.$chunk : '').'.xml';
+            $sitemap->writeToFile($path.'/'.$file);
+            $files[] = [$file, $count, $lastmod];
+            $sitemap = Sitemap::create();
+            $count = 0;
+            $chunk++;
+            $lastmod = null;
+        };
+
+        foreach ($urls as $url) {
+            $sitemap->add($url);
+            $count++;
+            // lastModificationDate is a typed property left uninitialized on
+            // URLs without a lastmod (e.g. static pages)
+            if (isset($url->lastModificationDate) && (!$lastmod || $url->lastModificationDate > $lastmod)) {
+                $lastmod = Carbon::instance($url->lastModificationDate);
+            }
+            if ($count >= self::MAX_URLS_PER_FILE) {
+                $flush();
+            }
+        }
+        $flush();
+
+        return $files;
+    }
+
+    /**
+     * @return iterable<Url>
+     */
+    protected function pageUrls(): iterable
+    {
+        foreach (self::PAGES as $page) {
+            yield Url::create($this->baseUrl.$page);
+        }
+    }
+
+    /**
+     * @return iterable<Url>
+     */
+    protected function eventUrls(): iterable
+    {
+        // deliberately NOT scopeVisible(null): that also matches proposal or
+        // private events with a null creator — the sitemap wants public only
+        $query = Event::query()
+            ->where('visibility_id', Visibility::VISIBILITY_PUBLIC)
+            ->select(['id', 'slug', 'updated_at']);
+
+        foreach ($this->slugUrls($query, 'events') as $url) {
+            yield $url;
+        }
+    }
+
+    /**
+     * @return iterable<Url>
+     */
+    protected function entityUrls(): iterable
+    {
+        $blacklist = array_filter(explode(',', (string) config('app.spider_blacklist')));
+
+        $query = Entity::query()->active()->select(['id', 'slug', 'updated_at']);
+
+        foreach ($this->slugUrls($query, 'entities') as $url) {
+            foreach ($blacklist as $item) {
+                if ($url->url === $this->baseUrl.'/entities/'.$item) {
+                    continue 2;
                 }
+            }
+            yield $url;
+        }
+    }
 
-                // skip upcoming events links
-                if (strpos($url->path(), '/events/upcoming') !== false) {
-                    return;
+    /**
+     * @return iterable<Url>
+     */
+    protected function seriesUrls(): iterable
+    {
+        $query = Series::query()
+            ->where('visibility_id', Visibility::VISIBILITY_PUBLIC)
+            ->select(['id', 'slug', 'updated_at']);
+
+        foreach ($this->slugUrls($query, 'series') as $url) {
+            yield $url;
+        }
+    }
+
+    /**
+     * @return iterable<Url>
+     */
+    protected function tagUrls(): iterable
+    {
+        $query = Tag::query()->hasContent()->select(['id', 'slug', 'updated_at']);
+
+        foreach ($this->slugUrls($query, 'tags') as $url) {
+            yield $url;
+        }
+    }
+
+    /**
+     * @return iterable<Url>
+     */
+    protected function blogUrls(): iterable
+    {
+        $query = Blog::query()
+            ->where('visibility_id', Visibility::VISIBILITY_PUBLIC)
+            ->select(['id', 'slug', 'updated_at']);
+
+        foreach ($this->slugUrls($query, 'blogs') as $url) {
+            yield $url;
+        }
+    }
+
+    /**
+     * Yield canonical slug URLs for a model query, chunked to keep memory flat.
+     * Skips rows whose slug is empty, purely numeric (route binding treats
+     * those as ids), or not a clean lowercase slug (junk data like URLs or
+     * names with spaces stored as slugs).
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<covariant Model> $query
+     * @return iterable<Url>
+     */
+    protected function slugUrls($query, string $prefix): iterable
+    {
+        $urls = [];
+
+        $query->chunkById(1000, function ($models) use (&$urls, $prefix) {
+            foreach ($models as $model) {
+                $slug = strtolower((string) $model->getAttribute('slug'));
+                if ($slug === '' || ctype_digit($slug) || !preg_match('/^[a-z0-9-]+$/', $slug)) {
+                    continue;
                 }
-
-                // skip upcoming links
-                if (strpos($url->path(), '/upcoming') !== false) {
-                    return;
+                $url = Url::create($this->baseUrl.'/'.$prefix.'/'.$slug);
+                $updatedAt = $model->getAttribute('updated_at');
+                if ($updatedAt) {
+                    $url->setLastModificationDate($updatedAt);
                 }
+                $urls[] = $url;
+            }
+        });
 
-                // skip user links
-                if (strpos($url->path(), '/users') !== false) {
-                    return;
-                }
-
-                // skip follow links
-                if (strpos($url->path(), '/follow') !== false) {
-                    return;
-                }
-
-                // skip events/related-to pages - filtered list pages, not canonical content
-                if (strpos($url->path(), '/events/related-to') !== false) {
-                    return;
-                }
-
-                // skip day_offset urls
-                if (strpos($url->segment(1), '?day_offset') !== false) {
-                    return;
-                }
-
-                // skip day_offset urls
-                if (strpos($url->segment(1), '?day_offset') !== false) {
-                    return;
-                }
-
-                // skip some specific urls
-                if (strpos($url->segment(2), 'export') !== false) {
-                    return;
-                }
-
-                if (strpos($url->segment(2), 'ical') !== false) {
-                    return;
-                }
-
-                if (strpos($url->segment(2), 'rpp-reset') !== false) {
-                    return;
-                }
-            
-                if (strpos($url->segment(2), 'alias') !== false) {
-                    return;
-                }
-
-                // blacklist entities in the config
-                if ($blacklist = config('app.spider_blacklist')) {
-                    $blacklistArray = explode(',', $blacklist);
-                    foreach ($blacklistArray as $item) {
-                        if ($url->path() === '/entities/'.$item) {
-                            return;
-                        }
-                    }
-                }
-
-                // if an event, get the event's updated at time and use
-                if ($url->segment(1) === 'events' && is_numeric($url->segment(2))) {
-                    $event = Event::find($url->segment(2));
-                    $url->setLastModificationDate($event->updated_at);
-                }
-
-                // if an event, get the event's updated at time and use
-                if ($url->segment(1) === 'events' && gettype($url->segment(2)) === 'string' && $url->segment(2) !== 'related-to' && $url->segment(2) !== 'upcoming' && $url->segment(2) !== 'tag' && $url->segment(2) != 'role' && $url->segment(2) != 'type') {
-                    $slug = $url->segment(2);
-                    $event = Event::where('slug', '=', $slug)->first();
-                    if ($event) {
-                        $url->setLastModificationDate($event->updated_at);
-                    } else {
-                        if ($url->url !== null) {
-                            $this->line('<fg=yellow>Could not find event for URL: ' . $url->url . '</>');
-                        }
-                    }
-                    return $url;
-                }
-
-                // if a series, get the event's updated at time and use
-                if ($url->segment(1) === 'series' && gettype($url->segment(2)) === 'string' && $url->segment(2) !== 'tag' && $url->segment(2) != 'role') {
-                    $slug = $url->segment(2);
-                    $series = Series::where('slug', '=', $slug)->first();
-                    if ($series) {
-                        $url->setLastModificationDate($series->updated_at);
-                    } else {
-                        if ($url->url !== null) {
-                            $this->line('<fg=yellow>Could not find series for URL: ' . $url->url . '</>');
-                        }
-                    }
-                }
-
-                // if an entity, get the entities's updated at time and use
-                if ($url->segment(1) === 'entities' && gettype($url->segment(2)) === 'string' && $url->segment(2) !== 'tag' && $url->segment(2) != 'role') {
-                    $slug = $url->segment(2);
-                    $entity = Entity::where('slug', '=', $slug)->first();
-                    if ($entity) {
-                        $url->setLastModificationDate($entity->updated_at);
-                    } else {
-                        if ($url->url !== null) {
-                            $this->line('<fg=yellow>Could not find entity for URL: ' . $url->url . '</>');
-                        }
-                    }
-                }
-
-                return $url;
-            })
-            ->shouldCrawl(function (UriInterface $url) {
-                // Skip click tracking redirect links
-                if (strpos($url->getPath(), '/go/') !== false) {
-                    return false;
-                }
-
-                // Skip events/add links
-                if (strpos($url->getPath(), '/events/add') !== false) {
-                    return false;
-                }
-
-                // Skip events/upcoming links
-                if (strpos($url->getPath(), '/events/upcoming') !== false) {
-                    return false;
-                }
-
-                // Skip events by-date
-                if (strpos($url->getPath(), '/events/by-date') !== false) {
-                    return false;
-                }
-
-                // Skip events/related-to - filtered list pages, not canonical content
-                if (strpos($url->getPath(), '/events/related-to') !== false) {
-                    return false;
-                }
-
-                // Links present on the photos page won't be added to the
-                // sitemap unless they are present on a crawlable page.
-                if (strpos($url->getPath(), '/photos') !== false) {
-                    return false;
-                }
-
-                // blacklist entities in the config
-                // if ($blacklist = config('app.spider_blacklist')) {
-                //     $blacklistArray = explode(',', $blacklist);
-                //     foreach ($blacklistArray as $item) {
-                //         if ($url->getPath() === '/entities/'.$item) {
-                //             return;
-                //         }
-                //     }
-                // }
-
-                return strpos($url->getPath(), '/storage') === false;
-            })
-            ->maxTagsPerSitemap(10000)
-            ->setMaximumCrawlCount(10000)
-            ->getSitemap();
-        
-        // Explicitly add important pages that might be missed by the crawler
-        $sitemap->add(Url::create(config('app.url') . '/events')
-            ->setPriority(0.9)
-            ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY));
-        
-        // Write the sitemap to file
-        $sitemap->writeToFile(public_path('sitemap.xml'));
+        return $urls;
     }
 }
