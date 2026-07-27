@@ -78,6 +78,25 @@ class Tag extends Eloquent
     }
 
     /**
+     * Limit to tags attached to at least one publicly visible piece of content
+     * (public event, active entity, or non-cancelled series). Used by the
+     * sitemap generator and anywhere an empty tag page shouldn't be surfaced.
+     */
+    public function scopeHasContent(Builder $query): Builder
+    {
+        return $query->where(function (Builder $q) {
+            $q->whereHas('events', function (Builder $event) {
+                $event->where('events.visibility_id', Visibility::VISIBILITY_PUBLIC);
+            })->orWhereHas('entities', function (Builder $entity) {
+                /* @phpstan-ignore-next-line */
+                $entity->active();
+            })->orWhereHas('series', function (Builder $series) {
+                $series->where('series.visibility_id', Visibility::VISIBILITY_PUBLIC);
+            });
+        });
+    }
+
+    /**
      * Adds a grid_thumbnail subquery select — returns the thumbnail path of the most recent
      * public event photo, falling back to the most recently created entity photo.
      */
