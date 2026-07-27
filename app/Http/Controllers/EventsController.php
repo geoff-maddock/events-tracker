@@ -626,6 +626,9 @@ class EventsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         string $slug
     ): string {
+        // unknown types are a 404, not an empty 200 (GSC soft-404)
+        EventType::where('slug', '=', $slug)->orWhere('name', '=', $slug)->firstOrFail();
+
         return $this->indexGridFiltered(
             $listParamSessionStore,
             $listEntityResultBuilder,
@@ -644,6 +647,9 @@ class EventsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         string $slug
     ): string {
+        // unknown series are a 404, not an empty 200 (GSC soft-404)
+        Series::where('slug', '=', $slug)->orWhere('name', '=', Str::title(str_replace('-', ' ', $slug)))->firstOrFail();
+
         return $this->indexGridFiltered(
             $listParamSessionStore,
             $listEntityResultBuilder,
@@ -2484,6 +2490,7 @@ class EventsController extends Controller
                         'direction' => $listResultSet->getSortDirection(),
                         'hasFilter' => $this->hasFilter,
                         'filters' => $listResultSet->getFilters(),
+                        'seoNoindex' => $events->total() === 0,
                     ],
                     $this->getFilterOptions(),
                     $this->getListControlOptions()
@@ -2547,6 +2554,7 @@ class EventsController extends Controller
                         'direction' => $listResultSet->getSortDirection(),
                         'hasFilter' => $this->hasFilter,
                         'filters' => $listResultSet->getFilters(),
+                        'seoNoindex' => $events->total() === 0,
                     ],
                     $this->getFilterOptions(),
                     $this->getListControlOptions()
@@ -2689,6 +2697,7 @@ class EventsController extends Controller
                         'direction' => $listResultSet->getSortDirection(),
                         'hasFilter' => $this->hasFilter,
                         'filters' => $listResultSet->getFilters(),
+                        'seoNoindex' => $future_events->total() === 0 && $past_events->total() === 0,
                     ],
                     $this->getFilterOptions(),
                     $this->getListControlOptions()
@@ -2710,6 +2719,10 @@ class EventsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         string $type
     ) {
+        // unknown types are a 404, not an empty 200 (GSC soft-404); links may
+        // carry either the slug or the display name
+        EventType::where('slug', '=', $type)->orWhere('name', '=', $type)->firstOrFail();
+
         $listParamSessionStore->setBaseIndex('internal_event');
         $listParamSessionStore->setKeyPrefix('internal_event_types');
 
@@ -2750,6 +2763,7 @@ class EventsController extends Controller
                         'direction' => $listResultSet->getSortDirection(),
                         'hasFilter' => $this->hasFilter,
                         'filters' => $listResultSet->getFilters(),
+                        'seoNoindex' => $events->total() === 0,
                     ],
                     $this->getFilterOptions(),
                     $this->getListControlOptions()
@@ -2770,7 +2784,11 @@ class EventsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         string $slug
     ) {
-        $slug = Str::title(str_replace('-', ' ', $slug));
+        // unknown series are a 404, not an empty 200 (GSC soft-404); the
+        // filter matches on the title-cased name derived from the slug
+        $name = Str::title(str_replace('-', ' ', $slug));
+        Series::where('slug', '=', $slug)->orWhere('name', '=', $name)->firstOrFail();
+        $slug = $name;
 
         $listParamSessionStore->setBaseIndex('internal_event');
         $listParamSessionStore->setKeyPrefix('internal_event_series');
@@ -2823,6 +2841,7 @@ class EventsController extends Controller
                         'direction' => $listResultSet->getSortDirection(),
                         'hasFilter' => $this->hasFilter,
                         'filters' => $listResultSet->getFilters(),
+                        'seoNoindex' => $future_events->total() === 0 && $past_events->total() === 0,
                     ],
                     $this->getFilterOptions(),
                     $this->getListControlOptions()

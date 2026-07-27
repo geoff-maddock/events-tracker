@@ -404,6 +404,11 @@ class ThreadsController extends Controller
         string $tag
     ): string {
         $tag = urldecode($tag);
+
+        // unknown terms are a 404, not an empty 200 (GSC soft-404); links may
+        // carry either the slug or the display name
+        $tagObject = Tag::where('slug', '=', $tag)->orWhere('name', '=', $tag)->firstOrFail();
+
         // initialized listParamSessionStore with baseindex key
         // list entity result builder
         $listParamSessionStore->setBaseIndex('internal_thread');
@@ -420,7 +425,7 @@ class ThreadsController extends Controller
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['threads.created_at' => 'desc'])
-            ->setParentFilter(['tag' => ucfirst($tag)]);
+            ->setParentFilter(['tag' => $tagObject->name]);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
@@ -447,6 +452,7 @@ class ThreadsController extends Controller
                 'direction' => $listResultSet->getSortDirection(),
                 'hasFilter' => $this->hasFilter,
                 'filters' => $listResultSet->getFilters(),
+                'seoNoindex' => $threads->total() === 0,
             ],
             $this->getFilterOptions(),
             $this->getListControlOptions()

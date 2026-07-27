@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Entity;
 use App\Models\Event;
+use App\Models\EventType;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserStatus;
@@ -166,6 +167,9 @@ class EventsTest extends TestCase
 
     public function testGridTypeRouteDisplaysParentFilterBreadcrumb()
     {
+        // unknown types 404, so the breadcrumb needs a real one
+        EventType::factory()->create(['name' => 'Grid-filter-type', 'slug' => 'grid-filter-type']);
+
         $this->get(route('events.grid.type', ['slug' => 'grid-filter-type']))
             ->assertOk()
             ->assertSee('Grid-filter-type');

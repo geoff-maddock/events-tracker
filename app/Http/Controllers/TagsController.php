@@ -255,7 +255,9 @@ class TagsController extends Controller
      */
     public function show(string $slug, StringHelper $stringHelper): View
     {
-        $tagObject = Tag::where('slug', '=', $slug)->first();
+        // name-based links also land here, so match either form; unknown
+        // terms are a 404, not an empty 200 (GSC reports those as soft-404s)
+        $tagObject = Tag::where('slug', '=', $slug)->orWhere('name', '=', $slug)->firstOrFail();
 
         // convert the slug to name?
         $tag = $stringHelper->SlugToName($slug);
@@ -300,7 +302,10 @@ class TagsController extends Controller
         // Get related tags based on co-occurrence with events
         $relatedTags = $tagObject ? $tagObject->relatedTags() : [];
 
-        return view('tags.show-tw', compact('series', 'entities', 'events', 'slug', 'tag', 'tagObject', 'tags', 'relatedTags'));
+        // a real term with nothing attached shouldn't enter the index
+        $seoNoindex = $series->isEmpty() && $events->isEmpty() && $entities->isEmpty();
+
+        return view('tags.show-tw', compact('series', 'entities', 'events', 'slug', 'tag', 'tagObject', 'tags', 'relatedTags', 'seoNoindex'));
     }
 
     /**
