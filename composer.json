@@ -28,7 +28,6 @@
 		"laravel/sanctum": "^3.2",
 		"laravel-notification-channels/twitter": "^7.0",
 		"laravel/ui": "^4.2",
-		"vinkla/shield": "^9.0",
 		"nunomaduro/collision": "^7.1",
 		"anhskohbo/no-captcha": "^3.5",
 		"guzzlehttp/guzzle": "^7.5",

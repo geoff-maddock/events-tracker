@@ -24,7 +24,6 @@
   - eluceo/ical (calendar exports)
   - League Flysystem (S3 file storage)
   - Sentry (error tracking)
-  - Laravel Shield (API basic auth)
 
 ### Frontend
 - **CSS Framework**: Bootstrap 5
@@ -196,7 +195,6 @@ Key `.env` variables:
 - `AWS_*` - S3 storage for images (optional)
 - `FACEBOOK_*`, `TWITTER_*` - Social integration (optional)
 - `SENTRY_*` - Error tracking (optional)
-- Laravel Shield credentials for API basic auth
 
 ### Running the Application
 ```bash

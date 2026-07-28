@@ -54,7 +54,7 @@ PHPStan has a `phpstan-baseline.neon` — don't try to fix baseline errors as pa
 
 **User attribution.** `created_by` / `updated_by` are populated on most models — trait-driven, generally automatic, but verify when adding a new model.
 
-**Auth.** Web uses session auth; API supports both Laravel Shield basic auth and Sanctum tokens (acquire via `POST /api/auth/token`). API routes live in `routes/api.php` and `app/Http/Controllers/Api/`.
+**Auth.** Web uses session auth; API supports both HTTP basic auth (via the `auth.either` middleware, `App\Http\Middleware\AuthenticateEither`) and Sanctum tokens (acquire via `POST /api/auth/token`). API routes live in `routes/api.php` and `app/Http/Controllers/Api/`.
 
 **Frontend bundling.** Vite (not Mix, despite older docs). Entry config in `vite.config.mjs`, Tailwind 4 via `@tailwindcss/postcss`. Vue 3 SFCs live under `resources/assets/js`; Blade views consume compiled bundles.
 
