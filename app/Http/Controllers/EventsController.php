@@ -1791,9 +1791,7 @@ class EventsController extends Controller
     {
         $event = Event::findOrFail($id);
 
-        $img = $imageHandler->generateCoverImage();
- 
-        return response()->download($img->basePath());
+        return response()->download($imageHandler->generateCoverImage());
     }
 
 

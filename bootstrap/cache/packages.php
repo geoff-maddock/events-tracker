@@ -35,17 +35,6 @@
       0 => 'Bepsvpt\\SecureHeaders\\SecureHeadersServiceProvider',
     ),
   ),
-  'intervention/image' => 
-  array (
-    'aliases' => 
-    array (
-      'Image' => 'Intervention\\Image\\Facades\\Image',
-    ),
-    'providers' => 
-    array (
-      0 => 'Intervention\\Image\\ImageServiceProvider',
-    ),
-  ),
   'laravel-notification-channels/twitter' => 
   array (
     'providers' => 
