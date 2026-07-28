@@ -214,8 +214,11 @@ var App = (function () {
             $.ajax({
                 url: $link.attr('href'),
             }).done(function (data) {
+                let $replacement = $(data.Success).addClass('anim-zoom-in');
+                // pop the favorite/follow icon in its new state
+                $replacement.find('a.ajax-action').first().children('i, svg').addClass('anim-star-pop');
+                $(target).replaceWith($replacement);
                 // fire a flash message
-                $(target).replaceWith($(data.Success).addClass('anim-zoom-in'));
                 Swal.fire({
                     title: "Success",
                     text: data.Message,
