@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
+use Intervention\Image\ImageManager;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 
@@ -126,6 +128,8 @@ class AppServiceProvider extends ServiceProvider
             'Illuminate\Contracts\Auth\Registrar',
             'App\Services\Registrar'
         );
+
+        $this->app->singleton(ImageManager::class, fn () => new ImageManager(new GdDriver()));
 
         if ($this->app->environment('local', 'testing')) {
         }

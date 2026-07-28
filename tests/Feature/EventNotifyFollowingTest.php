@@ -16,7 +16,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Facades\Image;
 use Mockery;
 use ReflectionMethod;
 use Tests\TestCase;
@@ -140,23 +139,6 @@ class EventNotifyFollowingTest extends TestCase
         $this->assertSame(1, $this->sentTo('tag-and-entity@example.com'));
     }
 
-    /**
-     * Stub Intervention's Image facade (same pattern as ImageHandlerTest) so
-     * the real upload endpoint runs against the fake external disk.
-     */
-    private function stubImageFacade(): void
-    {
-        $mock = Mockery::mock();
-        $mock->shouldReceive('fit')->andReturnSelf();
-        $mock->shouldReceive('encode')->andReturnSelf();
-        $mock->shouldReceive('save')->andReturnSelf();
-        $mock->shouldReceive('destroy')->andReturnNull();
-        $mock->shouldReceive('basePath')->andReturnUsing(function () {
-            return tempnam(sys_get_temp_dir(), 'notifytest-');
-        });
-
-        Image::shouldReceive('make')->andReturn($mock);
-    }
 
     /**
      * Upload-trigger regression: isset($event->photos) cached the relation
@@ -176,7 +158,6 @@ class EventNotifyFollowingTest extends TestCase
     public function first_photo_upload_notifies_followers(): void
     {
         Storage::fake('external');
-        $this->stubImageFacade();
 
         $owner = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
         $tag = Tag::factory()->create();
@@ -199,7 +180,6 @@ class EventNotifyFollowingTest extends TestCase
     public function second_photo_upload_does_not_renotify(): void
     {
         Storage::fake('external');
-        $this->stubImageFacade();
 
         $owner = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
         $tag = Tag::factory()->create();

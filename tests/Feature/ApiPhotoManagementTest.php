@@ -10,7 +10,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Facades\Image;
 use Mockery;
 use Tests\TestCase;
 
@@ -44,24 +43,6 @@ class ApiPhotoManagementTest extends TestCase
         parent::tearDown();
     }
 
-    /**
-     * Replace Intervention's Image facade with a self-chained mock (same
-     * pattern as ImageHandlerTest) so the upload pipeline runs without real
-     * image processing against the fake external disk.
-     */
-    private function stubImageFacade(): void
-    {
-        $mock = Mockery::mock();
-        $mock->shouldReceive('fit')->andReturnSelf();
-        $mock->shouldReceive('encode')->andReturnSelf();
-        $mock->shouldReceive('save')->andReturnSelf();
-        $mock->shouldReceive('destroy')->andReturnNull();
-        $mock->shouldReceive('basePath')->andReturnUsing(function () {
-            return tempnam(sys_get_temp_dir(), 'photomgmt-');
-        });
-
-        Image::shouldReceive('make')->andReturn($mock);
-    }
 
     private function seedPhotoOwnedBy(User $user): Photo
     {
@@ -78,7 +59,6 @@ class ApiPhotoManagementTest extends TestCase
     /** @test */
     public function uploaded_photo_is_attributed_to_the_uploader(): void
     {
-        $this->stubImageFacade();
         Mail::fake();
 
         $event = Event::factory()->create(['created_by' => $this->owner->id]);
@@ -118,7 +98,6 @@ class ApiPhotoManagementTest extends TestCase
     /** @test */
     public function make_photo_falls_back_to_user_one_when_unauthenticated(): void
     {
-        $this->stubImageFacade();
 
         // No actingAs: console/queued contexts keep the legacy attribution.
         $photo = (new \App\Services\ImageHandler())->makePhoto(
