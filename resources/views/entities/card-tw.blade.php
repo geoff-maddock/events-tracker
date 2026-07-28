@@ -1,5 +1,7 @@
 <!-- Entity Card Component -->
-<article class="entity-card-tw group {{ $entity->entityStatus->name === 'Inactive' ? 'opacity-50' : '' }}" id="entity-card-{{ $entity->id }}">
+<article class="entity-card-tw group {{ $entity->entityStatus->name === 'Inactive' ? 'opacity-50' : '' }} {{ isset($loop) ? 'stagger-item' : '' }}"
+	@isset($loop) style="--stagger-i: {{ $loop->index % 24 }}" @endisset
+	id="entity-card-{{ $entity->id }}">
 	<!-- Entity Image -->
 	<div class="relative overflow-hidden">
 		@if ($primary = $entity->getPrimaryPhoto())

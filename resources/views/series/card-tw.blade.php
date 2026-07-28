@@ -72,7 +72,7 @@
 
         <!-- Series Title -->
         <h3 class="event-card-title-tw mb-2 line-clamp-2">
-            <a href="{{ route('series.show', [$series->slug]) }}">{{ $series->name }}</a>
+            <a href="{{ route('series.show', [$series->slug]) }}" class="link-reveal">{{ $series->name }}</a>
         </h3>
 
         <!-- Short Description -->

@@ -1,4 +1,4 @@
-<div class="flex flex-col group">
+<div class="flex flex-col group {{ isset($loop) ? 'stagger-item' : '' }}" @isset($loop) style="--stagger-i: {{ $loop->index % 24 }}" @endisset>
     <!-- Date bar or placeholder to maintain alignment -->
     @if ($showDateBar)
         <div class="text-xs font-medium px-2 py-1 text-center mb-1 rounded-sm {{ $isWeekend ? 'badge-tw badge-warning-tw' : 'bg-accent text-foreground' }}">

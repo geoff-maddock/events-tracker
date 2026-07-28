@@ -70,8 +70,88 @@
   }
 }
 
+/* Micro-interaction keyframes (issue #2014) */
+@keyframes tw-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes tw-fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes tw-zoom-in {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes tw-spin {
+  to { transform: rotate(360deg); }
+}
+
 /* Legacy custom component classes - will be migrated to Blade components */
 @layer components {
+
+  /* Entrance animations ("backwards" fill hides the element during any delay
+     without locking the end-keyframe transform, so hover transforms still work) */
+  .anim-fade-in {
+    animation: tw-fade-in 0.25s ease-out backwards;
+  }
+
+  .anim-fade-up {
+    animation: tw-fade-up 0.35s ease-out backwards;
+  }
+
+  .anim-zoom-in {
+    animation: tw-zoom-in 0.2s ease-out backwards;
+  }
+
+  /* Staggered grid entrance: set --stagger-i inline from Blade $loop->index */
+  .stagger-item {
+    animation: tw-fade-up 0.35s ease-out backwards;
+    animation-delay: calc(min(var(--stagger-i, 0), 12) * 40ms);
+  }
+
+  /* Spinners and loading states */
+  .spinner {
+    @apply h-10 w-10 rounded-full border-4 border-muted border-t-primary;
+    animation: tw-spin 0.8s linear infinite;
+  }
+
+  .loading {
+    @apply fixed inset-0 z-[100] hidden items-center justify-center bg-background/60 backdrop-blur-sm;
+  }
+
+  .loading.is-active {
+    @apply flex;
+  }
+
+  .load-spinner {
+    @apply flex justify-center py-6;
+  }
+
+  .load-spinner::after {
+    content: '';
+    @apply h-8 w-8 rounded-full border-4 border-muted border-t-primary;
+    animation: tw-spin 0.8s linear infinite;
+  }
+
+  .btn-spinner {
+    @apply inline-block h-4 w-4 rounded-full border-2 border-current border-t-transparent;
+    animation: tw-spin 0.8s linear infinite;
+  }
+
+  /* Pending state for ajax-action links (toggled from public/js/custom.js) */
+  .is-pending {
+    @apply opacity-60 pointer-events-none;
+    animation: tw-fade-in 0.6s ease-in-out infinite alternate;
+  }
+
+  /* Underline sweep on hover */
+  .link-reveal {
+    @apply bg-gradient-to-r from-primary to-primary bg-no-repeat bg-[length:0%_1px] bg-left-bottom transition-[background-size] duration-300 hover:bg-[length:100%_1px];
+  }
 
   /* Button styles */
   .btn-primary-tw {
@@ -92,7 +172,7 @@
   }
 
   .card-hover-tw {
-    @apply hover:shadow-xl transition-all duration-200;
+    @apply hover:shadow-xl hover:-translate-y-0.5 transition-[transform,box-shadow] duration-200 motion-reduce:transform-none;
   }
 
   /* Form inputs */
@@ -168,12 +248,12 @@
 
   /* Event card specific styles */
   .event-card-tw {
-    @apply bg-card rounded-lg overflow-hidden shadow-lg border border-border hover:shadow-xl transition-all duration-200 flex flex-col;
+    @apply bg-card rounded-lg overflow-hidden shadow-lg border border-border hover:shadow-xl hover:-translate-y-0.5 transition-[transform,box-shadow] duration-200 motion-reduce:transform-none flex flex-col;
   }
 
   /* Entity card specific styles */
   .entity-card-tw {
-    @apply bg-card rounded-lg overflow-hidden shadow-lg border border-border hover:shadow-xl transition-all duration-200 flex flex-col;
+    @apply bg-card rounded-lg overflow-hidden shadow-lg border border-border hover:shadow-xl hover:-translate-y-0.5 transition-[transform,box-shadow] duration-200 motion-reduce:transform-none flex flex-col;
   }
 
   .event-card-image-tw {
@@ -382,4 +462,25 @@
 .swal2-html-container,
 .swal2-content {
   @apply text-muted-foreground;
+}
+
+/* Collapse all motion for users who prefer reduced motion.
+   Spinners are exempt — indeterminate progress must stay visible. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .spinner,
+  .btn-spinner,
+  .load-spinner::after,
+  .animate-spin {
+    animation-duration: 0.8s !important;
+    animation-iteration-count: infinite !important;
+  }
 }

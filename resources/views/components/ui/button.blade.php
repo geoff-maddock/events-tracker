@@ -2,10 +2,11 @@
     'variant' => 'default',
     'size' => 'default',
     'href' => null,
+    'loading' => false,
 ])
 
 @php
-$base = 'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50';
+$base = 'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,background-color,border-color,transform,opacity] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50';
 
 $variants = [
     'default' => 'bg-primary text-primary-foreground shadow hover:bg-primary/90',
@@ -27,14 +28,20 @@ $sizes = [
 $classes = $base
     . ' ' . ($variants[$variant] ?? $variants['default'])
     . ' ' . ($sizes[$size] ?? $sizes['default']);
+
+if ($loading) {
+    $classes .= $href ? ' opacity-60 pointer-events-none' : '';
+}
 @endphp
 
 @if($href)
-    <a href="{{ $href }}" {{ $attributes->merge(['class' => $classes]) }}>
+    <a href="{{ $href }}" {{ $attributes->merge(['class' => $classes]) }} @if($loading) aria-busy="true" @endif>
+        @if($loading)<span class="btn-spinner" aria-hidden="true"></span>@endif
         {{ $slot }}
     </a>
 @else
-    <button {{ $attributes->merge(['class' => $classes]) }}>
+    <button {{ $attributes->merge(['class' => $classes]) }} @if($loading) disabled aria-busy="true" @endif>
+        @if($loading)<span class="btn-spinner" aria-hidden="true"></span>@endif
         {{ $slot }}
     </button>
 @endif

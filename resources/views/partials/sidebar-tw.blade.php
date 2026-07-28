@@ -157,7 +157,7 @@
 
 
 <!-- Mobile Sidebar Overlay -->
-<div id="mobile-sidebar-overlay" class="hidden lg:hidden fixed inset-0 bg-black/50 z-40" onclick="closeMobileSidebar()"></div>
+<div id="mobile-sidebar-overlay" class="hidden anim-fade-in lg:hidden fixed inset-0 bg-black/50 z-40" onclick="closeMobileSidebar()"></div>
 
 <!-- Mobile Sidebar -->
 <aside id="mobile-sidebar" class="sidebar fixed inset-y-0 left-0 z-50 w-64 transform -translate-x-full transition-transform duration-200 ease-in-out lg:hidden bg-card border-r border-border flex flex-col">

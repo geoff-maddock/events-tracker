@@ -1,5 +1,7 @@
 <!-- Event Card Component -->
-<article class="event-card-tw group {{ $event->visibility->name === 'Cancelled' ? 'opacity-50' : '' }}" id="event-card-{{ $event->id }}">
+<article class="event-card-tw group {{ $event->visibility->name === 'Cancelled' ? 'opacity-50' : '' }} {{ isset($loop) ? 'stagger-item' : '' }}"
+    @isset($loop) style="--stagger-i: {{ $loop->index % 24 }}" @endisset
+    id="event-card-{{ $event->id }}">
     <!-- Event Image -->
     <div class="relative overflow-hidden">
         @if ($primary = $event->getPrimaryPhoto())
@@ -69,7 +71,7 @@
     <div class="event-card-content-tw">
         <!-- Event Title -->
         <h3 class="event-card-title-tw mb-2 line-clamp-2">
-            <a href="{{ route('events.show', [$event->slug]) }}">{{ $event->name }}</a>
+            <a href="{{ route('events.show', [$event->slug]) }}" class="link-reveal">{{ $event->name }}</a>
         </h3>
 
         <!-- Short Description -->

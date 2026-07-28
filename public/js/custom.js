@@ -205,12 +205,17 @@ var App = (function () {
     var setupAjaxAction = function (init) {
         $(init).on('click', 'a.ajax-action', function (e) {
             e.preventDefault();
-            let target = $(this).data("target");
+            let $link = $(this);
+            if ($link.hasClass('is-pending')) {
+                return;
+            }
+            $link.addClass('is-pending');
+            let target = $link.data("target");
             $.ajax({
-                url: $(this).attr('href'),
+                url: $link.attr('href'),
             }).done(function (data) {
                 // fire a flash message
-                $(target).replaceWith(data.Success);
+                $(target).replaceWith($(data.Success).addClass('anim-zoom-in'));
                 Swal.fire({
                     title: "Success",
                     text: data.Message,
@@ -219,6 +224,7 @@ var App = (function () {
                 });
                 console.log('Updated target ' + target);
             }).fail(function () {
+                $link.removeClass('is-pending');
                 console.log('No events could be loaded')
             });
         });
@@ -391,18 +397,22 @@ var Home = (function () {
 
     // load a whole block of events
     var getEvents = function getEvents(url) {
+        $('#loading').addClass('is-active');
         $.ajax({
             url: url
         }).done(function (data) {
             $('#4days').html(data);
         }).fail(function () {
             console.log('No events could be loaded.');
+        }).always(function () {
+            $('#loading').removeClass('is-active');
         });
     };
 
     // load a whole block of events and append
     var addEvents = function addEvents(url, target) {
         if (url !== undefined) {
+            $('#loading').addClass('is-active');
             $.ajax({
                 url: url
             }).done(function (data) {
@@ -411,6 +421,8 @@ var Home = (function () {
                 App.loadEmbeds();
             }).fail(function () {
                 console.log('No events could be loaded.');
+            }).always(function () {
+                $('#loading').removeClass('is-active');
             });
         }
     };

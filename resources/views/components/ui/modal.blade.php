@@ -19,13 +19,13 @@ $sizeClass = $sizeClasses[$size] ?? $sizeClasses['md'];
 
 <!-- Modal Backdrop -->
 <div id="{{ $id }}"
-     class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+     class="hidden anim-fade-in fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
      role="dialog"
      aria-modal="true"
      aria-labelledby="{{ $id }}-title">
 
     <!-- Modal Container -->
-    <div class="bg-card rounded-lg shadow-xl {{ $sizeClass }} w-full max-h-[90vh] flex flex-col border border-border"
+    <div class="anim-zoom-in bg-card rounded-lg shadow-xl {{ $sizeClass }} w-full max-h-[90vh] flex flex-col border border-border"
          @click.stop>
 
         <!-- Modal Header -->
