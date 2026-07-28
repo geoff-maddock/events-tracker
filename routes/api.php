@@ -246,10 +246,6 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::delete('photos/{photo}', [\App\Http\Controllers\Api\PhotosController::class, 'destroy']);
 });
 
-// routes protected by the shield middleware
-Route::middleware('shield')->name('shield.')->group(function () {
-});
-
 // calendar routes - these are used by the web app for dynamic loading
 Route::get('calendar-events', [\App\Http\Controllers\EventsController::class, 'calendarEventsApi'])->name('calendarEvents.api');
 Route::get('tag-calendar-events', [\App\Http\Controllers\EventsController::class, 'tagCalendarEventsApi'])->name('tagCalendarEvents.api');
