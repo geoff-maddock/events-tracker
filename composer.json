@@ -97,7 +97,9 @@
 		},
 		"audit": {
 			"ignore": {
-				"PKSA-mdq4-51ck-6kdq": "Laravel CRLF injection in default email validation rule. Patched only in Laravel 12.60+/13.10+ (all 10.x AND 11.x are affected), so it cannot be resolved without the deferred framework-upgrade track. Accepted/known risk; revisit when upgrading the framework."
+				"PKSA-mdq4-51ck-6kdq": "Laravel CRLF injection in default email validation rule. Patched only in Laravel 12.60+/13.10+ (all 10.x AND 11.x are affected), so it cannot be resolved without the deferred framework-upgrade track. Accepted/known risk; revisit when upgrading the framework.",
+				"PKSA-3r5d-mb8f-1qw9": "Duplicate GitHub-advisory record of GHSA-5vg9-5847-vvmq, the same CRLF-injection issue already ignored as PKSA-mdq4-51ck-6kdq. Patched only in Laravel 12.60+/13.10+; resolved by the Laravel 12 upgrade track.",
+				"PKSA-m5cs-t1y6-qpcs": "Temporary signed URL path confusion (GHSA-crmm-hgp2-wgrp). The vulnerable code path (LocalFilesystemAdapter::temporaryUrl serving) was introduced in Laravel 11+ and does not exist in Laravel 10; this app never calls Storage::temporaryUrl on the local disk. Not applicable; resolved by upgrade to 12.61.1+."
 			}
 		}
 	},
