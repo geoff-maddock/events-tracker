@@ -499,7 +499,9 @@ class Series extends Eloquent
     public function length(): float
     {
         if ($this->start_at) {
-            return $this->start_at->diffInHours($this->end_time, false);
+            // (int) keeps Carbon 2's truncated-integer semantics after the
+            // Carbon 3 upgrade, where diffIn* returns fractional floats
+            return (int) $this->start_at->diffInHours($this->end_time, false);
         }
 
         return 0;

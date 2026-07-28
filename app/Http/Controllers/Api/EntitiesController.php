@@ -253,8 +253,6 @@ class EntitiesController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        $this->middleware('auth');
-
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_entity');
         $listParamSessionStore->setKeyPrefix('internal_entity_index');
