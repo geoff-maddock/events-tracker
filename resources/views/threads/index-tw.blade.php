@@ -40,7 +40,7 @@
 	<!-- Active Filters / Reset -->
 	@if($hasFilter)
 	<div class="inline-flex items-center gap-2 ml-4">
-		<a href="{{ url()->action('ThreadsController@rppReset') }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg">
+		<a href="{{ url()->action([\App\Http\Controllers\ThreadsController::class, 'rppReset']) }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg">
 			Clear All <i class="bi bi-x ml-1"></i>
 		</a>
 	</div>

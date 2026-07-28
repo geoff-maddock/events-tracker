@@ -60,14 +60,14 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::match(['get', 'post'], 'activities/filter', ['as' => 'activities.filter', 'uses' => '\App\Http\Controllers\Api\ActivityController@filter']);
     Route::get('activities/reset', ['as' => 'activities.reset', 'uses' => '\App\Http\Controllers\Api\ActivityController@reset']);
     Route::get('activities/rpp-reset', ['as' => 'activities.rppReset', 'uses' => '\App\Http\Controllers\Api\ActivityController@rppReset']);
-    Route::resource('activities', 'Api\ActivityController');
+    Route::resource('activities', \App\Http\Controllers\Api\ActivityController::class);
 
     Route::match(['get', 'post'], 'blogs/filter', ['as' => 'blogs.filter', 'uses' => '\App\Http\Controllers\Api\BlogsController@filter']);
     Route::get('blogs/reset', ['as' => 'blogs.reset', 'uses' => '\App\Http\Controllers\Api\BlogsController@reset']);
     Route::get('blogs/rpp-reset', ['as' => 'blogs.rppReset', 'uses' => '\App\Http\Controllers\Api\BlogsController@rppReset']);
     Route::put('blogs/{blog}', [\App\Http\Controllers\Api\BlogsController::class, 'update'])->name('blogs.update');
     Route::patch('blogs/{blog}', [\App\Http\Controllers\Api\BlogsController::class, 'patch'])->name('blogs.patch');
-    Route::apiResource('blogs', 'Api\BlogsController')->except(['update']);
+    Route::apiResource('blogs', \App\Http\Controllers\Api\BlogsController::class)->except(['update']);
 
     Route::get('events/attending', ['as' => 'events.attending', 'uses' => '\App\Http\Controllers\Api\EventsController@indexAttending']);
     Route::get('events/recommended', ['as' => 'events.recommended', 'uses' => '\App\Http\Controllers\Api\EventsController@indexRecommended'])->middleware('auth:sanctum');
@@ -92,7 +92,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
 
     Route::put('events/{event}', [\App\Http\Controllers\Api\EventsController::class, 'update'])->name('events.update');
     Route::patch('events/{event}', [\App\Http\Controllers\Api\EventsController::class, 'patch'])->name('events.patch');
-    Route::resource('events', 'Api\EventsController')->except(['update']);
+    Route::resource('events', \App\Http\Controllers\Api\EventsController::class)->except(['update']);
 
     Route::get('entities/{entity}/photos', ['as' => 'entities.photos', 'uses' => '\App\Http\Controllers\Api\EntitiesController@photos']);
     Route::get('entities/{entity}/links', ['as' => 'entities.links', 'uses' => '\App\Http\Controllers\Api\EntitiesController@links']);
@@ -122,57 +122,57 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     // the single update() endpoint Route::resource would otherwise generate.
     Route::put('entities/{entity}', [\App\Http\Controllers\Api\EntitiesController::class, 'update'])->name('entities.update');
     Route::patch('entities/{entity}', [\App\Http\Controllers\Api\EntitiesController::class, 'patch'])->name('entities.patch');
-    Route::resource('entities', 'Api\EntitiesController')->except(['update']);
+    Route::resource('entities', \App\Http\Controllers\Api\EntitiesController::class)->except(['update']);
 
     Route::match(['get', 'post'], 'entity-types/filter', ['as' => 'entityType.filter', 'uses' => '\App\Http\Controllers\Api\EntityTypesController@filter']);
     Route::get('entity-types/reset', ['as' => 'entity-types.reset', 'uses' => '\App\Http\Controllers\Api\EntityTypesController@reset']);
     Route::get('entity-types/rpp-reset', ['as' => 'entity-types.rppReset', 'uses' => '\App\Http\Controllers\Api\EntityTypesController@rppReset']);
     Route::put('entity-types/{entity_type}', [\App\Http\Controllers\Api\EntityTypesController::class, 'update'])->name('entity-types.update');
     Route::patch('entity-types/{entity_type}', [\App\Http\Controllers\Api\EntityTypesController::class, 'patch'])->name('entity-types.patch');
-    Route::resource('entity-types', 'Api\EntityTypesController')->except(['update']);
+    Route::resource('entity-types', \App\Http\Controllers\Api\EntityTypesController::class)->except(['update']);
 
     Route::match(['get', 'post'], 'entity-statuses/filter', ['as' => 'entityStatus.filter', 'uses' => '\App\Http\Controllers\Api\EntityStatusesController@filter']);
     Route::get('entity-statuses/reset', ['as' => 'entity-statuses.reset', 'uses' => '\App\Http\Controllers\Api\EntityStatusesController@reset']);
     Route::get('entity-statuses/rpp-reset', ['as' => 'entity-statuses.rppReset', 'uses' => '\App\Http\Controllers\Api\EntityStatusesController@rppReset']);
     Route::put('entity-statuses/{entity_status}', [\App\Http\Controllers\Api\EntityStatusesController::class, 'update'])->name('entity-statuses.update');
     Route::patch('entity-statuses/{entity_status}', [\App\Http\Controllers\Api\EntityStatusesController::class, 'patch'])->name('entity-statuses.patch');
-    Route::resource('entity-statuses', 'Api\EntityStatusesController')->except(['update']);
+    Route::resource('entity-statuses', \App\Http\Controllers\Api\EntityStatusesController::class)->except(['update']);
 
     Route::match(['get', 'post'], 'event-types/filter', ['as' => 'eventType.filter', 'uses' => '\App\Http\Controllers\Api\EventTypesController@filter']);
     Route::get('event-types/reset', ['as' => 'event-types.reset', 'uses' => '\App\Http\Controllers\Api\EventTypesController@reset']);
     Route::get('event-types/rpp-reset', ['as' => 'event-types.rppReset', 'uses' => '\App\Http\Controllers\Api\EventTypesController@rppReset']);
     Route::put('event-types/{event_type}', [\App\Http\Controllers\Api\EventTypesController::class, 'update'])->name('event-types.update');
     Route::patch('event-types/{event_type}', [\App\Http\Controllers\Api\EventTypesController::class, 'patch'])->name('event-types.patch');
-    Route::resource('event-types', 'Api\EventTypesController')->except(['update']);
+    Route::resource('event-types', \App\Http\Controllers\Api\EventTypesController::class)->except(['update']);
 
     Route::match(['get', 'post'], 'event-statuses/filter', ['as' => 'eventStatus.filter', 'uses' => '\App\Http\Controllers\Api\EventStatusesController@filter']);
     Route::get('event-statuses/reset', ['as' => 'event-statuses.reset', 'uses' => '\App\Http\Controllers\Api\EventStatusesController@reset']);
     Route::get('event-statuses/rpp-reset', ['as' => 'event-statuses.rppReset', 'uses' => '\App\Http\Controllers\Api\EventStatusesController@rppReset']);
     Route::put('event-statuses/{event_status}', [\App\Http\Controllers\Api\EventStatusesController::class, 'update'])->name('event-statuses.update');
     Route::patch('event-statuses/{event_status}', [\App\Http\Controllers\Api\EventStatusesController::class, 'patch'])->name('event-statuses.patch');
-    Route::resource('event-statuses', 'Api\EventStatusesController')->except(['update']);
+    Route::resource('event-statuses', \App\Http\Controllers\Api\EventStatusesController::class)->except(['update']);
 
     Route::match(['get', 'post'], 'forums/filter', ['as' => 'forums.filter', 'uses' => '\App\Http\Controllers\Api\ForumsController@filter']);
     Route::get('forums/reset', ['as' => 'forums.reset', 'uses' => '\App\Http\Controllers\Api\ForumsController@reset']);
     Route::get('forums/rpp-reset', ['as' => 'forums.rppReset', 'uses' => '\App\Http\Controllers\Api\ForumsController@rppReset']);
     Route::put('forums/{forum}', [\App\Http\Controllers\Api\ForumsController::class, 'update'])->name('forums.update');
     Route::patch('forums/{forum}', [\App\Http\Controllers\Api\ForumsController::class, 'patch'])->name('forums.patch');
-    Route::apiResource('forums', 'Api\ForumsController')->except(['update']);
+    Route::apiResource('forums', \App\Http\Controllers\Api\ForumsController::class)->except(['update']);
 
     Route::match(['get', 'post'], 'links/filter', ['as' => 'links.filter', 'uses' => '\App\Http\Controllers\Api\LinksController@filter']);
     Route::get('links/reset', ['as' => 'links.reset', 'uses' => '\App\Http\Controllers\Api\LinksController@reset']);
     Route::get('links/rpp-reset', ['as' => 'links.rppReset', 'uses' => '\App\Http\Controllers\Api\LinksController@rppReset']);
-    Route::apiResource('links', 'Api\LinksController');
+    Route::apiResource('links', \App\Http\Controllers\Api\LinksController::class);
     Route::put('menus/{menu}', [\App\Http\Controllers\Api\MenusController::class, 'update'])->name('menus.update');
     Route::patch('menus/{menu}', [\App\Http\Controllers\Api\MenusController::class, 'patch'])->name('menus.patch');
-    Route::resource('menus', 'Api\MenusController')->except(['update']);
+    Route::resource('menus', \App\Http\Controllers\Api\MenusController::class)->except(['update']);
 
     Route::match(['get', 'post'], 'locations/filter', ['as' => 'locations.filter', 'uses' => '\App\Http\Controllers\Api\LocationsController@filter']);
     Route::get('locations/reset', ['as' => 'locations.reset', 'uses' => '\App\Http\Controllers\Api\LocationsController@reset']);
     Route::get('locations/rpp-reset', ['as' => 'locations.rppReset', 'uses' => '\App\Http\Controllers\Api\LocationsController@rppReset']);
     Route::put('locations/{location}', [\App\Http\Controllers\Api\LocationsController::class, 'update'])->name('locations.update');
     Route::patch('locations/{location}', [\App\Http\Controllers\Api\LocationsController::class, 'patch'])->name('locations.patch');
-    Route::resource('locations', 'Api\LocationsController')->except(['update']);
+    Route::resource('locations', \App\Http\Controllers\Api\LocationsController::class)->except(['update']);
 
     Route::get('series/reset', ['as' => 'series.reset', 'uses' => '\App\Http\Controllers\Api\SeriesController@reset']);
     Route::get('series/rpp-reset', ['as' => 'series.rppReset', 'uses' => '\App\Http\Controllers\Api\SeriesController@rppReset']);
@@ -184,7 +184,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('series/popular', ['as' => 'series.popular', 'uses' => '\App\Http\Controllers\Api\SeriesController@popular']);
     Route::put('series/{series}', [\App\Http\Controllers\Api\SeriesController::class, 'update'])->name('series.update');
     Route::patch('series/{series}', [\App\Http\Controllers\Api\SeriesController::class, 'patch'])->name('series.patch');
-    Route::apiResource('series', 'Api\SeriesController')->except(['update']);
+    Route::apiResource('series', \App\Http\Controllers\Api\SeriesController::class)->except(['update']);
 
     Route::match(['get', 'post'], 'tags/filter', ['as' => 'tags.filter', 'uses' => '\App\Http\Controllers\Api\TagsController@filter']);
     Route::get('tags/reset', ['as' => 'tags.reset', 'uses' => '\App\Http\Controllers\Api\TagsController@reset']);
@@ -194,9 +194,9 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::delete('tags/{tag}', [\App\Http\Controllers\Api\TagsController::class, 'destroy']);
     Route::get('tags/{tag}/related-tags', ['as' => 'tags.relatedTags', 'uses' => '\App\Http\Controllers\Api\TagsController@relatedTags']);
     Route::get('tags/popular', ['as' => 'tags.popular', 'uses' => '\App\Http\Controllers\Api\TagsController@popular']);
-    Route::resource('tags', 'Api\TagsController')->except(['destroy']);
+    Route::resource('tags', \App\Http\Controllers\Api\TagsController::class)->except(['destroy']);
     Route::match(['get', 'post'], 'tag-types/filter', ['as' => 'tag-types.filter', 'uses' => '\App\Http\Controllers\Api\TagTypesController@filter']);
-    Route::resource('tag-types', 'Api\TagTypesController')->only(['index', 'show']);
+    Route::resource('tag-types', \App\Http\Controllers\Api\TagTypesController::class)->only(['index', 'show']);
 
 
     Route::match(['get', 'post'], 'roles/filter', ['as' => 'roles.filter', 'uses' => '\App\Http\Controllers\Api\RolesController@filter']);
@@ -204,7 +204,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('roles/rpp-reset', ['as' => 'roles.rppReset', 'uses' => '\App\Http\Controllers\Api\RolesController@rppReset']);
     Route::put('roles/{role}', [\App\Http\Controllers\Api\RolesController::class, 'update'])->name('roles.update');
     Route::patch('roles/{role}', [\App\Http\Controllers\Api\RolesController::class, 'patch'])->name('roles.patch');
-    Route::resource('roles', 'Api\RolesController')->except(['update']);
+    Route::resource('roles', \App\Http\Controllers\Api\RolesController::class)->except(['update']);
 
 
     Route::match(['get', 'post'], 'posts/filter', ['as' => 'posts.filter', 'uses' => '\App\Http\Controllers\Api\PostsController@filter']);
@@ -212,7 +212,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('posts/rpp-reset', ['as' => 'posts.rppReset', 'uses' => '\App\Http\Controllers\Api\PostsController@rppReset']);
     Route::put('posts/{post}', [\App\Http\Controllers\Api\PostsController::class, 'update'])->name('posts.update');
     Route::patch('posts/{post}', [\App\Http\Controllers\Api\PostsController::class, 'patch'])->name('posts.patch');
-    Route::apiResource('posts', 'Api\PostsController')->except(['update']);
+    Route::apiResource('posts', \App\Http\Controllers\Api\PostsController::class)->except(['update']);
 
     Route::match(['get', 'post'], 'threads/filter', ['as' => 'threads.filter', 'uses' => '\App\Http\Controllers\Api\ThreadsController@filter']);
     Route::get('threads/reset', ['as' => 'threads.reset', 'uses' => '\App\Http\Controllers\Api\ThreadsController@reset']);
@@ -220,25 +220,25 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('threads/{threadId}/posts', ['as' => 'threads.posts', 'uses' => '\App\Http\Controllers\Api\ThreadsController@posts']);
     Route::put('threads/{thread}', [\App\Http\Controllers\Api\ThreadsController::class, 'update'])->name('threads.update');
     Route::patch('threads/{thread}', [\App\Http\Controllers\Api\ThreadsController::class, 'patch'])->name('threads.patch');
-    Route::apiResource('threads', 'Api\ThreadsController')->except(['update']);
+    Route::apiResource('threads', \App\Http\Controllers\Api\ThreadsController::class)->except(['update']);
 
     Route::match(['get', 'post'], 'users/filter', ['as' => 'users.filter', 'uses' => '\App\Http\Controllers\Api\UsersController@filter']);
     Route::get('users/reset', ['as' => 'users.reset', 'uses' => '\App\Http\Controllers\Api\UsersController@reset']);
     Route::get('users/rpp-reset', ['as' => 'users.rppReset', 'uses' => '\App\Http\Controllers\Api\UsersController@rppReset']);
     Route::get('users/{user}/events-attending', ['as' => 'users.events-attending', 'uses' => '\App\Http\Controllers\Api\UsersController@eventsAttending']);
-    Route::apiResource('users', 'Api\UsersController');
+    Route::apiResource('users', \App\Http\Controllers\Api\UsersController::class);
 
     Route::match(['get', 'post'], 'visibilities/filter', ['as' => 'visibilities.filter', 'uses' => '\App\Http\Controllers\Api\VisibilitiesController@filter']);
-    Route::resource('visibilities', 'Api\VisibilitiesController')->only(['index', 'show']);
+    Route::resource('visibilities', \App\Http\Controllers\Api\VisibilitiesController::class)->only(['index', 'show']);
 
     Route::match(['get', 'post'], 'occurrence-types/filter', ['as' => 'occurrence-types.filter', 'uses' => '\App\Http\Controllers\Api\OccurrenceTypesController@filter']);
-    Route::resource('occurrence-types', 'Api\OccurrenceTypesController')->only(['index', 'show']);
+    Route::resource('occurrence-types', \App\Http\Controllers\Api\OccurrenceTypesController::class)->only(['index', 'show']);
 
     Route::match(['get', 'post'], 'occurrence-weeks/filter', ['as' => 'occurrence-weeks.filter', 'uses' => '\App\Http\Controllers\Api\OccurrenceWeeksController@filter']);
-    Route::resource('occurrence-weeks', 'Api\OccurrenceWeeksController')->only(['index', 'show']);
+    Route::resource('occurrence-weeks', \App\Http\Controllers\Api\OccurrenceWeeksController::class)->only(['index', 'show']);
 
     Route::match(['get', 'post'], 'occurrence-days/filter', ['as' => 'occurrence-days.filter', 'uses' => '\App\Http\Controllers\Api\OccurrenceDaysController@filter']);
-    Route::resource('occurrence-days', 'Api\OccurrenceDaysController')->only(['index', 'show']);
+    Route::resource('occurrence-days', \App\Http\Controllers\Api\OccurrenceDaysController::class)->only(['index', 'show']);
 
     // photo management endpoints
     Route::post('photos/{photo}/set-primary', [\App\Http\Controllers\Api\PhotosController::class, 'setPrimary']);

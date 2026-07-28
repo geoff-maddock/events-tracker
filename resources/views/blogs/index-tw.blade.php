@@ -101,7 +101,7 @@
 	<div class="card-tw mb-6">
 		<div class="p-4">
 			<form action="{{ url()->current() }}" method="GET" class="flex flex-wrap items-center gap-3">
-				<a href="{{ url()->action('BlogsController@rppReset') }}" class="p-2 bg-muted hover:bg-muted/80 rounded-lg transition-colors" title="Reset list controls">
+				<a href="{{ url()->action([\App\Http\Controllers\BlogsController::class, 'rppReset']) }}" class="p-2 bg-muted hover:bg-muted/80 rounded-lg transition-colors" title="Reset list controls">
 					<i class="bi bi-arrow-clockwise"></i>
 				</a>
 

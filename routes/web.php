@@ -196,7 +196,7 @@ Route::match(['get', 'post'], 'users/filter', ['as' => 'users.filter', 'uses' =>
 Route::get('users/reset', ['as' => 'users.reset', 'uses' => '\App\Http\Controllers\UsersController@reset']);
 Route::get('users/rpp-reset', ['as' => 'users.rppReset', 'uses' => '\App\Http\Controllers\UsersController@rppReset']);
 
-Route::resource('users', 'UsersController')->except(['show'])->middleware('auth');
+Route::resource('users', \App\Http\Controllers\UsersController::class)->except(['show'])->middleware('auth');
 Route::get('users/{user}', [\App\Http\Controllers\UsersController::class, 'show'])->name('users.show');
 
 Route::get('profile/{user}', [\App\Http\Controllers\UsersController::class, 'show'])->name('users.profile-show');
@@ -217,7 +217,7 @@ Route::bind('photos', function ($id) {
     return Photo::whereId($id)->firstOrFail();
 });
 
-Route::resource('photos', 'PhotosController');
+Route::resource('photos', \App\Http\Controllers\PhotosController::class);
 
 // EVENTS
 Route::get('events/create-series', [
@@ -356,7 +356,7 @@ Route::delete('events/{id}/photos/{photo_id}', [\App\Http\Controllers\EventsCont
 Route::post('events/analyze-flyer', [\App\Http\Controllers\FlyerAnalysisController::class, 'analyze'])->name('events.analyzeFlyer');
 
 //Default resource for events
-Route::resource('events', 'EventsController');
+Route::resource('events', \App\Http\Controllers\EventsController::class);
 
 // FORUMS
 Route::bind('forums', function ($id) {
@@ -367,7 +367,7 @@ Route::get('forums/all', [\App\Http\Controllers\ForumsController::class, 'indexA
 Route::match(['get', 'post'], 'forums/filter', ['as' => 'forums.filter', 'uses' => '\App\Http\Controllers\ForumsController@filter']);
 Route::get('forums/reset', ['as' => 'forums.reset', 'uses' => '\App\Http\Controllers\ForumsController@reset']);
 Route::get('forums/rpp-reset', ['as' => 'forums.rppReset', 'uses' => '\App\Http\Controllers\ForumsController@rppReset']);
-Route::resource('forums', 'ForumsController');
+Route::resource('forums', \App\Http\Controllers\ForumsController::class);
 
 // THREADS
 Route::match(['get', 'post'], 'threads/following', [\App\Http\Controllers\ThreadsController::class, 'indexFollowing'])->name('threads.following')->middleware('auth');
@@ -409,7 +409,7 @@ Route::get('threads/{id}/unfollow', [
     'uses' => '\App\Http\Controllers\ThreadsController@unfollow',
 ]);
 
-Route::resource('threads', 'ThreadsController');
+Route::resource('threads', \App\Http\Controllers\ThreadsController::class);
 
 // POSTS
 Route::match(['get', 'post'], 'posts/filter', ['as' => 'posts.filter', 'uses' => '\App\Http\Controllers\PostsController@filter']);
@@ -432,7 +432,7 @@ Route::get('posts/{id}/unlike', [
     'uses' => '\App\Http\Controllers\PostsController@unlike',
 ]);
 
-Route::resource('posts', 'PostsController');
+Route::resource('posts', \App\Http\Controllers\PostsController::class);
 
 // THREAD CATEGORIES
 Route::get('categories/all', [\App\Http\Controllers\CategoriesController::class, 'indexAll']);
@@ -444,7 +444,7 @@ Route::bind('categories', function ($id) {
     return ThreadCategory::whereId($id)->firstOrFail();
 });
 
-Route::resource('categories', 'CategoriesController');
+Route::resource('categories', \App\Http\Controllers\CategoriesController::class);
 
 // BLOGS
 Route::get('blogs/all', [\App\Http\Controllers\BlogsController::class, 'indexAll']);
@@ -457,7 +457,7 @@ Route::bind('blogs', function ($id) {
     return Blog::whereId($id)->firstOrFail();
 });
 
-Route::resource('blogs', 'BlogsController');
+Route::resource('blogs', \App\Http\Controllers\BlogsController::class);
 
 // MENUS
 Route::get('menus/all', [\App\Http\Controllers\MenusController::class, 'indexAll']);
@@ -467,7 +467,7 @@ Route::get('menus/rpp-reset', ['as' => 'menus.rppReset', 'uses' => '\App\Http\Co
 Route::bind('menus', function ($id) {
     return Menu::whereId($id)->firstOrFail();
 });
-Route::resource('menus', 'MenusController');
+Route::resource('menus', \App\Http\Controllers\MenusController::class);
 Route::get('menus/{id}/content', [\App\Http\Controllers\MenusController::class, 'content']);
 
 // PERMISSIONS
@@ -480,7 +480,7 @@ Route::bind('permissions', function ($id) {
     return Permission::whereId($id)->firstOrFail();
 });
 
-Route::resource('permissions', 'PermissionsController');
+Route::resource('permissions', \App\Http\Controllers\PermissionsController::class);
 
 // EntityTypes
 Route::get('entity-types/all', [\App\Http\Controllers\EntityTypesController::class, 'indexAll']);
@@ -493,7 +493,7 @@ Route::bind('entity-types', function ($id) {
     return EntityType::whereId($id)->firstOrFail();
 });
 
-Route::resource('entity-types', 'EntityTypesController');
+Route::resource('entity-types', \App\Http\Controllers\EntityTypesController::class);
 Route::delete('entity-types/{id}', [\App\Http\Controllers\EntityTypesController::class, 'destroy']);
 
 // Roles
@@ -505,7 +505,7 @@ Route::bind('roles', function ($id) {
     return Role::whereId($id)->firstOrFail();
 });
 
-Route::resource('roles', 'RolesController');
+Route::resource('roles', \App\Http\Controllers\RolesController::class);
 Route::delete('roles/{id}', [\App\Http\Controllers\RolesController::class, 'destroy']);
 
 // GROUPS
@@ -519,7 +519,7 @@ Route::bind('groups', function ($id) {
     return Group::whereId($id)->firstOrFail();
 });
 
-Route::resource('groups', 'GroupsController');
+Route::resource('groups', \App\Http\Controllers\GroupsController::class);
 
 // ENTITIES
 Route::match(['get', 'post'], 'entities/following', [\App\Http\Controllers\EntitiesController::class, 'indexFollowing'])->name('entities.following')->middleware('auth');
@@ -568,13 +568,13 @@ Route::bind('entities', function ($id) {
     return Entity::whereId($id)->firstOrFail();
 });
 
-Route::resource('entities', 'EntitiesController');
+Route::resource('entities', \App\Http\Controllers\EntitiesController::class);
 
 Route::bind('locations', function ($id) {
     return Location::whereId($id)->firstOrFail();
 });
 
-Route::resource('entities.locations', 'LocationsController');
+Route::resource('entities.locations', \App\Http\Controllers\LocationsController::class);
 
 Route::bind('contacts', function ($id) {
     return Contact::whereId($id)->firstOrFail();
@@ -583,13 +583,13 @@ Route::bind('contacts', function ($id) {
 Route::get('/entities/{entity:slug}/contacts/{contact:id}/create', [\App\Http\Controllers\ContactsController::class, 'create']);
 Route::get('/entities/{entity:slug}/contacts/{contact:id}/edit', [\App\Http\Controllers\ContactsController::class, 'edit']);
 Route::post('/entities/{entity:slug}/contacts/{contact:id}/update', [\App\Http\Controllers\ContactsController::class, 'update']);
-Route::resource('entities.contacts', 'ContactsController');
+Route::resource('entities.contacts', \App\Http\Controllers\ContactsController::class);
 
 Route::bind('links', function ($id) {
     return Link::whereId($id)->firstOrFail();
 });
 
-Route::resource('entities.links', 'LinksController');
+Route::resource('entities.links', \App\Http\Controllers\LinksController::class);
 
 Route::bind('comments', function ($id) {
     return Comment::whereId($id)->firstOrFail();
@@ -598,16 +598,16 @@ Route::bind('comments', function ($id) {
 Route::get('/entities/{entity:slug}/comments/{comment:id}/edit', [\App\Http\Controllers\CommentsController::class, 'edit']);
 Route::delete('/entities/{entity:slug}/comments/{comment:id}/edit', [\App\Http\Controllers\CommentsController::class, 'destroy']);
 
-Route::resource('entities.comments', 'CommentsController');
-Route::resource('events.comments', 'CommentsController');
-Route::resource('events.reviews', 'EventReviewsController');
+Route::resource('entities.comments', \App\Http\Controllers\CommentsController::class);
+Route::resource('events.comments', \App\Http\Controllers\CommentsController::class);
+Route::resource('events.reviews', \App\Http\Controllers\EventReviewsController::class);
 
 // REVIEWS
 Route::match(['get', 'post'], 'reviews/filter', ['as' => 'reviews.filter', 'uses' => '\App\Http\Controllers\ReviewsController@filter']);
 Route::get('reviews/filter', ['as' => 'reviews.filter', 'uses' => '\App\Http\Controllers\ReviewsController@filter']);
 Route::get('reviews/reset', ['as' => 'reviews.reset', 'uses' => '\App\Http\Controllers\ReviewsController@reset']);
 Route::get('reviews/rpp-reset', ['as' => 'reviews.rppReset', 'uses' => '\App\Http\Controllers\ReviewsController@rppReset']);
-Route::resource('reviews', 'ReviewsController');
+Route::resource('reviews', \App\Http\Controllers\ReviewsController::class);
 
 // SERIES
 Route::get('series/{id}/load-embeds', [\App\Http\Controllers\SeriesController::class, 'loadEmbeds']);
@@ -651,7 +651,7 @@ Route::get('series/{id}/unfollow', [
 ]);
 
 
-Route::resource('series', 'SeriesController');
+Route::resource('series', \App\Http\Controllers\SeriesController::class);
 
 Route::get('series/{series:slug}', [\App\Http\Controllers\SeriesController::class, 'show'])->name('series.show');
 
@@ -670,7 +670,7 @@ Route::get('tags/{id}/unfollow', [
     'uses' => '\App\Http\Controllers\TagsController@unfollow',
 ]);
 
-Route::resource('tags', 'TagsController');
+Route::resource('tags', \App\Http\Controllers\TagsController::class);
 
 // Add the route for rss
 Route::get('rss', [\App\Http\Controllers\EventsController::class, 'rss']);

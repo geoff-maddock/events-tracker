@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Events Tracker — Laravel 10 CMS for tracking events, series, venues, artists, promoters, and related entities for music/arts communities. PHP 8.1+ on the local sandbox (CI uses PHP 8.4), MySQL 8, Vite + Tailwind 4 + Vue 3 / Alpine / jQuery on the frontend.
+Events Tracker — Laravel 12 CMS for tracking events, series, venues, artists, promoters, and related entities for music/arts communities. PHP 8.2+ (sandbox and CI run PHP 8.4), MySQL 8, Vite + Tailwind 4 + Vue 3 / Alpine / jQuery on the frontend. Legacy app skeleton (Kernels/Handler/providers) retained by choice.
 
 Default branch for PRs is `main` 
 

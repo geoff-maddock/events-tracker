@@ -3,11 +3,11 @@ parameters:
   level: 3
   paths:
       - app
-      
+
   ignoreErrors:
       - '#Unsafe usage of new static#'
-
-  checkMissingIterableValueType: false
+      -
+        identifier: missingType.iterableValue
 
 includes:
   - ./vendor/larastan/larastan/extension.neon
