@@ -15,8 +15,9 @@
 }">
     <button
         @click="toggle()"
-        class="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        class="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-[color,background-color,transform] active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'">
-        <i class="bi text-lg" :class="isDark ? 'bi-sun-fill' : 'bi-moon-fill'"></i>
+        <i x-show="isDark" x-cloak class="bi bi-sun-fill text-lg anim-theme-swap"></i>
+        <i x-show="!isDark" x-cloak class="bi bi-moon-fill text-lg anim-theme-swap"></i>
     </button>
 </div>
