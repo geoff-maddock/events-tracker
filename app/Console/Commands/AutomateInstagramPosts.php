@@ -128,8 +128,10 @@ class AutomateInstagramPosts extends Command
                     // output the last posted date and shareCount for debugging in one log statement
                     Log::info("AutomateInstagramPosts: Last posted event #{$event->id} on {$lastShare->posted_at}, share count: {$shareCount}");
 
-                    $daysSinceLastShare = $lastShare->posted_at->diffInDays($today, false);
-                    $daysUntilEvent = $today->diffInDays($event->start_at, false);
+                    // (int) keeps Carbon 2's truncated-integer semantics after the
+                    // Carbon 3 upgrade, where diffIn* returns fractional floats
+                    $daysSinceLastShare = (int) $lastShare->posted_at->diffInDays($today, false);
+                    $daysUntilEvent = (int) $today->diffInDays($event->start_at, false);
                     
                     if ($daysSinceLastShare > 7 && $daysUntilEvent < 30) {
                         return true;
