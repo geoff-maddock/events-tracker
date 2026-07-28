@@ -1,6 +1,7 @@
 <script type="application/ld+json">
 {
-    "@context": "https://schema.org",
+    {{-- @@ escapes Blade: Laravel 12 added a @context directive that would otherwise consume this JSON-LD key --}}
+    "@@context": "https://schema.org",
     "@type": "Event",
     "name": "{{ $event->name}}",
     "startDate": "{!! $event->start_at->format(DateTimeInterface::ISO8601) !!}",
