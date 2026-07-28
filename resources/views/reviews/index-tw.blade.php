@@ -21,7 +21,7 @@
 		<!-- Active Filters / Reset -->
 		@if($hasFilter)
 		<div class="inline-flex items-center gap-2 ml-4">
-			<a href="{{ url()->action('ReviewsController@rppReset') }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg">
+			<a href="{{ url()->action([\App\Http\Controllers\ReviewsController::class, 'rppReset']) }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg">
 				Clear All <i class="bi bi-x ml-1"></i>
 			</a>
 		</div>
@@ -84,7 +84,7 @@
 
 		<div class="flex flex-wrap items-center gap-4">
 			<form action="{{ url()->current() }}" method="GET" class="flex items-center gap-2">
-				<a href="{{ url()->action('ReviewsController@rppReset') }}" class="px-3 py-2 bg-card border border-border rounded-lg hover:bg-accent transition-colors" title="Reset sort and filters">
+				<a href="{{ url()->action([\App\Http\Controllers\ReviewsController::class, 'rppReset']) }}" class="px-3 py-2 bg-card border border-border rounded-lg hover:bg-accent transition-colors" title="Reset sort and filters">
 					<i class="bi bi-arrow-clockwise"></i>
 				</a>
 				<select name="limit" class="form-select-tw text-sm py-1 auto-submit">

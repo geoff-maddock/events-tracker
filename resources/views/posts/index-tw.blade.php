@@ -116,7 +116,7 @@
 
 		<div class="flex flex-wrap items-center gap-4">
 			<form action="{{ url()->current() }}" method="GET" class="flex items-center gap-2">
-				<a href="{{ url()->action('PostsController@rppReset') }}" class="px-3 py-2 bg-card border border-border rounded-lg hover:bg-accent transition-colors" title="Reset sort and filters">
+				<a href="{{ url()->action([\App\Http\Controllers\PostsController::class, 'rppReset']) }}" class="px-3 py-2 bg-card border border-border rounded-lg hover:bg-accent transition-colors" title="Reset sort and filters">
 					<i class="bi bi-arrow-clockwise"></i>
 				</a>
 				<select name="limit" class="form-select-tw text-sm py-1 auto-submit">

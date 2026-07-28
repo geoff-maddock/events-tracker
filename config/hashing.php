@@ -34,6 +34,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Rehash On Login
+    |--------------------------------------------------------------------------
+    |
+    | Laravel 11+ rehashes passwords on login when the work factor changes.
+    | Disabled here because User::setPasswordAttribute() sniffs for the $2y$
+    | bcrypt prefix to avoid double-hashing; auto-rehash must not be enabled
+    | until that mutator is reworked.
+    |
+    */
+
+    'rehash_on_login' => false,
+
+    /*
+    |--------------------------------------------------------------------------
     | Argon Options
     |--------------------------------------------------------------------------
     |

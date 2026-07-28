@@ -1,3 +1,464 @@
 parameters:
 	ignoreErrors:
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/BlogsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:followers\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/BlogsController.php
+
+		-
+			message: '#^Cannot use \+\+ on Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Like\>\.$#'
+			identifier: preInc.type
+			count: 1
+			path: app/Http/Controllers/Api/BlogsController.php
+
+		-
+			message: '#^Cannot use \-\- on Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Like\>\.$#'
+			identifier: preDec.type
+			count: 1
+			path: app/Http/Controllers/Api/BlogsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\:\:\$created_by\.$#'
+			identifier: property.notFound
+			count: 6
+			path: app/Http/Controllers/Api/EntitiesController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/EventsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/Api/EventsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$photos\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/EventsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:visible\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/EventsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:followers\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Api/EventsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getApiResponse\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Api/EventsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/PostsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:followers\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Api/PostsController.php
+
+		-
+			message: '#^Cannot use \+\+ on Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Like\>\.$#'
+			identifier: preInc.type
+			count: 1
+			path: app/Http/Controllers/Api/PostsController.php
+
+		-
+			message: '#^Cannot use \-\- on Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Like\>\.$#'
+			identifier: preDec.type
+			count: 1
+			path: app/Http/Controllers/Api/PostsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/SeriesController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$photos\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/SeriesController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getApiResponse\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Api/SeriesController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/BlogsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:followers\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/BlogsController.php
+
+		-
+			message: '#^Cannot use \+\+ on Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Like\>\.$#'
+			identifier: preInc.type
+			count: 1
+			path: app/Http/Controllers/BlogsController.php
+
+		-
+			message: '#^Cannot use \-\- on Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Like\>\.$#'
+			identifier: preDec.type
+			count: 1
+			path: app/Http/Controllers/BlogsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/EntitiesController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/EntitiesController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/EntitiesController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getPrimaryPhoto\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/EntitiesController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/EventsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:visible\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: app/Http/Controllers/EventsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:followers\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/EventsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$photos\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/PhotosController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/PostsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:followers\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/PostsController.php
+
+		-
+			message: '#^Cannot use \+\+ on Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Like\>\.$#'
+			identifier: preInc.type
+			count: 1
+			path: app/Http/Controllers/PostsController.php
+
+		-
+			message: '#^Cannot use \-\- on Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Like\>\.$#'
+			identifier: preDec.type
+			count: 1
+			path: app/Http/Controllers/PostsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/ReviewsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:followers\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/ReviewsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/ThreadsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:followers\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/ThreadsController.php
+
+		-
+			message: '#^Cannot use \+\+ on Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Like\>\.$#'
+			identifier: preInc.type
+			count: 1
+			path: app/Http/Controllers/ThreadsController.php
+
+		-
+			message: '#^Cannot use \-\- on Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Like\>\.$#'
+			identifier: preDec.type
+			count: 1
+			path: app/Http/Controllers/ThreadsController.php
+
+		-
+			message: '#^Method App\\Models\\Blog\:\:getPrimaryPhoto\(\) should return App\\Models\\Photo\|null but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Blog.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$photos\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Entity.php
+
+		-
+			message: '#^Generic type Illuminate\\Database\\Eloquent\\Relations\\HasMany\<App\\Models\\Location\> in PHPDoc tag @return does not specify all template types of class Illuminate\\Database\\Eloquent\\Relations\\HasMany\: TRelatedModel, TDeclaringModel$#'
+			identifier: generics.lessTypes
+			count: 1
+			path: app/Models/Entity.php
+
+		-
+			message: '#^Method App\\Models\\Entity\:\:getBandcampLinkAttribute\(\) should return App\\Models\\Link\|null but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Entity.php
+
+		-
+			message: '#^Method App\\Models\\Entity\:\:getPrimaryPhoto\(\) should return App\\Models\\Photo\|null but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Entity.php
+
+		-
+			message: '#^Method App\\Models\\Entity\:\:getSoundcloudLinkAttribute\(\) should return App\\Models\\Link\|null but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Entity.php
+
+		-
+			message: '#^Method App\\Models\\Entity\:\:locations\(\) should return Illuminate\\Database\\Eloquent\\Relations\\HasMany\<App\\Models\\Location\> but returns Illuminate\\Database\\Eloquent\\Relations\\HasMany\<App\\Models\\Location, \$this\(App\\Models\\Entity\)\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Entity.php
+
+		-
+			message: '#^Method App\\Models\\Entity\:\:primaryLink\(\) should return App\\Models\\Link\|null but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Entity.php
+
+		-
+			message: '#^Method App\\Models\\Entity\:\:todaysEvents\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Event\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Entity.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$responseType\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Event.php
+
+		-
+			message: '#^Method App\\Models\\Event\:\:getFlyer\(\) should return App\\Models\\Photo\|null but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Event.php
+
+		-
+			message: '#^Method App\\Models\\Event\:\:getPrimaryPhoto\(\) should return App\\Models\\Photo\|null but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Event.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\EventShare\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/EventShare.php
+
+		-
+			message: '#^Method App\\Models\\Post\:\:getPrimaryPhoto\(\) should return App\\Models\\Photo but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Post.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:past\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/Series.php
+
+		-
+			message: '#^Method App\\Models\\Series\:\:getPrimaryPhoto\(\) should return App\\Models\\Photo\|null but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Series.php
+
+		-
+			message: '#^Method App\\Models\\Series\:\:nextEvent\(\) should return App\\Models\\Event\|null but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Series.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\ShortUrl\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/ShortUrl.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$tags\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Tag.php
+
+		-
+			message: '#^Method App\\Models\\Tag\:\:todaysEvents\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Event\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Tag.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Models/Thread.php
+
+		-
+			message: '#^Method App\\Models\\Thread\:\:addPost\(\) should return App\\Models\\Post but returns Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Thread.php
+
+		-
+			message: '#^Method App\\Models\\Thread\:\:getFlyer\(\) should return App\\Models\\Photo\|null but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Thread.php
+
+		-
+			message: '#^Method App\\Models\\Thread\:\:getPrimaryPhoto\(\) should return App\\Models\\Photo\|null but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Thread.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$action_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$object_type\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Models/User.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$responseType\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Method App\\Models\\User\:\:getPrimaryPhoto\(\) should return App\\Models\\Photo\|null but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\User\:\:\$hidden is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$hidden\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/DataExportService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$entityType\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/DataExportService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$event\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/DataExportService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$event_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/DataExportService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Services/DataExportService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Services/DataExportService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$responseType\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/DataExportService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$slug\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Services/DataExportService.php
 
