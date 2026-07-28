@@ -130,7 +130,12 @@ class SeoGuardsTest extends TestCase
             'Disallow: /events/add/',
             'Disallow: /events/grid',
             'Disallow: /*/rpp-reset',
-            'Disallow: /*?sort=',
+            // d4423d36 broadened the param rules from /*?sort= so they also
+            // match sort= appearing after & — keep the test in sync
+            'Disallow: /*sort=',
+            'Disallow: /*direction=',
+            'Disallow: /*limit=',
+            'Disallow: /*filters',
         ] as $line) {
             $this->assertStringContainsString($line, $robots);
         }
