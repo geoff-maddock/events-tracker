@@ -37,13 +37,13 @@
   ),
   'intervention/image' => 
   array (
-    'providers' => 
-    array (
-      0 => 'Intervention\\Image\\ImageServiceProvider',
-    ),
     'aliases' => 
     array (
       'Image' => 'Intervention\\Image\\Facades\\Image',
+    ),
+    'providers' => 
+    array (
+      0 => 'Intervention\\Image\\ImageServiceProvider',
     ),
   ),
   'laravel-notification-channels/twitter' => 
@@ -51,13 +51,6 @@
     'providers' => 
     array (
       0 => 'NotificationChannels\\Twitter\\TwitterServiceProvider',
-    ),
-  ),
-  'laravel/dusk' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Laravel\\Dusk\\DuskServiceProvider',
     ),
   ),
   'laravel/sanctum' => 

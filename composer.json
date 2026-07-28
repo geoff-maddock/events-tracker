@@ -40,7 +40,6 @@
 		"symfony/dom-crawler": "^6.0",
 		"barryvdh/laravel-ide-helper": "^2.8",
 		"larastan/larastan": "^2.11",
-		"laravel/dusk": "^7.7",
 		"phpunit/phpunit": "^10.0",
 		"barryvdh/laravel-debugbar": "^3.8"
 	},
