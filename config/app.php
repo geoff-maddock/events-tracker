@@ -194,9 +194,6 @@ return [
         App\Providers\RouteServiceProvider::class,
         \App\Providers\ViewComposerServiceProvider::class,
 
-        // for image processing, thumbnails
-        Intervention\Image\ImageServiceProvider::class,
-
         // laravel tinker provider
         Laravel\Tinker\TinkerServiceProvider::class,
 
@@ -253,7 +250,6 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        'Image' => \Intervention\Image\Facades\Image::class,
         // 'Calendar' => \MaddHatter\LaravelFullcalendar\Facades\Calendar::class,
     ],
 ];

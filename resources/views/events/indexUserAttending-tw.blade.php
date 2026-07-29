@@ -2,6 +2,10 @@
 
 @section('title', 'User Events Attending')
 
+@section('meta.robots')
+<meta name="robots" content="noindex, follow">
+@endsection
+
 @if (isset($past_events) && count($past_events) > 0)
     @php
         $first = $past_events[0];
@@ -215,7 +219,7 @@
     <div class="card-tw mb-6">
         <div class="p-4">
             <form action="{{ url()->current() }}" method="GET" class="flex flex-wrap items-center gap-3">
-                <a href="{{ url()->action('EventsController@rppResetUserAttending', ['id' => $user->id]) }}?key={{ $key ?? '' }}"
+                <a href="{{ url()->action([\App\Http\Controllers\EventsController::class, 'rppResetUserAttending'], ['id' => $user->id]) }}?key={{ $key ?? '' }}"
                    class="p-2 bg-muted hover:bg-muted/80 rounded-lg transition-colors" title="Reset list controls">
                     <i class="bi bi-arrow-clockwise"></i>
                 </a>

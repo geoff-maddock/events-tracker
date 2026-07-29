@@ -2,6 +2,10 @@
 
 @section('title','Search Results')
 
+@section('meta.robots')
+<meta name="robots" content="noindex, follow">
+@endsection
+
 @section('content')
 
 <!-- Page Header -->

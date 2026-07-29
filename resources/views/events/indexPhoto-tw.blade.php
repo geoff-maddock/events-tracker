@@ -40,7 +40,7 @@
             </button>
 
             <form action="{{ url()->current() }}" method="GET" class="flex items-center gap-2">
-                <a href="{{ action('EventsController@rppReset') }}" class="btn-tw btn-secondary-tw" title="Reset">
+                <a href="{{ action([\App\Http\Controllers\EventsController::class, 'rppReset']) }}" class="btn-tw btn-secondary-tw" title="Reset">
                     <i class="bi bi-arrow-clockwise"></i>
                 </a>
                 <select name="limit" class="input-tw text-sm w-20 auto-submit">

@@ -94,9 +94,7 @@ class EventInstagramController extends Controller
     {
         $event = Event::findOrFail($id);
 
-        $img = $imageHandler->generateCoverImage();
- 
-        return response()->download($img->basePath());
+        return response()->download($imageHandler->generateCoverImage());
     }
 
 
@@ -318,16 +316,16 @@ class EventInstagramController extends Controller
 
         // get the first image to post
         $coverFileName = 'week-image.jpg';
-        $coverImage = $imageHandler->generateCoverImage($coverFileName);
+        $coverImagePath = $imageHandler->generateCoverImage($coverFileName);
 
-        if (!$coverImage) {
+        if (!is_file($coverImagePath)) {
             flash()->error('Error', 'You must have a base image to extract the image to make a week post to Instagram');
 
             return back();
         }
 
         // save the file in Storage
-        $coverPath = Storage::disk('external')->putFileAs('photos', new HttpFile($coverImage->basePath()), $coverFileName, 'public');
+        $coverPath = Storage::disk('external')->putFileAs('photos', new HttpFile($coverImagePath), $coverFileName, 'public');
         $coverImageUrl = Storage::disk('external')->url($coverPath);
 
         // create an array of images to post

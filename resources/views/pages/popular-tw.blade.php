@@ -97,7 +97,11 @@
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
                 @foreach ($popularTags as $tag)
                     @php
-                        $event = $tag->events()->visible($user ?? null)->latest('start_at')->first();
+                        // Events (visible, newest first) and their photos are eager-loaded
+                        // in PagesController::popular() to avoid a per-tag N+1 (EVENTREPO-WV).
+                        $event = $tag->relationLoaded('events')
+                            ? $tag->events->first()
+                            : $tag->events()->visible($user ?? null)->latest('start_at')->first();
                         $photo = $event ? $event->getPrimaryPhoto() : null;
                     @endphp
                     <a href="/tags/{{ $tag->slug }}" class="group block">

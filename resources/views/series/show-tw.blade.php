@@ -1,5 +1,10 @@
 @extends('layouts.app-tw')
 
+{{-- the id-based URL also resolves; the slug route is the canonical one --}}
+@section('canonical')
+<link rel="canonical" href="{{ url('/series/'.$series->slug) }}">
+@endsection
+
 @section('title', $series->getTitleFormat())
 @section('og-description', $series->short)
 

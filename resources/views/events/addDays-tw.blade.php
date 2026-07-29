@@ -9,6 +9,8 @@
 </div>
 
 <!-- Next Events Button -->
+@if ($hasNextWindow ?? true)
 <div class="flex justify-center mt-6" id="next-events">
 	{!! link_to_route('events.add', 'Load Next Events', ['date' => $next_day_window->format('Ymd')], ['id' => 'add-event', 'class' => 'px-6 py-3 bg-accent text-foreground border-2 border-primary font-semibold rounded-lg hover:bg-accent/80 transition-colors shadow-lg next-events whitespace-nowrap']) !!}
 </div>
+@endif

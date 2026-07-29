@@ -8,7 +8,8 @@
 	"license": "MIT",
 	"type": "project",
 	"require": {
-		"laravel/framework": "^10.0",
+		"php": "^8.2",
+		"laravel/framework": "^12.61",
 		"suin/php-rss-writer": "^1.5",
 		"pusher/pusher-php-server": "^7.0",
 		"eluceo/ical": "^2.14.0",
@@ -16,34 +17,32 @@
 		"facebook/php-business-sdk": "^12.0",
 		"fakerphp/faker": "^1.18",
 		"spatie/laravel-ignition": "^2.0",
-		"symfony/mailgun-mailer": "^6.0",
-		"symfony/http-client": "^6.0",
+		"symfony/mailgun-mailer": "^7.0",
+		"symfony/http-client": "^7.0",
 		"league/flysystem": "^3.0",
 		"league/flysystem-aws-s3-v3": "^3.0",
 		"jamband/ripple": "^0.10.3",
-		"intervention/image": "^2.7",
-		"spatie/laravel-sitemap": "^7.0",
-		"laravel/tinker": "^2.7",
+		"intervention/image": "^3.11",
+		"spatie/laravel-sitemap": "^8.0",
+		"laravel/tinker": "^2.10",
 		"predis/predis": "^2.0",
-		"laravel/sanctum": "^3.2",
-		"laravel-notification-channels/twitter": "^7.0",
-		"laravel/ui": "^4.2",
-		"vinkla/shield": "^9.0",
-		"nunomaduro/collision": "^7.1",
-		"anhskohbo/no-captcha": "^3.5",
+		"laravel/sanctum": "^4.0",
+		"laravel-notification-channels/twitter": "^9.0",
+		"laravel/ui": "^4.6",
+		"nunomaduro/collision": "^8.0",
+		"anhskohbo/no-captcha": "^3.7",
 		"guzzlehttp/guzzle": "^7.5",
 		"guzzlehttp/psr7": "^2.4",
 		"nyholm/psr7": "^1.6",
-		"sentry/sentry-laravel": "^3.4"
+		"sentry/sentry-laravel": "^4.0"
 	},
 	"require-dev": {
-		"mockery/mockery": "^1.0",
-		"symfony/dom-crawler": "^6.0",
-		"barryvdh/laravel-ide-helper": "^2.8",
-		"larastan/larastan": "^2.11",
-		"laravel/dusk": "^7.7",
-		"phpunit/phpunit": "^10.0",
-		"barryvdh/laravel-debugbar": "^3.8"
+		"mockery/mockery": "^1.6",
+		"symfony/dom-crawler": "^7.0",
+		"barryvdh/laravel-ide-helper": "^3.0",
+		"larastan/larastan": "^3.0",
+		"phpunit/phpunit": "^11.0",
+		"barryvdh/laravel-debugbar": "^4.0"
 	},
 	"autoload": {
 		"psr-4": {
@@ -97,9 +96,7 @@
 			"php-http/discovery": true
 		},
 		"audit": {
-			"ignore": {
-				"PKSA-mdq4-51ck-6kdq": "Laravel CRLF injection in default email validation rule. Patched only in Laravel 12.60+/13.10+ (all 10.x AND 11.x are affected), so it cannot be resolved without the deferred framework-upgrade track. Accepted/known risk; revisit when upgrading the framework."
-			}
+			"ignore": {}
 		}
 	},
 	"minimum-stability": "stable"

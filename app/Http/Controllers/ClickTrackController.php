@@ -30,7 +30,8 @@ class ClickTrackController extends Controller
             if ($event) {
                 return redirect()->route('events.show', $event->id);
             }
-            return redirect()->route('home');
+            // a tracking link for a missing event is a dead URL, not the homepage
+            abort(404);
         }
 
         // Check if the request is from a bot/crawler
@@ -76,7 +77,8 @@ class ClickTrackController extends Controller
             if ($series) {
                 return redirect()->route('series.show', $series->slug);
             }
-            return redirect()->route('home');
+            // a tracking link for a missing series is a dead URL, not the homepage
+            abort(404);
         }
 
         // Check if the request is from a bot/crawler

@@ -1,5 +1,12 @@
 @extends('layouts.app-tw')
 
+{{-- name-based links also resolve here; the slug form is the canonical one --}}
+@if (isset($tagObject) && $tagObject)
+@section('canonical')
+<link rel="canonical" href="{{ url('/tags/'.$tagObject->slug) }}">
+@endsection
+@endif
+
 @section('title')
 @if (isset($tag))
 {{ $tag }} • Tag

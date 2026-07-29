@@ -98,6 +98,11 @@ class EventsControllerSmokeTest extends TestCase
         $this->get('/events/by-date/2026/8/5')->assertOk();
     }
 
+    public function test_events_grid_by_date_single_digit_month_and_day_renders(): void
+    {
+        $this->get('/events/grid/by-date/2026/8/5')->assertOk();
+    }
+
     public function test_events_week_renders(): void
     {
         Event::factory()->create(['start_at' => Carbon::now()->setTime(20, 0)]);

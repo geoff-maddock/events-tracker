@@ -4,7 +4,8 @@ namespace App\Services;
 
 use App\Models\Photo;
 use Illuminate\Http\UploadedFile;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Typography\FontFactory;
 use Carbon\Carbon;
 
 
@@ -24,11 +25,15 @@ class ImageHandler
 
         // from here, this file has been stored publicly under it's unique name and original format
         $filePath = $file->storePubliclyAs('photos', $fileName, 'external');
-        
+
         // sets all the photo private name and path values
         $photo = Photo::named($fileName);
 
-        // make a webp version of the image 
+        // attribute the photo to the uploader; without this the column keeps
+        // its DB default of 1 and photo management breaks for everyone else
+        $photo->created_by = auth()->id() ?? 1;
+
+        // make a webp version of the image
         $webp = $photo->makeWebp();
 
         return $photo->makeThumbnail();
@@ -36,9 +41,10 @@ class ImageHandler
     
 
     /**
-     * Generate an image to use with posting to instagram
+     * Generate an image to use with posting to instagram.
+     * Returns the path of the generated local jpg file.
      */
-    public function generateCoverImage($fileName = 'week-image.jpg'): mixed
+    public function generateCoverImage($fileName = 'week-image.jpg'): string
     {
         // create an array of 12 hex color strings with a key of the month number
         $colors = [
@@ -58,36 +64,33 @@ class ImageHandler
 
         // set a color based on the month of the first day of the week
         $color = $colors[Carbon::now()->month];
-        $img = Image::canvas(1080, 1080, $color);
+        $img = app(ImageManager::class)->create(1080, 1080)->fill($color);
 
         // use carbon to get a string of the first and last day of the week, using the short weekday, short month, and day
         $start = Carbon::now()->startOfWeek()->format('D M j');
         $end = Carbon::now()->endOfWeek()->format('D M j');
         $week = $start.' - '.$end;
 
-        $img->text('Events for the Week', 200, 400, function($font) {
-            $font->file('fonts/LEMONMILK-MEDIUM.OTF');
+        $img->text('Events for the Week', 200, 400, function (FontFactory $font) {
+            $font->filename(public_path('fonts/LEMONMILK-MEDIUM.OTF'));
             $font->size(60);
             $font->color('#000000');
             $font->align('left');
             $font->valign('top');
         });
 
-        $img->text($week, 200, 500, function($font) {
-            $font->file('fonts/LEMONMILK-MEDIUM.OTF');
+        $img->text($week, 200, 500, function (FontFactory $font) {
+            $font->filename(public_path('fonts/LEMONMILK-MEDIUM.OTF'));
             $font->size(42);
             $font->color('#DEDEDE');
             $font->align('left');
             $font->valign('top');
         });
 
-        // creates a valid name for a jpg file
-        //$fileName = 'week-image.jpg';
-        $filePath = sprintf('%s/%s', 'photos', $fileName);
+        // write the generated image to a local scratch file
+        $localPath = sys_get_temp_dir().'/'.$fileName;
+        $img->toJpeg(75)->save($localPath);
 
-        // builds an image given the path of the file on the external disk, then creates a version
-        $image = $img->encode('jpg', 75)->save('storage/'.$filePath);
-
-        return $image;
+        return $localPath;
     }
 }

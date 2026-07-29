@@ -26,21 +26,13 @@ class Handler extends ExceptionHandler
     ];
 
     /**
-     * Report or log an exception.
-     *
-     * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
-     *
-     * @return void
-     *
-     * @throws Exception
+     * Register the exception handling callbacks for the application.
      */
-    public function report(Throwable $e)
+    public function register(): void
     {
-        if (app()->bound('sentry') && $this->shouldReport($e)) {
-            app('sentry')->captureException($e);
-        }
-
-        parent::report($e);
+        $this->reportable(function (Throwable $e) {
+            \Sentry\Laravel\Integration::captureUnhandledException($e);
+        });
     }
 
     /**

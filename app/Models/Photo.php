@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\File as HttpFile;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\ImageManager;
 use Storage;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -166,18 +166,17 @@ class Photo extends Eloquent
 
     public function makeThumbnail(?int $size = 600): Photo
     {
-        // builds an image given the path of the file on the external disk, then creates a version
-        $image = Image::make(Storage::disk('external')->url($this->path))
-            ->fit($size)
-            ->save('storage/'.$this->thumbnail);
+        // read the original from the external disk, square-crop it, and write a local scratch file
+        $localPath = sys_get_temp_dir().'/'.uniqid('photo-', true).'-'.$this->thumbName;
+        app(ImageManager::class)
+            ->read(Storage::disk('external')->get($this->path))
+            ->cover($size, $size)
+            ->save($localPath);
 
-        $saved_image_uri = $image->basePath();
-
-        $path = Storage::disk('external')->putFileAs('photos', new HttpFile($saved_image_uri), $this->thumbName, 'public');
+        Storage::disk('external')->putFileAs('photos', new HttpFile($localPath), $this->thumbName, 'public');
 
         // clean up local files
-        $image->destroy();
-        unlink($saved_image_uri);
+        unlink($localPath);
 
         return $this;
     }
@@ -189,21 +188,18 @@ class Photo extends Eloquent
 
         // creates a valid name for a webp file
         $webpName = $parts['filename'].'.webp';
-        $webpPath = sprintf('%s/%s', $this->baseDir, $webpName);
 
-        // builds an image given the path of the file on the external disk, then creates a version
-        $image = Image::make(Storage::disk('external')->url($this->path))
-            // ->scaleDown(width: 200)
-            ->encode('webp', $quality)
-            ->save('storage/'.$webpPath);
+        // read the original from the external disk and re-encode it as webp locally
+        $localPath = sys_get_temp_dir().'/'.uniqid('photo-', true).'-'.$webpName;
+        app(ImageManager::class)
+            ->read(Storage::disk('external')->get($this->path))
+            ->toWebp($quality)
+            ->save($localPath);
 
-        $saved_image_uri = $image->basePath();
-
-        $path = Storage::disk('external')->putFileAs('photos', new HttpFile($saved_image_uri), $webpName, 'public');
+        Storage::disk('external')->putFileAs('photos', new HttpFile($localPath), $webpName, 'public');
 
         // clean up local files
-        $image->destroy();
-        unlink($saved_image_uri);
+        unlink($localPath);
 
         // save the webp file as the name
         $this->saveAs($webpName);
@@ -218,20 +214,18 @@ class Photo extends Eloquent
 
         // creates a valid name for a jpg file
         $webpName = $parts['filename'].'.jpg';
-        $webpPath = sprintf('%s/%s', $this->baseDir, $webpName);
 
-        // builds an image given the path of the file on the external disk, then creates a version
-        $image = Image::make(Storage::disk('external')->url($this->path))
-            ->encode('jpg', $quality)
-            ->save('storage/'.$webpPath);
+        // read the original from the external disk and re-encode it as jpg locally
+        $localPath = sys_get_temp_dir().'/'.uniqid('photo-', true).'-'.$webpName;
+        app(ImageManager::class)
+            ->read(Storage::disk('external')->get($this->path))
+            ->toJpeg($quality)
+            ->save($localPath);
 
-        $saved_image_uri = $image->basePath();
-
-        $path = Storage::disk('external')->putFileAs('photos', new HttpFile($saved_image_uri), $webpName, 'public');
+        Storage::disk('external')->putFileAs('photos', new HttpFile($localPath), $webpName, 'public');
 
         // clean up local files
-        $image->destroy();
-        unlink($saved_image_uri);
+        unlink($localPath);
 
         // save the webp file as the name
         $this->saveAs($webpName);
