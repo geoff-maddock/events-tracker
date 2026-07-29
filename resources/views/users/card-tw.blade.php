@@ -24,15 +24,6 @@
             <a href="{{ route('users.show', [$user]) }}">{{ $user->name }}</a>
         </h3>
 
-        <!-- User Status Badge -->
-        @if (isset($user->user_status))
-        <div class="mb-3">
-            <span class="badge-tw {{ $user->user_status->name == 'Active' ? 'badge-primary-tw' : 'badge-secondary-tw' }} text-xs">
-                {{ $user->user_status->name }}
-            </span>
-        </div>
-        @endif
-
         <!-- User Bio/Description -->
         @if ($user->profile && $user->profile->bio)
         <p class="text-sm text-muted-foreground mb-3 line-clamp-3">{{ $user->profile->bio }}</p>
