@@ -484,7 +484,7 @@ class ForumsController extends Controller
         return [
             'userOptions' => ['' => '&nbsp;'] + Cache::remember('filter-opts-users-name', 3600, fn () => User::orderBy('name', 'ASC')->pluck('name', 'name')->all()),
             'tagOptions' => ['' => '&nbsp;'] + Cache::remember('filter-opts-tags-name', 3600, fn () => Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all()),
-            'seriesOptions' => ['' => ''] + Cache::remember('form-opts-series', 3600, fn () => Series::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
+            'seriesOptions' => ['' => ''] + Series::getFormOptions(),
         ];
     }
 

@@ -394,7 +394,7 @@ class EventsController extends Controller
                 $q->where('name', '=', 'Promoter');
             })->orderBy('name', 'ASC')->pluck('name', 'id')->all()),
             'eventTypeOptions' => ['' => ''] + Cache::remember('form-opts-event-types', 3600, fn () => EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
-            'seriesOptions' => ['' => ''] + Cache::remember('form-opts-series', 3600, fn () => Series::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
+            'seriesOptions' => ['' => ''] + Series::getFormOptions(),
             'visibilityOptions' => ['' => ''] + Cache::remember('form-opts-visibilities', 86400, fn () => Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
             'tagOptions' => Cache::remember('form-opts-tags', 3600, fn () => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
             'entityOptions' => Cache::remember('form-opts-entities-active', 3600, fn () => Entity::active()->orderBy('name', 'ASC')->pluck('name', 'id')->all()),
