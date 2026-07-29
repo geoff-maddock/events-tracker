@@ -2,7 +2,7 @@
 <article class="card-tw hover:border-primary/30 transition-all" id="user-card-{{ $user->id }}">
     <div class="p-4 flex flex-col items-center text-center">
         <!-- User Avatar -->
-        <div class="mb-4">
+        <div class="mb-4 relative">
             @if ($photo = $user->getPrimaryPhoto())
             <a href="{{ route('users.show', [$user]) }}">
                 <img src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}"
@@ -16,6 +16,7 @@
                 </div>
             </a>
             @endif
+            @include('users.status-dot')
         </div>
 
         <!-- User Name -->
