@@ -2,14 +2,18 @@
 
 namespace Tests\Feature;
 
+use App\Jobs\Instagram\PostWeekendPreviewToInstagram;
 use App\Models\Event;
+use App\Models\JobStatus;
 use App\Models\Photo;
 use App\Models\User;
 use App\Models\Visibility;
+use App\Notifications\JobCompleted;
 use App\Services\Integrations\Instagram;
 use App\Services\Integrations\InstagramEventPoster;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Mockery;
 use RuntimeException;
@@ -122,5 +126,77 @@ class QueuedWeekendPreviewTest extends TestCase
         $this->expectExceptionMessage('No stories could be posted. Ensure the selected events have photos.');
 
         $poster->postWeekendPreview($user->id);
+    }
+
+    public function test_dispatching_the_job_creates_a_queued_job_status(): void
+    {
+        $user = User::factory()->create(['user_status_id' => 1]);
+
+        $job = new PostWeekendPreviewToInstagram($user->id);
+
+        $this->assertNotNull($job->jobStatusId);
+        $this->assertDatabaseHas('job_statuses', [
+            'id' => $job->jobStatusId,
+            'user_id' => $user->id,
+            'type' => 'instagram_weekend_preview',
+            'status' => JobStatus::STATUS_QUEUED,
+        ]);
+    }
+
+    public function test_successful_job_marks_status_succeeded_and_notifies_user(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create(['user_status_id' => 1]);
+
+        $poster = Mockery::mock(InstagramEventPoster::class);
+        $poster->shouldReceive('postWeekendPreview')->once()->with($user->id)
+            ->andReturn(['posted' => 8, 'skipped' => 2, 'total' => 10]);
+
+        $job = new PostWeekendPreviewToInstagram($user->id);
+        $job->handle($poster);
+
+        $this->assertDatabaseHas('job_statuses', [
+            'id' => $job->jobStatusId,
+            'status' => JobStatus::STATUS_SUCCEEDED,
+            'message' => 'Weekend preview posted: 8 stories published, 2 skipped (no photo).',
+        ]);
+        Notification::assertSentTo($user, JobCompleted::class);
+    }
+
+    public function test_single_story_success_message_is_singular_without_skips(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create(['user_status_id' => 1]);
+
+        $poster = Mockery::mock(InstagramEventPoster::class);
+        $poster->shouldReceive('postWeekendPreview')->once()
+            ->andReturn(['posted' => 1, 'skipped' => 0, 'total' => 1]);
+
+        $job = new PostWeekendPreviewToInstagram($user->id);
+        $job->handle($poster);
+
+        $this->assertDatabaseHas('job_statuses', [
+            'id' => $job->jobStatusId,
+            'message' => 'Weekend preview posted: 1 story published.',
+        ]);
+    }
+
+    public function test_failed_job_marks_status_failed_and_notifies_user(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create(['user_status_id' => 1]);
+
+        $job = new PostWeekendPreviewToInstagram($user->id);
+        $job->failed(new RuntimeException('No events found for the upcoming weekend.'));
+
+        $this->assertDatabaseHas('job_statuses', [
+            'id' => $job->jobStatusId,
+            'status' => JobStatus::STATUS_FAILED,
+            'message' => 'No events found for the upcoming weekend.',
+        ]);
+        Notification::assertSentTo($user, JobCompleted::class);
     }
 }
