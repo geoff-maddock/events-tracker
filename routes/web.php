@@ -605,7 +605,6 @@ Route::resource('events.reviews', \App\Http\Controllers\EventReviewsController::
 
 // REVIEWS
 Route::match(['get', 'post'], 'reviews/filter', ['as' => 'reviews.filter', 'uses' => '\App\Http\Controllers\ReviewsController@filter']);
-Route::get('reviews/filter', ['as' => 'reviews.filter', 'uses' => '\App\Http\Controllers\ReviewsController@filter']);
 Route::get('reviews/reset', ['as' => 'reviews.reset', 'uses' => '\App\Http\Controllers\ReviewsController@reset']);
 Route::get('reviews/rpp-reset', ['as' => 'reviews.rppReset', 'uses' => '\App\Http\Controllers\ReviewsController@rppReset']);
 Route::resource('reviews', \App\Http\Controllers\ReviewsController::class);
