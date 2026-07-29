@@ -2,7 +2,7 @@
 <article class="card-tw hover:border-primary/30 transition-all" id="user-card-{{ $user->id }}">
     <div class="p-4 flex flex-col items-center text-center">
         <!-- User Avatar -->
-        <div class="mb-4">
+        <div class="mb-4 relative">
             @if ($photo = $user->getPrimaryPhoto())
             <a href="{{ route('users.show', [$user]) }}">
                 <img src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}"
@@ -16,21 +16,13 @@
                 </div>
             </a>
             @endif
+            @include('users.status-dot')
         </div>
 
         <!-- User Name -->
         <h3 class="text-lg font-semibold text-foreground hover:text-primary transition-colors mb-2">
             <a href="{{ route('users.show', [$user]) }}">{{ $user->name }}</a>
         </h3>
-
-        <!-- User Status Badge -->
-        @if (isset($user->user_status))
-        <div class="mb-3">
-            <span class="badge-tw {{ $user->user_status->name == 'Active' ? 'badge-primary-tw' : 'badge-secondary-tw' }} text-xs">
-                {{ $user->user_status->name }}
-            </span>
-        </div>
-        @endif
 
         <!-- User Bio/Description -->
         @if ($user->profile && $user->profile->bio)
