@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filters\SeriesFilters;
@@ -128,9 +129,37 @@ class Series extends Eloquent
         'hold_date' => false,
     ];
 
+    public const FORM_OPTIONS_CACHE_KEY = 'form-opts-series';
+
     public static function boot()
     {
         parent::boot();
+
+        // keep the cached series dropdown options (event/thread forms) in sync
+        static::saved(fn () => static::refreshFormOptionsCache());
+        static::deleted(fn () => static::refreshFormOptionsCache());
+    }
+
+    /**
+     * Cached name-by-id options for series dropdowns.
+     *
+     * @return array<int, string>
+     */
+    public static function getFormOptions(): array
+    {
+        return Cache::remember(self::FORM_OPTIONS_CACHE_KEY, 3600, fn () => static::orderBy('name', 'ASC')->pluck('name', 'id')->all());
+    }
+
+    /**
+     * Bust and immediately re-warm the cached series dropdown options.
+     *
+     * @return array<int, string>
+     */
+    public static function refreshFormOptionsCache(): array
+    {
+        Cache::forget(self::FORM_OPTIONS_CACHE_KEY);
+
+        return static::getFormOptions();
     }
 
     protected $with = ['occurrenceType', 'occurrenceWeek', 'occurrenceDay'];

@@ -13,6 +13,7 @@ use App\Models\OccurrenceType;
 use App\Models\UserStatus;
 use App\Models\Visibility;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
@@ -163,5 +164,81 @@ class SeriesTest extends TestCase
 
         // The source event is linked to the new series
         $this->assertEquals($series->id, $event->fresh()->series_id);
+    }
+
+    /**
+     * Storing a series must bust and re-warm the form-opts-series cache so the
+     * new series appears immediately in the event form series dropdown.
+     *
+     * @return void
+     */
+    public function testStoringSeriesRefreshesFormOptionsCache()
+    {
+        $user = User::factory()->create(['email_verified_at' => Carbon::now(), 'user_status_id' => UserStatus::ACTIVE]);
+
+        $occurrenceType = OccurrenceType::where('name', 'No Schedule')->first();
+        $eventType = EventType::first();
+
+        // simulate a stale cached dropdown built before the series existed
+        Cache::put('form-opts-series', [999999 => 'Stale Entry'], 3600);
+
+        $response = $this->actingAs($user)
+            ->withSession([])
+            ->post('/series', [
+                'name' => 'Ultraviolet',
+                'slug' => 'ultraviolet',
+                'short' => 'A new series',
+                'event_type_id' => $eventType->id,
+                'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+                'occurrence_type_id' => $occurrenceType->id,
+            ]);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertStatus(302);
+
+        $series = Series::where('slug', 'ultraviolet')->firstOrFail();
+
+        // cache was re-warmed (not just forgotten) and includes the new series
+        $cached = Cache::get('form-opts-series');
+        $this->assertNotNull($cached, 'form-opts-series cache should be re-warmed after storing a series');
+        $this->assertArrayHasKey($series->id, $cached);
+        $this->assertSame('Ultraviolet', $cached[$series->id]);
+        $this->assertArrayNotHasKey(999999, $cached);
+    }
+
+    /**
+     * Renaming a series must refresh the cached series dropdown options.
+     *
+     * @return void
+     */
+    public function testUpdatingSeriesRefreshesFormOptionsCache()
+    {
+        $series = Series::factory()->create(['name' => 'Old Name']);
+
+        Cache::put('form-opts-series', [$series->id => 'Old Name'], 3600);
+
+        $series->update(['name' => 'New Name']);
+
+        $cached = Cache::get('form-opts-series');
+        $this->assertNotNull($cached, 'form-opts-series cache should be re-warmed after updating a series');
+        $this->assertSame('New Name', $cached[$series->id]);
+    }
+
+    /**
+     * Deleting a series must refresh the cached series dropdown options.
+     *
+     * @return void
+     */
+    public function testDeletingSeriesRefreshesFormOptionsCache()
+    {
+        $series = Series::factory()->create(['name' => 'Doomed Series']);
+
+        Cache::put('form-opts-series', [$series->id => 'Doomed Series'], 3600);
+
+        $series->delete();
+
+        $cached = Cache::get('form-opts-series');
+        $this->assertNotNull($cached, 'form-opts-series cache should be re-warmed after deleting a series');
+        $this->assertArrayNotHasKey($series->id, $cached);
     }
 }
