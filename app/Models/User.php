@@ -277,6 +277,15 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     }
 
     /**
+     * Events the user has responded to as attending.
+     */
+    public function attendingEvents(): BelongsToMany
+    {
+        return $this->belongsToMany(Event::class, 'event_responses')
+            ->wherePivot('response_type_id', 1);
+    }
+
+    /**
      * Return the count of logins the user has made.
      */
     public function getLoginCountAttribute(): int

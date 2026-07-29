@@ -133,7 +133,7 @@ class UsersController extends Controller
         $query = $listResultSet->getList();
 
         // get the users
-        $users = $query->with('status')->paginate($listResultSet->getLimit());
+        $users = $query->with($this->cardEagerLoads($request->user()))->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();
@@ -198,6 +198,7 @@ class UsersController extends Controller
 
         // get the users
         $users = $query
+            ->with($this->cardEagerLoads($request->user()))
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -954,6 +955,22 @@ class UsersController extends Controller
     {
         return [
             'userStatusOptions' => ['' => ''] + UserStatus::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+        ];
+    }
+
+    /**
+     * Eager loads needed to render users/card-tw without N+1 queries.
+     */
+    protected function cardEagerLoads(?User $viewer): array
+    {
+        return [
+            'status',
+            'profile',
+            'photos',
+            'groups',
+            'attendingEvents' => function ($q) use ($viewer) {
+                $q->future()->visible($viewer)->with('photos');
+            },
         ];
     }
 
