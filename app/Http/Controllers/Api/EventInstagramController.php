@@ -457,27 +457,21 @@ class EventInstagramController extends Controller
      * Event selection (top weekend events by attending count) happens inside
      * the queued job. Only accessible by admins.
      */
-    public function postWeekendPreviewToInstagram(Instagram $instagram): RedirectResponse
+    public function postWeekendPreviewToInstagram(Instagram $instagram): RedirectResponse|JsonResponse
     {
         // Admin-only guard
         if (!$this->user || !$this->user->hasGroup('super_admin')) {
-            flash()->error('Error', 'You must be an admin to post the weekend preview to Instagram.');
-
-            return back();
+            return $this->instagramActionResponse(false, 'Error', 'You must be an admin to post the weekend preview to Instagram.');
         }
 
         // Fail fast when Instagram is not linked; the job re-checks at run time.
         if ($error = $this->instagramCredentialError($instagram)) {
-            flash()->error('Error', $error);
-
-            return back();
+            return $this->instagramActionResponse(false, 'Error', $error);
         }
 
         PostWeekendPreviewToInstagram::dispatch($this->user->id);
 
-        flash()->success('Queued', 'The weekend preview is being posted to Instagram in the background. You will be notified when it finishes.');
-
-        return back();
+        return $this->instagramActionResponse(true, 'Queued', 'The weekend preview is being posted to Instagram in the background. You will be notified when it finishes.');
     }
 
 

@@ -262,4 +262,40 @@ class QueuedWeekendPreviewTest extends TestCase
         $response->assertRedirect();
         Queue::assertNothingPushed();
     }
+
+    public function test_ajax_route_queues_the_job_and_returns_json_toast(): void
+    {
+        Queue::fake();
+        $this->mockInstagramCredentials();
+
+        $admin = $this->superAdmin();
+
+        $response = $this->actingAs($admin)->getJson('/events/instagram-weekend-preview');
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'title' => 'Queued',
+            ]);
+        Queue::assertPushed(PostWeekendPreviewToInstagram::class, function ($job) use ($admin) {
+            return $job->userId === $admin->id;
+        });
+    }
+
+    public function test_ajax_route_returns_json_error_for_non_admins(): void
+    {
+        Queue::fake();
+        $this->mockInstagramCredentials();
+
+        $user = User::factory()->create(['user_status_id' => 1]);
+
+        $response = $this->actingAs($user)->getJson('/events/instagram-weekend-preview');
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'success' => false,
+                'title' => 'Error',
+            ]);
+        Queue::assertNothingPushed();
+    }
 }

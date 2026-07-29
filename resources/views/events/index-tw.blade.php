@@ -63,7 +63,7 @@ Events @include('events.title-crumbs')
 			</a>
 			@if ($signedIn && $user && $user->hasGroup('super_admin'))
 			<div class="border-t border-border my-1"></div>
-			<a href="{!! URL::route('events.instagramWeekendPreview') !!}" class="flex items-center px-4 py-2 text-sm text-muted-foreground hover:bg-accent rounded-b-lg transition-colors">
+			<a href="{!! URL::route('events.instagramWeekendPreview') !!}" data-replace-history class="flex items-center px-4 py-2 text-sm text-muted-foreground hover:bg-accent rounded-b-lg transition-colors">
 				<i class="bi bi-instagram mr-2"></i>
 				Weekend Preview
 			</a>
@@ -284,6 +284,50 @@ Events @include('events.title-crumbs')
 		document.addEventListener('click', function() {
 			dropdown.classList.add('hidden');
 			btn.setAttribute('aria-expanded', 'false');
+		});
+	})();
+
+	// Fire-and-redirect actions (e.g. Weekend Preview) must not enter the
+	// browser history, otherwise clicking Back re-triggers the post. Fire
+	// them via fetch so the page never navigates and history is untouched.
+	(function() {
+		const fireAlert = function(options) {
+			if (window.Swal && typeof window.Swal.fire === 'function') {
+				return window.Swal.fire(options);
+			}
+			window.alert(options.text || options.title || 'Notification');
+		};
+
+		document.querySelectorAll('a[data-replace-history]').forEach(function(link) {
+			link.addEventListener('click', function(e) {
+				e.preventDefault();
+
+				fetch(this.href, {
+					headers: {
+						'X-Requested-With': 'XMLHttpRequest',
+						'Accept': 'application/json'
+					},
+					credentials: 'same-origin'
+				}).then(function(response) {
+					return response.json().then(function(data) {
+						return { ok: response.ok, data: data };
+					});
+				}).then(function(result) {
+					fireAlert({
+						title: result.data.title || (result.ok ? 'Queued' : 'Error'),
+						text: result.data.message || 'Could not start the Instagram post. Please try again.',
+						icon: result.ok ? 'success' : 'error',
+						timer: result.ok ? 3000 : undefined,
+						showConfirmButton: !result.ok
+					});
+				}).catch(function() {
+					fireAlert({
+						title: 'Error',
+						text: 'Could not start the Instagram post. Please try again.',
+						icon: 'error'
+					});
+				});
+			});
 		});
 	})();
 
