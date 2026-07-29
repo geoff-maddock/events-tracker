@@ -54,6 +54,9 @@
             @endif
         </div>
 
+        <!-- Attending Future Events -->
+        @include('users.attending-events-tw', ['user' => $user])
+
         <!-- User Groups/Roles -->
         @unless ($user->groups->isEmpty())
         <div class="flex flex-wrap gap-1 justify-center">
