@@ -13,7 +13,7 @@ class ProfileRequest extends Request
      */
     public function authorize()
     {
-        return true;  // we have no users yet
+        return true;  // authorization is enforced in UsersController
     }
 
     /**
@@ -23,8 +23,11 @@ class ProfileRequest extends Request
      */
     public function rules()
     {
+        $userId = optional($this->route('user'))->id;
+
         return [
-            //'name' => 'required|min:3',
+            'name' => 'required|string|min:3|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,'.($userId ?? 'NULL').',id',
         ];
     }
 }
