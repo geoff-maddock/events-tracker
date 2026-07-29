@@ -7,7 +7,11 @@
 
 On the users index page, each user card's avatar gets a small colored dot on its
 bottom-right edge (presence-indicator style) reflecting the user's `UserStatus`.
-Visible **only to super_admins**. Hover shows the status name via `title`.
+Visible **to all viewers** (the index is a public directory). Hover shows the
+status name via `title`.
+
+> Revised 2026-07-29: originally admin-only; Geoff requested status be visible
+> to any user on the list page.
 
 ## Color mapping
 
@@ -31,8 +35,7 @@ Visible **only to super_admins**. Hover shows the status name via `title`.
     circle with `title="{{ $user->status->name }}"`.
 - `resources/views/users/card-tw.blade.php`:
   - Avatar wrapper gets `relative`.
-  - Include the partial gated by `$signedIn && Auth::user()->hasGroup('super_admin')`
-    (same check as the card's edit button).
+  - Include the partial unconditionally (all viewers see it).
   - **Remove the dead status badge block** — it checks `$user->user_status`, a
     property that doesn't exist (the relation is `status`), so it has never rendered.
 - No controller changes: `UsersController@index` already eager-loads `status` and
@@ -48,5 +51,6 @@ Visible **only to super_admins**. Hover shows the status name via `title`.
 Feature test on the users index (suite conventions: `$seed = true`,
 `withExceptionHandling()`):
 
-- As super_admin: response contains the dot markup for a user with a known status.
-- As regular user and as anonymous visitor: response does not contain the dot markup.
+- As anonymous visitor: response contains the dot markup (correct color class and
+  `title`) for a user with a known status.
+- A user with no status renders no dot.
