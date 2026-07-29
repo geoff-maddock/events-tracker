@@ -7,8 +7,9 @@
 
 On the users index page, each user card's avatar gets a small colored dot on its
 bottom-right edge (presence-indicator style) reflecting the user's `UserStatus`.
-Visible **to all viewers** (the index is a public directory). Hover shows the
-status name via `title`.
+Visible **to all viewers of the page** — note the users resource route carries
+`->middleware('auth')` (routes/web.php:199), so in practice that means any
+signed-in user. Hover shows the status name via `title`.
 
 > Revised 2026-07-29: originally admin-only; Geoff requested status be visible
 > to any user on the list page.
