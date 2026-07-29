@@ -5,6 +5,7 @@ namespace App\Services\Integrations;
 use App\Models\Activity;
 use App\Models\Event;
 use App\Models\EventShare;
+use App\Models\Visibility;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -233,5 +234,98 @@ class InstagramEventPoster
             'created_by' => $userId,
             'posted_at' => Carbon::now(),
         ]);
+    }
+
+    /**
+     * Post a weekend preview to Instagram Stories: the top events for the
+     * upcoming weekend (Fri–Sun), ranked by attending-response count.
+     *
+     * Selection rules:
+     *  - If <= 10 weekend events: post all of them.
+     *  - If > 10: rank by response count descending and take top 10.
+     *  - If the 10th and 11th events are tied (no clear cutoff): fall back to
+     *    5 from Friday + 5 from Saturday, each sorted by response count.
+     *
+     * Per-event failures (no photo, upload/status/publish errors) are logged
+     * and skipped; the loop continues. Throws only for terminal cases.
+     *
+     * @return array{posted: int, skipped: int, total: int}
+     */
+    public function postWeekendPreview(?int $userId): array
+    {
+        $this->assertCredentials();
+
+        // Determine the upcoming weekend window (Friday 00:00 through Sunday 23:59)
+        $today = Carbon::today();
+
+        if ($today->isFriday()) {
+            $fridayStart = $today->copy()->startOfDay();
+        } elseif ($today->isSaturday() || $today->isSunday()) {
+            $fridayStart = $today->copy()->previous(Carbon::FRIDAY)->startOfDay();
+        } else {
+            // Mon–Thu: look to the coming Friday
+            $fridayStart = $today->copy()->next(Carbon::FRIDAY)->startOfDay();
+        }
+
+        $sundayEnd = $fridayStart->copy()->next(Carbon::SUNDAY)->endOfDay();
+
+        // Fetch all weekend events ranked by number of attending responses,
+        // excluding cancelled and non-public events.
+        $allWeekendEvents = Event::where('start_at', '>=', $fridayStart)
+            ->where('start_at', '<=', $sundayEnd)
+            ->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
+            ->whereNull('cancelled_at')
+            ->withCount(['eventResponses as response_count'])
+            ->orderBy('response_count', 'desc')
+            ->orderBy('start_at', 'asc')
+            ->get();
+
+        if ($allWeekendEvents->isEmpty()) {
+            throw new RuntimeException('No events found for the upcoming weekend.');
+        }
+
+        if ($allWeekendEvents->count() <= 10) {
+            $selectedEvents = $allWeekendEvents;
+        } else {
+            // A clear response-count cutoff between position 10 and 11 lets us
+            // take a clean top 10; a tie falls back to day-based distribution.
+            $tenth = $allWeekendEvents->get(9);
+            $eleventh = $allWeekendEvents->get(10);
+
+            if ($tenth && $eleventh && $tenth->response_count !== $eleventh->response_count) {
+                $selectedEvents = $allWeekendEvents->take(10);
+            } else {
+                $fridayEvents = $allWeekendEvents
+                    ->filter(fn ($e) => Carbon::parse($e->start_at)->isFriday())
+                    ->take(5);
+                $saturdayEvents = $allWeekendEvents
+                    ->filter(fn ($e) => Carbon::parse($e->start_at)->isSaturday())
+                    ->take(5);
+                $selectedEvents = $fridayEvents->merge($saturdayEvents);
+            }
+        }
+
+        if ($selectedEvents->isEmpty()) {
+            throw new RuntimeException('No events selected for the weekend preview.');
+        }
+
+        $posted = 0;
+        $skipped = 0;
+
+        foreach ($selectedEvents as $event) {
+            try {
+                $this->postStory($event, $userId);
+                $posted++;
+            } catch (Exception $e) {
+                Log::info('Weekend preview: skipping event '.$event->id.': '.$e->getMessage());
+                $skipped++;
+            }
+        }
+
+        if ($posted === 0) {
+            throw new RuntimeException('No stories could be posted. Ensure the selected events have photos.');
+        }
+
+        return ['posted' => $posted, 'skipped' => $skipped, 'total' => $selectedEvents->count()];
     }
 }

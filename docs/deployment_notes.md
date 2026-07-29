@@ -272,7 +272,7 @@ process_name=%(program_name)s_%(process_num)02d
 command=php /var/www/events/artisan queue:work --sleep=3 --tries=3 --timeout=700
 autostart=true
 autorestart=true
-stopwaitsecs=720
+stopwaitsecs=1260
 user=www-data
 numprocs=1
 redirect_stderr=true
