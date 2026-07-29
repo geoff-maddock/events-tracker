@@ -540,6 +540,7 @@ Route::get('entities/reset', ['as' => 'entities.reset', 'uses' => '\App\Http\Con
 Route::get('entities/rpp-reset', ['as' => 'entities.rppReset', 'uses' => '\App\Http\Controllers\EntitiesController@rppReset']);
 
 Route::post('entities/quick-store', [\App\Http\Controllers\EntitiesController::class, 'quickStore'])->name('entities.quickStore')->middleware('auth');
+Route::get('entities/quick-check', [\App\Http\Controllers\EntitiesController::class, 'quickCheck'])->name('entities.quickCheck')->middleware('auth');
 
 Route::get('entities/tag/{tag}', [\App\Http\Controllers\EntitiesController::class, 'indexTags'])->name('entities.tag');
 Route::get('entities/alias/{alias}', [\App\Http\Controllers\EntitiesController::class, 'indexAliases'])->name('entities.alias');
