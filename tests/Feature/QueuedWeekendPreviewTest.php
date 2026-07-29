@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Jobs\Instagram\PostWeekendPreviewToInstagram;
 use App\Models\Event;
+use App\Models\Group;
 use App\Models\JobStatus;
 use App\Models\Photo;
 use App\Models\User;
@@ -14,6 +15,7 @@ use App\Services\Integrations\InstagramEventPoster;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Mockery;
 use RuntimeException;
@@ -198,5 +200,66 @@ class QueuedWeekendPreviewTest extends TestCase
             'message' => 'No events found for the upcoming weekend.',
         ]);
         Notification::assertSentTo($user, JobCompleted::class);
+    }
+
+    private function superAdmin(): User
+    {
+        $group = Group::firstOrCreate(['name' => 'super_admin']);
+        $admin = User::factory()->create(['user_status_id' => 1]);
+        $admin->groups()->attach($group->id);
+
+        return $admin;
+    }
+
+    private function mockInstagramCredentials(): void
+    {
+        $instagram = Mockery::mock(Instagram::class);
+        $instagram->shouldReceive('getIgUserId')->andReturn(123)->byDefault();
+        $instagram->shouldReceive('getPageAccessToken')->andReturn('token')->byDefault();
+        $this->app->instance(Instagram::class, $instagram);
+    }
+
+    public function test_route_queues_the_job_for_super_admins(): void
+    {
+        Queue::fake();
+        $this->mockInstagramCredentials();
+
+        $admin = $this->superAdmin();
+
+        $response = $this->actingAs($admin)->get('/events/instagram-weekend-preview');
+
+        $response->assertRedirect();
+        Queue::assertPushed(PostWeekendPreviewToInstagram::class, function ($job) use ($admin) {
+            return $job->userId === $admin->id;
+        });
+    }
+
+    public function test_route_does_not_queue_for_non_admins(): void
+    {
+        Queue::fake();
+        $this->mockInstagramCredentials();
+
+        $user = User::factory()->create(['user_status_id' => 1]);
+
+        $response = $this->actingAs($user)->get('/events/instagram-weekend-preview');
+
+        $response->assertRedirect();
+        Queue::assertNothingPushed();
+    }
+
+    public function test_route_does_not_queue_when_instagram_is_not_linked(): void
+    {
+        Queue::fake();
+
+        $instagram = Mockery::mock(Instagram::class);
+        $instagram->shouldReceive('getIgUserId')->andReturn(0);
+        $this->app->instance(Instagram::class, $instagram);
+
+        $admin = $this->superAdmin();
+
+        $response = $this->actingAs($admin)->get('/events/instagram-weekend-preview');
+
+        $response->assertRedirect();
+        Queue::assertNothingPushed();
     }
 }
