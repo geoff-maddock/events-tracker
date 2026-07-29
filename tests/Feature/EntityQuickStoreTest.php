@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Models\UserStatus;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class EntityQuickStoreTest extends TestCase
@@ -104,5 +106,81 @@ class EntityQuickStoreTest extends TestCase
             ->postJson('/entities/quick-store', ['name' => 'ab', 'role' => 'Venue'])
             ->assertStatus(422)
             ->assertJsonValidationErrors('name');
+    }
+
+    /** @test */
+    public function quick_create_stores_optional_short_and_full_description()
+    {
+        $user = $this->activeUser();
+
+        $this->actingAs($user)
+            ->postJson('/entities/quick-store', [
+                'name' => 'Mr Smalls Theatre',
+                'role' => 'Venue',
+                'short' => 'Converted church concert venue',
+                'description' => 'A concert venue in Millvale housed in a converted 19th-century church.',
+            ])
+            ->assertStatus(201);
+
+        $entity = Entity::where('name', 'Mr Smalls Theatre')->first();
+
+        $this->assertNotNull($entity);
+        $this->assertSame('Converted church concert venue', $entity->short);
+        $this->assertSame('A concert venue in Millvale housed in a converted 19th-century church.', $entity->description);
+    }
+
+    /** @test */
+    public function quick_create_uses_the_name_as_placeholder_when_descriptions_are_omitted()
+    {
+        $user = $this->activeUser();
+
+        $this->actingAs($user)
+            ->postJson('/entities/quick-store', ['name' => 'Placeholder Hall', 'role' => 'Venue'])
+            ->assertStatus(201);
+
+        $entity = Entity::where('name', 'Placeholder Hall')->first();
+
+        $this->assertSame('Placeholder Hall', $entity->short);
+        $this->assertSame('Placeholder Hall', $entity->description);
+    }
+
+    /** @test */
+    public function quick_create_attaches_an_optional_image_as_primary_photo()
+    {
+        Storage::fake('external');
+        $user = $this->activeUser();
+
+        $this->actingAs($user)
+            ->post('/entities/quick-store', [
+                'name' => 'Spirit Lodge',
+                'role' => 'Venue',
+                'image' => UploadedFile::fake()->image('lodge.jpg'),
+            ], ['Accept' => 'application/json'])
+            ->assertStatus(201);
+
+        $entity = Entity::where('name', 'Spirit Lodge')->first();
+        $photo = $entity->photos()->first();
+
+        $this->assertNotNull($photo);
+        $this->assertSame(1, (int) $photo->is_primary);
+        $this->assertSame($user->id, $photo->created_by);
+    }
+
+    /** @test */
+    public function quick_create_rejects_a_non_image_file()
+    {
+        Storage::fake('external');
+        $user = $this->activeUser();
+
+        $this->actingAs($user)
+            ->post('/entities/quick-store', [
+                'name' => 'Bad Upload Hall',
+                'role' => 'Venue',
+                'image' => UploadedFile::fake()->create('document.pdf', 100, 'application/pdf'),
+            ], ['Accept' => 'application/json'])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('image');
+
+        $this->assertNull(Entity::where('name', 'Bad Upload Hall')->first());
     }
 }

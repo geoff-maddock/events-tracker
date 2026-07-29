@@ -798,11 +798,14 @@ class EntitiesController extends Controller
      * Quickly create a minimal entity (venue or promoter) from the event form and return JSON.
      * Lets users add a missing venue/promoter inline without leaving the event form.
      */
-    public function quickStore(Request $request): JsonResponse
+    public function quickStore(Request $request, ImageHandler $imageHandler): JsonResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|min:3|max:255',
             'role' => 'nullable|string',
+            'short' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            'image' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:10240',
         ]);
 
         $roleName = in_array($request->input('role'), ['Venue', 'Promoter'], true)
@@ -820,8 +823,8 @@ class EntitiesController extends Controller
         $entity = Entity::create([
             'name' => $validated['name'],
             'slug' => $slug,
-            'short' => $validated['name'],
-            'description' => $validated['name'],
+            'short' => $validated['short'] ?? $validated['name'],
+            'description' => $validated['description'] ?? $validated['name'],
             'entity_type_id' => $roleName === 'Venue' ? EntityType::SPACE : EntityType::GROUP,
             'entity_status_id' => EntityStatus::ACTIVE,
             'created_by' => $this->user->id,
@@ -833,6 +836,13 @@ class EntitiesController extends Controller
 
         if ($role = Role::where('name', $roleName)->first()) {
             $entity->roles()->attach($role->id);
+        }
+
+        if ($request->hasFile('image')) {
+            $photo = $imageHandler->makePhoto($request->file('image'));
+            $photo->is_primary = 1;
+            $photo->save();
+            $entity->addPhoto($photo);
         }
 
         Activity::log($entity, $this->user, Action::CREATE);
@@ -848,6 +858,59 @@ class EntitiesController extends Controller
             'name' => $entity->name,
             'slug' => $entity->slug,
         ], 201);
+    }
+
+    /**
+     * Check for existing entities with a name similar to the one being quick-added,
+     * so the event form can warn the user about likely duplicates.
+     */
+    public function quickCheck(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|min:3|max:255',
+        ]);
+
+        $name = $validated['name'];
+
+        $candidates = Entity::where(function (Builder $query) use ($name) {
+            $query->where('name', 'like', '%'.$name.'%')
+                ->orWhereRaw('SOUNDEX(name) = SOUNDEX(?)', [$name])
+                ->orWhereHas('aliases', function ($q) use ($name) {
+                    $q->where('name', $name);
+                });
+        })
+            ->with(['entityType', 'aliases'])
+            ->limit(25)
+            ->get();
+
+        $matches = $candidates
+            ->map(function (Entity $entity) use ($name) {
+                $aliasMatch = $entity->aliases->contains(
+                    fn ($alias) => 0 === strcasecmp($alias->name, $name)
+                );
+                similar_text(mb_strtolower($name), mb_strtolower($entity->name), $percent);
+
+                return [
+                    'entity' => $entity,
+                    'score' => $aliasMatch ? 100.0 : $percent,
+                    'keep' => $aliasMatch
+                        || $percent >= 60
+                        || false !== mb_stripos($entity->name, $name)
+                        || false !== mb_stripos($name, $entity->name),
+                ];
+            })
+            ->filter(fn (array $match) => $match['keep'])
+            ->sortByDesc('score')
+            ->take(5)
+            ->values()
+            ->map(fn (array $match) => [
+                'id' => $match['entity']->id,
+                'name' => $match['entity']->name,
+                'slug' => $match['entity']->slug,
+                'entity_type' => $match['entity']->entityType?->name,
+            ]);
+
+        return response()->json(['data' => $matches]);
     }
 
     /**

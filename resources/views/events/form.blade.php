@@ -491,8 +491,38 @@
     <x-ui.form-group name="quick_add_name" label="Name">
         <x-ui.input type="text" id="quick-add-name" placeholder="e.g. The Smiling Moose" />
     </x-ui.form-group>
+
+    {{-- Possible duplicate warning --}}
+    <div id="quick-add-duplicates"
+         class="hidden mt-3 rounded-md border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 p-3 text-sm"
+         role="alert">
+        <div class="flex items-start gap-2">
+            <i class="bi bi-exclamation-triangle-fill text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0"></i>
+            <div class="min-w-0">
+                <p class="font-medium text-amber-800 dark:text-amber-300 mb-1">
+                    Similar entities already exist — click one to select it instead:
+                </p>
+                <ul id="quick-add-duplicates-list" class="space-y-1"></ul>
+                <p class="mt-1 text-amber-600 dark:text-amber-500 text-xs">
+                    Or ignore this and create a new entry anyway.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <x-ui.form-group name="quick_add_short" label="Short description (optional)" class="mt-3">
+        <x-ui.input type="text" id="quick-add-short" maxlength="255" placeholder="One-line summary" />
+    </x-ui.form-group>
+    <x-ui.form-group name="quick_add_description" label="Description (optional)" class="mt-3">
+        <x-ui.textarea id="quick-add-description" rows="3" placeholder="A fuller description"></x-ui.textarea>
+    </x-ui.form-group>
+    <x-ui.form-group name="quick_add_image" label="Default image (optional)" class="mt-3">
+        <input type="file" id="quick-add-image" accept="image/jpeg,image/png,image/gif,image/webp"
+               class="block w-full text-sm text-muted-foreground file:mr-3 file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-primary-foreground hover:file:opacity-90" />
+    </x-ui.form-group>
+
     <p id="quick-add-error" class="hidden mt-2 text-sm text-red-600 dark:text-red-400"></p>
-    <p class="mt-3 text-xs text-muted-foreground">This creates a basic entry so you can keep building your event. You can add a photo, links and details later from the entity's page.</p>
+    <p class="mt-3 text-xs text-muted-foreground">This creates a basic entry so you can keep building your event. You can add links and more details later from the entity's page.</p>
 
     <x-slot:footer>
         <x-ui.button type="button" variant="outline" onclick="document.getElementById('quick-add-entity-modal').classList.add('hidden')">
@@ -533,6 +563,11 @@
         const quickAddName = document.getElementById('quick-add-name');
         const quickAddRole = document.getElementById('quick-add-role');
         const quickAddTarget = document.getElementById('quick-add-target');
+        const quickAddShort = document.getElementById('quick-add-short');
+        const quickAddDescription = document.getElementById('quick-add-description');
+        const quickAddImage = document.getElementById('quick-add-image');
+        const quickAddDuplicates = document.getElementById('quick-add-duplicates');
+        const quickAddDuplicatesList = document.getElementById('quick-add-duplicates-list');
         const quickAddError = document.getElementById('quick-add-error');
         const quickAddSubmit = document.getElementById('quick-add-submit');
 
@@ -541,12 +576,78 @@
             quickAddError.classList.remove('hidden');
         }
 
+        function hideQuickAddDuplicates() {
+            quickAddDuplicates.classList.add('hidden');
+            quickAddDuplicatesList.textContent = '';
+        }
+
+        function selectEntityAndClose(id, name) {
+            const select = $('#' + quickAddTarget.value);
+            let option = select.find('option[value="' + id + '"]');
+            if (option.length) {
+                select.val(id);
+            } else {
+                select.append(new Option(name, id, true, true));
+            }
+            select.trigger('change');
+            quickAddModal.classList.add('hidden');
+        }
+
+        function renderQuickAddDuplicates(matches) {
+            hideQuickAddDuplicates();
+            if (!matches.length) {
+                return;
+            }
+            matches.forEach(function (match) {
+                const li = document.createElement('li');
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'text-amber-800 dark:text-amber-300 underline hover:no-underline text-left';
+                btn.textContent = match.name + (match.entity_type ? ' (' + match.entity_type + ')' : '');
+                btn.addEventListener('click', function () {
+                    selectEntityAndClose(match.id, match.name);
+                });
+                li.appendChild(btn);
+                quickAddDuplicatesList.appendChild(li);
+            });
+            quickAddDuplicates.classList.remove('hidden');
+        }
+
+        let quickCheckTimer = null;
+        let quickCheckSeq = 0;
+        quickAddName.addEventListener('input', function () {
+            clearTimeout(quickCheckTimer);
+            const name = quickAddName.value.trim();
+            if (name.length < 3) {
+                hideQuickAddDuplicates();
+                return;
+            }
+            quickCheckTimer = setTimeout(function () {
+                const seq = ++quickCheckSeq;
+                fetch('{{ route('entities.quickCheck') }}?name=' + encodeURIComponent(name), {
+                    headers: { 'Accept': 'application/json' }
+                })
+                .then(function (response) { return response.ok ? response.json() : { data: [] }; })
+                .then(function (result) {
+                    // Ignore out-of-order responses from earlier keystrokes
+                    if (seq === quickCheckSeq) {
+                        renderQuickAddDuplicates(result.data || []);
+                    }
+                })
+                .catch(function () { /* duplicate check is advisory; ignore failures */ });
+            }, 400);
+        });
+
         document.querySelectorAll('[data-quick-add]').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 const role = btn.getAttribute('data-quick-add');
                 quickAddRole.value = role;
                 quickAddTarget.value = btn.getAttribute('data-target');
                 quickAddName.value = '';
+                quickAddShort.value = '';
+                quickAddDescription.value = '';
+                quickAddImage.value = '';
+                hideQuickAddDuplicates();
                 quickAddError.classList.add('hidden');
                 document.getElementById('quick-add-entity-modal-title').textContent = 'Add ' + role;
                 quickAddModal.classList.remove('hidden');
@@ -565,14 +666,26 @@
 
             quickAddSubmit.disabled = true;
 
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('role', quickAddRole.value);
+            if (quickAddShort.value.trim()) {
+                formData.append('short', quickAddShort.value.trim());
+            }
+            if (quickAddDescription.value.trim()) {
+                formData.append('description', quickAddDescription.value.trim());
+            }
+            if (quickAddImage.files.length) {
+                formData.append('image', quickAddImage.files[0]);
+            }
+
             fetch('{{ route('entities.quickStore') }}', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
-                body: JSON.stringify({ name: name, role: quickAddRole.value })
+                body: formData
             })
             .then(function (response) {
                 return response.json().then(function (data) {
@@ -581,17 +694,16 @@
             })
             .then(function (result) {
                 if (!result.ok) {
-                    const msg = result.data && result.data.errors && result.data.errors.name
-                        ? result.data.errors.name[0]
+                    const errors = result.data && result.data.errors;
+                    const firstError = errors && (errors.name || errors.short || errors.description || errors.image);
+                    const msg = firstError
+                        ? firstError[0]
                         : (result.data.message || 'Could not create the entity. Please try again.');
                     showQuickAddError(msg);
                     return;
                 }
 
-                const select = $('#' + quickAddTarget.value);
-                const option = new Option(result.data.name, result.data.id, true, true);
-                select.append(option).trigger('change');
-                quickAddModal.classList.add('hidden');
+                selectEntityAndClose(result.data.id, result.data.name);
             })
             .catch(function () {
                 showQuickAddError('Something went wrong. Please try again.');
