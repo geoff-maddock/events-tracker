@@ -1,3 +1,32 @@
+{{-- Name --}}
+<x-ui.form-group
+    name="name"
+    label="Name"
+    :error="$errors->first('name')"
+    helpText="The user's display name">
+    <x-ui.input
+        type="text"
+        name="name"
+        id="name"
+        :value="old('name', $user->name ?? '')"
+        placeholder="Enter name"
+        :hasError="$errors->has('name')" />
+</x-ui.form-group>
+
+{{-- Email --}}
+<x-ui.form-group
+    name="email"
+    label="Email"
+    :error="$errors->first('email')">
+    <x-ui.input
+        type="email"
+        name="email"
+        id="email"
+        :value="old('email', $user->email ?? '')"
+        placeholder="Enter email address"
+        :hasError="$errors->has('email')" />
+</x-ui.form-group>
+
 {{-- First Name --}}
 <x-ui.form-group
     name="first_name"

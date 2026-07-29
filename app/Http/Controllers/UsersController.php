@@ -384,9 +384,20 @@ class UsersController extends Controller
         flash('Success', 'Your user has been created!');
     }
 
+    /**
+     * Only the user themselves or an admin may edit/update/delete a user.
+     */
+    protected function authorizeUserChange(User $user): void
+    {
+        abort_unless(
+            $this->user && ($this->user->id === $user->id || $this->user->can('grant_access')),
+            403
+        );
+    }
+
     public function edit(User $user): View
     {
-        $this->middleware('auth');
+        $this->authorizeUserChange($user);
 
         return view('users.edit-tw', compact('user'))
             ->with($this->getFormOptions());
@@ -394,7 +405,15 @@ class UsersController extends Controller
 
     public function update(User $user, ProfileRequest $request): RedirectResponse
     {
+        $this->authorizeUserChange($user);
+
         $input = $request->all();
+
+        // status and group membership are admin-only fields; strip them for
+        // everyone else so a self-edit POST cannot escalate privileges
+        if (!$this->user->can('grant_access')) {
+            unset($input['user_status_id'], $input['group_list']);
+        }
 
         $input['setting_weekly_update'] = isset($input['setting_weekly_update']) ? 1 : 0;
         $input['setting_daily_update'] = isset($input['setting_daily_update']) ? 1 : 0;
@@ -407,8 +426,8 @@ class UsersController extends Controller
         // Some legacy users have no profile row yet (EVENTREPO-VW); create one on demand.
         $user->profile()->firstOrCreate([])->fill($input)->save();
 
-        if ($request->has('group_list')) {
-            $user->groups()->sync($request->input('group_list', []));
+        if (isset($input['group_list'])) {
+            $user->groups()->sync($input['group_list']);
         }
 
         // add to activity log
@@ -424,6 +443,8 @@ class UsersController extends Controller
      */
     public function destroy(User $user): RedirectResponse
     {
+        $this->authorizeUserChange($user);
+
         // add to activity log
         Activity::log($user, $this->user, 3);
 
