@@ -305,6 +305,10 @@ class InstagramEventPoster
             }
         }
 
+        if ($selectedEvents->isEmpty()) {
+            throw new RuntimeException('No events selected for the weekend preview.');
+        }
+
         $posted = 0;
         $skipped = 0;
 
