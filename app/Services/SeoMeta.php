@@ -42,6 +42,14 @@ class SeoMeta
     }
 
     /**
+     * Canonical URL for a known path, on the configured app host.
+     */
+    public static function canonicalFor(string $path): string
+    {
+        return rtrim(config('app.url'), '/').'/'.ltrim($path, '/');
+    }
+
+    /**
      * Whether the current request carries list-state query params and should
      * be noindexed (with follow, so link equity still flows).
      */
