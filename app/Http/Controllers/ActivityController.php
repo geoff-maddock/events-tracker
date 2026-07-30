@@ -432,7 +432,7 @@ class ActivityController extends Controller
         $listParamSessionStore->clearFilter();
         $listParamSessionStore->clearSort();
 
-        return redirect()->route($request->get('redirect') ?? 'activities.index');
+        return redirect()->route($this->resolveRedirectRoute($request, 'activities.index'));
     }
 
     protected function getGraphOptions(): array

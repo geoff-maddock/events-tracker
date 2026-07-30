@@ -198,7 +198,7 @@ class SeriesController extends Controller
         $listParamSessionStore->clearFilter();
         $listParamSessionStore->clearSort();
 
-        return redirect()->route($request->get('redirect') ?? 'series.index');
+        return redirect()->route($this->resolveRedirectRoute($request, 'series.index'));
     }
 
     /**

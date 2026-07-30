@@ -446,7 +446,7 @@ class PhotosController extends Controller
         $listParamSessionStore->clearFilter();
         $listParamSessionStore->clearSort();
 
-        return redirect()->route($request->get('redirect') ?? 'photos.index');
+        return redirect()->route($this->resolveRedirectRoute($request, 'photos.index'));
     }
 
     /**

@@ -240,7 +240,7 @@ class ReviewsController extends Controller
         $listParamSessionStore->clearFilter();
         $listParamSessionStore->clearSort();
 
-        return redirect()->route($request->get('redirect') ?? 'reviews.index');
+        return redirect()->route($this->resolveRedirectRoute($request, 'reviews.index'));
     }
 
     /**

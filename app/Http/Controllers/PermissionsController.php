@@ -219,7 +219,7 @@ class PermissionsController extends Controller
         $listParamSessionStore->clearFilter();
         $listParamSessionStore->clearSort();
 
-        return redirect()->route($request->get('redirect') ?? 'permissions.index');
+        return redirect()->route($this->resolveRedirectRoute($request, 'permissions.index'));
     }
 
     /**

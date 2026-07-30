@@ -468,7 +468,7 @@ class BlogsController extends Controller
         $listParamSessionStore->clearFilter();
         $listParamSessionStore->clearSort();
 
-        return redirect()->route($request->get('redirect') ?? 'blogs.index');
+        return redirect()->route($this->resolveRedirectRoute($request, 'blogs.index'));
     }
 
     protected function unauthorized(Request $request): RedirectResponse | Response

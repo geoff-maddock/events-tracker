@@ -709,7 +709,7 @@ class PostsController extends Controller
         $listParamSessionStore->clearFilter();
         $listParamSessionStore->clearSort();
 
-        return redirect()->route($request->get('redirect') ?? 'posts.index');
+        return redirect()->route($this->resolveRedirectRoute($request, 'posts.index'));
     }
 
     protected function getFilterOptions(): array
