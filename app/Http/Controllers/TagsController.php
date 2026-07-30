@@ -84,6 +84,8 @@ class TagsController extends Controller
      */
     public function destroy(Tag $tag): RedirectResponse
     {
+        $this->authorize('delete', $tag);
+
         $tag->delete();
 
         return redirect('tags');
@@ -310,7 +312,7 @@ class TagsController extends Controller
      */
     public function edit(Tag $tag): View
     {
-        $this->middleware('auth');
+        $this->authorize('update', $tag);
 
         $tagTypes = TagType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
@@ -639,6 +641,8 @@ class TagsController extends Controller
      */
     public function update(Tag $tag, TagRequest $request): RedirectResponse
     {
+        $this->authorize('update', $tag);
+
         $msg = '';
 
         $input = $request->all();

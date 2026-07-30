@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Filters\TagFilters;
 
@@ -33,6 +34,16 @@ class Tag extends Eloquent
     protected $fillable = [
         'name', 'tag_type_id', 'slug', 'description',
     ];
+
+    protected static function booted(): void
+    {
+        // stamp the creator; deliberately not in $fillable so it can't be mass-assigned
+        static::creating(function (Tag $tag) {
+            if (null === $tag->created_by && Auth::check()) {
+                $tag->created_by = Auth::id();
+            }
+        });
+    }
 
     public function getRouteKeyName()
     {

@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Models\Permission;
 use App\Models\Post;
+use App\Models\Tag;
 use App\Models\Thread;
 use App\Policies\PostPolicy;
+use App\Policies\TagPolicy;
 use App\Policies\ThreadPolicy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -29,6 +31,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Post::class => PostPolicy::class,
+        Tag::class => TagPolicy::class,
         Thread::class => ThreadPolicy::class,
     ];
 
