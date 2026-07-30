@@ -6,8 +6,10 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use App\Models\User;
 
@@ -47,5 +49,17 @@ abstract class Controller extends BaseController
         }
 
         return null;
+    }
+
+    /**
+     * Resolve the `redirect` request param (a route name) used by the
+     * reset/rpp-reset actions, falling back to $default when it is missing
+     * or does not name a real route.
+     */
+    protected function resolveRedirectRoute(Request $request, string $default): string
+    {
+        $redirect = $request->get('redirect');
+
+        return is_string($redirect) && Route::has($redirect) ? $redirect : $default;
     }
 }

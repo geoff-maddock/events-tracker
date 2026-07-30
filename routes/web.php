@@ -189,7 +189,7 @@ Route::post('purge', [\App\Http\Controllers\UsersController::class, 'purge'])->n
 Route::match(['get', 'post'], 'users/{id}/attending', [\App\Http\Controllers\EventsController::class, 'indexUserAttending'])->name('users.attending');
 Route::match(['get', 'post'], 'users/{id}/attending-ical', [\App\Http\Controllers\EventsController::class, 'indexUserAttendingIcal'])->name('users.attendingIcal');
 Route::match(['get', 'post'], 'users/{id}/interested-ical', [\App\Http\Controllers\EventsController::class, 'indexUserInterestedIcal'])->name('users.interestedIcal');
-Route::match(['get', 'post'], 'users/{id}/reset-user-attending', ['as' => 'users.resetUserAttending', 'uses' => '\App\Http\Controllers\EventsController@resetUserAttending']);
+Route::post('users/{id}/reset-user-attending', ['as' => 'users.resetUserAttending', 'uses' => '\App\Http\Controllers\EventsController@resetUserAttending']);
 Route::get('users/{id}/rpp-reset-user-attending', ['as' => 'users.rppResetUserAttending', 'uses' => '\App\Http\Controllers\EventsController@rppResetUserAttending']);
 
 Route::match(['get', 'post'], 'users/filter', ['as' => 'users.filter', 'uses' => '\App\Http\Controllers\UsersController@filter']);

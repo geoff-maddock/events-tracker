@@ -204,7 +204,7 @@ class MenusController extends Controller
         $listParamSessionStore->clearFilter();
         $listParamSessionStore->clearSort();
 
-        return redirect()->route($request->get('redirect') ?? 'menus.index');
+        return redirect()->route($this->resolveRedirectRoute($request, 'menus.index'));
     }
 
     /**

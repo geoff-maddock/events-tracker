@@ -207,7 +207,7 @@ class CalendarController extends Controller
         // clear
         $listParamSessionStore->clearSort();
 
-        return redirect()->route($request->get('redirect') ?? 'events.index');
+        return redirect()->route($this->resolveRedirectRoute($request, 'events.index'));
     }
 
     /**
@@ -228,7 +228,7 @@ class CalendarController extends Controller
         $listParamSessionStore->clearFilter();
         $listParamSessionStore->clearSort();
 
-        return redirect()->route($request->get('redirect') ?? 'events.index');
+        return redirect()->route($this->resolveRedirectRoute($request, 'events.index'));
     }
 
     /**

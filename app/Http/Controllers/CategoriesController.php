@@ -367,7 +367,7 @@ class CategoriesController extends Controller
         $listParamSessionStore->clearFilter();
         $listParamSessionStore->clearSort();
 
-        return redirect()->route($request->get('redirect') ?? 'categories.index');
+        return redirect()->route($this->resolveRedirectRoute($request, 'categories.index'));
     }
 
     protected function unauthorized(Request $request): RedirectResponse | Response

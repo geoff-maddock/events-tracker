@@ -325,7 +325,7 @@ class ThreadsController extends Controller
         $listParamSessionStore->clearFilter();
         $listParamSessionStore->clearSort();
 
-        return redirect()->route($request->get('redirect') ?? 'threads.index');
+        return redirect()->route($this->resolveRedirectRoute($request, 'threads.index'));
     }
 
     /**

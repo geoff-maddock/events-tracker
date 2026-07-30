@@ -203,7 +203,7 @@ class GroupsController extends Controller
         $listParamSessionStore->clearFilter();
         $listParamSessionStore->clearSort();
 
-        return redirect()->route($request->get('redirect') ?? 'groups.index');
+        return redirect()->route($this->resolveRedirectRoute($request, 'groups.index'));
     }
 
     /**

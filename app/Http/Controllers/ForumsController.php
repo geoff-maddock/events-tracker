@@ -468,7 +468,7 @@ class ForumsController extends Controller
         $listParamSessionStore->clearFilter();
         $listParamSessionStore->clearSort();
 
-        return redirect()->route($request->get('redirect') ?? 'forums.index');
+        return redirect()->route($this->resolveRedirectRoute($request, 'forums.index'));
     }
 
     /**
