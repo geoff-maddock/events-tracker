@@ -5,7 +5,7 @@
 {{-- dated variants are navigation state, not distinct pages --}}
 @if (($date ?? '') !== '')
 @section('canonical')
-<link rel="canonical" href="{{ url('/events/upcoming') }}">
+<link rel="canonical" href="{{ \App\Services\SeoMeta::canonicalFor('/events/upcoming') }}">
 @endsection
 @section('meta.robots')
 <meta name="robots" content="noindex, follow">

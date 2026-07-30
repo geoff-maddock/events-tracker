@@ -2,7 +2,7 @@
 
 {{-- the id-based URL also resolves; the slug route is the canonical one --}}
 @section('canonical')
-<link rel="canonical" href="{{ url('/series/'.$series->slug) }}">
+<link rel="canonical" href="{{ \App\Services\SeoMeta::canonicalFor('/series/'.$series->slug) }}">
 @endsection
 
 @section('title', $series->getTitleFormat())

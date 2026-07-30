@@ -2,7 +2,7 @@
 
 {{-- the id-based URL also resolves; the slug route is the canonical one --}}
 @section('canonical')
-<link rel="canonical" href="{{ url('/events/'.$event->slug) }}">
+<link rel="canonical" href="{{ \App\Services\SeoMeta::canonicalFor('/events/'.$event->slug) }}">
 @endsection
 
 @section('google.event.json')

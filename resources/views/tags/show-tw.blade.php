@@ -3,7 +3,7 @@
 {{-- name-based links also resolve here; the slug form is the canonical one --}}
 @if (isset($tagObject) && $tagObject)
 @section('canonical')
-<link rel="canonical" href="{{ url('/tags/'.$tagObject->slug) }}">
+<link rel="canonical" href="{{ \App\Services\SeoMeta::canonicalFor('/tags/'.$tagObject->slug) }}">
 @endsection
 @endif
 
