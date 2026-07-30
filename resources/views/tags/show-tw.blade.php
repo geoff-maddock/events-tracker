@@ -63,19 +63,20 @@ Tags
 					<i class="bi {{ $isFollowing ? 'bi-star-fill text-yellow-500' : 'bi-star text-muted-foreground' }} text-xl"></i>
 				</a>
 
-				<!-- Edit/Delete Menu (if owner) -->
-				@if ($tagObject->created_by && $user->id === $tagObject->created_by)
+				<!-- Edit/Delete Menu (creator or admin; delete is admin-only) -->
+				@can('update', $tagObject)
 				<div class="relative group">
 					<button class="p-2 rounded-md hover:bg-accent transition-colors text-muted-foreground hover:text-foreground">
 						<i class="bi bi-three-dots"></i>
 					</button>
 					<div class="absolute right-0 mt-1 w-48 bg-card border border-border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
 						<div class="py-1">
-							<a href="{{ route('tags.edit', $tagObject->id) }}" class="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
+							<a href="{{ route('tags.edit', $tagObject) }}" class="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
 								<i class="bi bi-pencil"></i>
 								Edit Tag
 							</a>
-							<form method="POST" action="{{ route('tags.destroy', $tagObject->id) }}" class="inline-block w-full" data-confirm="Are you sure you want to delete this tag?">
+							@can('delete', $tagObject)
+							<form method="POST" action="{{ route('tags.destroy', $tagObject) }}" class="inline-block w-full" data-confirm="Are you sure you want to delete this tag?">
 								@csrf
 								@method('DELETE')
 								<button type="submit" class="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950 transition-colors w-full text-left">
@@ -83,10 +84,11 @@ Tags
 									Delete Tag
 								</button>
 							</form>
+							@endcan
 						</div>
 					</div>
 				</div>
-				@endif
+				@endcan
 			</div>
 			@endif
 		</div>

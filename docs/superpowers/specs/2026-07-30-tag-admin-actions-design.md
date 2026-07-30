@@ -1,90 +1,94 @@
 # Tag show page: admin action menu + guarded edit/delete
 
 **Date:** 2026-07-30
-**Status:** Approved
+**Status:** Implemented (revised during implementation — see Revisions)
 
 ## Problem
 
 On the tag show page (`resources/views/tags/show-tw.blade.php`), the Edit/Delete
-action menu is only rendered when the signed-in user is the tag's creator
-(`$user->id === $tagObject->created_by`). Admins cannot see or use the menu on
-tags they didn't create.
+action menu was gated on `$user->id === $tagObject->created_by`. During
+implementation we discovered the `tags` table has **no `created_by` column** —
+the check was always false, so the menu never rendered for anyone.
 
-Worse, the server side does not enforce anything:
+The server side enforced nothing:
 
-- `TagsController::destroy` has no auth or ownership check — any request to
-  `DELETE /tags/{tag}` deletes the tag, even from a guest.
-- `edit` / `update` only require a verified login (`verified` middleware); any
-  verified user can edit any tag.
+- `TagsController::destroy` had no auth or ownership check — any request to
+  `DELETE /tags/{tag}` deleted the tag, even from a guest.
+- `edit` / `update` only required a verified login; any verified user could
+  edit any tag.
+
+The menu's edit/delete URLs were also built from `$tagObject->id`, but tag
+routes bind by slug (`getRouteKeyName`), so they would have 404'd had the menu
+ever rendered.
 
 ## Goal
 
+- Track tag ownership going forward (`created_by`).
 - Show the tag action menu to the creator **and** to admins (`admin` or
   `super_admin` group).
-- Allow admins to delete (and edit) tags they didn't create.
-- Enforce the same rule server-side: `destroy`, `edit`, and `update` require
-  creator-or-admin.
+- Edit: creator or admin. **Delete: admin only** (creators may not delete
+  their own tags).
+- Enforce the same rules server-side on `destroy`, `edit`, and `update`.
 
 ## Design
 
+### Schema
+
+Migration `2026_07_30_000000_add_created_by_to_tags_table` adds a nullable,
+indexed `created_by` (unsigned int, matching `users.id`) to `tags`. Existing
+tags keep `null` — they are admin-manageable only.
+
+`Tag::booted()` registers a `creating` hook that stamps
+`created_by = Auth::id()` when a user is signed in. This covers the ~15 inline
+`new Tag()` creation sites across web/API controllers without touching them.
+`created_by` is deliberately **not** in `$fillable`, so it cannot be spoofed
+via mass assignment.
+
 ### TagPolicy (single source of truth)
 
-New `app/Policies/TagPolicy.php`:
+`app/Policies/TagPolicy.php`, registered in `AuthServiceProvider::$policies`:
 
-- `update(User $user, Tag $tag): bool` — `$user->id === $tag->created_by || $user->hasGroup('super_admin')`
-- `delete(User $user, Tag $tag): bool` — same rule.
+- `update(User $user, Tag $tag)` — `$user->hasGroup('super_admin') || ($tag->created_by && $user->id === $tag->created_by)`
+- `delete(User $user, Tag $tag)` — `$user->hasGroup('super_admin')`
 
-The `admin` group is granted everything by the existing `Gate::before` in
-`AuthServiceProvider`, so the policy only needs to handle owner + `super_admin`.
-
-Register the policy in `AuthServiceProvider::$policies` alongside the existing
-`PostPolicy` and `ThreadPolicy` entries.
+The `admin` group passes both via the existing `Gate::before`.
 
 ### Controller
 
-In `TagsController`:
+`TagsController`:
 
-- `destroy`: `$this->authorize('delete', $tag);` before deleting.
-- `edit` and `update`: `$this->authorize('update', $tag);` at the top.
+- `destroy`: `$this->authorize('delete', $tag)`
+- `edit` / `update`: `$this->authorize('update', $tag)`
 
-Unauthenticated or unauthorized requests get 403 via the framework.
+Unauthenticated or unauthorized requests get 403.
 
 ### View
 
-`resources/views/tags/show-tw.blade.php` line ~67: replace
-
-```blade
-@if ($tagObject->created_by && $user->id === $tagObject->created_by)
-```
-
-with
-
-```blade
-@can('update', $tagObject)
-```
-
-The follow/unfollow star and the rest of the page are unchanged.
-
-### Edge cases
-
-- Tags with `created_by = null` (legacy data): only admins can manage them.
-- Guests: never see the menu (outer `$signedIn` check unchanged); direct
-  requests are denied by `authorize`.
+`show-tw.blade.php`: menu wrapped in `@can('update', $tagObject)`; the delete
+form additionally wrapped in `@can('delete', $tagObject)`. Route calls pass the
+model (slug binding) instead of `->id`. Follow star unchanged.
 
 ## Testing
 
-Feature tests (follow suite conventions: `$seed = true`,
-`withExceptionHandling()`):
+`tests/Feature/TagsPermissionsTest.php` (11 tests, green):
 
-1. Admin can delete a tag they did not create (tag gone, redirect to `/tags`).
-2. Creator can delete their own tag.
-3. Non-owner regular user gets 403 on `DELETE /tags/{tag}` and `GET /tags/{tag}/edit`.
-4. Guest `DELETE /tags/{tag}` is denied (403/redirect; tag still exists).
-5. Show page: action menu markup visible to admin, absent for an unrelated
-   signed-in user.
+1. admin / super_admin can delete a tag they did not create
+2. creator **cannot** delete their own tag (403)
+3. non-owner cannot delete (403); guest cannot delete (403); tag persists
+4. creator and admin can access edit page; non-owner gets 403
+5. show page: admin sees Edit + Delete; creator sees Edit but not Delete;
+   unrelated user sees neither
+
+## Revisions
+
+- **created_by column added**: original design assumed the column existed; it
+  did not, so a migration + creating-hook were added (user-approved).
+- **Delete narrowed to admin-only**: original design allowed creators to
+  delete their own tags; user revised mid-implementation to admin-only.
 
 ## Out of scope
 
-- API tag endpoints (`app/Http/Controllers/Api`) — separate surface, not
-  touched here.
+- API tag endpoints (`app/Http/Controllers/Api`) — already admin-gated
+  separately.
 - `store`/`create` authorization (unchanged: any verified user may create tags).
+- Backfilling `created_by` for existing tags.
