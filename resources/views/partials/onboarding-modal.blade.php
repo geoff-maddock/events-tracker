@@ -2,9 +2,11 @@
     Post-signup "Getting To Know You" onboarding prompt (issue #901).
 
     Shown to verified users who follow nothing yet. Lets them pick popular
-    entities, tags, and events to follow. Selecting "Follow selected" creates
-    the follows and marks onboarding complete; "Skip for now" permanently
-    dismisses it. Either way it never auto-shows again.
+    entities, tags, and events to follow. Each section pages client-side
+    (up to 10 pages of options from the data endpoint) and selections are
+    kept across pages. Selecting "Follow selected" creates the follows and
+    marks onboarding complete; "Skip for now" permanently dismisses it.
+    Either way it never auto-shows again.
 --}}
 <style>[x-cloak]{display:none!important}</style>
 <div x-data="onboarding()" x-init="init()" x-show="open" x-cloak
@@ -37,9 +39,25 @@
                 <div class="space-y-6">
                     <!-- Entities -->
                     <section x-show="entities.length">
-                        <h3 class="text-sm font-semibold text-foreground mb-2">Popular artists &amp; venues</h3>
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-semibold text-foreground">Popular artists &amp; venues</h3>
+                            <div class="flex items-center gap-1" x-show="pageCount('entities') > 1">
+                                <button type="button" @click="prevPage('entities')" :disabled="page.entities === 0"
+                                        aria-label="Previous artists and venues"
+                                        class="p-1 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                                    <i class="bi bi-chevron-left text-xs"></i>
+                                </button>
+                                <span class="text-xs text-muted-foreground tabular-nums"
+                                      x-text="(page.entities + 1) + ' / ' + pageCount('entities')"></span>
+                                <button type="button" @click="nextPage('entities')" :disabled="page.entities >= pageCount('entities') - 1"
+                                        aria-label="More artists and venues"
+                                        class="p-1 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                                    <i class="bi bi-chevron-right text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            <template x-for="item in entities" :key="'entity-' + item.id">
+                            <template x-for="item in paged('entities')" :key="'entity-' + item.id">
                                 <label class="flex items-center gap-3 p-2 rounded-md border border-border hover:bg-background cursor-pointer">
                                     <input type="checkbox" :value="item.id" x-model.number="selected.entities" class="rounded border-border">
                                     <img x-show="item.image" :src="item.image" alt="" class="w-8 h-8 rounded object-cover">
@@ -54,9 +72,25 @@
 
                     <!-- Tags -->
                     <section x-show="tags.length">
-                        <h3 class="text-sm font-semibold text-foreground mb-2">Popular genres &amp; tags</h3>
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-semibold text-foreground">Popular genres &amp; tags</h3>
+                            <div class="flex items-center gap-1" x-show="pageCount('tags') > 1">
+                                <button type="button" @click="prevPage('tags')" :disabled="page.tags === 0"
+                                        aria-label="Previous genres and tags"
+                                        class="p-1 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                                    <i class="bi bi-chevron-left text-xs"></i>
+                                </button>
+                                <span class="text-xs text-muted-foreground tabular-nums"
+                                      x-text="(page.tags + 1) + ' / ' + pageCount('tags')"></span>
+                                <button type="button" @click="nextPage('tags')" :disabled="page.tags >= pageCount('tags') - 1"
+                                        aria-label="More genres and tags"
+                                        class="p-1 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                                    <i class="bi bi-chevron-right text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
                         <div class="flex flex-wrap gap-2">
-                            <template x-for="item in tags" :key="'tag-' + item.id">
+                            <template x-for="item in paged('tags')" :key="'tag-' + item.id">
                                 <label class="cursor-pointer">
                                     <input type="checkbox" :value="item.id" x-model.number="selected.tags" class="sr-only peer">
                                     <span class="inline-block px-3 py-1 rounded-full text-sm border border-border text-muted-foreground peer-checked:bg-primary peer-checked:text-primary-foreground peer-checked:border-primary transition-colors"
@@ -68,9 +102,25 @@
 
                     <!-- Events -->
                     <section x-show="events.length">
-                        <h3 class="text-sm font-semibold text-foreground mb-2">Upcoming events</h3>
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-semibold text-foreground">Upcoming events</h3>
+                            <div class="flex items-center gap-1" x-show="pageCount('events') > 1">
+                                <button type="button" @click="prevPage('events')" :disabled="page.events === 0"
+                                        aria-label="Previous events"
+                                        class="p-1 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                                    <i class="bi bi-chevron-left text-xs"></i>
+                                </button>
+                                <span class="text-xs text-muted-foreground tabular-nums"
+                                      x-text="(page.events + 1) + ' / ' + pageCount('events')"></span>
+                                <button type="button" @click="nextPage('events')" :disabled="page.events >= pageCount('events') - 1"
+                                        aria-label="More events"
+                                        class="p-1 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                                    <i class="bi bi-chevron-right text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            <template x-for="item in events" :key="'event-' + item.id">
+                            <template x-for="item in paged('events')" :key="'event-' + item.id">
                                 <label class="flex items-center gap-3 p-2 rounded-md border border-border hover:bg-background cursor-pointer">
                                     <input type="checkbox" :value="item.id" x-model.number="selected.events" class="rounded border-border">
                                     <span class="min-w-0">
@@ -114,6 +164,23 @@
             tags: [],
             events: [],
             selected: { entities: [], tags: [], events: [] },
+            // Client-side paging per section; selections persist across pages
+            // because checkbox state lives in `selected`, not in the DOM.
+            page: { entities: 0, tags: 0, events: 0 },
+            perPage: { entities: 8, tags: 12, events: 6 },
+            paged(kind) {
+                const start = this.page[kind] * this.perPage[kind];
+                return this[kind].slice(start, start + this.perPage[kind]);
+            },
+            pageCount(kind) {
+                return Math.max(1, Math.ceil(this[kind].length / this.perPage[kind]));
+            },
+            prevPage(kind) {
+                if (this.page[kind] > 0) this.page[kind]--;
+            },
+            nextPage(kind) {
+                if (this.page[kind] < this.pageCount(kind) - 1) this.page[kind]++;
+            },
             get totalSelected() {
                 return this.selected.entities.length + this.selected.tags.length + this.selected.events.length;
             },
