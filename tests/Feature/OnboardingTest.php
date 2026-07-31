@@ -196,7 +196,12 @@ class OnboardingTest extends TestCase
         $activeStatusId = \App\Models\EntityStatus::where('name', 'Active')->first()->id;
         Entity::factory()->count(20)->create(['entity_status_id' => $activeStatusId]);
         Tag::factory()->count(20)->create();
-        Event::factory()->count(10)->create(['start_at' => now()->addWeek()]);
+        // The factory randomizes visibility_id; pin it to public so all ten
+        // events pass the endpoint's visible() scope for this user.
+        Event::factory()->count(10)->create([
+            'start_at' => now()->addWeek(),
+            'visibility_id' => \App\Models\Visibility::VISIBILITY_PUBLIC,
+        ]);
 
         $response = $this->actingAs($user)->getJson(route('onboarding.data'));
         $response->assertOk();
