@@ -28,6 +28,20 @@ class OnboardingController extends Controller
     private const FOLLOWABLE_TYPES = ['entity', 'tag', 'event'];
 
     /**
+     * The modal pages through each list client-side, up to this many pages.
+     */
+    private const MAX_PAGES = 10;
+
+    /**
+     * Items shown per page in the modal, per section.
+     */
+    private const ENTITIES_PER_PAGE = 8;
+
+    private const TAGS_PER_PAGE = 12;
+
+    private const EVENTS_PER_PAGE = 6;
+
+    /**
      * Return the popular entities, tags, and events to seed the prompt with.
      */
     public function data(): JsonResponse
@@ -154,7 +168,7 @@ class OnboardingController extends Controller
             ->with(['photos', 'entityType'])
             ->orderByDesc(DB::raw('follows_count + events_count'))
             ->orderBy('name')
-            ->limit(8)
+            ->limit(self::ENTITIES_PER_PAGE * self::MAX_PAGES)
             ->get();
 
         return $entities->map(fn (Entity $entity) => [
@@ -176,7 +190,7 @@ class OnboardingController extends Controller
             ->withCount(['events', 'follows'])
             ->orderByDesc(DB::raw('events_count + follows_count'))
             ->orderBy('name')
-            ->limit(12)
+            ->limit(self::TAGS_PER_PAGE * self::MAX_PAGES)
             ->get();
 
         return $tags->map(fn (Tag $tag) => [
@@ -199,7 +213,7 @@ class OnboardingController extends Controller
             ->with(['venue'])
             ->orderByDesc('attendees_count')
             ->orderBy('start_at')
-            ->limit(6)
+            ->limit(self::EVENTS_PER_PAGE * self::MAX_PAGES)
             ->get();
 
         return $events->map(fn (Event $event) => [

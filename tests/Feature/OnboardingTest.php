@@ -189,6 +189,31 @@ class OnboardingTest extends TestCase
     }
 
     /** @test */
+    public function data_endpoint_returns_enough_options_for_multiple_pages(): void
+    {
+        $user = User::factory()->create(['user_status_id' => 1]);
+
+        $activeStatusId = \App\Models\EntityStatus::where('name', 'Active')->first()->id;
+        Entity::factory()->count(20)->create(['entity_status_id' => $activeStatusId]);
+        Tag::factory()->count(20)->create();
+        Event::factory()->count(10)->create(['start_at' => now()->addWeek()]);
+
+        $response = $this->actingAs($user)->getJson(route('onboarding.data'));
+        $response->assertOk();
+
+        // More than one page's worth (8 entities / 12 tags / 6 events per page)
+        // must come back so the modal's per-section paging has content, capped
+        // at 10 pages per section.
+        $data = $response->json();
+        $this->assertGreaterThan(8, count($data['entities']));
+        $this->assertGreaterThan(12, count($data['tags']));
+        $this->assertGreaterThan(6, count($data['events']));
+        $this->assertLessThanOrEqual(80, count($data['entities']));
+        $this->assertLessThanOrEqual(120, count($data['tags']));
+        $this->assertLessThanOrEqual(60, count($data['events']));
+    }
+
+    /** @test */
     public function onboarding_routes_require_authentication(): void
     {
         $this->withExceptionHandling();
