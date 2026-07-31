@@ -119,8 +119,7 @@ class SearchService
                 [$keyword]
             );
         }
-        $query->orderByRaw('ABS(TIMESTAMPDIFF(SECOND, NOW(), events.start_at)) ASC')
-            ->orderBy('events.name', 'ASC');
+        $query->orderBy('events.name', 'ASC');
 
         return $query->paginate($perPage);
     }
@@ -153,8 +152,7 @@ class SearchService
                 [$keyword]
             );
         }
-        $query->orderByRaw('ABS(TIMESTAMPDIFF(SECOND, NOW(), series.start_at)) ASC')
-            ->orderBy('series.name', 'ASC');
+        $query->orderBy('series.name', 'ASC');
 
         return $query->paginate($perPage);
     }
@@ -388,14 +386,17 @@ class SearchService
     /**
      * Order results into three time buckets so upcoming events always come
      * before recent-past, which come before older — keeping discovery of
-     * upcoming events as the primary use case for the site.
+     * upcoming events as the primary use case for the site. Within the
+     * upcoming bucket rows are ascending (soonest first); within the past
+     * buckets, descending (most recent first). Date order outranks fulltext
+     * relevance, which callers may append as a tiebreaker.
      *
      * @param  Builder<\Illuminate\Database\Eloquent\Model>  $query
      */
     private function applyRecencyOrder(Builder $query, string $table): void
     {
         // start_at NULL is treated as "older" so undated rows don't outrank
-        // real upcoming events.
+        // real upcoming events, and sorted after dated rows in that bucket.
         $query->orderByRaw(
             "CASE
                 WHEN {$table}.start_at IS NULL                      THEN 2
@@ -404,6 +405,8 @@ class SearchService
                 ELSE                                                     2
             END ASC"
         );
+        $query->orderByRaw("{$table}.start_at IS NULL ASC");
+        $query->orderByRaw("ABS(TIMESTAMPDIFF(SECOND, NOW(), {$table}.start_at)) ASC");
     }
 
     /**
