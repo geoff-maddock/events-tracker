@@ -1187,7 +1187,7 @@ class EntitiesController extends Controller
 
         // check the elements in the alias list, and if any don't match, add the alias
         foreach ($aliasArray as $key => $alias) {
-            if (!Alias::find($alias)) {
+            if (!is_numeric($alias) || !$newAlias = Alias::find($alias)) {
                 $newAlias = new Alias();
                 $newAlias->name = ucwords(strtolower($alias));
                 $newAlias->save();
