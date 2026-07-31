@@ -65,11 +65,14 @@ Tags
 
 				<!-- Edit/Delete Menu (creator or admin; delete is admin-only) -->
 				@can('update', $tagObject)
-				<div class="relative group">
-					<button class="p-2 rounded-md hover:bg-accent transition-colors text-muted-foreground hover:text-foreground">
+				<div class="relative" x-data="{ open: false }">
+					<button @click="open = !open" type="button"
+						class="p-2 rounded-md hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
+						aria-haspopup="true" :aria-expanded="open" title="More actions">
 						<i class="bi bi-three-dots"></i>
 					</button>
-					<div class="absolute right-0 mt-1 w-48 bg-card border border-border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+					<div x-show="open" @click.away="open = false" x-cloak
+						class="absolute right-0 mt-1 w-48 bg-card border border-border rounded-lg shadow-lg z-20">
 						<div class="py-1">
 							<a href="{{ route('tags.edit', $tagObject) }}" class="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
 								<i class="bi bi-pencil"></i>
