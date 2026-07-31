@@ -31,6 +31,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Frontend URL
+    |--------------------------------------------------------------------------
+    |
+    | Base URL for links in transactional email (verification, password
+    | reset). Overrides the framework default of http://localhost:3000,
+    | which would otherwise leak into emails whenever FRONTEND_URL is
+    | unset. Only set FRONTEND_URL when a separate frontend origin (SPA)
+    | should receive these links; otherwise the app URL is used.
+    |
+    */
+
+    'frontend_url' => env('FRONTEND_URL') ?: env('APP_URL', 'http://localhost/'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |
