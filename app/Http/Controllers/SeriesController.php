@@ -651,8 +651,11 @@ class SeriesController extends Controller
 
     public function show(Series $series, OembedExtractor $embedExtractor): View
     {
-        // eager-load relations consumed by the page + JSON-LD
-        $series->loadMissing(['photos', 'venue.locations']);
+        // eager-load relations consumed by the page + JSON-LD; upcomingEvent lets
+        // Series::nextEvent() (used by getSeoTitleFormat()/getFestivalYear() below,
+        // for both this request and the view's own title render) reuse the cached
+        // relation instead of re-querying.
+        $series->loadMissing(['photos', 'venue.locations', 'upcomingEvent']);
 
         // Each event renders through events/card-tw, which touches venue, eventType,
         // visibility, tags, photos (getPrimaryPhoto), entities and threads per card —
@@ -666,6 +669,42 @@ class SeriesController extends Controller
         }
         $events = $series->events()->with($eventEager)->paginate($this->childLimit);
 
+        // Upcoming events for the Schedule section: same eager loads as the
+        // archive grid above, but ascending and unpaginated. Built from
+        // Event::query() (rather than $series->events()) so ->visible()'s
+        // local scope type-resolves against Builder<Event> for phpstan.
+        $upcomingEvents = Event::where('series_id', $series->id)
+            ->with($eventEager)
+            ->visible($this->user)
+            ->where('start_at', '>=', now())
+            ->orderBy('start_at', 'asc')
+            ->get();
+
+        // Same year the SEO title uses (next upcoming event, else most recent
+        // past event) — keeps the Schedule heading's year in sync with the title.
+        $festivalYear = $series->getFestivalYear();
+
+        // Lineup: entities attached to the upcoming events above, or — when
+        // there aren't any — entities attached to the most recent edition's
+        // events (those sharing $festivalYear, which falls back to the most
+        // recent past event's year). Two queries at most beyond $upcomingEvents.
+        $lineupEventIds = $upcomingEvents->pluck('id');
+        if ($lineupEventIds->isEmpty() && $festivalYear) {
+            $lineupEventIds = $series->events()->whereYear('start_at', $festivalYear)->pluck('id');
+        }
+
+        $lineupEntities = $lineupEventIds->isEmpty()
+            ? collect()
+            : Entity::select('entities.*')
+                ->selectRaw('COUNT(entity_event.event_id) as frequency')
+                ->join('entity_event', 'entities.id', '=', 'entity_event.entity_id')
+                ->whereIn('entity_event.event_id', $lineupEventIds)
+                ->with('roles')
+                ->groupBy('entities.id')
+                ->orderByDesc('frequency')
+                ->limit(24)
+                ->get();
+
         // posts/briefList renders each thread's posts with their user/tags/entities.
         $threads = $series->threads()
             ->with(['posts.user', 'posts.tags', 'posts.entities'])
@@ -674,7 +713,7 @@ class SeriesController extends Controller
         // Embeds are deferred to an AJAX call via the playlist-tw placeholder.
         $embeds = [];
 
-        return view('series.show-tw', compact('series', 'events', 'threads', 'embeds'));
+        return view('series.show-tw', compact('series', 'events', 'threads', 'embeds', 'upcomingEvents', 'lineupEntities', 'festivalYear'));
     }
 
     public function store(SeriesRequest $request, Series $series): RedirectResponse

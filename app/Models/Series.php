@@ -627,6 +627,14 @@ class Series extends Eloquent
             case 'Biweekly':
                 $repeat = $day;
                 break;
+            case 'Yearly':
+                // Yearly series don't repeat on a week/day cadence; the SEO
+                // title (getSeoTitleFormat()) doesn't use this value for
+                // Yearly series at all, but callers that do concatenate it
+                // (e.g. getTitleFormat()) must trim() the result so an empty
+                // string here doesn't leave a dangling space.
+                $repeat = '';
+                break;
         }
 
         return $repeat;
@@ -961,6 +969,77 @@ class Series extends Eloquent
         if ($this->venue) {
             $format .= ' at ';
             $format .= $this->venue->name ?? 'No venue specified';
+        }
+
+        return $format;
+    }
+
+    /**
+     * Whether this series reads as a festival for SEO purposes: an explicit
+     * Festival event type, or a Yearly occurrence (covers annual events —
+     * e.g. "Skull Fest" — that were never tagged with the Festival event
+     * type but only ever happen once a year).
+     */
+    public function isFestival(): bool
+    {
+        if ($this->eventType && 'festival' === $this->eventType->slug) {
+            return true;
+        }
+
+        return (bool) ($this->occurrenceType && 'Yearly' === $this->occurrenceType->name);
+    }
+
+    /**
+     * The year to surface in a festival title/heading: the next upcoming
+     * event's year, else the most recent past event's year, else null when
+     * the series has no events at all.
+     */
+    public function getFestivalYear(): ?int
+    {
+        if ($next = $this->nextEvent()) {
+            return $next->start_at->year;
+        }
+
+        if ($last = $this->lastEvent()) {
+            return $last->start_at->year;
+        }
+
+        return null;
+    }
+
+    /**
+     * SEO-friendly title (does NOT include the site brand — the layout
+     * appends that). Festival series get "{name} {year} — Lineup,
+     * Schedule & Tickets in Pittsburgh" with the year omitted cleanly when
+     * unknown. Non-festival series fall back to "{name} — {OccurrenceType}
+     * {occurrence_repeat} at {venue}", with each clause dropped cleanly
+     * (no dangling separators) when its data is missing. Kept separate
+     * from getTitleFormat(), which other callers still use unchanged.
+     */
+    public function getSeoTitleFormat(): string
+    {
+        if ($this->isFestival()) {
+            $year = $this->getFestivalYear();
+
+            return $this->name.($year ? ' '.$year : '').' — Lineup, Schedule & Tickets in Pittsburgh';
+        }
+
+        $format = $this->name;
+        $clauses = [];
+
+        if ($this->occurrenceType && 'No Schedule' !== $this->occurrenceType->name) {
+            $occurrenceClause = trim($this->occurrenceType->name.' '.$this->occurrence_repeat);
+            if ('' !== $occurrenceClause) {
+                $clauses[] = $occurrenceClause;
+            }
+        }
+
+        if ($this->venue) {
+            $clauses[] = 'at '.($this->venue->name ?? 'No venue specified');
+        }
+
+        if (!empty($clauses)) {
+            $format .= ' — '.implode(' ', $clauses);
         }
 
         return $format;
