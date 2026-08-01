@@ -9,7 +9,7 @@
 
 @section('title')
 @if (isset($tag))
-{{ $tag }} Events, Artists & Series in Pittsburgh
+{{ Str::ucfirst($tag) }} Events, Artists & Series in Pittsburgh
 @else
 Tags
 @endif
