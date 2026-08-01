@@ -48,14 +48,18 @@ class EntityUpdateAliasSyncTest extends TestCase
         // An existing alias whose id the coerced string will collide with.
         $existing = Alias::create(['name' => 'The Original Alias']);
 
-        $entity = Entity::factory()->create(['created_by' => $this->user->id]);
+        $entity = Entity::factory()->create([
+            'created_by' => $this->user->id,
+            // The factory's faker->name slug fails EntityRequest's ^[a-z0-9-]+$ rule.
+            'slug' => 'alias-sync-test-entity',
+        ]);
 
         // A free-text alias name beginning with the existing alias id, e.g. "7D".
         // is_numeric() is false, but MySQL coerces "7D" -> 7 in an id lookup.
         $aliasName = $existing->id.'D';
         $aliasCountBefore = Alias::count();
 
-        $response = $this->put('/entities/'.$entity->id, [
+        $response = $this->put(route('entities.update', $entity), [
             'name' => $entity->name,
             'slug' => $entity->slug,
             'short' => $entity->short ?? 'short',
