@@ -243,10 +243,7 @@ Route::get('update', function () {
     EventUpdated::dispatch(new Event());
 });
 
-Route::get('events/tonight', [\App\Http\Controllers\EventTimeWindowController::class, 'show'])->defaults('window', 'tonight')->name('events.tonight');
-Route::get('events/today', [\App\Http\Controllers\EventTimeWindowController::class, 'show'])->defaults('window', 'today')->name('events.today');
-Route::get('events/this-weekend', [\App\Http\Controllers\EventTimeWindowController::class, 'show'])->defaults('window', 'this-weekend')->name('events.thisWeekend');
-Route::get('events/this-week', [\App\Http\Controllers\EventTimeWindowController::class, 'show'])->defaults('window', 'this-week')->name('events.thisWeek');
+Route::get('events/today', [\App\Http\Controllers\EventsController::class, 'indexToday']);
 Route::match(['get', 'post'], 'events/grid', [\App\Http\Controllers\EventsController::class, 'indexGrid'])->name('events.grid');
 Route::get('events/grid/tag/{slug}', [\App\Http\Controllers\EventsController::class, 'indexGridTags'])->name('events.grid.tag');
 Route::get('events/grid/by-date/{year}/{month?}/{day?}', [\App\Http\Controllers\EventsController::class, 'indexGridByDate'])->name('events.grid.byDate')

@@ -67,17 +67,6 @@ class GenerateSitemapCommandTest extends TestCase
         }
     }
 
-    public function test_includes_the_time_window_landing_pages(): void
-    {
-        $content = $this->generate();
-
-        $base = rtrim(config('app.url'), '/');
-        $this->assertStringContainsString($base.'/events/tonight', $content);
-        $this->assertStringContainsString($base.'/events/today', $content);
-        $this->assertStringContainsString($base.'/events/this-weekend', $content);
-        $this->assertStringContainsString($base.'/events/this-week', $content);
-    }
-
     public function test_includes_public_content_and_excludes_non_public(): void
     {
         $public = Event::factory()->create([

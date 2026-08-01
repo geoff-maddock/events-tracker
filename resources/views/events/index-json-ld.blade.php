@@ -36,11 +36,11 @@
     }
 
     $isTagPage  = isset($tag);
-    $pageUrl    = $pageUrl ?? ($isTagPage ? route('events.tag', $tag->slug) : route('events.index'));
-    $pageName   = $pageName ?? ($isTagPage ? (ucfirst($tag->name) . ' Events') : 'Events');
-    $pageDesc   = $pageDesc ?? ($isTagPage
+    $pageUrl    = $isTagPage ? route('events.tag', $tag->slug) : route('events.index');
+    $pageName   = $isTagPage ? (ucfirst($tag->name) . ' Events') : 'Events';
+    $pageDesc   = $isTagPage
         ? ('Events tagged with ' . $tag->name . ' in Pittsburgh')
-        : 'Upcoming events, concerts and shows in Pittsburgh');
+        : 'Upcoming events, concerts and shows in Pittsburgh';
 
     $jsonLd = [
         '@context'    => 'https://schema.org',
@@ -62,13 +62,6 @@
             '@type'    => 'ListItem',
             'position' => 2,
             'name'     => ucfirst($tag->name),
-            'item'     => $pageUrl,
-        ];
-    } elseif ($pageUrl !== route('events.index')) {
-        $breadcrumbItems[] = [
-            '@type'    => 'ListItem',
-            'position' => 2,
-            'name'     => $pageName,
             'item'     => $pageUrl,
         ];
     }

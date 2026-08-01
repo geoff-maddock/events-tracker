@@ -327,19 +327,6 @@ class Event extends Model
     }
 
     /**
-     * Events with a start_at inside the given naive datetime bounds
-     * (inclusive), ordered earliest-first. Used by the time-window landing
-     * pages (/events/tonight, /today, /this-weekend, /this-week).
-     *
-     * @param Builder<Event> $query
-     */
-    public function scopeBetween(Builder $query, string $start, string $end): Builder
-    {
-        return $query->whereBetween('events.start_at', [$start, $end])
-            ->orderBy('events.start_at', 'asc');
-    }
-
-    /**
      * @param Builder<Event> $query 
      */
     public function scopeFuture(Builder $query): Builder
