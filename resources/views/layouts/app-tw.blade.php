@@ -27,7 +27,7 @@
 	@yield('page.json')
 	<meta name="theme-color" content="#0f172a"/>
 	<meta name="csrf-token" content="{{ csrf_token() }}">
-	<title>@yield('title','Event Guide') • {{ config('app.app_name')}}</title>
+	<title>@yield('title','Event Guide') | {{ config('app.app_name')}}</title>
 
 	<!-- Theme initialization script - must run before page renders to prevent flash -->
 	<script>
@@ -107,6 +107,8 @@
 			<!-- Main Content Area -->
 			<main class="flex-1 min-w-0 w-full mx-auto p-4 md:p-6 overflow-x-hidden overflow-y-auto bg-background max-w-[2400px]">
 				@yield('content')
+
+				@include('partials.footer-tw')
 			</main>
 		</div>
 	</div>

@@ -1,12 +1,12 @@
 @if (isset($tag))
-• {{ ucfirst($tag->name)}}
+— {{ ucfirst($tag->name)}}
 @endif
 @if (isset($role))
-• {{ ucfirst($role) }}
+— {{ ucfirst($role) }}
 @endif
 @if (isset($type))
-• {{ ucfirst($type) }}
+— {{ ucfirst($type) }}
 @endif
 @if (isset($slug))
-• {{ strtoupper($name) }}
+— {{ strtoupper($name) }}
 @endif 

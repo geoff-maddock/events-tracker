@@ -9,7 +9,7 @@
 
 @section('title')
 @if (isset($tag))
-{{ $tag }} • Tag
+{{ Str::ucfirst($tag) }} Events, Artists & Series in Pittsburgh
 @else
 Tags
 @endif
@@ -41,8 +41,8 @@ Tags
 					@if ($tagObject->tagType)
 					<p class="text-xl text-muted-foreground mt-1">{{ $tagObject->tagType->name }}</p>
 					@endif
-					@if ($tagObject->tag_definition)
-					<p class="mt-2 text-muted-foreground">{{ $tagObject->tag_definition }}</p>
+					@if ($tagObject->description)
+					<p class="mt-2 text-muted-foreground">{{ $tagObject->description }}</p>
 					@endif
 				@endif
 			</div>
