@@ -962,7 +962,9 @@ class EntitiesController extends Controller
                 $query->whereHas('entities', function ($q) use ($entity) {
                     $q->where('entities.id', $entity->id);
                 })->orWhere('venue_id', $entity->id);
-            })->distinct();
+            })
+                ->where(fn ($q) => $q->visible($this->user))
+                ->distinct();
         } else {
             $venueEventsBase = fn () => $entity->events();
         }

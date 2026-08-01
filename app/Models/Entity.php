@@ -1030,7 +1030,14 @@ class Entity extends Eloquent
         }
 
         $location = $this->getPrimaryLocation();
-        if ($location && !empty($location->city)) {
+        // JSON-LD is rendered from the model with no request/auth context, so
+        // match getSeoDescriptionFormat()'s convention: treat a Guarded
+        // location as not publicly disclosable and omit it, same as the
+        // facts panel / Locations card do for guests.
+        // @phpstan-ignore-next-line (same undefined-property pattern accepted at getSeoDescriptionFormat() above)
+        $locationIsGuarded = $location && isset($location->visibility) && $location->visibility->name === 'Guarded';
+
+        if ($location && !empty($location->city) && !($schemaType === 'MusicVenue' && $locationIsGuarded)) {
             if ($schemaType === 'MusicVenue' && !empty($location->address_one)) {
                 $data['address'] = [
                     '@type'           => 'PostalAddress',
@@ -1046,7 +1053,7 @@ class Entity extends Eloquent
             }
         }
 
-        if ($schemaType === 'MusicVenue' && $location && !empty($location->capacity)) {
+        if ($schemaType === 'MusicVenue' && $location && !empty($location->capacity) && !$locationIsGuarded) {
             $data['maximumAttendeeCapacity'] = (int) $location->capacity;
         }
 

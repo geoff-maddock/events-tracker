@@ -108,21 +108,19 @@ class VenueEntityPageTest extends TestCase
 
         // Guest (not signed in): the Guarded location's street address and
         // capacity must not leak into the facts panel, matching the
-        // existing Locations card's Guarded gating.
+        // existing Locations card's Guarded gating. This also covers
+        // Entity::getJsonLd(), which gates its streetAddress and
+        // maximumAttendeeCapacity fields on the same Guarded check -- so the
+        // assertions below run against the full response body, JSON-LD
+        // included, rather than stripping the <script type="application/ld+json">
+        // blocks first.
         $response = $this->get('/entities/' . $venue->slug);
 
         $response->assertOk();
 
-        // Strip the JSON-LD <script> blocks before asserting: Entity::getJsonLd()'s
-        // address/capacity fields are a separate, pre-existing code path that isn't
-        // gated by location visibility today (see task-4-report.md concerns) and is
-        // out of scope for this fix -- this test targets only the human-visible
-        // facts panel / Locations card markup.
-        $visibleHtml = preg_replace('#<script type="application/ld\+json">.*?</script>#s', '', $response->getContent());
-
-        $this->assertStringNotContainsString('999 Secret Alley', $visibleHtml);
-        $this->assertStringNotContainsString('4321', $visibleHtml);
-        $this->assertStringNotContainsString('Undisclosed Neighborhood', $visibleHtml);
+        $response->assertDontSee('999 Secret Alley', false);
+        $response->assertDontSee('4321', false);
+        $response->assertDontSee('Undisclosed Neighborhood', false);
     }
 
     public function test_seo_description_omits_neighborhood_for_guarded_location(): void
@@ -206,6 +204,28 @@ class VenueEntityPageTest extends TestCase
 
         $response->assertOk();
         $response->assertSee($event->name);
+    }
+
+    public function test_private_event_linked_only_by_venue_id_is_hidden_from_guests(): void
+    {
+        $venue = $this->makeVenue(['name' => 'Preserving Underground Private']);
+
+        $privateEvent = Event::factory()->create([
+            'name' => 'ZZPRIVATEVENUEONLY-' . uniqid(),
+            'venue_id' => $venue->id,
+            'start_at' => Carbon::now()->addDays(2),
+            'visibility_id' => Visibility::VISIBILITY_PRIVATE,
+        ]);
+
+        // Deliberately not attached via the entity_event pivot -- this is the
+        // "venue_id only" case the union query surfaces, and it must still
+        // respect visibility for guests.
+        $this->assertFalse($privateEvent->entities()->where('entities.id', $venue->id)->exists());
+
+        $response = $this->get('/entities/' . $venue->slug);
+
+        $response->assertOk();
+        $response->assertDontSee($privateEvent->name);
     }
 
     public function test_age_policy_is_21_plus_when_all_recent_events_require_21(): void
