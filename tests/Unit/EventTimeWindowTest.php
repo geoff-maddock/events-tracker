@@ -237,4 +237,13 @@ class EventTimeWindowTest extends TestCase
 
         $this->assertSame('Live music, club nights and DIY shows in Pittsburgh — updated daily.', $desc);
     }
+
+    public function test_meta_description_omits_venue_clause_when_no_venues(): void
+    {
+        $desc = EventTimeWindow::Tonight->metaDescription(['events' => 5, 'venues' => 0, 'tags' => []]);
+
+        $this->assertSame('5 shows tonight.', $desc);
+        $this->assertStringNotContainsString('Pittsburgh venues', $desc);
+        $this->assertStringNotContainsString('across 0', $desc);
+    }
 }

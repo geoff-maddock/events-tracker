@@ -181,16 +181,13 @@ enum EventTimeWindow: string
         }
 
         $showWord = $events === 1 ? 'show' : 'shows';
-        $venueWord = $venues === 1 ? 'venue' : 'venues';
 
-        $desc = sprintf(
-            '%d %s %s across %d Pittsburgh %s',
-            $events,
-            $showWord,
-            $this->phrase(),
-            $venues,
-            $venueWord
-        );
+        $desc = sprintf('%d %s %s', $events, $showWord, $this->phrase());
+
+        if ($venues > 0) {
+            $venueWord = $venues === 1 ? 'venue' : 'venues';
+            $desc .= sprintf(' across %d Pittsburgh %s', $venues, $venueWord);
+        }
 
         if (! empty($tags)) {
             $desc .= ' — '.implode(', ', $tags).' & more.';
