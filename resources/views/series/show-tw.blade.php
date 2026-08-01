@@ -5,7 +5,7 @@
 <link rel="canonical" href="{{ \App\Services\SeoMeta::canonicalFor('/series/'.$series->slug) }}">
 @endsection
 
-@section('title', $series->getTitleFormat())
+@section('title', $series->getSeoTitleFormat())
 @section('og-description', $series->short)
 
 @section('og-image')
@@ -330,11 +330,55 @@
 	</div>
 </div>
 
+<!-- Lineup - Full Width -->
+@if (isset($lineupEntities) && $lineupEntities->isNotEmpty())
+<div class="mt-6 rounded-lg border border-border bg-card shadow p-6">
+	<h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+		<i class="bi bi-people"></i>
+		Lineup
+	</h2>
+	<div class="flex flex-wrap gap-2">
+		@foreach ($lineupEntities as $lineupEntity)
+			<x-entity-badge :entity="$lineupEntity" />
+		@endforeach
+	</div>
+</div>
+@endif
+
+<!-- Schedule - Full Width -->
+@if (isset($upcomingEvents) && $upcomingEvents->isNotEmpty())
+<div class="mt-6 rounded-lg border border-border bg-card shadow p-6">
+	<h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+		<i class="bi bi-calendar-week"></i>
+		{{ $series->name }}{{ $festivalYear ? ' '.$festivalYear : '' }} Schedule
+	</h2>
+	<div class="space-y-4">
+		@foreach ($upcomingEvents->groupBy(fn ($event) => $event->start_at->format('l, F jS Y')) as $scheduleDate => $scheduleEvents)
+			<div>
+				<div class="text-sm font-semibold text-muted-foreground mb-2">{{ $scheduleDate }}</div>
+				<ul class="space-y-1">
+					@foreach ($scheduleEvents as $scheduleEvent)
+						<li class="flex flex-wrap items-center justify-between gap-2 text-sm">
+							<a href="{{ route('events.show', ['event' => $scheduleEvent->slug]) }}" class="text-primary hover:underline">
+								{{ $scheduleEvent->name }}
+							</a>
+							@if ($scheduleEvent->venue)
+								<span class="text-muted-foreground">{{ $scheduleEvent->venue->name }}</span>
+							@endif
+						</li>
+					@endforeach
+				</ul>
+			</div>
+		@endforeach
+	</div>
+</div>
+@endif
+
 <!-- Events - Full Width -->
 <div class="mt-6 rounded-lg border border-border bg-card shadow p-6">
 	<h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
 		<i class="bi bi-calendar-event"></i>
-		Events
+		Past Events &amp; Archive
 		@if (isset($events))
 			<span class="text-sm font-normal text-muted-foreground ml-2">({{ $events->total() }})</span>
 		@endif
