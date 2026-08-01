@@ -2,7 +2,7 @@
 
 @section('title')
 @if (isset($tag))
-Keyword Tag • {{ $tag }}
+Keyword Tag — {{ $tag }}
 @else
 Keyword Tags
 @endif

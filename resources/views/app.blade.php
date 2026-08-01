@@ -15,7 +15,7 @@
 	@yield('google.event.json')
 	<meta name="theme-color" content="#0f172a"/>
 	<meta name="csrf-token" content="{{ csrf_token() }}">
-	<title>@yield('title','Event Guide') • {{ config('app.app_name')}}</title>
+	<title>@yield('title','Event Guide') | {{ config('app.app_name')}}</title>
 
 	<!-- Theme initialization script - must run before page renders to prevent flash -->
 	<script>
