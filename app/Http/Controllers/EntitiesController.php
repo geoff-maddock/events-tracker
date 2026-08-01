@@ -11,6 +11,7 @@ use App\Models\Alias;
 use App\Models\Entity;
 use App\Models\EntityStatus;
 use App\Models\EntityType;
+use App\Models\Event;
 use App\Models\Follow;
 use App\Models\Role;
 use App\Models\Tag;
@@ -951,8 +952,23 @@ class EntitiesController extends Controller
             $filterStartAt = Carbon::today()->startOfDay();
         }
 
+        // Venue pages need events found either through the entity_event pivot
+        // (billed as a performer/promoter at their own room) OR via the event's
+        // direct venue_id — many events are only ever linked by venue_id, so a
+        // pivot-only query silently drops them from the venue's own page.
+        // Non-venue entities keep the original pivot-only relation.
+        if ($entity->hasRole('Venue')) {
+            $venueEventsBase = fn () => Event::where(function ($query) use ($entity) {
+                $query->whereHas('entities', function ($q) use ($entity) {
+                    $q->where('entities.id', $entity->id);
+                })->orWhere('venue_id', $entity->id);
+            })->distinct();
+        } else {
+            $venueEventsBase = fn () => $entity->events();
+        }
+
         // get related events (up to 16, sorted by date ascending from the filter date)
-        $relatedEventsQuery = $entity->events()
+        $relatedEventsQuery = $venueEventsBase()
             ->with([
                 'venue.locations',
                 'venue.links',
@@ -973,7 +989,7 @@ class EntitiesController extends Controller
         // get past events (prior to today, most recent first); fetch 21 to detect overflow past the 20 shown
         // Eager-load the relations the past-events grid card reads per event
         // (primary photo, venue, event type, tags) to avoid an N+1.
-        $pastEvents = $entity->events()
+        $pastEvents = $venueEventsBase()
             ->with(['eventType', 'tags', 'venue', 'photos'])
             ->where('start_at', '<', Carbon::today()->startOfDay())
             ->orderBy('start_at', 'desc')

@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Str;
 use Storage;
 
@@ -820,6 +821,13 @@ class Entity extends Eloquent
 
     public function getSeoTitleFormat(): string
     {
+        if ($this->hasRole('Venue')) {
+            $location = $this->getPrimaryLocation();
+            $city = ($location && !empty($location->city)) ? $location->city : 'Pittsburgh';
+
+            return $this->name . ' — Upcoming Events & Concerts in ' . $city;
+        }
+
         $format = $this->name;
 
         $roles = $this->roles->take(2)->pluck('name')->toArray();
@@ -844,6 +852,13 @@ class Entity extends Eloquent
             return $this->short;
         }
 
+        if ($this->hasRole('Venue')) {
+            $location = $this->getPrimaryLocation();
+            $neighborhoodClause = ($location && !empty($location->neighborhood)) ? ' in ' . $location->neighborhood : '';
+
+            return 'See upcoming shows and concerts at ' . $this->name . $neighborhoodClause . ' — full event calendar, capacity, address and photos on Arcane City.';
+        }
+
         $sentence = $this->name;
         $roleStr = $this->getRoleString();
         $location = $this->getPrimaryLocation();
@@ -862,6 +877,46 @@ class Entity extends Eloquent
         $sentence .= '. See upcoming shows, past performances, music links, and scene connections on Arcane City.';
 
         return $sentence;
+    }
+
+    /**
+     * Derive an all-ages/entry-age policy from the venue's most recent events.
+     *
+     * Looks at the last 20 events tied to this entity (either via the direct
+     * pivot or as the event's venue_id) ordered by start_at desc, and buckets
+     * their min_age values. Returns null when there is nothing to derive from,
+     * so the facts panel can omit the row entirely.
+     */
+    public function getAgePolicy(): ?string
+    {
+        return Cache::remember('entity-age-policy:' . $this->id, 21600, function () {
+            $minAges = Event::where(function ($query) {
+                $query->whereHas('entities', function ($q) {
+                    $q->where('entities.id', $this->id);
+                })->orWhere('venue_id', $this->id);
+            })
+                ->orderBy('start_at', 'desc')
+                ->limit(20)
+                ->pluck('min_age');
+
+            if ($minAges->isEmpty()) {
+                return null;
+            }
+
+            if ($minAges->every(fn ($age) => empty($age))) {
+                return 'All ages';
+            }
+
+            if ($minAges->every(fn ($age) => !empty($age) && $age >= 21)) {
+                return '21+';
+            }
+
+            if ($minAges->every(fn ($age) => !empty($age) && $age >= 18)) {
+                return '18+';
+            }
+
+            return 'Varies by event';
+        });
     }
 
     public function getSchemaType(): string
@@ -984,6 +1039,10 @@ class Entity extends Eloquent
                 $cityState = $location->city . (!empty($location->state) ? ', ' . $location->state : '');
                 $data['homeLocation'] = ['@type' => 'Place', 'name' => $cityState];
             }
+        }
+
+        if ($schemaType === 'MusicVenue' && $location && !empty($location->capacity)) {
+            $data['maximumAttendeeCapacity'] = (int) $location->capacity;
         }
 
         $sameAs = $this->getSameAsLinks();
