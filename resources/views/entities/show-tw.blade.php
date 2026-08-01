@@ -144,6 +144,50 @@
 		</div>
 		@endif
 
+		<!-- Upcoming Events - Full Width -->
+		<div class="mt-6 rounded-lg border border-border bg-card shadow p-6">
+			<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+				<h2 class="text-xl font-semibold flex items-center gap-2">
+					<i class="bi bi-calendar-event"></i>
+					Upcoming Events
+				</h2>
+				<!-- Date Filter -->
+				<form method="GET" action="{{ route('entities.show', $entity->slug) }}" class="flex items-center gap-2">
+					<label for="start_at" class="text-sm text-muted-foreground whitespace-nowrap">From date:</label>
+					<input type="date" id="start_at" name="start_at"
+						value="{{ $filterStartAt->format('Y-m-d') }}"
+						class="px-2 py-1 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary">
+					<button type="submit" class="px-3 py-1 text-sm rounded-md bg-accent border border-border text-foreground hover:bg-accent/80 transition-colors">
+						Filter
+					</button>
+					@if (request()->filled('start_at'))
+					<a href="{{ route('entities.show', $entity->slug) }}" class="px-3 py-1 text-sm rounded-md border border-border text-muted-foreground hover:bg-accent transition-colors">
+						Reset
+					</a>
+					@endif
+				</form>
+			</div>
+
+			{{-- Fragment caching: the event-card partial has per-user content (attend/edit
+			     buttons), so it is only cached for guests — signed-in users (incl. editors)
+			     always render live and see edits immediately. Keys fingerprint the event +
+			     its rendered relations (see Event::cardFingerprint) so any edit busts them. --}}
+			@if (isset($relatedEvents) && count($relatedEvents) > 0)
+				<!-- Events Grid -->
+				<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-6">
+					@foreach ($relatedEvents as $event)
+						@guest
+							{!! Cache::remember('event-card-tw:'.$event->cardFingerprint(), now()->addHours(6), fn () => view('events.card-tw', ['event' => $event])->render()) !!}
+						@else
+							@include('events.card-tw', ['event' => $event])
+						@endguest
+					@endforeach
+				</div>
+			@else
+				<p class="text-muted-foreground mb-4">No upcoming related events found.</p>
+			@endif
+		</div>
+
 		<!-- Description -->
 		@if ($entity->description)
 		<div class="rounded-lg border border-border bg-card shadow">
@@ -196,7 +240,12 @@
 
 	<!-- Sidebar -->
 	<div class="space-y-6">
-		
+
+		<!-- Venue Facts -->
+		@if ($entity->hasRole('Venue'))
+		@include('entities.venue-facts-tw', ['entity' => $entity])
+		@endif
+
 		<!-- Entity Details Card -->
 		<div class="rounded-lg border border-border bg-card shadow">
 			<div class="p-4 pt-2 space-y-4">
@@ -477,58 +526,21 @@
 	</div>
 </div>
 
-<!-- Related Events - Full Width -->
+<!-- Past Events - Full Width -->
+@if (isset($pastEvents) && $pastEvents->count() > 0)
 <div class="mt-6 rounded-lg border border-border bg-card shadow p-6">
-	<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-		<h2 class="text-xl font-semibold flex items-center gap-2">
-			<i class="bi bi-calendar-event"></i>
-			Upcoming Events
-		</h2>
-		<!-- Date Filter -->
-		<form method="GET" action="{{ route('entities.show', $entity->slug) }}" class="flex items-center gap-2">
-			<label for="start_at" class="text-sm text-muted-foreground whitespace-nowrap">From date:</label>
-			<input type="date" id="start_at" name="start_at"
-				value="{{ $filterStartAt->format('Y-m-d') }}"
-				class="px-2 py-1 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary">
-			<button type="submit" class="px-3 py-1 text-sm rounded-md bg-accent border border-border text-foreground hover:bg-accent/80 transition-colors">
-				Filter
-			</button>
-			@if (request()->filled('start_at'))
-			<a href="{{ route('entities.show', $entity->slug) }}" class="px-3 py-1 text-sm rounded-md border border-border text-muted-foreground hover:bg-accent transition-colors">
-				Reset
-			</a>
-			@endif
-		</form>
+	<h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+		<i class="bi bi-calendar-event"></i>
+		Past Events
+	</h2>
+	{{-- Fragment caching: the past-events grid has no per-user content, so it is
+	     cached for everyone. Key fingerprints the event + its rendered relations
+	     (see Event::cardFingerprint) so any edit busts it. --}}
+	<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-6">
+		{!! Cache::remember('past-events-grid:'.$entity->id.':'.($entity->updated_at?->getTimestamp() ?? '0').':'.md5($pastEvents->map->cardFingerprint()->implode('|')), now()->addHours(6), fn () => view('events.past-events-grid-card-tw', ['pastEvents' => $pastEvents, 'entity' => $entity])->render()) !!}
 	</div>
-
-	{{-- Fragment caching: the event-card partial has per-user content (attend/edit
-	     buttons), so it is only cached for guests — signed-in users (incl. editors)
-	     always render live and see edits immediately. The past-events grid has no
-	     per-user content, so it is cached for everyone. Keys fingerprint the event +
-	     its rendered relations (see Event::cardFingerprint) so any edit busts them. --}}
-	@if (isset($relatedEvents) && count($relatedEvents) > 0)
-		<!-- Events Grid -->
-		<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-6">
-			@foreach ($relatedEvents as $event)
-				@guest
-					{!! Cache::remember('event-card-tw:'.$event->cardFingerprint(), now()->addHours(6), fn () => view('events.card-tw', ['event' => $event])->render()) !!}
-				@else
-					@include('events.card-tw', ['event' => $event])
-				@endguest
-			@endforeach
-			@if (isset($pastEvents) && $pastEvents->count() > 0)
-				{!! Cache::remember('past-events-grid:'.$entity->id.':'.($entity->updated_at?->getTimestamp() ?? '0').':'.md5($pastEvents->map->cardFingerprint()->implode('|')), now()->addHours(6), fn () => view('events.past-events-grid-card-tw', ['pastEvents' => $pastEvents, 'entity' => $entity])->render()) !!}
-			@endif
-		</div>
-	@else
-		<p class="text-muted-foreground mb-4">No upcoming related events found.</p>
-		@if (isset($pastEvents) && $pastEvents->count() > 0)
-			<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-6">
-				{!! Cache::remember('past-events-grid:'.$entity->id.':'.($entity->updated_at?->getTimestamp() ?? '0').':'.md5($pastEvents->map->cardFingerprint()->implode('|')), now()->addHours(6), fn () => view('events.past-events-grid-card-tw', ['pastEvents' => $pastEvents, 'entity' => $entity])->render()) !!}
-			</div>
-		@endif
-	@endif
 </div>
+@endif
 
 @stop
 
