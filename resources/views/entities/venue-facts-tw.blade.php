@@ -2,6 +2,11 @@
      Included in the sidebar above the Entity Details card, venue entities only. --}}
 @php
 	$venueFactsLocation = $entity->getPrimaryLocation();
+	// Match the Locations card's Guarded gating (show-tw.blade.php's Locations card):
+	// a Guarded location's address/capacity are only shown to signed-in users.
+	$venueFactsLocationVisible = $venueFactsLocation
+		&& isset($venueFactsLocation->visibility)
+		&& ($venueFactsLocation->visibility->name != 'Guarded' || $signedIn);
 	$venueFactsAgePolicy = $entity->getAgePolicy();
 	$venueFactsWebsite = $entity->primaryLink();
 	$venueFactsPhotoCount = $entity->photos->count();
@@ -15,14 +20,14 @@
 	</h2>
 
 	<dl class="space-y-4 text-sm">
-		@if ($venueFactsLocation && !empty($venueFactsLocation->capacity))
+		@if ($venueFactsLocationVisible && !empty($venueFactsLocation->capacity))
 		<div>
 			<dt class="font-medium text-muted-foreground">Capacity</dt>
 			<dd class="text-foreground mt-0.5">{{ $venueFactsLocation->capacity }}</dd>
 		</div>
 		@endif
 
-		@if ($venueFactsLocation && !empty($venueFactsLocation->address_one))
+		@if ($venueFactsLocationVisible && !empty($venueFactsLocation->address_one))
 		<div>
 			<dt class="font-medium text-muted-foreground">Address</dt>
 			<dd class="text-foreground mt-0.5">

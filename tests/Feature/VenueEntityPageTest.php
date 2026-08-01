@@ -88,9 +88,57 @@ class VenueEntityPageTest extends TestCase
         $response = $this->get('/entities/' . $venue->slug);
 
         $response->assertOk();
-        $response->assertSee('Venue Facts');
-        $response->assertSee('650');
-        $response->assertSee('Millvale Business District');
+        // Scoped with assertSeeInOrder so this can't be satisfied by the
+        // (visibility-gated) Locations card lower in the sidebar instead of
+        // the Venue Facts card.
+        $response->assertSeeInOrder(['Venue Facts', '650', 'Millvale Business District']);
+    }
+
+    public function test_guarded_venue_location_hides_address_and_capacity_from_guests(): void
+    {
+        $venue = $this->makeVenue(['name' => 'The Secret Speakeasy']);
+        Location::factory()->create([
+            'entity_id' => $venue->id,
+            'address_one' => '999 Secret Alley',
+            'city' => 'Pittsburgh',
+            'capacity' => 4321,
+            'neighborhood' => 'Undisclosed Neighborhood',
+            'visibility_id' => Visibility::VISIBILITY_GUARDED,
+        ]);
+
+        // Guest (not signed in): the Guarded location's street address and
+        // capacity must not leak into the facts panel, matching the
+        // existing Locations card's Guarded gating.
+        $response = $this->get('/entities/' . $venue->slug);
+
+        $response->assertOk();
+
+        // Strip the JSON-LD <script> blocks before asserting: Entity::getJsonLd()'s
+        // address/capacity fields are a separate, pre-existing code path that isn't
+        // gated by location visibility today (see task-4-report.md concerns) and is
+        // out of scope for this fix -- this test targets only the human-visible
+        // facts panel / Locations card markup.
+        $visibleHtml = preg_replace('#<script type="application/ld\+json">.*?</script>#s', '', $response->getContent());
+
+        $this->assertStringNotContainsString('999 Secret Alley', $visibleHtml);
+        $this->assertStringNotContainsString('4321', $visibleHtml);
+        $this->assertStringNotContainsString('Undisclosed Neighborhood', $visibleHtml);
+    }
+
+    public function test_seo_description_omits_neighborhood_for_guarded_location(): void
+    {
+        $venue = $this->makeVenue(['name' => 'The Guarded Room']);
+        Location::factory()->create([
+            'entity_id' => $venue->id,
+            'city' => 'Pittsburgh',
+            'neighborhood' => 'Undisclosed Neighborhood',
+            'visibility_id' => Visibility::VISIBILITY_GUARDED,
+        ]);
+        $venue = $venue->fresh(['roles', 'locations.visibility']);
+
+        $description = $venue->getSeoDescriptionFormat();
+
+        $this->assertStringNotContainsString('Undisclosed Neighborhood', $description);
     }
 
     public function test_upcoming_events_render_before_description(): void
@@ -114,6 +162,29 @@ class VenueEntityPageTest extends TestCase
 
         $response->assertOk();
         $response->assertSeeInOrder([$event->name, $descriptionMarker], false);
+    }
+
+    public function test_past_events_render_after_description_at_the_bottom(): void
+    {
+        $descriptionMarker = 'ZZDESC-' . uniqid() . ' history of the room.';
+        $venue = $this->makeVenue([
+            'name' => 'The Bottom Room',
+            'description' => $descriptionMarker,
+        ]);
+
+        $pastEvent = Event::factory()->create([
+            'name' => 'ZZPASTEVENT-' . uniqid(),
+            'venue_id' => $venue->id,
+            'start_at' => Carbon::now()->subDays(3),
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+        ]);
+
+        $response = $this->get('/entities/' . $venue->slug);
+
+        $response->assertOk();
+        // The Upcoming Events grid moved to the top, but the past-events grid
+        // must stay at the bottom of the page, after the description.
+        $response->assertSeeInOrder([$descriptionMarker, 'Past Events', $pastEvent->name], false);
     }
 
     public function test_event_linked_only_by_venue_id_appears_on_venue_page(): void

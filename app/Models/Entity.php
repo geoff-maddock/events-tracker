@@ -854,7 +854,12 @@ class Entity extends Eloquent
 
         if ($this->hasRole('Venue')) {
             $location = $this->getPrimaryLocation();
-            $neighborhoodClause = ($location && !empty($location->neighborhood)) ? ' in ' . $location->neighborhood : '';
+            // Meta descriptions are public (crawlers, guests, everyone) — omit the
+            // neighborhood when the primary location is Guarded, matching the
+            // Guarded-gating the Locations card / facts panel apply for guests.
+            // @phpstan-ignore-next-line (same undefined-property pattern accepted at getPrimaryLocationAddress() above)
+            $locationIsGuarded = $location && isset($location->visibility) && $location->visibility->name === 'Guarded';
+            $neighborhoodClause = ($location && !$locationIsGuarded && !empty($location->neighborhood)) ? ' in ' . $location->neighborhood : '';
 
             return 'See upcoming shows and concerts at ' . $this->name . $neighborhoodClause . ' — full event calendar, capacity, address and photos on Arcane City.';
         }

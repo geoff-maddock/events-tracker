@@ -144,7 +144,7 @@
 		</div>
 		@endif
 
-		<!-- Related Events - Full Width -->
+		<!-- Upcoming Events - Full Width -->
 		<div class="mt-6 rounded-lg border border-border bg-card shadow p-6">
 			<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
 				<h2 class="text-xl font-semibold flex items-center gap-2">
@@ -170,8 +170,7 @@
 
 			{{-- Fragment caching: the event-card partial has per-user content (attend/edit
 			     buttons), so it is only cached for guests — signed-in users (incl. editors)
-			     always render live and see edits immediately. The past-events grid has no
-			     per-user content, so it is cached for everyone. Keys fingerprint the event +
+			     always render live and see edits immediately. Keys fingerprint the event +
 			     its rendered relations (see Event::cardFingerprint) so any edit busts them. --}}
 			@if (isset($relatedEvents) && count($relatedEvents) > 0)
 				<!-- Events Grid -->
@@ -183,17 +182,9 @@
 							@include('events.card-tw', ['event' => $event])
 						@endguest
 					@endforeach
-					@if (isset($pastEvents) && $pastEvents->count() > 0)
-						{!! Cache::remember('past-events-grid:'.$entity->id.':'.($entity->updated_at?->getTimestamp() ?? '0').':'.md5($pastEvents->map->cardFingerprint()->implode('|')), now()->addHours(6), fn () => view('events.past-events-grid-card-tw', ['pastEvents' => $pastEvents, 'entity' => $entity])->render()) !!}
-					@endif
 				</div>
 			@else
 				<p class="text-muted-foreground mb-4">No upcoming related events found.</p>
-				@if (isset($pastEvents) && $pastEvents->count() > 0)
-					<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-6">
-						{!! Cache::remember('past-events-grid:'.$entity->id.':'.($entity->updated_at?->getTimestamp() ?? '0').':'.md5($pastEvents->map->cardFingerprint()->implode('|')), now()->addHours(6), fn () => view('events.past-events-grid-card-tw', ['pastEvents' => $pastEvents, 'entity' => $entity])->render()) !!}
-					</div>
-				@endif
 			@endif
 		</div>
 
@@ -534,6 +525,22 @@
 		@endif
 	</div>
 </div>
+
+<!-- Past Events - Full Width -->
+@if (isset($pastEvents) && $pastEvents->count() > 0)
+<div class="mt-6 rounded-lg border border-border bg-card shadow p-6">
+	<h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+		<i class="bi bi-calendar-event"></i>
+		Past Events
+	</h2>
+	{{-- Fragment caching: the past-events grid has no per-user content, so it is
+	     cached for everyone. Key fingerprints the event + its rendered relations
+	     (see Event::cardFingerprint) so any edit busts it. --}}
+	<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-6">
+		{!! Cache::remember('past-events-grid:'.$entity->id.':'.($entity->updated_at?->getTimestamp() ?? '0').':'.md5($pastEvents->map->cardFingerprint()->implode('|')), now()->addHours(6), fn () => view('events.past-events-grid-card-tw', ['pastEvents' => $pastEvents, 'entity' => $entity])->render()) !!}
+	</div>
+</div>
+@endif
 
 @stop
 
