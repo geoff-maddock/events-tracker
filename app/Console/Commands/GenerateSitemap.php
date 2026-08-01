@@ -43,6 +43,10 @@ class GenerateSitemap extends Command
     protected const PAGES = [
         '/',
         '/events',
+        '/events/tonight',
+        '/events/today',
+        '/events/this-weekend',
+        '/events/this-week',
         '/entities',
         '/series',
         '/tags',

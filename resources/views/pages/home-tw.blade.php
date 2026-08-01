@@ -132,13 +132,22 @@
 
 <!-- Upcoming Events Section -->
 <section id="upcoming-events" class="space-y-6">
-	<div class="flex items-center justify-between">
+	<div class="flex flex-wrap items-center justify-between gap-2">
 		<h2 class="text-2xl md:text-3xl font-bold text-foreground">Upcoming Events</h2>
 		<a href="{!! URL::route('events.index') !!}"
 			class="text-sm font-medium text-primary hover:text-primary/90 transition-colors inline-flex items-center gap-1">
 			View All
 			<i class="bi bi-arrow-right"></i>
 		</a>
+	</div>
+
+	<div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
+		@foreach (\App\Enums\EventTimeWindow::cases() as $window)
+		<a href="{{ url($window->path()) }}" class="hover:text-primary transition-colors">{{ $window->label() }}</a>
+		@if (!$loop->last)
+		<span aria-hidden="true">&middot;</span>
+		@endif
+		@endforeach
 	</div>
 
 	@include('events.4days-tw')
