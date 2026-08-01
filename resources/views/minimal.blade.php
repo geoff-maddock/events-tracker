@@ -10,7 +10,7 @@
 	<meta property="og:image" content="@yield('og-image', url('/').'/apple-icon-180x180.png')">
 	<meta property="og:description" content="@yield('og-description', 'A calender of events, concerts, club nights, weekly and monthly events series, promoters, artists, producers, djs, venues and other entities.')">
 	<meta name="description" content="A calender of events, concerts, club nights, weekly and monthly events series, promoters, artists, producers, djs, venues and other entities.">
-	<title>@yield('title','Event Guide') • {{ config('app.app_name')}}</title>
+	<title>@yield('title','Event Guide') | {{ config('app.app_name')}}</title>
 	
 	<link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/apple-icon-180x180.png">
