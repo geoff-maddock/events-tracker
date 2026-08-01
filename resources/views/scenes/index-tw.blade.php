@@ -3,7 +3,7 @@
 @section('title', 'Pittsburgh Music Scenes')
 
 @php
-    $desc = 'Curated genre hubs for Pittsburgh — raves & EDM, punk & hardcore, goth & industrial, drum and bass, and experimental & noise, with upcoming events, key venues and artists, and active series.';
+    $desc = 'Curated genre hubs for Pittsburgh — '.collect(config('scenes'))->pluck('name')->map(fn ($name) => Str::lower($name))->join(', ', ' and ').' — with upcoming events, key venues and artists, and active series.';
 @endphp
 
 @section('description', $desc)

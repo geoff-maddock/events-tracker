@@ -164,7 +164,7 @@ class ScenesTest extends TestCase
         $response->assertSee('Scene Json Ld Event', false);
     }
 
-    public function test_scenes_index_lists_all_five_scene_names(): void
+    public function test_scenes_index_lists_all_configured_scene_names(): void
     {
         $response = $this->get('/scenes');
 

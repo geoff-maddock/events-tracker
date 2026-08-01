@@ -61,6 +61,22 @@ return [
         'tags' => ['drum-and-bass', 'jungle', 'bass'],
     ],
 
+    'hip-hop-beats' => [
+        'icon' => 'bi-mic-fill',
+        'name' => 'Hip Hop & Beats',
+        'title' => 'Hip Hop, Rap & Beats in Pittsburgh — Upcoming Shows & Events',
+        'description' => 'Upcoming hip hop, rap, trap and beat-scene shows in Pittsburgh.',
+        'tags' => ['hip-hop', 'rap', 'beats', 'trap'],
+    ],
+
+    'alternative-indie' => [
+        'icon' => 'bi-cassette-fill',
+        'name' => 'Alternative & Indie',
+        'title' => 'Alternative & Indie Shows in Pittsburgh — Upcoming Events',
+        'description' => 'Upcoming alternative, indie, shoegaze and dream pop shows in Pittsburgh.',
+        'tags' => ['alternative', 'indie', 'indierock', 'indiepop', 'shoegaze', 'dream-pop'],
+    ],
+
     'experimental-noise' => [
         'icon' => 'bi-soundwave',
         'name' => 'Experimental & Noise',
