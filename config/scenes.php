@@ -11,8 +11,8 @@
 | genre-demand searches that a bare tag listing doesn't.
 |
 | Keys:
-|   icon        Bootstrap Icons class used as the scene's visual fallback
-|               when no upcoming event photo is available for the hero image.
+|   icon        Bootstrap Icons class used as the scene's visual on the hub
+|               page header and index cards (until curated images exist).
 |   name        Display name (nav/footer/cards), e.g. "Raves & EDM"
 |   title       SEO <title> (layout appends " | " . config('app.app_name'))
 |   description Meta description base sentence; the controller appends

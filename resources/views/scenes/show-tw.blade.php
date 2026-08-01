@@ -41,13 +41,9 @@
 					{{ $stats['venues'] }} {{ Str::plural('venue', $stats['venues']) }}
 				</p>
 			</div>
-			@if (!empty($heroImageUrl))
-			<img src="{{ $heroImageUrl }}" alt="{{ $scene['name'] }}" class="hidden sm:block h-28 md:h-36 aspect-video object-cover rounded-lg border border-border shrink-0">
-			@else
 			<div class="hidden sm:flex h-28 md:h-36 aspect-video rounded-lg border border-border bg-muted items-center justify-center shrink-0">
 				<i class="bi {{ $scene['icon'] ?? 'bi-music-note-beamed' }} text-5xl text-muted-foreground/60"></i>
 			</div>
-			@endif
 		</div>
 
 		<!-- Sibling Scenes -->
@@ -96,21 +92,21 @@
 					View all
 				</a>
 			</div>
-			<div class="flex flex-wrap gap-2">
+			<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-2">
 				@foreach ($entities as $entity)
 				<a href="{{ route('entities.show', $entity->slug) }}"
-					class="inline-flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-border bg-card hover:border-primary hover:bg-accent transition-colors"
+					class="flex items-center gap-2 px-3 py-2 min-w-0 rounded-lg border border-border bg-card hover:border-primary hover:bg-accent transition-colors"
 					title="{{ $entity->name }}">
 					@if ($primary = $entity->getPrimaryPhoto())
-					<img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}" alt="" class="w-6 h-6 rounded-full object-cover">
+					<img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}" alt="" class="w-6 h-6 rounded-full object-cover shrink-0">
 					@else
-					<span class="w-6 h-6 rounded-full bg-muted flex items-center justify-center">
+					<span class="w-6 h-6 rounded-full bg-muted flex items-center justify-center shrink-0">
 						<i class="bi bi-building text-xs text-muted-foreground"></i>
 					</span>
 					@endif
-					<span class="text-sm font-medium text-foreground">{{ $entity->name }}</span>
+					<span class="text-sm font-medium text-foreground truncate">{{ $entity->name }}</span>
 					@if ($role = $entity->roles->first())
-					<span class="text-xs text-muted-foreground">{{ $role->name }}</span>
+					<span class="text-xs text-muted-foreground shrink-0 ml-auto">{{ $role->name }}</span>
 					@endif
 				</a>
 				@endforeach

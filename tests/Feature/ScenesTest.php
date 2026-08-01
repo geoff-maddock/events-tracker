@@ -113,7 +113,7 @@ class ScenesTest extends TestCase
         $response->assertDontSee('Scene Dormant Artist');
     }
 
-    public function test_scene_hero_falls_back_to_configured_icon_when_no_event_photo(): void
+    public function test_scene_page_shows_configured_icon(): void
     {
         $slug = $this->firstSceneSlug();
         $scene = config("scenes.$slug");

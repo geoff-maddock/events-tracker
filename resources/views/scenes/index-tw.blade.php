@@ -24,13 +24,9 @@
 			@foreach ($scenes as $scene)
 			<a href="{{ url('/scenes/'.$scene['slug']) }}"
 				class="block rounded-lg border border-border bg-card overflow-hidden hover:border-primary hover:shadow-md transition-all">
-				@if (!empty($scene['heroImageUrl']))
-				<img src="{{ $scene['heroImageUrl'] }}" alt="{{ $scene['name'] }}" class="w-full h-36 object-cover">
-				@else
 				<div class="w-full h-36 bg-muted flex items-center justify-center">
 					<i class="bi {{ $scene['icon'] ?? 'bi-music-note-beamed' }} text-4xl text-muted-foreground/60"></i>
 				</div>
-				@endif
 				<div class="p-6">
 					<h2 class="text-xl font-semibold text-foreground mb-2">{{ $scene['name'] }}</h2>
 					<p class="text-sm text-muted-foreground mb-4 line-clamp-2">{{ $scene['description'] }}</p>

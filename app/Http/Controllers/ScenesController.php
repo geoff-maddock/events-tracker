@@ -30,7 +30,6 @@ class ScenesController extends Controller
         $scenes = collect(config('scenes', []))->map(function (array $scene, string $slug) {
             $scene['slug'] = $slug;
             $scene['stats'] = $this->stats($slug, $scene['tags']);
-            $scene['heroImageUrl'] = $this->heroImageUrl($slug, $scene['tags']);
 
             return $scene;
         })->values();
@@ -110,7 +109,6 @@ class ScenesController extends Controller
             'entities' => $entities,
             'series' => $series,
             'stats' => $stats,
-            'heroImageUrl' => $this->heroImageUrl($slug, $tags),
         ]);
     }
 
@@ -142,34 +140,4 @@ class ScenesController extends Controller
         });
     }
 
-    /**
-     * Full-size primary-photo URL of the soonest upcoming public event in the
-     * scene, for the scene hero image; null when no such event has a photo
-     * (views fall back to the scene's configured icon). Public-only and
-     * cached so the same URL is safe to serve to every visitor. An empty
-     * string is cached in place of null so misses don't re-run the query.
-     *
-     * @param array<int, string> $tags
-     */
-    protected function heroImageUrl(string $slug, array $tags): ?string
-    {
-        $url = Cache::remember('scene-hero:'.$slug, self::STATS_CACHE_TTL, function () use ($tags) {
-            $event = Event::query()
-                ->where('visibility_id', Visibility::VISIBILITY_PUBLIC)
-                ->future()
-                ->whereHas('tags', function ($query) use ($tags) {
-                    $query->whereIn('tags.slug', $tags);
-                })
-                ->whereHas('photos', function ($query) {
-                    $query->where('photos.is_primary', 1);
-                })
-                ->with('photos')
-                ->orderBy('start_at')
-                ->first();
-
-            return $event ? ($event->getPrimaryPhotoPath() ?? '') : '';
-        });
-
-        return $url !== '' ? $url : null;
-    }
 }
