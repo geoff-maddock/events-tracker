@@ -680,17 +680,22 @@ class SeriesController extends Controller
             ->orderBy('start_at', 'asc')
             ->get();
 
-        // Same year the SEO title uses (next upcoming event, else most recent
-        // past event) — keeps the Schedule heading's year in sync with the title.
-        $festivalYear = $series->getFestivalYear();
+        // Edition year (next upcoming event, else most recent past event) —
+        // used to scope the "most recent edition" lineup fallback below for
+        // ANY series. $festivalYear (passed to the view for the Schedule
+        // heading) is the same value, but only for festivals: an ordinary
+        // weekly/monthly series' recurring events aren't "editions" and
+        // shouldn't get a fabricated year in their heading.
+        $editionYear = $series->getFestivalYear();
+        $festivalYear = $series->isFestival() ? $editionYear : null;
 
         // Lineup: entities attached to the upcoming events above, or — when
         // there aren't any — entities attached to the most recent edition's
-        // events (those sharing $festivalYear, which falls back to the most
+        // events (those sharing $editionYear, which falls back to the most
         // recent past event's year). Two queries at most beyond $upcomingEvents.
         $lineupEventIds = $upcomingEvents->pluck('id');
-        if ($lineupEventIds->isEmpty() && $festivalYear) {
-            $lineupEventIds = $series->events()->whereYear('start_at', $festivalYear)->pluck('id');
+        if ($lineupEventIds->isEmpty() && $editionYear) {
+            $lineupEventIds = $series->events()->whereYear('start_at', $editionYear)->pluck('id');
         }
 
         $lineupEntities = $lineupEventIds->isEmpty()

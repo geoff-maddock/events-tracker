@@ -164,6 +164,39 @@ class SeriesSeoTest extends TestCase
     }
 
     /**
+     * A non-festival series (Weekly occurrence, non-festival event type)
+     * with an upcoming event should still get a Schedule section, but its
+     * heading must NOT carry a fabricated "edition year" — that's a
+     * festival-only concept. Regression test for a review finding: the
+     * controller previously passed $festivalYear unconditionally, so an
+     * ordinary weekly club night rendered "{name} {year} Schedule".
+     */
+    public function test_non_festival_series_schedule_heading_has_no_year(): void
+    {
+        $series = Series::factory()->create([
+            'name' => 'Weekly Jazz Night',
+            'event_type_id' => $this->nonFestivalEventType(),
+            'occurrence_type_id' => $this->occurrenceType('Weekly'),
+            'occurrence_day_id' => OccurrenceDay::where('name', 'Friday')->value('id'),
+        ]);
+
+        $this->assertFalse($series->fresh(['occurrenceType', 'eventType'])->isFestival());
+
+        $upcoming = Carbon::now()->addWeeks(2);
+        Event::factory()->create([
+            'series_id' => $series->id,
+            'start_at' => $upcoming,
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+        ]);
+
+        $response = $this->get('/series/'.$series->slug);
+
+        $response->assertOk();
+        $response->assertSee($series->name.' Schedule');
+        $response->assertDontSee($series->name.' '.$upcoming->year.' Schedule');
+    }
+
+    /**
      * Unit coverage of the year-fallback chain: upcoming -> past -> none.
      */
     public function test_get_festival_year_falls_back_from_upcoming_to_past_to_none(): void
