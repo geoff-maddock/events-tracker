@@ -35,7 +35,7 @@
 @endphp
 
 @if ($galleryPhotos->count() > 0)
-<div class="rounded-lg border border-dark-border bg-card shadow p-8 p-4 pt-4 space-y-4">
+<div id="photo-gallery" class="rounded-lg border border-dark-border bg-card shadow p-8 p-4 pt-4 space-y-4">
 	<h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
 		<i class="bi bi-images"></i>
 		Photos
