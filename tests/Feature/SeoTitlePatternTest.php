@@ -68,4 +68,18 @@ class SeoTitlePatternTest extends TestCase
         $response->assertOk();
         $response->assertSee('A tag used only to verify the description renders.', false);
     }
+
+    public function test_tag_show_page_title_capitalizes_lowercase_tag_name(): void
+    {
+        $tag = Tag::factory()->create([
+            'name' => 'lowercase tag',
+            'slug' => 'lowercase-tag',
+        ]);
+
+        $response = $this->get('/tags/'.$tag->slug);
+
+        $response->assertOk();
+        $response->assertSee('<title>Lowercase Tag Events, Artists & Series in Pittsburgh', false);
+        $response->assertDontSee('<title>lowercase Tag Events', false);
+    }
 }
