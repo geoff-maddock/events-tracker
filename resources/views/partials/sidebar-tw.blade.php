@@ -32,6 +32,18 @@
                 <span>Events</span>
             </a>
             <div class="ml-8 space-y-1 mt-1">
+                <a href="{{ url('/events/tonight') }}" class="nav-item-tw text-sm {{ Request::is('events/tonight') ? 'nav-item-active-tw' : '' }}">
+                    <i class="bi bi-moon-stars text-sm"></i>
+                    <span>Tonight</span>
+                </a>
+                <a href="{{ url('/events/this-weekend') }}" class="nav-item-tw text-sm {{ Request::is('events/this-weekend') ? 'nav-item-active-tw' : '' }}">
+                    <i class="bi bi-calendar-week text-sm"></i>
+                    <span>This Weekend</span>
+                </a>
+                <a href="{{ url('/events/this-week') }}" class="nav-item-tw text-sm {{ Request::is('events/this-week') ? 'nav-item-active-tw' : '' }}">
+                    <i class="bi bi-calendar-range text-sm"></i>
+                    <span>This Week</span>
+                </a>
                 <a href="{{ url('/events/grid') }}" class="nav-item-tw text-sm {{ Request::is('events/grid') ? 'nav-item-active-tw' : '' }}">
                     <i class="bi bi-grid text-sm"></i>
                     <span>Event Grid</span>
@@ -189,6 +201,18 @@
                 <span>Events</span>
             </a>
             <div class="ml-8 space-y-1 mt-1">
+                <a href="{{ url('/events/tonight') }}" class="nav-item-tw text-sm {{ Request::is('events/tonight') ? 'nav-item-active-tw' : '' }}">
+                    <i class="bi bi-moon-stars text-sm"></i>
+                    <span>Tonight</span>
+                </a>
+                <a href="{{ url('/events/this-weekend') }}" class="nav-item-tw text-sm {{ Request::is('events/this-weekend') ? 'nav-item-active-tw' : '' }}">
+                    <i class="bi bi-calendar-week text-sm"></i>
+                    <span>This Weekend</span>
+                </a>
+                <a href="{{ url('/events/this-week') }}" class="nav-item-tw text-sm {{ Request::is('events/this-week') ? 'nav-item-active-tw' : '' }}">
+                    <i class="bi bi-calendar-range text-sm"></i>
+                    <span>This Week</span>
+                </a>
                 <a href="{{ url('/events/grid') }}" class="nav-item-tw text-sm {{ Request::is('events/grid') ? 'nav-item-active-tw' : '' }}">
                     <i class="bi bi-grid text-sm"></i>
                     <span>Event Grid</span>
