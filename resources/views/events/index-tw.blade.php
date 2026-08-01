@@ -1,7 +1,11 @@
 @extends('layouts.app-tw')
 
 @section('title')
+@if (isset($tag) || isset($related) || isset($type) || isset($slug) || isset($cdate))
 Events @include('events.title-crumbs')
+@else
+Pittsburgh Events Calendar — Concerts, Shows & More
+@endif
 @endsection
 
 @if (isset($events) && count($events) > 0)
