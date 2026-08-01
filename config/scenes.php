@@ -34,7 +34,7 @@ return [
         'name' => 'Raves & EDM',
         'title' => 'Raves, EDM & Club Nights in Pittsburgh — Upcoming Events & Parties',
         'description' => 'Upcoming raves, techno and house parties, and EDM club nights in Pittsburgh.',
-        'tags' => ['rave', 'techno', 'house', 'edm', 'electronic'],
+        'tags' => ['rave', 'techno', 'house', 'edm', 'electronic', 'dubstep'],
     ],
 
     'punk-hardcore' => [
@@ -55,10 +55,10 @@ return [
 
     'drum-and-bass' => [
         'icon' => 'bi-vinyl-fill',
-        'name' => 'Drum & Bass',
-        'title' => 'Drum & Bass & Jungle Nights in Pittsburgh — Upcoming Events',
-        'description' => 'Upcoming drum and bass and jungle nights in Pittsburgh.',
-        'tags' => ['drum-and-bass', 'jungle'],
+        'name' => 'Drum & Bass, Jungle & UK Bass',
+        'title' => 'Drum & Bass, Jungle & UK Bass Nights in Pittsburgh — Upcoming Events',
+        'description' => 'Upcoming drum and bass, jungle and UK bass nights in Pittsburgh.',
+        'tags' => ['drum-and-bass', 'jungle', 'bass'],
     ],
 
     'experimental-noise' => [
