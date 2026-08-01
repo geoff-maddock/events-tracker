@@ -33,12 +33,21 @@
 		</div>
 
 		<!-- Page Header -->
-		<div>
-			<h1 class="text-4xl font-bold text-foreground mb-2">{{ $scene['name'] }}</h1>
-			<p class="text-muted-foreground">
-				{{ $stats['events'] }} upcoming {{ Str::plural('event', $stats['events']) }} &middot;
-				{{ $stats['venues'] }} {{ Str::plural('venue', $stats['venues']) }}
-			</p>
+		<div class="flex items-start justify-between gap-6">
+			<div>
+				<h1 class="text-4xl font-bold text-foreground mb-2">{{ $scene['name'] }}</h1>
+				<p class="text-muted-foreground">
+					{{ $stats['events'] }} upcoming {{ Str::plural('event', $stats['events']) }} &middot;
+					{{ $stats['venues'] }} {{ Str::plural('venue', $stats['venues']) }}
+				</p>
+			</div>
+			@if (!empty($heroImageUrl))
+			<img src="{{ $heroImageUrl }}" alt="{{ $scene['name'] }}" class="hidden sm:block h-28 md:h-36 aspect-video object-cover rounded-lg border border-border shrink-0">
+			@else
+			<div class="hidden sm:flex h-28 md:h-36 aspect-video rounded-lg border border-border bg-muted items-center justify-center shrink-0">
+				<i class="bi {{ $scene['icon'] ?? 'bi-music-note-beamed' }} text-5xl text-muted-foreground/60"></i>
+			</div>
+			@endif
 		</div>
 
 		<!-- Sibling Scenes -->

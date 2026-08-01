@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Entity;
+use App\Models\EntityStatus;
 use App\Models\Event;
 use App\Models\Tag;
 use App\Models\Visibility;
@@ -61,6 +63,65 @@ class ScenesTest extends TestCase
         $response->assertSee('Scene Matching Future Event');
         $response->assertDontSee('Scene Untagged Future Event');
         $response->assertDontSee('Scene Matching Past Event');
+    }
+
+    public function test_key_entities_require_recent_events_and_rank_by_activity(): void
+    {
+        $slug = $this->firstSceneSlug();
+        $scene = config("scenes.$slug");
+        $sceneTag = Tag::factory()->create(['slug' => $scene['tags'][0]]);
+
+        $makeEntity = function (string $name) use ($sceneTag): Entity {
+            $entity = Entity::factory()->create([
+                'name' => $name,
+                'slug' => str_replace(' ', '-', strtolower($name)),
+                'entity_status_id' => EntityStatus::ACTIVE,
+            ]);
+            $entity->tags()->attach($sceneTag->id);
+
+            return $entity;
+        };
+
+        $busyArtist = $makeEntity('Scene Busy Artist');
+        foreach ([3, 10] as $days) {
+            $event = Event::factory()->create([
+                'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+                'start_at' => Carbon::now()->addDays($days),
+            ]);
+            $event->entities()->attach($busyArtist->id);
+        }
+
+        $hostVenue = $makeEntity('Scene Host Venue');
+        Event::factory()->create([
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+            'start_at' => Carbon::now()->addDays(7),
+            'venue_id' => $hostVenue->id,
+        ]);
+
+        $dormantArtist = $makeEntity('Scene Dormant Artist');
+        $oldEvent = Event::factory()->create([
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+            'start_at' => Carbon::now()->subYears(2),
+        ]);
+        $oldEvent->entities()->attach($dormantArtist->id);
+
+        $response = $this->get('/scenes/'.$slug);
+
+        $response->assertOk();
+        // Two recent events beat one; only-old-events entities are dropped.
+        $response->assertSeeInOrder(['Scene Busy Artist', 'Scene Host Venue']);
+        $response->assertDontSee('Scene Dormant Artist');
+    }
+
+    public function test_scene_hero_falls_back_to_configured_icon_when_no_event_photo(): void
+    {
+        $slug = $this->firstSceneSlug();
+        $scene = config("scenes.$slug");
+
+        $response = $this->get('/scenes/'.$slug);
+
+        $response->assertOk();
+        $response->assertSee('bi '.$scene['icon'], false);
     }
 
     public function test_unknown_scene_slug_is_404(): void

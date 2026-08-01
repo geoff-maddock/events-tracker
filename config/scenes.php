@@ -11,6 +11,8 @@
 | genre-demand searches that a bare tag listing doesn't.
 |
 | Keys:
+|   icon        Bootstrap Icons class used as the scene's visual fallback
+|               when no upcoming event photo is available for the hero image.
 |   name        Display name (nav/footer/cards), e.g. "Raves & EDM"
 |   title       SEO <title> (layout appends " | " . config('app.app_name'))
 |   description Meta description base sentence; the controller appends
@@ -28,6 +30,7 @@
 return [
 
     'rave-edm' => [
+        'icon' => 'bi-music-note-beamed',
         'name' => 'Raves & EDM',
         'title' => 'Raves, EDM & Club Nights in Pittsburgh — Upcoming Events & Parties',
         'description' => 'Upcoming raves, techno and house parties, and EDM club nights in Pittsburgh.',
@@ -35,6 +38,7 @@ return [
     ],
 
     'punk-hardcore' => [
+        'icon' => 'bi-lightning-fill',
         'name' => 'Punk & Hardcore',
         'title' => 'Punk & Hardcore Shows in Pittsburgh — Upcoming Events',
         'description' => 'Upcoming punk and hardcore shows in Pittsburgh, from DIY basement gigs to club bills.',
@@ -42,6 +46,7 @@ return [
     ],
 
     'goth-industrial' => [
+        'icon' => 'bi-moon-stars-fill',
         'name' => 'Goth & Industrial',
         'title' => 'Goth & Industrial Nights in Pittsburgh — Upcoming Events',
         'description' => 'Upcoming goth, industrial and darkwave nights in Pittsburgh.',
@@ -49,6 +54,7 @@ return [
     ],
 
     'drum-and-bass' => [
+        'icon' => 'bi-vinyl-fill',
         'name' => 'Drum & Bass',
         'title' => 'Drum & Bass & Jungle Nights in Pittsburgh — Upcoming Events',
         'description' => 'Upcoming drum and bass and jungle nights in Pittsburgh.',
@@ -56,6 +62,7 @@ return [
     ],
 
     'experimental-noise' => [
+        'icon' => 'bi-soundwave',
         'name' => 'Experimental & Noise',
         'title' => 'Experimental & Noise Shows in Pittsburgh — Upcoming Events',
         'description' => 'Upcoming experimental, noise and ambient shows in Pittsburgh.',
