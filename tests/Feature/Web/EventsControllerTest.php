@@ -2,8 +2,10 @@
 
 namespace Tests\Feature\Web;
 
+use App\Models\Entity;
 use App\Models\Event;
 use App\Models\Photo;
+use App\Models\Series;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserStatus;
@@ -137,6 +139,101 @@ class EventsControllerTest extends TestCase
         $response->assertOk();
         $response->assertSee('Public Tag Probe Event');
         $response->assertDontSee('Secret Private Tag Probe Event');
+    }
+
+    /**
+     * The future listing compacted its paginated result under the wrong
+     * variable name ($future_events), so the view (which only reads $events)
+     * always rendered "No matching events found." A public future event must
+     * actually appear on the page.
+     */
+    public function test_index_future_shows_created_event(): void
+    {
+        $event = Event::factory()->create([
+            'name' => 'Future Listing Probe Event',
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+            'start_at' => now()->addWeek(),
+        ]);
+
+        $response = $this->get('/events/future');
+
+        $response->assertOk();
+        $response->assertSee('Future Listing Probe Event');
+    }
+
+    /**
+     * Same bug as indexFuture, but for $past_events.
+     */
+    public function test_index_past_shows_created_event(): void
+    {
+        $event = Event::factory()->create([
+            'name' => 'Past Listing Probe Event',
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+            'start_at' => now()->subWeek(),
+        ]);
+
+        $response = $this->get('/events/past');
+
+        $response->assertOk();
+        $response->assertSee('Past Listing Probe Event');
+    }
+
+    /**
+     * Same bug as indexFuture, but for the "starting on this day" listing.
+     */
+    public function test_index_starting_shows_created_event(): void
+    {
+        $event = Event::factory()->create([
+            'name' => 'Starting Listing Probe Event',
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+            'start_at' => now()->startOfDay()->addHours(12),
+        ]);
+
+        $response = $this->get('/events/starting/'.now()->format('Ymd'));
+
+        $response->assertOk();
+        $response->assertSee('Starting Listing Probe Event');
+    }
+
+    /**
+     * Same bug as indexFuture, but for the by-venue listing.
+     */
+    public function test_index_venue_shows_created_event(): void
+    {
+        $venue = Entity::factory()->venue()->create(['slug' => 'listing-probe-venue']);
+        $event = Event::factory()->create([
+            'name' => 'Venue Listing Probe Event',
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+            'start_at' => now()->addWeek(),
+            'venue_id' => $venue->id,
+        ]);
+
+        $response = $this->get('/events/venue/listing-probe-venue');
+
+        $response->assertOk();
+        $response->assertSee('Venue Listing Probe Event');
+    }
+
+    /**
+     * Same bug as indexFuture, but for the by-series listing.
+     */
+    public function test_index_series_shows_created_event(): void
+    {
+        $series = Series::factory()->create([
+            'name' => 'Listing Probe Series',
+            'slug' => 'listing-probe-series',
+        ]);
+        $event = Event::factory()->create([
+            'name' => 'Series Listing Probe Event',
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+            'start_at' => now()->addWeek(),
+            'series_id' => $series->id,
+        ]);
+
+        $response = $this->get('/events/series/listing-probe-series');
+
+        $response->assertOk();
+        $response->assertSee('Series Listing Probe Event');
     }
 
     /**
