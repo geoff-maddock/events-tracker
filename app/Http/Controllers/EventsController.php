@@ -891,7 +891,7 @@ class EventsController extends Controller
         $query = $listResultSet->getList();
 
         // get the events
-        $future_events = $query
+        $events = $query
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
                 $query->visible($this->user);
@@ -917,7 +917,7 @@ class EventsController extends Controller
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
             ))
-            ->with(compact('future_events'));
+            ->with(compact('events'));
     }
 
     /*
@@ -1181,7 +1181,7 @@ class EventsController extends Controller
         $query = $listResultSet->getList();
 
         // get the events
-        $past_events = $query
+        $events = $query
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
                 $query->visible($this->user);
@@ -1206,7 +1206,7 @@ class EventsController extends Controller
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
             ))
-            ->with(compact('past_events'));
+            ->with(compact('events'));
     }
 
     /**
@@ -2628,7 +2628,7 @@ class EventsController extends Controller
         $cdate_yesterday = $cdate->copy()->subDay();
         $cdate_tomorrow = $cdate->copy()->addDay();
 
-        $future_events = Event::where('events.start_at', '>', $cdate_yesterday->toDateString())
+        $events = Event::where('events.start_at', '>', $cdate_yesterday->toDateString())
             ->with($this->cardEventEagerLoad())
             ->where('events.start_at', '<', $cdate_tomorrow->toDateString())
             ->where(function ($query) {
@@ -2658,7 +2658,7 @@ class EventsController extends Controller
                     $this->getListControlOptions()
                 )
             )
-            ->with(compact('future_events'))
+            ->with(compact('events'))
             ->with(compact('cdate'));
     }
 
@@ -2691,7 +2691,7 @@ class EventsController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
-        $future_events = Event::getByVenue(strtolower($slug))
+        $events = Event::getByVenue(strtolower($slug))
             ->with($this->cardEventEagerLoad())
             ->future()
             ->where(function ($query) {
@@ -2732,7 +2732,7 @@ class EventsController extends Controller
                     $this->getListControlOptions()
                 )
             )
-            ->with(compact('future_events'))
+            ->with(compact('events'))
             ->with(compact('past_events'))
             ->with(compact('slug'));
     }
@@ -2830,7 +2830,7 @@ class EventsController extends Controller
         $futureQuery = clone $pastQuery;
 
         // @phpstan-ignore-next-line
-        $future_events = $futureQuery
+        $events = $futureQuery
             ->visible($this->user)
             ->with($this->cardEventEagerLoad())
             ->future()
@@ -2866,7 +2866,7 @@ class EventsController extends Controller
                     $this->getListControlOptions()
                 )
             )
-            ->with(compact('future_events'))
+            ->with(compact('events'))
             ->with(compact('past_events'))
             ->with(compact('slug'));
     }
