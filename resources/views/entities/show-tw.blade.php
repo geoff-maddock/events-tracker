@@ -146,27 +146,10 @@
 
 		<!-- Upcoming Events - Full Width -->
 		<div class="mt-6 rounded-lg border border-border bg-card shadow p-6">
-			<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-				<h2 class="text-xl font-semibold flex items-center gap-2">
-					<i class="bi bi-calendar-event"></i>
-					Upcoming Events
-				</h2>
-				<!-- Date Filter -->
-				<form method="GET" action="{{ route('entities.show', $entity->slug) }}" class="flex items-center gap-2">
-					<label for="start_at" class="text-sm text-muted-foreground whitespace-nowrap">From date:</label>
-					<input type="date" id="start_at" name="start_at"
-						value="{{ $filterStartAt->format('Y-m-d') }}"
-						class="px-2 py-1 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary">
-					<button type="submit" class="px-3 py-1 text-sm rounded-md bg-accent border border-border text-foreground hover:bg-accent/80 transition-colors">
-						Filter
-					</button>
-					@if (request()->filled('start_at'))
-					<a href="{{ route('entities.show', $entity->slug) }}" class="px-3 py-1 text-sm rounded-md border border-border text-muted-foreground hover:bg-accent transition-colors">
-						Reset
-					</a>
-					@endif
-				</form>
-			</div>
+			<h2 class="text-xl font-semibold flex items-center gap-2 mb-4">
+				<i class="bi bi-calendar-event"></i>
+				Upcoming Events
+			</h2>
 
 			{{-- Fragment caching: the event-card partial has per-user content (attend/edit
 			     buttons), so it is only cached for guests — signed-in users (incl. editors)
@@ -174,7 +157,7 @@
 			     its rendered relations (see Event::cardFingerprint) so any edit busts them. --}}
 			@if (isset($relatedEvents) && count($relatedEvents) > 0)
 				<!-- Events Grid -->
-				<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-6">
+				<div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-6">
 					@foreach ($relatedEvents as $event)
 						@guest
 							{!! Cache::remember('event-card-tw:'.$event->cardFingerprint(), now()->addHours(6), fn () => view('events.card-tw', ['event' => $event])->render()) !!}
