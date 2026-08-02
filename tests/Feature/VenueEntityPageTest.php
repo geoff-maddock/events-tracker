@@ -296,4 +296,55 @@ class VenueEntityPageTest extends TestCase
         $response->assertSee('"maximumAttendeeCapacity": 500', false);
         $response->assertSee('"@type": "Event"', false);
     }
+
+    public function test_upcoming_events_grid_tracks_content_column_width(): void
+    {
+        $venue = $this->makeVenue(['name' => 'Grid Test Hall']);
+
+        $event = Event::factory()->create([
+            'name' => 'ZZGRID-' . uniqid(),
+            'venue_id' => $venue->id,
+            'start_at' => Carbon::now()->addDays(3),
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+        ]);
+        $event->entities()->attach($venue->id);
+
+        $response = $this->get('/entities/' . $venue->slug);
+
+        $response->assertOk();
+        // The section sits in a column that is full-width below lg, half the
+        // viewport at lg, and 2/3 from xl up — so the column count dips back
+        // to 1 at lg where the sidebar halves the available width.
+        $response->assertSee('grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 min-[1536px]:grid-cols-3 min-[1920px]:grid-cols-4', false);
+    }
+
+    public function test_upcoming_events_date_filter_is_removed(): void
+    {
+        $venue = $this->makeVenue(['name' => 'No Filter Hall']);
+
+        $response = $this->get('/entities/' . $venue->slug);
+
+        $response->assertOk();
+        $response->assertDontSee('From date:', false);
+        $response->assertDontSee('name="start_at"', false);
+    }
+
+    public function test_start_at_query_param_is_ignored(): void
+    {
+        $venue = $this->makeVenue(['name' => 'Param Ignored Hall']);
+
+        $event = Event::factory()->create([
+            'name' => 'ZZIGNORED-' . uniqid(),
+            'venue_id' => $venue->id,
+            'start_at' => Carbon::now()->addDays(3),
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+        ]);
+        $event->entities()->attach($venue->id);
+
+        // A far-future start_at used to filter this event out; now it must be ignored.
+        $response = $this->get('/entities/' . $venue->slug . '?start_at=' . Carbon::now()->addYear()->format('Y-m-d'));
+
+        $response->assertOk();
+        $response->assertSee($event->name, false);
+    }
 }
