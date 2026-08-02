@@ -69,6 +69,32 @@ class ApiEventInstagramTest extends TestCase
                  ]);
     }
 
+    public function test_cannot_post_event_without_primary_photo_to_instagram()
+    {
+        $user = User::factory()->create(['user_status_id' => 1]);
+        $this->actingAs($user, 'sanctum');
+
+        // Public event owned by the user, but with no primary photo attached.
+        $event = Event::factory()->create([
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+            'created_by' => $user->id,
+        ]);
+
+        // Credentials are present, so the request reaches the primary-photo guard.
+        $instagram = Mockery::mock(Instagram::class);
+        $instagram->shouldReceive('getIgUserId')->andReturn(123);
+        $instagram->shouldReceive('getPageAccessToken')->andReturn('token');
+        $this->app->instance(Instagram::class, $instagram);
+
+        $response = $this->postJson('/api/events/'.$event->id.'/instagram-post');
+
+        $response->assertStatus(422)
+                 ->assertJson([
+                     'success' => false,
+                     'message' => 'This event must have a primary photo before it can be posted to Instagram.',
+                 ]);
+    }
+
     public function test_cannot_post_private_event_to_instagram()
     {
         $user = User::factory()->create(['user_status_id' => 1]);

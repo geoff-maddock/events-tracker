@@ -155,6 +155,12 @@ class EventInstagramController extends Controller
             return back();
         }
 
+        if ($error = $this->eventPhotoError($event)) {
+            flash()->error('Error', $error);
+
+            return back();
+        }
+
         PostEventToInstagram::dispatch($event, false, $this->user?->id);
 
         flash()->success('Queued', 'This event is being posted to Instagram in the background. You will be notified when it finishes.');
@@ -172,6 +178,10 @@ class EventInstagramController extends Controller
         }
 
         if ($error = $this->instagramCredentialError($instagram)) {
+            return $this->instagramActionResponse(false, 'Error', $error);
+        }
+
+        if ($error = $this->eventPhotoError($event)) {
             return $this->instagramActionResponse(false, 'Error', $error);
         }
 
@@ -210,6 +220,10 @@ class EventInstagramController extends Controller
             return response()->json(['success' => false, 'message' => $error], 400);
         }
 
+        if ($error = $this->eventPhotoError($event)) {
+            return response()->json(['success' => false, 'message' => $error], 422);
+        }
+
         // Build the job so we can hand its tracking id back to the caller, then dispatch.
         $job = new PostEventToInstagram($event, true, $user->id);
         dispatch($job);
@@ -233,6 +247,21 @@ class EventInstagramController extends Controller
 
         if (!$instagram->getPageAccessToken()) {
             return 'You must have an Instagram page linked to post to Instagram.';
+        }
+
+        return null;
+    }
+
+    /**
+     * Instagram posts are built from the event's primary photo. Fail fast at
+     * dispatch time when it is missing so the caller gets an immediate,
+     * actionable message, instead of queuing a job that throws "You must have
+     * a photo…" and burns all three retries before giving up (EVENTREPO-VA).
+     */
+    private function eventPhotoError(Event $event): ?string
+    {
+        if (!$event->getPrimaryPhoto()) {
+            return 'This event must have a primary photo before it can be posted to Instagram.';
         }
 
         return null;
