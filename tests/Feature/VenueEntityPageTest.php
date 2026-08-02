@@ -325,4 +325,23 @@ class VenueEntityPageTest extends TestCase
         $response->assertDontSee('From date:', false);
         $response->assertDontSee('name="start_at"', false);
     }
+
+    public function test_start_at_query_param_is_ignored(): void
+    {
+        $venue = $this->makeVenue(['name' => 'Param Ignored Hall']);
+
+        $event = Event::factory()->create([
+            'name' => 'ZZIGNORED-' . uniqid(),
+            'venue_id' => $venue->id,
+            'start_at' => Carbon::now()->addDays(3),
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+        ]);
+        $event->entities()->attach($venue->id);
+
+        // A far-future start_at used to filter this event out; now it must be ignored.
+        $response = $this->get('/entities/' . $venue->slug . '?start_at=' . Carbon::now()->addYear()->format('Y-m-d'));
+
+        $response->assertOk();
+        $response->assertSee($event->name, false);
+    }
 }

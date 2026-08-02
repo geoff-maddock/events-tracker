@@ -662,7 +662,6 @@ class EntitiesController extends Controller
 
         return view('entities.show-tw')
             ->with(compact('entity'))
-            ->with(['filterStartAt' => Carbon::today()])
             ->render();
     }
 
@@ -707,7 +706,6 @@ class EntitiesController extends Controller
 
         return view('entities.show-tw')
             ->with(compact('entity', 'relatedEvents'))
-            ->with(['filterStartAt' => Carbon::today()])
             ->render();
     }
 
@@ -917,7 +915,7 @@ class EntitiesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Entity $entity, OembedExtractor $embedExtractor, Request $request): View
+    public function show(Entity $entity, OembedExtractor $embedExtractor): View
     {
         app('redirect')->setIntendedUrl(url()->current());
 
@@ -940,18 +938,6 @@ class EntitiesController extends Controller
         // $tracks = $embedExtractor->getTracksFromUrl('https://0h85.bandcamp.com/');
         $tracks = [];
 
-        // determine the start date filter for related events (default: today)
-        $filterStartAt = null;
-        if ($request->filled('start_at')) {
-            try {
-                $filterStartAt = Carbon::parse($request->input('start_at'))->startOfDay();
-            } catch (\Exception $e) {
-                $filterStartAt = Carbon::today()->startOfDay();
-            }
-        } else {
-            $filterStartAt = Carbon::today()->startOfDay();
-        }
-
         // Venue pages need events found either through the entity_event pivot
         // (billed as a performer/promoter at their own room) OR via the event's
         // direct venue_id — many events are only ever linked by venue_id, so a
@@ -969,7 +955,7 @@ class EntitiesController extends Controller
             $venueEventsBase = fn () => $entity->events();
         }
 
-        // get related events (up to 16, sorted by date ascending from the filter date)
+        // get related events (up to 16, sorted by date ascending from today)
         $relatedEventsQuery = $venueEventsBase()
             ->with([
                 'venue.locations',
@@ -983,7 +969,7 @@ class EntitiesController extends Controller
                 'eventType',
                 'tags',
             ])
-            ->where('start_at', '>=', $filterStartAt)
+            ->where('start_at', '>=', Carbon::today()->startOfDay())
             ->orderBy('start_at', 'asc');
 
         $relatedEvents = $relatedEventsQuery->limit(16)->get();
@@ -999,7 +985,7 @@ class EntitiesController extends Controller
             ->get();
 
         // only compute co-performer and venue lists when the entity has more than 2 events total;
-        // use a lightweight count to check regardless of the date filter applied above
+        // use a lightweight count to check regardless of the upcoming-events window above
         $frequentlyPerformsWith = null;
         $frequentlyPerformsAt = null;
         $isVenueOrShop = $entity->hasRole('Venue') || $entity->hasRole('Shop');
@@ -1010,7 +996,7 @@ class EntitiesController extends Controller
             }
         }
 
-        return view('entities.show-tw', compact('entity', 'threads', 'embeds', 'tracks', 'relatedEvents', 'pastEvents', 'frequentlyPerformsWith', 'frequentlyPerformsAt', 'filterStartAt'));
+        return view('entities.show-tw', compact('entity', 'threads', 'embeds', 'tracks', 'relatedEvents', 'pastEvents', 'frequentlyPerformsWith', 'frequentlyPerformsAt'));
     }
 
     /**
