@@ -52,6 +52,7 @@ class EventRequest extends Request
             'end_at' => 'nullable|date|after_or_equal:start_at',
             'door_at' => 'nullable|date|before_or_equal:start_at',
             'event_type_id' => 'required',
+            'created_by' => 'nullable|integer|exists:users,id',
             'visibility_id' => 'required',
             'presale_price' => 'nullable|numeric|between:0,999.99',
             'door_price' => 'nullable|numeric|between:0,999.99',
