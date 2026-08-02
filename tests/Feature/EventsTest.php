@@ -67,6 +67,43 @@ class EventsTest extends TestCase
         $this->assertSame($user->id, (int) $event->fresh()->created_by);
     }
 
+    public function testUpdateChangesOwnerWhenNewOwnerSelected()
+    {
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $newOwner = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $event = Event::factory()->create(['created_by' => $user->id]);
+
+        $response = $this->actingAs($user)->put('/events/'.$event->id, [
+            'name' => 'Updated Event Name',
+            'slug' => 'updated-event-name-'.$event->id,
+            'start_at' => '2026-07-01 20:00:00',
+            'event_type_id' => $event->event_type_id,
+            'visibility_id' => $event->visibility_id,
+            'created_by' => $newOwner->id,
+        ]);
+
+        $response->assertRedirect();
+        $this->assertSame($newOwner->id, (int) $event->fresh()->created_by);
+    }
+
+    public function testUpdateRejectsNonexistentOwner()
+    {
+        $this->withExceptionHandling();
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $event = Event::factory()->create(['created_by' => $user->id]);
+
+        $this->actingAs($user)->put('/events/'.$event->id, [
+            'name' => 'Updated Event Name',
+            'slug' => 'updated-event-name-'.$event->id,
+            'start_at' => '2026-07-01 20:00:00',
+            'event_type_id' => $event->event_type_id,
+            'visibility_id' => $event->visibility_id,
+            'created_by' => 999999,
+        ])->assertSessionHasErrors('created_by');
+
+        $this->assertSame($user->id, (int) $event->fresh()->created_by);
+    }
+
     public function testShowResolvesEventBySlugAndById()
     {
         $event = Event::factory()->create([
