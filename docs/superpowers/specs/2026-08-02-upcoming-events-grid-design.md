@@ -28,8 +28,11 @@ Only the 1→2 column step moves (768px → 1024px). Resulting layout:
 |----------|---------|
 | <1024px | 1 |
 | 1024–1279px | 2 |
-| 1280–1535px | 3 |
-| ≥1536px | 4 |
+| 1280–1599px | 3 |
+| ≥1600px | 4 |
+
+(This project overrides Tailwind's default `2xl` breakpoint to 1600px in
+`tailwind.config.js`.)
 
 ### 2. Remove the date filter UI
 
@@ -58,7 +61,8 @@ ignored (upcoming events always start from today).
 
 ## Testing
 
-- `./vendor/bin/phpunit tests/Feature/EntitiesControllerTest.php` (no existing
-  tests reference `start_at` or `filterStartAt` on entity show — verified).
+- `./vendor/bin/phpunit tests/Feature/VenueEntityPageTest.php tests/Feature/SemanticEntityRoutesTest.php tests/Feature/EntitiesTest.php`
+  (no pre-existing tests referenced `start_at` or `filterStartAt` on entity
+  show — verified).
 - `composer phpstan`.
 - Visual check of the grid at ~900px, ~1100px, ~1400px, ~1600px widths.
