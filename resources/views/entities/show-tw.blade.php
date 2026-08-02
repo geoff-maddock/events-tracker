@@ -157,7 +157,10 @@
 			     its rendered relations (see Event::cardFingerprint) so any edit busts them. --}}
 			@if (isset($relatedEvents) && count($relatedEvents) > 0)
 				<!-- Events Grid -->
-				<div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-6">
+				{{-- Column counts track the section's real width, not just the viewport: this
+     column is full-width below lg, HALF the viewport at lg (sidebar beside it),
+     and 2/3 from xl up — hence the dip back to 1 column at lg. --}}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 min-[1920px]:grid-cols-4 gap-6 mb-6">
 					@foreach ($relatedEvents as $event)
 						@guest
 							{!! Cache::remember('event-card-tw:'.$event->cardFingerprint(), now()->addHours(6), fn () => view('events.card-tw', ['event' => $event])->render()) !!}

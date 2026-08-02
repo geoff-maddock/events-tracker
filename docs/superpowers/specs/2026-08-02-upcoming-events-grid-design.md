@@ -20,19 +20,25 @@ On entity show pages, the Upcoming Events section has two issues:
 `resources/views/entities/show-tw.blade.php` (Upcoming Events grid, ~line 177):
 
 - Before: `grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4`
-- After: `grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4`
+- After: `grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 min-[1920px]:grid-cols-4`
 
-Only the 1→2 column step moves (768px → 1024px). Resulting layout:
+The column count tracks the **section's real width**, not just the viewport:
+the section sits in a content column that is full-width below `lg`, HALF the
+viewport at `lg` (the sidebar sits beside it), and 2/3 of the viewport from
+`xl` up (layout `max-w-[2400px]`). Hence the dip back to 1 column at `lg`.
 
-| Viewport | Columns |
-|----------|---------|
-| <1024px | 1 |
-| 1024–1279px | 2 |
-| 1280–1599px | 3 |
-| ≥1600px | 4 |
+| Viewport | Section width | Columns |
+|----------|---------------|---------|
+| <768px | full | 1 |
+| 768–1023px | full | 2 |
+| 1024–1279px | ~1/2 viewport | 1 |
+| 1280–1919px | ~2/3 viewport | 3 |
+| ≥1920px | ~2/3 viewport | 4 |
 
-(This project overrides Tailwind's default `2xl` breakpoint to 1600px in
-`tailwind.config.js`.)
+(4 columns uses the arbitrary variant `min-[1920px]:` rather than this
+project's `2xl:`, which is overridden to 1600px in `tailwind.config.js` —
+too narrow for 4 readable cards in a 2/3-width column. The new variant
+requires a Vite/Tailwind rebuild to enter the compiled CSS.)
 
 ### 2. Remove the date filter UI
 

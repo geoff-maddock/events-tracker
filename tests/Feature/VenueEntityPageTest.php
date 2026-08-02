@@ -297,7 +297,7 @@ class VenueEntityPageTest extends TestCase
         $response->assertSee('"@type": "Event"', false);
     }
 
-    public function test_upcoming_events_grid_breaks_to_one_column_below_lg(): void
+    public function test_upcoming_events_grid_tracks_content_column_width(): void
     {
         $venue = $this->makeVenue(['name' => 'Grid Test Hall']);
 
@@ -312,7 +312,10 @@ class VenueEntityPageTest extends TestCase
         $response = $this->get('/entities/' . $venue->slug);
 
         $response->assertOk();
-        $response->assertSee('grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4', false);
+        // The section sits in a column that is full-width below lg, half the
+        // viewport at lg, and 2/3 from xl up — so the column count dips back
+        // to 1 at lg where the sidebar halves the available width.
+        $response->assertSee('grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 min-[1920px]:grid-cols-4', false);
     }
 
     public function test_upcoming_events_date_filter_is_removed(): void
