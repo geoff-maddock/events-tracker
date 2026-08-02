@@ -315,7 +315,7 @@ class VenueEntityPageTest extends TestCase
         // The section sits in a column that is full-width below lg, half the
         // viewport at lg, and 2/3 from xl up — so the column count dips back
         // to 1 at lg where the sidebar halves the available width.
-        $response->assertSee('grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 min-[1920px]:grid-cols-4', false);
+        $response->assertSee('grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 min-[1536px]:grid-cols-3 min-[1920px]:grid-cols-4', false);
     }
 
     public function test_upcoming_events_date_filter_is_removed(): void

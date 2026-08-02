@@ -20,7 +20,7 @@ On entity show pages, the Upcoming Events section has two issues:
 `resources/views/entities/show-tw.blade.php` (Upcoming Events grid, ~line 177):
 
 - Before: `grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4`
-- After: `grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 min-[1920px]:grid-cols-4`
+- After: `grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 min-[1536px]:grid-cols-3 min-[1920px]:grid-cols-4`
 
 The column count tracks the **section's real width**, not just the viewport:
 the section sits in a content column that is full-width below `lg`, HALF the
@@ -32,8 +32,12 @@ viewport at `lg` (the sidebar sits beside it), and 2/3 of the viewport from
 | <768px | full | 1 |
 | 768–1023px | full | 2 |
 | 1024–1279px | ~1/2 viewport | 1 |
-| 1280–1919px | ~2/3 viewport | 3 |
+| 1280–1535px | ~2/3 viewport | 2 |
+| 1536–1919px | ~2/3 viewport | 3 |
 | ≥1920px | ~2/3 viewport | 4 |
+
+The Frequently Performs With / At cards also stack full-width (matching the
+Description box) instead of sitting two-up at `md`.
 
 (4 columns uses the arbitrary variant `min-[1920px]:` rather than this
 project's `2xl:`, which is overridden to 1600px in `tailwind.config.js` —
