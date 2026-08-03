@@ -1076,9 +1076,13 @@ class EventsController extends Controller
         $input = $request->all();
         $input['updated_by'] = $this->user->id;
 
+        $nonNullableBooleans = $this->nonNullableBooleanEventFields();
         foreach ($this->optionalEventFields() as $field) {
             if (!array_key_exists($field, $input)) {
-                $input[$field] = null;
+                // Boolean fields are backed by NOT NULL columns, so an omitted
+                // field resets to false (0) rather than null to avoid an
+                // integrity constraint violation.
+                $input[$field] = in_array($field, $nonNullableBooleans, true) ? false : null;
             }
         }
 
@@ -1151,6 +1155,21 @@ class EventsController extends Controller
             'cancelled_at',
             'do_not_repost',
             'min_age',
+        ];
+    }
+
+    /**
+     * Subset of optional fields backed by NOT NULL boolean columns. When these
+     * are omitted from a PUT they must reset to false, not null, otherwise the
+     * update fails with an integrity constraint violation.
+     *
+     * @return array<int, string>
+     */
+    private function nonNullableBooleanEventFields(): array
+    {
+        return [
+            'is_benefit',
+            'do_not_repost',
         ];
     }
 

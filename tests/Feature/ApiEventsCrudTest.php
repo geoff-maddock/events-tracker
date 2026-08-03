@@ -91,6 +91,29 @@ class ApiEventsCrudTest extends TestCase
         $this->assertSame('ZZ-Updated-Event', $event->fresh()->name);
     }
 
+    public function test_update_resets_omitted_boolean_fields_to_false(): void
+    {
+        $event = Event::factory()->create([
+            'created_by' => $this->user->id,
+            'slug' => 'zz-benefit-target-'.uniqid(),
+            'is_benefit' => 1,
+            'do_not_repost' => 1,
+        ]);
+
+        // PUT payload deliberately omits is_benefit and do_not_repost. Those
+        // columns are NOT NULL, so the update must reset them to false rather
+        // than null (which previously triggered an integrity constraint error).
+        $payload = $this->validPayload(['slug' => $event->slug]);
+        unset($payload['is_benefit'], $payload['do_not_repost']);
+
+        $response = $this->putJson('/api/events/'.$event->slug, $payload);
+
+        $response->assertOk();
+        $fresh = $event->fresh();
+        $this->assertSame(0, (int) $fresh->is_benefit);
+        $this->assertFalse((bool) $fresh->do_not_repost);
+    }
+
     public function test_update_refuses_when_not_creator(): void
     {
         $other = User::factory()->create();
