@@ -20,7 +20,7 @@
 			Add Tag
 		</a>
 		@endif
-		<a href="{!! URL::route('pages.popular') !!}" class="inline-flex items-center px-3 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-card transition-colors text-sm">
+		<a href="{!! URL::route('pages.popular') !!}#popular-tags" class="inline-flex items-center px-3 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-card transition-colors text-sm">
 			<i class="bi mr-2 bi-graph-up-arrow"></i>
 			Popular
 		</a>

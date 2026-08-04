@@ -108,8 +108,9 @@ class Tag extends Eloquent
     }
 
     /**
-     * Adds a grid_thumbnail subquery select — returns the thumbnail path of the most recent
-     * public event photo, falling back to the most recently created entity photo.
+     * Adds a grid_thumbnail subquery select — returns the thumbnail path of the soonest
+     * upcoming public event photo (falling back to the most recent past event photo),
+     * falling back to the most recently created entity photo.
      */
     public function scopeWithGridThumbnail(Builder $query): Builder
     {
@@ -123,7 +124,9 @@ class Tag extends Eloquent
                  WHERE et.tag_id = tags.id
                    AND p.is_primary = 1
                    AND e.visibility_id = ' . Visibility::VISIBILITY_PUBLIC . '
-                 ORDER BY e.start_at DESC
+                 ORDER BY (e.start_at >= CURDATE()) DESC,
+                          CASE WHEN e.start_at >= CURDATE() THEN e.start_at END ASC,
+                          e.start_at DESC
                  LIMIT 1),
                 (SELECT p.thumbnail
                  FROM photos p
