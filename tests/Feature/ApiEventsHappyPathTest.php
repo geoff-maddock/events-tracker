@@ -79,6 +79,22 @@ class ApiEventsHappyPathTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_index_by_date_handles_single_digit_month(): void
+    {
+        // Regression: /api/events/by-date/2026/8 previously concatenated the raw
+        // params into the unparseable string "2026801" and threw a 500 (EVENTREPO-WG).
+        $response = $this->getJson('/api/events/by-date/2026/8');
+
+        $response->assertStatus(200);
+    }
+
+    public function test_index_by_date_handles_single_digit_month_and_day(): void
+    {
+        $response = $this->getJson('/api/events/by-date/2026/8/4');
+
+        $response->assertStatus(200);
+    }
+
     public function test_index_attending_returns_list(): void
     {
         $response = $this->getJson('/api/events/attending');
