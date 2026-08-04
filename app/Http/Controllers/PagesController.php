@@ -262,16 +262,23 @@ class PagesController extends Controller
             ->get();
 
         // Get popular tags - tags with most events.
-        // Eager-load each tag's latest visible event plus its photos so the
-        // view can show the latest event + its primary photo without issuing a
+        // Eager-load each tag's thumbnail event plus its photos so the
+        // view can show the event's primary photo without issuing a
         // fresh query per tag (N+1 flagged as EVENTREPO-WV). The limit(1) is
         // applied per tag via a window function; without it every visible
         // event for each top tag is hydrated (13k+ in prod), which exhausts
         // php-fpm's memory_limit.
+        // Thumbnail event = soonest upcoming event with a primary photo,
+        // falling back to the most recent past one (mirrors Tag::scopeWithGridThumbnail).
         $popularTags = Tag::withCount('events')
             ->with(['events' => function ($query) use ($user) {
                 $query->visible($user)
-                    ->latest('start_at')
+                    ->whereHas('photos', function ($photo) {
+                        $photo->where('photos.is_primary', 1);
+                    })
+                    ->orderByRaw('(start_at >= CURDATE()) desc')
+                    ->orderByRaw('CASE WHEN start_at >= CURDATE() THEN start_at END asc')
+                    ->orderBy('start_at', 'desc')
                     ->limit(1)
                     ->with('photos');
             }])
