@@ -273,14 +273,22 @@ class TagsController extends Controller
             ->limit(8)
             ->get();
 
-        // get limited events linked to the tag (8 for preview)
-        $events = Event::getByTag($slug)
+        // get limited events linked to the tag (8 each for preview)
+        $eventsBase = fn () => Event::getByTag($slug)
             ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
                 $query->visible($this->user);
-            })
-            ->orderBy('start_at', 'DESC')
+            });
+
+        $upcomingEvents = $eventsBase()
+            ->future()
+            ->orderBy('name', 'ASC')
+            ->limit(8)
+            ->get();
+
+        $pastEvents = $eventsBase()
+            ->past()
             ->orderBy('name', 'ASC')
             ->limit(8)
             ->get();
@@ -297,12 +305,10 @@ class TagsController extends Controller
             ->limit(8)
             ->get();
 
-        $tags = Tag::orderBy('name', 'ASC')->get();
-
         // Get related tags based on co-occurrence with events
         $relatedTags = $tagObject ? $tagObject->relatedTags() : [];
 
-        return view('tags.show-tw', compact('series', 'entities', 'events', 'slug', 'tag', 'tagObject', 'tags', 'relatedTags'));
+        return view('tags.show-tw', compact('series', 'entities', 'upcomingEvents', 'pastEvents', 'slug', 'tag', 'tagObject', 'relatedTags'));
     }
 
     /**

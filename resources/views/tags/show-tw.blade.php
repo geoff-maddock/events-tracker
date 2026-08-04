@@ -96,6 +96,36 @@ Tags
 			@endif
 		</div>
 
+		<!-- Section Jump Links -->
+		@if(count($upcomingEvents) > 0 || count($pastEvents) > 0 || count($entities) > 0 || count($series) > 0)
+		<div class="flex flex-wrap gap-2">
+			@if(count($upcomingEvents) > 0)
+			<a href="#upcoming-events" class="inline-flex items-center px-4 py-2 bg-card border-2 border-primary text-foreground rounded-lg hover:bg-accent transition-colors text-sm font-medium">
+				<i class="bi bi-calendar-event mr-2"></i>
+				Upcoming Events
+			</a>
+			@endif
+			@if(count($pastEvents) > 0)
+			<a href="#past-events" class="inline-flex items-center px-4 py-2 bg-card border-2 border-primary text-foreground rounded-lg hover:bg-accent transition-colors text-sm font-medium">
+				<i class="bi bi-clock-history mr-2"></i>
+				Past Events
+			</a>
+			@endif
+			@if(count($entities) > 0)
+			<a href="#entities" class="inline-flex items-center px-4 py-2 bg-card border-2 border-primary text-foreground rounded-lg hover:bg-accent transition-colors text-sm font-medium">
+				<i class="bi bi-people mr-2"></i>
+				Entities
+			</a>
+			@endif
+			@if(count($series) > 0)
+			<a href="#series" class="inline-flex items-center px-4 py-2 bg-card border-2 border-primary text-foreground rounded-lg hover:bg-accent transition-colors text-sm font-medium">
+				<i class="bi bi-collection mr-2"></i>
+				Series
+			</a>
+			@endif
+		</div>
+		@endif
+
 		<!-- Related Tags Section -->
 		@if(isset($tagObject) && isset($relatedTags) && count($relatedTags) > 0)
 		<div>
@@ -124,17 +154,34 @@ Tags
 
 		<!-- Content Sections -->
 		<div class="space-y-8">
-			<!-- Events Section -->
-			@if(isset($events) && count($events) > 0)
-			<div>
+			<!-- Upcoming Events Section -->
+			@if(count($upcomingEvents) > 0)
+			<div id="upcoming-events" class="scroll-mt-6">
 				<div class="flex items-baseline gap-3 mb-4">
-					<h2 class="text-2xl font-semibold text-foreground">Events</h2>
+					<h2 class="text-2xl font-semibold text-foreground">Upcoming Events</h2>
 					<a href="{{ url('/events?filters[tag]=' . $slug) }}" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
 						View all
 					</a>
 				</div>
 				<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 3xl:grid-cols-4">
-					@foreach ($events->take(8) as $event)
+					@foreach ($upcomingEvents->take(8) as $event)
+					@include('events.card-tw', ['event' => $event, 'series' => null, 'entity' => null])
+					@endforeach
+				</div>
+			</div>
+			@endif
+
+			<!-- Past Events Section -->
+			@if(count($pastEvents) > 0)
+			<div id="past-events" class="scroll-mt-6">
+				<div class="flex items-baseline gap-3 mb-4">
+					<h2 class="text-2xl font-semibold text-foreground">Past Events</h2>
+					<a href="{{ url('/events?filters[tag]=' . $slug) }}" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
+						View all
+					</a>
+				</div>
+				<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 3xl:grid-cols-4">
+					@foreach ($pastEvents->take(8) as $event)
 					@include('events.card-tw', ['event' => $event, 'series' => null, 'entity' => null])
 					@endforeach
 				</div>
@@ -143,7 +190,7 @@ Tags
 
 			<!-- Entities Section -->
 			@if(isset($entities) && count($entities) > 0)
-			<div>
+			<div id="entities" class="scroll-mt-6">
 				<div class="flex items-baseline gap-3 mb-4">
 					<h2 class="text-2xl font-semibold text-foreground">Entities</h2>
 					<a href="{{ url('/entities?filters[tag]=' . $slug) }}" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -160,7 +207,7 @@ Tags
 
 			<!-- Series Section -->
 			@if(isset($series) && count($series) > 0)
-			<div>
+			<div id="series" class="scroll-mt-6">
 				<div class="flex items-baseline gap-3 mb-4">
 					<h2 class="text-2xl font-semibold text-foreground">Series</h2>
 					<a href="{{ url('/series?filters[tag]=' . $slug) }}" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -176,7 +223,7 @@ Tags
 			@endif
 
 			<!-- No Content Message -->
-			@if((!isset($series) || count($series) == 0) && (!isset($events) || count($events) == 0) && (!isset($entities) || count($entities) == 0))
+			@if(count($series) == 0 && count($upcomingEvents) == 0 && count($pastEvents) == 0 && count($entities) == 0)
 			<div class="text-center py-12 bg-card rounded-lg border border-border">
 				<i class="bi bi-tag text-4xl text-muted-foreground/50 mb-3 block"></i>
 				<p class="text-muted-foreground">No content found for this tag.</p>
