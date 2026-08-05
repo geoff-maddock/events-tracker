@@ -1,6 +1,10 @@
 @php
     $thumbnail = $tag->grid_thumbnail ?? null;
-    $following = $signedIn ? ($user->getTagsFollowing()->contains($tag)) : false;
+    // Reuse the caller's pre-loaded followed-tags collection ($userTags) when
+    // available so this per-card partial doesn't re-run getTagsFollowing() once
+    // per tag (the /tags grid rendered it ~100 times — an N+1). Falls back to a
+    // fresh lookup for callers that don't pass $userTags. [EVENTREPO-XJ]
+    $following = $signedIn ? ($userTags ?? $user->getTagsFollowing())->contains($tag) : false;
 @endphp
 <div class="bg-card border border-border rounded-lg overflow-hidden hover:border-primary transition-colors group">
     <!-- Tag Image -->
