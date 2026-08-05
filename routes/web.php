@@ -243,6 +243,9 @@ Route::get('update', function () {
     EventUpdated::dispatch(new Event());
 });
 
+Route::get('scenes', [\App\Http\Controllers\ScenesController::class, 'index'])->name('scenes.index');
+Route::get('scenes/{slug}', [\App\Http\Controllers\ScenesController::class, 'show'])->name('scenes.show');
+
 Route::get('events/tonight', [\App\Http\Controllers\EventTimeWindowController::class, 'show'])->defaults('window', 'tonight')->name('events.tonight');
 Route::get('events/today', [\App\Http\Controllers\EventTimeWindowController::class, 'show'])->defaults('window', 'today')->name('events.today');
 Route::get('events/this-weekend', [\App\Http\Controllers\EventTimeWindowController::class, 'show'])->defaults('window', 'this-weekend')->name('events.thisWeekend');

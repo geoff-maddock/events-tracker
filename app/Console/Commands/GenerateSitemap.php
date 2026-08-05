@@ -144,6 +144,14 @@ class GenerateSitemap extends Command
         foreach (self::PAGES as $page) {
             yield Url::create($this->baseUrl.$page);
         }
+
+        // Scene hub pages are config-driven (config/scenes.php) rather than
+        // a database table, so loop the config keys instead of hardcoding
+        // slugs here — keeps this in sync with ScenesController/routes.
+        yield Url::create($this->baseUrl.'/scenes');
+        foreach (array_keys(config('scenes', [])) as $sceneSlug) {
+            yield Url::create($this->baseUrl.'/scenes/'.$sceneSlug);
+        }
     }
 
     /**

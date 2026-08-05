@@ -491,6 +491,16 @@ class Entity extends Eloquent
     }
 
     /**
+     * Events linked to this entity as the venue (events.venue_id), as a real
+     * relation so it can be used with withCount/whereHas — unlike
+     * eventsAtVenue(), which executes immediately.
+     */
+    public function venueEvents(): HasMany
+    {
+        return $this->hasMany(Event::class, 'venue_id');
+    }
+
+    /**
      * Get a ranked list of entities that frequently perform with this entity
      * (other entities related to the same events).
      */

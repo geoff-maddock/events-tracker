@@ -78,6 +78,17 @@ class GenerateSitemapCommandTest extends TestCase
         $this->assertStringContainsString($base.'/events/this-week', $content);
     }
 
+    public function test_includes_the_scene_hub_pages(): void
+    {
+        $content = $this->generate();
+
+        $base = rtrim(config('app.url'), '/');
+        $this->assertStringContainsString($base.'/scenes', $content);
+        foreach (array_keys(config('scenes')) as $slug) {
+            $this->assertStringContainsString($base.'/scenes/'.$slug, $content);
+        }
+    }
+
     public function test_includes_public_content_and_excludes_non_public(): void
     {
         $public = Event::factory()->create([
