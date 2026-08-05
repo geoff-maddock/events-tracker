@@ -23,6 +23,8 @@ class AdminActivitySummary extends Mailable
     public array $counts;
     public array $userCounts;
 
+    public array $newsletterStats;
+
     /**
      * Create a new message instance.
      *
@@ -38,7 +40,8 @@ class AdminActivitySummary extends Mailable
         Carbon $endDate,
         array $summary,
         array $counts,
-        array $userCounts = []
+        array $userCounts = [],
+        array $newsletterStats = []
     ) {
         $this->url = $url;
         $this->site = $site;
@@ -49,6 +52,11 @@ class AdminActivitySummary extends Mailable
         $this->endDate = $endDate;
         $this->summary = $summary;
         $this->counts = $counts;
+        $this->newsletterStats = $newsletterStats ?: [
+            'total_confirmed' => 0,
+            'new_confirmed' => 0,
+            'unsubscribed' => 0,
+        ];
         $this->userCounts = $userCounts ?: [
             'logins' => [],
             'deletions' => [],

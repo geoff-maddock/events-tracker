@@ -268,6 +268,8 @@ Pittsburgh Events Calendar — Concerts, Shows & More
 <br>
 @include('events.index-sort-pagination')
 
+<x-newsletter-signup source="event-page" class="max-w-xl mt-8" />
+
 @stop
 
 @section('footer')

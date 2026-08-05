@@ -126,6 +126,8 @@
 					@endif
 				</div>
 			</div>
+
+			<x-newsletter-signup source="homepage" class="max-w-xl" />
 		</div>
 	</div>
 </div>

@@ -8,6 +8,7 @@ use App\Console\Commands\AutomateInstagramPosts;
 use App\Console\Commands\CleanupExports;
 use App\Console\Commands\CreateSeriesEvents;
 use App\Console\Commands\InitializeEventShares;
+use App\Console\Commands\NewsletterSendEssential;
 use App\Console\Commands\Notify;
 use App\Console\Commands\NotifyEntities;
 use App\Console\Commands\NotifyWeekly;
@@ -27,6 +28,7 @@ class Kernel extends ConsoleKernel
         Notify::class,
         AdminTest::class,
         AdminActivitySummary::class,
+        NewsletterSendEssential::class,
         NotifyEntities::class,
         NotifyWeekly::class,
         UserCleanup::class,
@@ -44,6 +46,9 @@ class Kernel extends ConsoleKernel
         // WEEKLY
         // schedule weekly update email of events each user is attending or interested in
         $schedule->command('notifyWeekly')->weekly()->mondays()->timezone('America/New_York')->at('5:00');
+
+        // schedule weekly essential events digest for public newsletter subscribers
+        $schedule->command('newsletter:send-essential')->weekly()->mondays()->timezone('America/New_York')->at('5:30');
 
         // schedule weekly admin activity summary (7 days)
         $schedule->command('admin:activity-summary 7')->weekly()->mondays()->timezone('America/New_York')->at('6:00');

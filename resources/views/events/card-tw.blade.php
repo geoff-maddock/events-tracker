@@ -194,6 +194,17 @@
             </a>
             @endif
 
+            <!-- Essential Digest Toggle (admin only) -->
+            @if ($signedIn && $user->hasGroup('admin'))
+            <a href="{!! route('events.toggleEssential', ['id' => $event->id]) !!}"
+                data-target="#event-card-{{ $event->id }}"
+                class="ajax-action p-2 rounded transition-colors {{ $event->is_essential ? 'text-primary' : 'text-muted-foreground hover:text-primary' }}"
+                title="{{ $event->is_essential ? 'Remove from Essential Events digest' : 'Add to Essential Events digest' }}"
+                aria-label="{{ $event->is_essential ? 'Remove' : 'Add' }} {{ $event->name }} {{ $event->is_essential ? 'from' : 'to' }} Essential Events digest">
+                <i class="bi {{ $event->is_essential ? 'bi-lightning-charge-fill' : 'bi-lightning-charge' }}" aria-hidden="true"></i>
+            </a>
+            @endif
+
             <!-- Thread Link -->
             @if ($thread = $event->threads->first())
             <a href="{{ route('threads.show', ['thread' => $thread->id]) }}"

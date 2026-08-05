@@ -19,6 +19,16 @@ This is your activity summary for **{{ $site }}** covering the past **{{ $days }
 | **Total Activities** | **{{ array_sum($counts) }}** |
 @endcomponent
 
+## Newsletter
+
+@component('mail::table')
+| Category | Count |
+|:---------|------:|
+| Confirmed Subscribers | {{ $newsletterStats['total_confirmed'] ?? 0 }} |
+| New Confirmations (period) | {{ $newsletterStats['new_confirmed'] ?? 0 }} |
+| Unsubscribes (period) | {{ $newsletterStats['unsubscribed'] ?? 0 }} |
+@endcomponent
+
 ---
 
 @if (count($summary['logins']) > 0)

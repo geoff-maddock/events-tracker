@@ -66,6 +66,18 @@ Route::get('tos', [\App\Http\Controllers\PagesController::class, 'tos']);
 Route::get('radar', [\App\Http\Controllers\PagesController::class, 'radar'])->middleware('auth')->name('radar');
 Route::get('popular', [\App\Http\Controllers\PagesController::class, 'popular'])->name('pages.popular');
 
+// Public newsletter subscription - Essential Events digest, no account required (issue #1978)
+Route::post('newsletter/subscribe', [\App\Http\Controllers\NewsletterSubscribersController::class, 'subscribe'])
+    ->middleware('throttle:6,1')
+    ->name('newsletter.subscribe');
+Route::get('newsletter/confirm/{token}', [\App\Http\Controllers\NewsletterSubscribersController::class, 'confirm'])
+    ->middleware('throttle:12,1')
+    ->name('newsletter.confirm');
+// POST supports RFC 8058 one-click unsubscribe from mail clients
+Route::match(['get', 'post'], 'newsletter/unsubscribe/{token}', [\App\Http\Controllers\NewsletterSubscribersController::class, 'unsubscribe'])
+    ->middleware('throttle:12,1')
+    ->name('newsletter.unsubscribe');
+
 // Post-signup "Getting To Know You" onboarding (issue #901)
 Route::middleware('auth')->group(function () {
     Route::get('onboarding/data', [\App\Http\Controllers\OnboardingController::class, 'data'])->name('onboarding.data');
@@ -351,6 +363,12 @@ Route::get('events/{id}/unattend', [
     'as' => 'events.unattend',
     'uses' => '\App\Http\Controllers\EventsController@unattend',
 ]);
+
+// One-click admin curation flag for the Essential Events digest (issue #1978)
+Route::get('events/{id}/toggle-essential', [
+    'as' => 'events.toggleEssential',
+    'uses' => 'EventsController@toggleEssential',
+])->middleware(['auth', 'can:admin']);
 
 Route::post('events/{id}/photos', [\App\Http\Controllers\EventsController::class, 'addPhoto']);
 Route::delete('events/{id}/photos/{photo_id}', [\App\Http\Controllers\EventsController::class, 'deletePhoto']);
