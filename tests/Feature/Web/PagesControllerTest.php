@@ -3,6 +3,7 @@
 namespace Tests\Feature\Web;
 
 use App\Models\Event;
+use App\Models\Photo;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserStatus;
@@ -63,6 +64,8 @@ class PagesControllerTest extends TestCase
         // visible event (plus photos) for each of the top 24 tags — 13k+ events
         // in prod — blowing php-fpm's memory_limit. The view only renders each
         // tag's single latest event, so only that one should be hydrated.
+        // The thumbnail query only considers events with a primary photo, so
+        // each event gets one attached.
         $tag = Tag::factory()->create();
 
         $older = Event::factory()->create([
@@ -78,6 +81,15 @@ class PagesControllerTest extends TestCase
             'start_at' => now()->subDay(),
         ]);
         $tag->events()->attach([$older->id, $middle->id, $latest->id]);
+
+        foreach ([$older, $middle, $latest] as $event) {
+            $photo = Photo::factory()->create([
+                'is_primary' => 1,
+                'path' => 'test.jpg',
+                'thumbnail' => 'test_thumb.jpg',
+            ]);
+            $event->photos()->attach($photo->id);
+        }
 
         $response = $this->get('/popular')->assertOk();
 
