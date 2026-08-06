@@ -247,6 +247,8 @@ Route::get('events/tonight', [\App\Http\Controllers\EventTimeWindowController::c
 Route::get('events/today', [\App\Http\Controllers\EventTimeWindowController::class, 'show'])->defaults('window', 'today')->name('events.today');
 Route::get('events/this-weekend', [\App\Http\Controllers\EventTimeWindowController::class, 'show'])->defaults('window', 'this-weekend')->name('events.thisWeekend');
 Route::get('events/this-week', [\App\Http\Controllers\EventTimeWindowController::class, 'show'])->defaults('window', 'this-week')->name('events.thisWeek');
+Route::get('events/graph', [\App\Http\Controllers\EventGraphController::class, 'graph'])->name('events.graph')->middleware(['auth', 'can:admin']);
+Route::get('events/graph/export', [\App\Http\Controllers\EventGraphController::class, 'exportGraph'])->name('events.graph.export')->middleware(['auth', 'can:admin']);
 Route::match(['get', 'post'], 'events/grid', [\App\Http\Controllers\EventsController::class, 'indexGrid'])->name('events.grid');
 Route::get('events/grid/tag/{slug}', [\App\Http\Controllers\EventsController::class, 'indexGridTags'])->name('events.grid.tag');
 Route::get('events/grid/by-date/{year}/{month?}/{day?}', [\App\Http\Controllers\EventsController::class, 'indexGridByDate'])->name('events.grid.byDate')
