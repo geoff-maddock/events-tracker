@@ -78,4 +78,36 @@ class SearchTest extends TestCase
         $this->assertNotFalse($relevancePos);
         $this->assertLessThan($relevancePos, $datePos);
     }
+
+    /** @test
+     * Search-page tag cards must render the real thumbnail image, not the
+     * placeholder icon. Regression for #2037 (SearchService dropped
+     * withGridThumbnail()).
+     */
+    public function search_tag_results_render_grid_thumbnails()
+    {
+        $this->signIn();
+        $keyword = 'thumbtagfest';
+
+        $tag = \App\Models\Tag::factory()->create(['name' => $keyword]);
+        $event = \App\Models\Event::factory()->create([
+            'name' => 'Unrelated Carrier Event',
+            'start_at' => now()->addDays(3),
+            'end_at' => now()->addDays(3)->addHour(),
+            'visibility_id' => \App\Models\Visibility::VISIBILITY_PUBLIC,
+        ]);
+        $event->tags()->attach($tag);
+        $photo = \App\Models\Photo::factory()->create([
+            'is_primary' => 1,
+            'thumbnail' => 'photos/thumbtagfest-thumb.jpg',
+        ]);
+        $event->photos()->attach($photo);
+
+        $response = $this->get('/search?keyword=' . $keyword);
+
+        $response->assertStatus(200);
+        // alt is the tag name, which distinguishes the tag card's img from the
+        // event card that also carries this photo.
+        $response->assertSee('alt="' . $keyword . '"', false);
+    }
 }

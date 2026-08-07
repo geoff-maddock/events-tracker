@@ -262,7 +262,7 @@
 			</button>
 		</div>
 		<div id="search-tags" class="p-4">
-			<div class="flex flex-wrap gap-2">
+			<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
 				@foreach($tags as $tag)
 					@include('tags.grid-card-tw')
 				@endforeach
