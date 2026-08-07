@@ -113,7 +113,7 @@
 
 		<!-- Embeds (lazy-loaded) -->
 		<div id="card-entity-minimal-playlist">
-		@include('embeds.minimal-playlist', ['entity' => $entity])
+		@include('embeds.minimal-playlist', ['entity' => $entity, 'event' => null, 'series' => null])
 		</div>
 
 		<!-- Action Icons Footer -->

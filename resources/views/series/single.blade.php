@@ -127,5 +127,5 @@
         @endunless
     </P>
 
-	@include('embeds.minimal-playlist', ['series' => $series])
+	@include('embeds.minimal-playlist', ['series' => $series, 'event' => null, 'entity' => null])
 </li>

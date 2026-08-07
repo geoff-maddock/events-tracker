@@ -166,5 +166,5 @@
 	</div>
 
 	@php unset($series) @endphp
-	@include('embeds.minimal-playlist', ['event' => $event])
+	@include('embeds.minimal-playlist', ['event' => $event, 'entity' => null, 'series' => null])
 </li>

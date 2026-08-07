@@ -178,7 +178,7 @@
 
     <!-- Embeds (lazy-loaded) -->
     <div id="card-event-minimal-playlist">
-        @include('embeds.minimal-playlist', ['event' => $event, 'entity' => null])
+        @include('embeds.minimal-playlist', ['event' => $event, 'entity' => null, 'series' => null])
     </div>
 
     <!-- Card Footer Actions -->

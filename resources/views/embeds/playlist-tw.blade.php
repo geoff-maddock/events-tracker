@@ -17,7 +17,11 @@
 
 @else
 
-    @if (isset($event))
+    {{-- Exactly one subject renders. The branches are @elseif rather than three
+         independent @ifs because @include inherits the caller's scope, so a stray
+         $event/$entity left over from a surrounding @foreach must not add a second
+         placeholder alongside the one the caller actually asked for. --}}
+    @if (isset($event) && is_object($event))
         @php
             // Estimate embed count from the event description URLs + related entity links.
             $expectedEmbedCount = 0;
@@ -41,7 +45,7 @@
             }
         @endphp
         @if ($expectedEmbedCount > 0)
-        <div id="playlist-{{ $event->id}}" class="playlist-id rounded-lg border bg-card shadow p-6" data-url="/events/{{ $event->id }}/load-embeds" data-slug="{{ $event->slug }}" data-resource-type="events" data-endpoint="embeds" style="min-height: {{ 80 + $expectedEmbedCount * 148 }}px;">
+        <div id="playlist-events-{{ $event->id}}" class="playlist-id rounded-lg border bg-card shadow p-6" data-url="/events/{{ $event->id }}/load-embeds" data-slug="{{ $event->slug }}" data-resource-type="events" data-endpoint="embeds" style="min-height: {{ 80 + $expectedEmbedCount * 148 }}px;">
             <div class="flex items-center gap-2 mb-4">
                 <i class="bi bi-music-note-beamed text-lg"></i>
                 <h2 class="text-xl font-semibold">Audio</h2>
@@ -54,8 +58,7 @@
             </div>
         </div>
         @endif
-    @endif
-    @if (isset($entity))
+    @elseif (isset($entity) && is_object($entity))
         @php
             // Estimate embed count to reserve space and avoid layout shift when the
             // deferred AJAX response replaces this placeholder. Medium-size iframes
@@ -71,7 +74,7 @@
             }
         @endphp
         @if ($expectedEmbedCount > 0)
-        <div id="playlist-{{ $entity->id}}" class="playlist-id rounded-lg border bg-card shadow p-6" data-url="/entities/{{ $entity->id }}/load-embeds" data-slug="{{ $entity->slug }}" data-resource-type="entities" data-endpoint="embeds" style="min-height: {{ 80 + $expectedEmbedCount * 148 }}px;">
+        <div id="playlist-entities-{{ $entity->id}}" class="playlist-id rounded-lg border bg-card shadow p-6" data-url="/entities/{{ $entity->id }}/load-embeds" data-slug="{{ $entity->slug }}" data-resource-type="entities" data-endpoint="embeds" style="min-height: {{ 80 + $expectedEmbedCount * 148 }}px;">
             <div class="flex items-center gap-2 mb-4">
                 <i class="bi bi-music-note-beamed text-lg"></i>
                 <h2 class="text-xl font-semibold">Audio</h2>
@@ -84,8 +87,7 @@
             </div>
         </div>
         @endif
-    @endif
-    @if (isset($series))
+    @elseif (isset($series) && is_object($series))
         @php
             $expectedEmbedCount = 0;
             $regex = "/\b(?:(?:https|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i";
@@ -108,7 +110,7 @@
             }
         @endphp
         @if ($expectedEmbedCount > 0)
-        <div id="playlist-{{ $series->id}}" class="playlist-id rounded-lg border bg-card shadow p-6" data-url="/series/{{ $series->id }}/load-embeds" data-slug="{{ $series->slug }}" data-resource-type="series" data-endpoint="embeds" style="min-height: {{ 80 + $expectedEmbedCount * 148 }}px;">
+        <div id="playlist-series-{{ $series->id}}" class="playlist-id rounded-lg border bg-card shadow p-6" data-url="/series/{{ $series->id }}/load-embeds" data-slug="{{ $series->slug }}" data-resource-type="series" data-endpoint="embeds" style="min-height: {{ 80 + $expectedEmbedCount * 148 }}px;">
             <div class="flex items-center gap-2 mb-4">
                 <i class="bi bi-music-note-beamed text-lg"></i>
                 <h2 class="text-xl font-semibold">Audio</h2>
