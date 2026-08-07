@@ -11,9 +11,11 @@ use App\Models\SurveyResponse;
 use App\Models\Visibility;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -35,7 +37,7 @@ class FeedbackAdminController extends Controller
      * Filters accepted by the response list.
      */
     protected const ALLOWED_FILTERS = [
-        'campaign', 'user', 'event', 'rating', 'visibility',
+        'campaign', 'user', 'event', 'rating', 'visibility', 'display_status',
         'submitted_after', 'submitted_before',
     ];
 
@@ -74,9 +76,39 @@ class FeedbackAdminController extends Controller
      */
     public function show(SurveyResponse $surveyResponse): View
     {
-        $surveyResponse->load(['campaign', 'user', 'subject', 'answers.question', 'visibility', 'invitation']);
+        $surveyResponse->load(['campaign', 'user', 'subject', 'answers.question', 'visibility', 'invitation', 'approver']);
 
-        return view('feedback.admin.show-tw')->with('response', $surveyResponse);
+        return view('feedback.admin.show-tw')
+            ->with('response', $surveyResponse)
+            ->with('visibilities', Visibility::orderBy('id')->get());
+    }
+
+    /**
+     * Set the two display gates on a response.
+     *
+     * Visibility is the submitter's consent and display_status the admin's
+     * moderation decision; an admin may override either, but both still have
+     * to agree before anything is shown (SurveyResponse::scopeDisplayable).
+     */
+    public function update(Request $request, SurveyResponse $surveyResponse): RedirectResponse
+    {
+        $validated = $request->validate([
+            'visibility_id' => ['required', 'integer', Rule::exists('visibilities', 'id')],
+            'display_status' => ['required', 'string', Rule::in(SurveyResponse::DISPLAY_STATUSES)],
+        ]);
+
+        $surveyResponse->visibility_id = (int) $validated['visibility_id'];
+        $surveyResponse->setDisplayStatus($validated['display_status'], $request->user());
+        $surveyResponse->save();
+
+        flash()->success('Success', sprintf(
+            'Feedback response %d is now %s and %s.',
+            $surveyResponse->id,
+            $surveyResponse->isPublic() ? 'public' : 'private',
+            $surveyResponse->display_status
+        ));
+
+        return redirect()->route('feedback.admin.show', $surveyResponse->id);
     }
 
     /**
@@ -145,7 +177,7 @@ class FeedbackAdminController extends Controller
             }
 
             fputcsv($output, array_merge(
-                ['Response ID', 'Campaign', 'User', 'Subject', 'Visibility', 'Submitted'],
+                ['Response ID', 'Campaign', 'User', 'Subject', 'Visibility', 'Display', 'Submitted'],
                 $questionKeys
             ));
 
@@ -171,6 +203,7 @@ class FeedbackAdminController extends Controller
                     $response->user?->name,
                     $response->subject->name ?? null,
                     $response->isPublic() ? 'public' : 'private',
+                    $response->display_status,
                     $response->submitted_at?->toDateTimeString(),
                 ], array_map(fn ($key) => $byKey[$key] ?? '', $questionKeys)));
             }

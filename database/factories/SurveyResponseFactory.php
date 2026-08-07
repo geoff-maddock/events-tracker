@@ -31,6 +31,9 @@ class SurveyResponseFactory extends Factory
             'subject_type' => 'event',
             'subject_id' => fn () => Event::factory()->create()->id,
             'visibility_id' => Visibility::VISIBILITY_PRIVATE,
+            'display_status' => SurveyResponse::DISPLAY_PENDING,
+            'approved_at' => null,
+            'approved_by' => null,
             'submitted_at' => now(),
         ];
     }
@@ -49,5 +52,26 @@ class SurveyResponseFactory extends Factory
     public function shared(): static
     {
         return $this->state(fn () => ['visibility_id' => Visibility::VISIBILITY_PUBLIC]);
+    }
+
+    /**
+     * An admin cleared this for display. Note this alone does not make the
+     * response displayable — pair with shared() for that.
+     */
+    public function approved(): static
+    {
+        return $this->state(fn () => [
+            'display_status' => SurveyResponse::DISPLAY_APPROVED,
+            'approved_at' => now(),
+            'approved_by' => fn () => User::factory()->create()->id,
+        ]);
+    }
+
+    /**
+     * An admin decided this should never be shown.
+     */
+    public function rejected(): static
+    {
+        return $this->state(fn () => ['display_status' => SurveyResponse::DISPLAY_REJECTED]);
     }
 }

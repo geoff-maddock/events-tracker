@@ -352,4 +352,179 @@ class FeedbackAdminTest extends TestCase
         $this->assertStringContainsString('Kept Event', $csv);
         $this->assertStringNotContainsString('Dropped Event', $csv);
     }
+
+    /** @test */
+    public function a_new_response_starts_pending_and_is_not_displayable(): void
+    {
+        $response = $this->makeResponse($this->makeUser(), $this->makeEvent());
+
+        $this->assertSame(SurveyResponse::DISPLAY_PENDING, $response->display_status);
+        $this->assertFalse($response->isDisplayable());
+        $this->assertSame(0, SurveyResponse::displayable()->count());
+    }
+
+    /** @test */
+    public function admin_can_approve_a_response_for_display(): void
+    {
+        $admin = $this->makeAdmin();
+        $response = $this->makeResponse($this->makeUser(), $this->makeEvent(), 5, [
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+        ]);
+
+        $this->actingAs($admin)
+            ->patch(route('feedback.admin.update', $response->id), [
+                'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+                'display_status' => SurveyResponse::DISPLAY_APPROVED,
+            ])
+            ->assertRedirect(route('feedback.admin.show', $response->id));
+
+        $response->refresh();
+
+        $this->assertTrue($response->isApproved());
+        $this->assertTrue($response->isDisplayable());
+        $this->assertSame($admin->id, $response->approved_by);
+        $this->assertNotNull($response->approved_at);
+        $this->assertSame(1, SurveyResponse::displayable()->count());
+    }
+
+    /** @test */
+    public function admin_can_flip_a_response_between_private_and_public(): void
+    {
+        $admin = $this->makeAdmin();
+        $response = $this->makeResponse($this->makeUser(), $this->makeEvent());
+
+        $this->assertFalse($response->isPublic());
+
+        $this->actingAs($admin)
+            ->patch(route('feedback.admin.update', $response->id), [
+                'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+                'display_status' => SurveyResponse::DISPLAY_PENDING,
+            ])->assertRedirect();
+
+        $this->assertTrue($response->fresh()->isPublic());
+
+        $this->actingAs($admin)
+            ->patch(route('feedback.admin.update', $response->id), [
+                'visibility_id' => Visibility::VISIBILITY_PRIVATE,
+                'display_status' => SurveyResponse::DISPLAY_PENDING,
+            ])->assertRedirect();
+
+        $this->assertFalse($response->fresh()->isPublic());
+    }
+
+    /** @test */
+    public function approval_alone_does_not_make_a_private_response_displayable(): void
+    {
+        $response = $this->makeResponse($this->makeUser(), $this->makeEvent());
+
+        $this->actingAs($this->makeAdmin())
+            ->patch(route('feedback.admin.update', $response->id), [
+                'visibility_id' => Visibility::VISIBILITY_PRIVATE,
+                'display_status' => SurveyResponse::DISPLAY_APPROVED,
+            ])->assertRedirect();
+
+        $response->refresh();
+
+        $this->assertTrue($response->isApproved());
+        $this->assertFalse($response->isDisplayable());
+        $this->assertTrue($response->isApprovedButNotShared());
+        $this->assertSame(0, SurveyResponse::displayable()->count());
+    }
+
+    /** @test */
+    public function a_public_response_is_not_displayable_until_approved(): void
+    {
+        SurveyResponse::factory()->shared()->create();
+
+        $this->assertSame(1, SurveyResponse::public()->count());
+        $this->assertSame(0, SurveyResponse::displayable()->count());
+    }
+
+    /** @test */
+    public function rejecting_a_response_clears_the_approval_audit_trail(): void
+    {
+        $admin = $this->makeAdmin();
+        $response = SurveyResponse::factory()->shared()->approved()->create();
+
+        $this->assertNotNull($response->approved_at);
+
+        $this->actingAs($admin)
+            ->patch(route('feedback.admin.update', $response->id), [
+                'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+                'display_status' => SurveyResponse::DISPLAY_REJECTED,
+            ])->assertRedirect();
+
+        $response->refresh();
+
+        $this->assertTrue($response->isRejected());
+        $this->assertFalse($response->isDisplayable());
+        $this->assertNull($response->approved_at);
+        $this->assertNull($response->approved_by);
+    }
+
+    /** @test */
+    public function an_invalid_display_status_is_rejected(): void
+    {
+        $this->withExceptionHandling();
+
+        $response = $this->makeResponse($this->makeUser(), $this->makeEvent());
+
+        $this->actingAs($this->makeAdmin())
+            ->patch(route('feedback.admin.update', $response->id), [
+                'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+                'display_status' => 'published',
+            ])
+            ->assertSessionHasErrors('display_status');
+
+        $this->assertSame(SurveyResponse::DISPLAY_PENDING, $response->fresh()->display_status);
+    }
+
+    /** @test */
+    public function moderating_a_response_is_admin_only(): void
+    {
+        $this->withExceptionHandling();
+
+        $response = $this->makeResponse($this->makeUser(), $this->makeEvent());
+
+        $payload = [
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+            'display_status' => SurveyResponse::DISPLAY_APPROVED,
+        ];
+
+        $this->actingAs($this->makeUser())
+            ->patch(route('feedback.admin.update', $response->id), $payload)
+            ->assertForbidden();
+
+        $this->assertSame(SurveyResponse::DISPLAY_PENDING, $response->fresh()->display_status);
+    }
+
+    /** @test */
+    public function a_guest_cannot_moderate_a_response(): void
+    {
+        $this->withExceptionHandling();
+
+        $response = $this->makeResponse($this->makeUser(), $this->makeEvent());
+
+        $this->patch(route('feedback.admin.update', $response->id), [
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+            'display_status' => SurveyResponse::DISPLAY_APPROVED,
+        ])->assertRedirect(route('login'));
+
+        $this->assertSame(SurveyResponse::DISPLAY_PENDING, $response->fresh()->display_status);
+    }
+
+    /** @test */
+    public function filtering_by_display_status_narrows_the_list(): void
+    {
+        $this->makeResponse($this->makeUser(), $this->makeEvent('Pending Event'));
+        $this->makeResponse($this->makeUser(), $this->makeEvent('Approved Event'), 5, [
+            'display_status' => SurveyResponse::DISPLAY_APPROVED,
+        ]);
+
+        $this->actingAs($this->makeAdmin())
+            ->get(route('feedback.admin.index', ['display_status' => SurveyResponse::DISPLAY_APPROVED]))
+            ->assertOk()
+            ->assertSee('Approved Event')
+            ->assertDontSee('Pending Event');
+    }
 }

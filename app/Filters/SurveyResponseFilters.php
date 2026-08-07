@@ -82,6 +82,18 @@ class SurveyResponseFilters extends QueryFilter
         return $this->builder->where('survey_responses.visibility_id', (int) $value);
     }
 
+    /**
+     * The admin moderation decision — pending, approved or rejected.
+     */
+    public function display_status(?string $value = null): Builder
+    {
+        if (! isset($value) || $value === '') {
+            return $this->builder;
+        }
+
+        return $this->builder->where('survey_responses.display_status', $value);
+    }
+
     public function submitted_after(?string $value = null): Builder
     {
         if (! isset($value) || $value === '') {

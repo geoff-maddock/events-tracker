@@ -83,6 +83,8 @@ Route::get('feedback/summary', [\App\Http\Controllers\FeedbackAdminController::c
     ->name('feedback.admin.summary')->middleware(['auth', 'can:admin']);
 Route::get('feedback/responses/{surveyResponse}', [\App\Http\Controllers\FeedbackAdminController::class, 'show'])
     ->name('feedback.admin.show')->middleware(['auth', 'can:admin']);
+Route::patch('feedback/responses/{surveyResponse}', [\App\Http\Controllers\FeedbackAdminController::class, 'update'])
+    ->name('feedback.admin.update')->middleware(['auth', 'can:admin']);
 
 // Proactive feedback interview (issue #1998).
 // Invitations bind by token, not id — the literal paths must be registered

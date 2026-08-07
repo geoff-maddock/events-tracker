@@ -186,6 +186,7 @@ class DataExportService
                     'subject_type' => $response->subject_type ?: null,
                     'subject_name' => $response->subject->name ?? null,
                     'visibility' => $response->isPublic() ? 'public' : 'private',
+                    'display_status' => $response->display_status,
                     'submitted_at' => $response->submitted_at,
                     'answers' => $response->answers->map(fn ($answer) => [
                         'question' => $answer->question ? $answer->question->prompt : null,

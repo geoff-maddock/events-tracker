@@ -58,6 +58,15 @@
             </select>
         </div>
         <div>
+            <label for="display_status" class="block text-sm text-muted-foreground mb-1">Display status</label>
+            <select id="display_status" name="display_status" class="form-select-tw">
+                <option value="">Any</option>
+                @foreach(\App\Models\SurveyResponse::DISPLAY_STATUSES as $status)
+                    <option value="{{ $status }}" {{ ($filters['display_status'] ?? '') === $status ? 'selected' : '' }}>{{ ucfirst($status) }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div>
             <label for="submitted_after" class="block text-sm text-muted-foreground mb-1">Submitted after</label>
             <input type="date" id="submitted_after" name="submitted_after" value="{{ $filters['submitted_after'] ?? '' }}" class="form-input-tw">
         </div>
@@ -86,6 +95,7 @@
                         <th class="py-2 pr-4">Subject</th>
                         <th class="py-2 pr-4">Rating</th>
                         <th class="py-2 pr-4">Visibility</th>
+                        <th class="py-2 pr-4">Display</th>
                         <th class="py-2"></th>
                     </tr>
                 </thead>
@@ -117,8 +127,13 @@
                                     {{ $response->isPublic() ? 'Public' : 'Private' }}
                                 </x-ui.badge>
                             </td>
+                            <td class="py-2 pr-4">
+                                <x-ui.badge :variant="$response->isApproved() ? 'default' : ($response->isRejected() ? 'destructive' : 'secondary')">
+                                    {{ ucfirst($response->display_status) }}
+                                </x-ui.badge>
+                            </td>
                             <td class="py-2 text-right">
-                                <a href="{{ route('feedback.admin.show', $response->id) }}" class="text-primary hover:underline">View</a>
+                                <a href="{{ route('feedback.admin.show', $response->id) }}" class="text-primary hover:underline">Moderate</a>
                             </td>
                         </tr>
                     @endforeach
