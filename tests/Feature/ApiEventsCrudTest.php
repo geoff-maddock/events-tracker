@@ -114,6 +114,33 @@ class ApiEventsCrudTest extends TestCase
         $this->assertFalse((bool) $fresh->do_not_repost);
     }
 
+    public function test_update_coerces_explicit_null_boolean_fields_to_false(): void
+    {
+        $event = Event::factory()->create([
+            'created_by' => $this->user->id,
+            'slug' => 'zz-benefit-null-target-'.uniqid(),
+            'is_benefit' => 1,
+            'do_not_repost' => 1,
+        ]);
+
+        // PUT payload sends the boolean keys with an explicit null. Those
+        // columns are NOT NULL and carry no validation rule, so without
+        // coercion fill() would set null and trip an integrity constraint
+        // violation (EVENTREPO-XH).
+        $payload = $this->validPayload([
+            'slug' => $event->slug,
+            'is_benefit' => null,
+            'do_not_repost' => null,
+        ]);
+
+        $response = $this->putJson('/api/events/'.$event->slug, $payload);
+
+        $response->assertOk();
+        $fresh = $event->fresh();
+        $this->assertSame(0, (int) $fresh->is_benefit);
+        $this->assertFalse((bool) $fresh->do_not_repost);
+    }
+
     public function test_update_refuses_when_not_creator(): void
     {
         $other = User::factory()->create();

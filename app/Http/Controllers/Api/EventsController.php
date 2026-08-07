@@ -1080,11 +1080,19 @@ class EventsController extends Controller
 
         $nonNullableBooleans = $this->nonNullableBooleanEventFields();
         foreach ($this->optionalEventFields() as $field) {
+            $isNonNullableBoolean = in_array($field, $nonNullableBooleans, true);
+
             if (!array_key_exists($field, $input)) {
                 // Boolean fields are backed by NOT NULL columns, so an omitted
                 // field resets to false (0) rather than null to avoid an
                 // integrity constraint violation.
-                $input[$field] = in_array($field, $nonNullableBooleans, true) ? false : null;
+                $input[$field] = $isNonNullableBoolean ? false : null;
+            } elseif ($isNonNullableBoolean && null === $input[$field]) {
+                // These columns carry no validation rule, so a body that sends
+                // the key with an explicit null still reaches fill() as null and
+                // trips the same NOT NULL constraint. Coerce it to false too
+                // (EVENTREPO-XH).
+                $input[$field] = false;
             }
         }
 
