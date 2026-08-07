@@ -16,11 +16,15 @@ var App = (function () {
     // load embeded audio code with caching support
     var loadEmbeds = function () {
         $('body div.playlist-id').each(function (e) {
-            var url = $(this).attr('data-url');
-            var target = $(this).attr('id');
-            var slug = $(this).attr('data-slug');
-            var resourceType = $(this).attr('data-resource-type') || 'events';
-            var endpoint = $(this).attr('data-endpoint') || 'minimal-embeds';
+            // Hold onto the element itself rather than looking it back up by id:
+            // a page can carry more than one placeholder with the same id (e.g. an
+            // entity page whose event card and Audio section both key off the same
+            // record), and $('#id') would resolve every loader to the first match.
+            var $container = $(this);
+            var url = $container.attr('data-url');
+            var slug = $container.attr('data-slug');
+            var resourceType = $container.attr('data-resource-type') || 'events';
+            var endpoint = $container.attr('data-endpoint') || 'minimal-embeds';
 
             // Use EmbedLoader with caching if available and slug is provided
             if (typeof EmbedLoader !== 'undefined' && slug) {
@@ -28,13 +32,17 @@ var App = (function () {
                     endpoint: endpoint,
                     onSuccess: function (embeds) {
                         if (embeds && embeds.length > 0) {
-                            var html = embeds.map(function (embed) {
+                            // Cards render at most one player. The server caps this too,
+                            // but localStorage entries cached before that cap can still
+                            // hold several, so trim here as well.
+                            var list = endpoint === 'embeds' ? embeds : embeds.slice(0, 1);
+                            var html = list.map(function (embed) {
                                 return endpoint === 'embeds'
                                     ? '<div class="rounded-md overflow-hidden">' + embed + '</div>'
                                     : embed;
                             }).join('');
-                            $('#' + target).html(html);
-                            $('#' + target).removeClass('playlist-id hidden');
+                            $container.html(html);
+                            $container.removeClass('playlist-id hidden');
                         }
                     },
                     onError: function () {
@@ -48,8 +56,8 @@ var App = (function () {
                 }).done(function (data) {
                     // load results into the applicable position if data exists
                     if (data.Success && data.Success.trim() !== '') {
-                        $('#' + target).html(data.Success);
-                        $('#' + target).removeClass('playlist-id hidden');
+                        $container.html(data.Success);
+                        $container.removeClass('playlist-id hidden');
                     }
                 }).fail(function () {
                     console.log('No event embeds could be loaded')

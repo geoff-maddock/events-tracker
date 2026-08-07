@@ -185,7 +185,10 @@
 
 		<!-- Audio -->
 		@if ($entity->entityType && $entity->entityType->name !== 'Space')
-		@include('embeds.playlist-tw', ['entity' => $entity, 'embeds' => $embeds ?? []])
+		{{-- event/series are nulled explicitly: the Upcoming Events @foreach above leaves
+		     $event defined in this scope, and @include inherits it, so the partial would
+		     otherwise render the last card's full event playlist instead of the entity's. --}}
+		@include('embeds.playlist-tw', ['entity' => $entity, 'event' => null, 'series' => null, 'embeds' => $embeds ?? []])
 		@endif
 
 		<!-- Frequently Performs With / At -->

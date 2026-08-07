@@ -326,7 +326,7 @@
 		@include('partials.photo-gallery-tw', ['series' => $series, 'entity' => null, 'event' => null, 'lightboxGroup' => 'series-gallery'])
 
 		<!-- Audio Section -->
-		@include('embeds.playlist', ['series' => $series])
+		@include('embeds.playlist', ['series' => $series, 'event' => null, 'entity' => null])
 	</div>
 </div>
 
