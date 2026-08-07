@@ -129,10 +129,19 @@ class FeedbackController extends Controller
         $this->logActivity($invitation, $user);
 
         if ($request->expectsJson()) {
+            // Hand back the next invitation inline so "save & next" doesn't
+            // need a second round trip. Null means the queue is now empty.
+            $next = $this->prompts->pendingFor($user->fresh());
+
+            if ($next) {
+                $next->markShown();
+            }
+
             return response()->json([
                 'success' => true,
                 'response_id' => $response->id,
                 'message' => "Thanks — that's genuinely useful.",
+                'next' => $next ? $this->prompts->payload($next) : null,
             ]);
         }
 

@@ -338,6 +338,111 @@ class FeedbackPromptTest extends TestCase
         $this->assertSame(1, SurveyResponse::public()->count());
     }
 
+    // ---------------------------------------------------------------- queue
+
+    /** @test */
+    public function the_payload_reports_how_many_invitations_are_queued(): void
+    {
+        $user = $this->makeUser();
+        $this->makeInvitation($user);
+        $this->makeInvitation($user);
+        $this->makeInvitation($user);
+
+        $this->actingAs($user)->getJson(route('feedback.prompt'))
+            ->assertOk()
+            ->assertJsonPath('queue.remaining', 3);
+    }
+
+    /** @test */
+    public function a_single_invitation_reports_a_queue_of_one(): void
+    {
+        $user = $this->makeUser();
+        $this->makeInvitation($user);
+
+        $this->actingAs($user)->getJson(route('feedback.prompt'))
+            ->assertOk()
+            ->assertJsonPath('queue.remaining', 1);
+    }
+
+    /** @test */
+    public function submitting_hands_back_the_next_invitation_inline(): void
+    {
+        $user = $this->makeUser();
+        $first = $this->makeInvitation($user);
+        $second = $this->makeInvitation($user);
+
+        $response = $this->actingAs($user)->postJson(route('feedback.store', $first), [
+            'answers' => ['attended' => 'yes', 'overall_rating' => 4],
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('next.invitation.token', $second->token)
+            ->assertJsonPath('next.queue.remaining', 1);
+
+        // Handing it back counts as showing it.
+        $this->assertSame(SurveyInvitation::STATUS_SHOWN, $second->fresh()->status);
+    }
+
+    /** @test */
+    public function submitting_the_last_invitation_returns_a_null_next(): void
+    {
+        $user = $this->makeUser();
+        $only = $this->makeInvitation($user);
+
+        $this->actingAs($user)->postJson(route('feedback.store', $only), [
+            'answers' => ['attended' => 'yes', 'overall_rating' => 4],
+        ])->assertOk()->assertJsonPath('next', null);
+    }
+
+    /** @test */
+    public function the_queue_can_be_worked_through_end_to_end(): void
+    {
+        $user = $this->makeUser();
+        $this->makeInvitation($user);
+        $this->makeInvitation($user);
+        $this->makeInvitation($user);
+
+        $payload = $this->actingAs($user)->getJson(route('feedback.prompt'))->json();
+
+        $this->assertSame(3, $payload['queue']['remaining']);
+
+        $seen = 0;
+
+        while ($payload !== null && ($payload['invitation'] ?? null) !== null) {
+            $seen++;
+
+            $body = $this->actingAs($user)
+                ->postJson('/feedback/'.$payload['invitation']['token'], [
+                    'answers' => ['attended' => 'yes', 'overall_rating' => 5],
+                ])
+                ->assertOk()
+                ->json();
+
+            $payload = $body['next'];
+        }
+
+        $this->assertSame(3, $seen, 'All three should be answerable in one sitting.');
+        $this->assertSame(3, SurveyResponse::where('user_id', $user->id)->count());
+        $this->assertSame(0, SurveyInvitation::where('user_id', $user->id)->actionable()->count());
+    }
+
+    /** @test */
+    public function the_queue_does_not_leak_another_users_invitations(): void
+    {
+        $user = $this->makeUser();
+        $other = $this->makeUser();
+
+        $mine = $this->makeInvitation($user);
+        $this->makeInvitation($other);
+        $this->makeInvitation($other);
+
+        $this->actingAs($user)->getJson(route('feedback.prompt'))
+            ->assertOk()
+            ->assertJsonPath('queue.remaining', 1)
+            ->assertJsonPath('invitation.token', $mine->token);
+    }
+
     // --------------------------------------------------------- no-show branch
 
     /** @test */

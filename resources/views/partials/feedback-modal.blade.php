@@ -31,7 +31,13 @@
         <!-- Header -->
         <div class="flex items-center justify-between p-4 border-b border-border">
             <div class="min-w-0">
-                <h2 id="feedback-title" class="text-lg font-semibold text-foreground" x-text="campaign.name || 'How was it?'"></h2>
+                <div class="flex items-center gap-2">
+                    <h2 id="feedback-title" class="text-lg font-semibold text-foreground" x-text="campaign.name || 'How was it?'"></h2>
+                    {{-- Only worth showing when there's actually a queue. --}}
+                    <span x-show="total > 1" x-cloak
+                          class="shrink-0 px-2 py-0.5 rounded-full text-xs font-semibold bg-background text-muted-foreground tabular-nums"
+                          x-text="index + ' of ' + total"></span>
+                </div>
                 <template x-if="subject && subject.name">
                     <p class="text-sm text-muted-foreground truncate">
                         <span x-text="subject.name"></span>
@@ -150,7 +156,7 @@
             </div>
             <button type="button" @click="submit()" :disabled="saving || !canSubmit"
                     class="px-4 py-2 text-sm rounded-md bg-primary text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
-                <span x-show="!saving">Send feedback</span>
+                <span x-show="!saving" x-text="index < total ? 'Send & next' : 'Send feedback'"></span>
                 <span x-show="saving">Sending&hellip;</span>
             </button>
         </div>
@@ -173,6 +179,10 @@
             generalError: '',
             isPublic: false,
             visibilityPrompt: 'Share my feedback publicly',
+            // Queue position. `total` is fixed on first load so the counter
+            // reads 1 of 3, 2 of 3, 3 of 3 rather than counting itself down.
+            index: 1,
+            total: 1,
 
             csrf() {
                 return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -209,11 +219,25 @@
                     });
             },
 
-            apply(data) {
+            apply(data, advancing = false) {
                 if (!data || !data.invitation) {
                     this.open = false;
                     return;
                 }
+
+                if (advancing) {
+                    this.index++;
+                } else {
+                    this.index = 1;
+                    this.total = (data.queue && data.queue.remaining) || 1;
+                }
+
+                // Fresh question state for each invitation in the queue.
+                this.answers = {};
+                this.errors = {};
+                this.generalError = '';
+                this.isPublic = false;
+
                 this.token = data.invitation.token;
                 this.campaign = data.campaign || {};
                 this.subject = data.subject || null;
@@ -271,9 +295,16 @@
                 this.post('/feedback/' + this.token, { answers: this.answers, public: this.isPublic })
                     .then(r => {
                         if (r.ok) {
-                            this.open = false;
-                            if (this.standalone) window.location = '/';
-                            return;
+                            return r.json().then(body => {
+                                // The server hands back the next invitation
+                                // inline, so advancing costs no extra request.
+                                if (body && body.next) {
+                                    this.apply(body.next, true);
+                                    return;
+                                }
+                                this.open = false;
+                                if (this.standalone) window.location = '/';
+                            });
                         }
                         return r.json().then(body => {
                             // Laravel returns answers.<key> keys; strip the prefix

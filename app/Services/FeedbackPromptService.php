@@ -174,6 +174,19 @@ class FeedbackPromptService
     }
 
     /**
+     * How many invitations this user still has open, including the one they're
+     * being shown. Drives the "1 of 3" counter in the modal.
+     */
+    public function queueCountFor(User $user): int
+    {
+        if (! $this->isEnabledFor($user)) {
+            return 0;
+        }
+
+        return $this->resolveQuery($user)->count();
+    }
+
+    /**
      * Build the JSON payload the modal renders.
      *
      * @return array<string, mixed>
@@ -197,6 +210,13 @@ class FeedbackPromptService
             'visibility' => [
                 'prompt' => $this->visibilityPrompt($invitation),
                 'default' => false,
+            ],
+            'queue' => [
+                // Includes the invitation being shown, so 3 means "this one
+                // plus two more". The modal turns it into "1 of 3".
+                'remaining' => $invitation->user
+                    ? $this->queueCountFor($invitation->user)
+                    : 1,
             ],
         ];
     }
