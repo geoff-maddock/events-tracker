@@ -56,6 +56,8 @@ class TwPageRenderSmokeTest extends TestCase
             'activity index'  => ['/activity'],
             'threads index'   => ['/threads'],
             'users index'     => ['/users'],
+            'feedback responses' => ['/feedback/responses'],
+            'feedback summary'   => ['/feedback/summary'],
         ];
     }
 

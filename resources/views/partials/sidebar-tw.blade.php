@@ -149,6 +149,10 @@
             <i class="bi bi-grid-3x3-gap text-lg"></i>
             <span>All Modules</span>
         </a>
+        <a href="{{ route('feedback.admin.index') }}" class="nav-item-tw mt-1 {{ Request::is('feedback/responses*') || Request::is('feedback/summary') ? 'nav-item-active-tw' : '' }}">
+            <i class="bi bi-chat-square-quote text-lg"></i>
+            <span>Feedback</span>
+        </a>
         @endcan
         <form action="{{ route('logout') }}" method="POST" class="w-full">
             @csrf
@@ -317,6 +321,10 @@
         <a href="{{ route('pages.allModules') }}" class="nav-item-tw mt-1 {{ Request::is('all-modules') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-grid-3x3-gap text-lg"></i>
             <span>All Modules</span>
+        </a>
+        <a href="{{ route('feedback.admin.index') }}" class="nav-item-tw mt-1 {{ Request::is('feedback/responses*') || Request::is('feedback/summary') ? 'nav-item-active-tw' : '' }}">
+            <i class="bi bi-chat-square-quote text-lg"></i>
+            <span>Feedback</span>
         </a>
         @endcan
         @endif

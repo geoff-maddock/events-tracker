@@ -242,6 +242,10 @@
                                     <i class="bi {{ $user->profile->setting_notify_threads_by_follow ? 'bi-check-circle text-green-500' : 'bi-x-circle text-muted-foreground' }}"></i>
                                     <span class="text-muted-foreground">Notify Discussions by Follow</span>
                                 </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="bi {{ $user->profile->setting_feedback_requests ? 'bi-check-circle text-green-500' : 'bi-x-circle text-muted-foreground' }}"></i>
+                                    <span class="text-muted-foreground">Receive Feedback Requests</span>
+                                </div>
                             @endif
                             <div class="flex items-center gap-2">
                                 <i class="bi {{ $user->profile->setting_public_profile ? 'bi-check-circle text-green-500' : 'bi-x-circle text-muted-foreground' }}"></i>

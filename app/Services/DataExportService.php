@@ -171,8 +171,30 @@ class DataExportService
                 'setting_forum_update' => $user->profile->setting_forum_update,
                 'setting_notify_threads_by_follow' => $user->profile->setting_notify_threads_by_follow,
                 'setting_public_profile' => $user->profile->setting_public_profile,
+                'setting_feedback_requests' => $user->profile->setting_feedback_requests,
             ] : null,
         ];
+
+        // Feedback survey responses the user has submitted (issue #1998).
+        // Private by default, so they must be covered by the personal export.
+        $surveyResponses = $user->surveyResponses()
+            ->with(['campaign', 'answers.question', 'subject'])
+            ->get()
+            ->map(function (\App\Models\SurveyResponse $response) {
+                return [
+                    'campaign' => $response->campaign ? $response->campaign->name : null,
+                    'subject_type' => $response->subject_type ?: null,
+                    'subject_name' => $response->subject->name ?? null,
+                    'visibility' => $response->isPublic() ? 'public' : 'private',
+                    'display_status' => $response->display_status,
+                    'submitted_at' => $response->submitted_at,
+                    'answers' => $response->answers->map(fn ($answer) => [
+                        'question' => $answer->question ? $answer->question->prompt : null,
+                        'question_key' => $answer->question ? $answer->question->key : null,
+                        'value' => $answer->displayValue(),
+                    ])->values()->all(),
+                ];
+            });
         
         // Photos associated with user (metadata only, images not included to keep file size manageable)
         $photos = $user->photos()->get();
@@ -196,6 +218,7 @@ class DataExportService
             'blogs' => $blogs,
             'follows' => $follows,
             'event_responses' => $eventResponses,
+            'survey_responses' => $surveyResponses,
             'profile' => $profile,
             'photos' => $photosData,
             'constants' => $constants,

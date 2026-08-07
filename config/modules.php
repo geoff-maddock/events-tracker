@@ -55,6 +55,7 @@ return [
         ['name' => 'Categories', 'url' => '/categories', 'icon' => 'bi-folder', 'description' => 'Manage forum categories'],
         ['name' => 'Entity Types', 'url' => '/entity-types', 'icon' => 'bi-diagram-3', 'description' => 'Manage entity types'],
         ['name' => 'Event Graph', 'url' => '/events/graph', 'icon' => 'bi-bar-chart-line', 'description' => 'Visualize and export event trends by type, tag, venue and more'],
+        ['name' => 'Feedback', 'url' => '/feedback/responses', 'icon' => 'bi-chat-square-quote', 'description' => 'Survey campaign responses and summaries'],
         ['name' => 'Forums', 'url' => '/forums', 'icon' => 'bi-chat-square-text', 'description' => 'Manage forum sections'],
         ['name' => 'Groups', 'url' => '/groups', 'icon' => 'bi-people-fill', 'description' => 'Manage user groups'],
         ['name' => 'Menus', 'url' => '/menus', 'icon' => 'bi-menu-button-wide', 'description' => 'Manage navigation menus'],

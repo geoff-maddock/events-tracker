@@ -119,6 +119,46 @@ class UserEditUpdateTest extends TestCase
     }
 
     /** @test */
+    public function unchecking_the_feedback_setting_persists_the_opt_out(): void
+    {
+        // Unchecked checkboxes are simply absent from the POST body, so the
+        // controller has to coerce them to 0 — without that, opting out of
+        // feedback requests silently never saves (issue #1998).
+        $this->withExceptionHandling();
+
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $user->profile()->create(['setting_feedback_requests' => 1]);
+
+        $this->actingAs($user)
+            ->patch(route('users.update', $user->id), [
+                'name' => $user->name,
+                'email' => $user->email,
+            ])
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame(0, (int) $user->fresh()->profile->setting_feedback_requests);
+    }
+
+    /** @test */
+    public function checking_the_feedback_setting_persists_the_opt_in(): void
+    {
+        $this->withExceptionHandling();
+
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $user->profile()->create(['setting_feedback_requests' => 0]);
+
+        $this->actingAs($user)
+            ->patch(route('users.update', $user->id), [
+                'name' => $user->name,
+                'email' => $user->email,
+                'setting_feedback_requests' => 1,
+            ])
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame(1, (int) $user->fresh()->profile->setting_feedback_requests);
+    }
+
+    /** @test */
     public function regular_user_cannot_view_edit_form_for_another_user(): void
     {
         $this->withExceptionHandling();
