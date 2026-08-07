@@ -73,6 +73,30 @@ Route::middleware('auth')->group(function () {
     Route::post('onboarding/dismiss', [\App\Http\Controllers\OnboardingController::class, 'dismiss'])->name('onboarding.dismiss');
 });
 
+// Admin reporting over collected feedback (issue #1998).
+// Registered before the feedback/{invitation} wildcard below.
+Route::get('feedback/responses', [\App\Http\Controllers\FeedbackAdminController::class, 'index'])
+    ->name('feedback.admin.index')->middleware(['auth', 'can:admin']);
+Route::get('feedback/responses/export', [\App\Http\Controllers\FeedbackAdminController::class, 'export'])
+    ->name('feedback.admin.export')->middleware(['auth', 'can:admin']);
+Route::get('feedback/summary', [\App\Http\Controllers\FeedbackAdminController::class, 'summary'])
+    ->name('feedback.admin.summary')->middleware(['auth', 'can:admin']);
+Route::get('feedback/responses/{surveyResponse}', [\App\Http\Controllers\FeedbackAdminController::class, 'show'])
+    ->name('feedback.admin.show')->middleware(['auth', 'can:admin']);
+
+// Proactive feedback interview (issue #1998).
+// Invitations bind by token, not id — the literal paths must be registered
+// before feedback/{invitation} so they aren't swallowed by the wildcard.
+Route::middleware('auth')->group(function () {
+    Route::get('feedback/prompt', [\App\Http\Controllers\FeedbackController::class, 'prompt'])->name('feedback.prompt');
+    Route::post('feedback/opt-out', [\App\Http\Controllers\FeedbackController::class, 'optOut'])->name('feedback.optOut');
+    Route::post('feedback/{invitation}/shown', [\App\Http\Controllers\FeedbackController::class, 'shown'])->name('feedback.shown');
+    Route::post('feedback/{invitation}/snooze', [\App\Http\Controllers\FeedbackController::class, 'snooze'])->name('feedback.snooze');
+    Route::post('feedback/{invitation}/dismiss', [\App\Http\Controllers\FeedbackController::class, 'dismiss'])->name('feedback.dismiss');
+    Route::post('feedback/{invitation}', [\App\Http\Controllers\FeedbackController::class, 'store'])->name('feedback.store');
+    Route::get('feedback/{invitation}', [\App\Http\Controllers\FeedbackController::class, 'show'])->name('feedback.show');
+});
+
 Route::get('help', [\App\Http\Controllers\PagesController::class, 'help']);
 Route::get('all-modules', [\App\Http\Controllers\PagesController::class, 'allModules'])->name('pages.allModules');
 

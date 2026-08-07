@@ -35,7 +35,8 @@ class ProfileFactory extends Factory
             'location' => $this->faker->optional->city,
             'setting_weekly_update' => 1,
             'setting_daily_update' => 1,
-            'setting_instant_update' => 1
+            'setting_instant_update' => 1,
+            'setting_feedback_requests' => 1,
         ];
     }
 }

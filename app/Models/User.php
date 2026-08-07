@@ -282,7 +282,23 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     public function attendingEvents(): BelongsToMany
     {
         return $this->belongsToMany(Event::class, 'event_responses')
-            ->wherePivot('response_type_id', 1);
+            ->wherePivot('response_type_id', ResponseType::ATTENDING);
+    }
+
+    /**
+     * Feedback survey invitations addressed to this user (issue #1998).
+     */
+    public function surveyInvitations(): HasMany
+    {
+        return $this->hasMany(SurveyInvitation::class);
+    }
+
+    /**
+     * Feedback survey responses this user has submitted.
+     */
+    public function surveyResponses(): HasMany
+    {
+        return $this->hasMany(SurveyResponse::class);
     }
 
     /**

@@ -5,7 +5,9 @@ namespace App\Providers;
 use App\Models\Forum;
 use App\Models\Menu;
 use App\Models\Role;
+use App\Services\FeedbackPromptService;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
 class ViewComposerServiceProvider extends ServiceProvider
@@ -18,6 +20,7 @@ class ViewComposerServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->composeNavigation();
+        $this->composeFeedbackPrompt();
     }
 
     /**
@@ -27,6 +30,28 @@ class ViewComposerServiceProvider extends ServiceProvider
      */
     public function register()
     {
+    }
+
+    /**
+     * Share the pending feedback prompt, if any, with the main layout.
+     *
+     * Scoped to the one layout rather than '*' on purpose: AppServiceProvider
+     * already registers a wildcard composer, and a second one would fire on
+     * every partial render. FeedbackPromptService short-circuits on the
+     * feature flag before touching the database.
+     */
+    private function composeFeedbackPrompt(): void
+    {
+        view()->composer('layouts.app-tw', function ($view) {
+            $service = app(FeedbackPromptService::class);
+            $user = Auth::user();
+
+            $invitation = $service->mayDisplayInRequest(request(), $user)
+                ? $service->pendingFor($user)
+                : null;
+
+            $view->with('feedbackPrompt', $invitation ? $service->payload($invitation) : null);
+        });
     }
 
     /**

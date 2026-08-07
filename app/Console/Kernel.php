@@ -7,6 +7,7 @@ use App\Console\Commands\AdminTest;
 use App\Console\Commands\AutomateInstagramPosts;
 use App\Console\Commands\CleanupExports;
 use App\Console\Commands\CreateSeriesEvents;
+use App\Console\Commands\GenerateFeedbackInvitations;
 use App\Console\Commands\InitializeEventShares;
 use App\Console\Commands\Notify;
 use App\Console\Commands\NotifyEntities;
@@ -34,6 +35,7 @@ class Kernel extends ConsoleKernel
         InitializeEventShares::class,
         CleanupExports::class,
         CreateSeriesEvents::class,
+        GenerateFeedbackInvitations::class,
     ];
 
     /**
@@ -61,6 +63,10 @@ class Kernel extends ConsoleKernel
 
         // schedule daily cleanup of old export files
         $schedule->command('cleanup:exports')->daily()->timezone('America/New_York')->at('03:00');
+
+        // generate proactive feedback invitations for recently finished events,
+        // and expire stale ones (issue #1998). No-ops unless FEEDBACK_ENABLED.
+        $schedule->command('feedback:generate')->daily()->timezone('America/New_York')->at('10:00');
 
         // schedule daily creation of next series events
         // DISABLED - need to reconsider if we want this

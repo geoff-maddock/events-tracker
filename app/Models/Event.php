@@ -518,7 +518,8 @@ class Event extends Model
      */
     public function attendees(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, "event_responses")->wherePivot("response_type_id", 1);
+        return $this->belongsToMany(User::class, "event_responses")
+            ->wherePivot("response_type_id", ResponseType::ATTENDING);
     }
 
 

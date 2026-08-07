@@ -89,6 +89,9 @@ class DatabaseSeeder extends Seeder
         $this->call(ThreadsTableSeeder::class);
         $this->command->info('Threads table seeded.');
 
+        $this->call(SurveyCampaignsTableSeeder::class);
+        $this->command->info('Survey campaigns table seeded.');
+
         // $this->call(ForumsTableSeeder::class);
         // $this->command->info('Forums table seeded.');
 

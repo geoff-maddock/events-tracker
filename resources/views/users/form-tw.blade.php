@@ -283,6 +283,21 @@
                 @endif
             </div>
         </div>
+
+        <div class="flex items-start gap-3">
+            <x-ui.checkbox
+                name="setting_feedback_requests"
+                id="setting_feedback_requests"
+                value="1"
+                :checked="old('setting_feedback_requests', isset($user->profile) ? $user->profile->setting_feedback_requests : false)"
+                :hasError="$errors->has('setting_feedback_requests')" />
+            <div class="flex-1">
+                <x-ui.label for="setting_feedback_requests">Ask me for feedback about events I attend</x-ui.label>
+                @if($errors->has('setting_feedback_requests'))
+                    <span class="text-xs text-destructive">{{ $errors->first('setting_feedback_requests') }}</span>
+                @endif
+            </div>
+        </div>
     </div>
 </div>
 

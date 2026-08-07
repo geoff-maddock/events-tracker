@@ -130,8 +130,11 @@
 	@include('flash')
 
 	@auth
+		{{-- Onboarding wins over the feedback prompt — never stack two modals. --}}
 		@if(auth()->user()->shouldSeeOnboarding() || session('show_onboarding'))
 			@include('partials.onboarding-modal')
+		@elseif(!empty($feedbackPrompt))
+			@include('partials.feedback-modal', ['payload' => $feedbackPrompt])
 		@endif
 	@endauth
 </body>
