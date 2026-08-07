@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Action;
 use App\Models\Activity;
+use App\Models\Event;
 use App\Models\Profile;
 use App\Models\SurveyAnswer;
 use App\Models\SurveyInvitation;
@@ -12,6 +13,7 @@ use App\Models\SurveyResponse;
 use App\Models\User;
 use App\Models\Visibility;
 use App\Services\FeedbackPromptService;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -62,7 +64,12 @@ class FeedbackController extends Controller
         $this->assertOwner($request, $invitation);
         $this->assertActionable($invitation);
 
-        $invitation->loadMissing(['campaign.questions', 'subject']);
+        $invitation->loadMissing([
+            'campaign.questions',
+            'subject' => fn (MorphTo $morphTo) => $morphTo->morphWith([
+                Event::class => ['venue', 'photos'],
+            ]),
+        ]);
         $invitation->markShown();
 
         return view('feedback.show-tw')

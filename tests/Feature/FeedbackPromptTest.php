@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Http\Middleware\VerifyCsrfToken;
+use App\Models\Entity;
 use App\Models\Event;
 use App\Models\Follow;
+use App\Models\Photo;
 use App\Models\SurveyCampaign;
 use App\Models\SurveyInvitation;
 use App\Models\SurveyResponse;
@@ -336,6 +338,62 @@ class FeedbackPromptTest extends TestCase
         $this->assertSame(Visibility::VISIBILITY_PUBLIC, $stored->visibility_id);
         $this->assertTrue($stored->isPublic());
         $this->assertSame(1, SurveyResponse::public()->count());
+    }
+
+    // ------------------------------------------------------- subject details
+
+    /** @test */
+    public function the_payload_carries_the_venue_and_flyer_thumbnail(): void
+    {
+        $user = $this->makeUser();
+
+        $venue = Entity::factory()->venue()->create(['name' => 'The Rock Room']);
+        $event = Event::factory()->create([
+            'name' => 'Test Show',
+            'venue_id' => $venue->id,
+            'start_at' => now()->subDays(2),
+            'end_at' => now()->subDays(2)->addHours(3),
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+        ]);
+
+        $photo = Photo::factory()->create(['is_primary' => 1]);
+        $event->photos()->attach($photo->id);
+
+        $invitation = $this->makeInvitation($user, [
+            'subject_type' => 'event',
+            'subject_id' => $event->id,
+        ]);
+
+        $payload = $this->actingAs($user)->getJson(route('feedback.prompt'))
+            ->assertOk()
+            ->assertJsonPath('subject.name', 'Test Show')
+            ->assertJsonPath('subject.venue', 'The Rock Room')
+            ->json();
+
+        $this->assertNotNull($payload['subject']['image'], 'The flyer thumbnail should be resolved.');
+        $this->assertNotNull($payload['subject']['venue_url']);
+        $this->assertNotNull($payload['subject']['date']);
+        $this->assertSame($invitation->token, $payload['invitation']['token']);
+    }
+
+    /** @test */
+    public function the_payload_tolerates_an_event_with_no_venue_or_flyer(): void
+    {
+        $user = $this->makeUser();
+        $this->makeInvitation($user, ['subject_id' => Event::factory()->create([
+            'name' => 'Bare Show',
+            'venue_id' => null,
+            'start_at' => now()->subDays(2),
+            'end_at' => now()->subDays(2)->addHours(3),
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+        ])->id]);
+
+        $this->actingAs($user)->getJson(route('feedback.prompt'))
+            ->assertOk()
+            ->assertJsonPath('subject.name', 'Bare Show')
+            ->assertJsonPath('subject.venue', null)
+            ->assertJsonPath('subject.venue_url', null)
+            ->assertJsonPath('subject.image', null);
     }
 
     // ---------------------------------------------------------------- queue

@@ -29,30 +29,57 @@
     <div class="bg-secondary rounded-lg shadow-2xl {{ $isStandalone ? 'w-full' : 'max-w-2xl w-full max-h-[90vh]' }} flex flex-col border border-border ring-1 ring-black/5"
          @click.stop>
         <!-- Header -->
-        <div class="flex items-center justify-between p-4 border-b border-border">
-            <div class="min-w-0">
-                <div class="flex items-center gap-2">
-                    <h2 id="feedback-title" class="text-lg font-semibold text-foreground" x-text="campaign.name || 'How was it?'"></h2>
+        <div class="p-4 border-b border-border">
+            <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-2 min-w-0">
+                    <h2 id="feedback-title" class="text-sm font-medium text-muted-foreground truncate"
+                        x-text="campaign.name || 'How was it?'"></h2>
                     {{-- Only worth showing when there's actually a queue. --}}
                     <span x-show="total > 1" x-cloak
                           class="shrink-0 px-2 py-0.5 rounded-full text-xs font-semibold bg-background text-muted-foreground tabular-nums"
                           x-text="index + ' of ' + total"></span>
                 </div>
-                <template x-if="subject && subject.name">
-                    <p class="text-sm text-muted-foreground truncate">
-                        <span x-text="subject.name"></span>
-                        <template x-if="subject.date">
-                            <span> &middot; <span x-text="subject.date"></span></span>
-                        </template>
-                    </p>
-                </template>
+                @unless($isStandalone)
+                    <button type="button" @click="dismiss()" title="Not now"
+                            class="shrink-0 p-1 -mt-1 rounded-md hover:bg-background text-muted-foreground hover:text-foreground transition-colors">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                @endunless
             </div>
-            @unless($isStandalone)
-                <button type="button" @click="dismiss()" title="Not now"
-                        class="p-1 rounded-md hover:bg-background text-muted-foreground hover:text-foreground transition-colors">
-                    <i class="bi bi-x-lg"></i>
-                </button>
-            @endunless
+
+            {{-- The event being reviewed: flyer thumbnail, prominent name,
+                 date and venue. This is what jogs the memory, so it leads. --}}
+            <template x-if="subject && subject.name">
+                <div class="flex items-start gap-3 mt-3">
+                    <template x-if="subject.image">
+                        <a :href="subject.url" target="_blank" rel="noopener" class="shrink-0">
+                            <img :src="subject.image" :alt="subject.name"
+                                 width="72" height="72" loading="lazy"
+                                 class="w-[4.5rem] h-[4.5rem] rounded-md object-cover border border-border">
+                        </a>
+                    </template>
+
+                    <div class="min-w-0">
+                        <a :href="subject.url" target="_blank" rel="noopener"
+                           class="block text-xl font-bold text-foreground leading-tight hover:text-primary transition-colors"
+                           x-text="subject.name"></a>
+
+                        <p class="mt-1 text-sm text-muted-foreground">
+                            <template x-if="subject.date">
+                                <span x-text="subject.date"></span>
+                            </template>
+                            <template x-if="subject.date && subject.venue">
+                                <span> &middot; </span>
+                            </template>
+                            <template x-if="subject.venue">
+                                <a :href="subject.venue_url" target="_blank" rel="noopener"
+                                   class="hover:text-foreground transition-colors"
+                                   x-text="subject.venue"></a>
+                            </template>
+                        </p>
+                    </div>
+                </div>
+            </template>
         </div>
 
         <!-- Body -->

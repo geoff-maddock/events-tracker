@@ -7,6 +7,7 @@ use App\Models\SurveyCampaign;
 use App\Models\SurveyInvitation;
 use App\Models\SurveyQuestion;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -68,7 +69,15 @@ class FeedbackPromptService
             return null;
         }
 
-        $invitation = SurveyInvitation::with(['campaign.questions', 'subject'])->find($invitationId);
+        // Preload what the payload reads off an Event subject. getPrimaryPhoto()
+        // is relation-load aware, so eager-loading photos here keeps the whole
+        // prompt to a fixed query count instead of adding two per page render.
+        $invitation = SurveyInvitation::with([
+            'campaign.questions',
+            'subject' => fn (MorphTo $morphTo) => $morphTo->morphWith([
+                Event::class => ['venue', 'photos'],
+            ]),
+        ])->find($invitationId);
 
         // Guard against a cache entry that outlived its row, and against an
         // invitation whose subject was hard-deleted (nothing soft-deletes here,
@@ -241,11 +250,20 @@ class FeedbackPromptService
             'name' => $subject->name ?? null,
             'url' => null,
             'date' => null,
+            'venue' => null,
+            'venue_url' => null,
+            'image' => null,
         ];
 
         if ($subject instanceof Event) {
             $payload['url'] = route('events.show', $subject->slug ?: $subject->getKey());
             $payload['date'] = $subject->start_at?->format('D M j, Y');
+            $payload['image'] = $subject->getPrimaryPhotoThumbnailPath();
+
+            if ($subject->venue) {
+                $payload['venue'] = $subject->venue->name;
+                $payload['venue_url'] = route('entities.show', $subject->venue->slug ?: $subject->venue->id);
+            }
         }
 
         return $payload;
