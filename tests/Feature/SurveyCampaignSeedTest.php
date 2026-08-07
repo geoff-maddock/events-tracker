@@ -48,15 +48,20 @@ class SurveyCampaignSeedTest extends TestCase
     }
 
     /** @test */
-    public function campaign_has_six_active_questions_in_sort_order(): void
+    public function campaign_has_the_expected_active_questions_in_sort_order(): void
     {
         $campaign = SurveyCampaign::bySlug(SurveyCampaign::POST_EVENT_ATTENDEE);
 
         $questions = $campaign->activeQuestions()->get();
 
-        $this->assertCount(6, $questions);
+        $this->assertCount(9, $questions);
         $this->assertSame(
-            ['overall_rating', 'liked_most', 'liked_least', 'want_more', 'return_likelihood', 'comments'],
+            [
+                'attended',
+                'not_attended_reason', 'not_attended_detail',
+                'overall_rating', 'liked_most', 'liked_least',
+                'want_more', 'return_likelihood', 'comments',
+            ],
             $questions->pluck('key')->all()
         );
 
@@ -67,17 +72,76 @@ class SurveyCampaignSeedTest extends TestCase
     }
 
     /** @test */
-    public function exactly_one_question_is_required_and_it_is_the_rating(): void
+    public function the_attendance_gate_is_first_unconditional_and_required(): void
     {
         $campaign = SurveyCampaign::bySlug(SurveyCampaign::POST_EVENT_ATTENDEE);
 
-        $required = $campaign->activeQuestions()->get()->where('is_required', true);
+        $gate = $campaign->activeQuestions()->get()->first();
 
-        $this->assertCount(1, $required);
-        $this->assertSame('overall_rating', $required->first()->key);
-        $this->assertSame(SurveyQuestion::TYPE_RATING, $required->first()->type);
-        $this->assertSame(1, $required->first()->min_value);
-        $this->assertSame(5, $required->first()->max_value);
+        $this->assertSame('attended', $gate->key);
+        $this->assertSame(SurveyQuestion::TYPE_SINGLE_CHOICE, $gate->type);
+        $this->assertTrue($gate->is_required);
+        $this->assertFalse($gate->isConditional(), 'The gate itself must never be conditional.');
+        $this->assertSame(['yes', 'no'], $gate->optionValues());
+    }
+
+    /** @test */
+    public function every_question_after_the_gate_belongs_to_exactly_one_branch(): void
+    {
+        $campaign = SurveyCampaign::bySlug(SurveyCampaign::POST_EVENT_ATTENDEE);
+
+        $branches = $campaign->activeQuestions()->get()
+            ->reject(fn (SurveyQuestion $q) => $q->key === 'attended')
+            ->groupBy('depends_on_value');
+
+        // Nothing may be left dangling without a branch, or the no-show path
+        // would be asked to rate an event they never saw.
+        $this->assertSame(['no', 'yes'], $branches->keys()->sort()->values()->all());
+        $this->assertCount(2, $branches['no']);
+        $this->assertCount(6, $branches['yes']);
+
+        foreach ($branches->flatten() as $question) {
+            $this->assertSame('attended', $question->depends_on_key);
+        }
+    }
+
+    /** @test */
+    public function the_rating_is_required_only_within_the_attended_branch(): void
+    {
+        $campaign = SurveyCampaign::bySlug(SurveyCampaign::POST_EVENT_ATTENDEE);
+
+        $rating = $campaign->activeQuestions()->get()->firstWhere('key', 'overall_rating');
+
+        $this->assertSame(SurveyQuestion::TYPE_RATING, $rating->type);
+        $this->assertTrue($rating->is_required);
+        $this->assertSame(1, $rating->min_value);
+        $this->assertSame(5, $rating->max_value);
+
+        $this->assertTrue($rating->appliesGiven(['attended' => 'yes']));
+        $this->assertFalse($rating->appliesGiven(['attended' => 'no']));
+        $this->assertFalse($rating->appliesGiven([]), 'An unanswered gate hides everything downstream.');
+    }
+
+    /** @test */
+    public function the_no_show_branch_asks_why(): void
+    {
+        $campaign = SurveyCampaign::bySlug(SurveyCampaign::POST_EVENT_ATTENDEE);
+        $questions = $campaign->activeQuestions()->get();
+
+        $reason = $questions->firstWhere('key', 'not_attended_reason');
+        $detail = $questions->firstWhere('key', 'not_attended_detail');
+
+        $this->assertNotNull($reason);
+        $this->assertNotNull($detail);
+
+        // Both optional — we ask why, we don't demand it.
+        $this->assertFalse($reason->is_required);
+        $this->assertFalse($detail->is_required);
+
+        $this->assertTrue($reason->appliesGiven(['attended' => 'no']));
+        $this->assertFalse($reason->appliesGiven(['attended' => 'yes']));
+        $this->assertContains('cost', $reason->optionValues());
+        $this->assertSame(SurveyQuestion::TYPE_TEXT, $detail->type);
     }
 
     /** @test */
@@ -145,7 +209,7 @@ class SurveyCampaignSeedTest extends TestCase
 
         $this->assertSame($originalId, $reseeded->id, 'Re-seeding must not replace the campaign row.');
         $this->assertSame(1, SurveyCampaign::where('slug', SurveyCampaign::POST_EVENT_ATTENDEE)->count());
-        $this->assertCount(6, $reseeded->questions);
+        $this->assertCount(9, $reseeded->questions);
         $this->assertSame(
             $originalQuestionIds,
             $reseeded->questions->pluck('id')->sort()->values()->all(),

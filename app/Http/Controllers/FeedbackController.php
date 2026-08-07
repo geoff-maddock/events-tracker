@@ -216,6 +216,13 @@ class FeedbackController extends Controller
                 continue;
             }
 
+            // Belt and braces: exclude_unless in the rules already strips
+            // answers whose branch wasn't taken, but never store one if it
+            // somehow survives.
+            if (! $question->appliesGiven($answers)) {
+                continue;
+            }
+
             $value = $answers[$question->key];
 
             if ($value === null || $value === '' || $value === []) {

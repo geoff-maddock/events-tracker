@@ -250,9 +250,13 @@ class FeedbackPromptTest extends TestCase
             ->assertJsonPath('campaign.slug', SurveyCampaign::POST_EVENT_ATTENDEE)
             ->assertJsonPath('subject.type', 'event')
             ->assertJsonPath('subject.name', 'Test Show')
-            ->assertJsonCount(6, 'questions')
-            ->assertJsonPath('questions.0.key', 'overall_rating')
+            ->assertJsonCount(9, 'questions')
+            ->assertJsonPath('questions.0.key', 'attended')
             ->assertJsonPath('questions.0.required', true)
+            ->assertJsonPath('questions.0.depends_on', null)
+            ->assertJsonPath('questions.3.key', 'overall_rating')
+            ->assertJsonPath('questions.3.depends_on.key', 'attended')
+            ->assertJsonPath('questions.3.depends_on.value', 'yes')
             ->assertJsonPath('visibility.default', false);
 
         $this->assertSame(SurveyInvitation::STATUS_SHOWN, $invitation->fresh()->status);
@@ -290,6 +294,7 @@ class FeedbackPromptTest extends TestCase
 
         $response = $this->actingAs($user)->postJson(route('feedback.store', $invitation), [
             'answers' => [
+                'attended' => 'yes',
                 'overall_rating' => 4,
                 'liked_most' => ['lineup', 'sound'],
                 'return_likelihood' => 'probably',
@@ -308,8 +313,8 @@ class FeedbackPromptTest extends TestCase
         $this->assertSame(Visibility::VISIBILITY_PRIVATE, $stored->visibility_id);
         $this->assertNotNull($stored->submitted_at);
 
-        // 1 rating + 2 multi-choice rows + 1 single choice + 1 text
-        $this->assertCount(5, $stored->answers);
+        // gate + rating + 2 multi-choice rows + 1 single choice + 1 text
+        $this->assertCount(6, $stored->answers);
 
         $this->assertSame(SurveyInvitation::STATUS_COMPLETED, $invitation->fresh()->status);
         $this->assertNotNull($invitation->fresh()->completed_at);
@@ -322,7 +327,7 @@ class FeedbackPromptTest extends TestCase
         $invitation = $this->makeInvitation($user);
 
         $this->actingAs($user)->postJson(route('feedback.store', $invitation), [
-            'answers' => ['overall_rating' => 5],
+            'answers' => ['attended' => 'yes', 'overall_rating' => 5],
             'public' => true,
         ])->assertOk();
 
@@ -333,6 +338,162 @@ class FeedbackPromptTest extends TestCase
         $this->assertSame(1, SurveyResponse::public()->count());
     }
 
+    // --------------------------------------------------------- no-show branch
+
+    /** @test */
+    public function a_user_can_report_that_they_did_not_attend_with_a_reason(): void
+    {
+        $user = $this->makeUser();
+        $invitation = $this->makeInvitation($user);
+
+        $this->actingAs($user)->postJson(route('feedback.store', $invitation), [
+            'answers' => [
+                'attended' => 'no',
+                'not_attended_reason' => ['cost', 'transport'],
+                'not_attended_detail' => 'Tickets went up and I could not get a ride.',
+            ],
+        ])->assertOk();
+
+        $stored = SurveyResponse::where('user_id', $user->id)->first();
+
+        $this->assertNotNull($stored);
+        $this->assertSame(SurveyInvitation::STATUS_COMPLETED, $invitation->fresh()->status);
+
+        $byKey = $stored->answers->groupBy(fn ($answer) => $answer->question->key);
+
+        $this->assertSame('no', $byKey['attended']->first()->value_option);
+        $this->assertSame(
+            ['cost', 'transport'],
+            $byKey['not_attended_reason']->pluck('value_option')->sort()->values()->all()
+        );
+        $this->assertSame(
+            'Tickets went up and I could not get a ride.',
+            $byKey['not_attended_detail']->first()->value_text
+        );
+    }
+
+    /** @test */
+    public function the_why_is_optional_for_a_no_show(): void
+    {
+        // We ask why; we don't demand it. Answering only the gate must succeed.
+        $user = $this->makeUser();
+        $invitation = $this->makeInvitation($user);
+
+        $this->actingAs($user)->postJson(route('feedback.store', $invitation), [
+            'answers' => ['attended' => 'no'],
+        ])->assertOk();
+
+        $stored = SurveyResponse::where('user_id', $user->id)->first();
+
+        $this->assertCount(1, $stored->answers);
+        $this->assertSame(SurveyInvitation::STATUS_COMPLETED, $invitation->fresh()->status);
+    }
+
+    /** @test */
+    public function the_rating_is_not_required_when_the_user_did_not_attend(): void
+    {
+        $this->withExceptionHandling();
+
+        $user = $this->makeUser();
+        $invitation = $this->makeInvitation($user);
+
+        $this->actingAs($user)->postJson(route('feedback.store', $invitation), [
+            'answers' => ['attended' => 'no'],
+        ])->assertOk();
+    }
+
+    /** @test */
+    public function attended_branch_answers_are_discarded_when_the_user_did_not_attend(): void
+    {
+        // A stale value left behind by switching the gate to "no" must not be
+        // stored against a branch the user isn't in.
+        $user = $this->makeUser();
+        $invitation = $this->makeInvitation($user);
+
+        $this->actingAs($user)->postJson(route('feedback.store', $invitation), [
+            'answers' => [
+                'attended' => 'no',
+                'overall_rating' => 5,
+                'liked_most' => ['lineup'],
+                'not_attended_reason' => ['forgot'],
+            ],
+        ])->assertOk();
+
+        $keys = SurveyResponse::where('user_id', $user->id)->first()
+            ->answers->map(fn ($answer) => $answer->question->key)->unique()->values()->all();
+
+        sort($keys);
+
+        $this->assertSame(['attended', 'not_attended_reason'], $keys);
+    }
+
+    /** @test */
+    public function no_show_answers_are_discarded_when_the_user_did_attend(): void
+    {
+        $user = $this->makeUser();
+        $invitation = $this->makeInvitation($user);
+
+        $this->actingAs($user)->postJson(route('feedback.store', $invitation), [
+            'answers' => [
+                'attended' => 'yes',
+                'overall_rating' => 4,
+                'not_attended_reason' => ['forgot'],
+                'not_attended_detail' => 'should be dropped',
+            ],
+        ])->assertOk();
+
+        $keys = SurveyResponse::where('user_id', $user->id)->first()
+            ->answers->map(fn ($answer) => $answer->question->key)->unique()->values()->all();
+
+        sort($keys);
+
+        $this->assertSame(['attended', 'overall_rating'], $keys);
+    }
+
+    /** @test */
+    public function the_attendance_gate_itself_is_required(): void
+    {
+        $this->withExceptionHandling();
+
+        $user = $this->makeUser();
+        $invitation = $this->makeInvitation($user);
+
+        $this->actingAs($user)->postJson(route('feedback.store', $invitation), [
+            'answers' => ['overall_rating' => 4],
+        ])->assertStatus(422)->assertJsonValidationErrors('answers.attended');
+
+        $this->assertSame(0, SurveyResponse::count());
+    }
+
+    /** @test */
+    public function an_unknown_attendance_value_is_rejected(): void
+    {
+        $this->withExceptionHandling();
+
+        $user = $this->makeUser();
+        $invitation = $this->makeInvitation($user);
+
+        $this->actingAs($user)->postJson(route('feedback.store', $invitation), [
+            'answers' => ['attended' => 'maybe'],
+        ])->assertStatus(422)->assertJsonValidationErrors('answers.attended');
+    }
+
+    /** @test */
+    public function an_unknown_no_show_reason_is_rejected(): void
+    {
+        $this->withExceptionHandling();
+
+        $user = $this->makeUser();
+        $invitation = $this->makeInvitation($user);
+
+        $this->actingAs($user)->postJson(route('feedback.store', $invitation), [
+            'answers' => [
+                'attended' => 'no',
+                'not_attended_reason' => ['not_an_option'],
+            ],
+        ])->assertStatus(422)->assertJsonValidationErrors('answers.not_attended_reason.0');
+    }
+
     /** @test */
     public function unknown_answer_keys_are_ignored(): void
     {
@@ -341,12 +502,13 @@ class FeedbackPromptTest extends TestCase
 
         $this->actingAs($user)->postJson(route('feedback.store', $invitation), [
             'answers' => [
+                'attended' => 'yes',
                 'overall_rating' => 3,
                 'not_a_real_question' => 'whatever',
             ],
         ])->assertOk();
 
-        $this->assertCount(1, SurveyResponse::where('user_id', $user->id)->first()->answers);
+        $this->assertCount(2, SurveyResponse::where('user_id', $user->id)->first()->answers);
     }
 
     /** @test */
@@ -358,7 +520,7 @@ class FeedbackPromptTest extends TestCase
         $invitation = $this->makeInvitation($user);
 
         $this->actingAs($user)->postJson(route('feedback.store', $invitation), [
-            'answers' => ['comments' => 'No rating given.'],
+            'answers' => ['attended' => 'yes', 'comments' => 'No rating given.'],
         ])->assertStatus(422)->assertJsonValidationErrors('answers.overall_rating');
 
         $this->assertSame(0, SurveyResponse::count());
@@ -373,7 +535,7 @@ class FeedbackPromptTest extends TestCase
         $invitation = $this->makeInvitation($user);
 
         $this->actingAs($user)->postJson(route('feedback.store', $invitation), [
-            'answers' => ['overall_rating' => 9],
+            'answers' => ['attended' => 'yes', 'overall_rating' => 9],
         ])->assertStatus(422)->assertJsonValidationErrors('answers.overall_rating');
     }
 
@@ -387,6 +549,7 @@ class FeedbackPromptTest extends TestCase
 
         $this->actingAs($user)->postJson(route('feedback.store', $invitation), [
             'answers' => [
+                'attended' => 'yes',
                 'overall_rating' => 4,
                 'liked_most' => ['not_an_option'],
             ],
@@ -403,7 +566,7 @@ class FeedbackPromptTest extends TestCase
         $invitation = $this->makeInvitation($owner);
 
         $this->actingAs($intruder)
-            ->postJson(route('feedback.store', $invitation), ['answers' => ['overall_rating' => 5]])
+            ->postJson(route('feedback.store', $invitation), ['answers' => ['attended' => 'yes', 'overall_rating' => 5]])
             ->assertForbidden();
 
         $this->assertSame(0, SurveyResponse::count());
@@ -418,7 +581,7 @@ class FeedbackPromptTest extends TestCase
         $invitation = $this->makeInvitation($user, ['status' => SurveyInvitation::STATUS_COMPLETED]);
 
         $this->actingAs($user)
-            ->postJson(route('feedback.store', $invitation), ['answers' => ['overall_rating' => 5]])
+            ->postJson(route('feedback.store', $invitation), ['answers' => ['attended' => 'yes', 'overall_rating' => 5]])
             ->assertStatus(410);
     }
 
@@ -428,7 +591,7 @@ class FeedbackPromptTest extends TestCase
         $this->withExceptionHandling();
 
         $this->actingAs($this->makeUser())
-            ->postJson('/feedback/'.str_repeat('z', 40), ['answers' => ['overall_rating' => 5]])
+            ->postJson('/feedback/'.str_repeat('z', 40), ['answers' => ['attended' => 'yes', 'overall_rating' => 5]])
             ->assertNotFound();
     }
 
@@ -443,7 +606,7 @@ class FeedbackPromptTest extends TestCase
         config(['feedback.enabled' => false]);
 
         $this->actingAs($user)
-            ->postJson(route('feedback.store', $invitation), ['answers' => ['overall_rating' => 5]])
+            ->postJson(route('feedback.store', $invitation), ['answers' => ['attended' => 'yes', 'overall_rating' => 5]])
             ->assertNotFound();
     }
 
@@ -489,7 +652,7 @@ class FeedbackPromptTest extends TestCase
         $invitation = $this->makeInvitation($user, ['status' => SurveyInvitation::STATUS_SHOWN]);
 
         $this->actingAs($user)->postJson(route('feedback.store', $invitation), [
-            'answers' => ['overall_rating' => 5],
+            'answers' => ['attended' => 'yes', 'overall_rating' => 5],
         ])->assertOk();
 
         $this->assertSame(SurveyInvitation::STATUS_COMPLETED, $invitation->fresh()->status);
@@ -549,7 +712,7 @@ class FeedbackPromptTest extends TestCase
         $user->profile->update(['setting_feedback_requests' => 0]);
 
         $this->actingAs($user->fresh())
-            ->postJson(route('feedback.store', $invitation), ['answers' => ['overall_rating' => 5]])
+            ->postJson(route('feedback.store', $invitation), ['answers' => ['attended' => 'yes', 'overall_rating' => 5]])
             ->assertForbidden();
     }
 

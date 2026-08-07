@@ -30,9 +30,12 @@ class SurveyCampaignsTableSeeder extends Seeder
     /**
      * Post-event feedback for users who marked "Attending".
      *
-     * Six questions, one required. The required one is a single tap, so an
-     * abandoned survey still yields a usable rating. Q2 and Q3 share an option
-     * vocabulary so the admin summary can show liked-vs-disliked per dimension.
+     * Branches on a required "did you make it?" gate: no-shows are asked why
+     * instead of being asked to rate something they didn't see. The gate is a
+     * single tap, so even an abandoned survey tells us whether they turned up.
+     *
+     * `liked_most` and `liked_least` share an option vocabulary so the admin
+     * summary can line them up against each other per dimension.
      */
     private function seedPostEventAttendee(): void
     {
@@ -40,7 +43,7 @@ class SurveyCampaignsTableSeeder extends Seeder
             ['slug' => SurveyCampaign::POST_EVENT_ATTENDEE],
             [
                 'name' => 'Post-event feedback',
-                'intro' => 'You said you were going to this one — how was it? Six quick questions, about a minute. Only the first is required.',
+                'intro' => 'You said you were going to this one. Did you make it? A handful of quick questions, about a minute. Only the first is required.',
                 'subject_type' => 'event',
                 'is_active' => true,
                 'priority' => 10,
@@ -62,9 +65,69 @@ class SurveyCampaignsTableSeeder extends Seeder
         ];
 
         $questions = [
+            // Gate question. Invitations go to everyone who marked "Attending",
+            // but plenty of them won't have actually gone — and "how was the
+            // sound?" is meaningless if they weren't there. Everything below
+            // branches off this answer.
+            [
+                'key' => 'attended',
+                'sort' => 1,
+                'type' => SurveyQuestion::TYPE_SINGLE_CHOICE,
+                'prompt' => 'Did you make it to this one?',
+                'help' => null,
+                'options' => [
+                    ['value' => 'yes', 'label' => 'Yes, I went'],
+                    ['value' => 'no', 'label' => "No, I didn't make it"],
+                ],
+                'min_value' => null,
+                'max_value' => null,
+                'is_required' => true,
+                'depends_on_key' => null,
+                'depends_on_value' => null,
+            ],
+            // --- No-show branch -------------------------------------------------
+            [
+                'key' => 'not_attended_reason',
+                'sort' => 2,
+                'type' => SurveyQuestion::TYPE_MULTI_CHOICE,
+                'prompt' => 'What got in the way?',
+                'help' => 'Optional, and genuinely useful — it tells promoters what loses people.',
+                'options' => [
+                    ['value' => 'cost', 'label' => 'Too expensive'],
+                    ['value' => 'timing', 'label' => 'Bad timing — too late or too early'],
+                    ['value' => 'lineup', 'label' => 'Lineup changed or lost interest'],
+                    ['value' => 'venue', 'label' => "Didn't want to go to that venue"],
+                    ['value' => 'distance', 'label' => 'Too far away'],
+                    ['value' => 'transport', 'label' => 'Getting there or parking'],
+                    ['value' => 'weather', 'label' => 'Weather'],
+                    ['value' => 'health', 'label' => 'Illness'],
+                    ['value' => 'plans_changed', 'label' => 'Plans changed / something came up'],
+                    ['value' => 'forgot', 'label' => 'Forgot about it'],
+                    ['value' => 'other', 'label' => 'Something else'],
+                ],
+                'min_value' => null,
+                'max_value' => null,
+                'is_required' => false,
+                'depends_on_key' => 'attended',
+                'depends_on_value' => 'no',
+            ],
+            [
+                'key' => 'not_attended_detail',
+                'sort' => 3,
+                'type' => SurveyQuestion::TYPE_TEXT,
+                'prompt' => 'Anything more on why you skipped it?',
+                'help' => 'Optional.',
+                'options' => null,
+                'min_value' => null,
+                'max_value' => null,
+                'is_required' => false,
+                'depends_on_key' => 'attended',
+                'depends_on_value' => 'no',
+            ],
+            // --- Attended branch ------------------------------------------------
             [
                 'key' => 'overall_rating',
-                'sort' => 1,
+                'sort' => 4,
                 'type' => SurveyQuestion::TYPE_RATING,
                 'prompt' => 'Overall, how was it?',
                 'help' => null,
@@ -72,10 +135,12 @@ class SurveyCampaignsTableSeeder extends Seeder
                 'min_value' => 1,
                 'max_value' => 5,
                 'is_required' => true,
+                'depends_on_key' => 'attended',
+                'depends_on_value' => 'yes',
             ],
             [
                 'key' => 'liked_most',
-                'sort' => 2,
+                'sort' => 5,
                 'type' => SurveyQuestion::TYPE_MULTI_CHOICE,
                 'prompt' => 'What worked? Pick anything that stood out.',
                 'help' => null,
@@ -83,10 +148,12 @@ class SurveyCampaignsTableSeeder extends Seeder
                 'min_value' => null,
                 'max_value' => null,
                 'is_required' => false,
+                'depends_on_key' => 'attended',
+                'depends_on_value' => 'yes',
             ],
             [
                 'key' => 'liked_least',
-                'sort' => 3,
+                'sort' => 6,
                 'type' => SurveyQuestion::TYPE_MULTI_CHOICE,
                 'prompt' => "What didn't? Be honest — this goes to the promoter and venue.",
                 'help' => null,
@@ -96,10 +163,12 @@ class SurveyCampaignsTableSeeder extends Seeder
                 'min_value' => null,
                 'max_value' => null,
                 'is_required' => false,
+                'depends_on_key' => 'attended',
+                'depends_on_value' => 'yes',
             ],
             [
                 'key' => 'want_more',
-                'sort' => 4,
+                'sort' => 7,
                 'type' => SurveyQuestion::TYPE_MULTI_CHOICE,
                 'prompt' => 'What would make you more likely to come back?',
                 'help' => null,
@@ -117,10 +186,12 @@ class SurveyCampaignsTableSeeder extends Seeder
                 'min_value' => null,
                 'max_value' => null,
                 'is_required' => false,
+                'depends_on_key' => 'attended',
+                'depends_on_value' => 'yes',
             ],
             [
                 'key' => 'return_likelihood',
-                'sort' => 5,
+                'sort' => 8,
                 'type' => SurveyQuestion::TYPE_SINGLE_CHOICE,
                 'prompt' => 'Would you go to another event by this promoter?',
                 'help' => null,
@@ -133,10 +204,12 @@ class SurveyCampaignsTableSeeder extends Seeder
                 'min_value' => null,
                 'max_value' => null,
                 'is_required' => false,
+                'depends_on_key' => 'attended',
+                'depends_on_value' => 'yes',
             ],
             [
                 'key' => 'comments',
-                'sort' => 6,
+                'sort' => 9,
                 'type' => SurveyQuestion::TYPE_TEXT,
                 'prompt' => "Anything else you'd want the promoter or venue to know?",
                 'help' => 'One specific thing is more useful than a general vibe.',
@@ -144,6 +217,8 @@ class SurveyCampaignsTableSeeder extends Seeder
                 'min_value' => null,
                 'max_value' => null,
                 'is_required' => false,
+                'depends_on_key' => 'attended',
+                'depends_on_value' => 'yes',
             ],
         ];
 

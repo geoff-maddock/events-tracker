@@ -248,6 +248,10 @@ class FeedbackPromptService
                 'maxlength' => $question->type === SurveyQuestion::TYPE_TEXT
                     ? SurveyQuestion::TEXT_MAX_LENGTH
                     : null,
+                // Drives show/hide in the modal; null means always shown.
+                'depends_on' => $question->isConditional()
+                    ? ['key' => $question->depends_on_key, 'value' => $question->depends_on_value]
+                    : null,
             ])
             ->values()
             ->all();
@@ -277,29 +281,45 @@ class FeedbackPromptService
 
         foreach ($campaign->questions->where('is_active', true) as $question) {
             $field = 'answers.'.$question->key;
+
+            // A conditional question is dropped from the validated payload
+            // entirely when its branch isn't taken. That makes "required" mean
+            // "required when shown", and stops a stale value the client left
+            // behind — say a rating entered before switching to "didn't go" —
+            // from being stored against the wrong branch.
+            $gate = $question->isConditional()
+                ? ['exclude_unless:answers.'.$question->depends_on_key.','.$question->depends_on_value]
+                : [];
+
             $required = $question->is_required ? 'required' : 'nullable';
 
             switch ($question->type) {
                 case SurveyQuestion::TYPE_RATING:
-                    $rules[$field] = [
+                    $rules[$field] = array_merge($gate, [
                         $required,
                         'integer',
                         'between:'.($question->min_value ?? 1).','.($question->max_value ?? 5),
-                    ];
+                    ]);
                     break;
 
                 case SurveyQuestion::TYPE_SINGLE_CHOICE:
-                    $rules[$field] = [$required, 'string', 'in:'.implode(',', $question->optionValues())];
+                    $rules[$field] = array_merge($gate, [
+                        $required, 'string', 'in:'.implode(',', $question->optionValues()),
+                    ]);
                     break;
 
                 case SurveyQuestion::TYPE_MULTI_CHOICE:
-                    $rules[$field] = [$required, 'array'];
-                    $rules[$field.'.*'] = ['string', 'in:'.implode(',', $question->optionValues())];
+                    $rules[$field] = array_merge($gate, [$required, 'array']);
+                    $rules[$field.'.*'] = array_merge($gate, [
+                        'string', 'in:'.implode(',', $question->optionValues()),
+                    ]);
                     break;
 
                 case SurveyQuestion::TYPE_TEXT:
                 default:
-                    $rules[$field] = [$required, 'string', 'max:'.SurveyQuestion::TEXT_MAX_LENGTH];
+                    $rules[$field] = array_merge($gate, [
+                        $required, 'string', 'max:'.SurveyQuestion::TEXT_MAX_LENGTH,
+                    ]);
                     break;
             }
         }

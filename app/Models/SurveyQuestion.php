@@ -27,6 +27,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int|null                                                         $max_value
  * @property bool                                                             $is_required
  * @property bool                                                             $is_active
+ * @property string|null                                                      $depends_on_key
+ * @property string|null                                                      $depends_on_value
  * @property \Illuminate\Support\Carbon|null                                  $created_at
  * @property \Illuminate\Support\Carbon|null                                  $updated_at
  * @property \App\Models\SurveyCampaign                                       $campaign
@@ -70,6 +72,7 @@ class SurveyQuestion extends Eloquent
     protected $fillable = [
         'survey_campaign_id', 'key', 'sort', 'type', 'prompt', 'help',
         'options', 'min_value', 'max_value', 'is_required', 'is_active',
+        'depends_on_key', 'depends_on_value',
     ];
 
     protected $casts = [
@@ -91,6 +94,39 @@ class SurveyQuestion extends Eloquent
     public function answers(): HasMany
     {
         return $this->hasMany(SurveyAnswer::class);
+    }
+
+    /**
+     * True when this question only applies given a particular earlier answer.
+     */
+    public function isConditional(): bool
+    {
+        return $this->depends_on_key !== null && $this->depends_on_value !== null;
+    }
+
+    /**
+     * Whether this question applies, given the answers collected so far.
+     *
+     * Unconditional questions always apply. A conditional one applies only when
+     * its controlling question holds the expected value — which also means an
+     * unanswered controller hides everything downstream of it.
+     *
+     * @param  array<string, mixed>  $answers  keyed by question key
+     */
+    public function appliesGiven(array $answers): bool
+    {
+        if (! $this->isConditional()) {
+            return true;
+        }
+
+        $actual = $answers[$this->depends_on_key] ?? null;
+
+        // Multi-choice controllers are unusual but cheap to support.
+        if (is_array($actual)) {
+            return in_array($this->depends_on_value, $actual, true);
+        }
+
+        return $actual !== null && (string) $actual === (string) $this->depends_on_value;
     }
 
     /**

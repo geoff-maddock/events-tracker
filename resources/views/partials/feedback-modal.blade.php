@@ -61,7 +61,7 @@
 
             <template x-if="!loading">
                 <div class="space-y-6">
-                    <template x-for="question in questions" :key="question.key">
+                    <template x-for="question in visibleQuestions" :key="question.key">
                         <section>
                             <h3 class="text-sm font-semibold text-foreground mb-2">
                                 <span x-text="question.prompt"></span>
@@ -184,10 +184,24 @@
                 return Array.from({ length: max - min + 1 }, (_, i) => min + i);
             },
 
-            // Only the required questions gate the submit button; everything
-            // else is optional by design so the survey stays quick to finish.
+            // Whether a question's branch is currently taken. Mirrors
+            // SurveyQuestion::appliesGiven() on the server.
+            applies(question) {
+                if (!question.depends_on) return true;
+                const actual = this.answers[question.depends_on.key];
+                if (Array.isArray(actual)) return actual.includes(question.depends_on.value);
+                return actual !== undefined && actual !== null && String(actual) === String(question.depends_on.value);
+            },
+
+            get visibleQuestions() {
+                return this.questions.filter(q => this.applies(q));
+            },
+
+            // Only the required questions that are currently shown gate the
+            // submit button; everything else is optional by design so the
+            // survey stays quick to finish.
             get canSubmit() {
-                return this.questions
+                return this.visibleQuestions
                     .filter(q => q.required)
                     .every(q => {
                         const value = this.answers[q.key];
