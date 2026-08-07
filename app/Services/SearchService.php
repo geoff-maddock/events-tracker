@@ -192,6 +192,7 @@ class SearchService
     private function tags(string $keyword, int $perPage): Paginator
     {
         return Tag::query()
+            ->withGridThumbnail()
             ->where('name', 'like', '%' . $keyword . '%')
             ->orderBy('name', 'ASC')
             ->simplePaginate($perPage);
