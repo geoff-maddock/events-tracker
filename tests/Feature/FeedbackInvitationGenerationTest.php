@@ -309,13 +309,13 @@ class FeedbackInvitationGenerationTest extends TestCase
     }
 
     /** @test */
-    public function it_does_not_skip_candidates_across_chunk_boundaries(): void
+    public function it_does_not_silently_drop_candidates_while_inserting(): void
     {
         // The candidate query filters on `survey_invitations.id is null` and the
-        // run inserts exactly those rows, so OFFSET-based chunking would skip
-        // roughly a full page per boundary. Keyset chunking must not.
+        // run inserts exactly those rows, so any OFFSET-based paging would walk
+        // off a shrinking result set and skip candidates. Iteration must be
+        // stable under its own writes.
         config([
-            'feedback.generation_chunk_size' => 2,
             'feedback.max_pending_per_user' => 0,
             'feedback.min_days_between_prompts' => 0,
         ]);
@@ -384,18 +384,18 @@ class FeedbackInvitationGenerationTest extends TestCase
     }
 
     /** @test */
-    public function it_respects_the_min_days_between_prompts_cap(): void
+    public function dismissing_a_prompt_starts_a_cooldown(): void
     {
         config(['feedback.max_pending_per_user' => 0, 'feedback.min_days_between_prompts' => 7]);
 
         $user = $this->makeAttendee();
         $campaign = SurveyCampaign::bySlug(SurveyCampaign::POST_EVENT_ATTENDEE);
 
-        // Answered something two days ago — too soon to ask again.
-        SurveyInvitation::factory()->completed()->create([
+        // Dismissed two days ago — they told us to back off, so we do.
+        SurveyInvitation::factory()->dismissed()->create([
             'survey_campaign_id' => $campaign->id,
             'user_id' => $user->id,
-            'completed_at' => now()->subDays(2),
+            'dismissed_at' => now()->subDays(2),
         ]);
 
         $event = $this->makeEvent(now()->subDays(2)->toDateTimeString(), now()->subDays(2)->addHours(3)->toDateTimeString());
@@ -404,6 +404,90 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->artisan('feedback:generate')->assertSuccessful();
 
         $this->assertSame(1, SurveyInvitation::where('user_id', $user->id)->count());
+    }
+
+    /** @test */
+    public function completing_a_prompt_does_not_start_a_cooldown(): void
+    {
+        // Someone who just answered is engaged. Making them wait a week is how
+        // their other events used to age out of the lookback window unasked.
+        config(['feedback.max_pending_per_user' => 0, 'feedback.min_days_between_prompts' => 7]);
+
+        $user = $this->makeAttendee();
+        $campaign = SurveyCampaign::bySlug(SurveyCampaign::POST_EVENT_ATTENDEE);
+
+        SurveyInvitation::factory()->completed()->create([
+            'survey_campaign_id' => $campaign->id,
+            'user_id' => $user->id,
+            'completed_at' => now()->subMinutes(5),
+        ]);
+
+        $event = $this->makeEvent(now()->subDays(2)->toDateTimeString(), now()->subDays(2)->addHours(3)->toDateTimeString());
+        $this->attend($user, $event);
+
+        $this->artisan('feedback:generate')->assertSuccessful();
+
+        $this->assertSame(2, SurveyInvitation::where('user_id', $user->id)->count());
+    }
+
+    /** @test */
+    public function the_freshest_event_is_queued_first(): void
+    {
+        config(['feedback.max_pending_per_user' => 1]);
+
+        $user = $this->makeAttendee();
+
+        // Attended in a deliberately unhelpful RSVP order: the oldest event was
+        // RSVP'd to first, so ordering by event_responses.id would pick it.
+        $oldest = $this->makeEvent(now()->subDays(9)->toDateTimeString(), now()->subDays(9)->addHours(3)->toDateTimeString());
+        $newest = $this->makeEvent(now()->subDays(2)->toDateTimeString(), now()->subDays(2)->addHours(3)->toDateTimeString());
+        $middle = $this->makeEvent(now()->subDays(5)->toDateTimeString(), now()->subDays(5)->addHours(3)->toDateTimeString());
+
+        $this->attend($user, $oldest);
+        $this->attend($user, $newest);
+        $this->attend($user, $middle);
+
+        $this->artisan('feedback:generate')->assertSuccessful();
+
+        $invitation = SurveyInvitation::where('user_id', $user->id)->first();
+
+        $this->assertSame($newest->id, $invitation->subject_id, 'Ask while the memory is sharp.');
+    }
+
+    /** @test */
+    public function a_busy_week_of_events_all_get_asked_about(): void
+    {
+        // The regression this whole change exists for: with a queue depth of 1
+        // and a cooldown on completion, the third event aged out of the
+        // 14-day lookback window before the user was ever asked.
+        $user = $this->makeAttendee();
+
+        $events = [];
+        foreach ([2, 5, 9] as $daysAgo) {
+            $event = $this->makeEvent(
+                now()->subDays($daysAgo)->toDateTimeString(),
+                now()->subDays($daysAgo)->addHours(3)->toDateTimeString()
+            );
+            $this->attend($user, $event);
+            $events[] = $event;
+        }
+
+        $this->artisan('feedback:generate')->assertSuccessful();
+
+        $invitations = SurveyInvitation::where('user_id', $user->id)->orderBy('id')->get();
+
+        $this->assertCount(3, $invitations, 'All three events should be queued while still in the window.');
+        $this->assertSame(
+            [$events[0]->id, $events[1]->id, $events[2]->id],
+            $invitations->pluck('subject_id')->all(),
+            'Queued freshest first.'
+        );
+
+        // Every one of them outlives the lookback window, because expiry is
+        // driven by expires_at (30 days), not by the creation window.
+        foreach ($invitations as $invitation) {
+            $this->assertTrue($invitation->expires_at->isAfter(now()->addDays(14)));
+        }
     }
 
     /** @test */

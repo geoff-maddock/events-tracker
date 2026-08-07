@@ -20,11 +20,6 @@ use Illuminate\Support\Facades\DB;
 class PostEventFeedbackGenerator
 {
     /**
-     * How many candidate rows to process per chunk.
-     */
-    private const DEFAULT_CHUNK_SIZE = 500;
-
-    /**
      * Find eligible (user, event) pairs and create invitations for them.
      *
      * @param  array{dry_run?: bool, lookback_days?: int|null, event?: int|string|null, limit?: int|null}  $options
@@ -59,59 +54,52 @@ class PostEventFeedbackGenerator
         // wildly overstate what the real run does.
         $grantedThisRun = [];
 
-        $chunkSize = (int) config('feedback.generation_chunk_size', self::DEFAULT_CHUNK_SIZE);
+        // cursor(), not chunk()/chunkById(): this query filters on
+        // `survey_invitations.id is null` and a real run inserts exactly those
+        // rows, so OFFSET paging would walk off a shrinking result set and skip
+        // roughly a page per boundary. cursor() executes once and iterates a
+        // single snapshot, which is both safe under that mutation and free to
+        // order by event recency — chunkById cannot, since it must order by its
+        // cursor column. PDO MySQL is buffered by default here, so writes on the
+        // same connection during iteration are fine.
+        foreach ($this->candidateQuery($campaign->id, $windowStart, $windowEnd, $options['event'] ?? null)->cursor() as $row) {
+            if ($limit !== null && $created >= $limit) {
+                break;
+            }
 
-        // chunkById, not chunk: this query filters on `survey_invitations.id is
-        // null`, and a real run inserts exactly those rows. Under OFFSET-based
-        // chunk() the result set shrinks beneath us between pages and roughly a
-        // full page of eligible candidates gets skipped every time. Keyset
-        // pagination on event_responses.id is stable under that mutation.
-        $this->candidateQuery($campaign->id, $windowStart, $windowEnd, $options['event'] ?? null)
-            ->chunkById($chunkSize, function ($rows) use (
-                $campaign, $expireDays, $dryRun, $limit,
-                &$created, &$candidates, &$skippedVolume, &$touchedUsers, &$grantedThisRun
-            ) {
-                foreach ($rows as $row) {
-                    if ($limit !== null && $created >= $limit) {
-                        return false;
-                    }
+            $userId = (int) $row->user_id;
+            $candidates++;
 
-                    $userId = (int) $row->user_id;
-                    $candidates++;
+            $alreadyGranted = $dryRun ? ($grantedThisRun[$userId] ?? 0) : 0;
 
-                    $alreadyGranted = $dryRun ? ($grantedThisRun[$userId] ?? 0) : 0;
+            if (! $this->withinVolumeLimits($userId, $alreadyGranted)) {
+                $skippedVolume++;
 
-                    if (! $this->withinVolumeLimits($userId, $alreadyGranted)) {
-                        $skippedVolume++;
+                continue;
+            }
 
-                        continue;
-                    }
+            if (! $dryRun) {
+                SurveyInvitation::firstOrCreate(
+                    [
+                        'survey_campaign_id' => $campaign->id,
+                        'user_id' => $row->user_id,
+                        'subject_type' => 'event',
+                        'subject_id' => $row->event_id,
+                    ],
+                    [
+                        'token' => SurveyInvitation::generateToken(),
+                        'status' => SurveyInvitation::STATUS_PENDING,
+                        'source' => SurveyInvitation::SOURCE_APP,
+                        'expires_at' => now()->addDays($expireDays),
+                    ]
+                );
 
-                    if (! $dryRun) {
-                        SurveyInvitation::firstOrCreate(
-                            [
-                                'survey_campaign_id' => $campaign->id,
-                                'user_id' => $row->user_id,
-                                'subject_type' => 'event',
-                                'subject_id' => $row->event_id,
-                            ],
-                            [
-                                'token' => SurveyInvitation::generateToken(),
-                                'status' => SurveyInvitation::STATUS_PENDING,
-                                'source' => SurveyInvitation::SOURCE_APP,
-                                'expires_at' => now()->addDays($expireDays),
-                            ]
-                        );
+                $touchedUsers[$userId] = true;
+            }
 
-                        $touchedUsers[$userId] = true;
-                    }
-
-                    $grantedThisRun[$userId] = ($grantedThisRun[$userId] ?? 0) + 1;
-                    $created++;
-                }
-
-                return true;
-            }, 'event_responses.id', 'candidate_id');
+            $grantedThisRun[$userId] = ($grantedThisRun[$userId] ?? 0) + 1;
+            $created++;
+        }
 
         foreach (array_keys($touchedUsers) as $userId) {
             SurveyInvitation::forgetPendingCache($userId);
@@ -168,13 +156,14 @@ class PostEventFeedbackGenerator
             ->where('user_statuses.can_login', 1)
             ->whereNotNull('users.email_verified_at')
             ->where('profiles.setting_feedback_requests', 1)
-            // candidate_id is the keyset cursor for chunkById; no orderBy here,
-            // chunkById supplies its own.
-            ->select(
-                'event_responses.id as candidate_id',
-                'event_responses.user_id',
-                'event_responses.event_id'
-            );
+            ->select('event_responses.user_id', 'event_responses.event_id')
+            // Grouped by user, freshest event first. The per-user volume cap
+            // means only the first few candidates for a user become
+            // invitations, so this decides which ones — and asking while the
+            // memory is sharp gets better answers than asking about whichever
+            // event they happened to RSVP to first.
+            ->orderBy('event_responses.user_id')
+            ->orderByRaw("$eventEnd DESC");
 
         if ($eventFilter !== null) {
             $query->where(function ($q) use ($eventFilter) {
@@ -210,15 +199,17 @@ class PostEventFeedbackGenerator
 
         $minDays = (int) config('feedback.min_days_between_prompts', 7);
 
+        // The cooldown deliberately keys off dismissal only, not completion.
+        // Someone who just answered is engaged — making them wait a week to be
+        // asked about their other event is the opposite of the right signal,
+        // and it's how events used to age out of the lookback window unasked.
+        // Someone who dismissed is telling us to back off, so we do.
         if ($minDays > 0) {
-            $recent = SurveyInvitation::where('user_id', $userId)
-                ->where(function ($q) use ($minDays) {
-                    $q->where('completed_at', '>', now()->subDays($minDays))
-                        ->orWhere('dismissed_at', '>', now()->subDays($minDays));
-                })
+            $recentlyDismissed = SurveyInvitation::where('user_id', $userId)
+                ->where('dismissed_at', '>', now()->subDays($minDays))
                 ->exists();
 
-            if ($recent) {
+            if ($recentlyDismissed) {
                 return false;
             }
         }

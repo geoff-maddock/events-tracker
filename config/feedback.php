@@ -36,17 +36,22 @@ return [
     ],
 
     /*
-    | Volume controls, applied across all campaigns. Without these a heavy
-    | attendee gets a prompt for every event they went to over a busy weekend.
+    | Volume controls, applied across all campaigns.
+    |
+    | max_pending_per_user is a queue depth, not a display limit — the modal
+    | always shows one invitation at a time, freshest event first. It is above 1
+    | because the lookback window governs *creation* while an invitation lives
+    | for expire_days once it exists; with a depth of 1 a user who attended
+    | several events in a week would see the extras age out of the window
+    | before they were ever asked.
     */
-    'max_pending_per_user' => 1,
-
-    'min_days_between_prompts' => 7,
+    'max_pending_per_user' => 3,
 
     /*
-    | Candidate rows processed per keyset chunk by feedback:generate. Lowered in
-    | tests to exercise multi-chunk behaviour.
+    | Cooldown after a user *dismisses* a prompt. Completing one does not start
+    | a cooldown — someone who just answered is engaged, and can work through
+    | their queue as fast as they like.
     */
-    'generation_chunk_size' => 500,
+    'min_days_between_prompts' => 7,
 
 ];

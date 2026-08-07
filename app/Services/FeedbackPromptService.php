@@ -167,7 +167,10 @@ class FeedbackPromptService
             ->where('survey_campaigns.is_active', true)
             ->actionable()
             ->orderByDesc('survey_campaigns.priority')
-            ->orderBy('survey_invitations.created_at');
+            // Insertion order, which the generator writes freshest-event-first,
+            // so a queued user is asked about their most recent event next.
+            // created_at is too coarse — a run inserts several within a second.
+            ->orderBy('survey_invitations.id');
     }
 
     /**
