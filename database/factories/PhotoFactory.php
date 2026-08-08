@@ -17,6 +17,15 @@ class PhotoFactory extends Factory
     protected $model = Photo::class;
 
     /**
+     * Committed sample images used as upload fixtures.
+     *
+     * Deliberately not /tmp. faker->file() copies a *random* file out of the
+     * source directory into a web-served path, so a world-writable source
+     * means anything sitting in /tmp gets published under public/storage.
+     */
+    private const FIXTURE_DIR = __DIR__ . '/fixtures/photos';
+
+    /**
      * Define the model's default state.
      *
      * @return array
@@ -27,8 +36,8 @@ class PhotoFactory extends Factory
 
         return [
             'name' => $this->faker->word,
-            'thumbnail' => $this->faker->file('/tmp', $path),
-            'path' => $this->faker->file('/tmp', $path),
+            'thumbnail' => $this->faker->file(self::FIXTURE_DIR, $path),
+            'path' => $this->faker->file(self::FIXTURE_DIR, $path),
             'caption' => $this->faker->sentence,
             'is_public' => $this->faker->boolean,
             'is_primary' => $this->faker->boolean,
