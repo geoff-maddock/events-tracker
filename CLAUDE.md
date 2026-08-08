@@ -69,7 +69,8 @@ PHPStan has a `phpstan-baseline.neon` — don't try to fix baseline errors as pa
 
 ## Docs to consult when relevant
 
-- `docs/deployment_notes.md` — production deploy
+- `docs/deployment_notes.md` — production deploy, queue worker, scheduler
 - `docs/api_notes.md` — API examples
 - `docs/feature_notes.md` — changelog/features
+- `docs/discord-integration.md` — Discord auto-repost: targets, modes, rollout
 - `CONTRIBUTING.md`, `SECURITY.md`
