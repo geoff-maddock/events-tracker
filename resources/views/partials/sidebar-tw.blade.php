@@ -149,10 +149,6 @@
             <i class="bi bi-grid-3x3-gap text-lg"></i>
             <span>All Modules</span>
         </a>
-        <a href="{{ route('discord-targets.index') }}" class="nav-item-tw mt-1 {{ Request::is('discord-targets*') ? 'nav-item-active-tw' : '' }}">
-            <i class="bi bi-discord text-lg"></i>
-            <span>Discord Targets</span>
-        </a>
         @endcan
         <form action="{{ route('logout') }}" method="POST" class="w-full">
             @csrf
@@ -321,10 +317,6 @@
         <a href="{{ route('pages.allModules') }}" class="nav-item-tw mt-1 {{ Request::is('all-modules') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-grid-3x3-gap text-lg"></i>
             <span>All Modules</span>
-        </a>
-        <a href="{{ route('discord-targets.index') }}" class="nav-item-tw mt-1 {{ Request::is('discord-targets*') ? 'nav-item-active-tw' : '' }}">
-            <i class="bi bi-discord text-lg"></i>
-            <span>Discord Targets</span>
         </a>
         @endcan
         @endif
