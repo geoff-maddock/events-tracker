@@ -2,6 +2,32 @@
 
 A more detailed description of new features and changes to the application.
 
+## 2026.08.08
+
+### Discord Auto-Repost
+Events can now be auto-posted to Discord channels. A **target** is one webhook pointing
+at one channel plus the rules for what gets posted there, managed at `/discord-targets`.
+Webhook URLs are stored encrypted.
+
+Four posting modes, each opted into per target:
+
+- **Announce** — posts once an event has a flyer, after a settle delay (default 30
+  minutes) so quick title and image fixes are not broadcast
+- **Reminder** — a daily sweep for events starting N days out (default T-7d and T-1d)
+- **Digest** — a weekly roundup on the target's own configured day and hour
+- **Manual** — a "Post to Discord" button on the event page
+
+Targets can match all events or filter by tag, entity, venue or series, and can be held
+back until a flyer exists.
+
+The whole feature is inert unless `DISCORD_ENABLED=true`, so it can be deployed off,
+pointed at a private channel to verify, then switched on. Reminders and digests require
+the [scheduler](deployment_notes.md#scheduled-tasks); announce and reminder posts are
+queued, so they also need the queue worker.
+
+See [Discord Integration](discord-integration.md) for setup, configuration and
+troubleshooting.
+
 ## 2026.02.12
 
 ### Tailwind CSS 4 Upgrade (Mix-first)

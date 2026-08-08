@@ -95,6 +95,18 @@
 												</form>
 												<div class="border-t border-border my-1"></div>
 											@endif
+											{{-- Outside the creator/super_admin block above: posting to Discord is
+												 an admin action, not an ownership one. POST, not a link — it leaves
+												 the server. --}}
+											@can('admin')
+												<form action="{!! route('events.discordPost', ['id' => $event->id]) !!}" method="POST" class="block">
+													@csrf
+													<button type="submit" class="w-full text-left px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
+														<i class="bi bi-discord mr-2"></i>Post to Discord
+													</button>
+												</form>
+												<div class="border-t border-border my-1"></div>
+											@endcan
 											@if ($signedIn)
 												<a href="{!! route('events.createThread', ['id' => $event->id]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
 													<i class="bi bi-chat-left-text mr-2"></i>Create Thread

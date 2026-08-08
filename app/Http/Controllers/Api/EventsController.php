@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Events\EventCreated;
+use App\Events\EventPhotoAdded;
 use App\Events\EventUpdated;
 use App\Filters\EventFilters;
 use App\Http\Controllers\Controller;
@@ -1718,6 +1719,8 @@ class EventsController extends Controller
 
             $photo->save();
             $event->addPhoto($photo);
+
+            EventPhotoAdded::dispatch($event, 0 === $existingPhotoCount);
 
             if ($event->start_at >= Carbon::now()) {
                 // notify followers only when this is the event's first photo

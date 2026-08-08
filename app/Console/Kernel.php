@@ -12,6 +12,8 @@ use App\Console\Commands\InitializeEventShares;
 use App\Console\Commands\Notify;
 use App\Console\Commands\NotifyEntities;
 use App\Console\Commands\NotifyWeekly;
+use App\Console\Commands\PostDiscordDigest;
+use App\Console\Commands\PostDiscordReminders;
 use App\Console\Commands\UserCleanup;
 use App\Models\User;
 use Illuminate\Console\Scheduling\Schedule;
@@ -36,6 +38,8 @@ class Kernel extends ConsoleKernel
         CleanupExports::class,
         CreateSeriesEvents::class,
         GenerateFeedbackInvitations::class,
+        PostDiscordReminders::class,
+        PostDiscordDigest::class,
     ];
 
     /**
@@ -94,6 +98,15 @@ class Kernel extends ConsoleKernel
             ->timezone('America/New_York')
             ->between('9:00', '17:00')
             ->weekdays();
+
+        // DISCORD (issue #2058). Both no-op unless DISCORD_ENABLED is set.
+        // Reminders for events starting in N days, per target.
+        $schedule->command('discord:reminders')->daily()->timezone('America/New_York')->at('11:00');
+
+        // Hourly, but each run serves only the targets whose configured digest
+        // day and hour match — per-target scheduling from one cron entry, so
+        // adding a channel never means editing this file.
+        $schedule->command('discord:digest')->hourly()->timezone('America/New_York');
     }
 
     /**

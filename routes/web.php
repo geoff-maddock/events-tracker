@@ -16,6 +16,7 @@ use App\Events\EventUpdated;
 use App\Models\Blog;
 use App\Models\Comment;
 use App\Models\Contact;
+use App\Models\DiscordTarget;
 use App\Models\Entity;
 use App\Models\EntityType;
 use App\Models\Event;
@@ -321,6 +322,10 @@ Route::get('events/{id}/instagram-post-single', [\App\Http\Controllers\Api\Event
 Route::get('events/instagram-post-week', [\App\Http\Controllers\Api\EventInstagramController::class, 'postWeekToInstagram'])->name('events.instagramPostWeek');
 Route::get('events/instagram-weekend-preview', [\App\Http\Controllers\Api\EventInstagramController::class, 'postWeekendPreviewToInstagram'])->name('events.instagramWeekendPreview');
 
+// POST to Discord (issue #2058). POST, not GET — this leaves the server.
+Route::post('events/{id}/discord-post', [\App\Http\Controllers\EventDiscordController::class, 'store'])
+    ->name('events.discordPost');
+
 // Background job status + notifications
 Route::get('job-status', [\App\Http\Controllers\JobStatusController::class, 'index'])->name('job-status.index');
 Route::get('job-status/{id}', [\App\Http\Controllers\JobStatusController::class, 'show'])->name('job-status.show')->where('id', '[0-9]+');
@@ -476,6 +481,20 @@ Route::bind('categories', function ($id) {
 });
 
 Route::resource('categories', \App\Http\Controllers\CategoriesController::class);
+
+// DISCORD TARGETS (issue #2058). Admin-gated in the controller constructor.
+// Non-resource routes first, so 'test'/'toggle' aren't swallowed by show.
+Route::post('discord-targets/{discordTarget}/test', [\App\Http\Controllers\DiscordTargetsController::class, 'test'])
+    ->name('discord-targets.test');
+Route::post('discord-targets/{discordTarget}/toggle', [\App\Http\Controllers\DiscordTargetsController::class, 'toggle'])
+    ->name('discord-targets.toggle');
+
+Route::bind('discordTarget', function ($id) {
+    return DiscordTarget::whereId($id)->firstOrFail();
+});
+
+Route::resource('discord-targets', \App\Http\Controllers\DiscordTargetsController::class)
+    ->parameters(['discord-targets' => 'discordTarget']);
 
 // BLOGS
 Route::get('blogs/all', [\App\Http\Controllers\BlogsController::class, 'indexAll']);

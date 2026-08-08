@@ -53,6 +53,7 @@ return [
         ['name' => 'Activity Graph', 'url' => '/activity/graph', 'icon' => 'bi-activity', 'description' => 'Visualize and export activity trends'],
         ['name' => 'Blogs', 'url' => '/blogs', 'icon' => 'bi-journal-text', 'description' => 'Manage blog posts'],
         ['name' => 'Categories', 'url' => '/categories', 'icon' => 'bi-folder', 'description' => 'Manage forum categories'],
+        ['name' => 'Discord Targets', 'url' => '/discord-targets', 'icon' => 'bi-discord', 'description' => 'Manage Discord channels that events are reposted to'],
         ['name' => 'Entity Types', 'url' => '/entity-types', 'icon' => 'bi-diagram-3', 'description' => 'Manage entity types'],
         ['name' => 'Event Graph', 'url' => '/events/graph', 'icon' => 'bi-bar-chart-line', 'description' => 'Visualize and export event trends by type, tag, venue and more'],
         ['name' => 'Feedback', 'url' => '/feedback/responses', 'icon' => 'bi-chat-square-quote', 'description' => 'Survey campaign responses and summaries'],

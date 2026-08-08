@@ -244,6 +244,18 @@ class ActionsTableSeeder extends Seeder
                 'created_at' => null,
                 'updated_at' => null,
             ],
+            19 => [
+                'id' => 20,
+                'name' => 'Discord Post',
+                'object_table' => 'Event',
+                'child_object_table' => null,
+                'description' => 'Event posted to Discord',
+                'changes' => null,
+                'order' => 0,
+                'is_active' => 1,
+                'created_at' => null,
+                'updated_at' => null,
+            ],
         ]);
     }
 }

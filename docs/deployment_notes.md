@@ -290,3 +290,38 @@ For local development, run `php artisan queue:work` in a separate terminal, or s
 
 Users see queued job progress and completion under the **Notifications** item in
 the sidebar (`/job-status`).
+
+## Scheduled tasks
+
+Everything registered in `app/Console/Kernel::schedule()` — weekly notifications,
+entity notifications, user cleanup, export cleanup, series event creation, feedback
+invitations, the admin activity summary, and the Discord reminder and digest commands
+— runs from a **single** cron entry:
+
+```crontab
+* * * * * php /var/www/events/artisan schedule:run >> /dev/null 2>&1
+```
+
+Laravel's scheduler works by having cron invoke `schedule:run` every minute; the
+framework then decides which commands are actually due. Without that one line,
+**nothing scheduled runs at all**, and there is no error — the commands simply never
+fire. That failure mode is silent, so check it explicitly rather than assuming.
+
+Confirm what the app believes is scheduled:
+
+```bash
+php artisan schedule:list
+```
+
+Confirm cron is actually invoking it — the entry may live in the deploying user's
+crontab, `www-data`'s, root's, or `/etc/cron.d/`:
+
+```bash
+sudo grep -rn 'schedule:run' /var/spool/cron/crontabs/ /etc/cron.d/ /etc/crontab
+```
+
+Scheduled commands inherit the timezone set per-task in the Kernel (most use
+`America/New_York`), not the server timezone.
+
+Some scheduled commands queue jobs rather than doing the work inline, so they also
+need the queue worker above to be running.

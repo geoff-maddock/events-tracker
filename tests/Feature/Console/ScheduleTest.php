@@ -53,6 +53,16 @@ class ScheduleTest extends TestCase
         $this->assertTrue($found, "Expected 'notify' command to be scheduled.");
     }
 
+    public function test_discord_reminders_is_scheduled(): void
+    {
+        $this->assertTrue($this->hasCommandLike('discord:reminders'));
+    }
+
+    public function test_discord_digest_is_scheduled(): void
+    {
+        $this->assertTrue($this->hasCommandLike('discord:digest'));
+    }
+
     private function hasCommandLike(string $needle): bool
     {
         foreach ($this->commands() as $command) {
