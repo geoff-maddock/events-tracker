@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\EventPhotoAdded;
 use App\Filters\PhotoFilters;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Entity;
@@ -369,6 +370,11 @@ class PhotosController extends Controller
 
         $photo->is_primary = 1;
         $photo->save();
+
+        // An event that had no usable flyer may now have one (issue #2058).
+        foreach ($events as $event) {
+            EventPhotoAdded::dispatch($event, true);
+        }
 
         flash('Success', 'The primary photo was updated.');
 

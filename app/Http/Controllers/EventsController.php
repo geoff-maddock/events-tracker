@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\EventCreated;
+use App\Events\EventPhotoAdded;
 use App\Events\EventUpdated;
 use App\Filters\EventFilters;
 use App\Http\Requests\EventRequest;
@@ -2048,6 +2049,7 @@ class EventsController extends Controller
                     $photo->is_primary = 1;
                     $photo->save();
                     $event->addPhoto($photo);
+                    EventPhotoAdded::dispatch($event, true);
                 } catch (\Throwable $e) {
                     Log::warning('EventsController@store: failed to attach flyer photo', [
                         'event_id' => $event->id,
@@ -2863,6 +2865,8 @@ class EventsController extends Controller
 
             // attach to event
             $event->addPhoto($photo);
+
+            EventPhotoAdded::dispatch($event, 0 === $existingPhotoCount);
 
             // make a call to notify all users who are following any of the tags/keywords if the event starts in the future
             if ($event->start_at >= Carbon::now()) {

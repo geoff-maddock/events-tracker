@@ -2,9 +2,13 @@
 
 namespace App\Providers;
 
+use App\Events\EventCreated;
+use App\Events\EventPhotoAdded;
+use App\Events\EventUpdated;
 use App\Listeners\ActivateVerifiedUserListener;
 use App\Listeners\LogFailedLogin;
 use App\Listeners\LogSuccessfulLogin;
+use App\Listeners\QueueDiscordEventPost;
 use App\Listeners\RouterMatchedListener;
 use App\Listeners\SendCustomEmailVerificationNotification;
 use Illuminate\Auth\Events\Failed;
@@ -36,6 +40,21 @@ class EventServiceProvider extends ServiceProvider
         ],
         Verified::class => [
             ActivateVerifiedUserListener::class,
+        ],
+
+        // Discord auto-repost (issue #2058). EventPhotoAdded is the primary
+        // trigger — an event usually gains its flyer after creation, and an
+        // announcement without one is easy to scroll past. The other two are
+        // cheap secondaries; PostEventToDiscord is ShouldBeUnique, so the
+        // burst of all three collapses into a single delayed job.
+        EventPhotoAdded::class => [
+            QueueDiscordEventPost::class,
+        ],
+        EventCreated::class => [
+            QueueDiscordEventPost::class,
+        ],
+        EventUpdated::class => [
+            QueueDiscordEventPost::class,
         ],
     ];
 
