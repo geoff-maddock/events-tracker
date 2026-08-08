@@ -10,7 +10,7 @@
 
     <!-- Search -->
     <div class="p-4">
-        @include('partials.search-autocomplete', ['variant' => 'tw', 'inputId' => 'search-sidebar'])
+        @include('partials.search-autocomplete', ['variant' => 'tw', 'inputId' => 'search-sidebar'])å
     </div>
 
     <!-- Navigation -->
@@ -148,10 +148,6 @@
         <a href="{{ route('pages.allModules') }}" class="nav-item-tw mt-1 {{ Request::is('all-modules') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-grid-3x3-gap text-lg"></i>
             <span>All Modules</span>
-        </a>
-        <a href="{{ route('feedback.admin.index') }}" class="nav-item-tw mt-1 {{ Request::is('feedback/responses*') || Request::is('feedback/summary') ? 'nav-item-active-tw' : '' }}">
-            <i class="bi bi-chat-square-quote text-lg"></i>
-            <span>Feedback</span>
         </a>
         <a href="{{ route('discord-targets.index') }}" class="nav-item-tw mt-1 {{ Request::is('discord-targets*') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-discord text-lg"></i>
@@ -325,10 +321,6 @@
         <a href="{{ route('pages.allModules') }}" class="nav-item-tw mt-1 {{ Request::is('all-modules') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-grid-3x3-gap text-lg"></i>
             <span>All Modules</span>
-        </a>
-        <a href="{{ route('feedback.admin.index') }}" class="nav-item-tw mt-1 {{ Request::is('feedback/responses*') || Request::is('feedback/summary') ? 'nav-item-active-tw' : '' }}">
-            <i class="bi bi-chat-square-quote text-lg"></i>
-            <span>Feedback</span>
         </a>
         <a href="{{ route('discord-targets.index') }}" class="nav-item-tw mt-1 {{ Request::is('discord-targets*') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-discord text-lg"></i>
