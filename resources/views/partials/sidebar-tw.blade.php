@@ -10,7 +10,7 @@
 
     <!-- Search -->
     <div class="p-4">
-        @include('partials.search-autocomplete', ['variant' => 'tw', 'inputId' => 'search-sidebar'])å
+        @include('partials.search-autocomplete', ['variant' => 'tw', 'inputId' => 'search-sidebar'])
     </div>
 
     <!-- Navigation -->
