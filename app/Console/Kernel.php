@@ -88,7 +88,7 @@ class Kernel extends ConsoleKernel
         }
 
         // update the sitemap once per week
-        $schedule->command('sitemap:generate')->weekly()->sundays()->timezone('America/New_York')->at('5:00');
+        $schedule->command('sitemap:generate')->daily()->timezone('America/New_York')->at('5:00');
 
         // EVERY 30 MINUTES
         // automate Instagram posts for events
