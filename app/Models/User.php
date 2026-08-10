@@ -635,6 +635,15 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
         return $this->groups->contains('name', $group);
     }
 
+    /**
+     * Whether this user is an administrator. Single definition of "admin"
+     * for the app — see Controller::requireAdmin(), which defers to this.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->hasGroup('admin') || $this->hasGroup('super_admin');
+    }
+
     public function hasPermission(string $permission): bool
     {
         return $this->getPermissions()->contains('name', $permission);

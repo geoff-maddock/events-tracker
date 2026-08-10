@@ -137,7 +137,7 @@ class PostsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
+    ): string|RedirectResponse {
         // if the gate does not allow this user to show a forum redirect to home
         if (Gate::denies('show_forum')) {
             flash()->error('Unauthorized', 'Your cannot view the forum');

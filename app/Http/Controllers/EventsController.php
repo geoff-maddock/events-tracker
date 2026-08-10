@@ -1136,6 +1136,9 @@ class EventsController extends Controller
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
                     'filters' => $listResultSet->getFilters(),
+                    // shares events.index-tw with /events, so give it its own title
+                    'pageTitle' => 'Past Events — Pittsburgh Concert & Show Archive',
+                    'pageDescription' => 'Browse past concerts, club nights, and events in Pittsburgh, newest first.',
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -1480,69 +1483,6 @@ class EventsController extends Controller
             ])
             ->render();
     }
-
-    /**
-     * Send a reminder to all users about all events they are attending.
-     *
-     * @return Response|RedirectResponse
-     */
-    public function daily()
-    {
-        // get all the users
-        $users = User::orderBy('name', 'ASC')->get();
-
-        $site = config('app.app_name');
-        $url = config('app.url');
-
-        // cycle through all the users
-        foreach ($users as $user) {
-            $interests = [];
-            $seriesList = [];
-
-            // get all the events the user is attending in the future, up to 100
-            $events = $user->getAttendingFuture()->take(100);
-
-            // build an array of future events based on tags the user follows
-            $tags = $user->getTagsFollowing();
-
-            if (count($tags) > 0) {
-                foreach ($tags as $tag) {
-                    /** @var \App\Models\Tag $tag */
-                    if (count($tag->todaysEvents()) > 0) {
-                        $interests[$tag->name] = $tag->todaysEvents();
-                    }
-                }
-            }
-
-            // build an array of series that the user is following
-            $series = $user->getSeriesFollowing();
-            if (count($series) > 0) {
-                foreach ($series as $s) {
-                    // if the series does not have NO SCHEDULE AND CANCELLED AT IS NULL
-                    /** @var \App\Models\Series $s */
-                    if ($s->occurrenceType->name !== 'No Schedule' && (null === $s->cancelled_at)) {
-                        // add matches to list
-                        $next_date = $s->nextOccurrenceDate()->format('Y-m-d');
-
-                        // today's date is the next series date
-                        if ($next_date === Carbon::now()->format('Y-m-d')) {
-                            $seriesList[] = $s;
-                        }
-                    }
-                }
-            }
-
-            Mail::send('emails.daily-events', ['user' => $user, 'events' => $events, 'seriesList' => $seriesList, 'interests' => $interests, 'url' => $url, 'site' => $site], function ($email) use ($user) {
-                $email->from('admin@events.cutupsmethod.com', 'Event Repo');
-                $email->to($user->email, $user->name)->subject('Event Repo: Daily Events Reminder');
-            });
-        }
-
-        flash()->success('Success', 'You sent an email reminder to '.count($users).' users about events they are attending');
-
-        return back();
-    }
-
 
     /**
      * Displays the calendar based on passed events and tag.

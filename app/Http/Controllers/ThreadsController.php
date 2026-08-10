@@ -24,6 +24,7 @@ use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
@@ -804,8 +805,12 @@ class ThreadsController extends Controller
                 ->all()
             : [];
 
-        // Atomic view count increment — avoids model events and updated_at side-effects
-        $thread->increment('views');
+        // Bump the view counter at the DB level. Eloquent's increment() routes
+        // through the query builder's addUpdatedAtColumn(), so it would stamp
+        // updated_at on every page load and make a read look like activity.
+        // Reading a thread is not activity; posting or editing is.
+        DB::table('threads')->where('id', $thread->id)->increment('views');
+        $thread->views = $thread->views + 1;
 
         return view('threads.show-tw', compact('thread', 'tags', 'threadFollow', 'threadLike', 'likedPostIds'));
     }

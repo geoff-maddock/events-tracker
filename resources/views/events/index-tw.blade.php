@@ -1,12 +1,24 @@
 @extends('layouts.app-tw')
 
 @section('title')
-@if (isset($tag) || isset($related) || isset($type) || isset($slug) || isset($cdate))
+@if (isset($pageTitle))
+{{ $pageTitle }}
+@elseif (isset($tag) || isset($related) || isset($type) || isset($slug) || isset($cdate))
 Events @include('events.title-crumbs')
 @else
 Pittsburgh Events Calendar — Concerts, Shows & More
 @endif
 @endsection
+
+{{-- listing variants that share this view but are distinct pages set their own description --}}
+@if (isset($pageDescription))
+@section('description')
+{{ $pageDescription }}
+@endsection
+@section('og-description')
+{{ $pageDescription }}
+@endsection
+@endif
 
 @if (isset($events) && count($events) > 0)
 @php

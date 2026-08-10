@@ -50,7 +50,23 @@ class ForumsController extends Controller
 
     public function __construct(ForumFilters $filter)
     {
-        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
+
+        // A forum is site structure, not user content, so only admins may add,
+        // edit or remove one. Hiding the "Add Forum" button is not enough on
+        // its own: the resource routes let any signed-in user POST /forums,
+        // and destroy carried no auth middleware at all.
+        $this->middleware(function ($request, $next) {
+            $user = $request->user();
+
+            if (!$user || !$user->isAdmin()) {
+                flash()->error('Unauthorized', 'You cannot manage forums');
+
+                return redirect()->route('forums.index');
+            }
+
+            return $next($request);
+        }, ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
 
         // prefix for session storage
         $this->prefix = 'app.forums.';
@@ -75,7 +91,7 @@ class ForumsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
+    ): string|RedirectResponse {
         // if the gate does not allow this user to show a forum redirect to home
         if (Gate::denies('show_forum')) {
             flash()->error('Unauthorized', 'Your cannot view the forum index');
@@ -137,81 +153,13 @@ class ForumsController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     */
-    public function indexAll(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore,
-        ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
-        // if the gate does not allow this user to show a forum redirect to home
-        if (Gate::denies('show_forum')) {
-            flash()->error('Unauthorized', 'Your cannot view the forum index');
-
-            return redirect()->back();
-        }
-
-        // initialized listParamSessionStore with base index key
-        $listParamSessionStore->setBaseIndex('internal_forum');
-        $listParamSessionStore->setKeyPrefix('internal_forum_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([ForumsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Forum::query()
-        ->select('forums.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['forums.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        /* @phpstan-ignore-next-line */
-        $forums = $query->visible($this->user)
-            ->with('visibility')
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        // return json only
-        if (request()->wantsJson()) {
-            return $forums;
-        }
-
-        return view('forums.index-tw')
-                ->with(array_merge(
-                    [
-                        'limit' => $listResultSet->getLimit(),
-                        'sort' => $listResultSet->getSort(),
-                        'direction' => $listResultSet->getSortDirection(),
-                        'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters(),
-                    ],
-                    $this->getFilterOptions(),
-                    $this->getListControlOptions()
-                ))
-                ->with(compact('forums'))
-                ->render();
-    }
-
-    /**
      * Filter a list of forums.
      */
     public function filter(
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
+    ): string|RedirectResponse {
         // if the gate does not allow this user to show a forum redirect to home
         if (Gate::denies('show_forum')) {
             flash()->error('Unauthorized', 'Your cannot view the forum index');
