@@ -303,7 +303,6 @@ Route::get('events/by-date/{year}/{month?}/{day?}', [\App\Http\Controllers\Event
     ->where('year', '[1-9][0-9][0-9][0-9]')
     ->where('month', '(0?[1-9]|1[012])$')
     ->where('day', '(0?[1-9]|[12][0-9]|3[01])');
-Route::get('events/daily', [\App\Http\Controllers\EventsController::class, 'daily']);
 Route::get('events/day/{day}', [\App\Http\Controllers\EventsController::class, 'day'])->name('events.day')
     ->where('day', '[12][0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])');
 Route::match(['get', 'post'], 'events/attending', [\App\Http\Controllers\EventsController::class, 'indexAttending'])->name('events.attending');
@@ -399,7 +398,8 @@ Route::bind('forums', function ($id) {
     return Forum::whereId($id)->firstOrFail();
 });
 
-Route::get('forums/all', [\App\Http\Controllers\ForumsController::class, 'indexAll']);
+// legacy alias; indexAll was a byte-for-byte copy of index, so consolidate on the index URL
+Route::permanentRedirect('forums/all', '/forums');
 Route::match(['get', 'post'], 'forums/filter', ['as' => 'forums.filter', 'uses' => '\App\Http\Controllers\ForumsController@filter']);
 Route::get('forums/reset', ['as' => 'forums.reset', 'uses' => '\App\Http\Controllers\ForumsController@reset']);
 Route::get('forums/rpp-reset', ['as' => 'forums.rppReset', 'uses' => '\App\Http\Controllers\ForumsController@rppReset']);
@@ -452,7 +452,8 @@ Route::match(['get', 'post'], 'posts/filter', ['as' => 'posts.filter', 'uses' =>
 Route::get('posts/reset', ['as' => 'posts.reset', 'uses' => '\App\Http\Controllers\PostsController@reset']);
 Route::get('posts/rpp-reset', ['as' => 'posts.rppReset', 'uses' => '\App\Http\Controllers\PostsController@rppReset']);
 Route::get('posts/tag/{tag}', [\App\Http\Controllers\PostsController::class, 'indexTags'])->name('posts.tag');
-Route::get('posts/all', [\App\Http\Controllers\PostsController::class, 'indexAll']);
+// legacy alias; indexAll was a byte-for-byte copy of index, so consolidate on the index URL
+Route::permanentRedirect('posts/all', '/posts');
 
 Route::bind('posts', function ($id) {
     return Post::whereId($id)->firstOrFail();
@@ -497,7 +498,8 @@ Route::resource('discord-targets', \App\Http\Controllers\DiscordTargetsControlle
     ->parameters(['discord-targets' => 'discordTarget']);
 
 // BLOGS
-Route::get('blogs/all', [\App\Http\Controllers\BlogsController::class, 'indexAll']);
+// legacy alias; BlogsController never had an indexAll, so this 500'd — send it to the index
+Route::permanentRedirect('blogs/all', '/blogs');
 Route::match(['get', 'post'], 'blogs/filter', ['as' => 'blogs.filter', 'uses' => '\App\Http\Controllers\BlogsController@filter']);
 Route::get('blogs/reset', ['as' => 'blogs.reset', 'uses' => '\App\Http\Controllers\BlogsController@reset']);
 Route::get('blogs/rpp-reset', ['as' => 'blogs.rppReset', 'uses' => '\App\Http\Controllers\BlogsController@rppReset']);

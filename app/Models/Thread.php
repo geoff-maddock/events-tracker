@@ -53,6 +53,8 @@ use Illuminate\Support\Str;
  * @property mixed                                                         $entity_list
  * @property mixed                                                         $is_locked
  * @property mixed                                                         $last_post_at
+ * @property mixed                                                         $last_activity_at
+ * @property \App\Models\Post|null                                         $lastPost
  * @property mixed                                                         $post_count
  * @property mixed                                                         $tag_list
  * @property int|null                                                      $likes_count
@@ -208,6 +210,28 @@ class Thread extends Eloquent
         }
 
         return $this->created_at;
+    }
+
+    /**
+     * When something last actually happened in this thread: the thread being
+     * edited, or a post being made or edited. Deliberately not affected by
+     * page views — those increment `views` without stamping any timestamp.
+     *
+     * Prefers the eager-loaded lastPost (listings load `lastPost.user`) so
+     * rendering a page of threads stays a single query.
+     */
+    public function getLastActivityAtAttribute(): DateTime
+    {
+        /** @var Post|null $lastPost */
+        $lastPost = $this->relationLoaded('lastPost')
+            ? $this->lastPost
+            : $this->posts()->orderBy('created_at', 'desc')->first();
+
+        if ($lastPost && $lastPost->updated_at->greaterThan($this->updated_at)) {
+            return $lastPost->updated_at;
+        }
+
+        return $this->updated_at;
     }
 
     /**

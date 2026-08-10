@@ -2,6 +2,15 @@
 
 @section('title', '503 - Service Unavailable')
 
+{{-- see errors/404: error pages must not self-canonicalize or be indexed --}}
+@section('canonical')
+<!-- no canonical: error page -->
+@endsection
+
+@section('meta.robots')
+<meta name="robots" content="noindex, follow">
+@endsection
+
 @section('content')
 
 <div class="flex items-center justify-center min-h-[60vh]">

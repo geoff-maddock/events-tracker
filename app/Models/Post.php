@@ -107,6 +107,15 @@ class Post extends Eloquent
 
     protected $guarded = [];
 
+    /**
+     * Making or editing a post is activity on its thread, so it bumps the
+     * thread's updated_at. Laravel's relation touch is a raw update, so it
+     * does not fire Thread's updating event and cannot rewrite updated_by.
+     *
+     * @var array<int, string>
+     */
+    protected $touches = ['thread'];
+
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

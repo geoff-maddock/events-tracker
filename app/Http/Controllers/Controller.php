@@ -43,8 +43,7 @@ abstract class Controller extends BaseController
      */
     protected function requireAdmin(): ?JsonResponse
     {
-        if (!$this->user
-            || (!$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin'))) {
+        if (!$this->user || !$this->user->isAdmin()) {
             return response()->json(['message' => 'Not authorized.'], 403);
         }
 

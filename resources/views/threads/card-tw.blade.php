@@ -97,10 +97,8 @@
 
         {{-- Col 5: Last activity (lg+) --}}
         <div class="hidden lg:flex flex-col items-end text-right w-32 flex-shrink-0">
-            @php
-                $lastPostAt = method_exists($thread, 'lastPostAt') ? $thread->lastPostAt : $thread->updated_at;
-            @endphp
-            <span class="text-xs text-foreground">{{ $lastPostAt->diffForHumans() }}</span>
+            {{-- last_activity_at covers thread edits and post activity, and ignores views --}}
+            <span class="text-xs text-foreground">{{ $thread->last_activity_at->diffForHumans() }}</span>
             @if ($thread->posts_count > 0 && $thread->lastPost?->user)
             <span class="text-xs text-muted-foreground truncate max-w-full mt-0.5">{{ $thread->lastPost->user->name }}</span>
             @endif
