@@ -32,27 +32,43 @@ class PostDiscordReminders extends Command
     {
         if (! config('discord.enabled')) {
             $this->info('Discord posting is disabled (DISCORD_ENABLED). Nothing to do.');
+            Log::info('Discord reminders: skipped, integration disabled (DISCORD_ENABLED).');
 
             return Command::SUCCESS;
         }
 
         $dryRun = (bool) $this->option('dry-run');
 
-        $targets = DiscordTarget::forMode(DiscordTarget::MODE_REMINDER)->with('criteria');
+        $query = DiscordTarget::forMode(DiscordTarget::MODE_REMINDER)->with('criteria');
 
         if ($targetId = $this->option('target')) {
-            $targets->whereKey($targetId);
+            $query->whereKey($targetId);
         }
 
+        $targets = $query->get();
         $queued = 0;
 
-        foreach ($targets->get() as $target) {
+        // Zero targets here is the commonest reason for silence, and it is
+        // indistinguishable from "the scheduler never ran" unless it is
+        // written down: cron discards the command's stdout.
+        Log::info('Discord reminders: run started', [
+            'targets_opted_in' => $targets->count(),
+            'dry_run' => $dryRun,
+        ]);
+
+        foreach ($targets as $target) {
             foreach ($target->effectiveReminderOffsets() as $offset) {
                 $queued += $this->remindersFor($matcher, $target, $offset, $dryRun);
             }
         }
 
         $this->info(($dryRun ? 'Would queue ' : 'Queued ').$queued.' Discord reminder(s).');
+
+        Log::info('Discord reminders: run finished', [
+            'targets_opted_in' => $targets->count(),
+            'queued' => $queued,
+            'dry_run' => $dryRun,
+        ]);
 
         return Command::SUCCESS;
     }
@@ -73,6 +89,15 @@ class PostDiscordReminders extends Command
 
         $events = $matcher->eventsFor($target, $from, $to)->get();
         $queued = 0;
+
+        // Separates "the criteria matched nothing" from "the criteria matched
+        // but every hit was suppressed" — the two look identical in the count.
+        Log::debug('Discord reminders: window scanned', [
+            'target_id' => $target->id,
+            'target' => $target->name,
+            'offset_days' => $offset,
+            'matched' => $events->count(),
+        ]);
 
         foreach ($events as $event) {
             if ($this->postedTooRecently($target, $event)) {

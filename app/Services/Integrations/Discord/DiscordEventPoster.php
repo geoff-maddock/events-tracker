@@ -141,14 +141,31 @@ class DiscordEventPoster
         $post = $this->claim($target, $eventId, $reason, $reasonKey, $userId);
 
         if ($post->isSent() && ! $allowResend) {
+            Log::debug('Discord: already sent, no-op', [
+                'target_id' => $target->id,
+                'event_id' => $eventId,
+                'reason' => $reason,
+                'reason_key' => $reasonKey,
+            ]);
+
             return $post;
         }
 
         if (! config('discord.enabled') || ! $target->is_enabled) {
+            $reasonSkipped = config('discord.enabled') ? 'Target disabled' : 'Discord integration disabled';
+
             $post->fill([
                 'status' => DiscordPost::STATUS_SKIPPED,
-                'error' => config('discord.enabled') ? 'Target disabled' : 'Discord integration disabled',
+                'error' => $reasonSkipped,
             ])->save();
+
+            Log::info('Discord: post skipped', [
+                'target_id' => $target->id,
+                'target' => $target->name,
+                'event_id' => $eventId,
+                'reason' => $reason,
+                'skipped_because' => $reasonSkipped,
+            ]);
 
             return $post;
         }
@@ -174,6 +191,18 @@ class DiscordEventPoster
         ])->save();
 
         $target->recordSuccess();
+
+        // The counterpart to the failure line below. Without it the log can
+        // only ever prove that something went wrong, never that anything went
+        // right, which is the harder question when a channel looks quiet.
+        Log::info('Discord post sent', [
+            'target_id' => $target->id,
+            'target' => $target->name,
+            'event_id' => $eventId,
+            'reason' => $reason,
+            'reason_key' => $reasonKey,
+            'message_id' => $result['message_id'],
+        ]);
 
         if (null !== $event) {
             $this->recordEventSuccess($event, $result['message_id'], $userId);

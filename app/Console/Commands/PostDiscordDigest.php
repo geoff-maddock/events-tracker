@@ -7,6 +7,7 @@ use App\Models\DiscordTarget;
 use App\Services\Integrations\Discord\DiscordEventPoster;
 use App\Services\Integrations\Discord\DiscordTargetMatcher;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Posts the weekly roundup (issue #2058).
@@ -33,6 +34,7 @@ class PostDiscordDigest extends Command
     {
         if (! config('discord.enabled')) {
             $this->info('Discord posting is disabled (DISCORD_ENABLED). Nothing to do.');
+            Log::info('Discord digest: skipped, integration disabled (DISCORD_ENABLED).');
 
             return Command::SUCCESS;
         }
@@ -55,8 +57,22 @@ class PostDiscordDigest extends Command
         // what makes the hourly schedule safe.
         $weekKey = $now->format('o-\WW');
         $sent = 0;
+        $targets = $query->get();
 
-        foreach ($query->get() as $target) {
+        // 23 runs out of 24 match nothing, so the routine "no target is due"
+        // case is debug — but it still has to be written somewhere, because
+        // "did the scheduler even fire?" is otherwise unanswerable after the
+        // fact: cron discards the command's stdout.
+        Log::log($targets->isEmpty() ? 'debug' : 'info', 'Discord digest: run started', [
+            'week' => $weekKey,
+            'hour' => $now->hour,
+            'day_of_week' => $now->dayOfWeek,
+            'targets_due' => $targets->count(),
+            'dry_run' => $dryRun,
+            'forced' => $force,
+        ]);
+
+        foreach ($targets as $target) {
             $from = $now->copy();
             $to = $now->copy()->addDays($target->digest_window_days);
 
@@ -83,6 +99,17 @@ class PostDiscordDigest extends Command
                 if ($post->isSent()) {
                     $sent++;
                 }
+
+                // The ledger status is the answer to "why was the channel
+                // quiet this week" — 'skipped' on an empty window reads very
+                // differently from a digest that was already sent.
+                Log::info('Discord digest: target processed', [
+                    'target_id' => $target->id,
+                    'target' => $target->name,
+                    'week' => $weekKey,
+                    'events' => $events->count(),
+                    'status' => $post->status,
+                ]);
             } catch (DiscordWebhookException $e) {
                 // Recorded and logged by the poster; one bad channel must not
                 // stop the rest of the week's digests.
@@ -91,6 +118,15 @@ class PostDiscordDigest extends Command
         }
 
         $this->info($sent.' digest(s) posted for '.$weekKey.'.');
+
+        if (! $targets->isEmpty()) {
+            Log::info('Discord digest: run finished', [
+                'week' => $weekKey,
+                'targets_due' => $targets->count(),
+                'sent' => $sent,
+                'dry_run' => $dryRun,
+            ]);
+        }
 
         return Command::SUCCESS;
     }

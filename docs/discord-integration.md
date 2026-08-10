@@ -244,13 +244,68 @@ php artisan test --filter Discord
 Covers the poster, target matcher, embed builder, webhook client, admin UI, auto-post
 listener, manual post, and both scheduled commands.
 
+## Logging
+
+Cron discards the scheduled commands' stdout, so both commands and the poster write
+what they did to the application log. Every line is prefixed `Discord`:
+
+```bash
+grep -i discord storage/logs/laravel-$(date +%F).log
+```
+
+| Line | Level | Meaning |
+|---|---|---|
+| `Discord reminders: run started` / `run finished` | info | The daily sweep fired. `targets_opted_in` is how many targets have `post_reminders` on; `queued` is how many jobs it dispatched. |
+| `Discord reminders: window scanned` | debug | Per target and offset, how many events the criteria matched — separates "matched nothing" from "matched, then suppressed". |
+| `Discord reminders: reminder suppressed, posted recently` | info | `reminder_min_gap_hours` swallowed one. |
+| `Discord digest: run started` | debug / **info** | The hourly run fired. Logged at debug when no target is due for this hour (23 hours out of 24), info when one is. |
+| `Discord digest: target processed` | info | Carries `events` and the ledger `status` — `skipped` means an empty window, `sent` means a real roundup. |
+| `Discord digest: run finished` | info | Summary; only written when a target was actually due. |
+| `Discord post sent` | info | One message delivered, with its `message_id`. |
+| `Discord: post skipped` | info | The integration or the target is disabled. |
+| `Discord: already sent, no-op` | debug | The claim-first ledger stopped a duplicate. This is the dedupe working. |
+| `Discord post failed` | error | Delivery failed; carries the HTTP status and Discord error code. |
+
+Webhook URLs are never logged — failure lines carry `maskedUrl()` only.
+
+The `discord_posts` table is the authoritative ledger and outlives the 7-day log
+rotation:
+
+```sql
+SELECT discord_target_id, event_id, reason, reason_key, status, error, posted_at
+FROM discord_posts ORDER BY id DESC LIMIT 20;
+```
+
 ## Troubleshooting
 
 | Symptom | Likely cause |
 |---|---|
 | Nothing posts at all | `DISCORD_ENABLED` false, or config cached before it was set |
+| Nothing has posted since enabling it | Most likely nothing is *due* yet. The digest fires only on the target's `digest_day`/`digest_hour`; announce needs a **new** event to gain a flyer (it does not backfill); reminders need `post_reminders` on. Confirm with the dry runs below. |
 | Reminders/digests never fire, manual works | `schedule:run` not in cron — see [Scheduled tasks](deployment_notes.md#scheduled-tasks) |
 | Announce/reminders never fire, digest works | Queue worker not running (digest posts inline, the others queue) |
 | A target went quiet on its own | Auto-disabled after repeated permanent failures, or the webhook was deleted in Discord — check `is_enabled` and the failure email |
 | Digest posted twice in a week | Should be impossible; the ISO week key dedupes. Check for two targets on the same channel. |
 | A target posts nothing but is enabled | `match_all` off with no criteria matches nothing by design |
+
+### Checking a live install
+
+Read-only, safe to run on production at any time:
+
+```bash
+# Is the feature actually on in the CACHED config? (env() alone will lie)
+php artisan tinker --execute="var_dump(config('discord.enabled'));"
+
+# Is the scheduler registered, and when does each command run next?
+php artisan schedule:list
+
+# What would each command send right now?
+php artisan discord:reminders --dry-run
+php artisan discord:digest --dry-run --force
+```
+
+`--dry-run` sends nothing. Dropping `--dry-run` from the digest posts for real — use
+`--target=ID` to keep that to one channel.
+
+Reminders reporting `0` while the digest dry run lists events means the target has
+`post_reminders` off; `forMode()` filters it out before any event is considered.
