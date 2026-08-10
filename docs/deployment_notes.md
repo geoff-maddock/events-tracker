@@ -152,6 +152,38 @@ $ npm install
 	sudo chmod -R ug+rwx storage bootstrap/cache
 ```
 
+The scheduled `sitemap:generate` command writes `sitemap*.xml` straight into
+`public/`, so the **sitemap files must be writable by the user that runs
+`schedule:run`** (`www-data` — check with `sudo grep -rn 'schedule:run'
+/var/spool/cron/crontabs/ /etc/cron.d/ /etc/crontab`). A manual run as the
+deploying user leaves them owned by that user, and every subsequent cron run
+then fails:
+
+```bash
+	sudo chgrp www-data public/sitemap*.xml
+	sudo chmod 664 public/sitemap*.xml
+```
+
+Deliberately **not** making `public/` itself group-writable: replacing an
+existing file only needs write permission on the file, so the daily run works
+without handing PHP the ability to create files in the docroot. The trade-off
+is that new sitemap files cannot be created by the scheduler — if a section
+outgrows one file (45k URLs) or a new section is added to the command, the
+first run after that must be done by a user who can write `public/`:
+
+```bash
+	php artisan sitemap:generate && sudo chgrp www-data public/sitemap*.xml && sudo chmod 664 public/sitemap*.xml
+```
+
+The command checks all of this up front and exits non-zero naming the offending
+files, so the condition shows up as a failed command rather than a silent
+staleness — Spatie's `writeToFile()` is a bare `file_put_contents()` that only
+raises a warning on failure. Verify a fix with a run as the scheduler user:
+
+```bash
+	sudo -u www-data php /var/www/project-name/artisan sitemap:generate
+```
+
 * Build assets
 ```bash
 npm run build
