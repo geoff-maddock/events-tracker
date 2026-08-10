@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\UserStatus;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
 abstract class TestCase extends BaseTestCase
@@ -36,6 +37,15 @@ abstract class TestCase extends BaseTestCase
         // branch). mail.default is set as well in case that file is ever
         // modernised.
         config(['mail.driver' => 'array', 'mail.default' => 'array']);
+
+        // No test may reach the network either. Without this the Discord suite
+        // sent live requests to discord.com using factory-generated webhook
+        // URLs, and Discord's real 404s and 503s were what drove the failure
+        // path that emailed the admin.
+        //
+        // This is the guarantee; Http::fake() in a test is how that test opts
+        // back in. An unfaked request now throws instead of silently escaping.
+        Http::preventStrayRequests();
 
         // replaces disableExceptionHandling
         // disabled due to Token mismatch on post - not sure when this is needed
