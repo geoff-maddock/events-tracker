@@ -4,6 +4,7 @@ namespace App\Services\Integrations\Discord;
 
 use App\Models\DiscordTarget;
 use App\Models\Event;
+use App\Services\EventTime;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -19,6 +20,11 @@ use Illuminate\Support\Str;
  *     rather than send a blank string.
  *  2. Clamp every string against config('discord.limits'). Over-long content
  *     is rejected the same opaque way.
+ *
+ * Every absolute instant comes from App\Services\EventTime, never from the
+ * model's cast Carbon. Discord resolves <t:unix> tags against the viewer's own
+ * clock, so an instant computed in the app's fixed-offset 'EST' zone shows an
+ * hour late for the eight months of the year the timezone actually observes.
  *
  * Note this does not reuse Event::getBriefFormat() or getInstagramFormat():
  * both are shaped for their platform — hashtags, @handles, a 280-character
@@ -107,8 +113,8 @@ class DiscordEmbedBuilder
             $embed['image'] = ['url' => $image];
         }
 
-        if (null !== $event->start_at) {
-            $embed['timestamp'] = $event->start_at->toIso8601String();
+        if (null !== ($startsAt = EventTime::startsAt($event))) {
+            $embed['timestamp'] = $startsAt->toIso8601String();
         }
 
         if (null !== $event->eventType) {
@@ -132,13 +138,13 @@ class DiscordEmbedBuilder
     {
         $fields = [];
 
-        if (null !== $event->start_at) {
+        if (null !== ($startsAt = EventTime::startsAt($event))) {
             // Discord renders <t:unix:F> in each viewer's own timezone, which
             // beats baking one timezone's string into the message.
-            $when = '<t:'.$event->start_at->timestamp.':F>';
+            $when = '<t:'.$startsAt->timestamp.':F>';
 
-            if (null !== $event->door_at) {
-                $when .= "\nDoors <t:".$event->door_at->timestamp.':t>';
+            if (null !== ($doorsAt = EventTime::doorsAt($event))) {
+                $when .= "\nDoors <t:".$doorsAt->timestamp.':t>';
             }
 
             $fields[] = $this->field('When', $when);
@@ -236,8 +242,8 @@ class DiscordEmbedBuilder
     {
         $line = '**['.$this->escapeMarkdown($event->name).']('.route('events.show', $event).')**';
 
-        if (null !== $event->start_at) {
-            $line .= ' — <t:'.$event->start_at->timestamp.':D>';
+        if (null !== ($startsAt = EventTime::startsAt($event))) {
+            $line .= ' — <t:'.$startsAt->timestamp.':D>';
         }
 
         if (null !== $event->venue) {
