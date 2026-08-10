@@ -14,8 +14,8 @@ use Eluceo\iCal\Domain\ValueObject\TimeSpan;
 use Eluceo\iCal\Domain\ValueObject\DateTime;
 use Eluceo\iCal\Domain\ValueObject\Attachment;
 use Eluceo\iCal\Domain\Entity\TimeZone;
+use App\Services\EventTime;
 use DateTimeZone as PhpDateTimeZone;
-use DateTime as PhpDateTime;
 use Storage;
 use DateTimeImmutable;
 use DateInterval;
@@ -38,11 +38,13 @@ class ICalBuilder
         // create a calendar object
         $vCalendar = new Calendar([]);
 
-        // set the default php time zone
-        date_default_timezone_set('America/New_York');
+        // Deliberately no date_default_timezone_set() here. It used to set the
+        // process default for the rest of the request, so unrelated code read
+        // dates differently depending on whether anyone had downloaded a
+        // calendar. EventTime carries the zone explicitly instead.
 
         // specify local time zone
-        $phpDateTimeZone = new PhpDateTimeZone('America/New_York');
+        $phpDateTimeZone = new PhpDateTimeZone(EventTime::ZONE);
         $utcTimeZone = new PhpDateTimeZone('UTC');
 
         $oldestTime = new DateTimeImmutable('now', $phpDateTimeZone);
@@ -61,25 +63,12 @@ class ICalBuilder
 
             $vEvent = new iCalEvent($uniqueIdentifier);
 
-            // set up occurrence           
-            $phpStart = PhpDateTime::createFromFormat('Y-m-d H:i:s', $event->start_at, $phpDateTimeZone);
-            $phpStart->setTimezone($phpDateTimeZone);
-            $start = new DateTime($phpStart, true);
-
-
-            if ($event->end_at) {
-                $phpEnd = PhpDateTime::createFromFormat('Y-m-d H:i:s', $event->end_at, $phpDateTimeZone);
-                $phpEnd->setTimezone($phpDateTimeZone);
-                $end = new DateTime($phpEnd, true);
-            } else {
-                $phpEnd = PhpDateTime::createFromFormat('Y-m-d H:i:s', $event->start_at, $phpDateTimeZone);
-                $phpEnd->setTimezone($phpDateTimeZone);
-
-                // add 4 hours to the php end time  
-                $phpEnd->add(new DateInterval('PT4H'));
-                $end = new DateTime($phpEnd, true);
-
-            }
+            // set up occurrence
+            // EventTime reinterprets the naive stored wall-clock value in
+            // America/New_York, and falls back to a 4-hour duration when the
+            // event has no end_at.
+            $start = new DateTime(EventTime::startsAt($event), true);
+            $end = new DateTime(EventTime::endsAt($event), true);
 
             $occurrence = new TimeSpan($start, $end);
 

@@ -208,6 +208,27 @@ Embed strings are clamped against Discord's documented limits (`discord.limits`)
 Discord answers an over-long or empty field with an opaque 400 rather than a useful
 message.
 
+## Times
+
+Every instant in an embed — the `timestamp` field and every `<t:unix:F>` tag — comes
+from `App\Services\EventTime`, never from `$event->start_at` directly.
+
+`events.start_at` is stored as a naive wall-clock value. The model casts it using
+`config('app.timezone')`, which is `'EST'` — and PHP treats `EST` as a **fixed UTC−5
+offset that never observes daylight saving**, while Pittsburgh is UTC−4 from March to
+November. Formatting that value for display is harmless, because the offset never comes
+up. Deriving an *absolute instant* from it is not: Discord resolves `<t:unix>` against
+each viewer's own clock, so an instant computed in `EST` renders an hour late for most
+of the year.
+
+`EventTime` reinterprets the stored wall time in `America/New_York`. `ICalBuilder` and
+`App\Enums\EventTimeWindow` follow the same rule, so the Discord embed, the `.ics`
+download, and the site's time-window pages all agree.
+
+Changing `config/app.php`'s `'EST'` is the real fix, but it touches every date in the
+application. Known debt; `EventTime` is the local remedy. **Anything new that emits an
+absolute instant must go through it.**
+
 ## Commands
 
 ```bash

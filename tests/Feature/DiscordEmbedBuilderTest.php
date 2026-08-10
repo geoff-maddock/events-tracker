@@ -5,7 +5,10 @@ namespace Tests\Feature;
 use App\Models\DiscordTarget;
 use App\Models\Event;
 use App\Models\Tag;
+use App\Services\Calendar\ICalBuilder;
+use App\Services\EventTime;
 use App\Services\Integrations\Discord\DiscordEmbedBuilder;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -47,6 +50,13 @@ class DiscordEmbedBuilderTest extends TestCase
     private function fieldNames(array $embed): array
     {
         return array_column($embed['fields'] ?? [], 'name');
+    }
+
+    private function whenField(Event $event): string
+    {
+        $embed = $this->embedFor($event);
+
+        return $embed['fields'][array_search('When', $this->fieldNames($embed), true)]['value'];
     }
 
     public function test_it_links_to_the_slug_url_not_the_id(): void
@@ -108,12 +118,77 @@ class DiscordEmbedBuilderTest extends TestCase
     {
         $event = Event::factory()->create();
 
-        $embed = $this->embedFor($event);
-        $when = $embed['fields'][array_search('When', $this->fieldNames($embed), true)]['value'];
+        // Not $event->start_at->timestamp. The model casts with the app's
+        // fixed-offset 'EST' zone, which names an instant an hour late
+        // whenever daylight saving is in effect.
+        $this->assertStringContainsString(
+            '<t:'.EventTime::startsAt($event)->timestamp.':F>',
+            $this->whenField($event)
+        );
+    }
 
-        // <t:unix:F> renders in each viewer's own timezone rather than baking
-        // one timezone's string into the message.
-        $this->assertStringContainsString('<t:'.$event->start_at->timestamp.':F>', $when);
+    public function test_a_summer_start_time_is_not_an_hour_late(): void
+    {
+        // The regression this guards is silent: the embed is well-formed and
+        // Discord renders it happily, an hour after the show started.
+        $event = Event::factory()->create(['start_at' => '2026-08-15 20:00:00', 'door_at' => null]);
+
+        // 2026-08-15 20:00 EDT (-04:00) === 2026-08-16T00:00:00Z.
+        $this->assertStringContainsString('<t:1786838400:F>', $this->whenField($event));
+        $this->assertStringNotContainsString(
+            '<t:'.$event->start_at->timestamp.':F>',
+            $this->whenField($event)
+        );
+    }
+
+    public function test_a_winter_start_time_is_unchanged(): void
+    {
+        // Outside daylight saving the app's zone is already correct, so the
+        // fix must be a no-op rather than an hour in the other direction.
+        $event = Event::factory()->create(['start_at' => '2026-01-15 20:00:00', 'door_at' => null]);
+
+        // 2026-01-15 20:00 EST (-05:00) === 2026-01-16T01:00:00Z. Here the
+        // app's fixed-offset zone happens to be right, so both agree.
+        $this->assertStringContainsString('<t:1768525200:F>', $this->whenField($event));
+        $this->assertSame($event->start_at->timestamp, EventTime::startsAt($event)->timestamp);
+    }
+
+    public function test_the_embed_timestamp_and_the_ical_export_agree(): void
+    {
+        // Two of our own outputs for one event. They disagreed by an hour for
+        // eight months of the year, which is how the bug was found.
+        $event = Event::factory()->create(['start_at' => '2026-08-15 20:00:00', 'end_at' => null]);
+
+        $ics = @(new ICalBuilder)->buildCalendar('dst.ics', collect([$event]));
+        $embed = $this->embedFor($event);
+
+        $this->assertStringContainsString('DTSTART;TZID=America/New_York:20260815T200000', $ics);
+        $this->assertSame('2026-08-15T20:00:00-04:00', $embed['timestamp']);
+    }
+
+    public function test_the_doors_time_resolves_in_the_same_zone(): void
+    {
+        $event = Event::factory()->create([
+            'start_at' => '2026-08-15 20:00:00',
+            'door_at' => '2026-08-15 19:00:00',
+        ]);
+
+        $this->assertStringContainsString('Doors <t:1786834800:t>', $this->whenField($event));
+    }
+
+    public function test_the_digest_line_uses_a_corrected_timestamp(): void
+    {
+        $target = DiscordTarget::factory()->create();
+        $event = Event::factory()->create(['start_at' => '2026-08-15 20:00:00']);
+
+        $payload = $this->builder()->forDigest(
+            $target,
+            collect([$event]),
+            Carbon::parse('2026-08-10'),
+            Carbon::parse('2026-08-17'),
+        );
+
+        $this->assertStringContainsString('<t:1786838400:D>', $payload['embeds'][0]['description']);
     }
 
     public function test_over_long_content_is_clamped_rather_than_rejected(): void
