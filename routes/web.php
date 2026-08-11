@@ -159,22 +159,25 @@ Route::delete('users/{id}/photos/{photo_id}', [\App\Http\Controllers\UsersContro
 Route::get('users/{id}/activate', [
     'as' => 'users.activate',
     'uses' => '\App\Http\Controllers\UsersController@activate',
-]);
+])->middleware(['auth', 'can:grant_access']);
 
 Route::get('users/{id}/reminder', [
     'as' => 'users.reminder',
     'uses' => '\App\Http\Controllers\UsersController@reminder',
-]);
+])->middleware(['auth', 'can:grant_access']);
 
+// Self-service as well as admin: the profile page offers "Send Weekly Update"
+// to the account owner, so the owner-or-grant_access check lives in the
+// controller rather than in a can:grant_access middleware.
 Route::get('users/{id}/weekly', [
     'as' => 'users.weekly',
     'uses' => '\App\Http\Controllers\UsersController@weekly',
-]);
+])->middleware('auth');
 
 Route::get('users/{id}/suspend', [
     'as' => 'users.suspend',
     'uses' => '\App\Http\Controllers\UsersController@suspend',
-]);
+])->middleware(['auth', 'can:grant_access']);
 
 Route::get('users/{id}/ical', [
     'as' => 'users.ical',
@@ -184,7 +187,7 @@ Route::get('users/{id}/ical', [
 Route::get('users/{id}/delete', [
     'as' => 'users.delete',
     'uses' => '\App\Http\Controllers\UsersController@delete',
-]);
+])->middleware(['auth', 'can:grant_access']);
 
 Route::get('users/{id}/reset-password', [
     'as' => 'users.showResetPassword',

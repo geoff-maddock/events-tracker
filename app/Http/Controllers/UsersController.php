@@ -613,6 +613,11 @@ class UsersController extends Controller
             return back();
         }
 
+        // the weekly update may be sent by the account owner or by an admin
+        if ($this->user->id !== $user->id && !$this->user->can('grant_access')) {
+            abort(403);
+        }
+
         // if the user does not have this setting, continue
         if ($user->profile->setting_weekly_update !== 1) {
             flash()->error('Error', 'User has weekly updates disabled');
