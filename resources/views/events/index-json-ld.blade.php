@@ -1,38 +1,14 @@
 @php
+    use App\Services\EventSchema;
+
     $items = [];
     $position = 1;
     foreach ($events as $event) {
-        $item = [
+        $items[] = [
             '@type'    => 'ListItem',
             'position' => $position++,
-            'item'     => [
-                '@type'     => 'Event',
-                'name'      => $event->name,
-                'startDate' => $event->start_at ? $event->start_at->format(DateTimeInterface::ISO8601) : null,
-                'url'       => route('events.show', $event->slug),
-            ],
+            'item'     => EventSchema::forEvent($event, EventSchema::LISTING_PERFORMER_LIMIT),
         ];
-        if ($event->venue) {
-            $item['item']['location'] = [
-                '@type' => 'Place',
-                'name'  => $event->venue->name,
-            ];
-        } else {
-            $item['item']['location'] = [
-                '@type'   => 'Place',
-                'name'    => 'TBA',
-                'address' => [
-                    '@type'           => 'PostalAddress',
-                    'addressLocality' => 'Pittsburgh',
-                    'addressRegion'   => 'PA',
-                    'addressCountry'  => 'US',
-                ],
-            ];
-        }
-        if ($event->short) {
-            $item['item']['description'] = $event->short;
-        }
-        $items[] = $item;
     }
 
     $isTagPage  = isset($tag);

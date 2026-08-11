@@ -83,6 +83,7 @@ use App\Models\User;
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Thread[]                                             $threads
  * @property int|null                                                                                                  $threads_count
  * @property \App\Models\User                                                                                          $user
+ * @property \App\Models\Entity|null                                                                                   $promoter
  * @property \App\Models\Entity|null                                                                                   $venue
  * @property \App\Models\Visibility|null                                                                               $visibility
  * @property int|null                                                                                                  $popularity_score

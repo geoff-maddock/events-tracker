@@ -368,7 +368,14 @@ class EventsController extends Controller
     public static function cardEventEagerLoad(?User $user = null): array
     {
         // venue.locations avoids an N+1 in card-tw's getPrimaryLocationMap()/getPrimaryLocationAddress() (EVENTREPO-W5).
-        $eager = ['visibility', 'venue.locations', 'eventType', 'tags', 'photos', 'entities', 'threads'];
+        // promoter.links/venue.links/entities.roles/entities.links serve the per-event JSON-LD
+        // built by App\Services\EventSchema: performerEntities() and primaryLink() both fall back
+        // to a query per event (per entity, for links) unless these are loaded. Four extra eager
+        // loads per page, constant in the number of events, against ~150 N+1 queries on a full page.
+        $eager = [
+            'visibility', 'venue.locations', 'venue.links', 'eventType', 'tags', 'photos',
+            'entities', 'entities.roles', 'entities.links', 'promoter.links', 'threads',
+        ];
 
         if ($user) {
             // The attend/unattend button reads getEventResponse($user)->responseType per card.

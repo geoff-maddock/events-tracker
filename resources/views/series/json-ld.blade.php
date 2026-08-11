@@ -1,4 +1,6 @@
 @php
+    use App\Services\EventSchema;
+
     $canonicalUrl = route('series.show', $series->slug);
 
     $seriesJsonLd = [
@@ -44,28 +46,18 @@
             if (!$ev->start_at || $ev->start_at->lt(now())) {
                 continue;
             }
-            $subEvent = [
-                '@type'     => 'Event',
-                'name'      => $ev->name,
-                'url'       => route('events.show', $ev->slug),
-                'startDate' => $ev->start_at->format(DateTimeInterface::ISO8601),
-            ];
-            if (!empty($ev->venue_id) && $ev->venue) {
-                $subEvent['location'] = ['@type' => 'Place', 'name' => $ev->venue->name];
-            } elseif ($series->venue) {
-                $subEvent['location'] = ['@type' => 'Place', 'name' => $series->venue->name];
-            } else {
+            $subEvent = EventSchema::forEvent($ev, EventSchema::LISTING_PERFORMER_LIMIT);
+
+            // An instance with no venue of its own inherits the series venue,
+            // which is more specific than EventSchema's TBA fallback.
+            if (empty($ev->venue_id) && $series->venue) {
                 $subEvent['location'] = [
-                    '@type'   => 'Place',
-                    'name'    => 'TBA',
-                    'address' => [
-                        '@type'           => 'PostalAddress',
-                        'addressLocality' => 'Pittsburgh',
-                        'addressRegion'   => 'PA',
-                        'addressCountry'  => 'US',
-                    ],
+                    '@type' => 'Place',
+                    'name'  => $series->venue->name,
+                    'url'   => route('entities.show', $series->venue->slug),
                 ];
             }
+
             $subEvents[] = $subEvent;
         }
         if (!empty($subEvents)) {
