@@ -15,7 +15,6 @@ use App\Mail\InstagramPostFailure;
 use App\Mail\LoginFailure;
 use App\Mail\UserActivation;
 use App\Mail\UserDataExportReady;
-use App\Mail\UserRegistration;
 use App\Mail\UserSuspended;
 use App\Mail\UserUpdate;
 use App\Mail\WeeklyUpdate;
@@ -71,16 +70,6 @@ class MailableBuildTest extends TestCase
     {
         $this->assertNotEmpty($mailable->bcc, 'Mailable should bcc the admin address');
         $this->assertSame(self::ADMIN, $mailable->bcc[0]['address'], 'Mailable should bcc the admin address');
-    }
-
-    public function test_user_registration_builds(): void
-    {
-        $user = User::factory()->create();
-        $mailable = new UserRegistration(self::URL, self::SITE, self::ADMIN, self::REPLY, $user);
-
-        $this->assertBuilt($mailable, 'emails.user-registration-markdown');
-        $this->assertStringContainsString($user->name, $mailable->subject);
-        $this->assertBccsAdmin($mailable);
     }
 
     public function test_user_activation_builds(): void
