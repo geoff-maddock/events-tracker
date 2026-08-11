@@ -10,6 +10,7 @@ use App\Services\EventTimeWindowStats;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class EventTimeWindowPagesTest extends TestCase
@@ -202,5 +203,123 @@ class EventTimeWindowPagesTest extends TestCase
         $response->assertSee('href="'.url('/events/today').'"', false);
         $response->assertSee('href="'.url('/events/this-weekend').'"', false);
         $response->assertSee('href="'.url('/events/this-week').'"', false);
+    }
+
+    /**
+     * Decode the CollectionPage block — the first JSON-LD script on the page —
+     * and return its ItemList entries.
+     */
+    private function listedEvents(string $html): array
+    {
+        preg_match('#<script type="application/ld\+json">(.*?)</script>#s', $html, $matches);
+
+        $decoded = json_decode($matches[1] ?? '', true);
+
+        $this->assertSame(
+            JSON_ERROR_NONE,
+            json_last_error(),
+            'listing JSON-LD did not parse: '.json_last_error_msg()
+        );
+
+        return $decoded['mainEntity']['itemListElement'];
+    }
+
+    /**
+     * Search Console reported all 44 events on /events/this-week as valid but
+     * each missing image, endDate, eventStatus, organizer, performer, offers
+     * and location.address — the listing partial emitted a thinner Event than
+     * the detail page did. They come from App\Services\EventSchema now.
+     */
+    public function test_listing_json_ld_carries_the_fields_search_console_asked_for(): void
+    {
+        $window = EventTimeWindow::from('this-week');
+        $event = $this->eventInside($window, ['name' => 'Rich JSON LD Event']);
+        $event->photos()->attach(
+            \App\Models\Photo::factory()->create(['is_primary' => 1])->id
+        );
+
+        // The event factory's venue carries no location, and location
+        // visibility is randomised — pin a public address so the assertion is
+        // about the mapping rather than about what the factory rolled.
+        $event->venue->locations()->create([
+            'name' => 'Main Room',
+            'slug' => 'main-room',
+            'address_one' => '4305 Murray Ave',
+            'city' => 'Pittsburgh',
+            'state' => 'PA',
+            'postcode' => '15217',
+            'location_type_id' => 1,
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+            'created_by' => User::factory()->create()->id,
+        ]);
+
+        $html = $this->get('/events/this-week')->assertOk()->getContent();
+
+        $items = $this->listedEvents($html);
+        $node = collect($items)->pluck('item')->firstWhere('name', 'Rich JSON LD Event');
+
+        $this->assertNotNull($node, 'the seeded event was not in the ItemList');
+
+        foreach (['image', 'endDate', 'eventStatus', 'organizer', 'performer', 'offers'] as $field) {
+            $this->assertArrayHasKey($field, $node, "missing {$field}");
+        }
+        $this->assertArrayHasKey('address', $node['location']);
+        $this->assertSame('Event', $node['@type']);
+    }
+
+    public function test_listing_start_dates_carry_a_daylight_saving_aware_offset(): void
+    {
+        // config('app.timezone') is a fixed UTC-5 offset that never observes
+        // DST, so anything reading the cast Carbon publishes summer showtimes
+        // an hour late. Google renders whatever offset we send.
+        $window = EventTimeWindow::from('this-week');
+        $start = Carbon::parse($window->range()['start'])->addMinutes(10);
+        $event = $this->eventInside($window, ['name' => 'Offset Check Event']);
+
+        $html = $this->get('/events/this-week')->assertOk()->getContent();
+
+        $node = collect($this->listedEvents($html))->pluck('item')->firstWhere('name', 'Offset Check Event');
+
+        $expectedOffset = $start->copy()->setTimezone('America/New_York')->format('P');
+        $this->assertStringEndsWith($expectedOffset, $node['startDate']);
+    }
+
+    /**
+     * The richer JSON-LD reads photos, roles, links and the promoter per
+     * event. Those are eager loaded; if that ever stops being true the page
+     * degrades quietly, so assert on the shape of the cost rather than an
+     * absolute count: query volume must not scale with the number of events.
+     */
+    public function test_listing_query_count_does_not_scale_with_event_count(): void
+    {
+        $window = EventTimeWindow::from('this-week');
+
+        $this->eventInside($window);
+        $withOne = $this->countQueriesForThisWeek();
+
+        for ($i = 0; $i < 8; ++$i) {
+            $this->eventInside($window);
+        }
+        $withNine = $this->countQueriesForThisWeek();
+
+        $this->assertLessThanOrEqual(
+            $withOne + 5,
+            $withNine,
+            "query count grew from {$withOne} to {$withNine} for 8 extra events — an N+1 is back"
+        );
+    }
+
+    private function countQueriesForThisWeek(): int
+    {
+        Cache::flush();
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+
+        $this->get('/events/this-week')->assertOk();
+
+        $count = count(DB::getQueryLog());
+        DB::disableQueryLog();
+
+        return $count;
     }
 }

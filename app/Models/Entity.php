@@ -1033,9 +1033,9 @@ class Entity extends Eloquent
         // JSON-LD is rendered from the model with no request/auth context, so
         // match getSeoDescriptionFormat()'s convention: treat a Guarded
         // location as not publicly disclosable and omit it, same as the
-        // facts panel / Locations card do for guests.
-        // @phpstan-ignore-next-line (same undefined-property pattern accepted at getSeoDescriptionFormat() above)
-        $locationIsGuarded = $location && isset($location->visibility) && $location->visibility->name === 'Guarded';
+        // facts panel / Locations card do for guests. Shared with
+        // App\Services\EventSchema via Location::isGuarded().
+        $locationIsGuarded = $location && $location->isAddressGuarded();
 
         if ($location && !empty($location->city) && !($schemaType === 'MusicVenue' && $locationIsGuarded)) {
             if ($schemaType === 'MusicVenue' && !empty($location->address_one)) {

@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 /**
  * App\Models\Location.
  *
- * @property string $map_url
+ * @property string                       $map_url
+ * @property \App\Models\Visibility|null  $visibility
  */
 class Location extends Eloquent
 {
@@ -47,6 +48,22 @@ class Location extends Eloquent
     public function visibility(): HasOne
     {
         return $this->hasOne(Visibility::class, 'id', 'visibility_id');
+    }
+
+    /**
+     * Whether this location's address is withheld from public output.
+     *
+     * Callers that render with no request/auth context — JSON-LD, SEO
+     * descriptions — must treat a Guarded location as not publicly
+     * disclosable. Reads the loaded relation rather than visibility_id so it
+     * stays correct if the Guarded row is ever renumbered; locations() eager
+     * loads visibility, so this costs no query.
+     *
+     * Not isGuarded(): that name belongs to Eloquent's mass-assignment guard.
+     */
+    public function isAddressGuarded(): bool
+    {
+        return 'Guarded' === $this->visibility?->name;
     }
 
     /**
