@@ -14,11 +14,23 @@
     min-width: 0 !important;
 }
 
-/* Ensure dropdown respects container width */
-.select2-container .select2-dropdown {
-    max-width: 100% !important;
-    min-width: 0 !important;
+/* When a dropdown opens, Select2 clones the container's classes onto a wrapper
+   span it appends to <body> and positions absolutely at the field's offset.
+   The 100% width above would make that wrapper as wide as the whole page
+   starting from that offset, which overflows the document and breaks the page
+   layout. Let Select2 size and position that wrapper itself. */
+body > .select2-container {
     width: auto !important;
+    max-width: none !important;
+}
+
+/* The panel gets an explicit pixel width inline from Select2 to match the
+   field. Don't cap it with a percentage — its wrapper is zero-width (the panel
+   is absolutely positioned), so a percentage max-width collapses it. */
+.select2-container .select2-dropdown {
+    max-width: calc(100vw - 2rem) !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
 }
 
 /* Single Select - match form-input-tw styling (py-2 = 0.5rem, text-base with line-height ~1.5) */
@@ -122,11 +134,6 @@
     @apply border border-border bg-card text-foreground rounded-lg shadow-lg mt-1;
     @apply z-50;
     box-sizing: border-box !important;
-}
-
-/* Ensure dropdown doesn't exceed viewport */
-.select2-container--tailwind.select2-container--open .select2-dropdown {
-    max-width: calc(100vw - 2rem) !important;
 }
 
 /* Search Input in Dropdown */
@@ -236,12 +243,6 @@
     width: 100% !important;
     padding: 0.125rem 0 !important;
     gap: 0.25rem !important;
-}
-
-/* Limit dropdown width to container */
-.select2-container--tailwind .select2-dropdown {
-    max-width: 100% !important;
-    box-sizing: border-box !important;
 }
 
 /* Ensure the selection and search inputs don't overflow */
