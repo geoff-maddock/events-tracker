@@ -286,6 +286,115 @@ class DiscordEmbedBuilderTest extends TestCase
         }
     }
 
+    public function test_a_digest_entry_carries_a_summary_and_linked_tags(): void
+    {
+        $event = Event::factory()->create(['short' => 'Goth and industrial DJs until 2am.']);
+        $event->tags()->attach(Tag::factory()->create(['name' => 'techno', 'slug' => 'techno'])->id);
+
+        $description = $this->digestDescription($event->fresh());
+
+        $this->assertStringContainsString('-# Goth and industrial DJs until 2am. · [techno](', $description);
+        $this->assertStringContainsString('/tags/techno)', $description);
+    }
+
+    public function test_a_digest_entry_lists_at_most_four_tags(): void
+    {
+        $event = Event::factory()->create();
+
+        foreach (['one', 'two', 'three', 'four', 'five'] as $name) {
+            $event->tags()->attach(Tag::factory()->create(['name' => $name, 'slug' => $name])->id);
+        }
+
+        $description = $this->digestDescription($event->fresh());
+
+        $this->assertStringContainsString('/tags/four)', $description);
+        $this->assertStringNotContainsString('/tags/five)', $description);
+    }
+
+    public function test_a_digest_summary_is_flattened_to_one_line_and_truncated(): void
+    {
+        // A newline would end the subtext block, dropping the tags out of it
+        // and leaving a stray line mid-roundup.
+        $event = Event::factory()->create();
+        $event->tags()->attach(Tag::factory()->create(['name' => 'techno', 'slug' => 'techno'])->id);
+
+        // Assigned in memory: the column is narrower than the summary cap, so
+        // a persisted row cannot exercise the truncation.
+        $event = $event->fresh();
+        $event->short = "Two rooms\nof techno ".str_repeat('and more ', 40);
+
+        $subtext = $this->digestSubtext($event);
+
+        $this->assertStringContainsString('Two rooms of techno', $subtext);
+        $this->assertStringContainsString('/tags/techno)', $subtext);
+        $this->assertLessThanOrEqual(200, mb_strlen($subtext));
+    }
+
+    public function test_a_digest_entry_with_nothing_to_add_stays_a_single_line(): void
+    {
+        $event = Event::factory()->create(['short' => '', 'description' => '']);
+
+        $this->assertStringNotContainsString('-# ', $this->digestDescription($event));
+    }
+
+    public function test_a_full_roundup_shortens_entries_rather_than_dropping_events(): void
+    {
+        // max_events worth of detail-heavy entries overruns 4096 characters.
+        // Every event must still be listed — a roundup missing the back half
+        // of the week is worse than one with clipped summaries.
+        $events = Event::factory()->count((int) config('discord.digest.max_events', 25))->create();
+        $tags = Tag::factory()->count(4)->create();
+
+        foreach ($events as $event) {
+            $event->tags()->attach($tags->pluck('id')->all());
+            $event->short = Str::random(140);
+        }
+
+        $payload = $this->builder()->forDigest(
+            DiscordTarget::factory()->create(),
+            $events->map(fn (Event $event): Event => tap($event->fresh(), function (Event $fresh) use ($event): void {
+                $fresh->short = $event->short;
+            })),
+            now(),
+            now()->addWeek(),
+        );
+
+        $description = $payload['embeds'][0]['description'];
+
+        $this->assertLessThanOrEqual(4096, mb_strlen($description));
+
+        foreach ($events as $event) {
+            $this->assertStringContainsString('/events/'.$event->slug, $description);
+        }
+    }
+
+    private function digestDescription(Event $event): string
+    {
+        $payload = $this->builder()->forDigest(
+            DiscordTarget::factory()->create(),
+            collect([$event]),
+            now(),
+            now()->addWeek(),
+        );
+
+        return $payload['embeds'][0]['description'];
+    }
+
+    /**
+     * The subtext line of a one-event digest.
+     */
+    private function digestSubtext(Event $event): string
+    {
+        $lines = array_values(array_filter(
+            explode("\n", $this->digestDescription($event)),
+            fn (string $line): bool => str_starts_with($line, '-# ')
+        ));
+
+        $this->assertCount(1, $lines, 'Expected exactly one subtext line.');
+
+        return $lines[0];
+    }
+
     public function test_a_test_message_carries_no_mention(): void
     {
         $target = DiscordTarget::factory()->create(['mention' => '@everyone']);

@@ -78,6 +78,24 @@ is logged and skipped so one bad webhook cannot stop the rest of the week's dige
 Window is the target's `digest_window_days` (default 7), capped at
 `discord.digest.max_events` (default 25) events.
 
+Each entry is two lines — a headline, then Discord subtext (`-# `, small grey
+text) carrying the event's summary and up to `digest.tag_limit` tags, linked to
+their tag pages:
+
+```
+**[Sinners - Vampire Themed Club Night](…)** — Aug 13, 2026 · Belvederes · $5
+-# Goth, industrial and darkwave DJs until 2am. · [goth](…) · [industrial](…)
+```
+
+The subtext is omitted entirely for an event with neither a summary nor tags.
+
+A full entry costs ~450 characters against Discord's 4096-character
+description, so a busy week does not fit at full detail. Rather than dropping
+the tail of the week, the builder retries at successively lower detail —
+shorter summary, no summary, fewer tags, headline only — and takes the richest
+level that fits. Only if `max_events` bare headlines still overrun does it
+truncate, and then on a whole-entry boundary so no line ends mid-link.
+
 ## Enabling it
 
 Designed to be turned on gradually. Work through these in order.
@@ -182,6 +200,8 @@ narrow criteria, then loosen.
 | `digest.default_hour` | — | 10 | Default digest hour |
 | `digest.window_days` | — | 7 | Default lookahead |
 | `digest.max_events` | — | 25 | Cap on one roundup |
+| `digest.summary_length` | — | 140 | Per-entry summary cap in the roundup |
+| `digest.tag_limit` | — | 4 | Tags shown per roundup entry |
 | `timeout` | `DISCORD_TIMEOUT` | 10 | Webhook HTTP timeout |
 | `embed_color` | — | `0x7B2FF7` | Embed accent |
 | `username` | `DISCORD_WEBHOOK_USERNAME` | — | Override webhook display name |

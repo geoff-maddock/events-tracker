@@ -54,12 +54,18 @@ return [
     /*
     | Weekly digest defaults. day is a Carbon dayOfWeek (0 = Sunday, 4 = Thursday),
     | hour is 0-23 in the app timezone. max_events caps a single roundup.
+    |
+    | summary_length and tag_limit bound the subtext line under each entry.
+    | They exist because one verbose event must not crowd later events out of
+    | the description budget — the roundup stops adding entries once it is full.
     */
     'digest' => [
         'default_day' => 4,
         'default_hour' => 10,
         'window_days' => 7,
         'max_events' => 25,
+        'summary_length' => 140,
+        'tag_limit' => 4,
     ],
 
     /*
