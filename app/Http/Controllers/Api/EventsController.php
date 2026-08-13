@@ -1333,10 +1333,12 @@ class EventsController extends Controller
 
         // delete the attending response
         $response = EventResponse::where('event_id', '=', $id)->where('user_id', '=', $this->user->id)->where('response_type_id', '=', 1)->first();
-        $response->delete();
+        if ($response) {
+            $response->delete();
 
-        // add to activity log
-        Activity::log($event, $this->user, 7);
+            // add to activity log
+            Activity::log($event, $this->user, 7);
+        }
 
         // handle the request if ajax
         if ($request->ajax()) {
@@ -1524,7 +1526,9 @@ class EventsController extends Controller
 
         // delete the follow
         $response = Follow::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'event')->first();
-        $response->delete();
+        if ($response) {
+            $response->delete();
+        }
 
         flash()->success('Success', 'You are no longer following the event.');
 

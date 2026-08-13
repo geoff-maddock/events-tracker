@@ -997,7 +997,9 @@ class ThreadsController extends Controller
 
         // delete the follow
         $response = Follow::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'thread')->first();
-        $response->delete();
+        if ($response) {
+            $response->delete();
+        }
 
         flash()->success('Success', 'You are no longer following the thread.');
 
@@ -1060,11 +1062,13 @@ class ThreadsController extends Controller
 
         // delete the like
         $response = Like::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'thread')->first();
-        $response->delete();
+        if ($response) {
+            $response->delete();
 
-        // update the likes
-        --$thread->likes;
-        $thread->save();
+            // update the likes
+            --$thread->likes;
+            $thread->save();
+        }
 
         flash()->success('Success', 'You are no longer liking the thread.');
 
