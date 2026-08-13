@@ -130,8 +130,11 @@
 	@include('flash')
 
 	@auth
-		{{-- Onboarding wins over the feedback prompt — never stack two modals. --}}
-		@if(auth()->user()->shouldSeeOnboarding() || session('show_onboarding'))
+		{{-- Never stack two modals: the just-registered activation prompt wins,
+		     then onboarding, then the feedback prompt. --}}
+		@if(session('show_verification_notice'))
+			@include('partials.verify-email-modal', ['email' => session('show_verification_notice')])
+		@elseif(auth()->user()->shouldSeeOnboarding() || session('show_onboarding'))
 			@include('partials.onboarding-modal')
 		@elseif(!empty($feedbackPrompt))
 			@include('partials.feedback-modal', ['payload' => $feedbackPrompt])
