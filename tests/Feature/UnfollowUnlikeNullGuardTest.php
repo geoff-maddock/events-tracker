@@ -3,9 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\Entity;
+use App\Models\Event;
 use App\Models\Post;
 use App\Models\Series;
 use App\Models\Tag;
+use App\Models\Thread;
 use App\Models\User;
 use App\Models\UserStatus;
 use Carbon\Carbon;
@@ -68,6 +70,42 @@ class UnfollowUnlikeNullGuardTest extends TestCase
         $response = $this->get('/tags/'.$tag->id.'/unfollow');
 
         $response->assertRedirect();
+    }
+
+    /** @test */
+    public function unattending_an_event_you_are_not_attending_does_not_error(): void
+    {
+        $this->actingAs($this->activeUser());
+        $event = Event::factory()->create();
+
+        $response = $this->get('/events/'.$event->id.'/unattend');
+
+        $response->assertRedirect();
+        $this->assertEquals(0, $event->eventResponses()->count());
+    }
+
+    /** @test */
+    public function unfollowing_a_thread_you_do_not_follow_does_not_error(): void
+    {
+        $this->actingAs($this->activeUser());
+        $thread = Thread::factory()->create();
+
+        $response = $this->get('/threads/'.$thread->id.'/unfollow');
+
+        $response->assertRedirect();
+    }
+
+    /** @test */
+    public function unliking_a_thread_you_do_not_like_does_not_error_or_decrement_likes(): void
+    {
+        $this->actingAs($this->activeUser());
+        $thread = Thread::factory()->create(['likes' => 3]);
+
+        $response = $this->get('/threads/'.$thread->id.'/unlike');
+
+        $response->assertRedirect();
+        // Likes must not be decremented when no like existed.
+        $this->assertEquals(3, $thread->fresh()->likes);
     }
 
     /** @test */
