@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -80,5 +81,25 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+    }
+
+    /**
+     * The user has been registered.
+     *
+     * Registration logs the user straight in and drops them on the homepage,
+     * which gave no hint that an activation email was on its way. Flag the
+     * session so the layout can surface the "check your email" modal on the
+     * page they land on. Returning null keeps the trait's normal redirect /
+     * JSON response handling.
+     *
+     * @param  \App\Models\User  $user
+     */
+    protected function registered(Request $request, $user): mixed
+    {
+        if (! $user->hasVerifiedEmail()) {
+            $request->session()->flash('show_verification_notice', $user->email);
+        }
+
+        return null;
     }
 }
