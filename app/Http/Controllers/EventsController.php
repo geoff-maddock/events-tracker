@@ -2288,12 +2288,17 @@ class EventsController extends Controller
             return back();
         }
 
-        // delete the attending response
+        // delete the attending response if one exists
         $response = EventResponse::where('event_id', '=', $id)->where('user_id', '=', $this->user->id)->where('response_type_id', '=', 1)->first();
-        $response->delete();
 
-        // add to activity log
-        Activity::log($event, $this->user, 7);
+        // the user may have no attending response (stale link, double submit, or a GET prefetch of this route);
+        // treat unattend as idempotent rather than erroring on a null response
+        if ($response) {
+            $response->delete();
+
+            // add to activity log
+            Activity::log($event, $this->user, 7);
+        }
 
         // handle the request if ajax
         if ($request->ajax()) {

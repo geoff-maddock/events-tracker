@@ -208,6 +208,24 @@ class EventsTest extends TestCase
             ->assertSee('Grid-filter-type');
     }
 
+    public function testUnattendWithoutAttendingResponseDoesNotError()
+    {
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $event = Event::factory()->create();
+
+        // The user has no attending response. unattend is a GET route, so a stale
+        // link, double submit, or link prefetch can hit it with nothing to delete;
+        // it must not call delete() on null and 500 (EVENTREPO-XT).
+        $response = $this->actingAs($user)->get('/events/'.$event->id.'/unattend');
+
+        $response->assertRedirect();
+        $this->assertDatabaseMissing('event_responses', [
+            'event_id' => $event->id,
+            'user_id' => $user->id,
+            'response_type_id' => 1,
+        ]);
+    }
+
     /**
      * A basic functional test example.
      *
