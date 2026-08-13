@@ -77,7 +77,7 @@ class PostDiscordDigest extends Command
             $to = $now->copy()->addDays($target->digest_window_days);
 
             $events = $matcher->eventsFor($target, $from, $to)
-                ->with(['venue'])
+                ->with(['venue', 'tags'])
                 ->limit((int) config('discord.digest.max_events', 25))
                 ->get();
 

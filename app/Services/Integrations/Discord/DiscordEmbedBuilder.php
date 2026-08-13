@@ -4,6 +4,7 @@ namespace App\Services\Integrations\Discord;
 
 use App\Models\DiscordTarget;
 use App\Models\Event;
+use App\Models\Tag;
 use App\Services\EventTime;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
@@ -33,6 +34,12 @@ use Illuminate\Support\Str;
 class DiscordEmbedBuilder
 {
     /**
+     * Shorter summary used when a full-detail roundup overruns the description
+     * budget. See digestDescription().
+     */
+    private const DIGEST_SUMMARY_FALLBACK = 60;
+
+    /**
      * A single-event announcement, reminder, or manual post.
      *
      * @return array<string, mixed>
@@ -56,14 +63,12 @@ class DiscordEmbedBuilder
         CarbonInterface $from,
         CarbonInterface $to,
     ): array {
-        $lines = $events->map(fn (Event $event): string => $this->digestLine($event))->all();
-
         $embed = [
             'title' => $this->clamp(
                 'Upcoming events · '.$from->format('M j').'–'.$to->format('M j'),
                 'title'
             ),
-            'description' => $this->joinWithinLimit($lines, (int) $this->limit('description')),
+            'description' => $this->digestDescription($events, (int) $this->limit('description')),
             'color' => $this->color($target),
             'footer' => ['text' => $this->clamp(config('app.app_name').' · '.rtrim((string) config('app.url'), '/'), 'footer')],
         ];
@@ -238,7 +243,60 @@ class DiscordEmbedBuilder
         return $this->clamp($tags, 'footer');
     }
 
-    private function digestLine(Event $event): string
+    /**
+     * The roundup body, at the richest detail level that fits.
+     *
+     * An entry with a summary and four linked tags costs roughly 450
+     * characters, so a full week of events can overrun the 4096 available. A
+     * roundup's job is to list the week: losing events off the end is worse
+     * than losing a few words of summary, so an overflow shortens every entry
+     * before it drops any.
+     *
+     * @param  Collection<int, Event>  $events
+     */
+    private function digestDescription(Collection $events, int $limit): string
+    {
+        $summary = (int) config('discord.digest.summary_length', 140);
+        $tags = (int) config('discord.digest.tag_limit', 4);
+        $entries = [];
+
+        // [summary length, tag count], richest first; 0 drops that part of the
+        // subtext. The last level is the bare headline the digest used before
+        // the subtext existed, which comfortably fits max_events.
+        $levels = [
+            [$summary, $tags],
+            [min(self::DIGEST_SUMMARY_FALLBACK, $summary), $tags],
+            [0, $tags],
+            [0, (int) min(2, $tags)],
+            [0, 0],
+        ];
+
+        foreach ($levels as [$summaryLength, $tagLimit]) {
+            $entries = $events->map(
+                fn (Event $event): string => $this->digestEntry($event, $summaryLength, $tagLimit)
+            )->all();
+
+            $joined = implode("\n\n", $entries);
+
+            if (mb_strlen($joined) <= $limit) {
+                return $joined;
+            }
+        }
+
+        // More events than fit even bare: drop the tail on a whole-entry
+        // boundary, so nothing ends mid markdown-link.
+        return $this->joinWithinLimit($entries, $limit);
+    }
+
+    /**
+     * One digest entry: a headline, and — when the event has either — a second
+     * line carrying its summary and up to $tagLimit linked tags.
+     *
+     * The second line is Discord subtext ('-# '), which renders small and grey.
+     * That keeps a 25-event roundup scannable: the headlines still read as a
+     * list, with the detail underneath rather than competing with them.
+     */
+    private function digestEntry(Event $event, int $summaryLength, int $tagLimit): string
     {
         $line = '**['.$this->escapeMarkdown($event->name).']('.route('events.show', $event).')**';
 
@@ -254,7 +312,64 @@ class DiscordEmbedBuilder
             $line .= ' · '.$price;
         }
 
+        $detail = array_merge(
+            array_filter([$this->digestSummary($event, $summaryLength)]),
+            $this->digestTags($event, $tagLimit),
+        );
+
+        if ([] !== $detail) {
+            $line .= "\n-# ".implode(' · ', $detail);
+        }
+
         return $line;
+    }
+
+    /**
+     * The event's summary, flattened to a single line.
+     *
+     * Whitespace is collapsed because a newline would terminate the subtext
+     * block, dropping the tags out of it and leaving a stray line in the
+     * middle of the roundup.
+     */
+    private function digestSummary(Event $event, int $length): ?string
+    {
+        if ($length <= 0) {
+            return null;
+        }
+
+        $summary = trim((string) $event->short);
+
+        if ('' === $summary) {
+            $summary = trim(strip_tags((string) $event->description));
+        }
+
+        $summary = trim((string) preg_replace('/\s+/u', ' ', $summary));
+
+        if ('' === $summary) {
+            return null;
+        }
+
+        return $this->escapeMarkdown(Str::limit($summary, $length, '…'));
+    }
+
+    /**
+     * Tags as links to their own pages, capped — a busy event can carry a
+     * dozen, which would swamp the summary it sits beside.
+     *
+     * @return array<int, string>
+     */
+    private function digestTags(Event $event, int $limit): array
+    {
+        if ($limit <= 0) {
+            return [];
+        }
+
+        return $event->tags
+            ->filter(fn (Tag $tag): bool => '' !== trim((string) $tag->name))
+            ->take($limit)
+            ->map(fn (Tag $tag): string => '['.$this->escapeMarkdown($tag->name).']('.route('tags.show', $tag).')')
+            ->values()
+            ->all();
     }
 
     /**
@@ -283,17 +398,18 @@ class DiscordEmbedBuilder
     }
 
     /**
-     * Join lines while staying under a character budget, rather than
-     * truncating mid-line and leaving a broken markdown link.
+     * Join entries while staying under a character budget, rather than
+     * truncating mid-entry and leaving a broken markdown link. Entries are
+     * separated by a blank line, since an entry is itself two lines.
      *
-     * @param  array<int, string>  $lines
+     * @param  array<int, string>  $entries
      */
-    private function joinWithinLimit(array $lines, int $limit): string
+    private function joinWithinLimit(array $entries, int $limit): string
     {
         $out = '';
 
-        foreach ($lines as $line) {
-            $candidate = ('' === $out) ? $line : $out."\n".$line;
+        foreach ($entries as $line) {
+            $candidate = ('' === $out) ? $line : $out."\n\n".$line;
 
             if (mb_strlen($candidate) > $limit) {
                 break;
