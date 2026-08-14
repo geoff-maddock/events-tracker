@@ -156,6 +156,60 @@ class ApiEventsCrudTest extends TestCase
         $this->assertContains($response->status(), [302, 401, 403]);
     }
 
+    public function test_update_rejects_non_integer_entity_list(): void
+    {
+        $event = Event::factory()->create([
+            'created_by' => $this->user->id,
+            'slug' => 'zz-entity-list-target-'.uniqid(),
+        ]);
+
+        // Client sends entity names instead of IDs (EVENTREPO-XV): must 422,
+        // not trip the entity_id integer column with a raw SQL error.
+        $payload = $this->validPayload([
+            'slug' => $event->slug,
+            'entity_list' => ['Preserving Underground'],
+        ]);
+
+        $response = $this->putJson('/api/events/'.$event->slug, $payload);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors('entity_list.0');
+    }
+
+    public function test_update_syncs_valid_entity_ids(): void
+    {
+        $event = Event::factory()->create([
+            'created_by' => $this->user->id,
+            'slug' => 'zz-entity-sync-target-'.uniqid(),
+        ]);
+        $entity = \App\Models\Entity::factory()->create();
+
+        $payload = $this->validPayload([
+            'slug' => $event->slug,
+            'entity_list' => [$entity->id],
+        ]);
+
+        $response = $this->putJson('/api/events/'.$event->slug, $payload);
+
+        $response->assertOk();
+        $this->assertSame([$entity->id], $event->fresh()->entity_list);
+    }
+
+    public function test_patch_rejects_non_integer_entity_list(): void
+    {
+        $event = Event::factory()->create([
+            'created_by' => $this->user->id,
+            'slug' => 'zz-patch-entity-list-'.uniqid(),
+        ]);
+
+        $response = $this->patchJson('/api/events/'.$event->slug, [
+            'entity_list' => ['Preserving Underground'],
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors('entity_list.0');
+    }
+
     public function test_patch_partial_update_for_creator(): void
     {
         $event = Event::factory()->create([

@@ -58,6 +58,12 @@ class EventRequest extends Request
             'door_price' => 'nullable|numeric|between:0,999.99',
             'primary_link' => ['nullable','regex:/^http:\/\/|https:\/\/|^$/','max:255'],
             'ticket_link' => ['nullable','regex:/^http:\/\/|https:\/\/|^$/','max:255'],
+            // entity_list is a set of existing entity IDs that get synced onto
+            // the event. Reject non-integer / unknown values here so a bad body
+            // (e.g. entity names instead of IDs) returns 422 rather than tripping
+            // the entity_id integer column with a raw SQL error (EVENTREPO-XV).
+            'entity_list' => ['nullable', 'array'],
+            'entity_list.*' => ['integer', 'exists:entities,id'],
         ];
     }
 
@@ -83,6 +89,9 @@ class EventRequest extends Request
             'primary_link.max' => 'A primary link must be less than 255 characters',
             'ticket_link.regex' => 'A ticket link must be a valid URL starting with http:// or https:// or blank',
             'ticket_link.max' => 'A ticket link must be less than 255 characters',
+            'entity_list.array' => 'The entity list must be an array of entity IDs',
+            'entity_list.*.integer' => 'Each entity in the entity list must be an entity ID',
+            'entity_list.*.exists' => 'Each entity in the entity list must reference an existing entity',
         ];
     }
 }
