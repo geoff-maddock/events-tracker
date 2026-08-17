@@ -30,6 +30,7 @@ use App\Models\Thread;
 use App\Models\User;
 use App\Models\Visibility;
 use App\Notifications\EventPublished;
+use App\Services\BestEffortMailer;
 use App\Services\Embeds\OembedExtractor;
 use App\Services\ImageHandler;
 use App\Services\RssFeed;
@@ -1013,6 +1014,10 @@ class EventsController extends Controller
         $site = config('app.app_name');
         $url = config('app.url');
 
+        // Follower notification is best-effort — the event is already saved, so
+        // a mail failure must not surface as a 500 on event creation.
+        $mailer = new BestEffortMailer();
+
         // notify users following any of the tags
         $tags = $event->tags()->get();
         $users = [];
@@ -1030,8 +1035,11 @@ class EventsController extends Controller
                 // no user_id attribute (it was always null, collapsing every
                 // follower onto one key and skipping all but the first)
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::to($user->email)
-                        ->send(new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $tag));
+                    $mailer->send(
+                        $user->email,
+                        new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $tag),
+                        ['event_id' => $event->id, 'user_id' => $user->id, 'via' => 'tag']
+                    );
                     $users[$user->id] = $tag->name;
                 } else {
                     $users[$user->id] = $users[$user->id].', '.$tag->name;
@@ -1051,13 +1059,23 @@ class EventsController extends Controller
                 }
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::to($user->email)
-                        ->send(new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $entity));
+                    $mailer->send(
+                        $user->email,
+                        new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $entity),
+                        ['event_id' => $event->id, 'user_id' => $user->id, 'via' => 'entity']
+                    );
                     $users[$user->id] = $entity->name;
                 } else {
                     $users[$user->id] = $users[$user->id].', '.$entity->name;
                 }
             }
+        }
+
+        $summary = $mailer->summary();
+        if ($summary['failed'] > 0 || $summary['skipped'] > 0) {
+            Log::warning('Api\EventsController@notifyFollowing: some follower notifications were not sent', $summary + [
+                'event_id' => $event->id,
+            ]);
         }
     }
 

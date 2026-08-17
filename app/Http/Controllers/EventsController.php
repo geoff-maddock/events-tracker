@@ -26,6 +26,7 @@ use App\Models\Thread;
 use App\Models\User;
 use App\Models\Visibility;
 use App\Notifications\EventPublished;
+use App\Services\BestEffortMailer;
 use App\Services\EventDateRange;
 use App\Services\ImageHandler;
 use App\Services\RssFeed;
@@ -2035,7 +2036,17 @@ class EventsController extends Controller
         if (Auth::user()->hasGroup('super_admin') && config('app.twitter_consumer_key') !== '999') {
             // only tweet if there is a primary photo
             if ($photo !== null) {
-                $event->notify(new EventPublished());
+                // the event is already saved, so a Twitter API failure must not
+                // fail the request either
+                try {
+                    $event->notify(new EventPublished());
+                } catch (\Throwable $e) {
+                    Log::warning('EventsController@store: failed to post event to Twitter', [
+                        'event_id' => $event->id,
+                        'error' => $e->getMessage(),
+                    ]);
+                    report($e);
+                }
             }
         }
 
@@ -2048,6 +2059,10 @@ class EventsController extends Controller
         $reply_email = config('app.noreplyemail');
         $site = config('app.app_name');
         $url = config('app.url');
+
+        // Follower notification is best-effort — the event is already saved, so
+        // a mail failure must not surface as a 500 on event creation.
+        $mailer = new BestEffortMailer();
 
         // notify users following any of the tags
         $tags = $event->tags()->get();
@@ -2066,8 +2081,11 @@ class EventsController extends Controller
                 // no user_id attribute (it was always null, collapsing every
                 // follower onto one key and skipping all but the first)
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::to($user->email)
-                        ->send(new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $tag));
+                    $mailer->send(
+                        $user->email,
+                        new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $tag),
+                        ['event_id' => $event->id, 'user_id' => $user->id, 'via' => 'tag']
+                    );
                     $users[$user->id] = $tag->name;
                 } else {
                     $users[$user->id] = $users[$user->id].', '.$tag->name;
@@ -2087,13 +2105,23 @@ class EventsController extends Controller
                 }
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::to($user->email)
-                        ->send(new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $entity));
+                    $mailer->send(
+                        $user->email,
+                        new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $entity),
+                        ['event_id' => $event->id, 'user_id' => $user->id, 'via' => 'entity']
+                    );
                     $users[$user->id] = $entity->name;
                 } else {
                     $users[$user->id] = $users[$user->id].', '.$entity->name;
                 }
             }
+        }
+
+        $summary = $mailer->summary();
+        if ($summary['failed'] > 0 || $summary['skipped'] > 0) {
+            Log::warning('EventsController@notifyFollowing: some follower notifications were not sent', $summary + [
+                'event_id' => $event->id,
+            ]);
         }
     }
 
