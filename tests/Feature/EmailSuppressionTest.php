@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\EmailSuppression;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Mail\Transport\ArrayTransport;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
@@ -30,13 +31,24 @@ class EmailSuppressionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Mail::getSymfonyTransport()->flush();
+        $this->transport()->flush();
+    }
+
+    /**
+     * phpunit.xml pins the array mailer, so this is always an ArrayTransport.
+     */
+    private function transport(): ArrayTransport
+    {
+        /** @var ArrayTransport $transport */
+        $transport = Mail::getSymfonyTransport();
+
+        return $transport;
     }
 
     /** @return \Illuminate\Support\Collection<int, \Symfony\Component\Mailer\SentMessage> */
     private function sentMessages(): \Illuminate\Support\Collection
     {
-        return Mail::getSymfonyTransport()->messages();
+        return $this->transport()->messages();
     }
 
     private function send(array $to, string $subject = 'Test'): void
@@ -52,7 +64,9 @@ class EmailSuppressionTest extends TestCase
         $messages = $this->sentMessages();
         $this->assertNotEmpty($messages, 'expected at least one message');
 
-        $to = $messages->first()->getOriginalMessage()->getTo();
+        /** @var \Symfony\Component\Mime\Email $original */
+        $original = $messages->first()->getOriginalMessage();
+        $to = $original->getTo();
 
         return array_map(static fn ($a) => $a->getAddress(), $to);
     }

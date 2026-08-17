@@ -5,7 +5,6 @@ namespace App\Listeners;
 use App\Models\EmailSuppression;
 use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\Mime\Address;
 
 /**
  * Drops suppressed addresses from outgoing mail.
@@ -37,7 +36,6 @@ class BlockSuppressedRecipients
         $blocked = [];
 
         foreach ($to as $address) {
-            /* @var Address $address */
             if (EmailSuppression::isSuppressed($address->getAddress())) {
                 $blocked[] = $address->getAddress();
             } else {
