@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Mockery;
 use ReflectionMethod;
+use Symfony\Component\Mailer\Exception\TransportException;
 use Tests\TestCase;
 
 /**
@@ -207,6 +208,35 @@ class EventNotifyFollowingTest extends TestCase
 
         // Pre-fix this was the (only) case that sent mail.
         $this->assertSame(0, $this->sentTo('second-photo@example.com'));
+    }
+
+    /**
+     * A dead mail transport used to bubble a TransportException out of
+     * notifyFollowing and 500 the request — after the event had already been
+     * saved, so the user saw a failure for work that succeeded and could retry
+     * into duplicates.
+     *
+     * @test
+     */
+    public function a_dead_mail_transport_does_not_break_the_notification_pass(): void
+    {
+        $tag = Tag::factory()->create();
+        $event = Event::factory()->create();
+        $event->tags()->attach($tag->id);
+
+        $follower = $this->follower('transport-down@example.com');
+        $this->follow($follower, 'tag', $tag->id);
+
+        // Replace the faked mailer with one whose transport always fails.
+        $pending = Mockery::mock();
+        $pending->shouldReceive('send')
+            ->andThrow(new TransportException('535 Authentication failed'));
+        Mail::shouldReceive('to')->andReturn($pending);
+
+        $this->notify($event);
+
+        // Reaching here at all is the assertion: pre-fix this threw.
+        $this->assertTrue(true);
     }
 
     /** @test */

@@ -18,6 +18,7 @@ use App\Models\Tag;
 use App\Models\User;
 use App\Mail\EntityUpdateSummary;
 use App\Notifications\EventPublished;
+use App\Services\BestEffortMailer;
 use App\Services\Embeds\OembedExtractor;
 use App\Services\ImageHandler;
 use App\Services\SessionStore\ListParameterSessionStore;
@@ -1708,7 +1709,7 @@ class EntitiesController extends Controller
         // venues frequently performed at
         $frequentlyPerformsAt = $entity->getFrequentlyPerformsAt(10);
 
-        Mail::to($contact->email, $contact->name ?? $entity->name)
+        $sent = (new BestEffortMailer())->attempt(fn () => Mail::to($contact->email, $contact->name ?? $entity->name)
             ->send(new EntityUpdateSummary(
                 $url,
                 $site,
@@ -1719,7 +1720,15 @@ class EntitiesController extends Controller
                 $pastEvents,
                 $frequentlyPerformsWith,
                 $frequentlyPerformsAt
-            ));
+            )), ['entity_id' => $entity->id]);
+
+        // Sending the summary is the point of this action — do not claim it
+        // was delivered when the transport rejected it.
+        if (!$sent) {
+            flash()->error('Email not sent', 'The update summary to ' . $contact->email . ' could not be sent.');
+
+            return back();
+        }
 
         Log::info('Entity update summary sent for entity ' . $entity->id . ' (' . $entity->name . ') to ' . $contact->email);
 

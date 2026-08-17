@@ -18,6 +18,7 @@ use App\Models\Profile;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Visibility;
+use App\Services\BestEffortMailer;
 use App\Services\ImageHandler;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
@@ -518,7 +519,11 @@ class UsersController extends Controller
         $site = config('app.app_name');
         $url = config('app.url');
 
-        Mail::to($user->email)->send(new UserActivation($url, $site, $admin_email, $reply_email, $user));
+        // The account is already activated; if the courtesy email cannot be
+        // sent, say so rather than failing the request.
+        if (!(new BestEffortMailer())->send($user->email, new UserActivation($url, $site, $admin_email, $reply_email, $user), ['user_id' => $user->id])) {
+            flash()->error('Email not sent', 'User '.$user->name.' was activated, but the notification email could not be sent.');
+        }
 
         return back();
     }
@@ -557,7 +562,11 @@ class UsersController extends Controller
         $site = config('app.app_name');
         $url = config('app.url');
 
-        Mail::to($user->email)->send(new UserSuspended($url, $site, $admin_email, $reply_email, $user));
+        // The account is already suspended; if the courtesy email cannot be
+        // sent, say so rather than failing the request.
+        if (!(new BestEffortMailer())->send($user->email, new UserSuspended($url, $site, $admin_email, $reply_email, $user), ['user_id' => $user->id])) {
+            flash()->error('Email not sent', 'User '.$user->name.' was suspended, but the notification email could not be sent.');
+        }
 
         return back();
     }
@@ -795,9 +804,13 @@ class UsersController extends Controller
             }
         }
 
-        Mail::to($user->email)->send(new UserUpdate($url, $site, $admin_email, $reply_email, $user, $attendingEvents, $seriesList, $interests));
-
-        flash()->success('Success', 'A daily-style notification email was sent to  '.$user->name.' at '.$user->email);
+        // Sending the email is the whole point of this action, so report the
+        // outcome honestly instead of claiming success unconditionally.
+        if ((new BestEffortMailer())->send($user->email, new UserUpdate($url, $site, $admin_email, $reply_email, $user, $attendingEvents, $seriesList, $interests), ['user_id' => $user->id])) {
+            flash()->success('Success', 'A daily-style notification email was sent to  '.$user->name.' at '.$user->email);
+        } else {
+            flash()->error('Email not sent', 'The daily-style notification email to '.$user->email.' could not be sent.');
+        }
 
         return back();
     }
@@ -876,8 +889,9 @@ class UsersController extends Controller
         // if there are more than 0 events
         if ((null !== $attendingEvents && $attendingEvents->count() > 0) || (null !== $seriesList && count($seriesList) > 0) || (null !== $interests && count($interests) > 0)) {
             // send an email containing that list
-            Mail::to($user->email)
-                ->send(new WeeklyUpdate($url, $site, $admin_email, $reply_email, $user, $attendingEvents, $seriesList, $interests));
+            if (!(new BestEffortMailer())->send($user->email, new WeeklyUpdate($url, $site, $admin_email, $reply_email, $user, $attendingEvents, $seriesList, $interests), ['user_id' => $user->id])) {
+                flash()->error('Email not sent', 'The weekly notification email to '.$user->email.' could not be sent.');
+            }
         }
 
         return back();

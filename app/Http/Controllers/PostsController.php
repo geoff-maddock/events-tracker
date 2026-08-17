@@ -14,6 +14,7 @@ use App\Models\Tag;
 use App\Models\Thread;
 use App\Models\User;
 use App\Models\Visibility;
+use App\Services\BestEffortMailer;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
 use Illuminate\Http\RedirectResponse;
@@ -355,6 +356,10 @@ class PostsController extends Controller
         $tags = $thread->tags()->get();
         $users = [];
 
+        // Follower notification is best-effort — the post is already saved, so
+        // a mail failure must not surface as a 500 on posting.
+        $mailer = new BestEffortMailer();
+
         // notify users who are following this thread
         foreach ($thread->followers() as $user) {
             // if the user does not have this setting, continue
@@ -363,7 +368,11 @@ class PostsController extends Controller
             }
             // if the user hasn't already been notified, then email them
             if (!array_key_exists($user->id, $users)) {
-                Mail::to($user->email)->send(new FollowingPostUpdate($url, $site, $admin_email, $reply_email, $user, $thread, $post));
+                $mailer->send(
+                    $user->email,
+                    new FollowingPostUpdate($url, $site, $admin_email, $reply_email, $user, $thread, $post),
+                    ['post_id' => $post->id, 'user_id' => $user->id, 'via' => 'thread']
+                );
                 $users[$user->id] = $thread->name;
             }
         }
@@ -377,7 +386,11 @@ class PostsController extends Controller
                 }
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::to($user->email)->send(new FollowingPostUpdate($url, $site, $admin_email, $reply_email, $user, $thread, $post, $tag));
+                    $mailer->send(
+                        $user->email,
+                        new FollowingPostUpdate($url, $site, $admin_email, $reply_email, $user, $thread, $post, $tag),
+                        ['post_id' => $post->id, 'user_id' => $user->id, 'via' => 'tag']
+                    );
                     $users[$user->id] = $tag->name;
                 }
             }
@@ -395,11 +408,17 @@ class PostsController extends Controller
 
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::to($user->email)->send(new FollowingPostUpdate($url, $site, $admin_email, $reply_email, $user, $thread, $post));
+                    $mailer->send(
+                        $user->email,
+                        new FollowingPostUpdate($url, $site, $admin_email, $reply_email, $user, $thread, $post),
+                        ['post_id' => $post->id, 'user_id' => $user->id, 'via' => 'series']
+                    );
                     $users[$user->id] = $series->name;
                 }
             }
         }
+
+        $mailer->logSummary('PostsController@notifyFollowing', ['post_id' => $post->id]);
 
         return back();
     }

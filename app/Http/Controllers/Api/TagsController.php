@@ -14,6 +14,7 @@ use App\Models\Follow;
 use App\Models\Series;
 use App\Models\Tag;
 use App\Models\TagType;
+use App\Services\BestEffortMailer;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
 use Carbon\Carbon;
@@ -488,20 +489,28 @@ class TagsController extends Controller
         $site = config('app.app_name');
         $url = config('app.url');
 
+        // Follower notification is best-effort — the tag is already saved, so
+        // a mail failure must not surface as a 500.
+        $mailer = new BestEffortMailer();
+
         // notify users following any of the tags
         $users = [];
 
         foreach ($tag->followers() as $user) {
             // if the user hasn't already been notified, then email them
             if (!array_key_exists($user->id, $users)) {
-                Mail::send('emails.following-thread', ['user' => $user, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $tag, $reply_email, $site) {
-                    $m->from($reply_email, $site);
+                $mailer->attempt(function () use ($user, $tag, $reply_email, $site) {
+                    Mail::send('emails.following-thread', ['user' => $user, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $tag, $reply_email, $site) {
+                        $m->from($reply_email, $site);
 
-                    $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$tag->created_at->format('D F jS'));
-                });
+                        $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$tag->created_at->format('D F jS'));
+                    });
+                }, ['tag_id' => $tag->id, 'user_id' => $user->id]);
                 $users[$user->id] = $tag->name;
             }
         }
+
+        $mailer->logSummary('Api\\TagsController@notifyFollowing', ['tag_id' => $tag->id]);
 
         return back();
     }
