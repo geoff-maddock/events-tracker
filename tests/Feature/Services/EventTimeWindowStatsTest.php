@@ -35,7 +35,7 @@ class EventTimeWindowStatsTest extends TestCase
 
     public function test_stats_count_public_events_only(): void
     {
-        $window = EventTimeWindow::Today;
+        $window = EventTimeWindow::Tonight;
         $start = $this->insideStart($window);
 
         Event::factory()->create([
@@ -61,7 +61,7 @@ class EventTimeWindowStatsTest extends TestCase
 
     public function test_stats_counts_distinct_venues_and_top_tags(): void
     {
-        $window = EventTimeWindow::Today;
+        $window = EventTimeWindow::Tonight;
         $start = $this->insideStart($window);
 
         $venue = Entity::factory()->create();
@@ -96,15 +96,15 @@ class EventTimeWindowStatsTest extends TestCase
     {
         $stats = app(EventTimeWindowStats::class);
 
-        $today = $stats->stats(EventTimeWindow::Today);
+        $stats->stats(EventTimeWindow::Tonight);
 
-        $todayRange = EventTimeWindow::Today->range();
-        $cacheKey = 'event-window-stats:today:'.substr($todayRange['start'], 0, 10);
+        $tonightRange = EventTimeWindow::Tonight->range();
+        $cacheKey = 'event-window-stats:tonight:'.substr($tonightRange['start'], 0, 10);
 
         $this->assertTrue(Cache::has($cacheKey));
 
-        // A different window (this-week) starts on the same date but is a
-        // distinct cache entry keyed by window value + start date.
+        // A different window (this-week) usually starts on the same date but is
+        // a distinct cache entry keyed by window value + start date.
         $weekRange = EventTimeWindow::ThisWeek->range();
         $weekCacheKey = 'event-window-stats:this-week:'.substr($weekRange['start'], 0, 10);
 

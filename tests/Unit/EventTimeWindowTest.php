@@ -7,7 +7,7 @@ use Carbon\CarbonImmutable;
 use Tests\TestCase;
 
 /**
- * Boundary matrix for the /events/tonight, /today, /this-weekend, /this-week
+ * Boundary matrix for the /events/tonight, /this-weekend, /this-week
  * landing pages. All times are America/New_York wall-clock, expressed as
  * naive 'Y-m-d H:i:s' strings compared against events.start_at.
  */
@@ -16,14 +16,6 @@ class EventTimeWindowTest extends TestCase
     protected function now(string $dateTime): CarbonImmutable
     {
         return CarbonImmutable::parse($dateTime, 'America/New_York');
-    }
-
-    public function test_today_window_is_the_calendar_day(): void
-    {
-        $range = EventTimeWindow::Today->range($this->now('2026-08-04 12:00:00')); // Tuesday
-
-        $this->assertSame('2026-08-04 00:00:00', $range['start']);
-        $this->assertSame('2026-08-04 23:59:59', $range['end']);
     }
 
     public function test_this_week_window_rolls_six_days_forward(): void
@@ -154,7 +146,7 @@ class EventTimeWindowTest extends TestCase
 
     public function test_range_defaults_to_current_time_when_now_is_not_injected(): void
     {
-        $range = EventTimeWindow::Today->range();
+        $range = EventTimeWindow::ThisWeek->range();
 
         $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2} 00:00:00$/', $range['start']);
         $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2} 23:59:59$/', $range['end']);
@@ -166,8 +158,6 @@ class EventTimeWindowTest extends TestCase
     {
         $this->assertSame('/events/tonight', EventTimeWindow::Tonight->path());
         $this->assertSame('Tonight', EventTimeWindow::Tonight->label());
-        $this->assertSame('/events/today', EventTimeWindow::Today->path());
-        $this->assertSame('Today', EventTimeWindow::Today->label());
         $this->assertSame('/events/this-weekend', EventTimeWindow::ThisWeekend->path());
         $this->assertSame('This Weekend', EventTimeWindow::ThisWeekend->label());
         $this->assertSame('/events/this-week', EventTimeWindow::ThisWeek->path());
@@ -177,7 +167,6 @@ class EventTimeWindowTest extends TestCase
     public function test_title_has_no_brand_suffix(): void
     {
         $this->assertSame('Events in Pittsburgh Tonight — Live Music, Shows & More', EventTimeWindow::Tonight->title());
-        $this->assertSame('Events in Pittsburgh Today — Live Music, Shows & More', EventTimeWindow::Today->title());
         $this->assertSame('Events in Pittsburgh This Weekend — Live Music, Shows & More', EventTimeWindow::ThisWeekend->title());
         $this->assertSame('Events in Pittsburgh This Week — Live Music, Shows & More', EventTimeWindow::ThisWeek->title());
 
@@ -189,7 +178,6 @@ class EventTimeWindowTest extends TestCase
     public function test_h1(): void
     {
         $this->assertSame('Events in Pittsburgh Tonight', EventTimeWindow::Tonight->h1());
-        $this->assertSame('Events in Pittsburgh Today', EventTimeWindow::Today->h1());
         $this->assertSame('Events in Pittsburgh This Weekend', EventTimeWindow::ThisWeekend->h1());
         $this->assertSame('Events in Pittsburgh This Week', EventTimeWindow::ThisWeek->h1());
     }
@@ -209,13 +197,13 @@ class EventTimeWindowTest extends TestCase
 
     public function test_meta_description_singular_counts(): void
     {
-        $desc = EventTimeWindow::Today->metaDescription([
+        $desc = EventTimeWindow::Tonight->metaDescription([
             'events' => 1,
             'venues' => 1,
             'tags' => ['Jazz'],
         ]);
 
-        $this->assertSame('1 show today across 1 Pittsburgh venue — Jazz & more.', $desc);
+        $this->assertSame('1 show tonight across 1 Pittsburgh venue — Jazz & more.', $desc);
     }
 
     public function test_meta_description_weekend_and_week_phrases(): void

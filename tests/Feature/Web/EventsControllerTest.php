@@ -37,9 +37,9 @@ class EventsControllerTest extends TestCase
         $this->get('/events/future')->assertOk();
     }
 
-    public function test_index_today_loads(): void
+    public function test_index_today_redirects_to_tonight(): void
     {
-        $this->get('/events/today')->assertOk();
+        $this->get('/events/today')->assertRedirect(url('/events/tonight'));
     }
 
     public function test_index_week_loads(): void

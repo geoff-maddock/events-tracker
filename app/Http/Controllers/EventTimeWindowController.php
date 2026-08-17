@@ -9,7 +9,7 @@ use Illuminate\Contracts\View\View;
 
 /**
  * Stable, crawlable time-window landing pages: /events/tonight,
- * /events/today, /events/this-weekend, /events/this-week.
+ * /events/this-weekend, /events/this-week.
  *
  * Deliberately does NOT use ListParameterSessionStore / ListEntityResultBuilder
  * — these pages must render the same content for every visitor and must not

@@ -274,7 +274,9 @@ Route::get('update', function () {
 });
 
 Route::get('events/tonight', [\App\Http\Controllers\EventTimeWindowController::class, 'show'])->defaults('window', 'tonight')->name('events.tonight');
-Route::get('events/today', [\App\Http\Controllers\EventTimeWindowController::class, 'show'])->defaults('window', 'today')->name('events.today');
+// The old /events/today window duplicated /events/tonight on most days; keep
+// the URL alive for existing links and indexed results.
+Route::permanentRedirect('events/today', 'events/tonight')->name('events.today');
 Route::get('events/this-weekend', [\App\Http\Controllers\EventTimeWindowController::class, 'show'])->defaults('window', 'this-weekend')->name('events.thisWeekend');
 Route::get('events/this-week', [\App\Http\Controllers\EventTimeWindowController::class, 'show'])->defaults('window', 'this-week')->name('events.thisWeek');
 Route::get('events/graph', [\App\Http\Controllers\EventGraphController::class, 'graph'])->name('events.graph')->middleware(['auth', 'can:admin']);

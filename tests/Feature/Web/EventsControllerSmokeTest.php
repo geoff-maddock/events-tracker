@@ -67,11 +67,11 @@ class EventsControllerSmokeTest extends TestCase
         $this->get('/events/past')->assertOk();
     }
 
-    public function test_events_today_renders(): void
+    public function test_events_tonight_renders(): void
     {
         Event::factory()->create(['start_at' => Carbon::now()->setTime(20, 0)]);
 
-        $this->get('/events/today')->assertOk();
+        $this->get('/events/tonight')->assertOk();
     }
 
     public function test_events_day_by_string_renders(): void

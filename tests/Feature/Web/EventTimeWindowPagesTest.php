@@ -35,7 +35,6 @@ class EventTimeWindowPagesTest extends TestCase
     {
         return [
             'tonight' => ['tonight', '/events/tonight', 'Tonight'],
-            'today' => ['today', '/events/today', 'Today'],
             'this-weekend' => ['this-weekend', '/events/this-weekend', 'This Weekend'],
             'this-week' => ['this-week', '/events/this-week', 'This Week'],
         ];
@@ -200,9 +199,16 @@ class EventTimeWindowPagesTest extends TestCase
         $response = $this->get('/events/tonight');
 
         $response->assertOk();
-        $response->assertSee('href="'.url('/events/today').'"', false);
         $response->assertSee('href="'.url('/events/this-weekend').'"', false);
         $response->assertSee('href="'.url('/events/this-week').'"', false);
+        $response->assertDontSee('href="'.url('/events/today').'"', false);
+    }
+
+    public function test_retired_today_window_redirects_to_tonight(): void
+    {
+        $this->get('/events/today')
+            ->assertStatus(301)
+            ->assertRedirect(url('/events/tonight'));
     }
 
     /**
