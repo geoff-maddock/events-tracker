@@ -1071,12 +1071,7 @@ class EventsController extends Controller
             }
         }
 
-        $summary = $mailer->summary();
-        if ($summary['failed'] > 0 || $summary['skipped'] > 0) {
-            Log::warning('Api\EventsController@notifyFollowing: some follower notifications were not sent', $summary + [
-                'event_id' => $event->id,
-            ]);
-        }
+        $mailer->logSummary('Api\EventsController@notifyFollowing', ['event_id' => $event->id]);
     }
 
     /**

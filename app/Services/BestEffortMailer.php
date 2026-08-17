@@ -43,12 +43,27 @@ class BestEffortMailer
     private bool $tripped = false;
 
     /**
-     * Attempt to send one message. Returns true only if it was handed to the
+     * Attempt to send one Mailable. Returns true only if it was handed to the
      * transport without error.
      *
      * @param array<string, mixed> $context extra fields for the failure log
      */
     public function send(string $email, Mailable $mailable, array $context = []): bool
+    {
+        return $this->attempt(
+            fn () => Mail::to($email)->send($mailable),
+            $context + ['mailable' => $mailable::class]
+        );
+    }
+
+    /**
+     * Attempt an arbitrary send. Use for call sites that still build mail with
+     * the Mail::send($view, $data, $closure) form rather than a Mailable.
+     *
+     * @param callable():mixed     $send
+     * @param array<string, mixed> $context extra fields for the failure log
+     */
+    public function attempt(callable $send, array $context = []): bool
     {
         if ($this->tripped) {
             ++$this->skipped;
@@ -57,7 +72,7 @@ class BestEffortMailer
         }
 
         try {
-            Mail::to($email)->send($mailable);
+            $send();
             $this->consecutiveFailures = 0;
             ++$this->sent;
 
@@ -67,7 +82,6 @@ class BestEffortMailer
             ++$this->consecutiveFailures;
 
             Log::warning('BestEffortMailer: notification email failed to send', $context + [
-                'mailable' => $mailable::class,
                 'error' => $e->getMessage(),
             ]);
 
@@ -80,7 +94,6 @@ class BestEffortMailer
 
                 Log::error('BestEffortMailer: mail transport looks unavailable, skipping the rest of this batch', $context + [
                     'consecutive_failures' => $this->consecutiveFailures,
-                    'mailable' => $mailable::class,
                 ]);
             }
 
@@ -94,6 +107,21 @@ class BestEffortMailer
     public function tripped(): bool
     {
         return $this->tripped;
+    }
+
+    /**
+     * Log the batch outcome, but only when something actually went wrong.
+     * Call once after a batch; safe to call when everything succeeded.
+     *
+     * @param array<string, mixed> $context identifying fields for the log line
+     */
+    public function logSummary(string $source, array $context = []): void
+    {
+        if (0 === $this->failed && 0 === $this->skipped) {
+            return;
+        }
+
+        Log::warning($source.': some notification emails were not sent', $context + $this->summary());
     }
 
     /**

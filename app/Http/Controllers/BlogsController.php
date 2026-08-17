@@ -14,6 +14,7 @@ use App\Models\Menu;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\Visibility;
+use App\Services\BestEffortMailer;
 use App\Services\ImageHandler;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\RedirectResponse;
@@ -243,6 +244,10 @@ class BlogsController extends Controller
         $site = config('app.app_name');
         $url = config('app.url');
 
+        // Follower notification is best-effort — the blog is already saved, so
+        // a mail failure must not surface as a 500.
+        $mailer = new BestEffortMailer();
+
         // notify users following any of the tags
         $tags = $blog->tags()->get();
         $users = [];
@@ -253,15 +258,19 @@ class BlogsController extends Controller
             foreach ($tag->followers() as $user) {
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::send('emails.following-thread', ['user' => $user, 'blog' => $blog, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $blog, $tag, $reply_email, $site) {
-                        $m->from($reply_email, $site);
+                    $mailer->attempt(function () use ($user, $blog, $tag, $reply_email, $site, $url) {
+                        Mail::send('emails.following-thread', ['user' => $user, 'blog' => $blog, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site, 'url' => $url], function ($m) use ($user, $blog, $tag, $reply_email, $site) {
+                            $m->from($reply_email, $site);
 
-                        $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$blog->created_at->format('D F jS').' '.$blog->name);
-                    });
+                            $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$blog->created_at->format('D F jS').' '.$blog->name);
+                        });
+                    }, ['blog_id' => $blog->id, 'user_id' => $user->id, 'via' => 'tag']);
                     $users[$user->id] = $tag->name;
                 }
             }
         }
+
+        $mailer->logSummary('BlogsController@notifyFollowing', ['blog_id' => $blog->id]);
 
         return back();
     }

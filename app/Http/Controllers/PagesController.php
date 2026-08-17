@@ -9,6 +9,7 @@ use App\Models\Menu;
 use App\Models\Series;
 use App\Models\Tag;
 use App\Models\User;
+use App\Services\BestEffortMailer;
 use App\Services\EventDateRange;
 use App\Services\SearchService;
 use App\Services\SessionStore\ListParameterSessionStore;
@@ -445,7 +446,11 @@ class PagesController extends Controller
         }
 
         // email the user
-        $this->inviteUser($email);
+        if (!$this->inviteUser($email)) {
+            flash()->error('Email not sent', 'The invite to '.$email.' could not be sent. Please try again later.');
+
+            return back();
+        }
 
         Log::info('Email '.$email.' was invited to join the site');
 
@@ -455,9 +460,10 @@ class PagesController extends Controller
     }
 
     /**
-     * @return \Illuminate\Http\RedirectResponse
+     * Send the invite. Returns false when the mail transport rejected it, so
+     * the caller can report that honestly rather than claiming it was sent.
      */
-    protected function inviteUser(string $email)
+    protected function inviteUser(string $email): bool
     {
         $admin_email = config('app.admin');
         $reply_email = config('app.admin');
@@ -471,19 +477,19 @@ class PagesController extends Controller
         $events = Event::future()->simplePaginate(10);
 
         // send an email inviting the user to join
-        Mail::send(
-            'emails.invite',
-            ['email' => $email,  'events' => $events, 'url' => $url, 'site' => $site],
-            function ($m) use ($email, $admin_email, $reply_email, $site) {
-                $m->from($reply_email, $site);
+        return (new BestEffortMailer())->attempt(function () use ($email, $events, $url, $site, $admin_email, $reply_email) {
+            Mail::send(
+                'emails.invite',
+                ['email' => $email,  'events' => $events, 'url' => $url, 'site' => $site],
+                function ($m) use ($email, $admin_email, $reply_email, $site) {
+                    $m->from($reply_email, $site);
 
-                $dt = Carbon::now();
-                $m->to($email, $email)
-                    ->bcc($admin_email)
-                    ->subject($site.': Event Tracker Invite - '.$dt->format('l F jS Y'));
-            }
-        );
-
-        return back();
+                    $dt = Carbon::now();
+                    $m->to($email, $email)
+                        ->bcc($admin_email)
+                        ->subject($site.': Event Tracker Invite - '.$dt->format('l F jS Y'));
+                }
+            );
+        }, ['invite_email' => $email]);
     }
 }

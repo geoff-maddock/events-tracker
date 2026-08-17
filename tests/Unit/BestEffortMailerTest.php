@@ -115,6 +115,48 @@ class BestEffortMailerTest extends TestCase
         $this->assertSame(0, $summary['skipped']);
     }
 
+    public function test_attempt_swallows_failures_from_closure_style_sends(): void
+    {
+        $mailer = new BestEffortMailer();
+
+        $result = $mailer->attempt(function (): void {
+            throw new TransportException('535 Authentication failed');
+        });
+
+        $this->assertFalse($result);
+        $this->assertSame(1, $mailer->summary()['failed']);
+    }
+
+    public function test_attempt_reports_success_for_closure_style_sends(): void
+    {
+        $mailer = new BestEffortMailer();
+
+        $this->assertTrue($mailer->attempt(fn () => null));
+        $this->assertSame(1, $mailer->summary()['sent']);
+    }
+
+    public function test_attempt_shares_the_breaker_with_send(): void
+    {
+        $mailer = new BestEffortMailer();
+
+        for ($i = 0; $i < BestEffortMailer::MAX_CONSECUTIVE_FAILURES; ++$i) {
+            $mailer->attempt(function (): void {
+                throw new TransportException('535 Authentication failed');
+            });
+        }
+
+        $this->assertTrue($mailer->tripped());
+
+        // Once tripped the closure must not run again at all.
+        $ran = false;
+        $mailer->attempt(function () use (&$ran): void {
+            $ran = true;
+        });
+
+        $this->assertFalse($ran);
+        $this->assertSame(1, $mailer->summary()['skipped']);
+    }
+
     public function test_successful_sends_are_counted_and_reported(): void
     {
         $pending = Mockery::mock();

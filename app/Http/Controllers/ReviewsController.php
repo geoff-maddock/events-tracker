@@ -12,6 +12,7 @@ use App\Models\ReviewType;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\Visibility;
+use App\Services\BestEffortMailer;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -313,6 +314,10 @@ class ReviewsController extends Controller
         $site = config('app.app_name');
         $url = config('app.url');
 
+        // Follower notification is best-effort — the review is already saved,
+        // so a mail failure must not surface as a 500.
+        $mailer = new BestEffortMailer();
+
         // notify users following any of the tags
         $tags = $event->tags()->get();
         $users = [];
@@ -322,11 +327,13 @@ class ReviewsController extends Controller
             foreach ($tag->followers() as $user) {
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $event, $tag, $reply_email, $site) {
-                        $m->from($reply_email, $site);
+                    $mailer->attempt(function () use ($user, $event, $tag, $reply_email, $site) {
+                        Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $event, $tag, $reply_email, $site) {
+                            $m->from($reply_email, $site);
 
-                        $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
-                    });
+                            $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
+                        });
+                    }, ['event_id' => $event->id, 'user_id' => $user->id, 'via' => 'tag']);
                     $users[$user->id] = $tag->name;
                 }
             }
@@ -340,15 +347,19 @@ class ReviewsController extends Controller
             foreach ($entity->followers() as $user) {
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $entity, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $event, $entity, $reply_email, $site) {
-                        $m->from($reply_email, $site);
+                    $mailer->attempt(function () use ($user, $event, $entity, $reply_email, $site) {
+                        Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $entity, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $event, $entity, $reply_email, $site) {
+                            $m->from($reply_email, $site);
 
-                        $m->to($user->email, $user->name)->subject($site.': '.$entity->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
-                    });
+                            $m->to($user->email, $user->name)->subject($site.': '.$entity->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
+                        });
+                    }, ['event_id' => $event->id, 'user_id' => $user->id, 'via' => 'entity']);
                     $users[$user->id] = $entity->name;
                 }
             }
         }
+
+        $mailer->logSummary('ReviewsController@notifyFollowing', ['event_id' => $event->id]);
 
         return back();
     }

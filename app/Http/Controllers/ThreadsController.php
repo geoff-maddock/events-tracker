@@ -19,6 +19,7 @@ use App\Models\Thread;
 use App\Models\ThreadCategory;
 use App\Models\User;
 use App\Models\Visibility;
+use App\Services\BestEffortMailer;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -721,6 +722,10 @@ class ThreadsController extends Controller
         $tags = $thread->tags()->get();
         $users = [];
 
+        // Follower notification is best-effort — the thread is already saved,
+        // so a mail failure must not surface as a 500 on posting.
+        $mailer = new BestEffortMailer();
+
         // notify users following any tags related to the thread
         foreach ($tags as $tag) {
             foreach ($tag->followers() as $user) {
@@ -734,8 +739,11 @@ class ThreadsController extends Controller
                 }
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::to($user->email)
-                        ->send(new FollowingThreadUpdate($url, $site, $admin_email, $reply_email, $user, $thread, $tag));
+                    $mailer->send(
+                        $user->email,
+                        new FollowingThreadUpdate($url, $site, $admin_email, $reply_email, $user, $thread, $tag),
+                        ['thread_id' => $thread->id, 'user_id' => $user->id, 'via' => 'tag']
+                    );
 
                     $users[$user->id] = $tag->name;
                 }
@@ -756,12 +764,17 @@ class ThreadsController extends Controller
                 }
                 // if the user hasn't already been notified, then email them
                 if (!array_key_exists($user->id, $users)) {
-                    Mail::to($user->email)
-                        ->send(new FollowingThreadUpdate($url, $site, $admin_email, $reply_email, $user, $thread));
+                    $mailer->send(
+                        $user->email,
+                        new FollowingThreadUpdate($url, $site, $admin_email, $reply_email, $user, $thread),
+                        ['thread_id' => $thread->id, 'user_id' => $user->id, 'via' => 'series']
+                    );
                     $users[$user->id] = $s->name;
                 }
             }
         }
+
+        $mailer->logSummary('ThreadsController@notifyFollowing', ['thread_id' => $thread->id]);
 
         return back();
     }
