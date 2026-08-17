@@ -6,6 +6,7 @@ use App\Events\EventCreated;
 use App\Events\EventPhotoAdded;
 use App\Events\EventUpdated;
 use App\Listeners\ActivateVerifiedUserListener;
+use App\Listeners\BlockSuppressedRecipients;
 use App\Listeners\LogFailedLogin;
 use App\Listeners\LogSuccessfulLogin;
 use App\Listeners\QueueDiscordEventPost;
@@ -16,6 +17,7 @@ use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Routing\Events\RouteMatched;
 
 class EventServiceProvider extends ServiceProvider
@@ -28,6 +30,13 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         RouteMatched::class => [
             RouterMatchedListener::class,
+        ],
+
+        // Suppression enforcement. MessageSending is the only hook that covers
+        // every send path, including the console digests that bypass
+        // BestEffortMailer — returning false from the listener cancels the send.
+        MessageSending::class => [
+            BlockSuppressedRecipients::class,
         ],
         Login::class => [
             LogSuccessfulLogin::class,
