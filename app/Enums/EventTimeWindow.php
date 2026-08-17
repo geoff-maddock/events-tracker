@@ -5,10 +5,15 @@ namespace App\Enums;
 use Carbon\CarbonImmutable;
 
 /**
- * The four time-window landing pages: /events/tonight, /events/today,
- * /events/this-weekend, /events/this-week. Pure date/copy logic only —
- * no queries, no HTTP. See app/Services/EventTimeWindowStats.php for
- * counts and app/Http/Controllers/EventTimeWindowController.php for glue.
+ * The time-window landing pages: /events/tonight, /events/this-weekend,
+ * /events/this-week. Pure date/copy logic only — no queries, no HTTP.
+ * See app/Services/EventTimeWindowStats.php for counts and
+ * app/Http/Controllers/EventTimeWindowController.php for glue.
+ *
+ * There used to be a fourth window, Today (midnight–23:59). It returned the
+ * same events as Tonight on most days — almost nothing here starts before
+ * 17:00 — so it was dropped and /events/today now redirects to
+ * /events/tonight. Daytime events are still covered by This Week.
  *
  * All window math happens in America/New_York wall-clock time. Never use
  * config('app.timezone') here — it's a fixed-offset 'EST' zone and will
@@ -17,7 +22,6 @@ use Carbon\CarbonImmutable;
 enum EventTimeWindow: string
 {
     case Tonight = 'tonight';
-    case Today = 'today';
     case ThisWeekend = 'this-weekend';
     case ThisWeek = 'this-week';
 
@@ -34,7 +38,6 @@ enum EventTimeWindow: string
         $now = $now ?? CarbonImmutable::now(self::TIMEZONE);
 
         [$start, $end] = match ($this) {
-            self::Today => $this->todayBounds($now),
             self::ThisWeek => $this->thisWeekBounds($now),
             self::Tonight => $this->tonightBounds($now),
             self::ThisWeekend => $this->thisWeekendBounds($now),
@@ -44,16 +47,6 @@ enum EventTimeWindow: string
             'start' => $start->format('Y-m-d H:i:s'),
             'end' => $end->format('Y-m-d H:i:s'),
         ];
-    }
-
-    /**
-     * @return array{0: CarbonImmutable, 1: CarbonImmutable}
-     */
-    private function todayBounds(CarbonImmutable $now): array
-    {
-        $date = $now->startOfDay();
-
-        return [$date, $date->setTime(23, 59, 59)];
     }
 
     /**
@@ -122,7 +115,6 @@ enum EventTimeWindow: string
     {
         return match ($this) {
             self::Tonight => 'Events in Pittsburgh Tonight — Live Music, Shows & More',
-            self::Today => 'Events in Pittsburgh Today — Live Music, Shows & More',
             self::ThisWeekend => 'Events in Pittsburgh This Weekend — Live Music, Shows & More',
             self::ThisWeek => 'Events in Pittsburgh This Week — Live Music, Shows & More',
         };
@@ -132,7 +124,6 @@ enum EventTimeWindow: string
     {
         return match ($this) {
             self::Tonight => 'Events in Pittsburgh Tonight',
-            self::Today => 'Events in Pittsburgh Today',
             self::ThisWeekend => 'Events in Pittsburgh This Weekend',
             self::ThisWeek => 'Events in Pittsburgh This Week',
         };
@@ -147,7 +138,6 @@ enum EventTimeWindow: string
     {
         return match ($this) {
             self::Tonight => 'Tonight',
-            self::Today => 'Today',
             self::ThisWeekend => 'This Weekend',
             self::ThisWeek => 'This Week',
         };
@@ -161,7 +151,6 @@ enum EventTimeWindow: string
     {
         return match ($this) {
             self::Tonight => 'tonight',
-            self::Today => 'today',
             self::ThisWeekend => 'this weekend',
             self::ThisWeek => 'this week',
         };

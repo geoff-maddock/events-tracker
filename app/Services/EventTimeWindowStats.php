@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Live counts backing the /events/tonight, /today, /this-weekend,
- * /this-week landing pages: event count, distinct venue count, and the
+ * Live counts backing the /events/tonight, /this-weekend and /this-week
+ * landing pages: event count, distinct venue count, and the
  * top tags for the window. Counts are computed against public events only
  * so the cached value is safe to share across all visitors regardless of
  * who's signed in.

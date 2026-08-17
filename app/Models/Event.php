@@ -330,7 +330,7 @@ class Event extends Model
     /**
      * Events with a start_at inside the given naive datetime bounds
      * (inclusive), ordered earliest-first. Used by the time-window landing
-     * pages (/events/tonight, /today, /this-weekend, /this-week).
+     * pages (/events/tonight, /this-weekend, /this-week).
      *
      * @param Builder<Event> $query
      */

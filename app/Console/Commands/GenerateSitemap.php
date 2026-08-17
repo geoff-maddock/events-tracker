@@ -50,17 +50,15 @@ class GenerateSitemap extends Command
      *  - /search — Disallow'd in robots.txt
      *  - /activity, /all-modules — churn/internal nav, nothing to rank
      *
-     * The four time-window pages stay despite overlapping: each is a distinct
-     * range with its own title targeting a distinct query. Note that today and
-     * tonight return the same events on roughly 2/3 of the days that have any,
-     * because almost everything here starts after 17:00 — differentiating them
-     * is a content problem, not a reason to drop one from the sitemap.
+     *  - /events/today — now a permanent redirect to /events/tonight
+     *
+     * The three remaining time-window pages stay despite overlapping: each is
+     * a distinct range with its own title targeting a distinct query.
      */
     protected const PAGES = [
         '/',
         '/events',
         '/events/tonight',
-        '/events/today',
         '/events/this-weekend',
         '/events/this-week',
         '/events/week',

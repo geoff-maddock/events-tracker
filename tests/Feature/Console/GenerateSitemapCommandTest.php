@@ -73,9 +73,10 @@ class GenerateSitemapCommandTest extends TestCase
 
         $base = rtrim(config('app.url'), '/');
         $this->assertStringContainsString($base.'/events/tonight', $content);
-        $this->assertStringContainsString($base.'/events/today', $content);
         $this->assertStringContainsString($base.'/events/this-weekend', $content);
         $this->assertStringContainsString($base.'/events/this-week', $content);
+        // /events/today is a permanent redirect now — redirects don't belong in a sitemap.
+        $this->assertStringNotContainsString($base.'/events/today', $content);
     }
 
     public function test_includes_public_content_and_excludes_non_public(): void
