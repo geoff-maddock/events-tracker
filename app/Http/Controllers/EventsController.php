@@ -41,7 +41,6 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Storage;
 use Illuminate\Support\Str;
@@ -1428,37 +1427,6 @@ class EventsController extends Controller
         }
 
         return redirect()->route('events.grid');
-    }
-
-    /**
-     * TODO https://github.com/geoff-maddock/events-tracker/issues/409
-     * This is not used in the UI - find where to add
-     * Send a reminder to all users who are attending this event.
-     *
-     * @return RedirectResponse
-     */
-    public function remind(int $id, Mail $mail)
-    {
-        if (!$event = Event::find($id)) {
-            flash()->error('Error', 'No such event');
-
-            return back();
-        }
-
-        // get all the users attending
-        foreach ($event->eventResponses as $response) {
-            $user = User::findOrFail($response->user_id);
-
-            $mail->send('emails.reminder', ['user' => $user, 'event' => $event], static function ($m) use ($user, $event) {
-                $m->from('admin@events.cutupsmethod.com', 'Event Repo');
-
-                $m->to($user->email, $user->name)->subject('Event Repo: '.$event->start_at->format('D F jS').' '.$event->name.' REMINDER');
-            });
-        }
-
-        flash()->success('Success', 'You sent an email reminder to '.count($event->eventResponses).' user about '.$event->name);
-
-        return back();
     }
 
     /**
