@@ -17,7 +17,7 @@
 
 
 @if (!empty($event->series_id) && !empty($event->series))
-<br><a href="/series/{{$event->series_id }}">{!! $event->series->name !!}</a> series
+<br><a href="{{ route('series.show', $event->series) }}">{!! $event->series->name !!}</a> series
 @endif
 <br>
 {{ $event->eventType->name }}

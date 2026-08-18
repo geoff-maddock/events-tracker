@@ -309,7 +309,7 @@ class CalendarController extends Controller
                     'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
                     'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
                     'title' => $s->name,
-                    'url' => '/series/'.$s->slug,
+                    'url' => '/series/'.strtolower($s->slug),
                     'backgroundColor' => '#99bcdb',
                     'description' => $s->short,
                 ];
@@ -374,7 +374,7 @@ class CalendarController extends Controller
                     'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
                     'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
                     'title' => $s->name,
-                    'url' => '/series/'.$s->slug,
+                    'url' => '/series/'.strtolower($s->slug),
                     'backgroundColor' => '#99bcdb',
                     'description' => $s->short,
                 ];
@@ -533,7 +533,7 @@ class CalendarController extends Controller
                     'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
                     'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
                     'title' => $s->name,
-                    'url' => '/series/'.$s->slug,
+                    'url' => '/series/'.strtolower($s->slug),
                     'backgroundColor' => '#99bcdb',
                     'description' => $s->short,
                 ];
@@ -607,7 +607,7 @@ class CalendarController extends Controller
                     'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
                     'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
                     'title' => $s->name,
-                    'url' => '/series/'.$s->slug,
+                    'url' => '/series/'.strtolower($s->slug),
                     'backgroundColor' => '#99bcdb',
                     'description' => $s->short,
                 ];
@@ -662,7 +662,7 @@ class CalendarController extends Controller
         //             'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
         //             'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
         //             'title' => $s->tagNames,
-        //             'url' => '/series/'.$s->slug,
+        //             'url' => '/series/'.strtolower($s->slug),
         //             'backgroundColor' => '#99bcdb',
         //             'description' => $s->short,
         //         ];
@@ -736,7 +736,7 @@ class CalendarController extends Controller
                     'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
                     'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
                     'title' => $s->name,
-                    'url' => '/series/'.$s->slug,
+                    'url' => '/series/'.strtolower($s->slug),
                     'backgroundColor' => '#99bcdb',
                     'description' => $s->short,
                 ];
@@ -797,7 +797,7 @@ class CalendarController extends Controller
                     'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
                     'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
                     'title' => $s->tagNames,
-                    'url' => '/series/'.$s->slug,
+                    'url' => '/series/'.strtolower($s->slug),
                     'backgroundColor' => '#99bcdb',
                     'description' => $s->short,
                 ];
@@ -872,7 +872,7 @@ class CalendarController extends Controller
                     'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
                     'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
                     'title' => $s->name,
-                    'url' => '/series/'.$s->slug,
+                    'url' => '/series/'.strtolower($s->slug),
                     'backgroundColor' => '#99bcdb',
                     'description' => $s->short,
                 ];
@@ -938,7 +938,7 @@ class CalendarController extends Controller
                     'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
                     'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
                     'title' => $s->name,
-                    'url' => '/series/'.$s->slug,
+                    'url' => '/series/'.strtolower($s->slug),
                     'backgroundColor' => '#99bcdb',
                     'description' => $s->short,
                 ];
@@ -1003,7 +1003,7 @@ class CalendarController extends Controller
                     'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
                     'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
                     'title' => $s->name,
-                    'url' => '/series/'.$s->slug,
+                    'url' => '/series/'.strtolower($s->slug),
                     'backgroundColor' => '#99bcdb',
                     'description' => $s->short,
                 ];
@@ -1067,7 +1067,7 @@ class CalendarController extends Controller
                     'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
                     'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
                     'title' => $s->name,
-                    'url' => '/series/'.$s->slug,
+                    'url' => '/series/'.strtolower($s->slug),
                     'backgroundColor' => '#99bcdb',
                     'description' => $s->short,
                 ];

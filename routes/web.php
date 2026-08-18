@@ -705,7 +705,10 @@ Route::get('series/{id}/unfollow', [
 
 Route::resource('series', \App\Http\Controllers\SeriesController::class);
 
-Route::get('series/{series:slug}', [\App\Http\Controllers\SeriesController::class, 'show'])->name('series.show');
+// {series} (no explicit :slug binding field) so route() generation with a model
+// uses Series::getRouteKey(), which lower-cases the slug; resolveRouteBinding
+// still accepts ids and slugs either way.
+Route::get('series/{series}', [\App\Http\Controllers\SeriesController::class, 'show'])->name('series.show');
 
 
 Route::get('tags/create', [\App\Http\Controllers\TagsController::class, 'create'])->name('tags.create');

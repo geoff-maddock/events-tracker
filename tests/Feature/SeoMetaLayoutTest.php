@@ -63,14 +63,18 @@ class SeoMetaLayoutTest extends TestCase
         $response->assertSee('<link rel="canonical" href="'.$this->base().'/events/'.$event->slug.'">', false);
     }
 
-    public function test_series_show_canonicalizes_to_slug_route(): void
+    public function test_series_show_canonicalizes_to_lowercase_slug_route(): void
     {
-        $series = Series::factory()->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC]);
+        // legacy slugs can be mixed case; the canonical URL is always lower-case
+        $series = Series::factory()->create([
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+            'slug' => 'Canonical-Probe-Fest',
+        ]);
 
-        $response = $this->get('/series/'.$series->slug);
+        $response = $this->get('/series/Canonical-Probe-Fest');
 
         $response->assertOk();
-        $response->assertSee('<link rel="canonical" href="'.$this->base().'/series/'.$series->slug.'">', false);
+        $response->assertSee('<link rel="canonical" href="'.$this->base().'/series/canonical-probe-fest">', false);
     }
 
     public function test_tag_show_canonicalizes_to_slug_route(): void

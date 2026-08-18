@@ -13,8 +13,8 @@
 		{{ $s->name }}
 
 
-		@if (!empty($s->series_id))
-		<br><a href="/series/{{$s->series_id }}">{!! $s->series->name !!}</a> series
+		@if (!empty($s->series))
+		<br><a href="{{ route('series.show', $s->series) }}">{!! $s->series->name !!}</a> series
 		@endif
 		<br>
 		{{ $s->eventType->name }}

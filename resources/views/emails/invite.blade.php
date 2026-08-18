@@ -24,7 +24,7 @@
 		<h4>{{ $event->name }}</h4>
 
 		@if (!empty($event->series_id))
-			<br><a href="/series/{{$event->series_id }}">{!! $event->series->name !!}</a> series
+			<br><a href="/series/{{ strtolower($event->series->slug) }}">{!! $event->series->name !!}</a> series
 		@endif
 		<br>
 		{{ $event->eventType->name }}

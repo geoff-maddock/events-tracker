@@ -11,7 +11,7 @@ You might be interested in this new event because you are following <b>{!! $obje
 
 	<b>
 	@if (!empty($event->series_id))
-	<a href="{{ url('series/'.$event->series_id) }}">{!! $event->series->name !!}</a> series
+	<a href="{{ url('series/'.strtolower($event->series->slug)) }}">{!! $event->series->name !!}</a> series
 	@endif
 
 	<a href="{{ url('events/type/'.$event->eventType->name) }}">{{ $event->eventType->name }}</a>

@@ -75,7 +75,7 @@ class ClickTrackController extends Controller
         // If series doesn't exist or has no ticket link, redirect to series page
         if (!$series || !$series->ticket_link) {
             if ($series) {
-                return redirect()->route('series.show', $series->slug);
+                return redirect()->route('series.show', $series);
             }
             // a tracking link for a missing series is a dead URL, not the homepage
             abort(404);

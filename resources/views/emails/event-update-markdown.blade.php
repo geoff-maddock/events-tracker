@@ -19,7 +19,7 @@
 [Link]({{ $url }}events/{{$event->id }}) 
 
 @if (!empty($event->series_id))
-[{!! $event->series->name !!}]({{ $url }}series/{{$event->series_id }}) series  
+[{!! $event->series->name !!}]({{ $url }}series/{{ strtolower($event->series->slug) }}) series  
 @endif
 
 {{ $event->eventType->name }} at  @if (!empty($event->venue_id))[{!! $event->venue->name !!}]({{ $url }}entities/{{$event->venue->slug }})  

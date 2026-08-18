@@ -19,7 +19,7 @@
                 @endif
                 @unless ($thread->series->isEmpty())
                     @foreach ($thread->series as $series)
-                    <a href="{{ route('series.show', ['series' => $series->slug]) }}" class="badge-tw badge-secondary-tw text-xs">
+                    <a href="{{ route('series.show', $series) }}" class="badge-tw badge-secondary-tw text-xs">
                         <i class="bi bi-collection mr-1"></i>{{ $series->name }}
                     </a>
                     @endforeach

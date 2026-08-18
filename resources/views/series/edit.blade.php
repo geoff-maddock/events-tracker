@@ -22,7 +22,7 @@
 
 	<!-- Action Buttons -->
 	<div class="mb-6 flex gap-2">
-		<x-ui.button variant="default" href="{{ route('series.show', $series->slug) }}">
+		<x-ui.button variant="default" href="{{ route('series.show', $series) }}">
 			<i class="bi bi-eye mr-2"></i>
 			Show Series
 		</x-ui.button>

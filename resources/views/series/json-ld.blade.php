@@ -1,7 +1,7 @@
 @php
     use App\Services\EventSchema;
 
-    $canonicalUrl = route('series.show', $series->slug);
+    $canonicalUrl = route('series.show', $series);
 
     $seriesJsonLd = [
         '@context'         => 'https://schema.org',

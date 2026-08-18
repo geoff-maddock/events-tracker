@@ -74,7 +74,7 @@
                         <a href="/threads/series/{{ urlencode($series->slug) }}" 
                            class="badge-tw badge-primary-tw text-xs">
                             {{ $series->name }}
-                            <a href="{!! route('series.show', ['series' => $series->slug]) !!}" 
+                            <a href="{!! route('series.show', $series) !!}" 
                                title="Show this series." 
                                class="ml-1">
                                 <i class="bi bi-link-45deg"></i>

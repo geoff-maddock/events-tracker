@@ -23,7 +23,7 @@ Here are the event series you follow that are forthcoming.
 
 ### Summary of series:
 @foreach ($seriesList as $series)
-1. [{{$series->name}}]({{ $url }}series/{{$series->slug }})
+1. [{{$series->name}}]({{ $url }}series/{{ strtolower($series->slug) }})
 @endforeach
 
 @foreach ($seriesList as $series)

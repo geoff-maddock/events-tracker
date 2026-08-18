@@ -8,7 +8,7 @@
             'item'     => [
                 '@type' => 'EventSeries',
                 'name'  => $item->name,
-                'url'   => route('series.show', $item->slug),
+                'url'   => route('series.show', $item),
             ],
         ];
         if ($item->short) {

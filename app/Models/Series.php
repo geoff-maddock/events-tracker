@@ -203,6 +203,15 @@ class Series extends Eloquent
         return 'slug';
     }
 
+    /**
+     * Generated URLs always use the lower-case slug; legacy mixed-case slugs
+     * still resolve because the slug column collation is case-insensitive.
+     */
+    public function getRouteKey(): string
+    {
+        return strtolower($this->slug);
+    }
+
     public function resolveRouteBinding($value, $field = null)
     {
         return is_numeric($value)
@@ -951,7 +960,7 @@ class Series extends Eloquent
             ($this->nextOccurrenceEndDate() ? $this->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
             $this->id,
             [
-                'url' => '/series/'.$this->id,
+                'url' => '/series/'.strtolower($this->slug),
                 'color' => '#99bcdb',
             ],
         ];

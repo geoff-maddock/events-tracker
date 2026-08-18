@@ -26,7 +26,7 @@ Here are the event series you follow that happen today.
 
 ### Summary of series:
 @foreach ($seriesList as $series)
-1. [{{$series->name}}]({{ $url }}series/{{$series->id }})
+1. [{{$series->name}}]({{ $url }}series/{{ strtolower($series->slug) }})
 @endforeach
 
 @foreach ($seriesList as $series)

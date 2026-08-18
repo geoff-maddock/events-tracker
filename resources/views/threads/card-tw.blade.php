@@ -70,7 +70,7 @@
             <div class="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
                 <i class="bi bi-collection"></i>
                 @foreach ($thread->series->take(2) as $s)
-                <a href="{{ route('series.show', [$s->slug]) }}" class="hover:text-primary">{{ $s->name }}</a>@if (!$loop->last), @endif
+                <a href="{{ route('series.show', $s) }}" class="hover:text-primary">{{ $s->name }}</a>@if (!$loop->last), @endif
                 @endforeach
             </div>
             @endif
