@@ -32,9 +32,7 @@ class TestsDoNotReachTheOutsideWorldTest extends TestCase
 {
     public function test_the_configured_mail_transport_cannot_deliver(): void
     {
-        // config/mail.php is the legacy flat format; MailManager reads the
-        // transport from mail.driver rather than mail.mailers.*.
-        $this->assertSame('array', config('mail.driver'));
+        $this->assertSame('array', config('mail.default'));
 
         $this->assertInstanceOf(
             ArrayTransport::class,
@@ -67,8 +65,21 @@ class TestsDoNotReachTheOutsideWorldTest extends TestCase
 
     public function test_the_real_mail_credentials_are_not_in_play(): void
     {
-        $this->assertNotSame('mailgun', config('mail.driver'));
-        $this->assertNotSame('smtp', config('mail.driver'));
+        // Asserted positively. The old form checked mail.driver was neither
+        // 'mailgun' nor 'smtp'; once config/mail.php was modernised that key
+        // stopped existing, so both assertions would have passed against null
+        // and quietly stopped guarding anything.
+        $this->assertSame('array', config('mail.default'));
+
+        // A truthy mail.driver sends MailManager down its pre-6.x BC branch,
+        // where mail.mailers is ignored and the flat config is handed to the
+        // transport factory instead — which is how the suite reached the live
+        // mailgun credentials in the first place. Nothing should put that key
+        // back, in config or at runtime.
+        $this->assertNull(
+            config('mail.driver'),
+            'mail.driver is set, which disables mail.mailers and re-enables the legacy transport resolution.'
+        );
     }
 
     public function test_an_unfaked_request_throws_instead_of_leaving_the_machine(): void
