@@ -3,14 +3,14 @@
     <div class="flex-shrink-0">
         @if ($primary = $series->getPrimaryPhoto())
         <a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
-            data-title="{{ $series->occurrenceType->name }}  {{ $series->occurrence_repeat }}  <a href='/series/{{ $series->id }}'>{{ $series->name }}</a> @ <a href='/entities/{{ $series->venue ? $series->venue->slug : '' }}'>{{ $series->venue ? $series->venue->name : '' }}</a>"
+            data-title="{{ $series->occurrenceType->name }}  {{ $series->occurrence_repeat }}  <a href='{{ route('series.show', $series) }}'>{{ $series->name }}</a> @ <a href='/entities/{{ $series->venue ? $series->venue->slug : '' }}'>{{ $series->venue ? $series->venue->name : '' }}</a>"
             data-lightbox="{{ $primary->path }}"
             class="block aspect-square w-20 sm:w-24 md:w-28 rounded-lg overflow-hidden border border-border group-hover:border-primary transition-colors">
             <img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}" alt="{{ $series->name }}" class="w-full h-full object-cover">
         </a>
         @else
         <a href="/images/event-placeholder.png"
-            data-title="{{ $series->occurrenceType->name }}  {{ $series->occurrence_repeat }}  <a href='/series/{{ $series->id }}'>{{ $series->name }}</a> @ <a href='/entities/{{ $series->venue ? $series->venue->slug : '' }}'>{{ $series->venue ? $series->venue->name : '' }}</a>"
+            data-title="{{ $series->occurrenceType->name }}  {{ $series->occurrence_repeat }}  <a href='{{ route('series.show', $series) }}'>{{ $series->name }}</a> @ <a href='/entities/{{ $series->venue ? $series->venue->slug : '' }}'>{{ $series->venue ? $series->venue->name : '' }}</a>"
             data-lightbox="/images/event-placeholder.png"
             class="block aspect-square w-20 sm:w-24 md:w-28 rounded-lg overflow-hidden border border-border group-hover:border-primary transition-colors bg-card flex items-center justify-center">
             <i class="bi bi-collection text-4xl text-muted-foreground/40"></i>
@@ -65,7 +65,7 @@
 
         <!-- Title -->
         <h3 class="text-lg sm:text-xl font-bold text-foreground mb-1 break-words">
-            <a href='/series/{{ $series->slug }}' class="hover:text-primary transition-colors">
+            <a href='{{ route('series.show', $series) }}' class="hover:text-primary transition-colors">
                 {{ $series->name }}
             </a>
         </h3>

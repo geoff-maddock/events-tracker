@@ -26,7 +26,7 @@
                     </div>
 
                     <h3 class="text-lg font-semibold text-foreground">
-                        <a href="{{ route('series.show', $s->slug) }}" class="hover:text-primary transition-colors">
+                        <a href="{{ route('series.show', $s) }}" class="hover:text-primary transition-colors">
                             {{ $s->name }}
                         </a>
                     </h3>

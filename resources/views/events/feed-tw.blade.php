@@ -33,7 +33,7 @@
 
                     @if (!empty($event->series_id) && !empty($event->series))
                         <div class="text-sm text-muted-foreground">
-                            <a href="/series/{{ $event->series_id }}" class="text-primary hover:underline">
+                            <a href="{{ route('series.show', $event->series) }}" class="text-primary hover:underline">
                                 {{ $event->series->name }}
                             </a> series
                         </div>

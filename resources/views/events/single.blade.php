@@ -91,8 +91,8 @@
 	<div>
 		{!! link_to_route('events.show', $event->name, [$event->slug], ['class' => 'item-title', 'alt' => $event->name,	'aria-label' => $event->name]) !!}
 		<br>
-		@if (!empty($event->series_id))
-		<a href="/series/{{$event?->series?->slug }}">{!! $event?->series?->name !!}</a> series
+		@if (!empty($event->series))
+		<a href="{{ route('series.show', $event->series) }}">{!! $event?->series?->name !!}</a> series
 		@endif
 
 		@if ($event->short)

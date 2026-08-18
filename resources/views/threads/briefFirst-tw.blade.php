@@ -56,47 +56,51 @@
     </div>
 
     @if ($event = $thread->event)
-    <div class="mb-2">
+    <div class="mb-2 flex flex-wrap items-center gap-2">
         <span class="text-sm text-muted-foreground">Event:</span>
-        <a href="{!! route('events.show', ['event' => $event->id]) !!}" class="inline-flex items-center px-2 py-1 bg-card border border-border text-foreground rounded text-sm hover:bg-accent">
-            {{ Str::limit($event->name, 30, ' ...') }}
-        </a>
+        <span class="badge-tw badge-primary-tw text-xs inline-flex items-center">
+            <a href="{{ route('events.show', ['event' => $event->slug]) }}" class="hover:underline" title="View {{ $event->name }}">
+                {{ Str::limit($event->name, 30, ' ...') }}
+            </a>
+        </span>
     </div>
     @endif
 
     @unless ($thread->series->isEmpty())
-    <div class="mb-2">
+    <div class="mb-2 flex flex-wrap items-center gap-2">
         <span class="text-sm text-muted-foreground">Series:</span>
-        <div class="inline-flex flex-wrap gap-2">
-            @foreach ($thread->series as $series)
-            <a href="/threads/series/{{ urlencode($series->slug) }}" class="inline-flex items-center px-2 py-1 bg-card border border-border text-foreground rounded text-sm hover:bg-accent">
+        @foreach ($thread->series as $series)
+        <span class="badge-tw badge-secondary-tw text-xs inline-flex items-center gap-1 group">
+            <a href="{{ route('threads.series', ['tag' => strtolower($series->slug)]) }}"
+               class="hover:underline"
+               title="Filter threads by {{ $series->name }}">
                 {{ $series->name }}
-                <a href="{!! route('series.show', ['series' => $series->slug]) !!}" title="Show this series" class="ml-1 text-primary hover:text-primary/90">
-                    <i class="bi bi-link-45deg"></i>
-                </a>
             </a>
-            @endforeach
-        </div>
+            <a href="{{ route('series.show', $series) }}"
+               class="p-1 -mr-1 opacity-60 hover:opacity-100 transition-opacity"
+               title="View {{ $series->name }}"
+               aria-label="View {{ $series->name }}">
+                <i class="bi bi-box-arrow-up-right text-xs" aria-hidden="true"></i>
+            </a>
+        </span>
+        @endforeach
     </div>
     @endunless
 
     @unless ($thread->entities->isEmpty())
-    <div class="mb-2">
+    <div class="mb-2 flex flex-wrap items-center gap-2">
         <span class="text-sm text-muted-foreground">Related:</span>
-        <div class="inline-flex flex-wrap gap-2">
-            @foreach ($thread->entities as $entity)
-            <a href="/threads/relatedto/{{ urlencode($entity->slug) }}" class="inline-flex items-center px-2 py-1 bg-card border border-border text-foreground rounded text-sm hover:bg-accent">
-                {{ $entity->name }}
-            </a>
-            @endforeach
-        </div>
+        @foreach ($thread->entities as $entity)
+            <x-entity-badge :entity="$entity" context="threads" />
+        @endforeach
     </div>
     @endunless
 
     @unless ($thread->tags->isEmpty())
-    <div class="flex flex-wrap gap-2">
+    <div class="flex flex-wrap items-center gap-2">
+        <span class="text-sm text-muted-foreground">Tags:</span>
         @foreach ($thread->tags as $tag)
-            <x-tag-badge :tag="$tag" context="threads" variant="primary" />
+            <x-tag-badge :tag="$tag" context="threads" />
         @endforeach
     </div>
     @endunless

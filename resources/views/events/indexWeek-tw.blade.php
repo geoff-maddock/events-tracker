@@ -83,7 +83,7 @@
                                         </li>
                                     @endif
                                     <li class="text-sm">
-                                        <a href="{{ route('series.show', $s->slug) }}" class="text-foreground hover:text-primary transition-colors">
+                                        <a href="{{ route('series.show', $s) }}" class="text-foreground hover:text-primary transition-colors">
                                             {{ $s->name }}
                                         </a>
                                         @if ($s->venue)

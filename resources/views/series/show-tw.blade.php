@@ -2,7 +2,7 @@
 
 {{-- the id-based URL also resolves; the slug route is the canonical one --}}
 @section('canonical')
-<link rel="canonical" href="{{ \App\Services\SeoMeta::canonicalFor('/series/'.$series->slug) }}">
+<link rel="canonical" href="{{ \App\Services\SeoMeta::canonicalFor('/series/'.strtolower($series->slug)) }}">
 @endsection
 
 @section('title', $series->getSeoTitleFormat())
@@ -60,7 +60,7 @@
 						<div id="series-actions-menu" class="hidden absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-card border border-border ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
 							<div class="py-1" role="menu" aria-orientation="vertical">
 								@if ($user && (Auth::user()->id == $series?->user?->id || $user->id == Config::get('app.superuser')))
-									<a href="{{ route('series.edit', ['series' => $series->slug]) }}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
+									<a href="{{ route('series.edit', $series) }}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
 										<i class="bi bi-pencil mr-2"></i>Edit Series
 									</a>
 									<a href="{{ route('series.createOccurrence', ['id' => $series->id]) }}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
@@ -106,7 +106,7 @@
 		<!-- Description -->
 		@if ($series->description)
 		<div class="rounded-lg border bg-card shadow">
-			<div class="prose max-w-none p-8 p-4 pt-2 space-y-4">
+			<div class="prose dark:prose-invert max-w-none p-6 space-y-4">
 				{!! nl2br(e($series->description)) !!}
 			</div>
 		</div>
@@ -121,7 +121,7 @@
 				<div class="rounded-lg border border-dark-border bg-card shadow">
 					<div class="flex items-center justify-between bg-primary text-primary-foreground px-6 py-4 rounded-t-lg">
 						<h5 class="text-lg font-semibold">Latest Thread</h5>
-						<a href="{{ route('threads.series', ['tag' => $series->slug]) }}"
+						<a href="{{ route('threads.series', ['tag' => strtolower($series->slug)]) }}"
 						   title="{{ count($threads) }} threads"
 						   class="bg-card text-foreground px-2 py-1 rounded text-sm font-medium">
 							{{ count($threads) }}
@@ -129,10 +129,8 @@
 					</div>
 
 					<div class="p-6">
-						<table class="w-full">
-							@include('threads.briefFirst', ['thread' => $thread])
-							@include('posts.briefList', ['thread' => $thread, 'posts' => $thread->posts])
-						</table>
+						@include('threads.briefFirst-tw', ['thread' => $thread])
+						@include('posts.briefList-tw', ['thread' => $thread, 'posts' => $thread->posts])
 
 						<div class="mt-6 pt-6 border-t border-border">
 							@if ($thread->is_locked)
@@ -203,7 +201,7 @@
 								</p>
 							@elseif ($series->cancelled_at == NULL)
 								<p class="text-muted-foreground">
-									Next: {{ $series->nextEvent() ? $series->nextEvent()->start_at->format('l F jS Y') : $series->cycleFromFoundedAt()->format('l F jS Y') }}
+									Next: {{ $series->cycleFromFoundedAt()->format('l F jS Y') }}
 									(not yet created)
 								</p>
 							@endif

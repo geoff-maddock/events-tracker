@@ -227,8 +227,8 @@
         </div>
 
         <!-- Series Link -->
-        @if (!empty($event->series_id))
-        <a href="/series/{{ $event?->series?->slug }}" class="text-xs text-muted-foreground hover:text-primary">
+        @if (!empty($event->series))
+        <a href="{{ route('series.show', $event->series) }}" class="text-xs text-muted-foreground hover:text-primary">
             Part of {{ $event?->series?->name }}
         </a>
         @endif

@@ -5,7 +5,7 @@
 
 @endif
 ## {{ $series->name }}  
-*{{ $series->short }}* [Link]({{ $url }}series/{{$series->id }})  
+*{{ $series->short }}* [Link]({{ $url }}series/{{ strtolower($series->slug) }})  
 @if ($series->description)
     {!! $series->description !!}
 @endif

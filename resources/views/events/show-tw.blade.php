@@ -256,7 +256,7 @@
 								<div class="items-center text-sm">
 									@if (!empty($event->series))
 									<span>
-										<a href="/series/{{$event->series->slug }}" class="text-muted-foreground font-bold hover:text-foreground transition-colors">
+										<a href="{{ route('series.show', $event->series) }}" class="text-muted-foreground font-bold hover:text-foreground transition-colors">
 											{!! $event->series->name !!}
 										</a>
 										<span class="mx-1 text-muted-foreground">series</span>

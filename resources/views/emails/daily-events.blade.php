@@ -15,7 +15,7 @@ Good morning!
 
 		<b>
 		@if (!empty($event->series_id))
-		<a href="{{ $url }}series/{{$event->series_id }}">{!! $event->series->name !!}</a> series
+		<a href="{{ $url }}series/{{ strtolower($event->series->slug) }}">{!! $event->series->name !!}</a> series
 		@endif
 
 		<a href="{{ $url }}events/type/{{$event->eventType->name }}">{{ $event->eventType->name }}</a>
@@ -92,7 +92,7 @@ Good morning!
 			<b>{{ $s->occurrenceType->name }}  {{ $s->occurrence_repeat }}</b>
 		</div>
 
-		<h2><a href="{{ $url }}series/{{$s->id }}">{{ $s->name }}</a></h2>
+		<h2><a href="{{ $url }}series/{{ strtolower($s->slug) }}">{{ $s->name }}</a></h2>
 		@if ($s->description)
 			<description class="body">
 				{!! nl2br($s->description) !!}
@@ -134,7 +134,7 @@ Good morning!
 					<i>{{ $event->short }}</i>
 
 					@if (!empty($event->series_id))
-						<br><a href="/series/{{$event->series_id }}">{!! $event->series->name !!}</a> series
+						<br><a href="/series/{{ strtolower($event->series->slug) }}">{!! $event->series->name !!}</a> series
 					@endif
 					<br>
 					{{ $event->eventType->name }}
