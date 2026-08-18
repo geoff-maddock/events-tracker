@@ -369,11 +369,6 @@ Route::get('events/{id}/import-photo', [
     'uses' => '\App\Http\Controllers\EventsController@importPhoto',
 ]);
 
-Route::get('events/{id}/remind', [
-    'as' => 'events.remind',
-    'uses' => '\App\Http\Controllers\EventsController@remind',
-]);
-
 Route::get('events/{id}/tweet', [
     'as' => 'events.tweet',
     'uses' => '\App\Http\Controllers\EventsController@tweet',
