@@ -20,17 +20,23 @@ class EventTimeWindowStats
     protected const CACHE_TTL = 900;
 
     /**
-     * @return array{events: int, venues: int, tags: string[]}
+     * How many tags tagLinks carries. The page shows the first
+     * TAG_LINKS_VISIBLE and folds the rest behind a "…" toggle.
+     */
+    public const TAG_LINKS_LIMIT = 24;
+
+    public const TAG_LINKS_VISIBLE = 8;
+
+    /**
+     * tagLinks: the window's tags by frequency, for the drill-down pills.
+     * tags: the top 3 names, for the meta description.
+     *
+     * @return array{events: int, venues: int, tags: string[], tagLinks: array<int, array{name: string, slug: string, count: int}>}
      */
     public function stats(EventTimeWindow $window): array
     {
+        $cacheKey = $this->cacheKey($window);
         $range = $window->range();
-
-        $cacheKey = sprintf(
-            'event-window-stats:%s:%s',
-            $window->value,
-            substr($range['start'], 0, 10)
-        );
 
         return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($range): array {
             $counts = Event::query()
@@ -40,24 +46,46 @@ class EventTimeWindowStats
                 ->toBase()
                 ->first();
 
-            $tags = DB::table('event_tag')
+            $tagLinks = DB::table('event_tag')
                 ->join('events', 'events.id', '=', 'event_tag.event_id')
                 ->join('tags', 'tags.id', '=', 'event_tag.tag_id')
                 ->where('events.visibility_id', Visibility::VISIBILITY_PUBLIC)
                 ->whereBetween('events.start_at', [$range['start'], $range['end']])
-                ->select('tags.name')
+                ->select('tags.name', 'tags.slug')
                 ->selectRaw('COUNT(*) as frequency')
-                ->groupBy('tags.name')
+                ->groupBy('tags.name', 'tags.slug')
                 ->orderByDesc('frequency')
-                ->limit(3)
-                ->pluck('tags.name')
+                ->orderBy('tags.name')
+                ->limit(self::TAG_LINKS_LIMIT)
+                ->get()
+                ->map(fn ($row) => [
+                    'name' => $row->name,
+                    'slug' => $row->slug,
+                    'count' => (int) $row->frequency,
+                ])
                 ->all();
 
             return [
                 'events' => $counts ? (int) $counts->event_count : 0,
                 'venues' => $counts ? (int) $counts->venue_count : 0,
-                'tags' => $tags,
+                'tags' => array_column(array_slice($tagLinks, 0, 3), 'name'),
+                'tagLinks' => $tagLinks,
             ];
         });
+    }
+
+    /**
+     * Versioned so a deploy that changes the payload shape never serves a
+     * stale entry missing the new keys.
+     */
+    protected function cacheKey(EventTimeWindow $window): string
+    {
+        $range = $window->range();
+
+        return sprintf(
+            'event-window-stats:v2:%s:%s',
+            $window->value,
+            substr($range['start'], 0, 10)
+        );
     }
 }
