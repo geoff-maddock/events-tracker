@@ -194,6 +194,108 @@ class EventTimeWindowPagesTest extends TestCase
         }
     }
 
+    /**
+     * @dataProvider windowProvider
+     */
+    public function test_tag_pills_render_for_in_window_tags(string $windowValue, string $path, string $phrase): void
+    {
+        $window = EventTimeWindow::from($windowValue);
+
+        $tag = \App\Models\Tag::factory()->create(['name' => 'Pill Render Tag']);
+        $this->eventInside($window)->tags()->attach($tag->id);
+
+        $response = $this->get($path);
+
+        $response->assertOk();
+        $response->assertSee('Pill Render Tag');
+        $response->assertSee($path.'?tag='.$tag->slug, false);
+    }
+
+    /**
+     * @dataProvider windowProvider
+     */
+    public function test_tag_param_filters_the_window_to_that_tag(string $windowValue, string $path, string $phrase): void
+    {
+        $window = EventTimeWindow::from($windowValue);
+
+        $tag = \App\Models\Tag::factory()->create(['name' => 'Drilldown Tag']);
+        $tagged = $this->eventInside($window, ['name' => 'Tagged Window Event']);
+        $tagged->tags()->attach($tag->id);
+        $this->eventInside($window, ['name' => 'Untagged Window Event']);
+
+        $response = $this->get($path.'?tag='.$tag->slug);
+
+        $response->assertOk();
+        $response->assertSee('Tagged Window Event');
+        $response->assertDontSee('Untagged Window Event');
+        // The active pill clears the filter back to the clean window path.
+        $response->assertSee('Clear tag filter', false);
+    }
+
+    /**
+     * @dataProvider windowProvider
+     */
+    public function test_unknown_tag_slug_is_a_404(string $windowValue, string $path, string $phrase): void
+    {
+        $this->get($path.'?tag=no-such-tag-slug')->assertNotFound();
+    }
+
+    /**
+     * @dataProvider windowProvider
+     */
+    public function test_tag_param_variant_is_noindexed(string $windowValue, string $path, string $phrase): void
+    {
+        $window = EventTimeWindow::from($windowValue);
+
+        $tag = \App\Models\Tag::factory()->create();
+        $this->eventInside($window)->tags()->attach($tag->id);
+
+        $response = $this->get($path.'?tag='.$tag->slug);
+
+        $response->assertOk();
+        $response->assertSee('<meta name="robots" content="noindex, follow">', false);
+        // ItemList JSON-LD is only emitted for the unfiltered page.
+        $response->assertDontSee('"@type": "ItemList"', false);
+    }
+
+    public function test_more_than_eight_tags_fold_behind_an_ellipsis_toggle(): void
+    {
+        $window = EventTimeWindow::from('this-week');
+
+        $event = $this->eventInside($window);
+        $tags = \App\Models\Tag::factory()->count(9)->create();
+        $event->tags()->attach($tags->pluck('id')->all());
+
+        $response = $this->get('/events/this-week');
+
+        $response->assertOk();
+        $response->assertSee('Show all tags', false);
+        $response->assertSee('x-show="expanded"', false);
+    }
+
+    public function test_eight_or_fewer_tags_have_no_ellipsis_toggle(): void
+    {
+        $window = EventTimeWindow::from('this-week');
+
+        $event = $this->eventInside($window);
+        $tags = \App\Models\Tag::factory()->count(3)->create();
+        $event->tags()->attach($tags->pluck('id')->all());
+
+        // The seeder can leave its own tagged events inside this real-time
+        // window; only assert the toggle is absent when the window really has
+        // eight or fewer tags.
+        $stats = app(EventTimeWindowStats::class)->stats($window);
+
+        $response = $this->get('/events/this-week');
+        $response->assertOk();
+
+        if (count($stats['tagLinks']) <= EventTimeWindowStats::TAG_LINKS_VISIBLE) {
+            $response->assertDontSee('Show all tags', false);
+        } else {
+            $response->assertSee('Show all tags', false);
+        }
+    }
+
     public function test_other_window_pill_links_are_present(): void
     {
         $response = $this->get('/events/tonight');

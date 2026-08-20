@@ -90,6 +90,36 @@ class EventTimeWindowStatsTest extends TestCase
         $this->assertSame(1, $stats['venues']); // same venue for both events
         $this->assertSame('Techno', $stats['tags'][0]); // most frequent first
         $this->assertContains('Punk', $stats['tags']);
+
+        // tagLinks carries name/slug/count for the drill-down pills, in the
+        // same frequency order the meta-description tags are derived from.
+        $this->assertSame(
+            ['name' => 'Techno', 'slug' => $tagA->slug, 'count' => 2],
+            $stats['tagLinks'][0]
+        );
+        $this->assertContains(
+            ['name' => 'Punk', 'slug' => $tagB->slug, 'count' => 1],
+            $stats['tagLinks']
+        );
+    }
+
+    public function test_tag_links_exclude_non_public_events(): void
+    {
+        $window = EventTimeWindow::Tonight;
+        $start = $this->insideStart($window);
+
+        $tag = Tag::factory()->create(['name' => 'Private Only Tag']);
+
+        $private = Event::factory()->create([
+            'visibility_id' => Visibility::VISIBILITY_PRIVATE,
+            'start_at' => $start,
+            'created_by' => User::factory()->create()->id,
+        ]);
+        $private->tags()->attach($tag->id);
+
+        $stats = app(EventTimeWindowStats::class)->stats($window);
+
+        $this->assertNotContains('Private Only Tag', array_column($stats['tagLinks'], 'name'));
     }
 
     public function test_cache_key_varies_by_window_start_date(): void
@@ -99,14 +129,14 @@ class EventTimeWindowStatsTest extends TestCase
         $stats->stats(EventTimeWindow::Tonight);
 
         $tonightRange = EventTimeWindow::Tonight->range();
-        $cacheKey = 'event-window-stats:tonight:'.substr($tonightRange['start'], 0, 10);
+        $cacheKey = 'event-window-stats:v2:tonight:'.substr($tonightRange['start'], 0, 10);
 
         $this->assertTrue(Cache::has($cacheKey));
 
         // A different window (this-week) usually starts on the same date but is
         // a distinct cache entry keyed by window value + start date.
         $weekRange = EventTimeWindow::ThisWeek->range();
-        $weekCacheKey = 'event-window-stats:this-week:'.substr($weekRange['start'], 0, 10);
+        $weekCacheKey = 'event-window-stats:v2:this-week:'.substr($weekRange['start'], 0, 10);
 
         $this->assertNotSame($cacheKey, $weekCacheKey);
     }

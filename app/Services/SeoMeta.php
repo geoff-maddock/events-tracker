@@ -26,6 +26,7 @@ class SeoMeta
         'tabs',
         'day_offset',
         'page',
+        'tag',
     ];
 
     /**
