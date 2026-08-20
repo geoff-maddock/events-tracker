@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Session\TokenMismatchException;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -44,6 +45,15 @@ class Handler extends ExceptionHandler
     {
         if ($e instanceof ModelNotFoundException) {
             abort(404);
+        }
+
+        // A stale page (open past the session lifetime) posts a CSRF token that
+        // no longer matches anything. Instead of a dead-end 419, send the user
+        // back with a fresh session so a retry works without a manual reload.
+        if ($e instanceof TokenMismatchException && !$request->expectsJson()) {
+            return redirect()->back(fallback: route('login'))
+                ->withInput($request->except('password', 'password_confirmation', '_token'))
+                ->with('error', 'Your session expired. Please try again.');
         }
 
         return parent::render($request, $e);

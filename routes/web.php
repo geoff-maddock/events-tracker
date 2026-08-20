@@ -42,6 +42,12 @@ use Illuminate\Support\Facades\Route;
 // apply it, leaving accounts open to verification via crafted URLs.
 Auth::routes();
 
+// Returns a token bound to the caller's (possibly brand-new) session so a
+// stale page can refresh its CSRF token without a full reload (issue #2089).
+Route::get('csrf-token', function () {
+    return response()->json(['token' => csrf_token()]);
+})->name('csrf.token');
+
 // Email verification routes — `verification.verify` MUST be signed.
 Route::get('email/verify', [\App\Http\Controllers\Auth\VerificationController::class, 'show'])
     ->name('verification.notice');
