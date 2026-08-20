@@ -93,3 +93,7 @@
     </div>
 </div>
 @endsection
+
+@section('scripts.footer')
+<script src="{{ asset('/js/csrf-refresh.js') }}?v={{ @filemtime(public_path('js/csrf-refresh.js')) }}"></script>
+@endsection
