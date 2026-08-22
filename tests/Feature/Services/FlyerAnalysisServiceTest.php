@@ -27,7 +27,7 @@ class FlyerAnalysisServiceTest extends TestCase
     {
         Http::fake([
             'api.anthropic.com/*' => Http::response([
-                'content' => [['text' => '{"name":"Test Event","start_at":"2026-08-15 20:00"}']],
+                'content' => [['type' => 'text', 'text' => '{"name":"Test Event","start_at":"2026-08-15 20:00"}']],
             ], 200),
         ]);
 
@@ -41,13 +41,29 @@ class FlyerAnalysisServiceTest extends TestCase
     {
         Http::fake([
             'api.anthropic.com/*' => Http::response([
-                'content' => [['text' => "```json\n{\"name\":\"Fenced Event\"}\n```"]],
+                'content' => [['type' => 'text', 'text' => "```json\n{\"name\":\"Fenced Event\"}\n```"]],
             ], 200),
         ]);
 
         $result = (new FlyerAnalysisService())->analyze($this->flyer());
 
         $this->assertSame('Fenced Event', $result['name']);
+    }
+
+    public function test_skips_leading_thinking_block_and_reads_text_block(): void
+    {
+        Http::fake([
+            'api.anthropic.com/*' => Http::response([
+                'content' => [
+                    ['type' => 'thinking', 'thinking' => ''],
+                    ['type' => 'text', 'text' => '{"name":"Thoughtful Event"}'],
+                ],
+            ], 200),
+        ]);
+
+        $result = (new FlyerAnalysisService())->analyze($this->flyer());
+
+        $this->assertSame('Thoughtful Event', $result['name']);
     }
 
     public function test_api_failure_throws_runtime_exception(): void
@@ -66,7 +82,7 @@ class FlyerAnalysisServiceTest extends TestCase
     {
         Http::fake([
             'api.anthropic.com/*' => Http::response([
-                'content' => [['text' => 'this is not json']],
+                'content' => [['type' => 'text', 'text' => 'this is not json']],
             ], 200),
         ]);
 

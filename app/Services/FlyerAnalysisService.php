@@ -67,7 +67,16 @@ class FlyerAnalysisService
         }
 
         $responseData = $response->json();
-        $text = $responseData['content'][0]['text'] ?? '';
+
+        // The response may lead with thinking blocks (adaptive thinking on
+        // Sonnet 5 / Opus 5), so take the first text block, not content[0].
+        $text = '';
+        foreach ($responseData['content'] ?? [] as $block) {
+            if (($block['type'] ?? null) === 'text') {
+                $text = $block['text'] ?? '';
+                break;
+            }
+        }
 
         // Strip any markdown fences the model may include despite instructions
         $text = preg_replace('/^```(?:json)?\s*/i', '', trim($text));
