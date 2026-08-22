@@ -32,6 +32,9 @@ class EntityRequest extends Request
             'description' => 'required',
             'entity_type_id' => 'required',
             'entity_status_id' => 'required',
+            // started_at is stored in a MySQL TIMESTAMP column (valid range 1970–2038),
+            // so keep it inside safe bounds to avoid a 500 from out-of-range dates.
+            'started_at' => 'nullable|date|after_or_equal:1971-01-01|before_or_equal:2037-12-31',
         ];
     }
 }
