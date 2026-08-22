@@ -10,6 +10,7 @@ use App\Jobs\Instagram\PostEventToInstagram;
 use App\Jobs\Instagram\PostWeekendPreviewToInstagram;
 use App\Models\Event;
 use App\Models\EventShare;
+use App\Models\User;
 use App\Services\Integrations\Instagram;
 use App\Services\ImageHandler;
 use Carbon\Carbon;
@@ -161,6 +162,12 @@ class EventInstagramController extends Controller
             return back();
         }
 
+        if ($error = $this->recentRepostError($event, $this->user)) {
+            flash()->error('Already posted', $error);
+
+            return back();
+        }
+
         PostEventToInstagram::dispatch($event, false, $this->user?->id);
 
         flash()->success('Queued', 'This event is being posted to Instagram in the background. You will be notified when it finishes.');
@@ -183,6 +190,10 @@ class EventInstagramController extends Controller
 
         if ($error = $this->eventPhotoError($event)) {
             return $this->instagramActionResponse(false, 'Error', $error);
+        }
+
+        if ($error = $this->recentRepostError($event, $this->user)) {
+            return $this->instagramActionResponse(false, 'Already posted', $error);
         }
 
         PostEventToInstagram::dispatch($event, true, $this->user?->id);
@@ -224,6 +235,10 @@ class EventInstagramController extends Controller
             return response()->json(['success' => false, 'message' => $error], 422);
         }
 
+        if ($error = $this->recentRepostError($event, $user)) {
+            return response()->json(['success' => false, 'message' => $error], 429);
+        }
+
         // Build the job so we can hand its tracking id back to the caller, then dispatch.
         $job = new PostEventToInstagram($event, true, $user->id);
         dispatch($job);
@@ -247,6 +262,34 @@ class EventInstagramController extends Controller
 
         if (!$instagram->getPageAccessToken()) {
             return 'You must have an Instagram page linked to post to Instagram.';
+        }
+
+        return null;
+    }
+
+    /**
+     * Manual reposts are throttled: an event that already went to Instagram
+     * within the last three days may not be posted again. Admins are exempt.
+     * Returns a user-facing error string, or null when posting may proceed.
+     */
+    private function recentRepostError(Event $event, ?User $user): ?string
+    {
+        if ($user && $user->isAdmin()) {
+            return null;
+        }
+
+        $lastShare = EventShare::where('event_id', $event->id)
+            ->where('platform', 'instagram')
+            ->whereNotNull('posted_at')
+            ->where('posted_at', '>=', Carbon::now()->subDays(3))
+            ->orderBy('posted_at', 'desc')
+            ->first();
+
+        if ($lastShare) {
+            return sprintf(
+                'This event was already posted to Instagram %s. Events can only be reposted three days after the last post.',
+                $lastShare->posted_at->diffForHumans()
+            );
         }
 
         return null;

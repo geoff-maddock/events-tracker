@@ -95,6 +95,94 @@ class QueuedInstagramPostTest extends TestCase
         Queue::assertPushed(PostEventStoryToInstagram::class);
     }
 
+    private function shareEventToInstagram(Event $event, ?\Carbon\Carbon $postedAt): EventShare
+    {
+        return EventShare::create([
+            'event_id' => $event->id,
+            'platform' => 'instagram',
+            'platform_id' => '555',
+            'created_by' => $event->created_by,
+            'posted_at' => $postedAt,
+        ]);
+    }
+
+    public function test_recent_instagram_post_blocks_manual_repost(): void
+    {
+        Queue::fake();
+        $this->mockInstagramCredentials();
+
+        $user = User::factory()->create(['user_status_id' => 1]);
+        $event = $this->eventWithPhoto($user);
+        $this->shareEventToInstagram($event, now()->subDay());
+
+        $response = $this->actingAs($user)->getJson('/events/' . $event->id . '/instagram-post');
+
+        $response->assertStatus(422)
+            ->assertJson(['success' => false, 'title' => 'Already posted']);
+        Queue::assertNotPushed(PostEventToInstagram::class);
+    }
+
+    public function test_post_older_than_three_days_does_not_block_repost(): void
+    {
+        Queue::fake();
+        $this->mockInstagramCredentials();
+
+        $user = User::factory()->create(['user_status_id' => 1]);
+        $event = $this->eventWithPhoto($user);
+        $this->shareEventToInstagram($event, now()->subDays(4));
+
+        $this->actingAs($user)->getJson('/events/' . $event->id . '/instagram-post')
+            ->assertStatus(200);
+        Queue::assertPushed(PostEventToInstagram::class);
+    }
+
+    public function test_failed_share_attempt_does_not_block_repost(): void
+    {
+        Queue::fake();
+        $this->mockInstagramCredentials();
+
+        $user = User::factory()->create(['user_status_id' => 1]);
+        $event = $this->eventWithPhoto($user);
+        // posted_at is null when a share attempt failed — that should not throttle
+        $this->shareEventToInstagram($event, null);
+
+        $this->actingAs($user)->getJson('/events/' . $event->id . '/instagram-post')
+            ->assertStatus(200);
+        Queue::assertPushed(PostEventToInstagram::class);
+    }
+
+    public function test_admin_is_exempt_from_repost_throttle(): void
+    {
+        Queue::fake();
+        $this->mockInstagramCredentials();
+
+        $adminGroup = Group::firstOrCreate(['name' => 'admin']);
+        $admin = User::factory()->create(['user_status_id' => 1]);
+        $admin->groups()->attach($adminGroup->id);
+        $event = $this->eventWithPhoto($admin);
+        $this->shareEventToInstagram($event, now()->subDay());
+
+        $this->actingAs($admin)->getJson('/events/' . $event->id . '/instagram-post')
+            ->assertStatus(200);
+        Queue::assertPushed(PostEventToInstagram::class);
+    }
+
+    public function test_api_carousel_blocks_recent_repost_with_429(): void
+    {
+        Queue::fake();
+        $this->mockInstagramCredentials();
+
+        $user = User::factory()->create(['user_status_id' => 1]);
+        $this->actingAs($user, 'sanctum');
+        $event = $this->eventWithPhoto($user);
+        $this->shareEventToInstagram($event, now()->subDay());
+
+        $this->postJson('/api/events/' . $event->id . '/instagram-post')
+            ->assertStatus(429)
+            ->assertJson(['success' => false]);
+        Queue::assertNotPushed(PostEventToInstagram::class);
+    }
+
     public function test_api_carousel_returns_job_status_id(): void
     {
         Queue::fake();
