@@ -24,8 +24,10 @@ return [
         'api_key' => env('ANTHROPIC_API_KEY', ''),
         'api_url' => 'https://api.anthropic.com/v1/messages',
         'api_version' => '2023-06-01',
-        'model' => env('ANTHROPIC_MODEL', 'claude-opus-4-5'),
-        'max_tokens' => 2048,
+        'model' => env('ANTHROPIC_MODEL', 'claude-sonnet-5'),
+        // Adaptive thinking (Sonnet 5 / Opus 5) counts against max_tokens,
+        // so leave headroom above the expected JSON payload size.
+        'max_tokens' => 8192,
     ],
 
     /*
