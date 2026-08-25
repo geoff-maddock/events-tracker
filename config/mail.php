@@ -57,6 +57,12 @@ return [
             'scheme' => env('MAIL_SCHEME'),
         ],
 
+        // Credentials read from config/services.php "mailgun" (MAIL_DOMAIN /
+        // MAIL_SECRET).
+        'mailgun' => [
+            'transport' => 'mailgun',
+        ],
+
         'log' => [
             'transport' => 'log',
             'channel' => env('MAIL_LOG_CHANNEL'),
