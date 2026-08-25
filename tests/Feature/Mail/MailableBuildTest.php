@@ -66,12 +66,6 @@ class MailableBuildTest extends TestCase
         $this->assertSame(self::SITE, $mailable->from[0]['name'], 'From name should be the site name');
     }
 
-    private function assertBccsAdmin(Mailable $mailable): void
-    {
-        $this->assertNotEmpty($mailable->bcc, 'Mailable should bcc the admin address');
-        $this->assertSame(self::ADMIN, $mailable->bcc[0]['address'], 'Mailable should bcc the admin address');
-    }
-
     public function test_user_activation_builds(): void
     {
         $user = User::factory()->create();
@@ -114,7 +108,6 @@ class MailableBuildTest extends TestCase
 
         $this->assertBuilt($mailable, 'emails.user-data-export-ready');
         $this->assertSame(self::SITE . ': Your Data Export is Ready', $mailable->subject);
-        $this->assertBccsAdmin($mailable);
     }
 
     public function test_user_update_builds(): void

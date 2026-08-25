@@ -50,6 +50,9 @@ class LoginFailure extends Mailable
         return $this->markdown('emails.user-login-failed-markdown')
             ->from($this->reply_email, $this->site)
             ->subject($this->site.':  Login failure attempts - '.$this->user?->name.' - '.$dt->format('l F jS Y'))
+            // Deliberately kept when the blanket admin bcc was removed from the
+            // other mailables: this bcc is the admin's only signal of repeated
+            // login failures.
             ->bcc($this->admin_email);
     }
 }

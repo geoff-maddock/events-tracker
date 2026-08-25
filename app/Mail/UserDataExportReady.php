@@ -48,7 +48,6 @@ class UserDataExportReady extends Mailable
     {
         return $this->markdown('emails.user-data-export-ready')
             ->from($this->reply_email, $this->site)
-            ->subject($this->site . ': Your Data Export is Ready')
-            ->bcc($this->admin_email);
+            ->subject($this->site . ': Your Data Export is Ready');
     }
 }
