@@ -29,7 +29,7 @@ class MailablesTest extends TestCase
 
         $this->assertStringContainsString('Admin Mailer Test', $built->subject);
         $this->assertSame('noreply@test.app', $built->from[0]['address']);
-        $this->assertSame('admin@test.app', $built->bcc[0]['address']);
+        $this->assertEmpty($built->bcc);
     }
 
     public function test_daily_reminder_builds(): void
@@ -69,7 +69,7 @@ class MailablesTest extends TestCase
         $built = $mail->build();
 
         $this->assertStringContainsString('Weekly Update', $built->subject);
-        $this->assertSame('admin@test.app', $built->bcc[0]['address']);
+        $this->assertEmpty($built->bcc);
     }
 
     public function test_entity_reminder_builds_with_entity_name_in_subject(): void

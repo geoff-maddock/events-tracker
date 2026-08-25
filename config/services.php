@@ -20,9 +20,20 @@ return [
 	],
 
 	'ses' => [
-		'key' => '',
-		'secret' => '',
-		'region' => 'us-east-1',
+		'key' => env('AWS_ACCESS_KEY_ID'),
+		'secret' => env('AWS_SECRET_ACCESS_KEY'),
+
+		// Deliberately no fallback region. The verified identity lives in
+		// exactly one region; defaulting to a different one sends there and
+		// fails with "Email address is not verified", which reads as a
+		// verification problem rather than a region problem. Unset fails loudly.
+		'region' => env('AWS_DEFAULT_REGION'),
+
+		// Merged into the SES v2 SendEmail call. array_filter drops the key
+		// when the variable is unset — SES rejects a null ConfigurationSetName.
+		'options' => array_filter([
+			'ConfigurationSetName' => env('SES_CONFIGURATION_SET'),
+		]),
 	],
 
 	'stripe' => [

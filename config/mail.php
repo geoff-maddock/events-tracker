@@ -3,122 +3,87 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | Mail Driver
+    | Default Mailer
     |--------------------------------------------------------------------------
     |
-    | Laravel supports both SMTP and PHP's "mail" function as drivers for the
-    | sending of e-mail. You may specify which one you're using throughout
-    | your application here. By default, Laravel is setup for SMTP mail.
+    | MAIL_MAILER is the modern name. MAIL_DRIVER is read as a fallback so an
+    | environment file written against the old flat config keeps working during
+    | the SES cutover; drop that fallback once every environment sets
+    | MAIL_MAILER.
     |
-    | Supported: "smtp", "mail", "sendmail", "mailgun", "mandrill", "log"
+    | This file used to be the pre-Laravel-6 flat format (a top-level "driver"
+    | key, with host/port/username/password beside it). In that format
+    | MailManager::getConfig() hands the *entire* config array to the transport
+    | factory, which is harmless for SMTP but means the SES factory would have
+    | received driver/host/port/from/markdown as SesClient constructor
+    | arguments. Hence the rewrite.
+    |
+    | Do not reintroduce a top-level "driver" key. Its presence at any value
+    | puts MailManager back on that legacy branch and silently ignores the
+    | "mailers" array below.
     |
     */
 
-    'driver' => env('MAIL_DRIVER', 'mailgun'),
+    'default' => env('MAIL_MAILER', env('MAIL_DRIVER', 'smtp')),
 
     /*
     |--------------------------------------------------------------------------
-    | SMTP Host Address
+    | Mailer Configurations
     |--------------------------------------------------------------------------
     |
-    | Here you may provide the host address of the SMTP server used by your
-    | applications. A default option is provided that is compatible with
-    | the Mailgun mail service which will provide reliable deliveries.
+    | Credentials for "ses" live in config/services.php under the key of the
+    | same name, which is where MailManager::createSesV2Transport() reads them.
     |
     */
 
-    'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
+    'mailers' => [
+        'ses' => [
+            // The SES v2 SendEmail API rather than the v1 SendRawEmail one.
+            'transport' => 'ses-v2',
+        ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | SMTP Host Port
-    |--------------------------------------------------------------------------
-    |
-    | This is the SMTP port used by your application to deliver e-mails to
-    | users of the application. Like the host we have set this value to
-    | stay compatible with the Mailgun e-mail application by default.
-    |
-    */
+        'smtp' => [
+            'transport' => 'smtp',
+            'host' => env('MAIL_HOST', '127.0.0.1'),
+            'port' => env('MAIL_PORT', 587),
+            'username' => env('MAIL_USERNAME'),
+            'password' => env('MAIL_PASSWORD'),
+            'timeout' => null,
+            // No "encryption" key: since Laravel 11 the SMTP transport derives
+            // its scheme from "scheme", or from the port (465 = smtps,
+            // anything else = smtp with STARTTLS). The flat config's
+            // hardcoded 'encryption' => 'tls' had already stopped doing
+            // anything. Set MAIL_SCHEME only if a server needs it forced.
+            'scheme' => env('MAIL_SCHEME'),
+        ],
 
-    'port' => env('MAIL_PORT', 587),
+        // Credentials read from config/services.php "mailgun" (MAIL_DOMAIN /
+        // MAIL_SECRET).
+        'mailgun' => [
+            'transport' => 'mailgun',
+        ],
+
+        'log' => [
+            'transport' => 'log',
+            'channel' => env('MAIL_LOG_CHANNEL'),
+        ],
+
+        'array' => [
+            'transport' => 'array',
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------
     | Global "From" Address
     |--------------------------------------------------------------------------
     |
-    | You may wish for all e-mails sent by your application to be sent from
-    | the same address. Here, you may specify a name and address that is
-    | used globally for all e-mails that are sent by your application.
+    | Under SES this address is not merely cosmetic: its domain must be a
+    | verified identity in the sending region or the API rejects the message.
     |
     */
 
     'from' => ['address' => env('APP_NOREPLY_EMAIL', 'postmaster@localhost'), 'name' => env('APP_NAME', 'Events Admin')],
-
-    /*
-    |--------------------------------------------------------------------------
-    | E-Mail Encryption Protocol
-    |--------------------------------------------------------------------------
-    |
-    | Here you may specify the encryption protocol that should be used when
-    | the application send e-mail messages. A sensible default using the
-    | transport layer security protocol should provide great security.
-    |
-    */
-
-    'encryption' => 'tls',
-
-    /*
-    |--------------------------------------------------------------------------
-    | SMTP Server Username
-    |--------------------------------------------------------------------------
-    |
-    | If your SMTP server requires a username for authentication, you should
-    | set it here. This will get used to authenticate with your server on
-    | connection. You may also set the "password" value below this one.
-    |
-    */
-
-    'username' => env('MAIL_USERNAME', 'postmaster@localhost'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | SMTP Server Password
-    |--------------------------------------------------------------------------
-    |
-    | Here you may set the password required by your SMTP server to send out
-    | messages from your application. This will be given to the server on
-    | connection so that the application will be able to send messages.
-    |
-    */
-
-    'password' => env('MAIL_PASSWORD', 'secret'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Sendmail System Path
-    |--------------------------------------------------------------------------
-    |
-    | When using the "sendmail" driver to send e-mails, we will need to know
-    | the path to where Sendmail lives on this server. A default path has
-    | been provided here, which will work well on most of your systems.
-    |
-    */
-
-    'sendmail' => '/usr/sbin/sendmail -bs',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Mail "Pretend"
-    |--------------------------------------------------------------------------
-    |
-    | When this option is enabled, e-mail will not actually be sent over the
-    | web and will instead be written to your application's logs files so
-    | you may inspect the message. This is great for local development.
-    |
-    */
-
-    'pretend' => false,
 
     /*
      * Markdown Config

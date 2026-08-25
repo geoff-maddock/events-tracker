@@ -51,7 +51,6 @@ class AdminMailer extends Mailable
         // markdown
         return $this->markdown('emails.admin-test-markdown')
             ->from($this->reply_email, $this->site)
-             ->subject($this->site.': Admin Mailer Test - '.$dt->format('l F jS Y'))
-             ->bcc($this->admin_email);
+             ->subject($this->site.': Admin Mailer Test - '.$dt->format('l F jS Y'));
     }
 }

@@ -11,14 +11,17 @@
     <env name="SESSION_DRIVER" value="array"/>
     <env name="QUEUE_DRIVER" value="sync"/>
     <!--
-      config/mail.php is the legacy flat format, so the transport is chosen by
-      MAIL_DRIVER, not MAIL_MAILER. Without this the suite inherits the real
-      mailgun credentials from .env and every test that exercises a failure
-      path emails the admin for real. Tests/TestCase.php enforces this again at
-      runtime so it cannot be lost by running phpunit with another config.
+      Without this the suite inherits the real mail credentials from .env and
+      every test that exercises a failure path emails the admin for real.
+      Tests/TestCase.php enforces this again at runtime so it cannot be lost by
+      running phpunit with another config.
+
+      MAIL_MAILER is what config/mail.php reads now that it is no longer the
+      pre-6.x flat format. MAIL_DRIVER is kept because it is still read as the
+      fallback, so the guard holds either way.
     -->
-    <env name="MAIL_DRIVER" value="array"/>
     <env name="MAIL_MAILER" value="array"/>
+    <env name="MAIL_DRIVER" value="array"/>
   </php>
   <source>
     <include>

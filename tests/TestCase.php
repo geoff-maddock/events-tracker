@@ -32,11 +32,12 @@ abstract class TestCase extends BaseTestCase
         // built and rendered, so a broken Blade template in a Mailable still
         // fails the test that exercises it. It just never reaches a transport.
         //
-        // config/mail.php is the pre-6.x flat format, so MailManager resolves
-        // the transport from mail.driver (see its createSymfonyTransport BC
-        // branch). mail.default is set as well in case that file is ever
-        // modernised.
-        config(['mail.driver' => 'array', 'mail.default' => 'array']);
+        // config/mail.php is the modern format, so the transport comes from
+        // mail.default and mail.mailers.*. Do not set mail.driver here: a
+        // truthy value at that key sends MailManager down its pre-6.x BC
+        // branch, where the whole mail config is passed to the transport
+        // factory and mail.mailers is ignored.
+        config(['mail.default' => 'array']);
 
         // No test may reach the network either. Without this the Discord suite
         // sent live requests to discord.com using factory-generated webhook

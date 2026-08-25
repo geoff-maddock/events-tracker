@@ -46,7 +46,6 @@ class UserActivation extends Mailable
 
         return $this->markdown('emails.user-activation-markdown')
             ->from($this->reply_email, $this->site)
-            ->subject($this->site.':  Account activated - '.$this->user?->name.' - '.$dt->format('l F jS Y'))
-            ->bcc($this->admin_email);
+            ->subject($this->site.':  Account activated - '.$this->user?->name.' - '.$dt->format('l F jS Y'));
     }
 }

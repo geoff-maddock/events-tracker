@@ -46,7 +46,6 @@ class UserSuspended extends Mailable
 
         return $this->markdown('emails.user-suspended-markdown')
             ->from($this->reply_email, $this->site)
-            ->subject($this->site.':  Account suspended - '.$this->user?->name.' - '.$dt->format('l F jS Y'))
-            ->bcc($this->admin_email);
+            ->subject($this->site.':  Account suspended - '.$this->user?->name.' - '.$dt->format('l F jS Y'));
     }
 }
