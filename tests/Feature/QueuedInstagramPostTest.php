@@ -313,6 +313,48 @@ class QueuedInstagramPostTest extends TestCase
         }
     }
 
+    public function test_carousel_is_trimmed_to_the_instagram_ten_item_limit(): void
+    {
+        $user = User::factory()->create(['user_status_id' => 1]);
+        $event = $this->eventWithPhoto($user);
+
+        // Attach 15 additional (non-primary) photos so the carousel would
+        // otherwise contain 16 items — well over Instagram's limit of 10,
+        // which makes createCarousel fail wholesale (EVENTREPO-X9).
+        for ($i = 0; $i < 15; $i++) {
+            $photo = Photo::factory()->create([
+                'is_primary' => 0,
+                'path' => "extra_{$i}.jpg",
+                'thumbnail' => "extra_{$i}_thumb.jpg",
+                'created_by' => $user->id,
+                'updated_by' => $user->id,
+            ]);
+            $event->photos()->attach($photo->id);
+        }
+
+        Storage::shouldReceive('disk')->with('external')->andReturnSelf()->byDefault();
+        Storage::shouldReceive('url')->andReturn('http://example.com/test.jpg')->byDefault();
+
+        $instagram = Mockery::mock(Instagram::class);
+        $instagram->shouldReceive('getIgUserId')->andReturn(123);
+        $instagram->shouldReceive('getPageAccessToken')->andReturn('token');
+        // No more than 10 containers should ever be uploaded or published.
+        $instagram->shouldReceive('uploadCarouselPhoto')->times(10)->andReturn(111);
+        $instagram->shouldReceive('checkBatchStatus')
+            ->with(Mockery::on(fn ($ids) => is_array($ids) && count($ids) === 10))
+            ->andReturn(true);
+        $instagram->shouldReceive('createCarousel')
+            ->with(Mockery::on(fn ($ids) => is_array($ids) && count($ids) === 10), Mockery::any())
+            ->andReturn(999);
+        $instagram->shouldReceive('checkStatus')->andReturn(true);
+        $instagram->shouldReceive('publishMedia')->andReturn(555);
+
+        $poster = new InstagramEventPoster($instagram);
+        $result = $poster->postCarousel($event, $user->id);
+
+        $this->assertSame(555, $result);
+    }
+
     public function test_job_status_show_endpoint_returns_json_for_owner(): void
     {
         $user = User::factory()->create(['user_status_id' => 1]);

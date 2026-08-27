@@ -21,6 +21,14 @@ use Storage;
  */
 class InstagramEventPoster
 {
+    /**
+     * Instagram permits at most 10 items in a single carousel. Handing more
+     * than that to the createCarousel endpoint makes the whole call fail with
+     * an opaque "No data returned" error (EVENTREPO-X9), so the container list
+     * is trimmed to this ceiling before publishing.
+     */
+    private const MAX_CAROUSEL_ITEMS = 10;
+
     public function __construct(private Instagram $instagram)
     {
     }
@@ -107,6 +115,11 @@ class InstagramEventPoster
 
         // Additional photos directly attached to the event.
         foreach ($event->getOtherPhotos() as $otherPhoto) {
+            if (count($igContainerIds) >= self::MAX_CAROUSEL_ITEMS) {
+                Log::info('Carousel item limit (' . self::MAX_CAROUSEL_ITEMS . ') reached for event ' . $event->id . '; skipping remaining photos.');
+                break;
+            }
+
             $otherUrl = Storage::disk('external')->url($otherPhoto->getStoragePath());
             if (!$otherUrl) {
                 continue;
@@ -122,6 +135,11 @@ class InstagramEventPoster
         // Primary photos of related entities — best effort, skip on failure.
         foreach ($event->entities as $entity) {
             foreach ($entity->photos as $photo) {
+                if (count($igContainerIds) >= self::MAX_CAROUSEL_ITEMS) {
+                    Log::info('Carousel item limit (' . self::MAX_CAROUSEL_ITEMS . ') reached for event ' . $event->id . '; skipping remaining entity photos.');
+                    break 2;
+                }
+
                 if (!$photo->is_primary) {
                     continue;
                 }
