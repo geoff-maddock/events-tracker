@@ -21,6 +21,9 @@ use Storage;
  */
 class InstagramEventPoster
 {
+    // Instagram caps how many stories are worth pushing in one run.
+    private const PREVIEW_STORY_LIMIT = 10;
+
     public function __construct(private Instagram $instagram)
     {
     }
@@ -318,6 +321,71 @@ class InstagramEventPoster
                 $posted++;
             } catch (Exception $e) {
                 Log::info('Weekend preview: skipping event '.$event->id.': '.$e->getMessage());
+                $skipped++;
+            }
+        }
+
+        if ($posted === 0) {
+            throw new RuntimeException('No stories could be posted. Ensure the selected events have photos.');
+        }
+
+        return ['posted' => $posted, 'skipped' => $skipped, 'total' => $selectedEvents->count()];
+    }
+
+    /**
+     * Post a preview of today's events to Instagram Stories: the events
+     * starting today, each as an individual story.
+     *
+     * Selection rules:
+     *  - Rank today's events by attending-response count and take the top 10.
+     *  - Re-sort that selection by start time, so the stories publish in the
+     *    order the events actually happen.
+     *
+     * The window covers the whole day (00:00 through 23:59), so events that
+     * have already started are still included.
+     *
+     * Per-event failures (no photo, upload/status/publish errors) are logged
+     * and skipped; the loop continues. Throws only for terminal cases.
+     *
+     * @return array{posted: int, skipped: int, total: int}
+     */
+    public function postTodaysPreview(?int $userId): array
+    {
+        $this->assertCredentials();
+
+        $dayStart = Carbon::today()->startOfDay();
+        $dayEnd = Carbon::today()->endOfDay();
+
+        // Fetch all of today's events ranked by number of attending responses,
+        // excluding cancelled and non-public events.
+        $todaysEvents = Event::where('start_at', '>=', $dayStart)
+            ->where('start_at', '<=', $dayEnd)
+            ->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
+            ->whereNull('cancelled_at')
+            ->withCount(['eventResponses as response_count'])
+            ->orderBy('response_count', 'desc')
+            ->orderBy('start_at', 'asc')
+            ->get();
+
+        if ($todaysEvents->isEmpty()) {
+            throw new RuntimeException('No events found for today.');
+        }
+
+        // Response count decides which events make the cut; start time decides
+        // the order they go out in.
+        $selectedEvents = $todaysEvents->take(self::PREVIEW_STORY_LIMIT)
+            ->sortBy('start_at')
+            ->values();
+
+        $posted = 0;
+        $skipped = 0;
+
+        foreach ($selectedEvents as $event) {
+            try {
+                $this->postStory($event, $userId);
+                $posted++;
+            } catch (Exception $e) {
+                Log::info("Today's preview: skipping event ".$event->id.': '.$e->getMessage());
                 $skipped++;
             }
         }
