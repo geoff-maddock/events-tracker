@@ -79,9 +79,13 @@ Pittsburgh Events Calendar — Concerts, Shows & More
 			</a>
 			@if ($signedIn && $user && $user->hasGroup('super_admin'))
 			<div class="border-t border-border my-1"></div>
-			<a href="{!! URL::route('events.instagramWeekendPreview') !!}" data-replace-history class="flex items-center px-4 py-2 text-sm text-muted-foreground hover:bg-accent rounded-b-lg transition-colors">
+			<a href="{!! URL::route('events.instagramWeekendPreview') !!}" data-replace-history class="flex items-center px-4 py-2 text-sm text-muted-foreground hover:bg-accent transition-colors">
 				<i class="bi bi-instagram mr-2"></i>
 				Weekend Preview
+			</a>
+			<a href="{!! URL::route('events.instagramTodaysPreview') !!}" data-replace-history class="flex items-center px-4 py-2 text-sm text-muted-foreground hover:bg-accent rounded-b-lg transition-colors">
+				<i class="bi bi-instagram mr-2"></i>
+				Today's Preview
 			</a>
 			@endif
 		</div>

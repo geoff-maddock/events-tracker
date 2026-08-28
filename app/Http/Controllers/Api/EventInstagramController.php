@@ -7,6 +7,7 @@ use App\Filters\EventFilters;
 use App\Http\Controllers\Controller;
 use App\Jobs\Instagram\PostEventStoryToInstagram;
 use App\Jobs\Instagram\PostEventToInstagram;
+use App\Jobs\Instagram\PostTodaysPreviewToInstagram;
 use App\Jobs\Instagram\PostWeekendPreviewToInstagram;
 use App\Models\Event;
 use App\Models\EventShare;
@@ -544,6 +545,27 @@ class EventInstagramController extends Controller
         PostWeekendPreviewToInstagram::dispatch($this->user->id);
 
         return $this->instagramActionResponse(true, 'Queued', 'The weekend preview is being posted to Instagram in the background. You will be notified when it finishes.');
+    }
+
+    /**
+     * Queue today's preview to be posted to Instagram Stories. Event selection
+     * happens inside the queued job. Admin only.
+     */
+    public function postTodaysPreviewToInstagram(Instagram $instagram): RedirectResponse|JsonResponse
+    {
+        // Admin-only guard
+        if (!$this->user || !$this->user->hasGroup('super_admin')) {
+            return $this->instagramActionResponse(false, 'Error', "You must be an admin to post today's preview to Instagram.");
+        }
+
+        // Fail fast when Instagram is not linked; the job re-checks at run time.
+        if ($error = $this->instagramCredentialError($instagram)) {
+            return $this->instagramActionResponse(false, 'Error', $error);
+        }
+
+        PostTodaysPreviewToInstagram::dispatch($this->user->id);
+
+        return $this->instagramActionResponse(true, 'Queued', "Today's preview is being posted to Instagram in the background. You will be notified when it finishes.");
     }
 
 
