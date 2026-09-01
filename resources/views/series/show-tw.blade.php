@@ -93,10 +93,14 @@
 
 		<!-- Series Image -->
 		@if ($photo = $series->getPrimaryPhoto())
-		<div class="aspect-video relative overflow-hidden rounded-lg border border-dark-border bg-card shadow">
-			<a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" data-lightbox="series-main" class="block w-full h-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-				<img src="{{ Storage::disk('external')->url($photo->getStoragePath()) }}"
-					 class="object-cover w-full h-full cursor-pointer hover:opacity-90 transition-opacity"
+		@php $primaryPhotoUrl = Storage::disk('external')->url($photo->getStoragePath()); @endphp
+		{{-- object-contain in a height-capped box, matching events/show-tw: series
+		     images are flyers and usually portrait, so the previous aspect-video
+		     + object-cover cropped the top and bottom off them. --}}
+		<div class="relative overflow-hidden rounded-lg border border-border bg-card shadow max-h-[600px] flex items-center justify-center">
+			<a href="{{ $primaryPhotoUrl }}" data-lightbox="series-main" class="block w-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+				<img src="{{ $primaryPhotoUrl }}"
+					 class="object-contain w-full max-h-[600px] cursor-pointer hover:opacity-90 transition-opacity"
 					 alt="{{ $series->name }}"
 					 loading="lazy">
 			</a>
