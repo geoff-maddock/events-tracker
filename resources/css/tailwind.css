@@ -105,6 +105,27 @@
     @apply w-full px-3 py-2 bg-input border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent;
   }
 
+  /* Image analyze panel
+     These are toggled by public/js/image-analyze.js. That file is NOT in the
+     Tailwind `content` globs (which cover resources/views and resources/js
+     only), so the utilities must be named here rather than assembled as class
+     strings in the JS, or they get purged from the production build. */
+  .img-analyze-status {
+    @apply text-sm mb-4 p-3 rounded-md;
+  }
+
+  .img-analyze-status-success {
+    @apply bg-green-50 text-green-700 border border-green-200 dark:bg-green-950/30 dark:text-green-400 dark:border-green-800;
+  }
+
+  .img-analyze-status-error {
+    @apply bg-red-50 text-red-700 border border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-800;
+  }
+
+  .img-analyze-status-info {
+    @apply bg-sky-50 text-sky-700 border border-sky-200 dark:bg-sky-950/30 dark:text-sky-400 dark:border-sky-800;
+  }
+
   /* Native select styling */
   select {
     @apply bg-card text-foreground;
@@ -383,4 +404,35 @@
 .swal2-html-container,
 .swal2-content {
   @apply text-muted-foreground;
+}
+/* Image analyze panel scan-line animation
+   Used by resources/views/partials/image-analyze-panel.blade.php while an
+   analysis request is in flight. Plain CSS (not utilities), so it is safe
+   from purging regardless of where the toggling JS lives. */
+.image-scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2.5rem;
+  background: linear-gradient(to bottom,
+      transparent,
+      rgba(56, 189, 248, 0.55),
+      transparent);
+  box-shadow: 0 0 14px 3px rgba(56, 189, 248, 0.5);
+  animation: image-scan 1.6s ease-in-out infinite;
+}
+
+@keyframes image-scan {
+  0% { top: -2.5rem; }
+  100% { top: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image-scan-line { animation: none; opacity: 0; }
+  #image-scan-overlay { animation: image-scan-pulse 1.5s ease-in-out infinite; }
+}
+
+@keyframes image-scan-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.7; }
 }

@@ -32,12 +32,14 @@ use App\Services\ImageHandler;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
+use App\Services\TempImageStore;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -1887,11 +1889,14 @@ class EventsController extends Controller
         return back();
     }
 
-    public function store(EventRequest $request, Event $event, ImageHandler $imageHandler): RedirectResponse
+    public function store(EventRequest $request, Event $event, TempImageStore $tempImages): RedirectResponse
     {
         $msg = '';
 
         $input = $request->all();
+
+        // Carried by the create form for photo attachment only, never a model attribute.
+        Arr::forget($input, TempImageStore::TOKEN_FIELDS);
 
         // transform the slug passed in the request
         $input['slug'] = Str::slug($request->input('slug', '-'));
@@ -1938,47 +1943,12 @@ class EventsController extends Controller
             $event->entities()->syncWithoutDetaching($request->input('promoter_id'));
         }
 
-        // If the event was created from an analysed flyer, attach that image as
-        // the primary photo now so the user does not need to upload it again.
-        $token = $request->input('flyer_temp_token');
-        $safeExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-        if ($token && preg_match('/^[a-f0-9\-]{36}\.([a-z]{2,4})$/', $token, $extMatch)
-            && in_array($extMatch[1], $safeExtensions, true)) {
-            $tempPath = storage_path('app/' . \App\Http\Controllers\FlyerAnalysisController::FLYER_TEMP_DIR . '/' . $token);
-            if (file_exists($tempPath)) {
-                try {
-                    $mimeType = mime_content_type($tempPath);
-                    if ($mimeType === false) {
-                        Log::warning('EventsController@store: could not determine MIME type for flyer temp file', [
-                            'token' => $token,
-                        ]);
-                        $mimeType = 'image/jpeg';
-                    }
-                    $uploadedFile = new \Illuminate\Http\UploadedFile(
-                        $tempPath,
-                        $token,
-                        $mimeType,
-                        null,
-                        true // mark as already moved so no temp-file move is attempted
-                    );
-                    $photo = $imageHandler->makePhoto($uploadedFile);
-                    $photo->is_primary = 1;
-                    $photo->save();
-                    $event->addPhoto($photo);
-                    EventPhotoAdded::dispatch($event, true);
-                } catch (\Throwable $e) {
-                    Log::warning('EventsController@store: failed to attach flyer photo', [
-                        'event_id' => $event->id,
-                        'error' => $e->getMessage(),
-                    ]);
-                } finally {
-                    if (file_exists($tempPath) && !unlink($tempPath)) {
-                        Log::warning('EventsController@store: failed to delete flyer temp file', [
-                            'path' => $tempPath,
-                        ]);
-                    }
-                }
-            }
+        // Attach the image the user chose on the create form, whether or not
+        // they ran it through analysis, as the primary photo.
+        $photo = $tempImages->attachFromRequest($request, $event);
+
+        if ($photo !== null) {
+            EventPhotoAdded::dispatch($event, true);
         }
 
         // add to activity log

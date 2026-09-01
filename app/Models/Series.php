@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\HasPhotos;
 use Carbon\Carbon;
 use DateTime;
 use Storage;
@@ -121,7 +122,7 @@ use App\Filters\SeriesFilters;
  * @method static \Illuminate\Database\Eloquent\Builder|Series whereVisibilityId($value)
  * @mixin \Eloquent
  */
-class Series extends Eloquent
+class Series extends Eloquent implements HasPhotos
 {
     use HasFactory;
 

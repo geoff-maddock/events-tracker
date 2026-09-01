@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\HasPhotos;
 use App\Filters\QueryFilter;
 use Carbon\Carbon;
 use DateTime;
@@ -127,7 +128,7 @@ use App\Models\User;
  * @method static Builder|Event whereVisibilityId($value)
  * @method static Builder|Event getByEntity($value)
  */
-class Event extends Model
+class Event extends Model implements HasPhotos
 {
     use Notifiable;
     use HasFactory;

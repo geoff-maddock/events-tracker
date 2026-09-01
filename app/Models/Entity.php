@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\HasPhotos;
 use App\Filters\QueryFilter;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -96,7 +97,7 @@ use Storage;
  * @method static Builder|Entity whereUpdatedBy($value)
  * @mixin \Eloquent
  */
-class Entity extends Eloquent
+class Entity extends Eloquent implements HasPhotos
 {
     use HasFactory;
     use Notifiable;

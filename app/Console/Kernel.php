@@ -14,6 +14,7 @@ use App\Console\Commands\NotifyEntities;
 use App\Console\Commands\NotifyWeekly;
 use App\Console\Commands\PostDiscordDigest;
 use App\Console\Commands\PostDiscordReminders;
+use App\Console\Commands\PruneTempImages;
 use App\Console\Commands\UserCleanup;
 use App\Models\User;
 use Illuminate\Console\Scheduling\Schedule;
@@ -36,6 +37,7 @@ class Kernel extends ConsoleKernel
         AutomateInstagramPosts::class,
         InitializeEventShares::class,
         CleanupExports::class,
+        PruneTempImages::class,
         CreateSeriesEvents::class,
         GenerateFeedbackInvitations::class,
         PostDiscordReminders::class,
@@ -67,6 +69,9 @@ class Kernel extends ConsoleKernel
 
         // schedule daily cleanup of old export files
         $schedule->command('cleanup:exports')->daily()->timezone('America/New_York')->at('03:00');
+
+        // schedule daily cleanup of abandoned create-form image uploads
+        $schedule->command('images:prune-temp')->daily()->timezone('America/New_York')->at('03:30');
 
         // generate proactive feedback invitations for recently finished events,
         // and expire stale ones (issue #1998). No-ops unless FEEDBACK_ENABLED.
