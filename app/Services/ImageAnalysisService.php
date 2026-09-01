@@ -65,7 +65,7 @@ class ImageAnalysisService
         ])->timeout(60)->post(config('ai.anthropic.api_url'), [
             'model' => config('ai.anthropic.model', 'claude-sonnet-5'),
             'max_tokens' => config('ai.anthropic.max_tokens', 2048),
-            'system' => $this->prompt($context, 'system'),
+            'system' => $this->datedPrompt($this->prompt($context, 'system')),
             'messages' => [
                 [
                     'role' => 'user',
@@ -123,6 +123,26 @@ class ImageAnalysisService
         }
 
         return $extracted;
+    }
+
+    /**
+     * Prefix a system prompt with today's date.
+     *
+     * The model has no clock, so without this it anchors relative dates
+     * ("every second Friday", "next Saturday") to an arbitrary point in the
+     * year and can return dates in the past. This is computed per request
+     * rather than stored in config/ai.php on purpose: config is cached at
+     * deploy time, so a baked-in date would go stale between deploys.
+     */
+    private function datedPrompt(string $prompt): string
+    {
+        $today = now();
+
+        return 'Today\'s date is ' . $today->toDateString()
+            . ' (' . $today->format('l') . '). '
+            . 'Interpret every relative or partial date against it, and never return a date in the past '
+            . 'for an upcoming or recurring event. '
+            . $prompt;
     }
 
     /**

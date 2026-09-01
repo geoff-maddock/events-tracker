@@ -133,7 +133,8 @@ class ImageAnalysisServiceTest extends TestCase
         (new ImageAnalysisService())->analyze($this->flyer(), $context);
 
         Http::assertSent(function ($request) use ($context) {
-            return $request['system'] === config("ai.prompts.{$context}.system")
+            // The system prompt is prefixed with today's date by datedPrompt().
+            return str_contains($request['system'], config("ai.prompts.{$context}.system"))
                 && $request['messages'][0]['content'][1]['text'] === config("ai.prompts.{$context}.user");
         });
     }
@@ -144,7 +145,7 @@ class ImageAnalysisServiceTest extends TestCase
 
         (new ImageAnalysisService())->analyze($this->flyer());
 
-        Http::assertSent(fn ($request) => $request['system'] === config('ai.prompts.event.system'));
+        Http::assertSent(fn ($request) => str_contains($request['system'], config('ai.prompts.event.system')));
     }
 
     public function test_unknown_context_throws_invalid_argument(): void
@@ -166,6 +167,55 @@ class ImageAnalysisServiceTest extends TestCase
         $this->expectExceptionMessage('config:clear');
 
         (new ImageAnalysisService())->analyze($this->flyer(), 'entity');
+    }
+
+    // ── Dated system prompt ──────────────────────────────────────────────
+
+    /**
+     * The model has no clock. Without today's date it anchors "every second
+     * Friday" to an arbitrary point in the year and can return a past date.
+     */
+    public function test_prefixes_the_system_prompt_with_todays_date(): void
+    {
+        $this->fakeText('{"name":"Dated"}');
+
+        $this->travelTo(\Carbon\Carbon::parse('2026-09-01'), function () {
+            (new ImageAnalysisService())->analyze($this->flyer(), 'series');
+
+            Http::assertSent(function ($request) {
+                return str_contains($request['system'], "Today's date is 2026-09-01")
+                    && str_contains($request['system'], 'Tuesday')
+                    && str_contains($request['system'], 'never return a date in the past');
+            });
+        });
+    }
+
+    public function test_the_dated_prefix_keeps_the_configured_prompt_intact(): void
+    {
+        $this->fakeText('{"name":"Dated"}');
+
+        (new ImageAnalysisService())->analyze($this->flyer(), 'entity');
+
+        Http::assertSent(fn ($request) => str_contains($request['system'], config('ai.prompts.entity.system')));
+    }
+
+    /**
+     * Config is cached at deploy time, so a date or year baked into the prompt
+     * config would freeze there. It must come from datedPrompt() instead.
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('contextProvider')]
+    public function test_prompt_config_contains_no_hardcoded_year(string $context): void
+    {
+        $prompts = config("ai.prompts.{$context}");
+
+        // Not a blanket year check: the entity prompt legitimately names the
+        // 1971-2037 started_at bounds. What must never appear is the *current*
+        // year, which is what a date() call in this config would bake in.
+        $this->assertStringNotContainsString(
+            date('Y'),
+            $prompts['system'] . ' ' . $prompts['user'],
+            "ai.prompts.{$context} contains the current year; config is cached at deploy time so it would go stale."
+        );
     }
 
     // ── Key allowlisting ─────────────────────────────────────────────────

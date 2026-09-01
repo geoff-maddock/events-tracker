@@ -10,10 +10,10 @@
 |
 */
 
-// Resolved when the config is built (and therefore when it is cached, which
-// happens on every deploy) rather than hard-coded, so the "assume the current
-// year" instruction does not silently go stale.
-$currentYear = date('Y');
+// NOTE: do not put a date or year in these prompts. Config is cached at deploy
+// time, so anything computed here freezes until the next deploy. The current
+// date is prefixed to the system prompt per request by
+// ImageAnalysisService::datedPrompt().
 
 // The event types actually seeded by database/seeders/EventTypesTableSeeder.php.
 // Offering the model anything outside this list guarantees a failed match.
@@ -41,7 +41,7 @@ $eventSystemPrompt = 'You are an event data extraction assistant for an event ca
     . 'Your task is to analyse the provided event flyer image and extract all available information. '
     . $researchGuidance
     . 'Extract all of the info about the event from the flyer including date, location, performers, time, styles and any other relevant info. '
-    . 'Unless the flyer explicitly states otherwise, assume the event is happening in the current year, which is ' . $currentYear . '. '
+    . 'Unless the flyer explicitly states otherwise, assume the event is the next upcoming occurrence on or after today. '
     . $localContext
     . 'Once the info is collected, re-write the description in a clear, readable format suitable for an event listing, '
     . 'with accurate info and all relevant details included.';
@@ -123,7 +123,7 @@ $seriesSystemPrompt = 'You are an event data extraction assistant for an event c
     . 'rather than a single one-off event. '
     . 'Your task is to extract both the details of the series and, crucially, its recurrence schedule. '
     . $researchGuidance
-    . 'Unless the image explicitly states otherwise, assume the series is currently running in ' . $currentYear . '. '
+    . 'Unless the image explicitly states otherwise, assume the series is currently running. '
     . $localContext
     . 'Once the info is collected, re-write the description in a clear, readable format suitable for a series listing, '
     . 'with accurate info and all relevant details included.';
@@ -143,8 +143,9 @@ $seriesUserPrompt = 'Please analyse this recurring event series image and return
     . '"door_at" (string, ISO 8601 datetime YYYY-MM-DDTHH:MM or null), '
     . '"start_at" (string, ISO 8601 datetime YYYY-MM-DDTHH:MM or null), '
     . '"end_at" (string, ISO 8601 datetime YYYY-MM-DDTHH:MM or null), '
-    . 'For soundcheck_at, door_at, start_at and end_at return the datetime of the NEXT occurrence of the series, '
-    . 'so that the time of day is correct and the date is a sensible anchor. '
+    . 'For soundcheck_at, door_at, start_at and end_at return the datetime of the next occurrence of the series '
+    . 'that falls ON OR AFTER today\'s date, so the time of day is correct and the date is a sensible anchor. '
+    . 'Work the recurrence forward from today; never return a date earlier than today. '
     . '"length" (number, typical length of one occurrence in hours, or null), '
     . '"presale_price" (number, presale ticket price without currency symbol or null), '
     . '"door_price" (number, door ticket price without currency symbol or null), '
