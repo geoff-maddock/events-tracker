@@ -331,6 +331,7 @@ Route::get('events/{id}/instagram-story-post', [\App\Http\Controllers\Api\EventI
 Route::get('events/{id}/instagram-post-single', [\App\Http\Controllers\Api\EventInstagramController::class, 'postToInstagram'])->name('events.instagramPostSingle');
 Route::get('events/instagram-post-week', [\App\Http\Controllers\Api\EventInstagramController::class, 'postWeekToInstagram'])->name('events.instagramPostWeek');
 Route::get('events/instagram-weekend-preview', [\App\Http\Controllers\Api\EventInstagramController::class, 'postWeekendPreviewToInstagram'])->name('events.instagramWeekendPreview');
+Route::get('events/instagram-todays-preview', [\App\Http\Controllers\Api\EventInstagramController::class, 'postTodaysPreviewToInstagram'])->name('events.instagramTodaysPreview');
 
 // POST to Discord (issue #2058). POST, not GET — this leaves the server.
 Route::post('events/{id}/discord-post', [\App\Http\Controllers\EventDiscordController::class, 'store'])
