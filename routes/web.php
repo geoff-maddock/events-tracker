@@ -394,8 +394,17 @@ Route::get('events/{id}/unattend', [
 Route::post('events/{id}/photos', [\App\Http\Controllers\EventsController::class, 'addPhoto']);
 Route::delete('events/{id}/photos/{photo_id}', [\App\Http\Controllers\EventsController::class, 'deletePhoto']);
 
-// Flyer analysis – returns extracted event data as JSON
-Route::post('events/analyze-flyer', [\App\Http\Controllers\FlyerAnalysisController::class, 'analyze'])->name('events.analyzeFlyer');
+// Image analysis – returns data extracted from an uploaded image as JSON,
+// and stashes the image so it can be attached when the record is created.
+Route::post('images/analyze', [\App\Http\Controllers\ImageAnalysisController::class, 'analyze'])
+    ->middleware('throttle:20,1')->name('images.analyze');
+Route::post('images/stash', [\App\Http\Controllers\ImageAnalysisController::class, 'stash'])
+    ->middleware('throttle:60,1')->name('images.stash');
+
+// DEPRECATED alias, kept for one release so pages loaded before images.analyze
+// shipped keep working. Remove together with the flyer_temp_token field.
+Route::post('events/analyze-flyer', [\App\Http\Controllers\ImageAnalysisController::class, 'analyze'])
+    ->middleware('throttle:20,1')->name('events.analyzeFlyer');
 
 //Default resource for events
 Route::resource('events', \App\Http\Controllers\EventsController::class);

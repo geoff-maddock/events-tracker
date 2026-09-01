@@ -24,6 +24,7 @@ use App\Services\ImageHandler;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\Integrations\Instagram;
 use App\Services\StringHelper;
+use App\Services\TempImageStore;
 use Carbon\Carbon;
 use Exception;
 use Storage;
@@ -32,6 +33,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -723,11 +725,14 @@ class EntitiesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(EntityRequest $request, Entity $entity): Response
+    public function store(EntityRequest $request, Entity $entity, TempImageStore $tempImages): Response
     {
         $msg = '';
 
         $input = $request->all();
+
+        // Carried by the create form for photo attachment only, never a model attribute.
+        Arr::forget($input, TempImageStore::TOKEN_FIELDS);
 
         $input['slug'] = Str::slug($request->input('slug', '-'));
         
@@ -780,6 +785,10 @@ class EntitiesController extends Controller
         $entity->tags()->attach($syncArray);
         $entity->aliases()->attach($aliasSyncArray);
         $entity->roles()->attach($request->input('role_list', []));
+
+        // Attach the image the user chose on the create form, whether or not
+        // they ran it through analysis, as the primary photo.
+        $tempImages->attachFromRequest($request, $entity);
 
         // add to activity log
         Activity::log($entity, $this->user, Action::CREATE);

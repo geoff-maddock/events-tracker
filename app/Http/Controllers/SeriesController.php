@@ -22,12 +22,14 @@ use App\Services\ImageHandler;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
+use App\Services\TempImageStore;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Str;
@@ -721,10 +723,13 @@ class SeriesController extends Controller
         return view('series.show-tw', compact('series', 'events', 'threads', 'embeds', 'upcomingEvents', 'lineupEntities', 'festivalYear'));
     }
 
-    public function store(SeriesRequest $request, Series $series): RedirectResponse
+    public function store(SeriesRequest $request, Series $series, TempImageStore $tempImages): RedirectResponse
     {
         $msg = '';
         $input = $request->all();
+
+        // Carried by the create form for photo attachment only, never a model attribute.
+        Arr::forget($input, TempImageStore::TOKEN_FIELDS);
 
         // transform the slug passed in the request
         $input['slug'] = Str::slug($request->input('slug', '-'));
@@ -767,6 +772,11 @@ class SeriesController extends Controller
                 $series->photos()->attach($event->photos->pluck('id')->toArray());
             }
         }
+
+        // Attach the image the user chose on the create form, whether or not they
+        // ran it through analysis. Done after the eventLink copy above so that
+        // the user's own upload wins is_primary over any copied event photos.
+        $tempImages->attachFromRequest($request, $series);
 
         // add to activity log
         Activity::log($series, $this->user, 1);
