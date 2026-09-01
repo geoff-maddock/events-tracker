@@ -62,9 +62,49 @@ class TempImageStore
             $token = Str::uuid()->toString() . '.' . $extension;
         }
 
-        Storage::disk('local')->putFileAs(self::TEMP_DIR, $file, $token);
+        $this->ensureTempDirectory();
+
+        // putFileAs returns false on failure rather than throwing (a full disk,
+        // an unwritable directory). Ignoring that hands back a valid-looking
+        // token for a file that does not exist, and the image then vanishes
+        // silently at attach time. Fail loudly instead.
+        if (Storage::disk('local')->putFileAs(self::TEMP_DIR, $file, $token) === false) {
+            $dir = storage_path('app/' . self::TEMP_DIR);
+
+            Log::error('TempImageStore: could not write temp image', [
+                'dir' => $dir,
+                'exists' => is_dir($dir),
+                'writable' => is_dir($dir) && is_writable($dir),
+            ]);
+
+            // The path stays in the log, not in the message: analyze() returns
+            // RuntimeException messages straight to the client.
+            throw new \RuntimeException('The image could not be saved to temporary storage.');
+        }
 
         return $token;
+    }
+
+    /**
+     * Create the temp directory group-writable if it is missing.
+     *
+     * The web server (www-data) and the CLI/test runner can be different
+     * users here. Laravel would create this directory on first write with a
+     * umask-masked 0755, so whichever user got there first would lock the
+     * other out — which is exactly how this broke the first time.
+     */
+    private function ensureTempDirectory(): void
+    {
+        $dir = storage_path('app/' . self::TEMP_DIR);
+
+        if (is_dir($dir)) {
+            return;
+        }
+
+        // mkdir's mode is masked by the umask, so set it explicitly after.
+        if (@mkdir($dir, 0775, true) || is_dir($dir)) {
+            @chmod($dir, 0775);
+        }
     }
 
     /**
@@ -123,6 +163,16 @@ class TempImageStore
         $tempPath = $this->path($token);
 
         if ($tempPath === null) {
+            // No token at all is the normal "user chose no image" path. A token
+            // that does not resolve means the stash silently failed or the file
+            // was pruned between stashing and saving, which is worth knowing.
+            if (is_string($token) && $token !== '') {
+                Log::warning('TempImageStore: token did not resolve to a file, no image attached', [
+                    'token' => $token,
+                    'model' => $model::class,
+                ]);
+            }
+
             return null;
         }
 

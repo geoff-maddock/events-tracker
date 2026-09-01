@@ -84,6 +84,64 @@ class TempImageStoreTest extends TestCase
         $this->assertMatchesRegularExpression('/^[a-f0-9\-]{36}\./', $token);
     }
 
+    /**
+     * Regression: Storage::putFileAs() returns false on failure rather than
+     * throwing. Ignoring that return value handed back a valid-looking token
+     * for a file that was never written, so the image then vanished silently
+     * at attach time with nothing in the logs. It must fail loudly instead.
+     */
+    public function test_stash_throws_when_the_temp_directory_is_not_writable(): void
+    {
+        $dir = storage_path('app/' . TempImageStore::TEMP_DIR);
+
+        if (!is_dir($dir)) {
+            mkdir($dir, 0775, true);
+        }
+
+        $original = fileperms($dir) & 0777;
+        chmod($dir, 0500);
+
+        try {
+            if (is_writable($dir)) {
+                // Running as root (some CI images), where mode cannot block a write.
+                $this->markTestSkipped('The temp directory is writable regardless of mode.');
+            }
+
+            $this->expectException(\RuntimeException::class);
+            $this->expectExceptionMessage('could not be saved to temporary storage');
+
+            $this->store()->stash(UploadedFile::fake()->image('unwritable.jpg'));
+        } finally {
+            chmod($dir, $original);
+        }
+    }
+
+    public function test_stash_creates_the_temp_directory_group_writable(): void
+    {
+        $dir = storage_path('app/' . TempImageStore::TEMP_DIR);
+
+        // Remove it so stash() has to create it, as it would on a fresh deploy.
+        foreach ((array) glob($dir . '/*') as $file) {
+            if (is_string($file) && is_file($file)) {
+                @unlink($file);
+            }
+        }
+        @rmdir($dir);
+
+        if (is_dir($dir)) {
+            $this->markTestSkipped('Could not remove the temp directory to test creation.');
+        }
+
+        $this->store()->stash(UploadedFile::fake()->image('fresh.jpg'));
+
+        $this->assertDirectoryExists($dir);
+        $this->assertSame(
+            0070,
+            fileperms($dir) & 0070,
+            'The temp directory must be group-writable so the web server and CLI users do not lock each other out.'
+        );
+    }
+
     // ── path ─────────────────────────────────────────────────────────────
 
     public function test_path_returns_null_for_null_and_malformed_tokens(): void
