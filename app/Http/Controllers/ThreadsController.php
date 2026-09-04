@@ -671,27 +671,10 @@ class ThreadsController extends Controller
         $input = $request->all();
 
         $tagArray = $request->input('tag_list', []);
-        $syncArray = [];
-
-        // check the elements in the tag list, and if any don't match, add the tag
-        foreach ($tagArray as $key => $tag) {
-            if (!Tag::find($tag)) {
-                $newTag = new Tag();
-                $newTag->name = ucwords(strtolower($tag));
-                $newTag->slug = Str::slug($tag);
-                $newTag->tag_type_id = 1;
-                $newTag->save();
-                // log adding of new tag
-                Activity::log($newTag, $this->user, 1);
-
-                $syncArray[strtolower($tag)] = $newTag->id;
-
-                $msg .= ' Added tag '.$tag.'.';
-            } else {
-                $syncArray[$key] = $tag;
-
-                $msg .= ' Linked tag '.$tag.'.';
-            }
+        $tags = Tag::resolveList($tagArray, $this->user);
+        $syncArray = $tags->modelKeys();
+        foreach ($tags as $tag) {
+            $msg .= $tag->wasRecentlyCreated ? ' Added tag '.$tag->name.'.' : ' Linked tag '.$tag->name.'.';
         }
 
         $thread = Thread::create($input);
@@ -887,24 +870,10 @@ class ThreadsController extends Controller
         $syncArray = [];
 
         $tagType = TagType::find(1);
-
-        // check the elements in the tag list, and if any don't match, add the tag
-        foreach ($tagArray as $key => $tag) {
-            if (!Tag::find($tag)) {
-                $newTag = new Tag();
-                $newTag->name = ucwords(strtolower($tag));
-                $newTag->slug = Str::slug($tag);
-                $newTag->tag_type_id = 1;
-                $newTag->save();
-                // log adding of new tag
-                Activity::log($newTag, $this->user, 1);
-
-                $syncArray[strtolower($tag)] = $newTag->id;
-
-                $msg .= ' Added tag '.$tag.'.';
-            } else {
-                $syncArray[$key] = $tag;
-            }
+        $tags = Tag::resolveList($tagArray, $this->user);
+        $syncArray = $tags->modelKeys();
+        foreach ($tags->filter(fn (Tag $tag) => $tag->wasRecentlyCreated) as $tag) {
+            $msg .= ' Added tag '.$tag->name.'.';
         }
 
         $thread->tags()->sync($syncArray);

@@ -744,25 +744,10 @@ class EntitiesController extends Controller
         $aliasArray = $request->input('alias_list', []);
         $syncArray = [];
         $aliasSyncArray = [];
-
-        // check the elements in the tag list, and if any don't match, add the tag
-        foreach ($tagArray as $key => $tag) {
-            if (!is_numeric($tag) || !$newTag = Tag::find($tag)) {
-                $newTag = new Tag();
-                $newTag->name = ucwords(strtolower($tag));
-                $newTag->slug = Str::slug($tag);
-                $newTag->tag_type_id = 1;
-                $newTag->save();
-
-                // log adding of new tag
-                Activity::log($newTag, $this->user, Action::CREATE);
-
-                $syncArray[] = $newTag->id;
-
-                $msg .= ' Added tag '.$tag.'.';
-            } else {
-                $syncArray[$key] = $tag;
-            }
+        $tags = Tag::resolveList($tagArray, $this->user);
+        $syncArray = $tags->modelKeys();
+        foreach ($tags->filter(fn (Tag $tag) => $tag->wasRecentlyCreated) as $tag) {
+            $msg .= ' Added tag '.$tag->name.'.';
         }
 
         // check the elements in the alias list, and if any don't match, add the alias
@@ -1178,25 +1163,10 @@ class EntitiesController extends Controller
 
         $syncArray = [];
         $aliasSyncArray = [];
-
-        // check the elements in the tag list, and if any don't match, add the tag
-        foreach ($tagArray as $key => $tag) {
-            if (!is_numeric($tag) || !$newTag = Tag::find($tag)) {
-                $newTag = new Tag();
-                $newTag->name = ucwords(strtolower($tag));
-                $newTag->slug = Str::slug($tag);
-                $newTag->tag_type_id = 1;
-                $newTag->save();
-
-                // log adding of new tag
-                Activity::log($newTag, $this->user, Action::CREATE);
-
-                $syncArray[strtolower($tag)] = $newTag->id;
-
-                $msg .= ' Added tag '.$tag.'.';
-            } else {
-                $syncArray[$key] = $tag;
-            }
+        $tags = Tag::resolveList($tagArray, $this->user);
+        $syncArray = $tags->modelKeys();
+        foreach ($tags->filter(fn (Tag $tag) => $tag->wasRecentlyCreated) as $tag) {
+            $msg .= ' Added tag '.$tag->name.'.';
         }
 
         // check the elements in the alias list, and if any don't match, add the alias

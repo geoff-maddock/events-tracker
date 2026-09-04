@@ -36,3 +36,12 @@ You can apply filters to routes using the following:
   - When you need events that contain *all* of the supplied tags, use `filters[tag_all]` instead.
   - `GET /api/events?filters[tag_all]=music,art`
 
+
+### Tags on Create and Update
+
+`tag_list` on the event, entity, series, post, blog and thread create/update endpoints accepts a mix of existing tag ids and free-text names.
+
+- Ids are matched by primary key.
+- Names are slugged and matched to an existing tag by slug, so `"diy"`, `"DIY"` and `"Diy"` all resolve to the existing `Diy` tag.
+- A tag is created only when no id or slug matches. Sending an existing tag's name never creates a duplicate.
+- `PUT /api/events/{event}` with `tag_list` is a full sync (a missing key detaches all tags); `PATCH` only syncs when `tag_list` is present.

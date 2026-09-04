@@ -289,25 +289,7 @@ class BlogsController extends Controller
      */
     private function resolveTagIds(array $tagArray): array
     {
-        $syncArray = [];
-
-        foreach ($tagArray as $key => $tag) {
-            if (!Tag::find($tag)) {
-                $newTag = new Tag();
-                $newTag->name = ucwords(strtolower($tag));
-                $newTag->slug = Str::slug($tag);
-                $newTag->tag_type_id = 1;
-                $newTag->save();
-
-                Activity::log($newTag, $this->user, Action::CREATE);
-
-                $syncArray[strtolower($tag)] = $newTag->id;
-            } else {
-                $syncArray[$key] = $tag;
-            }
-        }
-
-        return $syncArray;
+        return Tag::resolveList($tagArray, $this->user)->modelKeys();
     }
 
     /**

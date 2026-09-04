@@ -299,23 +299,10 @@ class PostsController extends Controller
         }
 
         $tagArray = $request->input('tag_list', []);
-        $syncArray = [];
-
-        // check the elements in the tag list, and if any don't match, add the tag
-        foreach ($tagArray as $key => $tag) {
-            if (!Tag::find($tag)) {
-                $newTag = new Tag();
-                $newTag->name = ucwords(strtolower($tag));
-                $newTag->slug = Str::slug($tag);
-                $newTag->tag_type_id = 1;
-                $newTag->save();
-
-                $syncArray[] = $newTag->id;
-
-                $msg .= ' Added tag '.$tag.'.';
-            } else {
-                $syncArray[$key] = $tag;
-            }
+        $tags = Tag::resolveList($tagArray, auth()->user());
+        $syncArray = $tags->modelKeys();
+        foreach ($tags->filter(fn (Tag $tag) => $tag->wasRecentlyCreated) as $tag) {
+            $msg .= ' Added tag '.$tag->name.'.';
         }
 
         $thread->addPost([
@@ -481,23 +468,10 @@ class PostsController extends Controller
         }
 
         $tagArray = $request->input('tag_list', []);
-        $syncArray = [];
-
-        // check the elements in the tag list, and if any don't match, add the tag
-        foreach ($tagArray as $key => $tag) {
-            if (!Tag::find($tag)) {
-                $newTag = new Tag();
-                $newTag->name = ucwords(strtolower($tag));
-                $newTag->slug = Str::slug($tag);
-                $newTag->tag_type_id = 1;
-                $newTag->save();
-
-                $syncArray[] = $newTag->id;
-
-                $msg .= ' Added tag '.$tag.'.';
-            } else {
-                $syncArray[$key] = $tag;
-            }
+        $tags = Tag::resolveList($tagArray, auth()->user());
+        $syncArray = $tags->modelKeys();
+        foreach ($tags->filter(fn (Tag $tag) => $tag->wasRecentlyCreated) as $tag) {
+            $msg .= ' Added tag '.$tag->name.'.';
         }
 
         $post->tags()->sync($syncArray);

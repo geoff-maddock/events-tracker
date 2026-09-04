@@ -2,6 +2,16 @@
 
 A more detailed description of new features and changes to the application.
 
+## 2026.09.04
+
+### Tag list de-duplication (#2120)
+Every create/update path that accepts a `tag_list` now resolves entries through
+`Tag::resolveList()`, which matches existing tags by id **or slug** and only creates
+a tag when nothing matches. Previously any non-id value created a new tag, so an API
+client sending `["diy"]` produced a duplicate `Diy` tag on every request. A migration
+merges any remaining duplicate tags (by slug, onto the lowest id, re-pointing pivot
+rows and follows) and adds a unique index on `tags.slug`.
+
 ## 2026.08.08
 
 ### Discord Auto-Repost

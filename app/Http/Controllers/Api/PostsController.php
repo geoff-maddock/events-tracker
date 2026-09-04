@@ -284,23 +284,10 @@ class PostsController extends Controller
         }
 
         $tagArray = $request->input('tag_list', []);
-        $syncArray = [];
-
-        // check the elements in the tag list, and if any don't match, add the tag
-        foreach ($tagArray as $key => $tag) {
-            if (!Tag::find($tag)) {
-                $newTag = new Tag();
-                $newTag->name = ucwords(strtolower($tag));
-                $newTag->slug = Str::slug($tag);
-                $newTag->tag_type_id = 1;
-                $newTag->save();
-
-                $syncArray[] = $newTag->id;
-
-                $msg .= ' Added tag '.$tag.'.';
-            } else {
-                $syncArray[$key] = $tag;
-            }
+        $tags = Tag::resolveList($tagArray, $request->user());
+        $syncArray = $tags->modelKeys();
+        foreach ($tags->filter(fn (Tag $tag) => $tag->wasRecentlyCreated) as $tag) {
+            $msg .= ' Added tag '.$tag->name.'.';
         }
 
         $thread->addPost([
@@ -454,7 +441,7 @@ class PostsController extends Controller
 
         $post->fill($input)->save();
 
-        $post->tags()->sync($this->resolveTagIds($request->input('tag_list', [])));
+        $post->tags()->sync($this->resolveTagIds($request->input('tag_list', []), $request->user()));
         $post->entities()->sync($request->input('entity_list', []));
 
         Activity::log($post, $this->user, 2);
@@ -480,7 +467,7 @@ class PostsController extends Controller
         }
 
         if ($request->has('tag_list')) {
-            $post->tags()->sync($this->resolveTagIds((array) $request->input('tag_list', [])));
+            $post->tags()->sync($this->resolveTagIds((array) $request->input('tag_list', []), $request->user()));
         }
 
         if ($request->has('entity_list')) {
@@ -493,28 +480,12 @@ class PostsController extends Controller
     }
 
     /**
-     * Resolve a list of tag identifiers to ids, creating any tags that don't
-     * already exist by id. Accepts a mix of existing tag ids and new tag names.
+     * Resolve a request tag_list (existing ids and/or names) to tag ids,
+     * reusing existing tags by id or slug and creating only what is missing.
      */
-    private function resolveTagIds(array $tagArray): array
+    private function resolveTagIds(array $tagArray, ?User $user): array
     {
-        $syncArray = [];
-
-        foreach ($tagArray as $key => $tag) {
-            if (!Tag::find($tag)) {
-                $newTag = new Tag();
-                $newTag->name = ucwords(strtolower($tag));
-                $newTag->slug = Str::slug($tag);
-                $newTag->tag_type_id = 1;
-                $newTag->save();
-
-                $syncArray[] = $newTag->id;
-            } else {
-                $syncArray[$key] = $tag;
-            }
-        }
-
-        return $syncArray;
+        return Tag::resolveList($tagArray, $user)->modelKeys();
     }
 
     /**

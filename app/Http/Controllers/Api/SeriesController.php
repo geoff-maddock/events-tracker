@@ -572,25 +572,10 @@ class SeriesController extends Controller
         $input['updated_by'] = $this->user->id;
 
         $tagArray = $request->input('tag_list', []);
-        $syncArray = [];
-
-        // check the elements in the tag list, and if any don't match, add the tag
-        foreach ($tagArray as $key => $tag) {
-            if (!is_numeric($tag) || count(DB::table('tags')->where('id', $tag)->get()) === 0) {
-                $newTag = new Tag();
-                $newTag->name = ucwords(strtolower($tag));
-                $newTag->slug = Str::slug($tag);
-                $newTag->tag_type_id = 1;
-                $newTag->save();
-
-                // log adding of new tag
-                Activity::log($newTag, $this->user, 1);
-                $syncArray[] = $newTag->id;
-
-                $msg .= ' Added tag '.$tag.'.';
-            } else {
-                $syncArray[$key] = $tag;
-            }
+        $tags = Tag::resolveList($tagArray, $this->user);
+        $syncArray = $tags->modelKeys();
+        foreach ($tags->filter(fn (Tag $tag) => $tag->wasRecentlyCreated) as $tag) {
+            $msg .= ' Added tag '.$tag->name.'.';
         }
 
         $series = $series->create($input);
@@ -753,24 +738,7 @@ class SeriesController extends Controller
      */
     private function resolveTagIds(array $tagArray): array
     {
-        $syncArray = [];
-
-        foreach ($tagArray as $key => $tag) {
-            if (!Tag::find($tag)) {
-                $newTag = new Tag();
-                $newTag->name = ucwords(strtolower($tag));
-                $newTag->slug = Str::slug($tag);
-                $newTag->tag_type_id = 1;
-                $newTag->save();
-                Activity::log($newTag, $this->user, 1);
-
-                $syncArray[strtolower($tag)] = $newTag->id;
-            } else {
-                $syncArray[$key] = $tag;
-            }
-        }
-
-        return $syncArray;
+        return Tag::resolveList($tagArray, $this->user)->modelKeys();
     }
 
     protected function unauthorized(Request $request): RedirectResponse | Response
