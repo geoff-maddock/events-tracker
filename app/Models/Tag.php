@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +33,9 @@ use App\Filters\TagFilters;
 class Tag extends Eloquent
 {
     use HasFactory;
+
+    /** Tag type given to tags created on the fly from a request tag_list. */
+    public const DEFAULT_TAG_TYPE_ID = 1;
 
     protected $fillable = [
         'name', 'tag_type_id', 'slug', 'description',
@@ -229,6 +235,80 @@ class Tag extends Eloquent
         arsort($total);
 
         return array_slice($total, 0, 5);
+    }
+
+    /**
+     * Resolve a request tag_list — a mix of existing tag ids and free-text
+     * names — to Tag models.
+     *
+     * Ids match by primary key; anything else is slugged and matched against
+     * existing tags by slug, so a client that sends "diy" gets the existing
+     * Diy tag back instead of a duplicate. A tag is created only when nothing
+     * matches; created tags carry wasRecentlyCreated = true so callers can
+     * report them. Repeats within the list collapse to a single tag, and
+     * blank entries are ignored.
+     *
+     * @param  iterable<int|string|null> $list
+     * @return EloquentCollection<int, Tag>
+     */
+    public static function resolveList(iterable $list, ?User $user = null): EloquentCollection
+    {
+        $user ??= Auth::user();
+        $resolved = new EloquentCollection();
+
+        foreach ($list as $item) {
+            if (!is_scalar($item)) {
+                continue;
+            }
+            $item = trim((string) $item);
+            if ('' === $item) {
+                continue;
+            }
+
+            $tag = ctype_digit($item) ? static::find((int) $item) : null;
+
+            if (null === $tag) {
+                $slug = Str::slug($item);
+                if ('' === $slug) {
+                    continue;
+                }
+                $tag = static::where('slug', $slug)->first() ?? static::createFromName($item, $slug, $user);
+            }
+
+            if (!$resolved->has($tag->id)) {
+                $resolved->put($tag->id, $tag);
+            }
+        }
+
+        return $resolved->values();
+    }
+
+    /**
+     * Create a tag from a free-text name, logging the create. If a concurrent
+     * request created the same slug first, return that tag instead.
+     */
+    protected static function createFromName(string $name, string $slug, ?User $user): Tag
+    {
+        $tag = new static();
+        $tag->name = ucwords(strtolower($name));
+        $tag->slug = $slug;
+        $tag->tag_type_id = self::DEFAULT_TAG_TYPE_ID;
+        $tag->created_by = $user?->id;
+
+        try {
+            $tag->save();
+        } catch (QueryException $e) {
+            $existing = '23000' === $e->getCode() ? static::where('slug', $slug)->first() : null;
+            if (null === $existing) {
+                throw $e;
+            }
+
+            return $existing;
+        }
+
+        Activity::log($tag, $user, Action::CREATE);
+
+        return $tag;
     }
 
     /**
