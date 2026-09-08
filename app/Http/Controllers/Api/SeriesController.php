@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\RemoteImageException;
 use App\Http\Controllers\Controller;
 use App\Filters\SeriesFilters;
 use App\Http\Requests\SeriesPatchRequest;
@@ -23,6 +24,7 @@ use App\Models\Tag;
 use App\Models\User;
 use App\Models\Visibility;
 use App\Services\ImageHandler;
+use App\Services\RemoteImageFetcher;
 use Carbon\Carbon;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
@@ -775,34 +777,75 @@ class SeriesController extends Controller
             'file' => 'required|mimes:jpg,jpeg,png,gif,webp',
         ]);
 
-        // attach to series
-        if ($series = Series::find($id)) {
-
-            // only the series owner (or an admin) may add photos
-            if (!$this->user
-                || (!$series->ownedBy($this->user) && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin'))) {
-                return response()->json(['message' => 'Not authorized.'], 403);
-            }
-
-            // make the photo object from the file in the request
-            $photo = $imageHandler->makePhoto($request->file('file'));
-
-            // count existing photos, and if zero, make this primary
-            if (isset($series->photos) && 0 === count($series->photos)) {
-                $photo->is_primary = 1;
-            }
-
-            $photo->save();
-
-            // attach to series
-            $series->addPhoto($photo);
-
-            $photoData = $photo->getApiResponse();
-
-            return response()->json($photoData, 201);
+        if (!$series = Series::find($id)) {
+            return response()->json([], 404);
         }
 
-        return response()->json([], 404);
+        if ($denied = $this->denyUnlessCanAddPhoto($series)) {
+            return $denied;
+        }
+
+        $photo = $imageHandler->makePhoto($request->file('file'));
+
+        return $this->finishAddingPhoto($series, $photo);
+    }
+
+    /**
+     * Attach a photo to a series from a public https URL. Identical to
+     * addPhoto() except that the server downloads the bytes (see
+     * RemoteImageFetcher for the SSRF guards).
+     */
+    public function addPhotoFromUrl(int $id, Request $request, ImageHandler $imageHandler, RemoteImageFetcher $fetcher): JsonResponse
+    {
+        $this->validate($request, [
+            'url' => 'required|url',
+        ]);
+
+        if (!$series = Series::find($id)) {
+            return response()->json([], 404);
+        }
+
+        if ($denied = $this->denyUnlessCanAddPhoto($series)) {
+            return $denied;
+        }
+
+        try {
+            $photo = $fetcher->fetch($request->input('url'), fn (UploadedFile $file) => $imageHandler->makePhoto($file));
+        } catch (RemoteImageException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return $this->finishAddingPhoto($series, $photo);
+    }
+
+    /**
+     * Only the series owner (or an admin) may add photos — checked before
+     * any bytes are fetched or written to storage.
+     */
+    private function denyUnlessCanAddPhoto(Series $series): ?JsonResponse
+    {
+        if (!$this->user
+            || (!$series->ownedBy($this->user) && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin'))) {
+            return response()->json(['message' => 'Not authorized.'], 403);
+        }
+
+        return null;
+    }
+
+    /**
+     * Shared tail of the upload and from-url paths: primary flag and attach.
+     */
+    private function finishAddingPhoto(Series $series, Photo $photo): JsonResponse
+    {
+        // count existing photos BEFORE attaching, and if zero, make this primary
+        if (0 === $series->photos()->count()) {
+            $photo->is_primary = 1;
+        }
+
+        $photo->save();
+        $series->addPhoto($photo);
+
+        return response()->json($photo->getApiResponse(), 201);
     }
 
     protected function makePhoto(UploadedFile $file): ?Photo

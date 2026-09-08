@@ -83,6 +83,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('events/{event}/photos', ['as' => 'events.photos', 'uses' => '\App\Http\Controllers\Api\EventsController@photos']);
     Route::get('events/{event}/all-photos', ['as' => 'events.allPhotos', 'uses' => '\App\Http\Controllers\Api\EventsController@allPhotos']);
     Route::post('events/{id}/photos', [\App\Http\Controllers\Api\EventsController::class, 'addPhoto']);
+    Route::post('events/{id}/photos/from-url', [\App\Http\Controllers\Api\EventsController::class, 'addPhotoFromUrl'])->middleware('throttle:photo-from-url');
     Route::post('events/{id}/instagram-post', [\App\Http\Controllers\Api\EventInstagramController::class, 'postCarouselToInstagramApi']);
     Route::get('events/{event}/embeds', ['as' => 'events.embeds', 'uses' => '\App\Http\Controllers\Api\EventsController@embeds']);
     Route::get('events/{event}/minimal-embeds', ['as' => 'events.minimalEmbeds', 'uses' => '\App\Http\Controllers\Api\EventsController@minimalEmbeds']);
@@ -101,6 +102,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('entities/{entity}/embeds', ['as' => 'entities.embeds', 'uses' => '\App\Http\Controllers\Api\EntitiesController@embeds']);
     Route::get('entities/{entity}/minimal-embeds', ['as' => 'entities.minimalEmbeds', 'uses' => '\App\Http\Controllers\Api\EntitiesController@minimalEmbeds']);
     Route::post('entities/{id}/photos', [\App\Http\Controllers\Api\EntitiesController::class, 'addPhoto']);
+    Route::post('entities/{id}/photos/from-url', [\App\Http\Controllers\Api\EntitiesController::class, 'addPhotoFromUrl'])->middleware('throttle:photo-from-url');
     Route::post('entities/{id}/links', [\App\Http\Controllers\Api\EntitiesController::class, 'addLink']);
     Route::post('entities/{id}/locations', [\App\Http\Controllers\Api\EntitiesController::class, 'addLocation']);
     Route::post('entities/{id}/contacts', [\App\Http\Controllers\Api\EntitiesController::class, 'addContact']);
@@ -179,6 +181,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('series/{series}/photos', ['as' => 'series.photos', 'uses' => '\App\Http\Controllers\Api\SeriesController@photos']);
     Route::get('series/{series}/all-photos', ['as' => 'series.allPhotos', 'uses' => '\App\Http\Controllers\Api\SeriesController@allPhotos']);
     Route::post('series/{id}/photos', [\App\Http\Controllers\Api\SeriesController::class, 'addPhoto']);
+    Route::post('series/{id}/photos/from-url', [\App\Http\Controllers\Api\SeriesController::class, 'addPhotoFromUrl'])->middleware('throttle:photo-from-url');
     Route::post('series/{series}/follow', [\App\Http\Controllers\Api\SeriesController::class, 'followJson'])->middleware('auth:sanctum');
     Route::post('series/{series}/unfollow', [\App\Http\Controllers\Api\SeriesController::class, 'unfollowJson'])->middleware('auth:sanctum');
     Route::get('series/popular', ['as' => 'series.popular', 'uses' => '\App\Http\Controllers\Api\SeriesController@popular']);

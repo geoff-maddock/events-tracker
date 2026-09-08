@@ -45,3 +45,31 @@ You can apply filters to routes using the following:
 - Names are slugged and matched to an existing tag by slug, so `"diy"`, `"DIY"` and `"Diy"` all resolve to the existing `Diy` tag.
 - A tag is created only when no id or slug matches. Sending an existing tag's name never creates a duplicate.
 - `PUT /api/events/{event}` with `tag_list` is a full sync (a missing key detaches all tags); `PATCH` only syncs when `tag_list` is present.
+
+### Attaching Photos by URL
+
+`POST /api/events/{id}/photos` (and the entity / series equivalents) take a multipart `file` upload. Each has a sibling that accepts a public https URL instead, for callers that cannot hold the bytes themselves (browser automation blocked by CORS, sandboxed agents, importers):
+
+```
+POST /api/events/{id}/photos/from-url
+POST /api/entities/{id}/photos/from-url
+POST /api/series/{id}/photos/from-url
+
+{ "url": "https://example.com/flyer.jpg" }
+```
+
+Behaviour matches the upload endpoint: same ownership rule (owner or admin), first photo becomes primary, followers are notified on an event's first photo, `201` with the photo's API representation. The differences are the guards on the fetch itself, all of which return `422` with a `message`:
+
+- `https` only, on every hop; at most 3 redirects.
+- The host must resolve to a public address. Loopback, link-local (including cloud metadata), RFC1918 / ULA and other reserved ranges are refused, and every redirect target is re-checked.
+- 5 MB cap (the same as the web uploader), enforced while downloading rather than from `Content-Length`.
+- The downloaded bytes are sniffed and must be a jpg, jpeg, png, gif or webp image, regardless of the URL extension or `Content-Type` header.
+- 10 s connect / 20 s total timeout.
+
+The stored file name is derived from the last path segment of the final URL, sanitized and given the sniffed extension. The route is rate limited to 20 requests per minute per user, separately from the rest of the API.
+
+```bash
+curl -u user:pass -H 'Accept: application/json' \
+  -d 'url=https://example.com/flyer.jpg' \
+  https://arcane.city/api/events/123/photos/from-url
+```
