@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\RemoteImageException;
 use App\Http\Controllers\Controller;
 use App\Filters\EntityFilters;
 use App\Http\Requests\EntityPatchRequest;
@@ -26,6 +27,7 @@ use App\Models\User;
 use App\Notifications\EventPublished;
 use App\Services\Embeds\OembedExtractor;
 use App\Services\ImageHandler;
+use App\Services\RemoteImageFetcher;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
 use Carbon\Carbon;
@@ -823,38 +825,75 @@ class EntitiesController extends Controller
             'file' => 'required|mimes:jpg,jpeg,png,gif,webp',
         ]);
 
-        // only the entity owner (or an admin) may add photos — checked
-        // before any file is written to storage
-        $entity = Entity::find($id);
-        if ($entity
-            && (!$this->user
-                || ($entity->created_by !== $this->user->id && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin')))) {
+        if (!$entity = Entity::find($id)) {
+            return response()->json([], 404);
+        }
+
+        if ($denied = $this->denyUnlessCanAddPhoto($entity)) {
+            return $denied;
+        }
+
+        $photo = $imageHandler->makePhoto($request->file('file'));
+
+        return $this->finishAddingPhoto($entity, $photo);
+    }
+
+    /**
+     * Attach a photo to an entity from a public https URL. Identical to
+     * addPhoto() except that the server downloads the bytes (see
+     * RemoteImageFetcher for the SSRF guards).
+     */
+    public function addPhotoFromUrl(int $id, Request $request, ImageHandler $imageHandler, RemoteImageFetcher $fetcher): JsonResponse
+    {
+        $this->validate($request, [
+            'url' => 'required|url',
+        ]);
+
+        if (!$entity = Entity::find($id)) {
+            return response()->json([], 404);
+        }
+
+        if ($denied = $this->denyUnlessCanAddPhoto($entity)) {
+            return $denied;
+        }
+
+        try {
+            $photo = $fetcher->fetch($request->input('url'), fn (UploadedFile $file) => $imageHandler->makePhoto($file));
+        } catch (RemoteImageException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return $this->finishAddingPhoto($entity, $photo);
+    }
+
+    /**
+     * Only the entity owner (or an admin) may add photos — checked before
+     * any bytes are fetched or written to storage.
+     */
+    private function denyUnlessCanAddPhoto(Entity $entity): ?JsonResponse
+    {
+        if (!$this->user
+            || ($entity->created_by !== $this->user->id && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin'))) {
             return response()->json(['message' => 'Not authorized.'], 403);
         }
 
-        $fileName = time().'_'.$request->file->getClientOriginalName();
-        $filePath = $request->file('file')->storePubliclyAs('photos', $fileName, 'external');
+        return null;
+    }
 
-        // attach to entity
-        if ($entity = Entity::find($id)) {
-            $photo = $imageHandler->makePhoto($request->file('file'));
-
-            // count existing photos, and if zero, make this primary
-            if (isset($entity->photos) && 0 === count($entity->photos)) {
-                $photo->is_primary = 1;
-            }
-
-            $photo->save();
-
-            // attach to entity
-            $entity->addPhoto($photo);
-
-            $photoData = $photo->getApiResponse();
-
-            return response()->json($photoData, 201);
+    /**
+     * Shared tail of the upload and from-url paths: primary flag and attach.
+     */
+    private function finishAddingPhoto(Entity $entity, Photo $photo): JsonResponse
+    {
+        // count existing photos BEFORE attaching, and if zero, make this primary
+        if (0 === $entity->photos()->count()) {
+            $photo->is_primary = 1;
         }
 
-        return response()->json([], 404);
+        $photo->save();
+        $entity->addPhoto($photo);
+
+        return response()->json($photo->getApiResponse(), 201);
     }
 
     /**

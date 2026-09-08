@@ -24,6 +24,8 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->configureRateLimiting();
+
         parent::boot();
     }
 
@@ -80,6 +82,12 @@ class RouteServiceProvider extends ServiceProvider
     {
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(300);
+        });
+
+        // each photos/from-url call makes an outbound request on the caller's
+        // behalf, so it gets a much tighter per-user budget than the rest of the API
+        RateLimiter::for('photo-from-url', function (Request $request) {
+            return Limit::perMinute(20)->by($request->user()?->id ?: $request->ip());
         });
     }
 }

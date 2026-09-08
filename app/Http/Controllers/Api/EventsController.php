@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Events\EventCreated;
 use App\Events\EventPhotoAdded;
 use App\Events\EventUpdated;
+use App\Exceptions\RemoteImageException;
 use App\Filters\EventFilters;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventPatchRequest;
@@ -23,6 +24,7 @@ use App\Models\Follow;
 use App\Models\OccurrenceDay;
 use App\Models\OccurrenceType;
 use App\Models\OccurrenceWeek;
+use App\Models\Photo;
 use App\Models\ResponseType;
 use App\Models\Series;
 use App\Models\Tag;
@@ -33,6 +35,7 @@ use App\Notifications\EventPublished;
 use App\Services\BestEffortMailer;
 use App\Services\Embeds\OembedExtractor;
 use App\Services\ImageHandler;
+use App\Services\RemoteImageFetcher;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
@@ -41,6 +44,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
@@ -1681,42 +1685,88 @@ class EventsController extends Controller
             'file' => 'required|mimes:jpg,jpeg,png,gif,webp',
         ]);
 
-        if ($event = Event::find($id)) {
-
-            // only the event owner (or an admin) may add photos
-            if (!$this->user
-                || (!$event->ownedBy($this->user) && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin'))) {
-                return response()->json(['message' => 'Not authorized.'], 403);
-            }
-
-            $photo = $imageHandler->makePhoto($request->file('file'));
-
-            // count existing photos BEFORE attaching; isset($event->photos)
-            // used to cache the relation here, so the post-attach count read
-            // stale data and the notification fired on the second photo
-            $existingPhotoCount = $event->photos()->count();
-
-            if (0 === $existingPhotoCount) {
-                $photo->is_primary = 1;
-            }
-
-            $photo->save();
-            $event->addPhoto($photo);
-
-            EventPhotoAdded::dispatch($event, 0 === $existingPhotoCount);
-
-            if ($event->start_at >= Carbon::now()) {
-                // notify followers only when this is the event's first photo
-                if (0 === $existingPhotoCount) {
-                    $this->notifyFollowing($event);
-                }
-            }
-
-            $photoData = $photo->getApiResponse();
-
-            return response()->json($photoData, 201);
+        if (!$event = Event::find($id)) {
+            return response()->json([], 404);
         }
 
-        return response()->json([], 404);
+        if ($denied = $this->denyUnlessCanAddPhoto($event)) {
+            return $denied;
+        }
+
+        $photo = $imageHandler->makePhoto($request->file('file'));
+
+        return $this->finishAddingPhoto($event, $photo);
+    }
+
+    /**
+     * Attach a photo to an event from a public https URL. Identical to
+     * addPhoto() except that the server downloads the bytes (see
+     * RemoteImageFetcher for the SSRF guards).
+     */
+    public function addPhotoFromUrl(int $id, Request $request, ImageHandler $imageHandler, RemoteImageFetcher $fetcher): JsonResponse
+    {
+        $this->validate($request, [
+            'url' => 'required|url',
+        ]);
+
+        if (!$event = Event::find($id)) {
+            return response()->json([], 404);
+        }
+
+        if ($denied = $this->denyUnlessCanAddPhoto($event)) {
+            return $denied;
+        }
+
+        try {
+            $photo = $fetcher->fetch($request->input('url'), fn (UploadedFile $file) => $imageHandler->makePhoto($file));
+        } catch (RemoteImageException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return $this->finishAddingPhoto($event, $photo);
+    }
+
+    /**
+     * Only the event owner (or an admin) may add photos — checked before
+     * any bytes are fetched or written to storage.
+     */
+    private function denyUnlessCanAddPhoto(Event $event): ?JsonResponse
+    {
+        if (!$this->user
+            || (!$event->ownedBy($this->user) && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin'))) {
+            return response()->json(['message' => 'Not authorized.'], 403);
+        }
+
+        return null;
+    }
+
+    /**
+     * Shared tail of the upload and from-url paths: primary flag, attach,
+     * dispatch and follower notification.
+     */
+    private function finishAddingPhoto(Event $event, Photo $photo): JsonResponse
+    {
+        // count existing photos BEFORE attaching; isset($event->photos)
+        // used to cache the relation here, so the post-attach count read
+        // stale data and the notification fired on the second photo
+        $existingPhotoCount = $event->photos()->count();
+
+        if (0 === $existingPhotoCount) {
+            $photo->is_primary = 1;
+        }
+
+        $photo->save();
+        $event->addPhoto($photo);
+
+        EventPhotoAdded::dispatch($event, 0 === $existingPhotoCount);
+
+        if ($event->start_at >= Carbon::now()) {
+            // notify followers only when this is the event's first photo
+            if (0 === $existingPhotoCount) {
+                $this->notifyFollowing($event);
+            }
+        }
+
+        return response()->json($photo->getApiResponse(), 201);
     }
 }

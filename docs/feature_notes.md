@@ -2,6 +2,21 @@
 
 A more detailed description of new features and changes to the application.
 
+## 2026.09.08
+
+### Attach photos by URL (#2123)
+`POST /api/{events,entities,series}/{id}/photos/from-url` with `{ "url": "https://…" }`
+attaches a photo the server downloads itself, so importers and browser automation that
+cannot hold the image bytes (CORS, sandboxes, native file dialogs) can still add flyer
+art. It behaves exactly like the multipart upload — same ownership check, first photo
+becomes primary, follower notification on an event's first photo — and only differs in
+where the bytes come from. The download lives in `RemoteImageFetcher` and is written as
+an SSRF sink: https only, host resolved and rejected for private / reserved address
+space on every redirect hop (max 3) with the connection pinned to the validated IP,
+5 MB cap enforced mid-transfer, bytes sniffed for jpg/png/gif/webp, timeouts, and a
+tighter per-user rate limit. The three `addPhoto` methods were refactored so the upload
+and URL paths share one tail; the entity upload no longer stores the file twice.
+
 ## 2026.09.04
 
 ### Tag list de-duplication (#2120)
