@@ -430,7 +430,7 @@ class ForumsController extends Controller
     protected function getFilterOptions(): array
     {
         return [
-            'userOptions' => ['' => '&nbsp;'] + Cache::remember('filter-opts-users-name', 3600, fn () => User::orderBy('name', 'ASC')->pluck('name', 'name')->all()),
+            'userOptions' => ['' => '&nbsp;'] + Cache::remember(User::FILTER_OPTIONS_CACHE_KEY, 3600, fn () => User::orderBy('name', 'ASC')->pluck('name', 'name')->all()),
             'tagOptions' => ['' => '&nbsp;'] + Cache::remember('filter-opts-tags-name', 3600, fn () => Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all()),
             'seriesOptions' => ['' => ''] + Series::getFormOptions(),
         ];

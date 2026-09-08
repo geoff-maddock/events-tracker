@@ -411,7 +411,7 @@ class EventsController extends Controller
             'visibilityOptions' => ['' => ''] + Cache::remember('form-opts-visibilities', 86400, fn () => Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
             'tagOptions' => Cache::remember('form-opts-tags', 3600, fn () => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
             'entityOptions' => Cache::remember('form-opts-entities-active', 3600, fn () => Entity::active()->orderBy('name', 'ASC')->pluck('name', 'id')->all()),
-            'userOptions' => ['' => ''] + Cache::remember('form-opts-users', 3600, fn () => User::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
+            'userOptions' => ['' => ''] + Cache::remember(User::FORM_OPTIONS_CACHE_KEY, 3600, fn () => User::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
         ];
     }
 
@@ -2825,7 +2825,7 @@ class EventsController extends Controller
             'occurrenceTypeOptions' => ['' => ''] + Cache::remember('form-opts-occurrence-types', 86400, fn () => OccurrenceType::pluck('name', 'id')->all()),
             'dayOptions' => ['' => ''] + Cache::remember('form-opts-occurrence-days', 86400, fn () => OccurrenceDay::pluck('name', 'id')->all()),
             'weekOptions' => ['' => ''] + Cache::remember('form-opts-occurrence-weeks', 86400, fn () => OccurrenceWeek::pluck('name', 'id')->all()),
-            'userOptions' => Cache::remember('form-opts-users', 3600, fn () => User::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
+            'userOptions' => Cache::remember(User::FORM_OPTIONS_CACHE_KEY, 3600, fn () => User::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
         ];
     }
 
