@@ -21,6 +21,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
@@ -104,6 +105,16 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     protected $fillable = ['name', 'slug', 'email', 'password', 'user_status_id'];
 
+    /**
+     * Cache key for the id => name user list used by form selects (e.g. event Owner).
+     */
+    public const FORM_OPTIONS_CACHE_KEY = 'form-opts-users';
+
+    /**
+     * Cache key for the name => name user list used by index filter selects.
+     */
+    public const FILTER_OPTIONS_CACHE_KEY = 'filter-opts-users-name';
+
     protected static function booted(): void
     {
         static::creating(function (self $user): void {
@@ -111,6 +122,19 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
                 $user->slug = self::generateUniqueSlug($user->name ?? 'user');
             }
         });
+
+        // Any create, rename or delete changes the cached user option lists.
+        static::saved(fn () => self::forgetOptionsCache());
+        static::deleted(fn () => self::forgetOptionsCache());
+    }
+
+    /**
+     * Forget the cached user option lists so new/renamed users show up in selects.
+     */
+    public static function forgetOptionsCache(): void
+    {
+        Cache::forget(self::FORM_OPTIONS_CACHE_KEY);
+        Cache::forget(self::FILTER_OPTIONS_CACHE_KEY);
     }
 
     /**
