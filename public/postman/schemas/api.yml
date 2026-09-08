@@ -3426,6 +3426,64 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PhotoResponse"
+  /api/events/{id}/photos/from-url:
+    post:
+      parameters:
+        - name: id
+          description: The unique identifier of the event
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - events
+      summary: Add Event Photo From URL
+      description: >-
+        Downloads an image from a public https URL and attaches it to the event,
+        exactly like the multipart upload (owner or admin only; the first photo becomes
+        primary). The URL must be https, resolve to a public host on every redirect hop
+        (max 3), be at most 5 MB, and return a jpg, jpeg, png, gif or webp image.
+        Rate limited to 20 requests per minute per user.
+      operationId: addEventPhotoFromUrl
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: Public https URL of the image to attach
+                  example: "https://example.com/flyers/show.jpg"
+      responses:
+        "201":
+          description: Photo downloaded and attached
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhotoResponse"
+        "403":
+          description: Not the owner or an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "404":
+          description: Event not found
+        "422":
+          description: The URL failed validation or the image could not be fetched safely (not https, private host, too large, not an image)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "429":
+          description: Rate limit exceeded
   /api/events/{slug}/all-photos:
     get:
       parameters:
@@ -3925,6 +3983,64 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PhotoResponse"
+  /api/entities/{id}/photos/from-url:
+    post:
+      parameters:
+        - name: id
+          description: The unique identifier of the entity
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - entities
+      summary: Add Entity Photo From URL
+      description: >-
+        Downloads an image from a public https URL and attaches it to the entity,
+        exactly like the multipart upload (owner or admin only; the first photo becomes
+        primary). The URL must be https, resolve to a public host on every redirect hop
+        (max 3), be at most 5 MB, and return a jpg, jpeg, png, gif or webp image.
+        Rate limited to 20 requests per minute per user.
+      operationId: addEntityPhotoFromUrl
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: Public https URL of the image to attach
+                  example: "https://example.com/venue.png"
+      responses:
+        "201":
+          description: Photo downloaded and attached
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhotoResponse"
+        "403":
+          description: Not the owner or an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "404":
+          description: Entity not found
+        "422":
+          description: The URL failed validation or the image could not be fetched safely (not https, private host, too large, not an image)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "429":
+          description: Rate limit exceeded
   /api/entities/{slug}/links:
     get:
       parameters:
@@ -6162,6 +6278,64 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PhotoResponse"
+  /api/series/{id}/photos/from-url:
+    post:
+      parameters:
+        - name: id
+          description: The unique identifier of the series
+          in: path
+          required: true
+          schema:
+            type: integer
+            readOnly: true
+            example: 1
+      tags:
+        - series
+      summary: Add Series Photo From URL
+      description: >-
+        Downloads an image from a public https URL and attaches it to the series,
+        exactly like the multipart upload (owner or admin only; the first photo becomes
+        primary). The URL must be https, resolve to a public host on every redirect hop
+        (max 3), be at most 5 MB, and return a jpg, jpeg, png, gif or webp image.
+        Rate limited to 20 requests per minute per user.
+      operationId: addSeriesPhotoFromUrl
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: Public https URL of the image to attach
+                  example: "https://example.com/series.jpg"
+      responses:
+        "201":
+          description: Photo downloaded and attached
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhotoResponse"
+        "403":
+          description: Not the owner or an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "404":
+          description: Series not found
+        "422":
+          description: The URL failed validation or the image could not be fetched safely (not https, private host, too large, not an image)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "429":
+          description: Rate limit exceeded
   /api/series/{slug}/follow:
     post:
       parameters:
