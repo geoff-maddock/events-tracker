@@ -122,6 +122,106 @@ class EntityQuickCheckTest extends TestCase
     }
 
     /** @test */
+    public function quick_check_reports_which_alias_matched()
+    {
+        $entity = $this->makeEntity('Spirit Lodge');
+        $alias = Alias::create(['name' => 'The Lodge PGH']);
+        $entity->aliases()->attach($alias->id);
+
+        $response = $this->actingAs($this->activeUser())
+            ->getJson('/entities/quick-check?name=the lodge pgh')
+            ->assertStatus(200);
+
+        $match = collect($response->json('data'))->firstWhere('id', $entity->id);
+        $this->assertNotNull($match);
+        $this->assertSame('The Lodge PGH', $match['alias']);
+
+        $byName = $this->actingAs($this->activeUser())
+            ->getJson('/entities/quick-check?name=Spirit Lodge')
+            ->json('data');
+        $this->assertNull(collect($byName)->firstWhere('id', $entity->id)['alias']);
+    }
+
+    /** @test */
+    public function quick_check_can_be_restricted_to_one_entity_type()
+    {
+        $space = $this->makeEntity('Spirit Lodge', EntityType::SPACE);
+        $group = $this->makeEntity('Spirit Lodge', EntityType::GROUP);
+
+        $ids = collect($this->actingAs($this->activeUser())
+            ->getJson('/entities/quick-check?name=Spirit Lodge&entity_type_id='.EntityType::GROUP)
+            ->assertStatus(200)
+            ->json('data'))->pluck('id');
+
+        $this->assertTrue($ids->contains($group->id));
+        $this->assertFalse($ids->contains($space->id));
+    }
+
+    /** @test */
+    public function quick_check_type_filter_still_matches_aliases()
+    {
+        $entity = $this->makeEntity('Spirit Lodge', EntityType::SPACE);
+        $alias = Alias::create(['name' => 'The Lodge PGH']);
+        $entity->aliases()->attach($alias->id);
+
+        $user = $this->activeUser();
+
+        $this->actingAs($user)
+            ->getJson('/entities/quick-check?name=The Lodge PGH&entity_type_id='.EntityType::SPACE)
+            ->assertStatus(200)
+            ->assertJsonFragment(['id' => $entity->id]);
+
+        $this->actingAs($user)
+            ->getJson('/entities/quick-check?name=The Lodge PGH&entity_type_id='.EntityType::GROUP)
+            ->assertStatus(200)
+            ->assertJsonMissing(['id' => $entity->id]);
+    }
+
+    /** @test */
+    public function quick_check_rejects_an_unknown_entity_type()
+    {
+        $this->actingAs($this->activeUser())
+            ->getJson('/entities/quick-check?name=Spirit Lodge&entity_type_id=9999')
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('entity_type_id');
+    }
+
+    /** @test */
+    public function quick_check_can_exclude_the_entity_being_edited()
+    {
+        $self = $this->makeEntity('Spirit Lodge');
+        $other = $this->makeEntity('Spirit Lodge Annex');
+
+        $ids = collect($this->actingAs($this->activeUser())
+            ->getJson('/entities/quick-check?name=Spirit Lodge&exclude_id='.$self->id)
+            ->assertStatus(200)
+            ->json('data'))->pluck('id');
+
+        $this->assertFalse($ids->contains($self->id));
+        $this->assertTrue($ids->contains($other->id));
+    }
+
+    /** @test */
+    public function entity_create_and_edit_forms_render_the_duplicate_warning()
+    {
+        $user = $this->activeUser();
+        $entity = $this->makeEntity('Spirit Lodge');
+        $entity->update(['created_by' => $user->id]);
+
+        $this->actingAs($user)
+            ->get('/entities/create')
+            ->assertStatus(200)
+            ->assertSee('id="entity-duplicate-warning"', false)
+            ->assertSee('const excludeId = 0;', false);
+
+        $this->actingAs($user)
+            ->get('/entities/'.$entity->slug.'/edit')
+            ->assertStatus(200)
+            ->assertSee('id="entity-duplicate-warning"', false)
+            ->assertSee('const excludeId = '.$entity->id.';', false);
+    }
+
+    /** @test */
     public function quick_check_returns_nothing_for_an_unrelated_name()
     {
         $this->makeEntity('Spirit Lodge');

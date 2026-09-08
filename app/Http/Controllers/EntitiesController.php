@@ -855,16 +855,24 @@ class EntitiesController extends Controller
     }
 
     /**
-     * Check for existing entities with a name similar to the one being quick-added,
-     * so the event form can warn the user about likely duplicates.
+     * Check for existing entities whose name or alias matches the one being entered,
+     * so the event quick-add modal and the entity form can warn about likely duplicates.
      */
     public function quickCheck(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|min:3|max:255',
+            // Restrict matches to one type: the entity form only warns about a
+            // same-name-same-type collision, since the same name legitimately
+            // exists across types (a band and the venue named after it).
+            'entity_type_id' => 'nullable|integer|exists:entity_types,id',
+            // When editing, the entity being edited must not match itself.
+            'exclude_id' => 'nullable|integer',
         ]);
 
         $name = $validated['name'];
+        $typeId = $validated['entity_type_id'] ?? null;
+        $excludeId = $validated['exclude_id'] ?? null;
 
         $candidates = Entity::where(function (Builder $query) use ($name) {
             $query->where('name', 'like', '%'.$name.'%')
@@ -873,21 +881,24 @@ class EntitiesController extends Controller
                     $q->where('name', $name);
                 });
         })
+            ->when($typeId, fn (Builder $query) => $query->where('entity_type_id', $typeId))
+            ->when($excludeId, fn (Builder $query) => $query->where('id', '!=', $excludeId))
             ->with(['entityType', 'aliases'])
             ->limit(25)
             ->get();
 
         $matches = $candidates
             ->map(function (Entity $entity) use ($name) {
-                $aliasMatch = $entity->aliases->contains(
+                $matchedAlias = $entity->aliases->first(
                     fn ($alias) => 0 === strcasecmp($alias->name, $name)
                 );
                 similar_text(mb_strtolower($name), mb_strtolower($entity->name), $percent);
 
                 return [
                     'entity' => $entity,
-                    'score' => $aliasMatch ? 100.0 : $percent,
-                    'keep' => $aliasMatch
+                    'alias' => $matchedAlias?->name,
+                    'score' => $matchedAlias ? 100.0 : $percent,
+                    'keep' => $matchedAlias
                         || $percent >= 60
                         || false !== mb_stripos($entity->name, $name)
                         || false !== mb_stripos($name, $entity->name),
@@ -902,6 +913,9 @@ class EntitiesController extends Controller
                 'name' => $match['entity']->name,
                 'slug' => $match['entity']->slug,
                 'entity_type' => $match['entity']->entityType?->name,
+                // Set when the input matched one of the entity's aliases rather
+                // than its name, so the UI can explain why it surfaced.
+                'alias' => $match['alias'],
             ]);
 
         return response()->json(['data' => $matches]);
