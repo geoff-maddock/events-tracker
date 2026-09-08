@@ -320,6 +320,8 @@
         if (coerced === '') return;
 
         el.value = coerced;
+        // Let field listeners (e.g. the entity duplicate check) see the prefill.
+        el.dispatchEvent(new Event('input', { bubbles: true }));
     }
 
     function matchSelectByName(selectId, name) {

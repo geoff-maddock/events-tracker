@@ -4,6 +4,14 @@ A more detailed description of new features and changes to the application.
 
 ## 2026.09.08
 
+### Duplicate-entity warning on the entity form
+The entity create and edit forms now warn, as you type, when another entity of the
+**same type** already has that name or lists it as an alias, so aliases stop turning
+into separate concrete entities. The same name across different types (a band and the
+venue named after it) does not warn. Matches link to the existing entity and say which
+alias matched; the form can still be submitted. `GET /entities/quick-check` gained
+optional `entity_type_id` and `exclude_id` filters and an `alias` field per match.
+
 ### Attach photos by URL (#2123)
 `POST /api/{events,entities,series}/{id}/photos/from-url` with `{ "url": "https://…" }`
 attaches a photo the server downloads itself, so importers and browser automation that
