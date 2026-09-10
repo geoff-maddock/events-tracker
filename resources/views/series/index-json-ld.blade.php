@@ -1,26 +1,14 @@
 @php
+    use App\Services\SeriesSchema;
+
     $items = [];
     $position = 1;
     foreach ($series as $item) {
-        $listItem = [
+        $items[] = [
             '@type'    => 'ListItem',
             'position' => $position++,
-            'item'     => [
-                '@type' => 'EventSeries',
-                'name'  => $item->name,
-                'url'   => route('series.show', $item),
-            ],
+            'item'     => SeriesSchema::forSeries($item),
         ];
-        if ($item->short) {
-            $listItem['item']['description'] = $item->short;
-        }
-        if ($item->venue) {
-            $listItem['item']['location'] = [
-                '@type' => 'Place',
-                'name'  => $item->venue->name,
-            ];
-        }
-        $items[] = $listItem;
     }
 
     $jsonLd = [
