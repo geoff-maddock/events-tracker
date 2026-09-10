@@ -6,7 +6,9 @@ use App\Models\Entity;
 use App\Models\Event;
 use App\Models\Link;
 use App\Models\Location;
+use App\Models\Photo;
 use App\Models\Role;
+use App\Models\Series;
 use App\Models\Visibility;
 use App\Services\EventSchema;
 use Illuminate\Support\Collection;
@@ -39,6 +41,7 @@ class EventSchemaTest extends TestCase
         $event->setRelation('visibility', null);
         $event->setRelation('venue', null);
         $event->setRelation('promoter', null);
+        $event->setRelation('series', null);
 
         return $event;
     }
@@ -47,9 +50,18 @@ class EventSchemaTest extends TestCase
     {
         $venue = new Entity(['name' => $name, 'slug' => 'squirrel-hill-sports-bar']);
         $venue->setRelation('links', new Collection());
+        $venue->setRelation('photos', new Collection());
         $venue->setRelation('locations', new Collection($location ? [$location] : []));
 
         return $venue;
+    }
+
+    private function photo(string $path): Photo
+    {
+        $photo = new Photo(['path' => $path, 'thumbnail' => $path]);
+        $photo->is_primary = 1;
+
+        return $photo;
     }
 
     private function location(string $visibility, array $attributes = []): Location
@@ -177,6 +189,40 @@ class EventSchemaTest extends TestCase
         $this->assertSame('Pittsburgh', $schema['location']['address']['addressLocality']);
     }
 
+    public function test_a_venue_with_no_location_on_file_gets_a_city_level_address(): void
+    {
+        // Search Console's second-largest warning: a fifth of listed venues
+        // have no Location row, and a Place with no address at all is worth
+        // less than one locatable to the city.
+        $event = $this->event();
+        $event->setRelation('venue', $this->venue());
+
+        $schema = EventSchema::forEvent($event);
+
+        $this->assertSame('Squirrel Hill Sports Bar', $schema['location']['name']);
+        $this->assertSame([
+            '@type'           => 'PostalAddress',
+            'addressLocality' => 'Pittsburgh',
+            'addressRegion'   => 'PA',
+            'addressCountry'  => 'US',
+        ], $schema['location']['address']);
+    }
+
+    public function test_a_location_with_no_street_still_publishes_its_city(): void
+    {
+        $event = $this->event();
+        $event->setRelation('venue', $this->venue(location: $this->location('Public', [
+            'address_one' => null, 'city' => 'Millvale', 'postcode' => null,
+        ])));
+
+        $address = EventSchema::forEvent($event)['location']['address'];
+
+        $this->assertArrayNotHasKey('streetAddress', $address);
+        $this->assertArrayNotHasKey('postalCode', $address);
+        $this->assertSame('Millvale', $address['addressLocality']);
+        $this->assertSame('PA', $address['addressRegion']);
+    }
+
     // -- offers -----------------------------------------------------------
 
     public function test_offer_url_prefers_the_ticket_link(): void
@@ -206,6 +252,39 @@ class EventSchemaTest extends TestCase
         $this->assertSame('USD', $schema['offers']['priceCurrency']);
     }
 
+    public function test_an_unknown_price_is_not_advertised_as_free(): void
+    {
+        // Google renders price 0 as "Free". A null price means nobody entered
+        // one, which is not the same claim.
+        $offer = EventSchema::forEvent($this->event())['offers'];
+
+        $this->assertArrayNotHasKey('price', $offer);
+        $this->assertArrayNotHasKey('priceCurrency', $offer);
+        $this->assertSame('https://schema.org/InStock', $offer['availability']);
+    }
+
+    public function test_an_explicit_zero_price_is_free(): void
+    {
+        // '0.00', not '0': Event::setDoorPriceAttribute() treats a bare '0'
+        // as empty and stores null, so an explicit free price arrives as '0.00'.
+        $this->assertSame('0.00', EventSchema::forEvent($this->event(['door_price' => '0.00']))['offers']['price']);
+    }
+
+    public function test_a_ticket_link_that_is_not_a_url_is_not_used(): void
+    {
+        // Pre-validation rows hold values like these; Search Console reports
+        // them as missing or invalid offer urls.
+        foreach (['Ticketfly.com', 'Admission: Free', 'e', 'ttps://example.test/x', 'mailto:x@example.test', 'https://millvalемusicfestival.com'] as $junk) {
+            $schema = EventSchema::forEvent($this->event(['ticket_link' => $junk, 'primary_link' => 'not a url either']));
+
+            $this->assertSame(route('events.show', 'camp-gloom'), $schema['offers']['url'], "accepted: $junk");
+        }
+
+        // Surrounding whitespace is a data-entry slip, not a bad link.
+        $schema = EventSchema::forEvent($this->event(['ticket_link' => ' https://example.test/x ']));
+        $this->assertSame('https://example.test/x', $schema['offers']['url']);
+    }
+
     // -- performer / organizer --------------------------------------------
 
     public function test_related_performers_are_listed_with_their_links(): void
@@ -221,7 +300,8 @@ class EventSchemaTest extends TestCase
         $this->assertCount(2, $schema['performer']);
         $this->assertSame('DJ Strawberry Bloodbath', $schema['performer'][0]['name']);
         $this->assertSame('https://example.test/strawberry', $schema['performer'][0]['url']);
-        $this->assertArrayNotHasKey('url', $schema['performer'][1]);
+        // No external link: the performer's own page here is still a url.
+        $this->assertSame(route('entities.show', 'zona-morta'), $schema['performer'][1]['url']);
     }
 
     public function test_the_performer_limit_is_respected(): void
@@ -268,9 +348,55 @@ class EventSchemaTest extends TestCase
         $this->assertSame('Squirrel Hill Sports Bar', EventSchema::forEvent($event)['organizer']['name']);
     }
 
-    public function test_an_event_with_neither_promoter_nor_venue_omits_organizer(): void
+    public function test_an_organizer_with_no_external_link_points_at_its_own_page(): void
+    {
+        // The single largest Search Console warning (1,884 items): an
+        // Organization with a name and no url.
+        $event = $this->event();
+        $event->setRelation('venue', $this->venue());
+
+        $this->assertSame(route('entities.show', 'squirrel-hill-sports-bar'), EventSchema::forEvent($event)['organizer']['url']);
+    }
+
+    public function test_organizer_falls_back_to_the_series_promoter_or_venue(): void
+    {
+        $promoter = new Entity(['name' => 'Gloom Collective', 'slug' => 'gloom-collective']);
+        $promoter->setRelation('links', new Collection());
+
+        $series = new Series(['name' => 'Gloom Nights']);
+        $series->setRelation('promoter', $promoter);
+        $series->setRelation('venue', null);
+
+        $event = $this->event();
+        $event->setRelation('series', $series);
+
+        $this->assertSame('Gloom Collective', EventSchema::forEvent($event)['organizer']['name']);
+    }
+
+    public function test_an_event_with_neither_promoter_nor_venue_nor_series_omits_organizer(): void
     {
         $this->assertArrayNotHasKey('organizer', EventSchema::forEvent($this->event()));
+    }
+
+    // -- image ------------------------------------------------------------
+
+    public function test_image_falls_back_through_series_and_venue_to_the_site_promo(): void
+    {
+        $event = $this->event();
+        $this->assertSame([url(EventSchema::DEFAULT_IMAGE_PATH)], EventSchema::forEvent($event)['image']);
+
+        $venue = $this->venue();
+        $venue->setRelation('photos', new Collection([$this->photo('photos/venue.jpg')]));
+        $event->setRelation('venue', $venue);
+        $this->assertStringEndsWith('photos/venue.jpg', EventSchema::forEvent($event)['image'][0]);
+
+        $series = new Series(['name' => 'Gloom Nights']);
+        $series->setRelation('photos', new Collection([$this->photo('photos/series.jpg')]));
+        $event->setRelation('series', $series);
+        $this->assertStringEndsWith('photos/series.jpg', EventSchema::forEvent($event)['image'][0]);
+
+        $event->setRelation('photos', new Collection([$this->photo('photos/flyer.jpg')]));
+        $this->assertStringEndsWith('photos/flyer.jpg', EventSchema::forEvent($event)['image'][0]);
     }
 
     // -- description ------------------------------------------------------
@@ -292,9 +418,17 @@ class EventSchemaTest extends TestCase
         $this->assertSame('The long one.', $schema['description']);
     }
 
-    public function test_an_event_with_no_copy_omits_description(): void
+    public function test_an_event_with_no_copy_describes_itself(): void
     {
-        $this->assertArrayNotHasKey('description', EventSchema::forEvent($this->event()));
+        $event = $this->event(['start_at' => '2026-08-01 21:00:00']);
+        $event->setRelation('venue', $this->venue());
+
+        $this->assertSame(
+            'Camp Gloom at Squirrel Hill Sports Bar on Saturday, August 1, 2026.',
+            EventSchema::forEvent($event)['description']
+        );
+
+        $this->assertSame('Camp Gloom.', EventSchema::forEvent($this->event(['start_at' => null]))['description']);
     }
 
     public function test_an_event_with_no_start_time_omits_the_dates(): void

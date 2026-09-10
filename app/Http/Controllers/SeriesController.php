@@ -662,7 +662,7 @@ class SeriesController extends Controller
         // Each event renders through events/card-tw, which touches venue, eventType,
         // visibility, tags, photos (getPrimaryPhoto), entities and threads per card —
         // eager-load them so the grid is a fixed number of queries, not N per event.
-        $eventEager = ['venue', 'eventType', 'visibility', 'tags', 'photos', 'entities', 'threads'];
+        $eventEager = ['venue.photos', 'eventType', 'visibility', 'tags', 'photos', 'entities', 'series.photos', 'threads'];
         if ($this->user) {
             // The attend/unattend button reads getEventResponse($user)->responseType per card.
             $eventEager['eventResponses'] = function ($query) {

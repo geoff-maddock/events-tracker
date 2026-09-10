@@ -696,7 +696,9 @@ class EntitiesController extends Controller
             ->with([
                 'venue.locations',
                 'venue.links',
+                'venue.photos',
                 'promoter.links',
+                'series.photos',
                 'photos',
                 'entities.roles',
                 'entities.links',
@@ -969,7 +971,9 @@ class EntitiesController extends Controller
             ->with([
                 'venue.locations',
                 'venue.links',
+                'venue.photos',
                 'promoter.links',
+                'series.photos',
                 'photos',
                 'entities.roles',
                 'entities.links',

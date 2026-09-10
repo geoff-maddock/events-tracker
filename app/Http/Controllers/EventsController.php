@@ -374,9 +374,10 @@ class EventsController extends Controller
         // built by App\Services\EventSchema: performerEntities() and primaryLink() both fall back
         // to a query per event (per entity, for links) unless these are loaded. Four extra eager
         // loads per page, constant in the number of events, against ~150 N+1 queries on a full page.
+        // venue.photos/series.photos feed EventSchema's image fallback for an event with no flyer.
         $eager = [
-            'visibility', 'venue.locations', 'venue.links', 'eventType', 'tags', 'photos',
-            'entities', 'entities.roles', 'entities.links', 'promoter.links', 'threads',
+            'visibility', 'venue.locations', 'venue.links', 'venue.photos', 'eventType', 'tags', 'photos',
+            'entities', 'entities.roles', 'entities.links', 'promoter.links', 'series.photos', 'threads',
         ];
 
         if ($user) {

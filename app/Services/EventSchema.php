@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Entity;
 use App\Models\Event;
+use App\Models\Location;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * The one place that maps an Event onto a schema.org Event node.
@@ -14,6 +16,13 @@ use App\Models\Event;
  * dozen, which is what Search Console reports as missing fields on
  * /events/this-week. They also disagreed about whether a Guarded venue's street
  * address is publishable. Every caller now shares this builder instead.
+ *
+ * Every recommended Event property Google lists is emitted for every event,
+ * falling back to the best available stand-in rather than omitting the key.
+ * Search Console counts each missing recommended field as an enrichment
+ * warning per indexed item; the September 2026 export had ~3,300 of them,
+ * almost all from organizers with no external link and venues with no
+ * street address on file. The fallbacks are documented at each helper.
  *
  * Dates go through App\Services\EventTime rather than reading the cast Carbon
  * directly. config('app.timezone') is 'EST', a fixed UTC-5 offset that never
@@ -33,6 +42,13 @@ class EventSchema
     public const DETAIL_PERFORMER_LIMIT = 10;
 
     /**
+     * The site-wide promo image, already the default og:image in the layout.
+     * Last resort for an event with no flyer whose series and venue have no
+     * photo either.
+     */
+    public const DEFAULT_IMAGE_PATH = '/images/arcane-city-promo.jpg';
+
+    /**
      * A standalone Event document, for a page whose subject is one event.
      *
      * @return array<string, mixed>
@@ -50,6 +66,9 @@ class EventSchema
      * promoter.links, entities.roles, entities.links. The helpers this calls
      * all short-circuit on relationLoaded(), so callers rendering many events
      * should eager load them — see EventsController::cardEventEagerLoad().
+     * The series relation (and venue/series photos) are only read on the
+     * fallback paths for an event with no photo or no promoter and venue,
+     * which is rare enough not to warrant an eager load of its own.
      *
      * @return array<string, mixed>
      */
@@ -76,15 +95,8 @@ class EventSchema
 
         $node['eventAttendanceMode'] = self::CONTEXT.'/OfflineEventAttendanceMode';
         $node['eventStatus'] = self::eventStatus($event);
-
-        if ($image = $event->getPrimaryPhotoPath()) {
-            $node['image'] = [$image];
-        }
-
-        if ($description = self::description($event)) {
-            $node['description'] = $description;
-        }
-
+        $node['image'] = [self::image($event)];
+        $node['description'] = self::description($event);
         $node['location'] = self::location($event->venue);
         $node['offers'] = self::offers($event, $url);
         $node['performer'] = self::performers($event, $performerLimit);
@@ -109,24 +121,66 @@ class EventSchema
     }
 
     /**
-     * Prefer the short blurb; fall back to the long description. Both may hold
-     * markup, which schema.org descriptions should not.
+     * The event's own flyer, else the series' image, else the venue's, else
+     * the site promo image. Google wants a relevant image on every Event and
+     * a generic one only clears the warning — the flyer is what improves the
+     * result — but an absent image is the worst of the options.
      */
-    protected static function description(Event $event): ?string
+    protected static function image(Event $event): string
     {
-        $text = $event->short ?: $event->description;
-
-        if (null === $text || '' === trim($text)) {
-            return null;
+        if ($path = $event->getPrimaryPhotoPath()) {
+            return $path;
         }
 
-        return trim(preg_replace('/\s+/', ' ', strip_tags($text)) ?? '') ?: null;
+        $photo = $event->series?->getPrimaryPhoto() ?? $event->venue?->getPrimaryPhoto();
+
+        if ($photo) {
+            return Storage::disk('external')->url($photo->getStoragePath());
+        }
+
+        return url(self::DEFAULT_IMAGE_PATH);
     }
 
     /**
+     * Prefer the short blurb; fall back to the long description. Both may hold
+     * markup, which schema.org descriptions should not. An event with no copy
+     * at all gets a sentence built from what is known about it, so the field
+     * is never absent.
+     */
+    protected static function description(Event $event): string
+    {
+        $text = $event->short ?: $event->description;
+
+        if (null !== $text && '' !== trim($text)) {
+            $clean = trim(preg_replace('/\s+/', ' ', strip_tags($text)) ?? '');
+
+            if ('' !== $clean) {
+                return $clean;
+            }
+        }
+
+        $sentence = $event->name;
+
+        if ($event->venue) {
+            $sentence .= ' at '.$event->venue->name;
+        }
+
+        if ($startsAt = EventTime::startsAt($event)) {
+            $sentence .= ' on '.$startsAt->format('l, F j, Y');
+        }
+
+        return $sentence.'.';
+    }
+
+    /**
+     * The venue as a Place. Always carries a PostalAddress: the full street
+     * address when one is on file and publishable, otherwise the city level,
+     * which is still what Google asks for and beats nothing. Roughly a fifth
+     * of listed venues have no Location row at all.
+     *
      * @return array<string, mixed>
      */
-    protected static function location(?Entity $venue): array
+    public static function location(?Entity $venue): array
     {
         if (null === $venue) {
             // Everything published here is a Pittsburgh event, so a venueless
@@ -134,12 +188,7 @@ class EventSchema
             return [
                 '@type'   => 'Place',
                 'name'    => 'TBA',
-                'address' => [
-                    '@type'           => 'PostalAddress',
-                    'addressLocality' => 'Pittsburgh',
-                    'addressRegion'   => 'PA',
-                    'addressCountry'  => 'US',
-                ],
+                'address' => self::postalAddress(null),
             ];
         }
 
@@ -152,39 +201,100 @@ class EventSchema
         $location = $venue->getPrimaryLocation();
 
         // A Guarded address is deliberately withheld from crawlers — same rule
-        // Entity::getJsonLd() applies to the venue's own page.
-        if ($location && !$location->isAddressGuarded() && !empty($location->address_one)) {
-            $place['address'] = [
-                '@type'           => 'PostalAddress',
-                'streetAddress'   => $location->address_one,
-                'addressLocality' => $location->city ?? 'Pittsburgh',
-                'addressRegion'   => $location->state ?? 'PA',
-                'postalCode'      => $location->postcode ?? '',
-                'addressCountry'  => $location->country ?? 'US',
-            ];
+        // Entity::getJsonLd() applies to the venue's own page. Nothing about
+        // it is published, not even the city, so the node cannot be used to
+        // narrow the venue down.
+        if ($location && $location->isAddressGuarded()) {
+            return $place;
         }
+
+        $place['address'] = self::postalAddress($location);
 
         return $place;
     }
 
     /**
+     * A PostalAddress from a Location, or the city-level default when there
+     * is no Location or it carries no street. Empty parts are omitted rather
+     * than emitted as empty strings.
+     *
+     * @return array<string, string>
+     */
+    protected static function postalAddress(?Location $location): array
+    {
+        $address = ['@type' => 'PostalAddress'];
+
+        if ($location && !empty($location->address_one)) {
+            $address['streetAddress'] = $location->address_one;
+        }
+
+        $address['addressLocality'] = $location?->city ?: 'Pittsburgh';
+        $address['addressRegion'] = $location?->state ?: 'PA';
+
+        if ($location && !empty($location->postcode)) {
+            $address['postalCode'] = $location->postcode;
+        }
+
+        $address['addressCountry'] = $location?->country ?: 'US';
+
+        return $address;
+    }
+
+    /**
+     * The ticket link, else the event's primary link, else its own page —
+     * but only a link that is actually an absolute http(s) URL. Older rows
+     * hold values like "Ticketfly.com" or "Admission: Free" from before the
+     * form validated the field, and Search Console flags those as invalid.
+     *
+     * price is only emitted when one is on file. Google renders a price of
+     * 0 as "Free", and most events with no recorded price are ticketed shows
+     * whose price simply was not entered — advertising those as free is
+     * worse than an Offer without a price.
+     *
      * @return array<string, mixed>
      */
     protected static function offers(Event $event, string $eventUrl): array
     {
         $offer = [
-            '@type'         => 'Offer',
-            'url'           => $event->ticket_link ?: ($event->primary_link ?: $eventUrl),
-            'price'         => (string) ($event->door_price ?? $event->presale_price ?? 0),
-            'priceCurrency' => 'USD',
-            'availability'  => self::CONTEXT.'/InStock',
+            '@type'        => 'Offer',
+            'url'          => self::validUrl($event->ticket_link) ?? self::validUrl($event->primary_link) ?? $eventUrl,
+            'availability' => self::CONTEXT.'/InStock',
         ];
+
+        $price = $event->door_price ?? $event->presale_price;
+
+        if (null !== $price && '' !== $price) {
+            $offer['price'] = (string) $price;
+            $offer['priceCurrency'] = 'USD';
+        }
 
         if ($validFrom = EventTime::toInstant($event->created_at)) {
             $offer['validFrom'] = $validFrom->toAtomString();
         }
 
         return $offer;
+    }
+
+    /**
+     * The value if it is an absolute http or https URL, otherwise null.
+     * filter_var rejects non-ASCII hosts, which also catches the homoglyph
+     * domains that Search Console reports as invalid.
+     */
+    public static function validUrl(?string $value): ?string
+    {
+        if (null === $value) {
+            return null;
+        }
+
+        $value = trim($value);
+
+        if ('' === $value || false === filter_var($value, FILTER_VALIDATE_URL)) {
+            return null;
+        }
+
+        $scheme = strtolower((string) parse_url($value, PHP_URL_SCHEME));
+
+        return in_array($scheme, ['http', 'https'], true) ? $value : null;
     }
 
     /**
@@ -199,13 +309,7 @@ class EventSchema
         $performers = [];
 
         foreach ($event->performerEntities($limit) as $entity) {
-            $performer = ['@type' => 'PerformingGroup', 'name' => $entity->name];
-
-            if ($link = $entity->primaryLink()) {
-                $performer['url'] = $link->url;
-            }
-
-            $performers[] = $performer;
+            $performers[] = self::performer($entity);
         }
 
         if (!empty($performers)) {
@@ -213,33 +317,71 @@ class EventSchema
         }
 
         $fallback = ['@type' => 'PerformingGroup', 'name' => $event->name];
-        if ($event->primary_link) {
-            $fallback['url'] = $event->primary_link;
+        if ($url = self::validUrl($event->primary_link)) {
+            $fallback['url'] = $url;
         }
 
         return [$fallback];
     }
 
     /**
+     * A performing entity as a PerformingGroup with its own page as the url
+     * when it has no external link.
+     *
+     * @return array<string, string>
+     */
+    public static function performer(Entity $entity): array
+    {
+        return [
+            '@type' => 'PerformingGroup',
+            'name'  => $entity->name,
+            'url'   => self::entityUrl($entity),
+        ];
+    }
+
+    /**
      * The promoter runs the show; absent one, the venue is the closest thing
-     * to an organizer we can name.
+     * to an organizer we can name; absent both, the series the event belongs
+     * to may name either.
      *
      * @return array<string, mixed>|null
      */
     protected static function organizer(Event $event): ?array
     {
-        $entity = $event->promoter ?: $event->venue;
+        $entity = $event->promoter
+            ?: $event->venue
+            ?: $event->series?->promoter
+            ?: $event->series?->venue;
 
         if (null === $entity) {
             return null;
         }
 
-        $organizer = ['@type' => 'Organization', 'name' => $entity->name];
+        return self::organization($entity);
+    }
 
-        if ($link = $entity->primaryLink()) {
-            $organizer['url'] = $link->url;
-        }
+    /**
+     * An entity as an Organization with a url that is always present.
+     *
+     * @return array<string, string>
+     */
+    public static function organization(Entity $entity): array
+    {
+        return [
+            '@type' => 'Organization',
+            'name'  => $entity->name,
+            'url'   => self::entityUrl($entity),
+        ];
+    }
 
-        return $organizer;
+    /**
+     * The entity's own site when it has a valid primary link, else its page
+     * here. Search Console's single largest warning was organizers with a
+     * name and no url: most venues and promoters have no primary link set,
+     * and their arcane.city page is a real, crawlable url for them.
+     */
+    public static function entityUrl(Entity $entity): string
+    {
+        return self::validUrl($entity->primaryLink()?->url) ?? route('entities.show', $entity->slug);
     }
 }
