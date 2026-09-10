@@ -49,8 +49,8 @@ class EventPatchRequest extends Request
             'visibility_id' => ['sometimes', 'required'],
             'presale_price' => ['sometimes', 'nullable', 'numeric', 'between:0,999.99'],
             'door_price' => ['sometimes', 'nullable', 'numeric', 'between:0,999.99'],
-            'primary_link' => ['sometimes', 'nullable', 'regex:/^http:\/\/|https:\/\/|^$/', 'max:255'],
-            'ticket_link' => ['sometimes', 'nullable', 'regex:/^http:\/\/|https:\/\/|^$/', 'max:255'],
+            'primary_link' => ['sometimes', 'nullable', 'url:http,https', 'max:255'],
+            'ticket_link' => ['sometimes', 'nullable', 'url:http,https', 'max:255'],
             // Only validated when present. entity_list must be existing entity
             // IDs so a bad body returns 422 rather than a raw SQL error on the
             // entity_id integer column (EVENTREPO-XV).
