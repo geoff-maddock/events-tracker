@@ -78,7 +78,7 @@ class Instagram
 
         // check if data is not null
         if (!isset($response['data']['id'])) {
-            throw new \Exception('No data returned. There was an error posting to Instagram.  Please try again.');
+            throw new \Exception('There was an error posting to Instagram during photo upload. '.$this->describeApiError($response));
         }
 
         return $response['data']['id'];
@@ -95,7 +95,7 @@ class Instagram
 
         // check if data is not null
         if (!isset($response['data']['id'])) {
-            throw new \Exception('No data returned. There was an error posting to Instagram.  Please try again.');
+            throw new \Exception('There was an error posting to Instagram during story photo upload. '.$this->describeApiError($response));
         }
 
         return $response['data']['id'];
@@ -109,7 +109,7 @@ class Instagram
 
         // check if data is not null
         if (!isset($response['data']['id'])) {
-            throw new \Exception('No data returned. There was an error posting carousel photo to Instagram.  Please try again.');
+            throw new \Exception('There was an error posting carousel photo to Instagram. '.$this->describeApiError($response));
         }
 
         return $response['data']['id'];
@@ -133,7 +133,7 @@ class Instagram
 
         // check if data is not null
         if (!isset($response['data']['id'])) {
-            throw new \Exception('No data returned. There was an error posting create carousel to Instagram.  Please try again.');
+            throw new \Exception('There was an error creating the Instagram carousel. '.$this->describeApiError($response));
         }
 
         return $response['data']['id'];
