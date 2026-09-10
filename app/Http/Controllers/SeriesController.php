@@ -276,7 +276,9 @@ class SeriesController extends Controller
 
         // get the series
         $series = $query
-            ->with('visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos', 'upcomingEvent','occurrenceType','occurrenceWeek','occurrenceDay')
+            // venue.locations/links/photos, promoter.links and entities.roles/links
+            // feed the per-series JSON-LD built by App\Services\SeriesSchema.
+            ->with('visibility', 'eventStatus', 'eventType', 'promoter.links', 'venue.locations', 'venue.links', 'venue.photos', 'tags', 'entities.roles', 'entities.links', 'photos', 'upcomingEvent','occurrenceType','occurrenceWeek','occurrenceDay')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -657,12 +659,22 @@ class SeriesController extends Controller
         // Series::nextEvent() (used by getSeoTitleFormat()/getFestivalYear() below,
         // for both this request and the view's own title render) reuse the cached
         // relation instead of re-querying.
-        $series->loadMissing(['photos', 'venue.locations', 'upcomingEvent']);
+        // venue.links/photos, promoter.links, entities.roles/links and occurrenceType
+        // feed the EventSeries JSON-LD built by App\Services\SeriesSchema.
+        $series->loadMissing([
+            'photos', 'venue.locations', 'venue.links', 'venue.photos', 'promoter.links',
+            'entities.roles', 'entities.links', 'occurrenceType', 'upcomingEvent',
+        ]);
 
         // Each event renders through events/card-tw, which touches venue, eventType,
         // visibility, tags, photos (getPrimaryPhoto), entities and threads per card —
         // eager-load them so the grid is a fixed number of queries, not N per event.
-        $eventEager = ['venue.photos', 'eventType', 'visibility', 'tags', 'photos', 'entities', 'series.photos', 'threads'];
+        // The upcoming set is also emitted as subEvent JSON-LD through EventSchema,
+        // which reads venue.locations/links, promoter.links and entities.roles/links.
+        $eventEager = [
+            'venue.locations', 'venue.links', 'venue.photos', 'promoter.links', 'eventType', 'visibility',
+            'tags', 'photos', 'entities.roles', 'entities.links', 'series.photos', 'threads',
+        ];
         if ($this->user) {
             // The attend/unattend button reads getEventResponse($user)->responseType per card.
             $eventEager['eventResponses'] = function ($query) {
