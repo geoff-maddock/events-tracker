@@ -56,8 +56,8 @@ class EventRequest extends Request
             'visibility_id' => 'required',
             'presale_price' => 'nullable|numeric|between:0,999.99',
             'door_price' => 'nullable|numeric|between:0,999.99',
-            'primary_link' => ['nullable','regex:/^http:\/\/|https:\/\/|^$/','max:255'],
-            'ticket_link' => ['nullable','regex:/^http:\/\/|https:\/\/|^$/','max:255'],
+            'primary_link' => ['nullable','url:http,https','max:255'],
+            'ticket_link' => ['nullable','url:http,https','max:255'],
             // entity_list is a set of existing entity IDs that get synced onto
             // the event. Reject non-integer / unknown values here so a bad body
             // (e.g. entity names instead of IDs) returns 422 rather than tripping
@@ -85,9 +85,9 @@ class EventRequest extends Request
             'door_at.before_or_equal' => 'The door open time must be before or equal to the start time',
             'event_type_id.required' => 'An event type is required',
             'visibility_id.required' => 'A visibility is required',
-            'primary_link.regex' => 'A primary link must be a valid URL starting with http:// or https:// or blank',
+            'primary_link.url' => 'A primary link must be a valid URL starting with http:// or https:// or blank',
             'primary_link.max' => 'A primary link must be less than 255 characters',
-            'ticket_link.regex' => 'A ticket link must be a valid URL starting with http:// or https:// or blank',
+            'ticket_link.url' => 'A ticket link must be a valid URL starting with http:// or https:// or blank',
             'ticket_link.max' => 'A ticket link must be less than 255 characters',
             'entity_list.array' => 'The entity list must be an array of entity IDs',
             'entity_list.*.integer' => 'Each entity in the entity list must be an entity ID',

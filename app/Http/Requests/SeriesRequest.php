@@ -48,8 +48,8 @@ class SeriesRequest extends Request
             'presale_price' => 'nullable|numeric|between:0,999.99',
             'door_price' => 'nullable|numeric|between:0,999.99',
             'occurrence_type_id' => 'required',
-            'primary_link' => ['nullable','regex:/^http:\/\/|https:\/\/|^$/','max:255'],
-            'ticket_link' => ['nullable','regex:/^http:\/\/|https:\/\/|^$/','max:255'],
+            'primary_link' => ['nullable','url:http,https','max:255'],
+            'ticket_link' => ['nullable','url:http,https','max:255'],
             'occurrence_week_id' => 'nullable',
             'occurrence_day_id' => 'nullable',
         ];
@@ -93,9 +93,9 @@ class SeriesRequest extends Request
             'occurrence_type_id.required' => 'An occurrence type is required',
             'occurrence_week_id.required' => 'An occurrence week is required for this occurrence type',
             'occurrence_day_id.required' => 'An occurrence day is required for this occurrence type',
-            'primary_link.regex' => 'A primary link must be a valid URL starting with http:// or https:// or blank',
+            'primary_link.url' => 'A primary link must be a valid URL starting with http:// or https:// or blank',
             'primary_link.max' => 'A primary link must be less than 255 characters',
-            'ticket_link.regex' => 'A ticket link must be a valid URL starting with http:// or https:// or blank',
+            'ticket_link.url' => 'A ticket link must be a valid URL starting with http:// or https:// or blank',
             'ticket_link.max' => 'A ticket link must be less than 255 characters',
             'length.integer' => 'A series length must be an integer',
         ];

@@ -41,8 +41,8 @@ class SeriesPatchRequest extends Request
             'presale_price' => ['sometimes', 'nullable', 'numeric', 'between:0,999.99'],
             'door_price' => ['sometimes', 'nullable', 'numeric', 'between:0,999.99'],
             'occurrence_type_id' => ['sometimes', 'required'],
-            'primary_link' => ['sometimes', 'nullable', 'regex:/^http:\/\/|https:\/\/|^$/', 'max:255'],
-            'ticket_link' => ['sometimes', 'nullable', 'regex:/^http:\/\/|https:\/\/|^$/', 'max:255'],
+            'primary_link' => ['sometimes', 'nullable', 'url:http,https', 'max:255'],
+            'ticket_link' => ['sometimes', 'nullable', 'url:http,https', 'max:255'],
             'occurrence_week_id' => ['sometimes', 'nullable'],
             'occurrence_day_id' => ['sometimes', 'nullable'],
         ];
