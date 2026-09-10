@@ -260,6 +260,15 @@ class SeriesSchemaTest extends TestCase
         $this->assertArrayNotHasKey('subEvent', SeriesSchema::document($this->series()));
     }
 
+    public function test_sub_events_are_capped(): void
+    {
+        $events = array_fill(0, SeriesSchema::SUB_EVENT_LIMIT + 5, $this->event());
+
+        $document = SeriesSchema::document($this->series(), $events);
+
+        $this->assertCount(SeriesSchema::SUB_EVENT_LIMIT, $document['subEvent']);
+    }
+
     public function test_it_encodes_to_valid_json(): void
     {
         $schema = SeriesSchema::forSeries($this->series(['short' => "line one\nline two \\ \"quoted\""]));

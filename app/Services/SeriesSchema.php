@@ -27,6 +27,14 @@ class SeriesSchema
     /** Performers emitted per series; lineups on a series are a curated handful. */
     public const PERFORMER_LIMIT = 10;
 
+    /**
+     * Upcoming instances emitted as subEvents. The busiest series in the data
+     * runs 18 events in a year, so this never truncates a real schedule — it
+     * bounds the page if a festival ever announces a very long run at once.
+     * The template this replaced was bounded by the archive's pagination.
+     */
+    public const SUB_EVENT_LIMIT = 25;
+
     /** Occurrence types whose schedule can be projected to a next date. */
     private const SCHEDULED_TYPES = ['Weekly', 'Biweekly', 'Monthly', 'Bimonthly', 'Yearly'];
 
@@ -43,6 +51,10 @@ class SeriesSchema
 
         $subEvents = [];
         foreach ($upcomingEvents as $event) {
+            if (count($subEvents) >= self::SUB_EVENT_LIMIT) {
+                break;
+            }
+
             $subEvents[] = self::subEvent($series, $event);
         }
 
