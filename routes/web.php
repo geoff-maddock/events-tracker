@@ -279,6 +279,9 @@ Route::get('update', function () {
     EventUpdated::dispatch(new Event());
 });
 
+Route::get('scenes', [\App\Http\Controllers\ScenesController::class, 'index'])->name('scenes.index');
+Route::get('scenes/{slug}', [\App\Http\Controllers\ScenesController::class, 'show'])->name('scenes.show');
+
 Route::get('events/tonight', [\App\Http\Controllers\EventTimeWindowController::class, 'show'])->defaults('window', 'tonight')->name('events.tonight');
 // The old /events/today window duplicated /events/tonight on most days; keep
 // the URL alive for existing links and indexed results.
