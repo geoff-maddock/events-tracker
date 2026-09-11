@@ -12,6 +12,8 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        'api/*'
+        'api/*',
+        // RFC 8058 one-click unsubscribe POSTs come from mail providers without a CSRF token
+        'newsletter/unsubscribe/*',
     ];
 }
