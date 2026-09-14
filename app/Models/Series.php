@@ -628,7 +628,9 @@ class Series extends Eloquent implements HasPhotos
         $week = $this->occurrenceWeek ? $this->occurrenceWeek->name : '';
         $day = $this->occurrenceDay ? $this->occurrenceDay->name.'s' : '';
 
-        switch ($this->occurrenceType->name) {
+        // Nullable: series.occurrence_type_id is nullable and a one-off
+        // series has none. null matches no case and leaves $repeat empty.
+        switch ($this->occurrenceType?->name) {
             case 'Monthly':
             case 'Bimonthly':
                 $repeat = $week.' '.$day;
@@ -682,6 +684,16 @@ class Series extends Eloquent implements HasPhotos
     public function upcomingEvent(): HasOne
     {
         return $this->hasOne(Event::class)->where('start_at', '>=', Carbon::now())->orderBy('start_at', 'asc');
+    }
+
+    /**
+     * The most recent instance that has already happened. Read by
+     * App\Services\SeriesSchema when a dormant series has no upcoming
+     * instance to date its EventSeries node from.
+     */
+    public function latestEvent(): HasOne
+    {
+        return $this->hasOne(Event::class)->where('start_at', '<', Carbon::now())->orderBy('start_at', 'desc');
     }
 
     /**
@@ -857,6 +869,8 @@ class Series extends Eloquent implements HasPhotos
 
     /**
      * The entities that belong to the event.
+     *
+     * @return BelongsToMany<Entity, $this>
      */
     public function entities(): BelongsToMany
     {
