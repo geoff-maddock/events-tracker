@@ -35,6 +35,9 @@ class EventSchema
 {
     public const CONTEXT = 'https://schema.org';
 
+    /** Every venue listed here prices in USD; see offers(). */
+    public const CURRENCY = 'USD';
+
     /** Performers emitted per event on listing pages, where a page holds 48 of them. */
     public const LISTING_PERFORMER_LIMIT = 5;
 
@@ -218,26 +221,68 @@ class EventSchema
      * is no Location or it carries no street. Empty parts are omitted rather
      * than emitted as empty strings.
      *
+     * The columns are free text and hold what a decade of hand entry put in
+     * them: untrimmed values, 'USA' and 'United States' alongside 'US', and a
+     * handful of rows with a ZIP code sitting in the state column. Google
+     * wants an ISO 3166-1 alpha-2 country and reads addressRegion as a region,
+     * so all three are normalised here rather than published as stored.
+     *
      * @return array<string, string>
      */
-    protected static function postalAddress(?Location $location): array
+    public static function postalAddress(?Location $location): array
     {
         $address = ['@type' => 'PostalAddress'];
 
-        if ($location && !empty($location->address_one)) {
-            $address['streetAddress'] = $location->address_one;
+        $street = trim((string) $location?->address_one);
+        $city = trim((string) $location?->city);
+        $region = trim((string) $location?->state);
+        $postcode = trim((string) $location?->postcode);
+
+        // A ZIP in the state column is a data-entry slip, not a region. Keep
+        // the digits as the postal code when that field is empty, which is
+        // how they got there.
+        if ('' !== $region && ctype_digit($region)) {
+            if ('' === $postcode) {
+                $postcode = $region;
+            }
+
+            $region = '';
         }
 
-        $address['addressLocality'] = $location?->city ?: 'Pittsburgh';
-        $address['addressRegion'] = $location?->state ?: 'PA';
-
-        if ($location && !empty($location->postcode)) {
-            $address['postalCode'] = $location->postcode;
+        if ('' !== $street) {
+            $address['streetAddress'] = $street;
         }
 
-        $address['addressCountry'] = $location?->country ?: 'US';
+        $address['addressLocality'] = $city ?: 'Pittsburgh';
+        $address['addressRegion'] = 2 === strlen($region) ? strtoupper($region) : ($region ?: 'PA');
+
+        if ('' !== $postcode) {
+            $address['postalCode'] = $postcode;
+        }
+
+        $address['addressCountry'] = self::countryCode(trim((string) $location?->country));
 
         return $address;
+    }
+
+    /**
+     * An ISO 3166-1 alpha-2 country code. Only US spellings occur in the data;
+     * anything else is passed through uppercased if it is already two letters,
+     * and otherwise as stored, which is still better than guessing.
+     */
+    protected static function countryCode(string $country): string
+    {
+        if ('' === $country) {
+            return 'US';
+        }
+
+        $normalised = strtolower(preg_replace('/[^a-z]/i', '', $country) ?? '');
+
+        if (in_array($normalised, ['us', 'usa', 'unitedstates', 'unitedstatesofamerica'], true)) {
+            return 'US';
+        }
+
+        return 2 === strlen($country) ? strtoupper($country) : $country;
     }
 
     /**
@@ -246,26 +291,35 @@ class EventSchema
      * hold values like "Ticketfly.com" or "Admission: Free" from before the
      * form validated the field, and Search Console flags those as invalid.
      *
-     * price is only emitted when one is on file. Google renders a price of
-     * 0 as "Free", and most events with no recorded price are ticketed shows
-     * whose price simply was not entered — advertising those as free is
-     * worse than an Offer without a price.
+     * priceCurrency is unconditional: every offer on this site is priced in
+     * USD whether or not the amount is known, so stating the currency asserts
+     * nothing that could be wrong and clears half of what Search Console
+     * counts as an incomplete Offer.
+     *
+     * price is still only emitted when one is on file. Google renders a price
+     * of 0 as "Free", and most events with no recorded price are ticketed
+     * shows whose price simply was not entered — advertising those as free is
+     * worse than the remaining warning. Note that door_price is nulled by
+     * Event::setDoorPriceAttribute() when the form posts an empty value, and
+     * '0' is empty() in PHP, so a free show entered through the form arrives
+     * here as null and is indistinguishable from an unpriced one; only the
+     * imported '0.00' rows can be published as free.
      *
      * @return array<string, mixed>
      */
     protected static function offers(Event $event, string $eventUrl): array
     {
         $offer = [
-            '@type'        => 'Offer',
-            'url'          => self::validUrl($event->ticket_link) ?? self::validUrl($event->primary_link) ?? $eventUrl,
-            'availability' => self::CONTEXT.'/InStock',
+            '@type'         => 'Offer',
+            'url'           => self::validUrl($event->ticket_link) ?? self::validUrl($event->primary_link) ?? $eventUrl,
+            'priceCurrency' => self::CURRENCY,
+            'availability'  => self::CONTEXT.'/InStock',
         ];
 
         $price = $event->door_price ?? $event->presale_price;
 
         if (null !== $price && '' !== $price) {
             $offer['price'] = (string) $price;
-            $offer['priceCurrency'] = 'USD';
         }
 
         if ($validFrom = EventTime::toInstant($event->created_at)) {

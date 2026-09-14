@@ -1,26 +1,23 @@
 @php
+    use App\Services\SeriesSchema;
+
+    // One batched eager load for the whole page: series.index-tw is rendered by
+    // seven controller methods whose eager loads differ, and the nodes below
+    // read photos, venue locations and entity roles for every row.
+    $seriesItems = $series instanceof \Illuminate\Contracts\Pagination\Paginator
+        ? $series->getCollection()
+        : $series;
+    SeriesSchema::eagerLoad($seriesItems);
+
     $items = [];
     $position = 1;
-    foreach ($series as $item) {
-        $listItem = [
+    foreach ($seriesItems as $item) {
+        $items[] = [
             '@type'    => 'ListItem',
             'position' => $position++,
-            'item'     => [
-                '@type' => 'EventSeries',
-                'name'  => $item->name,
-                'url'   => route('series.show', $item),
-            ],
+            // No subEvent on a listing — the ItemList is already 48 nodes deep.
+            'item'     => SeriesSchema::forSeries($item),
         ];
-        if ($item->short) {
-            $listItem['item']['description'] = $item->short;
-        }
-        if ($item->venue) {
-            $listItem['item']['location'] = [
-                '@type' => 'Place',
-                'name'  => $item->venue->name,
-            ];
-        }
-        $items[] = $listItem;
     }
 
     $jsonLd = [

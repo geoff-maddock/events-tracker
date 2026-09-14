@@ -181,6 +181,49 @@ class EventSchemaTest extends TestCase
         $this->assertArrayNotHasKey('address', $schema['location']);
     }
 
+    public function test_free_text_country_spellings_normalise_to_an_iso_code(): void
+    {
+        // The column is free text and holds all three spellings; Google wants
+        // ISO 3166-1 alpha-2.
+        foreach (['USA', 'United States', 'united states of america', 'us', ' US '] as $stored) {
+            $event = $this->event();
+            $event->setRelation('venue', $this->venue(location: $this->location('Public', ['country' => $stored])));
+
+            $this->assertSame('US', EventSchema::forEvent($event)['location']['address']['addressCountry'], "stored: $stored");
+        }
+    }
+
+    public function test_a_zip_code_stored_in_the_state_column_becomes_the_postal_code(): void
+    {
+        // A handful of rows have a ZIP where the state belongs. Publishing it
+        // as addressRegion states something false; dropping it loses a real
+        // postal code when that column is empty.
+        $event = $this->event();
+        $event->setRelation('venue', $this->venue(location: $this->location('Public', [
+            'state' => '15203',
+            'postcode' => '',
+        ])));
+
+        $address = EventSchema::forEvent($event)['location']['address'];
+
+        $this->assertSame('PA', $address['addressRegion']);
+        $this->assertSame('15203', $address['postalCode']);
+    }
+
+    public function test_address_parts_are_trimmed(): void
+    {
+        $event = $this->event();
+        $event->setRelation('venue', $this->venue(location: $this->location('Public', [
+            'state' => ' Pennsylvania ',
+            'city' => ' Pittsburgh ',
+        ])));
+
+        $address = EventSchema::forEvent($event)['location']['address'];
+
+        $this->assertSame('Pennsylvania', $address['addressRegion']);
+        $this->assertSame('Pittsburgh', $address['addressLocality']);
+    }
+
     public function test_an_event_with_no_venue_still_locates_to_the_city(): void
     {
         $schema = EventSchema::forEvent($this->event());
@@ -255,11 +298,12 @@ class EventSchemaTest extends TestCase
     public function test_an_unknown_price_is_not_advertised_as_free(): void
     {
         // Google renders price 0 as "Free". A null price means nobody entered
-        // one, which is not the same claim.
+        // one, which is not the same claim. priceCurrency still goes out —
+        // the currency is known even when the amount is not.
         $offer = EventSchema::forEvent($this->event())['offers'];
 
         $this->assertArrayNotHasKey('price', $offer);
-        $this->assertArrayNotHasKey('priceCurrency', $offer);
+        $this->assertSame('USD', $offer['priceCurrency']);
         $this->assertSame('https://schema.org/InStock', $offer['availability']);
     }
 

@@ -1040,14 +1040,10 @@ class Entity extends Eloquent implements HasPhotos
 
         if ($location && !empty($location->city) && !($schemaType === 'MusicVenue' && $locationIsGuarded)) {
             if ($schemaType === 'MusicVenue' && !empty($location->address_one)) {
-                $data['address'] = [
-                    '@type'           => 'PostalAddress',
-                    'streetAddress'   => $location->address_one,
-                    'addressLocality' => $location->city,
-                    'addressRegion'   => $location->state ?? '',
-                    'postalCode'      => $location->postcode ?? '',
-                    'addressCountry'  => $location->country ?? 'US',
-                ];
+                // Shared with App\Services\EventSchema, which normalises the
+                // free-text country/region columns and drops empty parts
+                // instead of publishing them as empty strings.
+                $data['address'] = \App\Services\EventSchema::postalAddress($location);
             } else {
                 $cityState = $location->city . (!empty($location->state) ? ', ' . $location->state : '');
                 $data['homeLocation'] = ['@type' => 'Place', 'name' => $cityState];

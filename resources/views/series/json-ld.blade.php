@@ -1,69 +1,12 @@
 @php
-    use App\Services\EventSchema;
+    use App\Services\SeriesSchema;
+
+    // EventSeries is an Event subtype, so Google holds it to the full Event
+    // field list — App\Services\SeriesSchema emits all of it, with the same
+    // fallback policy EventSchema uses for a single event.
+    $seriesJsonLd = SeriesSchema::document($series, $upcomingEvents ?? $events ?? []);
 
     $canonicalUrl = route('series.show', $series);
-
-    $seriesJsonLd = [
-        '@context'         => 'https://schema.org',
-        '@type'            => 'EventSeries',
-        '@id'              => $canonicalUrl . '#series',
-        'name'             => $series->name,
-        'url'              => $canonicalUrl,
-        'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => $canonicalUrl],
-    ];
-
-    if ($series->short) {
-        $seriesJsonLd['description'] = $series->short;
-    }
-
-    if ($photo = $series->getPrimaryPhoto()) {
-        $seriesJsonLd['image'] = Storage::disk('external')->url($photo->getStoragePath());
-    }
-
-    if ($series->venue) {
-        $seriesJsonLd['location'] = [
-            '@type' => 'Place',
-            'name'  => $series->venue->name,
-            'url'   => route('entities.show', $series->venue->slug),
-        ];
-        $venueLocation = $series->venue->getPrimaryLocation();
-        if ($venueLocation && !empty($venueLocation->address_one)) {
-            $seriesJsonLd['location']['address'] = [
-                '@type'           => 'PostalAddress',
-                'streetAddress'   => $venueLocation->address_one,
-                'addressLocality' => $venueLocation->city,
-                'addressRegion'   => $venueLocation->state ?? '',
-                'postalCode'      => $venueLocation->postcode ?? '',
-                'addressCountry'  => $venueLocation->country ?? 'US',
-            ];
-        }
-    }
-
-    // Add upcoming instances as subEvents
-    if (isset($events) && count($events) > 0) {
-        $subEvents = [];
-        foreach ($events as $ev) {
-            if (!$ev->start_at || $ev->start_at->lt(now())) {
-                continue;
-            }
-            $subEvent = EventSchema::forEvent($ev, EventSchema::LISTING_PERFORMER_LIMIT);
-
-            // An instance with no venue of its own inherits the series venue,
-            // which is more specific than EventSchema's TBA fallback.
-            if (empty($ev->venue_id) && $series->venue) {
-                $subEvent['location'] = [
-                    '@type' => 'Place',
-                    'name'  => $series->venue->name,
-                    'url'   => route('entities.show', $series->venue->slug),
-                ];
-            }
-
-            $subEvents[] = $subEvent;
-        }
-        if (!empty($subEvents)) {
-            $seriesJsonLd['subEvent'] = $subEvents;
-        }
-    }
 
     $breadcrumbJsonLd = [
         '@context'        => 'https://schema.org',
