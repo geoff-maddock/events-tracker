@@ -112,13 +112,15 @@ class LinksController extends Controller
      *
      * @throws \Exception
      */
-    public function destroy(Entity $entity, Link $link): RedirectResponse
+    public function destroy(Link $link): JsonResponse
     {
+        if (!$this->user || $this->user->cannot('delete', $link)) {
+            return response()->json(['message' => 'Not authorized.'], 403);
+        }
+
         $link->delete();
 
-        flash()->success('Success', 'Your link has been deleted!');
-
-        return redirect()->route('entities.show', $entity->slug);
+        return response()->json([], 204);
     }
 
         /**

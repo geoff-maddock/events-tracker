@@ -145,9 +145,11 @@ class LocationsController extends Controller
      */
     public function destroy(Location $location): JsonResponse
     {
-        $location->delete();
+        if (!$this->user || $this->user->cannot('delete', $location)) {
+            return response()->json(['message' => 'Not authorized.'], 403);
+        }
 
-        flash()->success('Success', 'Your location has been deleted!');
+        $location->delete();
 
         return response()->json([], 204);
     }

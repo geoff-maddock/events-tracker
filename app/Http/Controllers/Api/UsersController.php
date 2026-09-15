@@ -327,6 +327,11 @@ class UsersController extends Controller
      */
     public function destroy(User $user): JsonResponse
     {
+        // same rule as the web UsersController::authorizeUserChange
+        if (!$this->user || ($this->user->id !== $user->id && !$this->user->can('grant_access'))) {
+            return response()->json(['message' => 'Not authorized.'], 403);
+        }
+
         // add to activity log
         Activity::log($user, $this->user, 3);
 

@@ -89,6 +89,8 @@ class ApiUsersHappyPathTest extends TestCase
 
     public function test_destroy_deletes_user(): void
     {
+        // deleting another account needs grant_access (admins pass via Gate::before)
+        $this->actor->assignGroup('admin');
         $target = User::factory()->create();
 
         $response = $this->deleteJson('/api/users/'.$target->id);

@@ -1207,7 +1207,7 @@ class EventsController extends Controller
 
     public function destroy(Event $event, Request $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
-        if (!$event->ownedBy($this->user)) {
+        if ($this->user->cannot('delete', $event)) {
             return $this->unauthorized($request);
         }
 

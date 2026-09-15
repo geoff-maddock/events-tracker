@@ -5322,13 +5322,19 @@ paths:
       tags:
         - forums
       summary: Delete Forum
-      description: Deletes a forum by its ID.
+      description: Deletes a forum by its ID. Admin only.
       operationId: deleteForumById
       responses:
         "204":
           description: Successful response
           content:
             application/json: {}
+        "403":
+          description: Not an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
   /api/links:
     get:
       tags:
@@ -5438,13 +5444,19 @@ paths:
       tags:
         - links
       summary: Delete Link
-      description: Deletes a link by its ID.
+      description: Deletes a link by its ID. Allowed for the owner of an entity the link is attached to, or an admin.
       operationId: deleteLinkById
       responses:
         "204":
           description: Successful response
           content:
             application/json: {}
+        "403":
+          description: Not the owner of an attached entity or an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
   /api/menus:
     get:
       tags:
@@ -5686,13 +5698,19 @@ paths:
       tags:
         - locations
       summary: Delete Location
-      description: Deletes a location by its ID.
+      description: Deletes a location by its ID. Allowed for the location's creator, the owner of its entity, or an admin.
       operationId: deleteLocationById
       responses:
         "204":
           description: Successful response
           content:
             application/json: {}
+        "403":
+          description: Not the creator, the entity owner, or an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
   /api/occurrence-types:
     get:
       tags:
@@ -7279,13 +7297,19 @@ paths:
       tags:
         - users
       summary: Delete User
-      description: Deletes a user account by its ID.
+      description: Deletes a user account by its ID. Allowed for the account itself or a user with grant_access.
       operationId: deleteUserById
       responses:
         "204":
           description: Successful response
           content:
             application/json: {}
+        "403":
+          description: Not the account owner or an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
   /api/users/{userId}/events-attending:
     get:
       parameters:

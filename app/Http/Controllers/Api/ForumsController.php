@@ -295,6 +295,10 @@ class ForumsController extends Controller
      */
     public function destroy(Forum $forum): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         // add to activity log
         Activity::log($forum, $this->user, 3);
 

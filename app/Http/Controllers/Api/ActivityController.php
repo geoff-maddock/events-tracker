@@ -168,11 +168,15 @@ class ActivityController extends Controller
         return redirect('/');
     }
 
-    public function destroy(Activity $activity): RedirectResponse
+    public function destroy(Activity $activity): JsonResponse
     {
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $activity->delete();
 
-        return redirect('activity');
+        return response()->json([], 204);
     }
 
     /**

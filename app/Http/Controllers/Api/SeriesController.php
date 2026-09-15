@@ -756,7 +756,7 @@ class SeriesController extends Controller
 
     public function destroy(Series $series, Request $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
-        if (!$series->ownedBy($this->user)) {
+        if ($this->user->cannot('delete', $series)) {
             return $this->unauthorized($request);
         }
 
