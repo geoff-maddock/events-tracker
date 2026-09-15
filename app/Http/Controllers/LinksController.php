@@ -37,6 +37,7 @@ class LinksController extends Controller
     public function __construct()
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
+        $this->middleware(['auth', 'can:edit_entity'], ['only' => ['destroy']]);
 
         // default list variables
         $this->defaultLimit = 5;

@@ -87,6 +87,7 @@ class EventsController extends Controller
     public function __construct(EventFilters $filter)
     {
         $this->middleware('verified', ['only' => ['create', 'edit', 'duplicate','store', 'update', 'indexAttending']]);
+        $this->middleware(['auth', 'verified'], ['only' => ['destroy']]);
         $this->filter = $filter;
 
         // prefix for session storage
@@ -2108,8 +2109,10 @@ class EventsController extends Controller
 
     public function destroy(Event $event): RedirectResponse
     {
+        $this->authorize('delete', $event);
+
         // add to activity log
-        Activity::log($event, auth()->user(), 3);
+        Activity::log($event, $this->user, 3);
 
         $event->delete();
 

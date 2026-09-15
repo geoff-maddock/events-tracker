@@ -20,6 +20,7 @@ class ContactsController extends Controller
     public function __construct()
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
+        $this->middleware(['auth', 'can:edit_entity'], ['only' => ['destroy']]);
 
         parent::__construct();
     }

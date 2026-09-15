@@ -66,6 +66,7 @@ class SeriesController extends Controller
     public function __construct(SeriesFilters $filter)
     {
         $this->middleware('verified', ['only' => ['create', 'edit', 'store', 'update']]);
+        $this->middleware(['auth', 'verified'], ['only' => ['destroy']]);
         $this->filter = $filter;
 
         // prefix for session storage
@@ -905,6 +906,8 @@ class SeriesController extends Controller
 
     public function destroy(Series $series): RedirectResponse
     {
+        $this->authorize('delete', $series);
+
         // add to activity log
         Activity::log($series, $this->user, 3);
 
