@@ -349,35 +349,28 @@
 
 <!-- Schedule - Full Width -->
 @if (isset($upcomingEvents) && $upcomingEvents->isNotEmpty())
-<div class="mt-6 rounded-lg border border-border bg-card shadow p-6">
+<div id="series-schedule" class="mt-6 rounded-lg border border-border bg-card shadow p-6">
 	<h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
 		<i class="bi bi-calendar-week"></i>
 		{{ $series->name }}{{ $festivalYear ? ' '.$festivalYear : '' }} Schedule
 	</h2>
-	<div class="space-y-4">
-		@foreach ($upcomingEvents->groupBy(fn ($event) => $event->start_at->format('l, F jS Y')) as $scheduleDate => $scheduleEvents)
-			<div>
-				<div class="text-sm font-semibold text-muted-foreground mb-2">{{ $scheduleDate }}</div>
-				<ul class="space-y-1">
-					@foreach ($scheduleEvents as $scheduleEvent)
-						<li class="flex flex-wrap items-center justify-between gap-2 text-sm">
-							<a href="{{ route('events.show', ['event' => $scheduleEvent->slug]) }}" class="text-primary hover:underline">
-								{{ $scheduleEvent->name }}
-							</a>
-							@if ($scheduleEvent->venue)
-								<span class="text-muted-foreground">{{ $scheduleEvent->venue->name }}</span>
-							@endif
-						</li>
-					@endforeach
-				</ul>
-			</div>
+	{{-- Same event cards as an entity's Upcoming Events, cached for guests only
+	     (the card has per-user attend/edit buttons). This section is full-width,
+	     so it uses the archive grid's column counts below. --}}
+	<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+		@foreach ($upcomingEvents as $event)
+			@guest
+				{!! Cache::remember('event-card-tw:'.$event->cardFingerprint(), now()->addHours(6), fn () => view('events.card-tw', ['event' => $event, 'series' => null, 'entity' => null])->render()) !!}
+			@else
+				@include('events.card-tw', ['event' => $event, 'series' => null, 'entity' => null])
+			@endguest
 		@endforeach
 	</div>
 </div>
 @endif
 
 <!-- Events - Full Width -->
-<div class="mt-6 rounded-lg border border-border bg-card shadow p-6">
+<div id="series-archive" class="mt-6 rounded-lg border border-border bg-card shadow p-6">
 	<h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
 		<i class="bi bi-calendar-event"></i>
 		Past Events &amp; Archive
@@ -410,7 +403,7 @@
 	@else
 		<div class="text-center py-12">
 			<i class="bi bi-calendar-x text-4xl text-muted-foreground/50 mb-3 block"></i>
-			<p class="text-muted-foreground">No events found for this series.</p>
+			<p class="text-muted-foreground">No past events for this series.</p>
 		</div>
 	@endif
 </div>

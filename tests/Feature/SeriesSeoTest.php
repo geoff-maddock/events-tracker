@@ -197,6 +197,53 @@ class SeriesSeoTest extends TestCase
     }
 
     /**
+     * The Past Events & Archive grid only lists events that have already
+     * started; upcoming events appear in the Schedule section instead.
+     */
+    public function test_past_events_archive_excludes_upcoming_events(): void
+    {
+        $series = Series::factory()->create([
+            'event_type_id' => $this->nonFestivalEventType(),
+            'occurrence_type_id' => $this->occurrenceType('Weekly'),
+        ]);
+
+        $pastEvent = Event::factory()->create([
+            'name' => 'ZZ Past Night '.uniqid(),
+            'series_id' => $series->id,
+            'start_at' => Carbon::now()->subWeeks(2),
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+        ]);
+        $upcomingEvent = Event::factory()->create([
+            'name' => 'ZZ Upcoming Night '.uniqid(),
+            'series_id' => $series->id,
+            'start_at' => Carbon::now()->addWeeks(2),
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+        ]);
+
+        $response = $this->get('/series/'.$series->slug);
+
+        $response->assertOk();
+
+        // Both sections render events.card-tw (id="event-card-{id}"), so scope
+        // each assertion to its own section.
+        $html = $response->getContent();
+        $scheduleStart = strpos($html, 'id="series-schedule"');
+        $archiveStart = strpos($html, 'id="series-archive"');
+        $this->assertNotFalse($scheduleStart);
+        $this->assertNotFalse($archiveStart);
+        $this->assertLessThan($archiveStart, $scheduleStart);
+
+        $schedule = substr($html, $scheduleStart, $archiveStart - $scheduleStart);
+        $archive = substr($html, $archiveStart);
+
+        $this->assertStringContainsString('id="event-card-'.$upcomingEvent->id.'"', $schedule);
+        $this->assertStringNotContainsString('id="event-card-'.$pastEvent->id.'"', $schedule);
+
+        $this->assertStringContainsString('id="event-card-'.$pastEvent->id.'"', $archive);
+        $this->assertStringNotContainsString('id="event-card-'.$upcomingEvent->id.'"', $archive);
+    }
+
+    /**
      * Unit coverage of the year-fallback chain: upcoming -> past -> none.
      */
     public function test_get_festival_year_falls_back_from_upcoming_to_past_to_none(): void
