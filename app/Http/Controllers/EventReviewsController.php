@@ -20,7 +20,7 @@ class EventReviewsController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
 
         parent::__construct();
     }
@@ -146,16 +146,24 @@ class EventReviewsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
+     * The argument must be named $review to bind the {review} route parameter;
+     * as $eventReview it resolved to an empty model and the delete was a no-op.
+     *
      * @param  Event $event
-     * @param  EventReview $eventReview
+     * @param  EventReview $review
      * @throws \Exception
      */
-    public function destroy(Event $event, EventReview $eventReview): RedirectResponse
+    public function destroy(Event $event, EventReview $review): RedirectResponse
     {
-        $eventReview->delete();
+        // the author, or an admin
+        if ((int) $review->user_id !== $this->user->id && !$this->user->isAdmin()) {
+            abort(403);
+        }
+
+        $review->delete();
 
         \Session::flash('flash_message', 'Your review has been deleted!');
 
-        return redirect()->route('entities.show', $event->id);
+        return redirect()->route('events.show', $event->id);
     }
 }

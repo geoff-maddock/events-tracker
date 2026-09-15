@@ -399,18 +399,6 @@ class ReviewsController extends Controller
         return redirect('events');
     }
 
-    public function destroy(Event $event): RedirectResponse
-    {
-        // add to activity log
-        Activity::log($event, $this->user, 3);
-
-        $event->delete();
-
-        flash()->success('Success', 'Your event has been deleted!');
-
-        return redirect('events');
-    }
-
     protected function getListControlOptions(): array
     {
         return [
