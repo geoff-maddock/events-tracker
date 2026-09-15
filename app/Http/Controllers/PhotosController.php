@@ -51,6 +51,7 @@ class PhotosController extends Controller
     public function __construct(PhotoFilters $filter)
     {
         // $this->middleware('auth', ['except' => ['index', 'show']]);
+        $this->middleware('auth', ['only' => ['destroy']]);
 
         $this->filter = $filter;
 
@@ -315,7 +316,11 @@ class PhotosController extends Controller
 
     public function destroy(int $id): RedirectResponse
     {
-        $photo = Photo::findOrFail($id)->delete();
+        $photo = Photo::findOrFail($id);
+
+        $this->authorize('delete', $photo);
+
+        $photo->delete();
 
         flash('Success', 'Your photo has been deleted');
 

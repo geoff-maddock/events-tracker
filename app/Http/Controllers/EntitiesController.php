@@ -67,7 +67,7 @@ class EntitiesController extends Controller
 
     public function __construct(EntityFilters $filter)
     {
-        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'follow']]);
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'follow', 'destroy']]);
         $this->filter = $filter;
 
         // prefix for session storage
@@ -1228,6 +1228,8 @@ class EntitiesController extends Controller
      */
     public function destroy(Entity $entity): RedirectResponse
     {
+        $this->authorize('delete', $entity);
+
         // add to activity log
         Activity::log($entity, $this->user, Action::DELETE);
 

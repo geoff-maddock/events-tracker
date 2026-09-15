@@ -20,7 +20,7 @@ class CommentsController extends Controller
 
     public function __construct(Entity $entity)
     {
-        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
         $this->entity = $entity;
 
         parent::__construct();
@@ -132,6 +132,11 @@ class CommentsController extends Controller
      */
     public function destroy(Entity $entity, Comment $comment): RedirectResponse
     {
+        // the author, or anyone who may moderate entity content
+        if ((int) $comment->created_by !== $this->user->id && $this->user->cannot('edit_entity')) {
+            abort(403);
+        }
+
         $comment->delete();
 
         \Session::flash('flash_message', 'Your comment has been deleted!');
