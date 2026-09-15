@@ -669,7 +669,13 @@ class SeriesController extends Controller
                 $query->where('user_id', $this->user->id)->with('responseType');
             };
         }
-        $events = $series->events()->with($eventEager)->paginate($this->childLimit);
+        // Past Events & Archive grid: only events that have already started.
+        // Uses the same now() boundary as $upcomingEvents below (not
+        // Event::past()'s start-of-today) so no event falls between the two.
+        $events = $series->events()
+            ->with($eventEager)
+            ->where('start_at', '<', now())
+            ->paginate($this->childLimit);
 
         // Upcoming events for the Schedule section: same eager loads as the
         // archive grid above, but ascending and unpaginated. Built from
