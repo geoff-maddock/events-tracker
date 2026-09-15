@@ -146,13 +146,7 @@ class PagesController extends Controller
             return back();
         }
 
-        // match the exact phrase, case-insensitive, in the name, short or description
-        $like = '%'.addcslashes($keyword, '%_\\').'%';
-        $textMatch = function ($query) use ($like) {
-            $query->where('name', 'like', $like)
-                ->orWhere('short', 'like', $like)
-                ->orWhere('description', 'like', $like);
-        };
+        $textMatch = $this->keywordMatch($keyword);
 
         $events = Event::where($textMatch)
             ->visible($this->user)
@@ -174,6 +168,70 @@ class PagesController extends Controller
         flash()->success('Success', sprintf('Related "%s" to %d matching event(s) and %d matching series.', $entity->name, count($events), count($seriesList)));
 
         return redirect()->route('pages.search', compact('keyword'));
+    }
+
+    /**
+     * Automatically set a series on returned events that aren't already in a series
+     */
+    public function autoRelateSeries(int $id, Request $request): RedirectResponse
+    {
+        if (!$this->user || !$this->user->can('show_admin')) {
+            flash()->error('Error', 'You do not have permission to auto-relate series');
+
+            return back();
+        }
+
+        // load the series
+        if (!$series = Series::find($id)) {
+            flash()->error('Error', 'No such series');
+
+            return back();
+        }
+
+        $keyword = trim((string) $request->input('keyword'));
+
+        if ($keyword === '') {
+            flash()->error('Error', 'No keyword was provided to match against');
+
+            return back();
+        }
+
+        $textMatch = $this->keywordMatch($keyword);
+
+        // only claim events that don't already belong to a series
+        $events = Event::where($textMatch)
+            ->whereNull('series_id')
+            ->visible($this->user)
+            ->get();
+
+        foreach ($events as $event) {
+            $event->series_id = $series->id;
+            $event->save();
+        }
+
+        $skipped = Event::where($textMatch)
+            ->whereNotNull('series_id')
+            ->where('series_id', '!=', $series->id)
+            ->visible($this->user)
+            ->count();
+
+        flash()->success('Success', sprintf('Added %d matching event(s) to series "%s"; skipped %d already in another series.', count($events), $series->name, $skipped));
+
+        return redirect()->route('pages.search', compact('keyword'));
+    }
+
+    /**
+     * Query constraint matching the exact phrase, case-insensitive, in the name, short or description
+     */
+    private function keywordMatch(string $keyword): \Closure
+    {
+        $like = '%'.addcslashes($keyword, '%_\\').'%';
+
+        return function ($query) use ($like) {
+            $query->where('name', 'like', $like)
+                ->orWhere('short', 'like', $like)
+                ->orWhere('description', 'like', $like);
+        };
     }
 
     public function help(): View

@@ -217,7 +217,7 @@
 				</h3>
 				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
 					@foreach($upcomingSeries as $s)
-					@include('series.card-tw', ['series' => $s])
+					@include('series.card-tw', ['series' => $s, 'autoRelateKeyword' => $search])
 					@php unset($s); @endphp
 					@endforeach
 				</div>
@@ -235,7 +235,7 @@
 				@endif
 				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
 					@foreach($pastSeries as $s)
-					@include('series.card-tw', ['series' => $s])
+					@include('series.card-tw', ['series' => $s, 'autoRelateKeyword' => $search])
 					@php unset($s); @endphp
 					@endforeach
 				</div>

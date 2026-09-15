@@ -129,6 +129,11 @@ Route::match(['get', 'post'], 'auto-relate-entity/{id}', [
     'uses' => '\App\Http\Controllers\PagesController@autoRelateEntity',
 ]);
 
+Route::match(['get', 'post'], 'auto-relate-series/{id}', [
+    'as' => 'pages.relateSeries',
+    'uses' => '\App\Http\Controllers\PagesController@autoRelateSeries',
+]);
+
 Route::get('users/{id}/notify', [
     'as' => 'users.notify',
     'uses' => '\App\Http\Controllers\UsersController@notifyUser',
