@@ -36,8 +36,8 @@ class LinksController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
-        $this->middleware(['auth', 'can:edit_entity'], ['only' => ['destroy']]);
+        // per-entity ownership is checked in each action via EntityPolicy::update
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
 
         // default list variables
         $this->defaultLimit = 5;
@@ -59,6 +59,8 @@ class LinksController extends Controller
      */
     public function create(Entity $entity): View
     {
+        $this->authorize('update', $entity);
+
         return view('links.create-tw', compact('entity'))
             ->with($this->getFormOptions());
     }
@@ -68,6 +70,8 @@ class LinksController extends Controller
      */
     public function store(Request $request, Entity $entity): RedirectResponse
     {
+        $this->authorize('update', $entity);
+
         $msg = '';
 
         // get the request
@@ -99,6 +103,9 @@ class LinksController extends Controller
      */
     public function edit(Entity $entity, Link $link): View
     {
+        $this->authorize('update', $entity);
+        $this->ensureBelongsToEntity($entity, $link);
+
         return view('links.edit-tw', compact('entity', 'link'))
             ->with($this->getFormOptions());
     }
@@ -108,6 +115,9 @@ class LinksController extends Controller
      */
     public function update(Request $request, Entity $entity, Link $link): RedirectResponse
     {
+        $this->authorize('update', $entity);
+        $this->ensureBelongsToEntity($entity, $link);
+
         $input = $request->all();
         $input['is_primary'] = isset($input['is_primary']) ? 1 : 0;
 
@@ -125,6 +135,9 @@ class LinksController extends Controller
      */
     public function destroy(Entity $entity, Link $link): RedirectResponse
     {
+        $this->authorize('update', $entity);
+        $this->ensureBelongsToEntity($entity, $link);
+
         $link->delete();
 
         flash()->success('Success', 'Your link has been deleted!');
@@ -137,5 +150,13 @@ class LinksController extends Controller
         return [
             'visibilities' => ['' => ''] + Visibility::pluck('name', 'id')->all(),
         ];
+    }
+
+    /**
+     * A link reached through another entity's URL must not be editable by that entity's owner.
+     */
+    protected function ensureBelongsToEntity(Entity $entity, Link $link): void
+    {
+        abort_unless($entity->links()->whereKey($link->id)->exists(), 404);
     }
 }

@@ -350,7 +350,7 @@
 		</div>
 
 		@php
-			$canEditEntity = $user && ($user->id == ($entity->user ? $entity->user?->id : null) || $user->hasGroup('super_admin'));
+			$canEditEntity = $user && $user->can('update', $entity);
 		@endphp
 
 		<!-- Locations -->

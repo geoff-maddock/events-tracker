@@ -38,8 +38,8 @@ class LocationsController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
-        $this->middleware(['auth', 'can:edit_entity'], ['only' => ['destroy']]);
+        // per-entity ownership is checked in each action via EntityPolicy::update
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
 
         // default list variables
         $this->defaultLimit = 10;
@@ -59,6 +59,8 @@ class LocationsController extends Controller
      */
     public function create(Entity $entity): View
     {
+        $this->authorize('update', $entity);
+
         $locationTypes = LocationType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
@@ -79,6 +81,8 @@ class LocationsController extends Controller
      */
     public function store(Request $request, Entity $entity): RedirectResponse
     {
+        $this->authorize('update', $entity);
+
         $msg = '';
 
         // get the request
@@ -107,6 +111,9 @@ class LocationsController extends Controller
      */
     public function edit(Entity $entity, Location $location): View
     {
+        $this->authorize('update', $entity);
+        $this->ensureBelongsToEntity($entity, $location);
+
         $locationTypes = ['' => ''] + LocationType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
@@ -118,6 +125,9 @@ class LocationsController extends Controller
      */
     public function update(Request $request, Entity $entity, Location $location): RedirectResponse
     {
+        $this->authorize('update', $entity);
+        $this->ensureBelongsToEntity($entity, $location);
+
         $msg = '';
 
         $location->fill($request->input())->save();
@@ -134,10 +144,21 @@ class LocationsController extends Controller
      */
     public function destroy(Entity $entity, Location $location): RedirectResponse
     {
+        $this->authorize('update', $entity);
+        $this->ensureBelongsToEntity($entity, $location);
+
         $location->delete();
 
         flash()->success('Success', 'Your location has been deleted!');
 
         return redirect()->route('entities.show', $entity->slug);
+    }
+
+    /**
+     * A location reached through another entity's URL must not be editable by that entity's owner.
+     */
+    protected function ensureBelongsToEntity(Entity $entity, Location $location): void
+    {
+        abort_unless((int) $location->entity_id === $entity->id, 404);
     }
 }
