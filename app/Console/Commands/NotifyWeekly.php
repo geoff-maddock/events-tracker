@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Mail\WeeklyUpdate;
 use App\Models\Activity;
 use App\Models\User;
+use App\Services\EntityStats;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -31,7 +32,7 @@ class NotifyWeekly extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(EntityStats $stats)
     {
         $reply_email = config('app.noreplyemail');
         $admin_email = config('app.admin');
@@ -134,6 +135,12 @@ class NotifyWeekly extends Command
                     ->send(new WeeklyUpdate($url, $site, $admin_email, $reply_email, $user, $attendingEvents, $seriesList, $interests));
 
                                     
+                // count this recipient toward each event's digest reach for the owner dashboard
+                $stats->recordEventReach(
+                    collect($attendingEvents)->pluck('id')
+                        ->merge(collect($interests)->flatten(1)->pluck('id'))
+                );
+
                 // add login to log
                 Activity::log($user, $user, 15, "Sent weekly notification email");
 

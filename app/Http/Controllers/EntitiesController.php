@@ -20,6 +20,7 @@ use App\Mail\EntityUpdateSummary;
 use App\Notifications\EventPublished;
 use App\Services\BestEffortMailer;
 use App\Services\Embeds\OembedExtractor;
+use App\Services\EntityStats;
 use App\Services\ImageHandler;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\Integrations\Instagram;
@@ -674,7 +675,7 @@ class EntitiesController extends Controller
      *
      * @throws \Throwable
      */
-    public function showByRoleAndSlug(string $slug, string $role)
+    public function showByRoleAndSlug(string $slug, string $role, Request $request, EntityStats $stats)
     {
         // Get entity by slug and verify it has the specified role
         /** @var Entity $entity */
@@ -687,6 +688,8 @@ class EntitiesController extends Controller
         if (!$entity) {
             abort(404);
         }
+
+        $stats->recordView($entity, $request, $request->user());
 
         // eager-load relations consumed by the page + JSON-LD
         $entity->loadMissing(['roles', 'aliases', 'photos', 'tags', 'locations.visibility', 'links', 'entityType']);
@@ -926,7 +929,7 @@ class EntitiesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Entity $entity, OembedExtractor $embedExtractor): View
+    public function show(Entity $entity, OembedExtractor $embedExtractor, Request $request, EntityStats $stats): View
     {
         app('redirect')->setIntendedUrl(url()->current());
 
@@ -935,6 +938,8 @@ class EntitiesController extends Controller
 
             abort(404);
         }
+
+        $stats->recordView($entity, $request, $request->user());
 
         // eager-load relations consumed by the page + JSON-LD (getJsonLd, getBreadcrumbJsonLd, getSchemaType)
         $entity->loadMissing(['roles', 'aliases', 'photos', 'tags', 'locations.visibility', 'links', 'entityType']);
