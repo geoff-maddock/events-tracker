@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Post;
+use App\Models\User;
+use App\Models\UserStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -20,9 +22,20 @@ class ApiPostsUnhappyPathTest extends TestCase
 
     public function test_show_returns_404_for_missing_post(): void
     {
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $this->actingAs($user, 'sanctum');
+
         $response = $this->getJson('/api/posts/999999999');
 
         $response->assertStatus(404);
+    }
+
+    public function test_show_requires_authentication_before_lookup(): void
+    {
+        // auth runs before route model binding, so guests can't probe which records exist
+        $response = $this->getJson('/api/posts/999999999');
+
+        $response->assertStatus(401);
     }
 
     public function test_store_requires_authentication(): void
