@@ -4,6 +4,20 @@ A more detailed description of new features and changes to the application.
 
 ## 2026.09.16
 
+### API rate limits enabled
+The `api` rate limiter was defined but its middleware was commented out, so nothing
+limited the API. It's now on, keyed so one client can't use up the budget for everyone:
+**240 requests/minute per authenticated user** and **120 requests/minute per IP** for
+anonymous calls. Over the limit returns `429` with `Retry-After`. The old definition
+(300/minute with no key) would have been one bucket shared by every caller.
+
+Failed HTTP basic auth is also throttled: after **20 failures per minute from one IP**, basic
+auth from that IP gets `429` until the window resets, even with the right password.
+Every basic auth request runs a password hash check, so before this the API was an
+unmetered password-guessing endpoint. `AuthenticateEither` and a new
+`App\Http\Middleware\AuthenticateWithBasicAuth` (now the `auth.basic` alias) share the
+`ThrottlesFailedBasicAuth` trait. See `docs/api_notes.md` for the details.
+
 ### "Using the API" guide page (#2128)
 New public page at `/api-guide`, linked from Help's "For developers" section and quick
 links, and listed in the sitemap. It explains the API for site users rather than

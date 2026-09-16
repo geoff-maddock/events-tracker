@@ -2,7 +2,13 @@ openapi: 3.0.3
 info:
   title: Arcane City
   version: 2025.06.09
-  description: REST API for working with Arcane City data
+  description: |
+    REST API for working with Arcane City data.
+
+    Rate limits: 240 requests/minute per authenticated user, 120 requests/minute per IP for
+    anonymous requests, and 20 requests/minute for photos/from-url. After 20 failed basic auth
+    attempts in a minute from one IP, basic auth from that IP is refused until the minute is up.
+    Over any limit the API returns 429 with a Retry-After header.
   contact:
     name: Geoff Maddock
     email: geoff.maddock@gmail.com
@@ -6957,6 +6963,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserTokenResponse"
+        "401":
+          description: Invalid credentials
+        "429":
+          description: Too many failed basic auth attempts from this IP
   /api/tokens/validate:
     get:
       tags:
