@@ -804,7 +804,7 @@ class EntitiesController extends Controller
      */
     public function destroy(Entity $entity, Request $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
-        if ($entity->created_by !== $this->user->id) {
+        if ($this->user->cannot('delete', $entity)) {
             return $this->unauthorized($request);
         }
 
