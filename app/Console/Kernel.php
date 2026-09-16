@@ -5,6 +5,7 @@ namespace App\Console;
 use App\Console\Commands\AdminActivitySummary;
 use App\Console\Commands\AdminTest;
 use App\Console\Commands\AutomateInstagramPosts;
+use App\Console\Commands\RollupEntityStats;
 use App\Console\Commands\CleanupExports;
 use App\Console\Commands\CreateSeriesEvents;
 use App\Console\Commands\GenerateFeedbackInvitations;
@@ -42,6 +43,7 @@ class Kernel extends ConsoleKernel
         GenerateFeedbackInvitations::class,
         PostDiscordReminders::class,
         PostDiscordDigest::class,
+        RollupEntityStats::class,
     ];
 
     /**
@@ -68,6 +70,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('userCleanup')->daily()->timezone('America/New_York')->at('07:00');
 
         // schedule daily cleanup of old export files
+        // rebuild yesterday's entity follows/clicks/responses for the owner dashboard
+        $schedule->command('entities:rollup-stats')->daily()->timezone('America/New_York')->at('02:30');
+
         $schedule->command('cleanup:exports')->daily()->timezone('America/New_York')->at('03:00');
 
         // schedule daily cleanup of abandoned create-form image uploads
