@@ -17,6 +17,21 @@
 - To aquire a user token, you can use the `/api/auth/token` endpoint with basic auth credentials.
   When requesting a token, include in the body a `token_name` key with the desired name for the token.
 
+### Rate Limits
+All `/api/*` routes go through the `api` rate limiter (`RouteServiceProvider::configureRateLimiting`):
+
+| Caller | Limit | Keyed by |
+| --- | --- | --- |
+| Authenticated (basic auth or bearer token) | 240 requests / minute | user id |
+| Anonymous (e.g. `/api/search`, `/api/calendar-events`) | 120 requests / minute | IP address |
+| `POST /api/{events,entities,series}/{id}/photos/from-url` | 20 requests / minute, on top of the general limit | user id |
+| Failed basic auth attempts | 20 failures / minute | IP address |
+
+- Responses carry `X-RateLimit-Limit` and `X-RateLimit-Remaining`. Over the limit you get `429` with a `Retry-After` header (seconds).
+- After 20 failed basic auth attempts from one IP, basic auth from that IP is refused with `429` for the rest of the minute, **even with the correct password**. Successful logins don't count. This applies to `auth.either` routes and `POST /api/tokens/create`.
+- `AuthenticateEither` implements `AuthenticatesRequests` so Laravel's middleware priority runs it before `ThrottleRequests`. That's what lets the limiter see the user. Don't remove the interface, or every basic auth caller falls back to the per-IP limit.
+- Counters live in the default cache store (`CACHE_DRIVER`), so they're per server unless the cache is shared.
+
 ### Email Verification
 - After registration, users will receive a verification email with a signed URL.
 - The email verification endpoint is: `GET /api/email/verify/{id}/{hash}`

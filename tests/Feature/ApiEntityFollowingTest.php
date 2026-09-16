@@ -16,10 +16,9 @@ class ApiEntityFollowingTest extends TestCase
 
     public function testGuestCannotAccessFollowingEndpoint()
     {
-        $this->expectException(\Illuminate\Auth\AuthenticationException::class);
-        
-        $this->withoutExceptionHandling()
-            ->getJson('/api/entities/following');
+        $this->withExceptionHandling()
+            ->getJson('/api/entities/following')
+            ->assertStatus(401);
     }
 
     public function testAuthenticatedUserCanGetFollowingEntities()

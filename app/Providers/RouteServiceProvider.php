@@ -80,8 +80,16 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function configureRateLimiting()
     {
+        // keyed per user (or per IP for anonymous callers) so one busy client
+        // can't exhaust the budget for everyone. AuthenticateEither sorts ahead
+        // of the throttle, so basic auth users resolve here; token requests
+        // need the sanctum guard asked explicitly.
         RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(300);
+            $user = $request->user() ?? $request->user('sanctum');
+
+            return $user
+                ? Limit::perMinute(240)->by('user:' . $user->id)
+                : Limit::perMinute(120)->by('ip:' . $request->ip());
         });
 
         // each photos/from-url call makes an outbound request on the caller's
