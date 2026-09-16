@@ -19,8 +19,8 @@ class ContactsController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
-        $this->middleware(['auth', 'can:edit_entity'], ['only' => ['destroy']]);
+        // per-entity ownership is checked in each action via EntityPolicy::update
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
 
         parent::__construct();
     }
@@ -30,6 +30,8 @@ class ContactsController extends Controller
      */
     public function create(Entity $entity, Contact $contact): View
     {
+        $this->authorize('update', $entity);
+
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
         return view('contacts.create-tw', compact('entity', 'contact', 'visibilities'));
@@ -40,6 +42,8 @@ class ContactsController extends Controller
      */
     public function store(Request $request, Entity $entity): RedirectResponse
     {
+        $this->authorize('update', $entity);
+
         $msg = '';
 
         // get the request
@@ -70,6 +74,9 @@ class ContactsController extends Controller
      */
     public function edit(Entity $entity, Contact $contact): View
     {
+        $this->authorize('update', $entity);
+        $this->ensureBelongsToEntity($entity, $contact);
+
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
         return view('contacts.edit-tw', compact('entity', 'contact', 'visibilities'));
@@ -80,6 +87,9 @@ class ContactsController extends Controller
      */
     public function update(ContactRequest $request, Entity $entity, Contact $contact): RedirectResponse
     {
+        $this->authorize('update', $entity);
+        $this->ensureBelongsToEntity($entity, $contact);
+
         $msg = '';
 
         $contact->fill($request->input())->save();
@@ -96,10 +106,21 @@ class ContactsController extends Controller
      */
     public function destroy(Entity $entity, Contact $contact): RedirectResponse
     {
+        $this->authorize('update', $entity);
+        $this->ensureBelongsToEntity($entity, $contact);
+
         $contact->delete();
 
         flash()->success('Success', 'Your contacts has been deleted!');
 
         return redirect()->route('entities.show', $entity->slug);
+    }
+
+    /**
+     * A contact reached through another entity's URL must not be editable by that entity's owner.
+     */
+    protected function ensureBelongsToEntity(Entity $entity, Contact $contact): void
+    {
+        abort_unless($entity->contacts()->whereKey($contact->id)->exists(), 404);
     }
 }

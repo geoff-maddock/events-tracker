@@ -7,7 +7,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
         <h1 class="text-3xl font-bold text-foreground">Location</h1>
         <div class="flex gap-2 mt-4 sm:mt-0">
-            @can('edit_entity')
+            @can('update', $entity)
                 <x-ui.button variant="default" href="{{ route('entities.locations.edit', ['entity' => $entity->slug, 'location' => $location->id]) }}">
                     <i class="bi bi-pencil mr-2"></i>Edit
                 </x-ui.button>
@@ -107,7 +107,7 @@
             </div>
         </div>
 
-        @can('edit_entity')
+        @can('update', $entity)
             <div class="mt-6 pt-6 border-t border-border">
                 <form action="{{ route('entities.locations.destroy', ['entity' => $entity->slug, 'location' => $location->id]) }}" method="POST"
                     data-confirm="Are you sure you want to delete this location?">
