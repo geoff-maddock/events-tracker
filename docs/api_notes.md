@@ -1,5 +1,7 @@
 # API Notes
 
+A plain-language guide for site users lives at `/api-guide` (`resources/views/pages/api-guide-tw.blade.php`). Keep it in step with this file and `routes/api.php`.
+
 ## API Endpoints
 - Visit the API docs endpoint https://your-domain.com/api/docs for a full list of available endpoints.
 
@@ -14,7 +16,7 @@
 - You can query the API using basic auth or a user token.
 - To authenticate using basic auth, include the `Authorization` header with the value `Basic base64(username:password)`.
 - To authenticate using a user token, include the `Authorization` header with the value `Bearer your_user_token`.
-- To aquire a user token, you can use the `/api/auth/token` endpoint with basic auth credentials.
+- To acquire a user token, call `POST /api/tokens/create` with basic auth credentials.
   When requesting a token, include in the body a `token_name` key with the desired name for the token.
 
 ### Rate Limits

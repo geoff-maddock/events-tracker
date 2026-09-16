@@ -107,6 +107,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('help', [\App\Http\Controllers\PagesController::class, 'help']);
+Route::get('api-guide', [\App\Http\Controllers\PagesController::class, 'apiGuide'])->name('pages.apiGuide');
 Route::get('all-modules', [\App\Http\Controllers\PagesController::class, 'allModules'])->name('pages.allModules');
 
 Route::get('calendar', [\App\Http\Controllers\CalendarController::class, 'index'])->name('calendar');

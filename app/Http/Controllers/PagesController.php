@@ -239,6 +239,11 @@ class PagesController extends Controller
         return view('pages.help-tw');
     }
 
+    public function apiGuide(): View
+    {
+        return view('pages.api-guide-tw');
+    }
+
     public function about(): View
     {
         $menu = Menu::with('blogs.contentType')->find(1);
