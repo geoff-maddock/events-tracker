@@ -13,8 +13,8 @@
 ## Tech Stack
 
 ### Backend
-- **PHP**: 8.1+
-- **Framework**: Laravel 10
+- **PHP**: 8.2+
+- **Framework**: Laravel 12
 - **Database**: MySQL 8 (database agnostic)
 - **Key Dependencies**:
   - Laravel Socialite (social authentication)
@@ -26,9 +26,9 @@
   - Sentry (error tracking)
 
 ### Frontend
-- **CSS Framework**: Bootstrap 5
+- **CSS Framework**: Tailwind CSS 4
 - **JavaScript**: Vue.js 3, jQuery
-- **Build Tools**: Laravel Mix, Webpack
+- **Build Tools**: Vite
 - **UI Libraries**:
   - FullCalendar 6.1.11
   - Select2 4.1
@@ -172,8 +172,8 @@ php artisan db:seed --class=ProdExtraDatabaseSeeder      # More complete data
 php artisan db:seed --class=ProdPittsburghDatabaseSeeder # Pittsburgh-specific data
 
 # Build frontend assets
-npm run dev    # Development
-npm run prod   # Production
+npm run dev    # Development (Vite dev server with hot reload)
+npm run build  # Production build (alias: npm run prod)
 ```
 
 ### Database Requirements
@@ -201,8 +201,8 @@ Key `.env` variables:
 # Development server
 php artisan serve
 
-# Watch and rebuild assets
-npm run watch
+# Vite dev server (watches and rebuilds assets)
+npm run dev
 
 # Run tests
 php artisan test
@@ -290,7 +290,7 @@ Example: `GET /api/events?filters[name]=Concert&filters[tag]=music&sort=start_at
 - 2+ vCPUs, 4GB+ RAM
 - PHP 8.1+ with required extensions
 - MySQL 8.0+
-- Node.js 14.15+
+- Node.js 20.19+ or 22.12+
 - SSL certificate for production
 
 ### Deployment Steps
@@ -298,7 +298,7 @@ Example: `GET /api/events?filters[name]=Concert&filters[tag]=music&sort=start_at
 2. Clone repository
 3. Configure `.env` file
 4. Run `composer install --no-dev --optimize-autoloader`
-5. Run `npm install && npm run prod`
+5. Run `npm install && npm run build`
 6. Run migrations and seeders
 7. Configure web server (Nginx/Apache)
 8. Set up SSL
@@ -330,7 +330,7 @@ See `docs/deployment_notes.md` for detailed instructions.
 4. **File Storage**: Images can be stored locally or in S3. Check `config/filesystems.php`.
 5. **Seeding**: Multiple seeders for different deployment scenarios. Don't modify production seeders without understanding implications.
 6. **API Routes**: Separate from web routes. API uses Sanctum tokens or basic auth.
-7. **Frontend**: Uses Laravel Mix for asset compilation. Changes to JS/CSS require rebuild.
+7. **Frontend**: Uses Vite for asset compilation (`vite.config.mjs`). Changes to JS/CSS require rebuild.
 8. **Migrations**: Always create new migration files, never edit existing ones.
 
 ### Common Patterns
