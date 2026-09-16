@@ -55,7 +55,7 @@ class PostsController extends Controller
 
     public function __construct(PostFilters $filter)
     {
-        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
 
         // prefix for session storage
         $this->prefix = 'app.posts.';

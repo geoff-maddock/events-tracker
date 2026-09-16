@@ -56,7 +56,7 @@ class BlogsController extends Controller
 
     public function __construct(BlogFilters $filter)
     {
-        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
+        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
 
         $this->filter = $filter;
 

@@ -165,7 +165,6 @@ Route::get('impersonate/{user}', function (User $user) {
 })->middleware('can:admin')->name('user.impersonate');
 
 Route::post('users/{id}/photos', [\App\Http\Controllers\UsersController::class, 'addPhoto']);
-Route::delete('users/{id}/photos/{photo_id}', [\App\Http\Controllers\UsersController::class, 'deletePhoto']);
 
 Route::get('users/{id}/activate', [
     'as' => 'users.activate',
@@ -397,7 +396,6 @@ Route::get('events/{id}/unattend', [
 ]);
 
 Route::post('events/{id}/photos', [\App\Http\Controllers\EventsController::class, 'addPhoto']);
-Route::delete('events/{id}/photos/{photo_id}', [\App\Http\Controllers\EventsController::class, 'deletePhoto']);
 
 // Image analysis – returns data extracted from an uploaded image as JSON,
 // and stashes the image so it can be attached when the record is created.
@@ -680,7 +678,8 @@ Route::resource('events.reviews', \App\Http\Controllers\EventReviewsController::
 Route::match(['get', 'post'], 'reviews/filter', ['as' => 'reviews.filter', 'uses' => '\App\Http\Controllers\ReviewsController@filter']);
 Route::get('reviews/reset', ['as' => 'reviews.reset', 'uses' => '\App\Http\Controllers\ReviewsController@reset']);
 Route::get('reviews/rpp-reset', ['as' => 'reviews.rppReset', 'uses' => '\App\Http\Controllers\ReviewsController@rppReset']);
-Route::resource('reviews', \App\Http\Controllers\ReviewsController::class);
+// reviews are deleted through events.reviews.destroy
+Route::resource('reviews', \App\Http\Controllers\ReviewsController::class)->except(['destroy']);
 
 // SERIES
 Route::get('series/{id}/load-embeds', [\App\Http\Controllers\SeriesController::class, 'loadEmbeds']);
@@ -700,7 +699,6 @@ Route::get('series/related-to/{slug}', [\App\Http\Controllers\SeriesController::
 Route::get('series/week', [\App\Http\Controllers\SeriesController::class, 'indexWeek']);
 Route::get('series/cancelled', [\App\Http\Controllers\SeriesController::class, 'indexCancelled'])->name('series.cancelled');
 Route::post('series/{id}/photos', [\App\Http\Controllers\SeriesController::class, 'addPhoto']);
-Route::delete('series/{id}/photos/{photo_id}', [\App\Http\Controllers\SeriesController::class, 'deletePhoto']);
 Route::get(
     'series/export',
     [

@@ -41,6 +41,7 @@ class MenusController extends Controller
     public function __construct(MenuFilters $filter)
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
+        $this->middleware(['auth', 'can:admin'], ['only' => ['destroy']]);
         $this->filter = $filter;
 
         // prefix for session storage
