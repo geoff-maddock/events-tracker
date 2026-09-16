@@ -2,6 +2,17 @@
 
 A more detailed description of new features and changes to the application.
 
+## 2026.09.16
+
+### "Using the API" guide page (#2128)
+New public page at `/api-guide`, linked from Help's "For developers" section and quick
+links, and listed in the sitemap. It explains the API for site users rather than
+developers: your site account is your API account, with the same permissions; basic auth
+vs. bearer tokens; paging, sorting, and filtering; writes with `tag_list` and photos; and
+rate limits. `/api/docs` stays the endpoint reference. The Help page, `docs/api_notes.md`,
+and the agent docs pointed at a `POST /api/auth/token` route that doesn't exist. They now
+point at the real `POST /api/tokens/create`.
+
 ## 2026.09.08
 
 ### Duplicate-entity warning on the entity form

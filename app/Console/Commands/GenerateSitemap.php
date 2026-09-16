@@ -74,6 +74,7 @@ class GenerateSitemap extends Command
         '/popular',
         '/about',
         '/help',
+        '/api-guide',
         '/privacy',
         '/tos',
     ];

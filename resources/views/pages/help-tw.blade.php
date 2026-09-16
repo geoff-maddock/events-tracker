@@ -484,9 +484,14 @@
 					</h2>
 					<ul class="list-disc list-inside space-y-1 text-muted-foreground">
 						<li>
-							<strong class="text-foreground">REST API:</strong>
+							<strong class="text-foreground">Using the API:</strong>
+							<a href="{{ route('pages.apiGuide') }}" class="text-primary hover:underline">a plain-language guide</a>
+							— your site account is your API account. Covers authentication, filtering, paging, and creating records.
+						</li>
+						<li>
+							<strong class="text-foreground">REST API reference:</strong>
 							<a href="{{ url('/api/docs') }}" class="text-primary hover:underline">/api/docs</a>
-							— read and write events, entities, series, tags, photos, contacts, links, and more. Authenticate with a Sanctum token (<code class="px-1 py-0.5 rounded bg-muted text-xs">POST /api/auth/token</code>) or HTTP Basic auth.
+							— read and write events, entities, series, tags, photos, contacts, links, and more. Authenticate with a Sanctum token (<code class="px-1 py-0.5 rounded bg-muted text-xs">POST /api/tokens/create</code>) or HTTP Basic auth.
 						</li>
 						<li>
 							<strong class="text-foreground">Source:</strong>
@@ -539,6 +544,9 @@
 						</a>
 						<a href="{{ url('/tos') }}" class="inline-flex items-center px-3 py-2 bg-accent text-foreground border border-border rounded-lg hover:bg-accent/80 transition-colors text-sm">
 							<i class="bi bi-file-earmark-text mr-2"></i> Terms of Service
+						</a>
+						<a href="{{ route('pages.apiGuide') }}" class="inline-flex items-center px-3 py-2 bg-accent text-foreground border border-border rounded-lg hover:bg-accent/80 transition-colors text-sm">
+							<i class="bi bi-braces mr-2"></i> Using the API
 						</a>
 					</div>
 				</div>

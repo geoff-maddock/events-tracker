@@ -219,7 +219,7 @@ The API supports two authentication methods:
 
 1. **Basic Auth**: Include `Authorization: Basic base64(username:password)` header
 2. **Token Auth**: Include `Authorization: Bearer {token}` header
-   - Acquire token via `POST /api/auth/token` with basic auth and `token_name` in body
+   - Acquire token via `POST /api/tokens/create` with basic auth and `token_name` in body
 
 ### API Endpoints
 - Visit `/api/docs` for Swagger-generated documentation
