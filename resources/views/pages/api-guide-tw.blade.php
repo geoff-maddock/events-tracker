@@ -241,7 +241,11 @@ curl -G -u 'you&#64;example.com:your-password' \
 						Rate limits &amp; etiquette
 					</h2>
 					<ul class="list-disc list-inside space-y-1 text-muted-foreground">
-						<li>Adding photos by URL is limited to <strong class="text-foreground">20 requests per minute</strong> per user. Over the limit you'll get <code class="px-1 py-0.5 rounded bg-muted text-xs">429 Too Many Requests</code>, so wait and retry.</li>
+						<li><strong class="text-foreground">240 requests per minute</strong> per logged-in user (basic auth or token).</li>
+						<li><strong class="text-foreground">120 requests per minute</strong> per IP address for requests that aren't logged in.</li>
+						<li>Adding photos by URL has its own limit of <strong class="text-foreground">20 requests per minute</strong> per user.</li>
+						<li>After <strong class="text-foreground">20 failed logins in a minute</strong> from one IP address, basic auth from that address is refused until the minute is up, even with the right password. If your script keeps failing to log in, check your credentials before retrying.</li>
+						<li>Every response includes <code class="px-1 py-0.5 rounded bg-muted text-xs">X-RateLimit-Remaining</code>. Over a limit you'll get <code class="px-1 py-0.5 rounded bg-muted text-xs">429 Too Many Requests</code> with a <code class="px-1 py-0.5 rounded bg-muted text-xs">Retry-After</code> header saying how many seconds to wait.</li>
 						<li>This is a community-run site on modest hardware. Page through results instead of requesting huge lists, cache what you can, and space out bulk imports.</li>
 						<li>Check for existing events, entities, and series before creating new ones so you don't make duplicates.</li>
 						<li>Everything you create through the API is covered by the <a href="{{ url('/tos') }}" class="text-primary hover:underline">Terms of Service</a>, just like content added through the site.</li>
