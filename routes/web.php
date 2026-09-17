@@ -637,6 +637,9 @@ Route::get('entities/{id}/unfollow', [
     'uses' => '\App\Http\Controllers\EntitiesController@unfollow',
 ]);
 
+// ENTITY OWNER DASHBOARD (#2149). Owners and admins only, checked in the controller.
+Route::get('entities/{entity}/stats', [\App\Http\Controllers\EntityStatsController::class, 'show'])->name('entities.stats');
+
 // ENTITY CLAIMS (#2148). Auth, verified and grant_entity_ownership are applied in the controller.
 Route::get('entities/{entity}/claim', [\App\Http\Controllers\EntityClaimsController::class, 'create'])->name('entities.claim.create');
 Route::post('entities/{entity}/claim', [\App\Http\Controllers\EntityClaimsController::class, 'store'])->name('entities.claim.store')->middleware('throttle:10,60');
