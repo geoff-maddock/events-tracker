@@ -92,6 +92,7 @@
 				@php
 				$adminModules = config('modules.admin', []);
 				sort($adminModules);
+				$pendingClaims = \App\Models\EntityClaim::pending()->count();
 				@endphp
 
 				@foreach($adminModules as $module)
@@ -101,7 +102,12 @@
 							<i class="{{ $module['icon'] }} text-primary text-xl"></i>
 						</div>
 						<div class="flex-1">
-							<h3 class="font-semibold text-foreground group-hover:text-primary transition-colors">{{ $module['name'] }}</h3>
+							<h3 class="font-semibold text-foreground group-hover:text-primary transition-colors">
+								{{ $module['name'] }}
+								@if($module['url'] === '/entity-claims' && $pendingClaims > 0)
+								<span class="ml-2 inline-flex items-center justify-center text-xs font-semibold rounded-full bg-red-600 text-white px-2 py-0.5">{{ $pendingClaims }}</span>
+								@endif
+							</h3>
 							<p class="text-sm text-muted-foreground mt-1">{{ $module['description'] }}</p>
 						</div>
 					</div>

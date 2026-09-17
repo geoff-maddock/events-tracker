@@ -445,7 +445,7 @@
 					<div class="divide-y divide-border">
 						@php
 							$faqs = [
-								['How do I claim an existing entity?', 'Email geoff.maddock at gmail.com from an address that proves you\'re affiliated. Claimed entities can be edited by their owner.'],
+								['How do I claim an existing entity?', 'Log in, open the entity\'s page, and choose "Claim this page" from its actions menu. Tell us how you\'re connected; once an admin approves, you become the owner and can edit it.'],
 								['Why was my event edited?', 'Moderators occasionally fix typos, add missing venues, or clean up tags. If you disagree with an edit, post in the forum or email.'],
 								['Can the same event have multiple venues?', 'No — pick the primary venue and add the others as related entities.'],
 								['A series instance isn\'t showing up on the calendar — why?', 'Series occurrences appear in light blue until someone creates a concrete event for that date. If a date is missing entirely, edit the series and check the recurrence rule.'],
