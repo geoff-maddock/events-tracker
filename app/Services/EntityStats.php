@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Helpers\BotDetector;
 use App\Models\Entity;
+use App\Models\EntityStatDaily;
 use App\Models\EventReachDaily;
 use App\Models\User;
 use Carbon\CarbonInterface;
@@ -86,6 +87,145 @@ class EntityStats
              ON DUPLICATE KEY UPDATE count = count + 1, updated_at = VALUES(updated_at)",
             $bindings
         );
+    }
+
+    /**
+     * Everything the owner dashboard shows for an entity (#2149).
+     *
+     * @return array{
+     *     trackingSince: ?Carbon,
+     *     followers: int,
+     *     upcomingEvents: int,
+     *     upcomingResponses: int,
+     *     periods: array<int, array<string, array{current: int, previous: int}>>,
+     *     reach: array<int, array{digest: int, instagram: int, discord: int}>,
+     *     chart: array{labels: array<int, string>, views: array<int, int>, follows: array<int, int>, clicks: array<int, int>}
+     * }
+     */
+    public function dashboard(Entity $entity, array $periods = [30, 90]): array
+    {
+        $today = Carbon::today();
+        $eventIds = $this->entityEventIds($entity);
+
+        $firstTracked = EntityStatDaily::min('date');
+
+        $summary = [
+            'trackingSince' => $firstTracked ? Carbon::parse($firstTracked) : null,
+            'followers' => DB::table('follows')->where('object_type', 'entity')->where('object_id', $entity->id)->count(),
+            'upcomingEvents' => DB::table('events')->whereIn('id', $eventIds)->where('start_at', '>=', $today)->count(),
+            'upcomingResponses' => DB::table('event_responses')
+                ->whereIn('event_id', DB::table('events')->whereIn('id', $eventIds)->where('start_at', '>=', $today)->select('id'))
+                ->count(),
+            'periods' => [],
+            'reach' => [],
+        ];
+
+        foreach ($periods as $days) {
+            // the current window includes today, so partial-day live views show up
+            $start = $today->copy()->subDays($days - 1);
+            $previousStart = $start->copy()->subDays($days);
+
+            $summary['periods'][$days] = [
+                'views' => $this->compare($this->dailySum($entity, 'views', $start, $today), $this->dailySum($entity, 'views', $previousStart, $start->copy()->subDay())),
+                'clicks' => $this->compare($this->dailySum($entity, 'clicks', $start, $today), $this->dailySum($entity, 'clicks', $previousStart, $start->copy()->subDay())),
+                'responses' => $this->compare($this->dailySum($entity, 'responses', $start, $today), $this->dailySum($entity, 'responses', $previousStart, $start->copy()->subDay())),
+                // new follows are read live rather than from the rollup, so they are never a day behind
+                'follows' => $this->compare($this->newFollows($entity, $start, $today->copy()->endOfDay()), $this->newFollows($entity, $previousStart, $start->copy()->subSecond())),
+            ];
+
+            $summary['reach'][$days] = [
+                'digest' => (int) DB::table('event_reach_daily')
+                    ->whereIn('event_id', $eventIds)
+                    ->where('channel', EventReachDaily::CHANNEL_DIGEST)
+                    ->whereBetween('date', [$start->toDateString(), $today->toDateString()])
+                    ->sum('count'),
+                'instagram' => DB::table('event_shares')
+                    ->whereIn('event_id', $eventIds)
+                    ->where('platform', 'instagram')
+                    ->where('created_at', '>=', $start)
+                    ->count(),
+                'discord' => DB::table('discord_posts')
+                    ->whereIn('event_id', $eventIds)
+                    ->where('status', 'sent')
+                    ->where('created_at', '>=', $start)
+                    ->count(),
+            ];
+        }
+
+        $summary['chart'] = $this->chartSeries($entity, max($periods));
+
+        return $summary;
+    }
+
+    /**
+     * Ids of every event the entity is the venue, promoter, or billed on.
+     */
+    protected function entityEventIds(Entity $entity): \Illuminate\Database\Query\Builder
+    {
+        return DB::table('entity_event')->where('entity_id', $entity->id)->select('event_id as id')
+            ->union(DB::table('events')->where('venue_id', $entity->id)->select('id'))
+            ->union(DB::table('events')->where('promoter_id', $entity->id)->select('id'));
+    }
+
+    protected function dailySum(Entity $entity, string $column, CarbonInterface $from, CarbonInterface $to): int
+    {
+        return (int) DB::table('entity_stats_daily')
+            ->where('entity_id', $entity->id)
+            ->whereBetween('date', [$from->toDateString(), $to->toDateString()])
+            ->sum($column);
+    }
+
+    protected function newFollows(Entity $entity, CarbonInterface $from, CarbonInterface $to): int
+    {
+        return DB::table('follows')
+            ->where('object_type', 'entity')
+            ->where('object_id', $entity->id)
+            ->whereBetween('created_at', [$from, $to])
+            ->count();
+    }
+
+    /**
+     * @return array{current: int, previous: int}
+     */
+    protected function compare(int $current, int $previous): array
+    {
+        return ['current' => $current, 'previous' => $previous];
+    }
+
+    /**
+     * One point per day, with missing days filled with zero.
+     *
+     * @return array{labels: array<int, string>, views: array<int, int>, follows: array<int, int>, clicks: array<int, int>}
+     */
+    protected function chartSeries(Entity $entity, int $days): array
+    {
+        $end = Carbon::today();
+        $start = $end->copy()->subDays($days - 1);
+
+        $rows = DB::table('entity_stats_daily')
+            ->where('entity_id', $entity->id)
+            ->whereBetween('date', [$start->toDateString(), $end->toDateString()])
+            ->get(['date', 'views', 'clicks'])
+            ->keyBy(fn ($row) => Carbon::parse($row->date)->toDateString());
+
+        $follows = DB::table('follows')
+            ->where('object_type', 'entity')
+            ->where('object_id', $entity->id)
+            ->where('created_at', '>=', $start)
+            ->selectRaw('DATE(created_at) as day, COUNT(*) as total')
+            ->groupBy('day')
+            ->pluck('total', 'day');
+
+        $series = ['labels' => [], 'views' => [], 'follows' => [], 'clicks' => []];
+        for ($day = $start->copy(); $day->lte($end); $day->addDay()) {
+            $key = $day->toDateString();
+            $series['labels'][] = $day->format('M j');
+            $series['views'][] = (int) ($rows[$key]->views ?? 0);
+            $series['clicks'][] = (int) ($rows[$key]->clicks ?? 0);
+            $series['follows'][] = (int) ($follows[$key] ?? 0);
+        }
+
+        return $series;
     }
 
     /**

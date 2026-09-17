@@ -75,6 +75,9 @@
                                     <a href="{!! route('entities.edit', ['entity' => $entity->slug]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
                                         <i class="bi bi-pencil mr-2"></i>Edit Entity
                                     </a>
+                                    <a href="{{ route('entities.stats', $entity) }}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
+                                        <i class="bi bi-graph-up mr-2"></i>View Stats
+                                    </a>
                                     <a href="{{ url('events/related-to/'.$entity->slug) }}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
                                         <i class="bi bi-calendar-event mr-2"></i>Show Related Events
                                     </a>

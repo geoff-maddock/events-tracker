@@ -291,6 +291,23 @@
                     </div>
                     @endif
 
+                    <!-- Pages this user manages (#2149) -->
+                    @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->can('grant_entity_ownership')) && $user->ownedEntities->isNotEmpty())
+                    <div class="pt-4 border-t border-border">
+                        <h2 class="text-lg font-semibold text-foreground mb-2">{{ Auth::user()->id == $user->id ? 'Pages you manage' : 'Pages managed' }}</h2>
+                        <ul class="divide-y divide-border">
+                            @foreach ($user->ownedEntities->sortBy('name') as $ownedEntity)
+                            <li class="flex items-center justify-between gap-4 py-2">
+                                <a href="{{ route('entities.show', $ownedEntity) }}" class="text-foreground hover:text-primary truncate">{{ $ownedEntity->name }}</a>
+                                <a href="{{ route('entities.stats', $ownedEntity) }}" class="shrink-0 inline-flex items-center text-sm text-primary hover:text-primary/90">
+                                    <i class="bi bi-graph-up mr-1"></i> Stats
+                                </a>
+                            </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
+
                     <!-- Delete Button -->
                     @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser')))
                         <div class="pt-4 border-t border-border">

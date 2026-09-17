@@ -4,6 +4,21 @@ A more detailed description of new features and changes to the application.
 
 ## 2026.09.17
 
+### Entity owner stats (#2149, #2146)
+Owners and admins get a stats page for each entity at `/entities/{slug}/stats`. It's linked
+as **View Stats** in the entity's actions menu and from **Pages you manage** on the owner's
+profile. For the last 30 or 90 days, compared with the period before, it shows: page views,
+new followers (plus the total), ticket-link clicks and RSVPs on the entity's events, a daily
+chart, how many weekly-email inboxes, Instagram posts and Discord posts included the
+entity's events, and what's coming up.
+
+Page views are recorded live from the entity page, not counting bots, prefetches, owners or
+admins, into `entity_stats_daily`. The weekly email records which events it included in
+`event_reach_daily`. `entities:rollup-stats` runs nightly at 02:30 to rebuild follows,
+clicks and responses per entity. Clicks and responses count for the venue, the promoter and
+every entity billed on the event. Use `--date` and `--days` to backfill. Page views and email
+reach only exist from deploy onward, and the page says when counting started.
+
 ### Claim an entity page (#2148, #2147)
 Logged-in users with a verified email can ask to take over an artist, venue or promoter page
 with **Claim this page** in the entity's actions menu (`/entities/{slug}/claim`). They say how
