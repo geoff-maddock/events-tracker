@@ -102,6 +102,11 @@
                                 <a href="{!! URL::route('entities.index') !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
                                     <i class="bi bi-list mr-2"></i>Return to list
                                 </a>
+                                @if (!$user || !$user->can('update', $entity))
+                                <a href="{{ route('entities.claim.create', $entity) }}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
+                                    <i class="bi bi-patch-check mr-2"></i>Claim this page
+                                </a>
+                                @endif
                                 <div class="border-t border-border my-1"></div>
                                 <button type="button" id="refresh-embeds-btn" data-slug="{{ $entity->slug }}" class="w-full text-left block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
                                     <i class="bi bi-arrow-repeat mr-2"></i>Refresh Embeds

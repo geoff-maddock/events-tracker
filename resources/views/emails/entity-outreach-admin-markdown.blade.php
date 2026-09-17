@@ -30,7 +30,7 @@ Below is a template message you can use when reaching out to these entities on I
 
 ---
 
-*Hey {{ '@' }}[USERNAME]! 👋 We wanted to let you know that **{{ $site }}** has a profile for you at {{ $url }} — a community hub for music and arts events. We'd love for you to claim your page, add your upcoming events, and connect with the local scene. Check it out and feel free to reach out if you have any questions! 🎵*
+*Hey {{ '@' }}[USERNAME]! 👋 We wanted to let you know that **{{ $site }}** has a profile for you at {{ $url }} — a community hub for music and arts events. We'd love for you to claim your page (log in and choose "Claim this page" from the ... menu), add your upcoming events, and connect with the local scene. Check it out and feel free to reach out if you have any questions! 🎵*
 
 ---
 

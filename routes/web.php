@@ -637,6 +637,14 @@ Route::get('entities/{id}/unfollow', [
     'uses' => '\App\Http\Controllers\EntitiesController@unfollow',
 ]);
 
+// ENTITY CLAIMS (#2148). Auth, verified and grant_entity_ownership are applied in the controller.
+Route::get('entities/{entity}/claim', [\App\Http\Controllers\EntityClaimsController::class, 'create'])->name('entities.claim.create');
+Route::post('entities/{entity}/claim', [\App\Http\Controllers\EntityClaimsController::class, 'store'])->name('entities.claim.store')->middleware('throttle:10,60');
+Route::get('entity-claims', [\App\Http\Controllers\EntityClaimsController::class, 'index'])->name('entity-claims.index');
+Route::post('entity-claims/{entityClaim}/withdraw', [\App\Http\Controllers\EntityClaimsController::class, 'withdraw'])->name('entity-claims.withdraw');
+Route::post('entity-claims/{entityClaim}/approve', [\App\Http\Controllers\EntityClaimsController::class, 'approve'])->name('entity-claims.approve');
+Route::post('entity-claims/{entityClaim}/deny', [\App\Http\Controllers\EntityClaimsController::class, 'deny'])->name('entity-claims.deny');
+
 Route::bind('entities', function ($id) {
     return Entity::whereId($id)->firstOrFail();
 });

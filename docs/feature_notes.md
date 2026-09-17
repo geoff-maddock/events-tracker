@@ -2,6 +2,26 @@
 
 A more detailed description of new features and changes to the application.
 
+## 2026.09.17
+
+### Claim an entity page (#2148, #2147)
+Logged-in users with a verified email can ask to take over an artist, venue or promoter page
+with **Claim this page** in the entity's actions menu (`/entities/{slug}/claim`). They say how
+they're connected and can add a link as proof. Admins review claims at `/entity-claims`
+(listed in All Modules, with a count of pending claims) and approve or deny with an optional
+note. The claimant is emailed either way.
+
+**Approval fully transfers ownership.** The claimant becomes the only owner, everyone who
+owned the page before (including whoever created it) loses edit and delete access and gets
+an email, and any other pending claims on that page are denied.
+
+Ownership now lives in a new `entity_owners` table rather than `entities.created_by`, which is
+kept only as a record of who added the entity. The migration copies every `created_by` into
+it, and new entities start owned by their creator. Admins with `grant_entity_ownership` can
+also add or remove owners directly with the **Owners** field on the entity form, which
+replaces the old "Owner" dropdown. Owners can edit and delete the entity and manage its
+links, locations, contacts and photos, on the web and through the API.
+
 ## 2026.09.16
 
 ### API rate limits enabled
