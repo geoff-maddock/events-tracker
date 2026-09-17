@@ -16,10 +16,10 @@ class ApiEntityLinksAndLocationsTest extends TestCase
 
     protected bool $seed = true;
 
-    public function test_authenticated_user_can_add_link_to_entity(): void
+    public function test_owner_can_add_link_to_entity(): void
     {
         $user = User::factory()->create();
-        $entity = Entity::factory()->create();
+        $entity = Entity::factory()->create(['created_by' => $user->id]);
         $user->user_status_id = 1; // Assuming 1 is the ID for active status
         $this->actingAs($user, 'sanctum');
 
@@ -39,10 +39,10 @@ class ApiEntityLinksAndLocationsTest extends TestCase
         ]);
     }
 
-    public function test_authenticated_user_can_add_location_to_entity(): void
+    public function test_owner_can_add_location_to_entity(): void
     {
         $user = User::factory()->create();
-        $entity = Entity::factory()->create();
+        $entity = Entity::factory()->create(['created_by' => $user->id]);
         $visibility = Visibility::factory()->create();
         $locationType = LocationType::factory()->create();
         $user->user_status_id = 1; // Assuming 1 is the ID for active status

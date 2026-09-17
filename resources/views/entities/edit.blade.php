@@ -38,7 +38,7 @@
 				</form>
 
 				<!-- Delete Button -->
-				@if ($user && ($entity->ownedBy($user) || $user->hasGroup('super_admin')))
+				@if ($user && $user->can('delete', $entity))
 				<div class="mt-6 pt-6 border-t border-border">
 					<form method="POST" action="{{ route('entities.destroy', $entity->slug) }}" data-confirm="Are you sure you want to delete this entity? This action cannot be undone.">
 						@csrf
@@ -64,7 +64,7 @@
 		<!-- Photos Sidebar -->
 		<div class="lg:col-span-1">
 			<!-- Photo Upload -->
-			@if ($user && ($entity->user && (Auth::user()->id === $entity->user->id) || $user->hasGroup('super_admin')))
+			@if ($user && $user->can('update', $entity))
 			<div class="rounded-lg border border-border bg-card shadow p-2 pt-2 space-y-4 mb-6">
 				<form action="/entities/{{ $entity->id }}/photos"
 					class="dropzone border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-600 transition-colors"
@@ -84,7 +84,7 @@
 @stop
 
 @section('scripts.footer')
-@if ($user && ($entity->user && (Auth::user()->id === $entity->user->id) || $user->hasGroup('super_admin')))
+@if ($user && $user->can('update', $entity))
 <script>
 $(document).ready(function(){
 	// Wait for Dropzone to be available

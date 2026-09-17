@@ -747,6 +747,16 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     }
 
         /**
+     * Entities this user controls (#2147).
+     */
+    public function ownedEntities(): BelongsToMany
+    {
+        return $this->belongsToMany(Entity::class, 'entity_owners')
+            ->withPivot('granted_by')
+            ->withTimestamps();
+    }
+
+    /**
      * Return the entities the user is following.
      */
     public function followedEntities(): BelongsToMany

@@ -13,6 +13,6 @@ class LinkPolicy
     {
         // links have no creator, so ownership comes from the entities they are attached to
         return $user->hasGroup('super_admin')
-            || $link->entities()->where('entities.created_by', $user->id)->exists();
+            || $link->entities()->whereHas('owners', fn ($q) => $q->where('users.id', $user->id))->exists();
     }
 }

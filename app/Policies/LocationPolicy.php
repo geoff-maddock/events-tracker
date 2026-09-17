@@ -12,11 +12,12 @@ class LocationPolicy
 
     public function delete(User $user, Location $location): bool
     {
-        if ($user->hasGroup('super_admin') || (int) $location->created_by === $user->id) {
+        if ($user->hasGroup('super_admin')) {
             return true;
         }
 
-        // the owner of the entity the location belongs to
-        return Entity::whereKey($location->entity_id)->where('created_by', $user->id)->exists();
+        // only the entity's current owners: whoever added the location loses
+        // control of it once the entity is transferred
+        return Entity::whereKey($location->entity_id)->ownedBy($user)->exists();
     }
 }

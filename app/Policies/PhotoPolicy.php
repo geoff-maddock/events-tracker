@@ -18,7 +18,7 @@ class PhotoPolicy
         // the owner of the gallery a photo is attached to may manage it,
         // matching the delete button in partials/photo-gallery-tw
         return $photo->events()->where('events.created_by', $user->id)->exists()
-            || $photo->entities()->where('entities.created_by', $user->id)->exists()
+            || $photo->entities()->whereHas('owners', fn ($q) => $q->where('users.id', $user->id))->exists()
             || $photo->series()->where('series.created_by', $user->id)->exists()
             || $photo->users()->whereKey($user->id)->exists();
     }
