@@ -206,7 +206,7 @@ class EntityQuickCheckTest extends TestCase
     {
         $user = $this->activeUser();
         $entity = $this->makeEntity('Spirit Lodge');
-        $entity->update(['created_by' => $user->id]);
+        $entity->syncOwners([$user->id]);
 
         $this->actingAs($user)
             ->get('/entities/create')

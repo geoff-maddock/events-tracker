@@ -35,6 +35,9 @@ class EntityRequest extends Request
             // started_at is stored in a MySQL TIMESTAMP column (valid range 1970–2038),
             // so keep it inside safe bounds to avoid a 500 from out-of-range dates.
             'started_at' => 'nullable|date|after_or_equal:1971-01-01|before_or_equal:2037-12-31',
+            // owners panel, only applied for users who can grant entity ownership
+            'owner_list' => 'nullable|array',
+            'owner_list.*' => 'integer|exists:users,id',
         ];
     }
 }

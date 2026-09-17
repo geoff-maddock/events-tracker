@@ -240,26 +240,33 @@
         </x-ui.form-group>
     </div>
 
+    @can('grant_entity_ownership')
     <div class="col-span-12 md:col-span-6">
+        {{-- only this panel's presence tells the controller to sync owners --}}
+        <input type="hidden" name="manage_owners" value="1">
         <x-ui.form-group
-            name="created_by"
-            label="Owner"
-            :error="$errors->first('created_by')">
+            name="owner_list"
+            label="Owners"
+            :error="$errors->first('owner_list')">
             <x-ui.select
-                name="created_by"
-                id="created_by"
+                name="owner_list[]"
+                id="owner_list"
                 class="select2"
                 data-theme="tailwind"
-                :hasError="$errors->has('created_by')">
-                <option value="">Select owner</option>
+                multiple
+                :hasError="$errors->has('owner_list')">
                 @foreach($userOptions as $id => $name)
-                    <option value="{{ $id }}" {{ old('created_by', $entity->created_by ?? '') == $id ? 'selected' : '' }}>
+                    @if ($id !== '')
+                    <option value="{{ $id }}" {{ in_array($id, old('owner_list', isset($entity) && $entity->exists ? $entity->owners->pluck('id')->all() : [Auth::id()])) ? 'selected' : '' }}>
                         {{ $name }}
                     </option>
+                    @endif
                 @endforeach
             </x-ui.select>
+            <p class="mt-1 text-xs text-muted-foreground">Owners can edit and delete this entity. Removing someone here revokes their access.</p>
         </x-ui.form-group>
     </div>
+    @endcan
 </div>
 
 {{-- Submit Button --}}

@@ -127,7 +127,7 @@ class ApiEntitiesCrudTest extends TestCase
 
     public function test_add_link_attaches_link_to_entity(): void
     {
-        $entity = Entity::factory()->create();
+        $entity = Entity::factory()->create(['created_by' => $this->user->id]);
 
         $response = $this->postJson('/api/entities/'.$entity->id.'/links', [
             'text' => 'Bandcamp',
@@ -140,7 +140,7 @@ class ApiEntitiesCrudTest extends TestCase
 
     public function test_add_link_validates_required_fields(): void
     {
-        $entity = Entity::factory()->create();
+        $entity = Entity::factory()->create(['created_by' => $this->user->id]);
 
         $response = $this->postJson('/api/entities/'.$entity->id.'/links', [
             'text' => 'x',
@@ -151,7 +151,7 @@ class ApiEntitiesCrudTest extends TestCase
 
     public function test_add_contact_attaches_contact_to_entity(): void
     {
-        $entity = Entity::factory()->create();
+        $entity = Entity::factory()->create(['created_by' => $this->user->id]);
 
         $response = $this->postJson('/api/entities/'.$entity->id.'/contacts', [
             'name' => 'Booking',
@@ -162,5 +162,34 @@ class ApiEntitiesCrudTest extends TestCase
 
         $response->assertStatus(201);
         $this->assertGreaterThanOrEqual(1, $entity->fresh()->contacts()->count());
+    }
+
+    public function test_non_owner_cannot_add_links_locations_or_contacts(): void
+    {
+        $entity = Entity::factory()->create();
+        $this->withExceptionHandling();
+
+        $this->postJson('/api/entities/'.$entity->id.'/links', [
+            'text' => 'Bandcamp',
+            'url' => 'https://example.bandcamp.com',
+        ])->assertForbidden();
+
+        $this->postJson('/api/entities/'.$entity->id.'/locations', [
+            'name' => 'Spam location',
+            'slug' => 'spam-location',
+            'city' => 'Pittsburgh',
+            'visibility_id' => \App\Models\Visibility::VISIBILITY_PUBLIC,
+            'location_type_id' => \App\Models\LocationType::first()->id,
+        ])->assertForbidden();
+
+        $this->postJson('/api/entities/'.$entity->id.'/contacts', [
+            'name' => 'Booking',
+            'type' => 'manager',
+            'visibility_id' => \App\Models\Visibility::VISIBILITY_PUBLIC,
+        ])->assertForbidden();
+
+        $this->assertSame(0, $entity->fresh()->links()->count());
+        $this->assertSame(0, $entity->fresh()->locations()->count());
+        $this->assertSame(0, $entity->fresh()->contacts()->count());
     }
 }

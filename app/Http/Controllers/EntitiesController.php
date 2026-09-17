@@ -776,6 +776,8 @@ class EntitiesController extends Controller
         $entity->aliases()->attach($aliasSyncArray);
         $entity->roles()->attach($request->input('role_list', []));
 
+        $msg .= $this->syncOwnersFromRequest($entity, $request);
+
         // Attach the image the user chose on the create form, whether or not
         // they ran it through analysis, as the primary photo.
         $tempImages->attachFromRequest($request, $entity);
@@ -1150,7 +1152,7 @@ class EntitiesController extends Controller
     {
         $this->middleware('auth');
 
-        if ($entity->created_by !== $this->user->id && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin')) {
+        if ($this->user->cannot('update', $entity)) {
             \Session::flash('flash_message', ['title' => 'Access Denied', 'message' => 'You do not have permission to edit this entity.', 'level' => 'error']);
 
             return redirect()->route('entities.show', compact('entity'));
@@ -1167,11 +1169,14 @@ class EntitiesController extends Controller
     {
         $msg = '';
 
-        if ($entity->created_by !== $this->user->id && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin')) {
+        if ($this->user->cannot('update', $entity)) {
             return $this->unauthorized($request);
         }
 
         $input = $request->all();
+
+        // created_by records who added the entity; ownership changes go through owner_list
+        unset($input['created_by']);
 
         $input['slug'] = Str::slug($request->input('slug', '-'));
         $input['updated_by'] = $this->user->id;
@@ -1210,6 +1215,8 @@ class EntitiesController extends Controller
         $entity->tags()->sync($syncArray);
         $entity->aliases()->sync($aliasSyncArray);
         $entity->roles()->sync($request->input('role_list', []));
+
+        $msg .= $this->syncOwnersFromRequest($entity, $request);
 
         // add to activity log
         Activity::log($entity, $this->user, Action::UPDATE);
@@ -1261,9 +1268,7 @@ class EntitiesController extends Controller
         if ($entity = Entity::find($id)) {
 
             // only the entity owner (or an admin) may add photos
-            if ($entity->created_by !== $this->user->id
-                && !$this->user->hasGroup('admin')
-                && !$this->user->hasGroup('super_admin')) {
+            if ($this->user->cannot('update', $entity)) {
                 abort(403);
             }
 
@@ -1747,6 +1752,30 @@ class EntitiesController extends Controller
     protected function getDefaultSortCriteria(): array
     {
         return ['id' => 'desc'];
+    }
+
+    /**
+     * Apply the owners panel on the entity form. Only users who can grant
+     * entity ownership see the panel, and only its presence triggers a sync,
+     * so a form without it never clears the owners.
+     */
+    protected function syncOwnersFromRequest(Entity $entity, Request $request): string
+    {
+        if (!$request->boolean('manage_owners') || $this->user->cannot('grant_entity_ownership')) {
+            return '';
+        }
+
+        $before = $entity->owners()->pluck('users.id')->sort()->values();
+        $entity->syncOwners($request->input('owner_list', []), $this->user);
+        $after = $entity->owners()->pluck('users.id')->sort()->values();
+
+        if ($before->all() === $after->all()) {
+            return '';
+        }
+
+        Activity::log($entity, $this->user, Action::UPDATE, 'Owners changed from ['.$before->implode(', ').'] to ['.$after->implode(', ').']');
+
+        return ' Updated owners.';
     }
 
     protected function unauthorized(EntityRequest $request): RedirectResponse | Response

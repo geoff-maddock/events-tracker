@@ -71,7 +71,7 @@
 
                         <div id="entity-actions-menu" class="hidden absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-card border border-border ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
                             <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                                @if ($user && ($user->id === ($entity->user ? $entity->user?->id : null) || $user->hasGroup('super_admin')))
+                                @if ($user && $user->can('update', $entity))
                                     <a href="{!! route('entities.edit', ['entity' => $entity->slug]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
                                         <i class="bi bi-pencil mr-2"></i>Edit Entity
                                     </a>
@@ -506,7 +506,7 @@
 		@include('partials.photo-gallery-tw', ['event'=> null,'series'=>null,'entity' => $entity, 'lightboxGroup' => 'entity-gallery'])
 
 		<!-- Photo Upload -->
-		@if ($user && ($user->id == $entity->user?->id || $user->hasGroup('super_admin')))
+		@if ($user && $user->can('update', $entity))
 		<div class="rounded-lg border border-border bg-card shadow p-4">
 			<form action="/entities/{{ $entity->id }}/photos" class="dropzone border-2 border-dashed border-border rounded-lg p-4 text-center cursor-pointer hover:border-muted-foreground/60 transition-colors" id="myDropzone" method="POST">
 				<input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -530,7 +530,7 @@
 
 @section('scripts.footer')
 
-@if ($user && ($user->id === $entity->user?->id || $user->hasGroup('super_admin')))
+@if ($user && $user->can('update', $entity))
 <script>
 $(document).ready(function(){
 	// Wait for Dropzone to be available

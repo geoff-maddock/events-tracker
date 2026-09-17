@@ -80,6 +80,7 @@ use Storage;
  * @method static Builder|Entity newQuery()
  * @method static Builder|Entity ofType($type)
  * @method static Builder|Entity ownedBy(\App\Models\User $user)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $owners
  * @method static Builder|Entity promoter(string $type)
  * @method static Builder|Entity query()
  * @method static Builder|Entity whereCreatedAt($value)
@@ -120,6 +121,13 @@ class Entity extends Eloquent implements HasPhotos
     public static function boot()
     {
         parent::boot();
+
+        // whoever creates an entity owns it until ownership is changed (#2147)
+        static::created(function (Entity $entity) {
+            if ($entity->created_by && User::whereKey($entity->created_by)->exists()) {
+                $entity->owners()->syncWithoutDetaching([$entity->created_by]);
+            }
+        });
     }
 
     
@@ -251,13 +259,11 @@ class Entity extends Eloquent implements HasPhotos
     }
 
     /**
-     * Returns entities created by the user.
-     *
-     * @ param User $user
+     * Returns entities the user owns. created_by is only attribution and grants nothing.
      */
     public function scopeOwnedBy(Builder $query, User $user): Builder
     {
-        return $query->where('created_by', '=', $user->id);
+        return $query->whereHas('owners', fn (Builder $q) => $q->where('users.id', $user->id));
     }
 
     /**
@@ -306,6 +312,45 @@ class Entity extends Eloquent implements HasPhotos
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * The users who control this entity. Kept separate from created_by so
+     * ownership can be transferred (#2147).
+     */
+    public function owners(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'entity_owners')
+            ->withPivot('granted_by')
+            ->withTimestamps();
+    }
+
+    public function isOwnedBy(?User $user): bool
+    {
+        if (!$user) {
+            return false;
+        }
+
+        if ($this->relationLoaded('owners')) {
+            return $this->owners->contains('id', $user->id);
+        }
+
+        return $this->owners()->whereKey($user->id)->exists();
+    }
+
+    /**
+     * Replace the owners with the given users, recording who granted any new ones.
+     *
+     * @param array<int|string> $userIds
+     */
+    public function syncOwners(array $userIds, ?User $grantedBy = null): void
+    {
+        $ids = collect($userIds)->map(fn ($id) => (int) $id)->filter()->unique();
+
+        $this->owners()->sync(
+            $ids->mapWithKeys(fn (int $id) => [$id => ['granted_by' => $grantedBy?->id]])->all()
+        );
+        $this->unsetRelation('owners');
     }
 
     public static function allOrdered(): Collection

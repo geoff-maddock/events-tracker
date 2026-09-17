@@ -37,10 +37,12 @@ class EntityModelTest extends TestCase
         $other = User::factory()->create();
 
         $owned = Entity::factory()->create();
-        $owned->forceFill(['created_by' => $owner->id])->save();
+        $owned->syncOwners([$owner->id]);
 
+        // created_by is attribution only and grants no ownership (#2147)
         $notOwned = Entity::factory()->create();
-        $notOwned->forceFill(['created_by' => $other->id])->save();
+        $notOwned->forceFill(['created_by' => $owner->id])->save();
+        $notOwned->syncOwners([$other->id]);
 
         $results = Entity::ownedBy($owner)->get();
 

@@ -694,11 +694,14 @@ class EntitiesController extends Controller
      */
     public function update(Entity $entity, EntityRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
-        if ($entity->created_by !== $this->user->id) {
+        if ($this->user->cannot('update', $entity)) {
             return $this->unauthorized($request);
         }
 
         $input = $request->all();
+
+        // created_by records who added the entity and is never reassigned; ownership lives in entity_owners
+        unset($input['created_by']);
         $input['slug'] = Str::slug($request->input('slug', '-'));
 
         // Reset optional fillable scalars not present in the body to null so
@@ -732,11 +735,14 @@ class EntitiesController extends Controller
      */
     public function patch(Entity $entity, EntityPatchRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
-        if ($entity->created_by !== $this->user->id) {
+        if ($this->user->cannot('update', $entity)) {
             return $this->unauthorized($request);
         }
 
         $input = $request->all();
+
+        // created_by records who added the entity and is never reassigned; ownership lives in entity_owners
+        unset($input['created_by']);
 
         if (array_key_exists('slug', $input)) {
             $input['slug'] = Str::slug($request->input('slug', '-'));
@@ -873,7 +879,7 @@ class EntitiesController extends Controller
     private function denyUnlessCanAddPhoto(Entity $entity): ?JsonResponse
     {
         if (!$this->user
-            || ($entity->created_by !== $this->user->id && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin'))) {
+            || $this->user->cannot('update', $entity)) {
             return response()->json(['message' => 'Not authorized.'], 403);
         }
 
@@ -907,6 +913,10 @@ class EntitiesController extends Controller
         ]);
 
         if ($entity = Entity::find($id)) {
+            if ($request->user()->cannot('update', $entity)) {
+                return response()->json([], 403);
+            }
+
             $input = $request->only(['text', 'url', 'title', 'is_primary']);
             $input['is_primary'] = isset($input['is_primary']) ? 1 : 0;
             $link = Link::create($input);
@@ -937,7 +947,7 @@ class EntitiesController extends Controller
         if ($entity = Entity::find($id)) {
             $link = $entity->links()->find($linkId);
             if ($link) {
-                if ($request->user()->id !== ($link->created_by ?? $entity->created_by)) {
+                if ($request->user()->cannot('update', $entity)) {
                     return response()->json([], 403);
                 }
 
@@ -972,7 +982,7 @@ class EntitiesController extends Controller
         if ($entity = Entity::find($id)) {
             $link = $entity->links()->find($linkId);
             if ($link) {
-                if ($request->user()->id !== ($link->created_by ?? $entity->created_by)) {
+                if ($request->user()->cannot('update', $entity)) {
                     return response()->json([], 403);
                 }
 
@@ -1007,6 +1017,10 @@ class EntitiesController extends Controller
         ]);
 
         if ($entity = Entity::find($id)) {
+            if ($request->user()->cannot('update', $entity)) {
+                return response()->json([], 403);
+            }
+
             $input = $request->all();
             $input['entity_id'] = $id;
             $location = new Location($input);
@@ -1040,7 +1054,7 @@ class EntitiesController extends Controller
         if ($entity = Entity::find($id)) {
             $location = $entity->locations()->find($locationId);
             if ($location) {
-                if ($request->user()->id !== ($location->created_by ?? $entity->created_by)) {
+                if ($request->user()->cannot('update', $entity)) {
                     return response()->json([], 403);
                 }
 
@@ -1095,7 +1109,7 @@ class EntitiesController extends Controller
         if ($entity = Entity::find($id)) {
             $location = $entity->locations()->find($locationId);
             if ($location) {
-                if ($request->user()->id !== ($location->created_by ?? $entity->created_by)) {
+                if ($request->user()->cannot('update', $entity)) {
                     return response()->json([], 403);
                 }
 
@@ -1129,6 +1143,10 @@ class EntitiesController extends Controller
         ]);
 
         if ($entity = Entity::find($id)) {
+            if ($request->user()->cannot('update', $entity)) {
+                return response()->json([], 403);
+            }
+
             $input = $request->only(['name', 'email', 'phone', 'other', 'type', 'visibility_id']);
             $contact = Contact::create($input);
             $entity->contacts()->attach($contact->id);
@@ -1159,7 +1177,7 @@ class EntitiesController extends Controller
         if ($entity = Entity::find($id)) {
             $contact = $entity->contacts()->find($contactId);
             if ($contact) {
-                if ($request->user()->id !== ($contact->created_by ?? $entity->created_by)) {
+                if ($request->user()->cannot('update', $entity)) {
                     return response()->json([], 403);
                 }
 
@@ -1197,7 +1215,7 @@ class EntitiesController extends Controller
         if ($entity = Entity::find($id)) {
             $contact = $entity->contacts()->find($contactId);
             if ($contact) {
-                if ($request->user()->id !== ($contact->created_by ?? $entity->created_by)) {
+                if ($request->user()->cannot('update', $entity)) {
                     return response()->json([], 403);
                 }
 
@@ -1222,7 +1240,7 @@ class EntitiesController extends Controller
         if ($entity = Entity::find($id)) {
             $link = $entity->links()->find($linkId);
             if ($link) {
-                if ($request->user()->id !== ($link->created_by ?? $entity->created_by)) {
+                if ($request->user()->cannot('update', $entity)) {
                     return response()->json([], 403);
                 }
 
@@ -1247,7 +1265,7 @@ class EntitiesController extends Controller
         if ($entity = Entity::find($id)) {
             $location = $entity->locations()->find($locationId);
             if ($location) {
-                if ($request->user()->id !== ($location->created_by ?? $entity->created_by)) {
+                if ($request->user()->cannot('update', $entity)) {
                     return response()->json([], 403);
                 }
 
@@ -1271,7 +1289,7 @@ class EntitiesController extends Controller
         if ($entity = Entity::find($id)) {
             $contact = $entity->contacts()->find($contactId);
             if ($contact) {
-                if ($request->user()->id !== ($contact->created_by ?? $entity->created_by)) {
+                if ($request->user()->cannot('update', $entity)) {
                     return response()->json([], 403);
                 }
 
