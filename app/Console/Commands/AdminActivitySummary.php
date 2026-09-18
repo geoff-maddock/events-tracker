@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Mail\AdminActivitySummary as AdminActivitySummaryMail;
 use App\Models\Action;
 use App\Models\Activity;
+use App\Models\NewsletterSubscriber;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -144,6 +145,13 @@ class AdminActivitySummary extends Command
         }
         unset($users);
 
+        // Newsletter subscriber stats (issue #1978)
+        $newsletterStats = [
+            'total_confirmed' => NewsletterSubscriber::confirmed()->count(),
+            'new_confirmed' => NewsletterSubscriber::whereBetween('confirmed_at', [$startDate, $endDate])->count(),
+            'unsubscribed' => NewsletterSubscriber::whereBetween('unsubscribed_at', [$startDate, $endDate])->count(),
+        ];
+
         // Display summary counts
         $this->info('Activity Summary:');
         $this->table(
@@ -157,6 +165,9 @@ class AdminActivitySummary extends Command
                 ['New Series', $counts['new_series']],
                 ['Other Activities', $counts['other']],
                 ['Total', $activities->count()],
+                ['Newsletter Subscribers (confirmed)', $newsletterStats['total_confirmed']],
+                ['Newsletter New Confirmations', $newsletterStats['new_confirmed']],
+                ['Newsletter Unsubscribes', $newsletterStats['unsubscribed']],
             ]
         );
 
@@ -173,7 +184,8 @@ class AdminActivitySummary extends Command
                     $endDate,
                     $summary,
                     $counts,
-                    $userCounts
+                    $userCounts,
+                    $newsletterStats
                 ));
 
             Log::info("Admin activity summary email sent to {$admin_email} for the past {$days} days.");
