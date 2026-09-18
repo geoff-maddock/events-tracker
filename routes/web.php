@@ -12,14 +12,12 @@
 */
 
 // what is this  for?
-use App\Events\EventUpdated;
 use App\Models\Blog;
 use App\Models\Comment;
 use App\Models\Contact;
 use App\Models\DiscordTarget;
 use App\Models\Entity;
 use App\Models\EntityType;
-use App\Models\Event;
 use App\Models\Forum;
 use App\Models\Group;
 use App\Models\Link;
@@ -32,7 +30,6 @@ use App\Models\Role;
 use App\Models\Series;
 use App\Models\Thread;
 use App\Models\ThreadCategory;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -44,9 +41,7 @@ Auth::routes();
 
 // Returns a token bound to the caller's (possibly brand-new) session so a
 // stale page can refresh its CSRF token without a full reload (issue #2089).
-Route::get('csrf-token', function () {
-    return response()->json(['token' => csrf_token()]);
-})->name('csrf.token');
+Route::get('csrf-token', [\App\Http\Controllers\SystemController::class, 'csrfToken'])->name('csrf.token');
 
 // Email verification routes — `verification.verify` MUST be signed.
 Route::get('email/verify', [\App\Http\Controllers\Auth\VerificationController::class, 'show'])
@@ -57,9 +52,7 @@ Route::get('email/verify/{id}/{hash}', [\App\Http\Controllers\Auth\VerificationC
 Route::post('email/resend', [\App\Http\Controllers\Auth\VerificationController::class, 'resend'])
     ->name('verification.resend');
 
-Route::get('tokens/test', function () {
-    return ['data' => 'has event check'];
-})->middleware('auth:sanctum');
+Route::get('tokens/test', [\App\Http\Controllers\SystemController::class, 'tokensTest'])->middleware('auth:sanctum');
 
 Route::view('/api/docs', 'docs.swagger');
 
@@ -159,11 +152,7 @@ Route::bind('users', function ($id) {
     return App\Models\User::whereId($id)->firstOrFail();
 });
 
-Route::get('impersonate/{user}', function (User $user) {
-    Auth::login($user);
-
-    return redirect('/');
-})->middleware('can:admin')->name('user.impersonate');
+Route::get('impersonate/{user}', [\App\Http\Controllers\SystemController::class, 'impersonate'])->middleware('can:admin')->name('user.impersonate');
 
 Route::post('users/{id}/photos', [\App\Http\Controllers\UsersController::class, 'addPhoto']);
 
@@ -275,14 +264,8 @@ Route::get('events/{id}/duplicate', [
     'uses' => '\App\Http\Controllers\EventsController@duplicate',
 ]);
 
-Route::get('events/dispatch', function () {
-    EventUpdated::dispatch();
-
-    return 'test';
-});
-Route::get('update', function () {
-    EventUpdated::dispatch(new Event());
-});
+Route::get('events/dispatch', [\App\Http\Controllers\SystemController::class, 'dispatchEvent']);
+Route::get('update', [\App\Http\Controllers\SystemController::class, 'update']);
 
 Route::get('events/tonight', [\App\Http\Controllers\EventTimeWindowController::class, 'show'])->defaults('window', 'tonight')->name('events.tonight');
 // The old /events/today window duplicated /events/tonight on most days; keep
