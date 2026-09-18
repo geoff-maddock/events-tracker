@@ -80,6 +80,12 @@
             <span>Tags</span>
         </a>
 
+        <!-- Scenes -->
+        <a href="{{ url('/scenes') }}" class="nav-item-tw {{ Request::is('scenes') || Request::is('scenes/*') ? 'nav-item-active-tw' : '' }}">
+            <i class="bi bi-vinyl text-lg"></i>
+            <span>Scenes</span>
+        </a>
+
 
         <!-- Forum -->
         <a href="{{ url('/threads/all') }}" class="nav-item-tw {{ Request::is('threads*') ? 'nav-item-active-tw' : '' }}">
@@ -246,6 +252,12 @@
         <a href="{{ url('/tags') }}" class="nav-item-tw {{ Request::is('tags') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-tags text-lg"></i>
             <span>Tags</span>
+        </a>
+
+        <!-- Scenes -->
+        <a href="{{ url('/scenes') }}" class="nav-item-tw {{ Request::is('scenes') || Request::is('scenes/*') ? 'nav-item-active-tw' : '' }}">
+            <i class="bi bi-vinyl text-lg"></i>
+            <span>Scenes</span>
         </a>
 
         <!-- Forum -->

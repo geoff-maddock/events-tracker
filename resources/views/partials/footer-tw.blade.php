@@ -14,4 +14,11 @@
 		<span aria-hidden="true">&middot;</span>
 		<a href="{{ url('/tags') }}" class="hover:text-primary transition-colors">Tags</a>
 	</div>
+	<div class="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
+		<span class="font-semibold text-foreground">Scenes</span>
+		@foreach (config('scenes', []) as $sceneSlug => $scene)
+		<span aria-hidden="true">&middot;</span>
+		<a href="{{ url('/scenes/'.$sceneSlug) }}" class="hover:text-primary transition-colors">{{ $scene['name'] }}</a>
+		@endforeach
+	</div>
 </footer>
