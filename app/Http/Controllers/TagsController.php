@@ -274,7 +274,7 @@ class TagsController extends Controller
             ->limit(8)
             ->get();
 
-        // get limited events linked to the tag (8 each for preview)
+        // get limited events linked to the tag (16 upcoming, 8 past for preview)
         $eventsBase = fn () => Event::getByTag($slug)
             ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
             ->where(function ($query) {
@@ -285,7 +285,7 @@ class TagsController extends Controller
         $upcomingEvents = $eventsBase()
             ->future()
             ->orderBy('name', 'ASC')
-            ->limit(8)
+            ->limit(16)
             ->get();
 
         $pastEvents = $eventsBase()
