@@ -160,6 +160,19 @@ class InstagramEventPoster
             }
         }
 
+        // Instagram requires a carousel to contain between 2 and 10 items.
+        // When an event only has a usable primary image (no other/entity
+        // photos, or they were all skipped), a single container would be
+        // handed to createCarousel, which fails with an opaque "No data
+        // returned" error (EVENTREPO-X9). #2099 capped the upper bound; this
+        // guards the lower bound by falling back to a normal single-photo
+        // feed post instead.
+        if (count($igContainerIds) < 2) {
+            Log::info('Carousel for event ' . $event->id . ' has fewer than 2 items; posting as a single photo instead.');
+
+            return $this->postSingle($event, $userId);
+        }
+
         if ($this->instagram->checkBatchStatus($igContainerIds) === false) {
             throw new RuntimeException($this->failureMessage('carousel batch status check'));
         }

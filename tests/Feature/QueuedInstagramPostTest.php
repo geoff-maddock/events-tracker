@@ -53,6 +53,18 @@ class QueuedInstagramPostTest extends TestCase
         return $event;
     }
 
+    private function attachSecondaryPhoto(Event $event, User $user): void
+    {
+        $photo = Photo::factory()->create([
+            'is_primary' => 0,
+            'path' => 'test2.jpg',
+            'thumbnail' => 'test2_thumb.jpg',
+            'created_by' => $user->id,
+            'updated_by' => $user->id,
+        ]);
+        $event->photos()->attach($photo->id);
+    }
+
     private function mockInstagramCredentials(): void
     {
         $instagram = Mockery::mock(Instagram::class);
@@ -258,6 +270,9 @@ class QueuedInstagramPostTest extends TestCase
     {
         $user = User::factory()->create(['user_status_id' => 1]);
         $event = $this->eventWithPhoto($user);
+        // Two photos so the carousel path (2–10 items) runs rather than the
+        // single-photo fallback.
+        $this->attachSecondaryPhoto($event, $user);
 
         Storage::shouldReceive('disk')->with('external')->andReturnSelf()->byDefault();
         Storage::shouldReceive('url')->andReturn('http://example.com/test.jpg')->byDefault();
@@ -278,6 +293,39 @@ class QueuedInstagramPostTest extends TestCase
             'event_id' => $event->id,
             'platform' => 'instagram',
             'platform_id' => '555',
+        ]);
+    }
+
+    public function test_single_photo_carousel_falls_back_to_single_post(): void
+    {
+        $user = User::factory()->create(['user_status_id' => 1]);
+        // Only a primary photo — a carousel would have a single item, which
+        // Instagram rejects (needs 2–10). The poster must fall back to a
+        // normal single-photo feed post (EVENTREPO-X9).
+        $event = $this->eventWithPhoto($user);
+
+        Storage::shouldReceive('disk')->with('external')->andReturnSelf()->byDefault();
+        Storage::shouldReceive('url')->andReturn('http://example.com/test.jpg')->byDefault();
+
+        $instagram = Mockery::mock(Instagram::class);
+        $instagram->shouldReceive('getIgUserId')->andReturn(123);
+        $instagram->shouldReceive('getPageAccessToken')->andReturn('token');
+        $instagram->shouldReceive('uploadCarouselPhoto')->andReturn(111);
+        // Carousel container assembly must never happen for a single image.
+        $instagram->shouldReceive('createCarousel')->never();
+        $instagram->shouldReceive('checkBatchStatus')->never();
+        // Single-photo publish path.
+        $instagram->shouldReceive('uploadPhoto')->once()->andReturn(222);
+        $instagram->shouldReceive('checkStatus')->andReturn(true);
+        $instagram->shouldReceive('publishMedia')->once()->andReturn(777);
+        $this->app->instance(Instagram::class, $instagram);
+
+        PostEventToInstagram::dispatch($event, true, $user->id);
+
+        $this->assertDatabaseHas('event_shares', [
+            'event_id' => $event->id,
+            'platform' => 'instagram',
+            'platform_id' => '777',
         ]);
     }
 
