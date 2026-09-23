@@ -170,6 +170,7 @@ class EventsController extends Controller
                 'series',
                 'tags',
                 'entities',
+                'entities.roles',
                 'photos',
                 'threads',
                 'eventResponses.responseType',
