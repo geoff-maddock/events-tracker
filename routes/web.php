@@ -256,7 +256,7 @@ Route::bind('photos', function ($id) {
     return Photo::whereId($id)->firstOrFail();
 });
 
-Route::resource('photos', \App\Http\Controllers\PhotosController::class);
+Route::resource('photos', \App\Http\Controllers\PhotosController::class)->only(['index', 'show', 'destroy']);
 
 // EVENTS
 Route::get('events/create-series', [

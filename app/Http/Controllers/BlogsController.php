@@ -482,6 +482,11 @@ class BlogsController extends Controller
      */
     public function addPhoto(int $id, Request $request, ImageHandler $imageHandler): void
     {
+        abort_unless($this->user, 401);
+        // matches the upload form in blogs/show-tw: the author or a super_admin
+        $blog = Blog::findOrFail($id);
+        abort_unless($this->user->hasGroup('super_admin') || $this->user->can('update', $blog), 403);
+
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif,webp',
         ]);

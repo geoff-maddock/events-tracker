@@ -9,6 +9,12 @@ class PhotoPolicy
 {
     // the `admin` group is granted everything by Gate::before in AuthServiceProvider
 
+    // set/unset primary and event flags; same people who may delete it
+    public function update(User $user, Photo $photo): bool
+    {
+        return $this->delete($user, $photo);
+    }
+
     public function delete(User $user, Photo $photo): bool
     {
         if ($user->hasGroup('super_admin') || (int) $photo->created_by === $user->id) {
