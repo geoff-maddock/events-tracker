@@ -338,7 +338,7 @@
             <div class="p-6">
                 <h3 class="text-lg font-semibold text-foreground mb-4">Photos</h3>
 
-                @if ($canViewFullProfile && ($signedIn || $user->id == Config::get('app.superuser')))
+                @if ($canViewFullProfile && Auth::check() && (Auth::id() === $user->id || Auth::user()->can('grant_access')))
                     <div class="mb-4 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600 transition-colors p-2">
                         <form action="/users/{{ $user->id }}/photos" class="dropzone !border-0 !rounded-md text-center cursor-pointer" id="myDropzone" method="POST">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -353,7 +353,7 @@
                                 <a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}" data-lightbox="user-photos" class="block aspect-square overflow-hidden rounded-lg">
                                     <img src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}" alt="{{ $user->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
                                 </a>
-                                @if ($signedIn || $user->id == Config::get('app.superuser'))
+                                @can('update', $photo)
                                     <div class="absolute bottom-1 right-1 flex gap-1">
                                         @if ($photo->is_primary)
                                             <form action="/photos/{{ $photo->id }}/unset-primary" method="POST" class="inline">
@@ -378,7 +378,7 @@
                                             </button>
                                         </form>
                                     </div>
-                                @endif
+                                @endcan
                             </div>
                         @endforeach
                     </div>

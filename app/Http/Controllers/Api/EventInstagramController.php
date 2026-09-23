@@ -151,6 +151,12 @@ class EventInstagramController extends Controller
             return back();
         }
 
+        if ($error = $this->eventShareError($event)) {
+            flash()->error('Error', $error);
+
+            return back();
+        }
+
         if ($error = $this->instagramCredentialError($instagram)) {
             flash()->error('Error', $error);
 
@@ -183,6 +189,10 @@ class EventInstagramController extends Controller
     {
         if (!$event = Event::find($id)) {
             return $this->instagramActionResponse(false, 'Error', 'No such event');
+        }
+
+        if ($error = $this->eventShareError($event)) {
+            return $this->instagramActionResponse(false, 'Error', $error);
         }
 
         if ($error = $this->instagramCredentialError($instagram)) {
@@ -316,6 +326,28 @@ class EventInstagramController extends Controller
      * so the request never navigates and stays out of the browser history;
      * regular requests fall back to a flash message and redirect.
      */
+    /**
+     * Only public events may go to the site's Instagram, and only their owner or an admin may send them.
+     * Mirrors the checks in postCarouselToInstagramApi.
+     */
+    private function eventShareError(Event $event): ?string
+    {
+        $user = $this->user;
+
+        if (!$user) {
+            return 'You must be signed in to post to Instagram.';
+        }
+
+        if ($event->visibility_id !== \App\Models\Visibility::VISIBILITY_PUBLIC) {
+            return 'Only public events can be posted to Instagram.';
+        }
+
+        $isOwner = (int) $event->created_by === $user->id;
+        $isAdmin = $user->hasGroup('admin') || $user->hasGroup('super_admin');
+
+        return ($isOwner || $isAdmin) ? null : 'You are not authorized to post this event to Instagram.';
+    }
+
     private function instagramActionResponse(bool $success, string $title, string $message): RedirectResponse|JsonResponse
     {
         if (request()->ajax() || request()->wantsJson()) {
@@ -379,6 +411,13 @@ class EventInstagramController extends Controller
      */
     public function postWeekToInstagram(Instagram $instagram, ImageHandler $imageHandler): RedirectResponse
     {
+        // Admin-only guard
+        if (!$this->user || !$this->user->hasGroup('super_admin')) {
+            flash()->error('Error', 'You must be an admin to post the week to Instagram.');
+
+            return back();
+        }
+
         // load the first 9 events of the week
         $events = Event::where('start_at', '>=', Carbon::now()->startOfWeek())
             ->where('start_at', '<=', Carbon::now()->endOfWeek())

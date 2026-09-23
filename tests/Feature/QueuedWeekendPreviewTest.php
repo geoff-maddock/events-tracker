@@ -226,7 +226,7 @@ class QueuedWeekendPreviewTest extends TestCase
 
         $admin = $this->superAdmin();
 
-        $response = $this->actingAs($admin)->get('/events/instagram-weekend-preview');
+        $response = $this->actingAs($admin)->post('/events/instagram-weekend-preview');
 
         $response->assertRedirect();
         Queue::assertPushed(PostWeekendPreviewToInstagram::class, function ($job) use ($admin) {
@@ -241,7 +241,7 @@ class QueuedWeekendPreviewTest extends TestCase
 
         $user = User::factory()->create(['user_status_id' => 1]);
 
-        $response = $this->actingAs($user)->get('/events/instagram-weekend-preview');
+        $response = $this->actingAs($user)->post('/events/instagram-weekend-preview');
 
         $response->assertRedirect();
         Queue::assertNothingPushed();
@@ -257,7 +257,7 @@ class QueuedWeekendPreviewTest extends TestCase
 
         $admin = $this->superAdmin();
 
-        $response = $this->actingAs($admin)->get('/events/instagram-weekend-preview');
+        $response = $this->actingAs($admin)->post('/events/instagram-weekend-preview');
 
         $response->assertRedirect();
         Queue::assertNothingPushed();
@@ -270,7 +270,7 @@ class QueuedWeekendPreviewTest extends TestCase
 
         $admin = $this->superAdmin();
 
-        $response = $this->actingAs($admin)->getJson('/events/instagram-weekend-preview');
+        $response = $this->actingAs($admin)->postJson('/events/instagram-weekend-preview');
 
         $response->assertStatus(200)
             ->assertJson([
@@ -289,7 +289,7 @@ class QueuedWeekendPreviewTest extends TestCase
 
         $user = User::factory()->create(['user_status_id' => 1]);
 
-        $response = $this->actingAs($user)->getJson('/events/instagram-weekend-preview');
+        $response = $this->actingAs($user)->postJson('/events/instagram-weekend-preview');
 
         $response->assertStatus(422)
             ->assertJson([

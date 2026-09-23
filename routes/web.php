@@ -256,7 +256,7 @@ Route::bind('photos', function ($id) {
     return Photo::whereId($id)->firstOrFail();
 });
 
-Route::resource('photos', \App\Http\Controllers\PhotosController::class);
+Route::resource('photos', \App\Http\Controllers\PhotosController::class)->only(['index', 'show', 'destroy']);
 
 // EVENTS
 Route::get('events/create-series', [
@@ -319,13 +319,13 @@ Route::get('events/rpp-reset', ['as' => 'events.rppReset', 'uses' => '\App\Http\
 // FB access token
 Route::get('fb-access', [\App\Http\Controllers\EventsController::class, 'fbAuthToken']);
 
-// POST to Instagram
-Route::get('events/{id}/instagram-post', [\App\Http\Controllers\Api\EventInstagramController::class, 'postCarouselToInstagram'])->name('events.instagramPost');
-Route::get('events/{id}/instagram-story-post', [\App\Http\Controllers\Api\EventInstagramController::class, 'postStoryToInstagram'])->name('events.instagramStoryPost');
-Route::get('events/{id}/instagram-post-single', [\App\Http\Controllers\Api\EventInstagramController::class, 'postToInstagram'])->name('events.instagramPostSingle');
-Route::get('events/instagram-post-week', [\App\Http\Controllers\Api\EventInstagramController::class, 'postWeekToInstagram'])->name('events.instagramPostWeek');
-Route::get('events/instagram-weekend-preview', [\App\Http\Controllers\Api\EventInstagramController::class, 'postWeekendPreviewToInstagram'])->name('events.instagramWeekendPreview');
-Route::get('events/instagram-todays-preview', [\App\Http\Controllers\Api\EventInstagramController::class, 'postTodaysPreviewToInstagram'])->name('events.instagramTodaysPreview');
+// POST to Instagram; these publish to the site's accounts, so they are POST + auth and check ownership in the controller
+Route::post('events/{id}/instagram-post', [\App\Http\Controllers\Api\EventInstagramController::class, 'postCarouselToInstagram'])->name('events.instagramPost')->middleware('auth');
+Route::post('events/{id}/instagram-story-post', [\App\Http\Controllers\Api\EventInstagramController::class, 'postStoryToInstagram'])->name('events.instagramStoryPost')->middleware('auth');
+Route::post('events/{id}/instagram-post-single', [\App\Http\Controllers\Api\EventInstagramController::class, 'postToInstagram'])->name('events.instagramPostSingle')->middleware('auth');
+Route::post('events/instagram-post-week', [\App\Http\Controllers\Api\EventInstagramController::class, 'postWeekToInstagram'])->name('events.instagramPostWeek')->middleware('auth');
+Route::post('events/instagram-weekend-preview', [\App\Http\Controllers\Api\EventInstagramController::class, 'postWeekendPreviewToInstagram'])->name('events.instagramWeekendPreview')->middleware('auth');
+Route::post('events/instagram-todays-preview', [\App\Http\Controllers\Api\EventInstagramController::class, 'postTodaysPreviewToInstagram'])->name('events.instagramTodaysPreview')->middleware('auth');
 
 // POST to Discord (issue #2058). POST, not GET — this leaves the server.
 Route::post('events/{id}/discord-post', [\App\Http\Controllers\EventDiscordController::class, 'store'])
@@ -370,10 +370,10 @@ Route::get('events/{id}/import-photo', [
     'uses' => '\App\Http\Controllers\EventsController@importPhoto',
 ]);
 
-Route::get('events/{id}/tweet', [
+Route::post('events/{id}/tweet', [
     'as' => 'events.tweet',
     'uses' => '\App\Http\Controllers\EventsController@tweet',
-]);
+])->middleware('auth');
 
 Route::get('events/{id}/attend', [
     'as' => 'events.attend',
@@ -607,13 +607,13 @@ Route::get('entities/tag/{tag}', [\App\Http\Controllers\EntitiesController::clas
 Route::get('entities/alias/{alias}', [\App\Http\Controllers\EntitiesController::class, 'indexAliases'])->name('entities.alias');
 Route::get('entities/slug/{slug}', [\App\Http\Controllers\EntitiesController::class, 'indexSlug'])->name('entities.slug');
 
-Route::get('entities/{id}/tweet', [
+Route::post('entities/{id}/tweet', [
     'as' => 'entities.tweet',
     'uses' => '\App\Http\Controllers\EntitiesController@tweet',
-]);
+])->middleware('auth');
 
-Route::get('entities/{id}/instagram-post', [\App\Http\Controllers\EntitiesController::class, 'postToInstagram'])->name('entities.instagramPost');
-Route::get('entities/{id}/instagram-story-post', [\App\Http\Controllers\EntitiesController::class, 'postStoryToInstagram'])->name('entities.instagramStoryPost');
+Route::post('entities/{id}/instagram-post', [\App\Http\Controllers\EntitiesController::class, 'postToInstagram'])->name('entities.instagramPost')->middleware('auth');
+Route::post('entities/{id}/instagram-story-post', [\App\Http\Controllers\EntitiesController::class, 'postStoryToInstagram'])->name('entities.instagramStoryPost')->middleware('auth');
 Route::get('entities/{id}/send-update-summary', [\App\Http\Controllers\EntitiesController::class, 'sendUpdateSummary'])->name('entities.sendUpdateSummary')->middleware('auth');
 
 Route::match(['get', 'post'], 'entities/{id}/follow', [

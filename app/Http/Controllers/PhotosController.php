@@ -13,7 +13,6 @@ use App\Services\StringHelper;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
 class PhotosController extends Controller
@@ -50,8 +49,7 @@ class PhotosController extends Controller
 
     public function __construct(PhotoFilters $filter)
     {
-        // $this->middleware('auth', ['except' => ['index', 'show']]);
-        $this->middleware('auth', ['only' => ['destroy']]);
+        $this->middleware('auth', ['only' => ['destroy', 'setPrimary', 'unsetPrimary', 'setEvent', 'unsetEvent']]);
 
         $this->filter = $filter;
 
@@ -290,30 +288,6 @@ class PhotosController extends Controller
         return view('photos.show-tw', compact('photo'));
     }
 
-    public function store(Request $request, Photo $photo): RedirectResponse
-    {
-        $input = $request->all();
-
-        $photo = $photo->create($input);
-
-        $photo->entities()->attach($request->input('entity_list'));
-
-        Session::flash('flash_message', 'Your photo has been created!');
-
-        return redirect()->route('photos.index');
-    }
-
-    public function update(Photo $photo, Request $request): RedirectResponse
-    {
-        $photo->fill($request->input())->save();
-
-        $photo->entities()->sync($request->input('entity_list', []));
-
-        \Session::flash('flash_message', 'Your photo has been updated!');
-
-        return redirect('photos');
-    }
-
     public function destroy(int $id): RedirectResponse
     {
         $photo = Photo::findOrFail($id);
@@ -330,6 +304,8 @@ class PhotosController extends Controller
     public function setPrimary(int $id): RedirectResponse
     {
         $photo = Photo::findOrFail($id);
+
+        $this->authorize('update', $photo);
 
         // get anything linked to this photo
         $users = $photo->users;
@@ -390,6 +366,8 @@ class PhotosController extends Controller
     {
         $photo = Photo::findOrFail($id);
 
+        $this->authorize('update', $photo);
+
         $photo->is_primary = 0;
         $photo->save();
 
@@ -402,6 +380,8 @@ class PhotosController extends Controller
     {
         $photo = Photo::findOrFail($id);
 
+        $this->authorize('update', $photo);
+
         $photo->is_event = 1;
         $photo->save();
 
@@ -413,6 +393,8 @@ class PhotosController extends Controller
     public function unsetEvent(int $id): RedirectResponse
     {
         $photo = Photo::findOrFail($id);
+
+        $this->authorize('update', $photo);
 
         $photo->is_event = 0;
         $photo->save();
