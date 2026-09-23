@@ -293,7 +293,7 @@ class BlogsController extends Controller
      */
     public function edit(Blog $blog): View
     {
-        $this->middleware('auth');
+        $this->authorize('update', $blog);
 
         return view('blogs.edit-tw', compact('blog'))
             ->with($this->getFormOptions());
@@ -306,11 +306,9 @@ class BlogsController extends Controller
     {
         $msg = '';
 
-        $blog->fill($request->input())->save();
+        $this->authorize('update', $blog);
 
-        if (!$blog->ownedBy($this->user)) {
-            $this->unauthorized($request);
-        }
+        $blog->fill($request->input())->save();
 
         $tagArray = $request->input('tag_list', []);
         $tags = Tag::resolveList($tagArray, $this->user);

@@ -438,7 +438,7 @@ class PostsController extends Controller
      */
     public function edit(Post $post): View
     {
-        $this->middleware('auth');
+        $this->authorize('update', $post);
 
         return view('posts.edit-tw', compact('post'))->with($this->getFormOptions());
     }
@@ -461,11 +461,9 @@ class PostsController extends Controller
     {
         $msg = '';
 
-        $post->fill($request->input())->save();
+        $this->authorize('update', $post);
 
-        if (!$post->ownedBy($this->user)) {
-            $this->unauthorized($request);
-        }
+        $post->fill($request->input())->save();
 
         $tagArray = $request->input('tag_list', []);
         $tags = Tag::resolveList($tagArray, auth()->user());

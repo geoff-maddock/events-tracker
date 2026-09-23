@@ -86,7 +86,10 @@ class Post extends Eloquent
         parent::boot();
 
         static::creating(function ($post) {
-            //$post->created_by = Auth::user() ? Auth::user()->id : 1;
+            // ownership is never mass-assigned; it comes from the signed-in user
+            if (empty($post->created_by) && Auth::id()) {
+                $post->created_by = Auth::id();
+            }
             $post->updated_by = Auth::user() ? Auth::user()->id : 1;
         });
 
@@ -102,10 +105,7 @@ class Post extends Eloquent
         'visibility_id',
         'body',
         'thread_id',
-        'created_by',
     ];
-
-    protected $guarded = [];
 
     /**
      * Making or editing a post is activity on its thread, so it bumps the
