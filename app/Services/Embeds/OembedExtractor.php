@@ -7,7 +7,6 @@ use App\Models\Event;
 use App\Models\Series;
 use DOMDocument;
 use DOMXPath;
-use Exception;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -16,6 +15,8 @@ use Illuminate\Support\Facades\Cache;
 class OembedExtractor
 {
     const CONTAINER_LIMIT = 4;
+
+    const MAX_REDIRECTS = 3;
 
     // 7 days — matches the browser-side embed cache TTL in public/js/embed-cache.js.
     const CACHE_TTL_SECONDS = 604800;
@@ -170,8 +171,8 @@ class OembedExtractor
                 }
             }
 
-            if (str_contains($url, "bandcamp.com")) {
-                $temp = $this->getEmbedsFromBandcampUrl($url);
+            if ($bandcampUrl = self::bandcampUrl($url)) {
+                $temp = $this->getEmbedsFromBandcampUrl($bandcampUrl);
                 if ($temp !== null) {
                     $embeds = array_merge($embeds, $temp);
                 }
@@ -268,15 +269,15 @@ class OembedExtractor
             $this->config = $this->getLayoutConfig();
         }
 
-        if (str_contains($url, "bandcamp.com")) {
-            $this->provider->request($url);
+        // only https pages on bandcamp.com or a subdomain are fetched, and every redirect hop is re-checked
+        if (($url = self::bandcampUrl($url)) && $this->requestBandcampPage($url)) {
             $content = $this->provider->query('//meta[@property="og:video"]/@content');
 
-            if (null !== $content) {
+            if (null !== $content && self::bandcampUrl($content) !== null) {
                 $content = $this->convertBandcampMetaOgVideo($content);
-                $embeds[] = sprintf($this->config['bandcamp_layout'], $content);
-            } else {
-                $containerUrls = $this->getUrlsFromContainer($url);
+                $embeds[] = sprintf($this->config['bandcamp_layout'], e($content));
+            } elseif (null === $content) {
+                $containerUrls = $this->getUrlsFromContainer($url, (string) $this->provider->getResponse());
 
                 foreach ($containerUrls as $containerUrl) {
                     if ($containerCount > $this::CONTAINER_LIMIT) {
@@ -296,19 +297,62 @@ class OembedExtractor
         return array_unique($embeds);
     }
 
-    protected function getUrlsFromContainer(string $containerUrl): array
+    /**
+     * Normalise $url to an https URL on bandcamp.com or one of its subdomains, or null if it is not one.
+     * http links are upgraded; credentials and non-default ports are rejected.
+     */
+    public static function bandcampUrl(string $url): ?string
+    {
+        $parts = parse_url(trim($url));
+
+        if (!is_array($parts) || !in_array(strtolower($parts['scheme'] ?? ''), ['http', 'https'], true)) {
+            return null;
+        }
+
+        if (isset($parts['user']) || isset($parts['pass']) || (isset($parts['port']) && !in_array((int) $parts['port'], [80, 443], true))) {
+            return null;
+        }
+
+        $host = strtolower($parts['host'] ?? '');
+
+        if ($host !== 'bandcamp.com' && !str_ends_with($host, '.bandcamp.com')) {
+            return null;
+        }
+
+        return 'https://'.$host.($parts['path'] ?? '').(isset($parts['query']) ? '?'.$parts['query'] : '');
+    }
+
+    /**
+     * Load a Bandcamp page into the provider, following up to MAX_REDIRECTS redirects that stay on Bandcamp.
+     */
+    protected function requestBandcampPage(string $url): bool
+    {
+        for ($hop = 0; $hop <= self::MAX_REDIRECTS; $hop++) {
+            $this->provider->setResponse(null);
+            $next = $this->provider->requestWithoutRedirects($url);
+
+            if ($next === null) {
+                return !empty($this->provider->getResponse());
+            }
+
+            if (!$url = self::bandcampUrl($next)) {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Album and track links on an already-fetched Bandcamp artist/label page.
+     */
+    protected function getUrlsFromContainer(string $containerUrl, string $htmlString): array
     {
         $urls = [];
 
-        $httpClient = new \GuzzleHttp\Client();
-
-        try {
-            $response = $httpClient->get($containerUrl);
-        } catch (Exception $e) {
+        if ($htmlString === '') {
             return [];
         }
-
-        $htmlString = (string) $response->getBody();
 
         libxml_use_internal_errors(true);
 

@@ -147,4 +147,12 @@ class FakeEmbedProvider extends Provider
         // Anything else (bandcamp scrape, container fetch, etc.) gets an empty response.
         $this->setResponse('');
     }
+
+    public function requestWithoutRedirects(string $url): ?string
+    {
+        $this->requestCount++;
+        $this->setResponse('');
+
+        return null;
+    }
 }
