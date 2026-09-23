@@ -418,14 +418,14 @@
                 </div>
                 <div class="p-6">
                     @if ($tabs['events'] === 'created')
-                        @include('events.list-tw', ['events' => $user->events ? $user->events->take(10) : collect()])
+                        @include('events.list-tw', ['events' => $profileEvents])
                         <div class="mt-4 pt-4 border-t border-border">
                             <a href="{{ route('events.index') }}" class="text-primary hover:underline text-sm">
                                 View all events &rarr;
                             </a>
                         </div>
                     @else
-                        @include('events.list-tw', ['events' => $user->getAttending()->get()->take(20)])
+                        @include('events.list-tw', ['events' => $profileEvents])
                         <div class="mt-4 pt-4 border-t border-border">
                             <a href="{{ route('users.attending', ['id' => $user->id, 'filters[start_at][start]' => '']) }}" class="text-primary hover:underline text-sm">
                                 View all events attending &rarr;

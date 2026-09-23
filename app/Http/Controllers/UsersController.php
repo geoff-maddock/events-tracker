@@ -327,10 +327,6 @@ class UsersController extends Controller
             return redirect('users/'.$user->id);
         }
 
-        // dd($user->getTagsFollowing());
-
-        $token = \Password::getRepository()->create($user);
-
         // Determine if the current viewer can see the full profile
         // Full profile is visible if:
         // 1. The viewer is the profile owner
@@ -354,7 +350,13 @@ class UsersController extends Controller
             }
         }
 
-        return view('users.show-tw', compact('user', 'tabs', 'token', 'canViewFullProfile'));
+        // only the active events tab is rendered; load just that list, capped, with what the cards read
+        $eagerLoad = EventsController::cardEventEagerLoad($this->user);
+        $profileEvents = ($tabs['events'] ?? 'created') === 'attending'
+            ? $user->getAttending()->with($eagerLoad)->orderBy('events.start_at', 'desc')->limit(20)->get()
+            : $user->events()->with($eagerLoad)->limit(10)->get();
+
+        return view('users.show-tw', compact('user', 'tabs', 'canViewFullProfile', 'profileEvents'));
     }
 
     public function profile(Request $request): RedirectResponse
