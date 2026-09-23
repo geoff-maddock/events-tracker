@@ -9,6 +9,7 @@ use App\Models\Thread;
 use App\Policies\PostPolicy;
 use App\Policies\TagPolicy;
 use App\Policies\ThreadPolicy;
+use App\Services\FrontendUrl;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -64,17 +65,16 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         ResetPassword::createUrlUsing(function ($notifiable, string $token) {
-            // Prefer the per-request value your API accepts, fallback to config/app.php
-            $base = request()->input('frontend-url') ?? config('app.frontend_url', config('app.url'));
-            $base = rtrim($base, '/');
+            // a client-supplied frontend-url is only used when its origin is allowlisted
+            $base = FrontendUrl::resolve(request()->input('frontend-url'));
 
             return $base.'/password/reset/'.$token.'?email='.urlencode($notifiable->getEmailForPasswordReset());
         });
 
         // I just need to override the URL generation, not the whole email
         VerifyEmail::createUrlUsing(function ($notifiable) {
-            // Prefer the per-request value your API accepts, fallback to config/app.php
-            $base = $notifiable->frontendUrl ?? config('app.frontend_url', config('app.url'));
+            // a client-supplied frontend-url is only used when its origin is allowlisted
+            $base = FrontendUrl::resolve($notifiable->frontendUrl ?? null);
 
             $path = URL::temporarySignedRoute(
                 'verification.verify',

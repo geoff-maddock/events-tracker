@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Services\FrontendUrl;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Support\Facades\URL;
@@ -20,6 +21,7 @@ class SendCustomEmailVerificationNotification
         if ($event->user instanceof MustVerifyEmail && ! $event->user->hasVerifiedEmail()) {
             // Check if there's a custom frontend URL in the user object
             $frontendUrl = $event->user->frontendUrl ?? null;
+            $frontendUrl = $frontendUrl ? FrontendUrl::resolve($frontendUrl) : null;
             
             if ($frontendUrl) {
                 // Temporarily override the app URL to use the frontend URL

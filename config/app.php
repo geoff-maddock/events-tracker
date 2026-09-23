@@ -45,6 +45,14 @@ return [
     'frontend_url' => env('FRONTEND_URL') ?: env('APP_URL', 'http://localhost/'),
 
     /*
+    | Extra origins (comma-separated) that API clients may pass as `frontend-url`
+    | for emailed auth links. frontend_url and url are always allowed; anything
+    | else falls back to frontend_url. See App\Services\FrontendUrl.
+    */
+
+    'allowed_frontend_urls' => array_values(array_filter(array_map('trim', explode(',', (string) env('ALLOWED_FRONTEND_URLS', ''))))),
+
+    /*
     |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
