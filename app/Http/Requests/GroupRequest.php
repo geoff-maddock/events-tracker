@@ -14,7 +14,7 @@ class GroupRequest extends Request
      */
     public function authorize()
     {
-        return true;
+        return $this->user() !== null && $this->user()->can('admin');
     }
 
     /**

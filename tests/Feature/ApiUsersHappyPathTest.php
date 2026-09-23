@@ -68,6 +68,8 @@ class ApiUsersHappyPathTest extends TestCase
 
     public function test_update_modifies_user_and_profile_fields(): void
     {
+        // updating another account needs grant_access (admins pass via Gate::before)
+        $this->actor->assignGroup('admin');
         $target = User::factory()->create();
         $target->profile()->create([]);
 

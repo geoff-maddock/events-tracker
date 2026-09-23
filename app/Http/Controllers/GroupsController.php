@@ -40,8 +40,8 @@ class GroupsController extends Controller
 
     public function __construct(GroupFilters $filter)
     {
-        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
-        $this->middleware(['auth', 'can:admin'], ['only' => ['destroy']]);
+        // group and permission changes grant privileges, so every write is admin-only
+        $this->middleware(['auth', 'can:admin'], ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
         $this->filter = $filter;
 
         // prefix for session storage
