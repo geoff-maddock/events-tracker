@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Profile;
 use App\Http\Resources\UserResource;
+use App\Services\FrontendUrl;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -42,7 +43,8 @@ class RegisterController extends Controller
         // Fire the Registered event to trigger email verification
         // Store frontend-url in user instance temporarily if provided
         if ($request->has('frontend-url')) {
-            $user->frontendUrl = $request->input('frontend-url');
+            // only allowlisted origins; anything else falls back to the configured frontend
+            $user->frontendUrl = FrontendUrl::resolve($request->input('frontend-url'));
         }
         
         event(new Registered($user));

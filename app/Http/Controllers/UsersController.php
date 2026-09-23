@@ -902,6 +902,8 @@ class UsersController extends Controller
      */
     public function purge(Request $request)
     {
+        abort_unless($request->user()?->can('grant_access'), 403);
+
         // get all the users who are not approved
         $users = User::where('user_status_id', '=', '1')->orderBy('name', 'ASC')->get();
 

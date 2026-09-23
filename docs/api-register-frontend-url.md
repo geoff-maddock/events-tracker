@@ -22,6 +22,9 @@ POST /api/register
 ### Optional Fields
 - `frontend-url` (string, url, max: 255): The base URL of your frontend application
 
+### Allowed origins
+`frontend-url` is only used when its origin (scheme, host and port) is `FRONTEND_URL`, `APP_URL`, or listed in the comma-separated `ALLOWED_FRONTEND_URLS` env var. Any other value is ignored and the link uses `FRONTEND_URL`. The same rule applies to `frontend-url` on password-reset requests. This stops a caller from making the site email a link that points somewhere else.
+
 ## Example Requests
 
 ### Without frontend-url (uses default backend URL)

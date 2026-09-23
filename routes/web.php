@@ -12,14 +12,12 @@
 */
 
 // what is this  for?
-use App\Events\EventUpdated;
 use App\Models\Blog;
 use App\Models\Comment;
 use App\Models\Contact;
 use App\Models\DiscordTarget;
 use App\Models\Entity;
 use App\Models\EntityType;
-use App\Models\Event;
 use App\Models\Forum;
 use App\Models\Group;
 use App\Models\Link;
@@ -225,7 +223,7 @@ Route::get('exports/download/{filename}', [
     'uses' => '\App\Http\Controllers\UsersController@downloadExport',
 ])->middleware('signed');
 
-Route::post('purge', [\App\Http\Controllers\UsersController::class, 'purge'])->name('users.purge');
+Route::post('purge', [\App\Http\Controllers\UsersController::class, 'purge'])->name('users.purge')->middleware(['auth', 'can:grant_access']);
 
 Route::match(['get', 'post'], 'users/{id}/attending', [\App\Http\Controllers\EventsController::class, 'indexUserAttending'])->name('users.attending');
 Route::match(['get', 'post'], 'users/{id}/attending-ical', [\App\Http\Controllers\EventsController::class, 'indexUserAttendingIcal'])->name('users.attendingIcal');
@@ -274,15 +272,6 @@ Route::get('events/{id}/duplicate', [
     'as' => 'events.duplicate',
     'uses' => '\App\Http\Controllers\EventsController@duplicate',
 ]);
-
-Route::get('events/dispatch', function () {
-    EventUpdated::dispatch();
-
-    return 'test';
-});
-Route::get('update', function () {
-    EventUpdated::dispatch(new Event());
-});
 
 Route::get('events/tonight', [\App\Http\Controllers\EventTimeWindowController::class, 'show'])->defaults('window', 'tonight')->name('events.tonight');
 // The old /events/today window duplicated /events/tonight on most days; keep

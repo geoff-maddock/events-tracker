@@ -275,14 +275,12 @@ class UsersController extends Controller
 
     public function store(UserRequest $request, User $user): JsonResponse
     {   
-        // input does have values
-        $input = $request->all();
-
-        // changed this to use the static method and it worked
-        $user = User::create($input);
+        // user_status_id is fillable, so only take the account fields here
+        $user = User::create($request->only(['name', 'email', 'password']));
 
         // set the user status
         $user->user_status_id = 1;
+        $user->save();
 
         // if there is no profile, create one
         $profile = new Profile();
@@ -298,21 +296,35 @@ class UsersController extends Controller
 
     public function update(User $user, Request $request): JsonResponse
     {
-        $input = $request->all();
-        
-        // Extract user fields (exclude profile data)
-        $userFields = $request->except('profile');
-        
-        // Extract profile fields
+        // same rule as destroy: self, or a user with grant_access
+        if (!$this->user || ($this->user->id !== $user->id && !$this->user->can('grant_access'))) {
+            return response()->json(['message' => 'Not authorized.'], 403);
+        }
+
+        $isAdmin = $this->user->can('grant_access');
+
+        $request->validate([
+            'name' => ['sometimes', 'required', 'min:6', 'max:255', 'regex:/^[a-zA-Z0-9\s._-]+$/'],
+            'email' => ['sometimes', 'required', 'email', 'max:255', 'unique:users,email,'.$user->id],
+            'password' => ['sometimes', 'required', 'min:8', 'max:60'],
+            'profile' => ['sometimes', 'array'],
+            'group_list' => ['sometimes', 'array'],
+            'group_list.*' => ['integer', 'exists:groups,id'],
+        ]);
+
+        // status and group membership are admin-only fields
+        $userFields = $request->only($isAdmin
+            ? ['name', 'slug', 'email', 'password', 'user_status_id']
+            : ['name', 'slug', 'email', 'password']);
+
         $profileFields = $request->input('profile', []);
 
-        // Update user fields
         $user->fill($userFields)->save();
-        
-        // Update profile fields
-        $user->profile->fill($profileFields)->save();
 
-        if ($request->has('group_list')) {
+        // Some legacy users have no profile row yet (EVENTREPO-VW); create one on demand.
+        $user->profile()->firstOrCreate([])->fill($profileFields)->save();
+
+        if ($isAdmin && $request->has('group_list')) {
             $user->groups()->sync($request->input('group_list', []));
         }
 
