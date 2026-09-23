@@ -1410,6 +1410,12 @@ class EntitiesController extends Controller
             return back();
         }
 
+        if (!$this->user->can('update', $entity)) {
+            flash()->error('Error', 'You are not authorized to tweet this entity.');
+
+            return back();
+        }
+
         if (config('app.twitter_consumer_key') === '999') {
             flash()->error('Error', 'Twitter is not configured.');
         }
@@ -1432,6 +1438,13 @@ class EntitiesController extends Controller
         // load the entity
         if (!$entity = Entity::find($id)) {
             flash()->error('Error', 'No such entity');
+
+            return back();
+        }
+
+        // same people who see the menu link: those who may edit the entity
+        if (!$this->user || !$this->user->can('update', $entity)) {
+            flash()->error('Error', 'You are not authorized to post this entity to Instagram.');
 
             return back();
         }
@@ -1584,6 +1597,13 @@ class EntitiesController extends Controller
         // load the entity
         if (!$entity = Entity::find($id)) {
             flash()->error('Error', 'No such entity');
+
+            return back();
+        }
+
+        // same people who see the menu link: those who may edit the entity
+        if (!$this->user || !$this->user->can('update', $entity)) {
+            flash()->error('Error', 'You are not authorized to post this entity to Instagram.');
 
             return back();
         }

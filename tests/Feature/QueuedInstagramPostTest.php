@@ -69,7 +69,7 @@ class QueuedInstagramPostTest extends TestCase
         $user = User::factory()->create(['user_status_id' => 1]);
         $event = $this->eventWithPhoto($user);
 
-        $response = $this->actingAs($user)->get('/events/' . $event->id . '/instagram-post');
+        $response = $this->actingAs($user)->post('/events/' . $event->id . '/instagram-post');
 
         $response->assertRedirect();
         Queue::assertPushed(PostEventToInstagram::class, function ($job) use ($event, $user) {
@@ -89,7 +89,7 @@ class QueuedInstagramPostTest extends TestCase
         $admin->groups()->attach($superGroup->id);
         $event = $this->eventWithPhoto($admin);
 
-        $response = $this->actingAs($admin)->get('/events/' . $event->id . '/instagram-story-post');
+        $response = $this->actingAs($admin)->post('/events/' . $event->id . '/instagram-story-post');
 
         $response->assertRedirect();
         Queue::assertPushed(PostEventStoryToInstagram::class);
@@ -115,7 +115,7 @@ class QueuedInstagramPostTest extends TestCase
         $event = $this->eventWithPhoto($user);
         $this->shareEventToInstagram($event, now()->subDay());
 
-        $response = $this->actingAs($user)->getJson('/events/' . $event->id . '/instagram-post');
+        $response = $this->actingAs($user)->postJson('/events/' . $event->id . '/instagram-post');
 
         $response->assertStatus(422)
             ->assertJson(['success' => false, 'title' => 'Already posted']);
@@ -131,7 +131,7 @@ class QueuedInstagramPostTest extends TestCase
         $event = $this->eventWithPhoto($user);
         $this->shareEventToInstagram($event, now()->subDays(4));
 
-        $this->actingAs($user)->getJson('/events/' . $event->id . '/instagram-post')
+        $this->actingAs($user)->postJson('/events/' . $event->id . '/instagram-post')
             ->assertStatus(200);
         Queue::assertPushed(PostEventToInstagram::class);
     }
@@ -146,7 +146,7 @@ class QueuedInstagramPostTest extends TestCase
         // posted_at is null when a share attempt failed — that should not throttle
         $this->shareEventToInstagram($event, null);
 
-        $this->actingAs($user)->getJson('/events/' . $event->id . '/instagram-post')
+        $this->actingAs($user)->postJson('/events/' . $event->id . '/instagram-post')
             ->assertStatus(200);
         Queue::assertPushed(PostEventToInstagram::class);
     }
@@ -162,7 +162,7 @@ class QueuedInstagramPostTest extends TestCase
         $event = $this->eventWithPhoto($admin);
         $this->shareEventToInstagram($event, now()->subDay());
 
-        $this->actingAs($admin)->getJson('/events/' . $event->id . '/instagram-post')
+        $this->actingAs($admin)->postJson('/events/' . $event->id . '/instagram-post')
             ->assertStatus(200);
         Queue::assertPushed(PostEventToInstagram::class);
     }

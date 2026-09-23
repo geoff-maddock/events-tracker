@@ -81,12 +81,18 @@
                                     <a href="{{ url('events/related-to/'.$entity->slug) }}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
                                         <i class="bi bi-calendar-event mr-2"></i>Show Related Events
                                     </a>
-                                    <a href="{!! route('entities.instagramPost', ['id' => $entity->id]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
-                                        <i class="bi bi-instagram mr-2"></i>Post to Instagram
-                                    </a>
-                                    <a href="{!! route('entities.instagramStoryPost', ['id' => $entity->id]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
-                                        <i class="bi bi-instagram mr-2"></i>Post Story to Instagram
-                                    </a>
+                                    <form action="{!! route('entities.instagramPost', ['id' => $entity->id]) !!}" method="POST" class="block">
+                                        @csrf
+                                        <button type="submit" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors w-full text-left" role="menuitem">
+                                            <i class="bi bi-instagram mr-2"></i>Post to Instagram
+                                        </button>
+                                    </form>
+                                    <form action="{!! route('entities.instagramStoryPost', ['id' => $entity->id]) !!}" method="POST" class="block">
+                                        @csrf
+                                        <button type="submit" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors w-full text-left" role="menuitem">
+                                            <i class="bi bi-instagram mr-2"></i>Post Story to Instagram
+                                        </button>
+                                    </form>
                                     @if ($user && $user->hasGroup('super_admin'))
                                     <a href="{!! route('entities.sendUpdateSummary', ['id' => $entity->id]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
                                         <i class="bi bi-envelope mr-2"></i>Send Update Summary

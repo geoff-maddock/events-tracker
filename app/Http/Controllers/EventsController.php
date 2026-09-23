@@ -2142,6 +2142,13 @@ class EventsController extends Controller
             return back();
         }
 
+        // owner or admin only, matching the Instagram share rule
+        if ((int) $event->created_by !== $this->user->id && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin')) {
+            flash()->error('Error', 'You are not authorized to tweet this event.');
+
+            return back();
+        }
+
         // add a twitter notification
         $event->notify(new EventPublished());
 
