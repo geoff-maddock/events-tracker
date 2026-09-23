@@ -284,12 +284,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     public function getAttendingCountAttribute(): int
     {
-        $responses = $this->eventResponses()->get();
-        $responses->filter(function ($e) {
-            return 'Attending' == $e->responseType->name;
-        });
-
-        return count($responses);
+        return $this->eventResponses()->where('response_type_id', ResponseType::ATTENDING)->count();
     }
 
     /**
@@ -330,12 +325,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     public function getLoginCountAttribute(): int
     {
-        $logins = $this->activity()->get();
-        $logins->filter(function ($e) {
-            return 1 == $e->action_id;
-        });
-
-        return count($logins);
+        return $this->activity()->where('action_id', Action::LOGIN)->count();
     }
 
     /**
@@ -343,12 +333,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     public function getEntitiesFollowingCountAttribute(): int
     {
-        $responses = $this->follows()->get();
-        $responses->filter(function ($e) {
-            return 'entity' == $e->object_type;
-        });
-
-        return count($responses);
+        return $this->follows()->where('object_type', 'entity')->count();
     }
 
     /**
@@ -356,12 +341,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     public function getTagsFollowingCountAttribute(): int
     {
-        $responses = $this->follows()->get();
-        $responses->filter(function ($e) {
-            return 'tag' == $e->object_type;
-        });
-
-        return count($responses);
+        return $this->follows()->where('object_type', 'tag')->count();
     }
 
     /**
@@ -369,12 +349,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     public function getSeriesFollowingCountAttribute(): int
     {
-        $responses = $this->follows()->get();
-        $responses->filter(function ($e) {
-            return 'series' == $e->object_type;
-        });
-
-        return count($responses);
+        return $this->follows()->where('object_type', 'series')->count();
     }
 
     /**
@@ -382,12 +357,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     public function getThreadsFollowingCountAttribute(): int
     {
-        $responses = $this->follows()->get();
-        $responses->filter(function ($e) {
-            return 'thread' == $e->object_type;
-        });
-
-        return count($responses);
+        return $this->follows()->where('object_type', 'thread')->count();
     }
 
     /**
