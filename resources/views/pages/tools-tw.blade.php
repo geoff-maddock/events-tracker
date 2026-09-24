@@ -12,10 +12,6 @@
             <h2 class="text-xl font-semibold text-foreground mb-4">
                 <i class="bi bi-image mr-2"></i>Photo Import
             </h2>
-            <x-ui.button variant="secondary" href="{{ route('events.importPhotos') }}">
-                <i class="bi bi-cloud-download mr-2"></i>Import Photos
-            </x-ui.button>
-
             @if (count($events) > 0)
                 <div class="mt-4">
                     <h3 class="text-sm font-medium text-muted-foreground mb-2">Events with Photos to Import</h3>
