@@ -1,4 +1,4 @@
-There was a new post in a thread that you are following with the subject <b>{!! $object->name !!}</b>.
+There was a new post in a thread that you are following with the subject <b>{{ $object->name }}</b>.
 
 @unless ($tag == null)
 You received this notificaiton because you are following the keyword tag **{{ $tag->name }}**

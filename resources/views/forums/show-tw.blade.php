@@ -80,7 +80,11 @@
 
             <div class="p-6">
                 <div class="prose dark:prose-invert max-w-none">
-                    {!! $thread->body !!}
+                    @if (isset($thread->user) && $thread->user->can('trust_thread'))
+                        {!! $thread->body !!}
+                    @else
+                        {{ $thread->body }}
+                    @endif
                 </div>
 
                 @if ($signedIn && $thread->ownedBy($user))

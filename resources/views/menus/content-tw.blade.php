@@ -16,7 +16,7 @@
     <div class="space-y-6">
         @forelse ($menu->blogs as $blog)
             <div class="card-tw p-6">
-                @if ($blog->contentType->name === "HTML")
+                @if ($blog->contentType?->name === "HTML" && $blog->user?->can('trust_blog'))
                     <div class="prose dark:prose-invert max-w-none">
                         {!! $blog->body !!}
                     </div>

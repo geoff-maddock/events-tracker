@@ -17,9 +17,9 @@
 	<tr>
 		<td>{!! $menu->id !!}</td>
 		<td>{!! link_to_route('menus.show', $menu->name, [$menu->id], ['class' => 'item-title']) !!}</td>
-		<td>{!! $menu->slug !!}</td>
-        <td>{!! $menu->menuParent ? $menu->menuParent->name : '' !!}</td>
-        <td>{!! $menu->visibility ? $menu->visibility->name : '' !!}</td>
+		<td>{{ $menu->slug }}</td>
+        <td>{{ $menu->menuParent ? $menu->menuParent->name : '' }}</td>
+        <td>{{ $menu->visibility ? $menu->visibility->name : '' }}</td>
 		<td>
 			@can('edit_menu')
 			<a href="{!! route('menus.edit', ['menu' => $menu->id]) !!}"><i class="bi bi-pencil-fill icon"></i></a>

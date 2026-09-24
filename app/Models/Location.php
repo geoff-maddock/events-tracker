@@ -67,6 +67,18 @@ class Location extends Eloquent
     }
 
     /**
+     * map_url is user-entered; only hand it to an href when it is an http(s) URL,
+     * so a javascript: or data: value can never become a clickable link.
+     */
+    public function safeMapUrl(): ?string
+    {
+        $url = trim((string) $this->map_url);
+        $scheme = strtolower((string) parse_url($url, PHP_URL_SCHEME));
+
+        return in_array($scheme, ['http', 'https'], true) ? $url : null;
+    }
+
+    /**
      * Returns visible locations.
      */
     public function scopeVisible(Builder $query, ?User $user): Builder

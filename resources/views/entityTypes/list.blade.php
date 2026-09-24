@@ -15,8 +15,8 @@
 	<tr>
 		<td>{!! $entityType->id !!}</td>
 		<td>{!! link_to_route('entity-types.show', $entityType->name, [$entityType->id], ['class' => 'item-title']) !!}</td>
-		<td>{!! $entityType->slug !!}</td>
-        <td>{!! $entityType->short !!}</td>
+		<td>{{ $entityType->slug }}</td>
+        <td>{{ $entityType->short }}</td>
 		<td>
 			@can('edit_entityType')
 			<a href="{!! route('entity-types.edit', ['entity_type' => $entityType->id]) !!}"><i class="bi bi-pencil"></i></a>

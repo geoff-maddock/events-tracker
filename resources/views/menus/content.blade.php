@@ -16,7 +16,7 @@
 
     @forelse ($menu->blogs as $blog)
         <div class="profile-card col-md-12 mx-2">
-            @if ($blog->contentType->name === "HTML")
+            @if ($blog->contentType?->name === "HTML" && $blog->user?->can('trust_blog'))
                 {!! $blog->body !!}
             @else
                 {{ $blog->body }}

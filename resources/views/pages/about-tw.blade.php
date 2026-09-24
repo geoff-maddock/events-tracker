@@ -12,7 +12,7 @@
         <div class="space-y-4 md:space-y-6">
             @forelse ($menu->blogs as $blog)
                 <div class="card-tw p-4 md:p-6 overflow-hidden">
-                    @if ($blog->contentType && $blog->contentType->name === "HTML")
+                    @if ($blog->contentType?->name === "HTML" && $blog->user?->can('trust_blog'))
                         <div class="prose dark:prose-invert max-w-none [&_img]:!max-w-full [&_img]:!h-auto [&_img]:!w-auto [&_iframe]:!max-w-full [&_iframe]:w-full">
                             {!! $blog->body !!}
                         </div>

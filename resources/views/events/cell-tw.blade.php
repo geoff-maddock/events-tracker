@@ -4,7 +4,7 @@
         @if ($primary = $event->getPrimaryPhoto())
             <a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}" 
                data-lightbox="grid"
-               data-title="{{ $event->name }} @ {{ $event->venue ? $event->venue->name : '' }}">
+               data-title="{{ e($event->name) }} @ {{ e($event->venue ? $event->venue->name : '') }}">
                 <img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}" 
                      alt="{{ $event->name }}" 
                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">

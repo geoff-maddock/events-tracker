@@ -263,7 +263,7 @@
 									@if (!empty($event->series))
 									<span>
 										<a href="{{ route('series.show', $event->series) }}" class="text-muted-foreground font-bold hover:text-foreground transition-colors">
-											{!! $event->series->name !!}
+											{{ $event->series->name }}
 										</a>
 										<span class="mx-1 text-muted-foreground">series</span>
 									</span>
@@ -279,7 +279,7 @@
 									<span>
 										<span class="mx-1 text-muted-foreground">by</span>
 										<a href="/entities/{{$event->promoter->slug }}" class="text-muted-foreground font-bold hover:text-foreground transition-colors underline-offset-2 hover:underline">
-											{!! $event->promoter->name !!}
+											{{ $event->promoter->name }}
 										</a>
 									</span>
 									@endif
@@ -301,7 +301,7 @@
 								@endif
 								<span class="mx-2">•</span>
 									<span>Show {!! $event->start_at->format('g:i A') !!}</span>
-									<a href="{!! $event->getGoogleCalendarLink() !!}" target="_blank" rel="nofollow" class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Add to Google Calendar">
+									<a href="{{ $event->getGoogleCalendarLink() }}" target="_blank" rel="nofollow" class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Add to Google Calendar">
 										<i class="bi bi-calendar-plus text-muted-foreground"></i>
 									</a>
 								</div>
@@ -311,7 +311,7 @@
 								<div class="flex items-center text-sm text-muted-foreground">
 									<i class="bi bi-geo-alt mr-2 h-4 w-4"></i>
 									<a href="/entities/{{$event->venue->slug }}" class="hover:text-foreground transition-colors underline-offset-2 hover:underline">
-										{!! $event->venue->name !!}
+										{{ $event->venue->name }}
 									</a>
 								@if ($event->venue->getPrimaryLocationMap())
 								<a href="{{ $event->venue->getPrimaryLocationMap() }}" 

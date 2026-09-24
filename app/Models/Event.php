@@ -906,18 +906,22 @@ class Event extends Model implements HasPhotos
 
     public function getGoogleCalendarLink(): ?string
     {
-        $action = 'TEMPLATE';
-        $text = $this->name;
         $start = Carbon::parse($this->start_at)->format('Ymd\THis');
         $end = Carbon::parse($this->start_at)->format('Ymd\THis');
-        $details = $this->description;
-        $location = $this->venue ? $this->venue->name : 'Unknown';
-        $sf = 'true';
+
+        // name, description and venue are user text, so every value is URL-encoded;
+        // dates is only digits/T and Google expects a literal slash between them
+        $query = http_build_query([
+            'action' => 'TEMPLATE',
+            'text' => $this->name,
+            'details' => $this->description,
+            'location' => $this->venue ? $this->venue->name : 'Unknown',
+            'sf' => 'true',
+            'output' => 'xml',
+        ], '', '&', PHP_QUERY_RFC3986);
 
         // TODO get this URL from config
-        $url = sprintf('https://www.google.com/calendar/render?action=%s&text=%s&dates=%s/%s&details=%s&location=%s&sf=%s&output=xml', $action, $text, $start, $end, $details, $location, $sf);
-
-        return $url;
+        return 'https://www.google.com/calendar/render?'.$query.'&dates='.$start.'/'.$end;
     }
 
     /**

@@ -46,7 +46,7 @@
 			</div>
 
 			<div class="prose prose-sm max-w-none dark:prose-invert text-foreground">
-				{!! $review->review !!}
+				{!! nl2br(e($review->review)) !!}
 			</div>
 		</div>
 	</div>
