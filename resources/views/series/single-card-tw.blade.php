@@ -6,7 +6,7 @@
             data-title="{{ $series->occurrenceType->name }}  {{ $series->occurrence_repeat }}  <a href='{{ route('series.show', $series) }}'>{{ $series->name }}</a> @ <a href='/entities/{{ $series->venue ? $series->venue->slug : '' }}'>{{ $series->venue ? $series->venue->name : '' }}</a>"
             data-lightbox="{{ $primary->path }}"
             class="block aspect-square w-full rounded-lg overflow-hidden border border-border group-hover:border-primary transition-colors">
-            <img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}" alt="{{ $series->name }}" class="w-full h-full object-cover">
+            <img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}" alt="{{ $series->name }}" loading="lazy" class="w-full h-full object-cover">
         </a>
         @else
         <a href="/images/event-placeholder.png"
@@ -118,7 +118,7 @@
             @endif
 
             @if ($signedIn)
-                @if ($follow = $series->followedBy($user))
+                @if (in_array($series->id, $user->followedIds('series'), true))
                 <a href="{!! route('series.unfollow', ['id' => $series->id]) !!}"
                    class="text-primary hover:text-destructive transition-colors"
                    title="Unfollow">

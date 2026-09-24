@@ -701,45 +701,56 @@ class Series extends Eloquent implements HasPhotos
      */
     public static function byNextDate(?string $date, ?Collection $events = null): array
     {
+        // series that already have an event listed on this day are shown with that event
+        $ids = $events ? $events->pluck('series_id')->filter()->all() : [];
+
         $list = [];
-
-        // get all the ids from the events
-        if ($events) {
-            $ids = $events->filter(function ($event) {
-                return !is_null($event->series_id);
-            })->pluck('series_id')->toArray();
-        }
-
-        // get all the upcoming series events
-        $series = Series::active()
-            ->whereNotIn('id', $ids ?? [])
-            ->with([
-                'visibility',
-                'occurrenceType',
-                'occurrenceWeek',
-                'occurrenceDay',
-                'venue',
-                'entities',
-                'tags',
-                'photos'
-            ])
-            ->get();
-
-        $series = $series->filter(function ($e) {
-            return ('Public' === $e->visibility->name) and ('No Schedule' !== $e->occurrenceType->name);
-        });
-
-        foreach ($series as $s) {
-
-                $next_date = $s->nextOccurrenceDate()->format('Y-m-d');
-
-                if ($next_date == $date) {
-                    $list[] = $s;
-                }
-
+        foreach (self::publicWithNextDates() as $row) {
+            if ($row['date'] === $date && !in_array($row['series']->id, $ids)) {
+                $list[] = $row['series'];
+            }
         }
 
         return $list;
+    }
+
+    /**
+     * Every active, public, scheduled series with its next occurrence date (Y-m-d).
+     *
+     * The next date only depends on today, so this is built once per request: the home
+     * page shows 4 days and /events/week 7, and each used to reload every series with
+     * its relations and walk its occurrence cycle again (#2168).
+     *
+     * @return array<int, array{series: Series, date: string|null}>
+     */
+    public static function publicWithNextDates(): array
+    {
+        return once(function (): array {
+            $rows = [];
+
+            $series = Series::active()
+                ->with([
+                    'visibility',
+                    'occurrenceType',
+                    'occurrenceWeek',
+                    'occurrenceDay',
+                    'venue',
+                    'entities',
+                    'tags',
+                    'photos',
+                    // the series card calls nextEvent(), which uses this when loaded
+                    'upcomingEvent',
+                ])
+                ->get();
+
+            foreach ($series as $s) {
+                if ('Public' === $s->visibility?->name && 'No Schedule' !== $s->occurrenceType?->name) {
+                    $rows[] = ['series' => $s, 'date' => $s->nextOccurrenceDate()?->format('Y-m-d')];
+                }
+            }
+
+            return $rows;
+        });
     }
 
     /**

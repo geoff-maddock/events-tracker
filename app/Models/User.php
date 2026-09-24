@@ -361,6 +361,17 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     }
 
     /**
+     * IDs of the objects of one type (e.g. 'series') this user follows, loaded once per request
+     * so list cards can check follow state without a query each.
+     *
+     * @return array<int, int>
+     */
+    public function followedIds(string $objectType): array
+    {
+        return once(fn () => $this->follows()->where('object_type', $objectType)->pluck('object_id')->map(fn ($id) => (int) $id)->all());
+    }
+
+    /**
      * A user can follow many objects.
      */
     public function follows(): HasMany

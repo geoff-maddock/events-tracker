@@ -23,7 +23,8 @@
                 'entities',
                 'tags',
                 'threads',
-                'eventResponses',
+                // only the viewer's response is shown on the card
+                'eventResponses' => fn ($q) => $q->where('user_id', auth()->id()),
                 'photos'
             ])->starting($day->format('Y-m-d'))->get(); ?>
 

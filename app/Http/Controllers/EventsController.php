@@ -2712,10 +2712,23 @@ class EventsController extends Controller
      */
     public function indexWeek(Request $request)
     {
-        // no filters or sorting applied, just future events the user may see
-        $events = Event::visible($this->user)->with('venue')->future()->get();
+        // the six days the page shows, in one query grouped by day; the view used to run
+        // a query per day (without venue) after this loaded every future event, unused (#2168)
+        $today = Carbon::now()->startOfDay();
+        $userId = $this->user?->id;
 
-        return view('events.indexWeek-tw', compact('events'));
+        $eventsByDay = Event::query()
+            ->where('start_at', '>=', $today)
+            ->where('start_at', '<', $today->copy()->addDays(6))
+            // same rules as the Event::starting() scope the view used, plus visible()
+            ->where(fn ($q) => $q->where('visibility_id', '=', 3)->orWhere('created_by', '=', $userId))
+            ->visible($this->user)
+            ->with('venue')
+            ->orderBy('start_at', 'ASC')
+            ->get()
+            ->groupBy(fn (Event $event) => $event->start_at->format('Y-m-d'));
+
+        return view('events.indexWeek-tw', compact('eventsByDay'));
     }
 
     /**

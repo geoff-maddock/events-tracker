@@ -41,7 +41,7 @@
                 </div>
 
                 <div class="p-4 space-y-4">
-                    @php $events = App\Models\Event::starting($day->format('Y-m-d'))->visible(auth()->user())->get(); @endphp
+                    @php $events = $eventsByDay->get($day->format('Y-m-d'), collect()); @endphp
 
                     @if (count($events) > 0)
                         <div>
