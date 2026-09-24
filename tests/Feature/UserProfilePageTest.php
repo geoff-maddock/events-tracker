@@ -109,7 +109,8 @@ class UserProfilePageTest extends TestCase
     public function test_attending_tab_shows_attending_events(): void
     {
         $user = $this->makeUser();
-        $event = Event::factory()->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC]);
+        // fixed name: a random name with an apostrophe renders escaped and would miss assertSee
+        $event = Event::factory()->create(['name' => 'ZZ Attending Event', 'visibility_id' => Visibility::VISIBILITY_PUBLIC]);
         EventResponse::create([
             'user_id' => $user->id,
             'event_id' => $event->id,
