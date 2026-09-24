@@ -330,7 +330,12 @@
         var calendar = new FullCalendar.Calendar(calendarEl, {
             headerToolbar: { center: 'dayGridMonth,timeGridWeek,timeGridDay' },
             initialView: checkViewport(),
+            @isset($calendarFeedUrl)
+            // fetched per visible range with the page's filters (FullCalendar adds start/end)
+            events: { url: @json($calendarFeedUrl) },
+            @else
             events: {!! $eventList !!},
+            @endisset
             height: getCalendarHeight(),
             initialDate: '{{ $initialDate }}',
             eventDisplay: 'block',
