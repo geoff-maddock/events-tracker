@@ -2,6 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Models\Thread;
+use App\Models\User;
+use App\Models\UserStatus;
+use App\Models\Visibility;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
@@ -11,6 +16,16 @@ use Tests\TestCase;
  */
 class RoutesResolveTest extends TestCase
 {
+    use RefreshDatabase;
+
+    protected $seed = true;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withExceptionHandling();
+    }
+
     public function test_every_controller_route_points_at_an_existing_method(): void
     {
         $missing = [];
@@ -38,5 +53,25 @@ class RoutesResolveTest extends TestCase
         foreach (['menus', 'permissions', 'entity-types', 'groups'] as $name) {
             $this->get('/'.$name.'/all')->assertStatus(301)->assertRedirect('/'.$name);
         }
+    }
+
+    public function test_api_thread_show_returns_visible_threads_only(): void
+    {
+        // show_thread is only granted through groups (admins pass Gate::before), same as the index
+        $author = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $author->assignGroup('admin');
+        $viewer = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $viewer->assignGroup('admin');
+        $author = $author->fresh();
+        $viewer = $viewer->fresh();
+        $public = Thread::factory()->create(['created_by' => $author->id, 'visibility_id' => Visibility::VISIBILITY_PUBLIC]);
+        $private = Thread::factory()->create(['visibility_id' => Visibility::VISIBILITY_PRIVATE]);
+        // Thread's creating hook stamps the signed-in user (or 1), so set the owner afterwards
+        $private->forceFill(['created_by' => $author->id])->saveQuietly();
+
+        $this->actingAs($viewer, 'sanctum')->getJson('/api/threads/'.$public->id)
+            ->assertOk()->assertJsonFragment(['id' => $public->id]);
+        $this->actingAs($viewer, 'sanctum')->getJson('/api/threads/'.$private->id)->assertNotFound();
+        $this->actingAs($author, 'sanctum')->getJson('/api/threads/'.$private->id)->assertOk();
     }
 }

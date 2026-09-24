@@ -209,7 +209,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('threads/{threadId}/posts', ['as' => 'threads.posts', 'uses' => '\App\Http\Controllers\Api\ThreadsController@posts']);
     Route::put('threads/{thread}', [\App\Http\Controllers\Api\ThreadsController::class, 'update'])->name('threads.update');
     Route::patch('threads/{thread}', [\App\Http\Controllers\Api\ThreadsController::class, 'patch'])->name('threads.patch');
-    Route::apiResource('threads', \App\Http\Controllers\Api\ThreadsController::class)->except(['update', 'show']);
+    Route::apiResource('threads', \App\Http\Controllers\Api\ThreadsController::class)->except(['update']);
 
     Route::match(['get', 'post'], 'users/filter', ['as' => 'users.filter', 'uses' => '\App\Http\Controllers\Api\UsersController@filter']);
     Route::get('users/reset', ['as' => 'users.reset', 'uses' => '\App\Http\Controllers\Api\UsersController@reset']);

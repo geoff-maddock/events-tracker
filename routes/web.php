@@ -147,8 +147,6 @@ Route::get('activity/rpp-reset', ['as' => 'activities.rppReset', 'uses' => '\App
 Route::get('tools', [\App\Http\Controllers\PagesController::class, 'tools'])->name('pages.tools');
 Route::post('invite', [\App\Http\Controllers\PagesController::class, 'invite'])->name('pages.invite');
 
-
-
 Route::bind('users', function ($id) {
     return App\Models\User::whereId($id)->firstOrFail();
 });
@@ -311,8 +309,6 @@ Route::match(['get', 'post'], 'events/filter', ['as' => 'events.filter', 'uses' 
 Route::get('events/apply-filter', ['as' => 'events.applyFilterFromUrl', 'uses' => '\App\Http\Controllers\EventsController@applyFilterFromUrl']);
 Route::get('events/reset', ['as' => 'events.reset', 'uses' => '\App\Http\Controllers\EventsController@reset']);
 Route::get('events/rpp-reset', ['as' => 'events.rppReset', 'uses' => '\App\Http\Controllers\EventsController@rppReset']);
-
-// FB access token
 
 // POST to Instagram; these publish to the site's accounts, so they are POST + auth and check ownership in the controller
 Route::post('events/{id}/instagram-post', [\App\Http\Controllers\Api\EventInstagramController::class, 'postCarouselToInstagram'])->name('events.instagramPost')->middleware('auth');

@@ -260,6 +260,22 @@ class ThreadsController extends Controller
     }
 
     /**
+     * A single thread, subject to the same gate and visibility rules as the index.
+     */
+    public function show(Thread $thread): JsonResponse
+    {
+        if (Gate::denies('show_thread')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        if (!Thread::visible($this->user)->whereKey($thread->id)->exists()) {
+            return response()->json(['message' => 'Not found.'], 404);
+        }
+
+        return response()->json($thread);
+    }
+
+    /**
      * Show the form for editing the specified resource.
      */
     public function edit(Thread $thread): View
