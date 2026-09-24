@@ -81,7 +81,10 @@ class Blog extends Eloquent
         parent::boot();
 
         static::creating(function ($blog) {
-            //$blog->created_by = Auth::user() ? Auth::user()->id : 1;
+            // ownership is never mass-assigned; it comes from the signed-in user
+            if (empty($blog->created_by) && Auth::id()) {
+                $blog->created_by = Auth::id();
+            }
             $blog->updated_by = Auth::user() ? Auth::user()->id : 1;
         });
 
@@ -103,8 +106,6 @@ class Blog extends Eloquent
         'menu_id',
         'sort_order',
     ];
-
-    protected $guarded = [];
 
     protected $casts = [
         'created_at' => 'datetime',

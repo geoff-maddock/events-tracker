@@ -74,6 +74,46 @@ class Provider
     }
 
     /**
+     * Fetch $url over https without following redirects, so the caller can vet each hop.
+     * A 2xx body becomes the response; a redirect leaves the response null and returns
+     * the absolute target URL. Anything else returns null with a null response.
+     */
+    public function requestWithoutRedirects(string $url): ?string
+    {
+        if (isset($this->options['response']) && is_string($this->options['response'])) {
+            $this->response = $this->options['response'];
+
+            return null;
+        }
+
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_CONNECTTIMEOUT => 3,
+            CURLOPT_ENCODING => 'gzip',
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_PROTOCOLS => CURLPROTO_HTTPS,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 5,
+            CURLOPT_URL => $url,
+            CURLOPT_USERAGENT => 'Geoff-Maddock/Events-Tracker BrowserKit',
+        ]);
+        $body = curl_exec($ch);
+        $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        $redirect = curl_getinfo($ch, CURLINFO_REDIRECT_URL);
+        curl_close($ch);
+
+        if ($status >= 300 && $status < 400 && is_string($redirect) && $redirect !== '') {
+            return $redirect;
+        }
+
+        if ($status >= 200 && $status < 300 && is_string($body)) {
+            $this->response = $body;
+        }
+
+        return null;
+    }
+
+    /**
      * @param string $expression
      * @return string|null
      */
