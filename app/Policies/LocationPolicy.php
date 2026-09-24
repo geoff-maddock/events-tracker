@@ -10,6 +10,11 @@ class LocationPolicy
 {
     // the `admin` group is granted everything by Gate::before in AuthServiceProvider
 
+    public function update(User $user, Location $location): bool
+    {
+        return $this->delete($user, $location);
+    }
+
     public function delete(User $user, Location $location): bool
     {
         if ($user->hasGroup('super_admin')) {

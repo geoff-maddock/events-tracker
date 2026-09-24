@@ -5393,7 +5393,7 @@ paths:
       tags:
         - links
       summary: Create link
-      description: Creates a new link.
+      description: Creates a new link and attaches it to the entity given by `entity_id` (required). The caller must be able to edit that entity (an owner, super_admin or admin); otherwise 403.
       operationId: createLink
       requestBody:
         content:

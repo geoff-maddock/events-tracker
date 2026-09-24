@@ -859,7 +859,7 @@ class ThreadsController extends Controller
 
     public function edit(Thread $thread): View
     {
-        $this->middleware('auth');
+        $this->authorize('update', $thread);
 
         return view('threads.edit', compact('thread'))->with($this->getFormOptions());
     }
@@ -868,11 +868,9 @@ class ThreadsController extends Controller
     {
         $msg = '';
 
-        $thread->fill($request->input())->save();
+        $this->authorize('update', $thread);
 
-        if (!$thread->ownedBy($this->user)) {
-            $this->unauthorized($request);
-        }
+        $thread->fill($request->input())->save();
 
         $tagArray = $request->input('tag_list', []);
         $syncArray = [];

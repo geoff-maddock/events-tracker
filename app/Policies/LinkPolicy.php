@@ -9,6 +9,11 @@ class LinkPolicy
 {
     // the `admin` group is granted everything by Gate::before in AuthServiceProvider
 
+    public function update(User $user, Link $link): bool
+    {
+        return $this->delete($user, $link);
+    }
+
     public function delete(User $user, Link $link): bool
     {
         // links have no creator, so ownership comes from the entities they are attached to

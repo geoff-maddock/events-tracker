@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ContactRequest;
 use App\Models\Comment;
 use App\Models\Entity;
 use App\Models\Event;
@@ -93,6 +92,10 @@ class CommentsController extends Controller
      */
     public function edit(Entity $entity, Comment $comment): View
     {
+        if ((int) $comment->created_by !== $this->user->id && $this->user->cannot('edit_entity')) {
+            abort(403);
+        }
+
         $object = $comment->commentable;
         $entity = null;
         $event = null;
@@ -114,15 +117,24 @@ class CommentsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(ContactRequest $request, Entity $entity, Comment $comment): RedirectResponse
+    public function update(Request $request, Entity $entity, Comment $comment): RedirectResponse
     {
-        $msg = '';
+        // the author, or anyone who may moderate entity content (same rule as destroy)
+        if ((int) $comment->created_by !== $this->user->id && $this->user->cannot('edit_entity')) {
+            abort(403);
+        }
 
-        $comment->fill($request->input())->save();
+        $this->validate($request, $this->rules);
+
+        // only the text is editable; what the comment is attached to never changes
+        $comment->fill($request->only('message'))->save();
 
         flash('Success', 'Your comment has been updated');
 
-        return redirect()->route('entities.show', $entity->getRouteKey());
+        // the route's parent param differs for entity and event comments, so go by the comment itself
+        $type = $comment->commentable instanceof Event ? 'events' : 'entities';
+
+        return redirect()->route($type.'.show', $comment->commentable->getRouteKey());
     }
 
     /**

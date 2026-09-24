@@ -670,8 +670,8 @@ Route::resource('events.reviews', \App\Http\Controllers\EventReviewsController::
 Route::match(['get', 'post'], 'reviews/filter', ['as' => 'reviews.filter', 'uses' => '\App\Http\Controllers\ReviewsController@filter']);
 Route::get('reviews/reset', ['as' => 'reviews.reset', 'uses' => '\App\Http\Controllers\ReviewsController@reset']);
 Route::get('reviews/rpp-reset', ['as' => 'reviews.rppReset', 'uses' => '\App\Http\Controllers\ReviewsController@rppReset']);
-// reviews are deleted through events.reviews.destroy
-Route::resource('reviews', \App\Http\Controllers\ReviewsController::class)->except(['destroy']);
+// reviews are created, updated and deleted through events.reviews; /reviews only lists, shows and links to the edit form
+Route::resource('reviews', \App\Http\Controllers\ReviewsController::class)->only(['index', 'show', 'edit']);
 
 // SERIES
 Route::get('series/{id}/load-embeds', [\App\Http\Controllers\SeriesController::class, 'loadEmbeds']);

@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use App\Http\Requests\Request;
-use App\Models\Location;
 
 class LocationRequest extends Request
 {
@@ -14,9 +13,8 @@ class LocationRequest extends Request
      */
     public function authorize()
     {
-        return Location::where([
-            'created_by' => $this->user()->id
-        ])->exists();
+        // per-record checks (entity ownership) happen in the controller
+        return $this->user() !== null;
     }
 
     /**
