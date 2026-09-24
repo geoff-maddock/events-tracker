@@ -324,7 +324,7 @@ class Event extends Model implements HasPhotos
     public function scopeToday(Builder $query): Builder
     {
         /* @var Builder<Event>*/
-        return $query->whereDate('start_at', '=', Carbon::today()->toDateString())
+        return $query->where('start_at', '>=', Carbon::today())->where('start_at', '<', Carbon::tomorrow())
             ->orderBy('start_at', 'asc');
     }
 

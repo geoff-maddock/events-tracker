@@ -487,7 +487,7 @@ class Entity extends Eloquent implements HasPhotos
      */
     public function todaysEvents(): Collection
     {
-        return $this->events()->whereDate('start_at', '=', Carbon::today()->toDateString())->orderBy('start_at', 'ASC')->get();
+        return $this->events()->where('start_at', '>=', Carbon::today())->where('start_at', '<', Carbon::tomorrow())->orderBy('start_at', 'ASC')->get();
     }
 
     /**
