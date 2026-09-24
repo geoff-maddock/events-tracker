@@ -102,45 +102,34 @@ class EventReviewsController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  Event 		$event
-     * @param  EventReview  	$eventReview
+     * @param  EventReview  	$review
      */
-    public function edit(Event $event, EventReview $eventReview): View
+    public function edit(Event $event, EventReview $review): View
     {
+        $this->authorizeReviewChange($review);
+
         $reviewTypeOptions = ['' => ''] + ReviewType::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
-        return view('reviews.edit-tw', compact('event', 'eventReview', 'reviewTypeOptions'));
+        return view('reviews.edit-tw', compact('event', 'review', 'reviewTypeOptions'));
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  Request 			$request
-     * @param  Event 		$event
-     * @param  EventReview  	$eventReview
      */
-    public function update(Request $request, Event $event, EventReview $eventReview): RedirectResponse
+    public function update(EventReviewRequest $request, Event $event, EventReview $review): RedirectResponse
     {
-        $msg = '';
+        $this->authorizeReviewChange($review);
 
-        $input = $request->input();
-        $input['event_id'] = $event->id;
-        $input['user_id'] = $this->user->id;
-        if (isset($input['attended'])) {
-            $input['attended'] = $input['attended'] == 'on' ? 1 : 0;
-        } else {
-            $input['attended'] = 0;
-        }
-        if (isset($input['confirmed'])) {
-            $input['confirmed'] = $input['confirmed'] == 'on' ? 1 : 0;
-        } else {
-            $input['confirmed'] = 0;
-        }
+        // the event and author never change on edit
+        $input = $request->only(['review_type_id', 'expectation', 'rating', 'review']);
+        $input['attended'] = $request->input('attended') == 'on' ? 1 : 0;
+        $input['confirmed'] = $request->input('confirmed') == 'on' ? 1 : 0;
 
-        $eventReview->fill($input)->save();
+        $review->fill($input)->save();
 
         flash()->success('Success', 'Your review has been updated!');
 
-        return redirect()->route('events.show', ['event' => $event->id]);
+        return redirect()->route('events.show', ['event' => $review->event_id]);
     }
 
     /**
@@ -155,15 +144,20 @@ class EventReviewsController extends Controller
      */
     public function destroy(Event $event, EventReview $review): RedirectResponse
     {
-        // the author, or an admin
-        if ((int) $review->user_id !== $this->user->id && !$this->user->isAdmin()) {
-            abort(403);
-        }
+        $this->authorizeReviewChange($review);
 
         $review->delete();
 
         \Session::flash('flash_message', 'Your review has been deleted!');
 
         return redirect()->route('events.show', $event->id);
+    }
+
+    /**
+     * Only the review's author or an admin may change it.
+     */
+    private function authorizeReviewChange(EventReview $review): void
+    {
+        abort_unless($this->user && ((int) $review->user_id === $this->user->id || $this->user->isAdmin()), 403);
     }
 }

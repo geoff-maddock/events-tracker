@@ -11,16 +11,6 @@ class ThreadPolicy
 {
     use HandlesAuthorization;
 
-    public function before(User $user): bool
-    {
-        // instant authorizes the selected user
-        if ($user->id === 1) {
-            return true;
-        }
-
-        return true;
-    }
-
     /**
      * Determine whether the user can view the thread.
      */
@@ -46,7 +36,8 @@ class ThreadPolicy
      */
     public function update(User $user, Thread $thread): bool
     {
-        return $thread->user->id == $user->id;
+        // the author or a super_admin; the `admin` group passes via Gate::before
+        return (int) $thread->created_by === $user->id || $user->hasGroup('super_admin');
     }
 
     /**
@@ -54,11 +45,7 @@ class ThreadPolicy
      */
     public function delete(User $user, Thread $thread): bool
     {
-        if (Auth::check()) {
-            return true;
-        }
-
-        return false;
+        return $this->update($user, $thread);
     }
 
     /**

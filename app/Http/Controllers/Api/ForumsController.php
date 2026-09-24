@@ -218,6 +218,11 @@ class ForumsController extends Controller
      */
     public function store(ForumRequest $request, Forum $forum): JsonResponse
     {
+        // forums are site structure: admin only, as on the web
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         $forum = $forum->create($request->all());
 
         // add to activity log
@@ -240,8 +245,8 @@ class ForumsController extends Controller
      */
     public function update(ForumRequest $request, Forum $forum): JsonResponse
     {
-        if (!$forum->ownedBy($this->user)) {
-            $this->unauthorized($request);
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
         }
 
         $input = $request->all();
@@ -264,8 +269,8 @@ class ForumsController extends Controller
      */
     public function patch(ForumPatchRequest $request, Forum $forum): JsonResponse
     {
-        if (!$forum->ownedBy($this->user)) {
-            $this->unauthorized($request);
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
         }
 
         $input = $request->all();

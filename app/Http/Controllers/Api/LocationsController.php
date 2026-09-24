@@ -75,6 +75,10 @@ class LocationsController extends Controller
      */
     public function store(LocationRequest $request): JsonResponse
     {
+        if ($denied = $this->denyUnlessCanEditEntity($request->input('entity_id'), true)) {
+            return $denied;
+        }
+
         $input = $request->all();
 
         $location = Location::create($input);
@@ -97,6 +101,10 @@ class LocationsController extends Controller
      */
     public function update(Location $location, LocationRequest $request): JsonResponse
     {
+        if ($denied = $this->denyUnlessCanEditLocation($location, $request)) {
+            return $denied;
+        }
+
         $input = $request->all();
 
         $optionalFields = [
@@ -129,6 +137,10 @@ class LocationsController extends Controller
      */
     public function patch(Location $location, LocationPatchRequest $request): JsonResponse
     {
+        if ($denied = $this->denyUnlessCanEditLocation($location, $request)) {
+            return $denied;
+        }
+
         $input = $request->all();
         $scalarInput = array_intersect_key($input, array_flip($location->getFillable()));
         if (!empty($scalarInput)) {
@@ -194,5 +206,43 @@ class LocationsController extends Controller
         $locations = $query->paginate($listResultSet->getLimit());
 
         return response()->json(new LocationCollection($locations));
+    }
+
+    /**
+     * A location may only be changed by someone who can edit its entity, and
+     * only moved to another entity they can also edit.
+     */
+    private function denyUnlessCanEditLocation(Location $location, Request $request): ?JsonResponse
+    {
+        if (!$this->user || $this->user->cannot('update', $location)) {
+            return response()->json(['message' => 'Not authorized.'], 403);
+        }
+
+        if ($request->has('entity_id') && (int) $request->input('entity_id') !== (int) $location->entity_id) {
+            return $this->denyUnlessCanEditEntity($request->input('entity_id'), false);
+        }
+
+        return null;
+    }
+
+    private function denyUnlessCanEditEntity(mixed $entityId, bool $required): ?JsonResponse
+    {
+        if ($entityId === null || $entityId === '') {
+            return $required
+                ? response()->json(['message' => 'The entity_id field is required.', 'errors' => ['entity_id' => ['The entity_id field is required.']]], 422)
+                : null;
+        }
+
+        $entity = Entity::find($entityId);
+
+        if (!$entity) {
+            return response()->json(['message' => 'The selected entity_id is invalid.', 'errors' => ['entity_id' => ['The selected entity_id is invalid.']]], 422);
+        }
+
+        if (!$this->user || $this->user->cannot('update', $entity)) {
+            return response()->json(['message' => 'Not authorized.'], 403);
+        }
+
+        return null;
     }
 }

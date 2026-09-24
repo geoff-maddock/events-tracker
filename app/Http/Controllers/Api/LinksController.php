@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Filters\LinkFilters;
 use App\Models\Entity;
 use App\Models\Link;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use App\Http\Controllers\Controller;
@@ -64,24 +63,23 @@ class LinksController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, Entity $entity): RedirectResponse
+    public function store(Request $request): JsonResponse
     {
-        $msg = '';
+        $this->validate($request, $this->rules + ['entity_id' => ['required', 'integer', 'exists:entities,id']]);
 
-        // get the request
-        $input = $request->all();
-        $input['entity_id'] = $entity->id;
-        $input['is_primary'] = isset($input['is_primary']) ? 1 : 0;
+        // links belong to entities, so creating one needs edit rights on that entity
+        $entity = Entity::findOrFail($request->input('entity_id'));
+        if (!$this->user || $this->user->cannot('update', $entity)) {
+            return response()->json(['message' => 'Not authorized.'], 403);
+        }
 
-        $this->validate($request, $this->rules);
+        $input = $request->only(['text', 'url', 'title']);
+        $input['is_primary'] = $request->boolean('is_primary') ? 1 : 0;
 
         $link = Link::create($input);
-
         $entity->links()->attach($link->id);
 
-        flash()->success('Success', 'Your link has been created');
-
-        return redirect()->route('entities.show', $entity->slug);
+        return response()->json($link, 201);
     }
 
     /**
@@ -95,16 +93,20 @@ class LinksController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Entity $entity, Link $link): RedirectResponse
+    public function update(Request $request, Link $link): JsonResponse
     {
-        $input = $request->all();
-        $input['is_primary'] = isset($input['is_primary']) ? 1 : 0;
+        if (!$this->user || $this->user->cannot('update', $link)) {
+            return response()->json(['message' => 'Not authorized.'], 403);
+        }
+
+        $this->validate($request, $this->rules);
+
+        $input = $request->only(['text', 'url', 'title']);
+        $input['is_primary'] = $request->boolean('is_primary') ? 1 : 0;
 
         $link->fill($input)->save();
 
-        flash()->success('Success', 'Your link has been updated!');
-
-        return redirect()->route('entities.show', $entity->slug);
+        return response()->json($link);
     }
 
     /**

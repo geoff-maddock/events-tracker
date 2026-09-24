@@ -3,26 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Filters\ReviewFilters;
-use App\Http\Requests\EventRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
-use App\Models\Activity;
 use App\Models\Event;
 use App\Models\EventReview;
 use App\Models\ReviewType;
-use App\Models\Tag;
 use App\Models\User;
 use App\Models\Visibility;
-use App\Services\BestEffortMailer;
 use App\Services\SessionStore\ListParameterSessionStore;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
-use Redirect;
-use Str;
 
 class ReviewsController extends Controller
 {
@@ -244,159 +234,19 @@ class ReviewsController extends Controller
         return redirect()->route($this->resolveRedirectRoute($request, 'reviews.index'));
     }
 
-    /**
-     * Show a form to create a new review.
-     **/
-    public function create(): View
-    {
-        $events = Event::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        return view('reviews.create-tw', compact('events'))
-            ->with($this->getFormOptions());
-    }
-
     public function show(EventReview $review): View
     {
         return view('reviews.show-tw', compact('review'));
     }
 
-    public function store(EventRequest $request, Event $event): RedirectResponse
-    {
-        $msg = '';
-
-        // get the request
-        $input = $request->all();
-
-        // validate - hmm, isn't this doing it elsewhere?
-
-        $tagArray = $request->input('tag_list', []);
-        $tags = Tag::resolveList($tagArray, auth()->user());
-        $syncArray = $tags->modelKeys();
-        foreach ($tags->filter(fn (Tag $tag) => $tag->wasRecentlyCreated) as $tag) {
-            $msg .= ' Added tag '.$tag->name.'.';
-        }
-
-        $event = $event->create($input);
-
-        $event->tags()->attach($syncArray);
-        $event->entities()->attach($request->input('entity_list'));
-
-        // here, make a call to notify all users who are following any of the sync'd tags
-        $this->notifyFollowing($event);
-
-        // add to activity log
-        Activity::log($event, $this->user, 1);
-
-        flash()->success('Success', 'Your event has been created');
-
-        return redirect()->route('reviews.index');
-    }
-
-    /**
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    protected function notifyFollowing(Event $event)
-    {
-        $reply_email = config('app.noreplyemail');
-        $site = config('app.app_name');
-        $url = config('app.url');
-
-        // Follower notification is best-effort — the review is already saved,
-        // so a mail failure must not surface as a 500.
-        $mailer = new BestEffortMailer();
-
-        // notify users following any of the tags
-        $tags = $event->tags()->get();
-        $users = [];
-
-        // improve this so it will only sent one email to each user per event, and include a list of all tags they were following that led to the notification
-        foreach ($tags as $tag) {
-            foreach ($tag->followers() as $user) {
-                // if the user hasn't already been notified, then email them
-                if (!array_key_exists($user->id, $users)) {
-                    $mailer->attempt(function () use ($user, $event, $tag, $reply_email, $site) {
-                        Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $tag, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $event, $tag, $reply_email, $site) {
-                            $m->from($reply_email, $site);
-
-                            $m->to($user->email, $user->name)->subject($site.': '.$tag->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
-                        });
-                    }, ['event_id' => $event->id, 'user_id' => $user->id, 'via' => 'tag']);
-                    $users[$user->id] = $tag->name;
-                }
-            }
-        }
-
-        // notify users following any of the entities
-        $entities = $event->entities()->get();
-
-        // improve this so it will only sent one email to each user per event, and include a list of entities they were following that led to the notification
-        foreach ($entities as $entity) {
-            foreach ($entity->followers() as $user) {
-                // if the user hasn't already been notified, then email them
-                if (!array_key_exists($user->id, $users)) {
-                    $mailer->attempt(function () use ($user, $event, $entity, $reply_email, $site) {
-                        Mail::send('emails.following', ['user' => $user, 'event' => $event, 'object' => $entity, 'reply_email' => $reply_email, 'site' => $site], function ($m) use ($user, $event, $entity, $reply_email, $site) {
-                            $m->from($reply_email, $site);
-
-                            $m->to($user->email, $user->name)->subject($site.': '.$entity->name.' :: '.$event->start_at->format('D F jS').' '.$event->name);
-                        });
-                    }, ['event_id' => $event->id, 'user_id' => $user->id, 'via' => 'entity']);
-                    $users[$user->id] = $entity->name;
-                }
-            }
-        }
-
-        $mailer->logSummary('ReviewsController@notifyFollowing', ['event_id' => $event->id]);
-
-        return back();
-    }
-
-    protected function unauthorized(EventRequest $request): RedirectResponse | Response
-    {
-        if ($request->ajax()) {
-            return response(['message' => 'No way.'], 403);
-        }
-
-        \Session::flash('flash_message', 'Not authorized');
-
-        return redirect('/');
-    }
-
     public function edit(EventReview $review): View
     {
-        $this->middleware('auth');
+        // the author, or an admin (same rule as events.reviews.destroy)
+        abort_unless($this->user && ($review->ownedBy($this->user) || $this->user->isAdmin()), 403);
 
         // moved necessary lists into AppServiceProvider
         return view('reviews.edit-tw', compact('review'))
             ->with($this->getFormOptions());
-    }
-
-    public function update(Event $event, EventRequest $request): RedirectResponse
-    {
-        $msg = '';
-
-        $event->fill($request->input())->save();
-
-        if (!$event->ownedBy($this->user)) {
-            $this->unauthorized($request);
-        }
-
-        $tagArray = $request->input('tag_list', []);
-        $tags = Tag::resolveList($tagArray, auth()->user());
-        $syncArray = $tags->modelKeys();
-        foreach ($tags->filter(fn (Tag $tag) => $tag->wasRecentlyCreated) as $tag) {
-            $msg .= ' Added tag '.$tag->name.'.';
-        }
-
-        $event->tags()->sync($syncArray);
-        $event->entities()->sync($request->input('entity_list', []));
-
-        // add to activity log
-        Activity::log($event, $this->user, 2);
-
-        flash()->success('Success', 'Your event has been updated');
-
-        return redirect('events');
     }
 
     protected function getListControlOptions(): array

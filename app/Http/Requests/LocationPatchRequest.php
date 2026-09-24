@@ -2,13 +2,13 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Location;
 
 class LocationPatchRequest extends Request
 {
     public function authorize(): bool
     {
-        return Location::where(['created_by' => $this->user()->id])->exists();
+        // per-record checks (entity ownership) happen in the controller
+        return $this->user() !== null;
     }
 
     public function rules(): array
