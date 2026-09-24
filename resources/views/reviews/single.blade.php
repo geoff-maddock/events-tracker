@@ -25,7 +25,7 @@
 
 		<a href="/reviews?filter[type]={{ $review->reviewType->name }}">{{ $review->reviewType->name }}</a>
 		<br>
-		<div id="review">{!! $review->review !!}</div>
+		<div id="review">{!! nl2br(e($review->review)) !!}</div>
 
 
 </li>

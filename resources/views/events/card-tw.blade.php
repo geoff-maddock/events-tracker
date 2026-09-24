@@ -4,7 +4,7 @@
     <div class="relative overflow-hidden">
         @if ($primary = $event->getPrimaryPhoto())
         <a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
-            data-title="{!! $event->start_at->format('l F jS Y') !!} - {{ $event->name }} @ {{ $event->venue ? $event->venue->name : '' }}"
+            data-title="{!! $event->start_at->format('l F jS Y') !!} - {{ e($event->name) }} @ {{ e($event->venue ? $event->venue->name : '') }}"
             data-lightbox="{{ $primary->path }}"
             aria-label="View photo for {{ $event->name }}">
             <img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}"

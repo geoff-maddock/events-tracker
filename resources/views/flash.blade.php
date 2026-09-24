@@ -2,9 +2,9 @@
 	<script>
 	document.addEventListener('DOMContentLoaded', function () {
 		const options = {
-			title: "{{ session('flash_message.title') }}",
-			text: "{!! session('flash_message.message') !!}",
-			icon: "{{ session('flash_message.level') }}",
+			title: @json((string) session('flash_message.title')),
+			text: @json((string) session('flash_message.message')),
+			icon: @json((string) session('flash_message.level')),
 			timer: 2500,
 			showConfirmButton: false,
 			preConfirm: function() {

@@ -1,4 +1,4 @@
-You might be interested in this new event because you are following <b>{!! $object->name !!}</b>.
+You might be interested in this new event because you are following <b>{{ $object->name }}</b>.
 
 <div class='event-date'>
 	<h2>{!! $event->start_at->format('l F jS Y') !!}</h2>
@@ -11,14 +11,14 @@ You might be interested in this new event because you are following <b>{!! $obje
 
 	<b>
 	@if (!empty($event->series_id))
-	<a href="{{ url('series/'.strtolower($event->series->slug)) }}">{!! $event->series->name !!}</a> series
+	<a href="{{ url('series/'.strtolower($event->series->slug)) }}">{{ $event->series->name }}</a> series
 	@endif
 
 	<a href="{{ url('events/type/'.$event->eventType->name) }}">{{ $event->eventType->name }}</a>
 	<br>
 
 	@if (!empty($event->venue_id))
-	<a href="{{ url('entities/'.$event->venue->slug) }}">{!! $event->venue->name !!}</a>
+	<a href="{{ url('entities/'.$event->venue->slug) }}">{{ $event->venue->name }}</a>
 
 	@if ($event->venue->getPrimaryLocationAddress() )
 		{{ $event->venue->getPrimaryLocationAddress() }}
@@ -53,7 +53,7 @@ You might be interested in this new event because you are following <b>{!! $obje
 	<p>
 	@if ($event->description)
 	<event class="body">
-		{!! nl2br($event->description) !!}
+		{!! nl2br(e($event->description)) !!}
 	</event>
 	@endif
 

@@ -396,8 +396,8 @@
 						</div>
 						@endif
 						<div class="mt-2 flex gap-2">
-							@if (isset($location->map_url) && $location->map_url != '')
-							<a href="{!! $location->map_url !!}"
+							@if ($location->safeMapUrl())
+							<a href="{{ $location->safeMapUrl() }}"
 								target="_blank"
 								class="text-primary hover:text-primary/90 transition-colors"
 								title="View on map">

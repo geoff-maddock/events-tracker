@@ -79,11 +79,11 @@
                 </div>
             @endif
 
-            @if ($location->map_url)
+            @if ($location->safeMapUrl())
                 <div>
                     <label class="text-sm font-medium text-muted-foreground">Map</label>
                     <p class="text-foreground mt-1">
-                        <a href="{{ $location->map_url }}" target="_blank" class="text-primary hover:underline">
+                        <a href="{{ $location->safeMapUrl() }}" target="_blank" class="text-primary hover:underline">
                             View on Map <i class="bi bi-box-arrow-up-right ml-1 text-xs"></i>
                         </a>
                     </p>

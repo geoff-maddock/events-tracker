@@ -3,14 +3,14 @@
     <div class="flex-shrink-0">
         @if ($primary = $event->getPrimaryPhoto())
         <a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
-            data-title="{!! $event->start_at->format('l F jS Y') !!} <a href='/events/{{ $event->slug }}'>{{ $event->name }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ $event->venue ? $event->venue->name : '' }}</a>"
+            data-title="{!! $event->start_at->format('l F jS Y') !!} <a href='/events/{{ $event->slug }}'>{{ e($event->name) }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ e($event->venue ? $event->venue->name : '') }}</a>"
             data-lightbox="{{ $primary->path }}"
             class="block aspect-square w-20 sm:w-24 md:w-28 rounded-lg overflow-hidden border border-border group-hover:border-primary transition-colors">
             <img src="{{ Storage::disk('external')->url($primary->getStoragePath()) }}" alt="{{ $event->name }}" class="w-full h-full object-cover">
         </a>
         @else
         <a href="/images/event-placeholder.png"
-            data-title="{!! $event->start_at->format('l F jS Y') !!} <a href='/events/{{ $event->slug }}'>{{ $event->name }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ $event->venue ? $event->venue->name : '' }}</a>"
+            data-title="{!! $event->start_at->format('l F jS Y') !!} <a href='/events/{{ $event->slug }}'>{{ e($event->name) }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ e($event->venue ? $event->venue->name : '') }}</a>"
             data-lightbox="/images/event-placeholder.png"
             class="block aspect-square w-20 sm:w-24 md:w-28 rounded-lg overflow-hidden border border-border group-hover:border-primary transition-colors bg-card flex items-center justify-center">
             <i class="bi bi-calendar-event text-4xl text-muted-foreground/40"></i>

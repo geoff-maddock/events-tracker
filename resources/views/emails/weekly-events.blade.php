@@ -16,14 +16,14 @@ Here is a reminder from <a href="{{ $url }}">{{ $url }}</a> about these upcoming
 
 	<b>
 	@if (!empty($event->series_id))
-	<a href="{{ $url }}/series/{{ strtolower($event->series->slug) }}">{!! $event->series->name !!}</a> series
+	<a href="{{ $url }}/series/{{ strtolower($event->series->slug) }}">{{ $event->series->name }}</a> series
 	@endif
 
 	<a href="{{ $url }}/events/type/{{$event->eventType->name }}">{{ $event->eventType->name }}</a>
 	<br>
 
 	@if (!empty($event->venue_id))
-	<a href="{{ $url }}/entities/{{$event->venue->slug }}">{!! $event->venue->name !!}</a>
+	<a href="{{ $url }}/entities/{{$event->venue->slug }}">{{ $event->venue->name }}</a>
 
 	@if ($event->venue->getPrimaryLocationAddress() )
 		{{ $event->venue->getPrimaryLocationAddress() }}
@@ -58,7 +58,7 @@ Here is a reminder from <a href="{{ $url }}">{{ $url }}</a> about these upcoming
 	<p>
 	@if ($event->description)
 	<event class="body">
-		{!! nl2br($event->description) !!}
+		{!! nl2br(e($event->description)) !!}
 	</event>
 	@endif
 
@@ -99,7 +99,7 @@ Here is a reminder from <a href="{{ $url }}">{{ $url }}</a> about these upcoming
 					<i>{{ $event->short }}</i>
 
 					@if (!empty($event->series_id))
-						<br><a href="/series/{{ strtolower($event->series->slug) }}">{!! $event->series->name !!}</a> series
+						<br><a href="/series/{{ strtolower($event->series->slug) }}">{{ $event->series->name }}</a> series
 					@endif
 					<br>
 					{{ $event->eventType->name }}

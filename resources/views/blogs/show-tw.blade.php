@@ -41,7 +41,8 @@
 		<div class="p-6">
 			@if ($blog->body)
 				<div class="prose prose-slate dark:prose-invert max-w-none">
-					@if (auth()->check() && auth()->user()->can('trust_blog'))
+					{{-- raw HTML only for a trusted author; checking the viewer let an admin run anyone's script --}}
+					@if ($blog->user && $blog->user->can('trust_blog'))
 						{!! $blog->body !!}
 					@else
 						{!! nl2br(e($blog->body)) !!}

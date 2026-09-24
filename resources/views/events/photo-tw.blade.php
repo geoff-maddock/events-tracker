@@ -3,7 +3,7 @@
         <div class="group relative aspect-square overflow-hidden rounded-lg bg-muted">
             <a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}"
                 data-lightbox="grid"
-                data-title="{!! $event->start_at->format('l F jS Y') !!} <a href='/events/{{ $event->slug }}'>{{ $event->name }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ $event->venue ? $event->venue->name : '' }}</a>"
+                data-title="{!! $event->start_at->format('l F jS Y') !!} <a href='/events/{{ $event->slug }}'>{{ e($event->name) }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ e($event->venue ? $event->venue->name : '') }}</a>"
                 title="{{ $event->start_at->format('l F jS Y') }} {{ $event->name }} @ {{ $event->venue ? $event->venue->name : '' }}">
                 <img src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}"
                     alt="{{ $event->name }}"

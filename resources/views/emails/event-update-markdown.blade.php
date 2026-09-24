@@ -15,14 +15,14 @@
 @endif
 ## {{ $event->name }}  
 **{!! $event->start_at->format('g:i A') !!}{!! $event->end_time ? ' until '.$event->end_time->format('g:i A') : '' !!}**  
-{!! $event->short ? '*'.$event->short.'*' : '' !!}
+{{ $event->short ? '*'.$event->short.'*' : '' }}
 [Link]({{ $url }}events/{{$event->id }}) 
 
 @if (!empty($event->series_id))
-[{!! $event->series->name !!}]({{ $url }}series/{{ strtolower($event->series->slug) }}) series  
+[{{ $event->series->name }}]({{ $url }}series/{{ strtolower($event->series->slug) }}) series  
 @endif
 
-{{ $event->eventType->name }} at  @if (!empty($event->venue_id))[{!! $event->venue->name !!}]({{ $url }}entities/{{$event->venue->slug }})  
+{{ $event->eventType->name }} at  @if (!empty($event->venue_id))[{{ $event->venue->name }}]({{ $url }}entities/{{$event->venue->slug }})  
 @if ($event->venue->getPrimaryLocationAddress()){{ $event->venue->getPrimaryLocationAddress() }} @endif @else no venue specified @endif 
 @if ($event->door_price)${{ number_format($event->door_price,0) }}@endif 
 @if ($event->min_age){{ $event->age_format }}@endif 

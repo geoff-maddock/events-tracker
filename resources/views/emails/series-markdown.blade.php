@@ -7,10 +7,10 @@
 ## {{ $series->name }}  
 *{{ $series->short }}* [Link]({{ $url }}series/{{ strtolower($series->slug) }})  
 @if ($series->description)
-    {!! $series->description !!}
+    {{ $series->description }}
 @endif
 
-{{ $series->eventType->name }} at  @if (!empty($series->venue_id))[{!! $series->venue->name !!}]({{ $url }}entities/{{$series->venue->slug }})  
+{{ $series->eventType->name }} at  @if (!empty($series->venue_id))[{{ $series->venue->name }}]({{ $url }}entities/{{$series->venue->slug }})  
 @if ($series->venue->getPrimaryLocationAddress()){{ $series->venue->getPrimaryLocationAddress() }} @endif @else no venue specified @endif 
 
 @unless ($series->entities->isEmpty())

@@ -15,7 +15,7 @@
 	<tr>
 		<td>{!! $blog->id !!}</td>
 		<td>{!! link_to_route('blogs.show', $blog->name, [$blog->slug], ['class' => 'item-title']) !!}</td>
-		<td>{!! $blog->slug !!}</td>
+		<td>{{ $blog->slug }}</td>
 		<td>{!! $blog->created_at !!}</td>
 		<td>
 			@can('edit_blog')

@@ -2,7 +2,7 @@
 
 Good morning!
 
-You might be interested in this new thread because you are following  **{!! $tag->name !!}**.
+You might be interested in this new thread because you are following  **{{ $tag->name }}**.
 
 @include('emails.thread-update-markdown')
 
